@@ -14,7 +14,7 @@
     "typecheck": "tsc -b",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "ci": "bun run format:check && bun run lint && bun run typecheck && bun run coverage",
+    "ci": "bun run format:check && bun run typecheck && bun run lint && bun run coverage",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",

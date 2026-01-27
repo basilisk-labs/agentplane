@@ -186,6 +186,202 @@ describe("runCli", () => {
     expect(text).toContain('"workflow_mode": "direct"');
   });
 
+  it("task new creates a task README and prints the id", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let id = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      id = io.stdout.trim();
+      expect(id).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
+    } finally {
+      io.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain(`id: "${id}"`);
+    expect(readme).toContain('status: "TODO"');
+    expect(readme).toContain('title: "My task"');
+  });
+
+  it("task show prints task frontmatter json", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    let id = "";
+    try {
+      const code1 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(0);
+      id = io1.stdout.trim();
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["task", "show", id, "--root", root]);
+      expect(code2).toBe(0);
+      expect(io2.stdout).toContain(`"id": "${id}"`);
+      expect(io2.stdout).toContain('"status": "TODO"');
+    } finally {
+      io2.restore();
+    }
+  });
+
+  it("task list prints tasks", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    let id = "";
+    try {
+      const code1 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(0);
+      id = io1.stdout.trim();
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["task", "list", "--root", root]);
+      expect(code2).toBe(0);
+      expect(io2.stdout).toContain(id);
+      expect(io2.stdout).toContain("[TODO]");
+      expect(io2.stdout).toContain("My task");
+    } finally {
+      io2.restore();
+    }
+  });
+
+  it("task list is empty when no tasks exist", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "list", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task show requires an id", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane task show");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task show maps missing readme to E_IO", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(4);
+      expect(io.stderr).toMatch(/ENOENT|no such file/i);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task new validates required flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane task new");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task new rejects unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--wat",
+        "x",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unknown flag");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("mode get prints workflow mode (default)", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

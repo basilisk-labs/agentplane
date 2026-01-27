@@ -25,3 +25,15 @@ export {
   renderTaskReadme,
   type ParsedTaskReadme,
 } from "./task-readme.js";
+
+export {
+  createTask,
+  getTasksDir,
+  listTasks,
+  readTask,
+  taskReadmePath,
+  type TaskFrontmatter,
+  type TaskPriority,
+  type TaskRecord,
+  type TaskStatus,
+} from "./task-store.js";

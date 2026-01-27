@@ -1,6 +1,14 @@
 import path from "node:path";
 
-import { loadConfig, resolveProject, saveConfig, setByDottedKey } from "@agentplane/core";
+import {
+  createTask,
+  listTasks,
+  loadConfig,
+  readTask,
+  resolveProject,
+  saveConfig,
+  setByDottedKey,
+} from "@agentplane/core";
 
 import { CliError, formatJsonError } from "./errors.js";
 import { renderHelp } from "./help.js";
@@ -160,6 +168,145 @@ async function cmdModeSet(opts: {
   }
 }
 
+type TaskNewFlags = {
+  title?: string;
+  description?: string;
+  owner?: string;
+  priority?: "low" | "normal" | "med" | "high";
+  tags: string[];
+  dependsOn: string[];
+  verify: string[];
+};
+
+function parseTaskNewFlags(args: string[]): TaskNewFlags {
+  const out: TaskNewFlags = { tags: [], dependsOn: [], verify: [] };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (!arg.startsWith("--")) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Unexpected argument: ${arg}`,
+      });
+    }
+
+    const next = args[i + 1];
+    if (!next) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+    }
+
+    switch (arg) {
+      case "--title": {
+        out.title = next;
+        break;
+      }
+      case "--description": {
+        out.description = next;
+        break;
+      }
+      case "--owner": {
+        out.owner = next;
+        break;
+      }
+      case "--priority": {
+        out.priority = next as TaskNewFlags["priority"];
+        break;
+      }
+      case "--tag": {
+        out.tags.push(next);
+        break;
+      }
+      case "--depends-on": {
+        out.dependsOn.push(next);
+        break;
+      }
+      case "--verify": {
+        out.verify.push(next);
+        break;
+      }
+      default: {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
+      }
+    }
+
+    i++;
+  }
+
+  return out;
+}
+
+async function cmdTaskNew(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseTaskNewFlags(opts.args);
+  const priority = flags.priority ?? "med";
+
+  if (!flags.title || !flags.description || !flags.owner || flags.tags.length === 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        "Usage: agentplane task new --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]",
+    });
+  }
+
+  try {
+    const created = await createTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      title: flags.title,
+      description: flags.description,
+      owner: flags.owner,
+      priority,
+      tags: flags.tags,
+      dependsOn: flags.dependsOn,
+      verify: flags.verify,
+    });
+    process.stdout.write(`${created.id}\n`);
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "task new", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdTaskShow(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+}): Promise<number> {
+  try {
+    const task = await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+    process.stdout.write(`${JSON.stringify(task.frontmatter, null, 2)}\n`);
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, {
+      command: "task show",
+      root: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+  }
+}
+
+async function cmdTaskList(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const tasks = await listTasks({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    for (const t of tasks) {
+      process.stdout.write(`${t.id} [${t.frontmatter.status}] ${t.frontmatter.title}\n`);
+    }
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "task list", root: opts.rootOverride ?? null });
+  }
+}
+
 export async function runCli(argv: string[]): Promise<number> {
   try {
     const { globals, rest } = parseGlobalArgs(argv);
@@ -206,6 +353,26 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdModeSet({ cwd: process.cwd(), rootOverride: globals.root, mode });
+    }
+
+    if (namespace === "task" && command === "new") {
+      return await cmdTaskNew({ cwd: process.cwd(), rootOverride: globals.root, args });
+    }
+
+    if (namespace === "task" && command === "show") {
+      const [taskId] = args;
+      if (!taskId) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Usage: agentplane task show <task-id>",
+        });
+      }
+      return await cmdTaskShow({ cwd: process.cwd(), rootOverride: globals.root, taskId });
+    }
+
+    if (namespace === "task" && command === "list") {
+      return await cmdTaskList({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     process.stderr.write("Not implemented yet. Run `agentplane --help`.\n");
