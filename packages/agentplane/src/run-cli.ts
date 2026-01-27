@@ -11,6 +11,7 @@ import {
   setByDottedKey,
   setTaskDocSection,
   validateTaskDocMetadata,
+  writeTasksExport,
 } from "@agentplane/core";
 
 import { CliError, formatJsonError } from "./errors.js";
@@ -321,6 +322,23 @@ async function cmdTaskList(opts: { cwd: string; rootOverride?: string }): Promis
   }
 }
 
+async function cmdTaskExport(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const result = await writeTasksExport({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    process.stdout.write(`${path.relative(resolved.gitRoot, result.path)}\n`);
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "task export", root: opts.rootOverride ?? null });
+  }
+}
+
 const TASK_DOC_SET_USAGE =
   "Usage: agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)";
 
@@ -492,6 +510,10 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "task" && command === "list") {
       return await cmdTaskList({ cwd: process.cwd(), rootOverride: globals.root });
+    }
+
+    if (namespace === "task" && command === "export") {
+      return await cmdTaskExport({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "task" && command === "doc") {

@@ -504,6 +504,50 @@ describe("runCli", () => {
     }
   });
 
+  it("task export writes .agentplane/tasks.json", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    let id = "";
+    try {
+      const code1 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(0);
+      id = io1.stdout.trim();
+      expect(id).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["task", "export", "--root", root]);
+      expect(code2).toBe(0);
+      expect(io2.stdout.trim()).toBe(".agentplane/tasks.json");
+    } finally {
+      io2.restore();
+    }
+
+    const outPath = path.join(root, ".agentplane", "tasks.json");
+    const text = await readFile(outPath, "utf8");
+    const parsed = JSON.parse(text) as { tasks: unknown[]; meta: { checksum: string } };
+    expect(Array.isArray(parsed.tasks)).toBe(true);
+    expect(typeof parsed.meta.checksum).toBe("string");
+    expect(parsed.meta.checksum.length).toBeGreaterThan(0);
+  });
+
   it("task doc rejects unknown subcommands", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
