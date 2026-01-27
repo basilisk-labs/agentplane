@@ -50,3 +50,10 @@ export {
   type TasksExportSnapshot,
   type TasksExportTask,
 } from "./tasks-export.js";
+
+export {
+  lintTasksFile,
+  lintTasksSnapshot,
+  readTasksExport,
+  type TasksLintResult,
+} from "./tasks-lint.js";

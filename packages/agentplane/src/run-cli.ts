@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   createTask,
   listTasks,
+  lintTasksFile,
   loadConfig,
   readTask,
   resolveProject,
@@ -339,6 +340,24 @@ async function cmdTaskExport(opts: { cwd: string; rootOverride?: string }): Prom
   }
 }
 
+async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const result = await lintTasksFile({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    if (result.errors.length > 0) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: result.errors.join("\n"),
+      });
+    }
+    process.stdout.write("OK\n");
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "task lint", root: opts.rootOverride ?? null });
+  }
+}
+
 const TASK_DOC_SET_USAGE =
   "Usage: agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)";
 
@@ -514,6 +533,10 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "task" && command === "export") {
       return await cmdTaskExport({ cwd: process.cwd(), rootOverride: globals.root });
+    }
+
+    if (namespace === "task" && command === "lint") {
+      return await cmdTaskLint({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "task" && command === "doc") {

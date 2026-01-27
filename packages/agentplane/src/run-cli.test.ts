@@ -548,6 +548,96 @@ describe("runCli", () => {
     expect(parsed.meta.checksum.length).toBeGreaterThan(0);
   });
 
+  it("task lint reports OK for a valid export", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    try {
+      const code1 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(0);
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["task", "export", "--root", root]);
+      expect(code2).toBe(0);
+    } finally {
+      io2.restore();
+    }
+
+    const io3 = captureStdIO();
+    try {
+      const code3 = await runCli(["task", "lint", "--root", root]);
+      expect(code3).toBe(0);
+      expect(io3.stdout.trim()).toBe("OK");
+    } finally {
+      io3.restore();
+    }
+  });
+
+  it("task lint returns validation error when checksum is wrong", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    try {
+      const code1 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(0);
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["task", "export", "--root", root]);
+      expect(code2).toBe(0);
+    } finally {
+      io2.restore();
+    }
+
+    const outPath = path.join(root, ".agentplane", "tasks.json");
+    const text = await readFile(outPath, "utf8");
+    const parsed = JSON.parse(text) as { tasks: unknown[]; meta: { checksum: string } };
+    parsed.meta.checksum = "bad";
+    await writeFile(outPath, `${JSON.stringify(parsed, null, 2)}\n`, "utf8");
+
+    const io3 = captureStdIO();
+    try {
+      const code3 = await runCli(["task", "lint", "--root", root]);
+      expect(code3).toBe(3);
+      expect(io3.stderr).toContain("meta.checksum does not match");
+    } finally {
+      io3.restore();
+    }
+  });
+
   it("task doc rejects unknown subcommands", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
