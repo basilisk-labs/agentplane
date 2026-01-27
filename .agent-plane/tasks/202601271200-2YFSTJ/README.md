@@ -1,12 +1,15 @@
 ---
 id: "202601271200-2YFSTJ"
 title: "AP-015: guard staged paths allow/deny"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: ["202601270756-RMNY59", "202601270756-V6CK4Q"]
 tags: ["nodejs", "roadmap", "git", "guard"]
 verify: ["bun run ci"]
+commit: { hash: "2d7b22cbd638e464a91a752d463acc5746648218", message: "✨ 2YFSTJ AP-015: guard staged paths" }
+comments:
+  - { author: "CODER", body: "verified: bun run ci passed via pre-commit (format, typecheck, lint, coverage)." }
 doc_version: 2
 doc_updated_at: "2026-01-27T12:22:25+00:00"
 doc_updated_by: "agentctl"
