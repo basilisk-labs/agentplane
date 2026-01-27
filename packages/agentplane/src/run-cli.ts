@@ -32,6 +32,17 @@ import { getVersion } from "./version.js";
 
 const execFileAsync = promisify(execFile);
 
+function gitEnv(): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = { ...process.env };
+  delete env.GIT_DIR;
+  delete env.GIT_WORK_TREE;
+  delete env.GIT_COMMON_DIR;
+  delete env.GIT_INDEX_FILE;
+  delete env.GIT_OBJECT_DIRECTORY;
+  delete env.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+  return env;
+}
+
 type ParsedArgs = {
   help: boolean;
   version: boolean;
@@ -377,6 +388,8 @@ const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
 const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text>";
 const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <text>";
 const FINISH_USAGE = "Usage: agentplane finish <task-id> --author <id> --body <text>";
+const WORK_START_USAGE =
+  "Usage: agentplane work start <task-id> --agent <id> --slug <slug> --worktree";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
   if (prefix === "." || prefix === "") return true;
@@ -512,17 +525,34 @@ function isPathWithin(parent: string, candidate: string): boolean {
 }
 
 async function gitRevParse(cwd: string, args: string[]): Promise<string> {
-  const { stdout } = await execFileAsync("git", ["rev-parse", ...args], { cwd });
+  const { stdout } = await execFileAsync("git", ["rev-parse", ...args], { cwd, env: gitEnv() });
   const trimmed = stdout.trim();
   if (!trimmed) throw new Error("Failed to resolve git path");
   return trimmed;
 }
 
 async function gitCurrentBranch(cwd: string): Promise<string> {
-  const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], { cwd });
+  const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {
+    cwd,
+    env: gitEnv(),
+  });
   const trimmed = stdout.trim();
   if (!trimmed) throw new Error("Failed to resolve git branch");
   return trimmed;
+}
+
+async function gitBranchExists(cwd: string, branch: string): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
+      cwd,
+      env: gitEnv(),
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
+  }
 }
 
 async function resolveGitHooksDir(cwd: string): Promise<string> {
@@ -601,6 +631,34 @@ function shimScriptText(): string {
     "exit 1",
     "",
   ].join("\n");
+}
+
+function validateWorkSlug(slug: string): void {
+  const trimmed = slug.trim();
+  if (!trimmed) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+  }
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trimmed)) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Slug must be lowercase kebab-case (a-z, 0-9, hyphen)",
+    });
+  }
+}
+
+function validateWorkAgent(agent: string): void {
+  const trimmed = agent.trim();
+  if (!trimmed) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+  }
+  if (!/^[A-Z0-9_]+$/.test(trimmed)) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Agent id must be uppercase letters, numbers, or underscores",
+    });
+  }
 }
 
 async function ensureShim(agentplaneDir: string, gitRoot: string): Promise<void> {
@@ -1186,6 +1244,89 @@ async function cmdFinish(opts: {
   }
 }
 
+async function cmdWorkStart(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  agent: string;
+  slug: string;
+  worktree: boolean;
+}): Promise<number> {
+  try {
+    validateWorkAgent(opts.agent);
+    validateWorkSlug(opts.slug);
+
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    if (loaded.config.workflow_mode !== "branch_pr") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "work start is only supported when workflow_mode=branch_pr",
+      });
+    }
+    if (!opts.worktree) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+    }
+
+    await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+
+    const baseBranch = await getBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const currentBranch = await gitCurrentBranch(resolved.gitRoot);
+    if (currentBranch !== baseBranch) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
+      });
+    }
+
+    const prefix = loaded.config.branch.task_prefix;
+    const branchName = `${prefix}/${opts.taskId}/${opts.slug.trim()}`;
+    const worktreesDir = path.resolve(resolved.gitRoot, loaded.config.paths.worktrees_dir);
+    if (!isPathWithin(resolved.gitRoot, worktreesDir)) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `worktrees_dir must be inside the repo: ${worktreesDir}`,
+      });
+    }
+    const worktreePath = path.join(worktreesDir, `${opts.taskId}-${opts.slug.trim()}`);
+    if (await fileExists(worktreePath)) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `Worktree path already exists: ${worktreePath}`,
+      });
+    }
+    await mkdir(worktreesDir, { recursive: true });
+
+    const branchExists = await gitBranchExists(resolved.gitRoot, branchName);
+    const worktreeArgs = branchExists
+      ? ["worktree", "add", worktreePath, branchName]
+      : ["worktree", "add", "-b", branchName, worktreePath, baseBranch];
+    await execFileAsync("git", worktreeArgs, { cwd: resolved.gitRoot, env: gitEnv() });
+
+    process.stdout.write(
+      `✅ work start ${branchName} (worktree=${path.relative(resolved.gitRoot, worktreePath)})\n`,
+    );
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "work start", root: opts.rootOverride ?? null });
+  }
+}
+
 async function cmdHooksInstall(opts: {
   cwd: string;
   rootOverride?: string;
@@ -1616,6 +1757,55 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+    }
+
+    if (namespace === "work" && command === "start") {
+      const [taskId, ...restArgs] = args;
+      if (!taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+      }
+      let agent = "";
+      let slug = "";
+      let worktree = false;
+
+      for (let i = 0; i < restArgs.length; i++) {
+        const arg = restArgs[i];
+        if (!arg) continue;
+        if (arg === "--agent") {
+          const next = restArgs[i + 1];
+          if (!next)
+            throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+          agent = next;
+          i++;
+          continue;
+        }
+        if (arg === "--slug") {
+          const next = restArgs[i + 1];
+          if (!next)
+            throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+          slug = next;
+          i++;
+          continue;
+        }
+        if (arg === "--worktree") {
+          worktree = true;
+          continue;
+        }
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+      }
+
+      if (!agent || !slug || !worktree) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+      }
+
+      return await cmdWorkStart({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        agent,
+        slug,
+        worktree,
+      });
     }
 
     if (namespace === "guard") {
