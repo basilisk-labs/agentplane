@@ -369,8 +369,10 @@ async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promis
 
 const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
 const GUARD_COMMIT_USAGE = "Usage: agentplane guard commit <task-id> -m <message>";
+const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
+  if (prefix === "." || prefix === "") return true;
   if (candidate === prefix) return true;
   return candidate.startsWith(`${prefix}/`);
 }
@@ -569,7 +571,7 @@ async function cmdGuardSuggestAllow(opts: {
   }
 }
 
-async function cmdGuardCommit(opts: {
+type GuardCommitOptions = {
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -578,70 +580,139 @@ async function cmdGuardCommit(opts: {
   allowTasks: boolean;
   requireClean: boolean;
   quiet: boolean;
-}): Promise<number> {
-  try {
-    const resolved = await resolveProject({
+};
+
+async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
+  const resolved = await resolveProject({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
+  const loaded = await loadConfig(resolved.agentplaneDir);
+  const policy = validateCommitSubject({
+    subject: opts.message,
+    taskId: opts.taskId,
+    genericTokens: loaded.config.commit.generic_tokens,
+  });
+  if (!policy.ok) {
+    throw new CliError({ exitCode: 5, code: "E_GIT", message: policy.errors.join("\n") });
+  }
+
+  const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  if (staged.length === 0) {
+    throw new CliError({ exitCode: 5, code: "E_GIT", message: "No staged files" });
+  }
+  if (opts.allow.length === 0) {
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: "Provide at least one --allow <path> prefix",
+    });
+  }
+
+  const allow = opts.allow.map((prefix) => normalizeAllowPrefix(prefix));
+  const denied = new Set<string>();
+  if (!opts.allowTasks) denied.add(".agentplane/tasks.json");
+
+  if (opts.requireClean) {
+    const unstaged = await getUnstagedFiles({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const loaded = await loadConfig(resolved.agentplaneDir);
-    const policy = validateCommitSubject({
-      subject: opts.message,
-      taskId: opts.taskId,
-      genericTokens: loaded.config.commit.generic_tokens,
-    });
-    if (!policy.ok) {
-      throw new CliError({ exitCode: 5, code: "E_GIT", message: policy.errors.join("\n") });
+    if (unstaged.length > 0) {
+      throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree is dirty" });
     }
+  }
 
-    const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
-    if (staged.length === 0) {
-      throw new CliError({ exitCode: 5, code: "E_GIT", message: "No staged files" });
-    }
-    if (opts.allow.length === 0) {
+  for (const filePath of staged) {
+    if (denied.has(filePath)) {
       throw new CliError({
         exitCode: 5,
         code: "E_GIT",
-        message: "Provide at least one --allow <path> prefix",
+        message: `Staged file is forbidden by default: ${filePath} (use --allow-tasks to override)`,
       });
     }
-
-    const allow = opts.allow.map((prefix) => normalizeAllowPrefix(prefix));
-    const denied = new Set<string>();
-    if (!opts.allowTasks) denied.add(".agentplane/tasks.json");
-
-    if (opts.requireClean) {
-      const unstaged = await getUnstagedFiles({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride ?? null,
+    if (!allow.some((prefix) => pathIsUnder(filePath, prefix))) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `Staged file is outside allowlist: ${filePath}`,
       });
-      if (unstaged.length > 0) {
-        throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree is dirty" });
-      }
     }
+  }
+}
 
-    for (const filePath of staged) {
-      if (denied.has(filePath)) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: `Staged file is forbidden by default: ${filePath} (use --allow-tasks to override)`,
-        });
-      }
-      if (!allow.some((prefix) => pathIsUnder(filePath, prefix))) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: `Staged file is outside allowlist: ${filePath}`,
-        });
-      }
-    }
-
+async function cmdGuardCommit(opts: GuardCommitOptions): Promise<number> {
+  try {
+    await guardCommitCheck(opts);
     if (!opts.quiet) process.stdout.write("OK\n");
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "guard commit", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdCommit(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  message: string;
+  allow: string[];
+  autoAllow: boolean;
+  allowTasks: boolean;
+  allowBase: boolean;
+  requireClean: boolean;
+  quiet: boolean;
+}): Promise<number> {
+  try {
+    let allow = opts.allow;
+    if (opts.autoAllow && allow.length === 0) {
+      const staged = await getStagedFiles({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      const prefixes = suggestAllowPrefixes(staged);
+      if (prefixes.length === 0) {
+        throw new CliError({ exitCode: 5, code: "E_GIT", message: "No staged files" });
+      }
+      allow = prefixes;
+    }
+
+    await guardCommitCheck({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      message: opts.message,
+      allow,
+      allowTasks: opts.allowTasks,
+      requireClean: opts.requireClean,
+      quiet: opts.quiet,
+    });
+
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const env = {
+      ...process.env,
+      AGENT_PLANE_TASK_ID: opts.taskId,
+      AGENT_PLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
+      AGENT_PLANE_ALLOW_BASE: opts.allowBase ? "1" : "0",
+    };
+    await execFileAsync("git", ["commit", "-m", opts.message], { cwd: resolved.gitRoot, env });
+
+    if (!opts.quiet) {
+      const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], {
+        cwd: resolved.gitRoot,
+      });
+      const trimmed = stdout.trim();
+      const [hash, subject] = trimmed.split(":", 2);
+      process.stdout.write(`✅ committed ${hash?.slice(0, 12) ?? ""} ${subject ?? ""}\n`);
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "commit", root: opts.rootOverride ?? null });
   }
 }
 
@@ -1166,6 +1237,79 @@ export async function runCli(argv: string[]): Promise<number> {
         exitCode: 2,
         code: "E_USAGE",
         message: "Usage: agentplane guard <subcommand>",
+      });
+    }
+
+    if (namespace === "commit") {
+      const taskId = command;
+      if (!taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+      }
+      const allow: string[] = [];
+      let message = "";
+      let autoAllow = false;
+      let allowTasks = false;
+      let allowBase = false;
+      let requireClean = false;
+      let quiet = false;
+
+      for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (!arg) continue;
+        if (arg === "--allow") {
+          const next = args[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+          allow.push(next);
+          i++;
+          continue;
+        }
+        if (arg === "-m" || arg === "--message") {
+          const next = args[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+          message = next;
+          i++;
+          continue;
+        }
+        if (arg === "--auto-allow") {
+          autoAllow = true;
+          continue;
+        }
+        if (arg === "--allow-tasks") {
+          allowTasks = true;
+          continue;
+        }
+        if (arg === "--allow-base") {
+          allowBase = true;
+          continue;
+        }
+        if (arg === "--require-clean") {
+          requireClean = true;
+          continue;
+        }
+        if (arg === "--quiet") {
+          quiet = true;
+          continue;
+        }
+        if (arg.startsWith("--")) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+        }
+      }
+
+      if (!message) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+      }
+
+      return await cmdCommit({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        message,
+        allow,
+        autoAllow,
+        allowTasks,
+        allowBase,
+        requireClean,
+        quiet,
       });
     }
 
