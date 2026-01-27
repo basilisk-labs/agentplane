@@ -1,15 +1,17 @@
 ---
 id: "202601270932-B4MVS9"
 title: "Enforce code quality via git hooks + CI"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["nodejs", "tooling", "quality", "ci"]
 verify: ["bun run ci"]
+commit: { hash: "4fa3ff495bc81a2a18c5ab9232f8df0a8d951cc3", message: "✨ B4MVS9 enforce quality via hooks + CI" }
 comments:
   - { author: "CODER", body: "Start: adding git hooks + GitHub Actions to enforce bun run ci for all changes." }
   - { author: "CODER", body: "Start: implementing lefthook pre-commit hook and GitHub Actions CI to enforce bun run ci." }
+  - { author: "CODER", body: "verified: bun run ci passed | details: lefthook + GitHub Actions CI enforce quality gates." }
 doc_version: 2
 doc_updated_at: "2026-01-27T09:35:29+00:00"
 doc_updated_by: "agentctl"
