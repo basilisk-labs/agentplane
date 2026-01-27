@@ -15,6 +15,7 @@ coverage
 *.tsbuildinfo
 .agentplane
 .agent-plane/worktrees
+.agentplane/worktrees
 .agent-plane/tasks.json
 .agent-plane/.runs
 .agent-plane/cache

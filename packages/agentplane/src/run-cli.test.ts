@@ -895,6 +895,51 @@ describe("runCli", () => {
     }
   });
 
+  it("guard commit requires a task id", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "commit", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane guard commit");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit rejects missing --allow value", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF guard allow",
+        "--allow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane guard commit");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit rejects missing -m value", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "commit", "202601010101-ABCDEF", "-m", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane guard commit");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("guard commit rejects unknown flags", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -2275,6 +2320,201 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("work start requires task id and flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["work", "start", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane work start");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("work start rejects missing --slug value", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "work",
+        "start",
+        "202601010101-ABCDEF",
+        "--agent",
+        "CODER",
+        "--worktree",
+        "--slug",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane work start");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("work start rejects missing --agent value", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "work",
+        "start",
+        "202601010101-ABCDEF",
+        "--agent",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane work start");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("work start rejects missing --worktree flag", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "work",
+        "start",
+        "202601010101-ABCDEF",
+        "--agent",
+        "CODER",
+        "--slug",
+        "missing-worktree",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane work start");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("work start rejects unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "work",
+        "start",
+        "202601010101-ABCDEF",
+        "--agent",
+        "CODER",
+        "--slug",
+        "unknown-flag",
+        "--worktree",
+        "--nope",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane work start");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("work start requires branch_pr workflow", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await writeDefaultConfig(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "work",
+        "start",
+        "202601010101-ABCDEF",
+        "--agent",
+        "CODER",
+        "--slug",
+        "work-start",
+        "--worktree",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("workflow_mode=branch_pr");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("work start creates a branch and worktree", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Work start task",
+        "--description",
+        "Work start creates branch and worktree",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    let branchName = "";
+    let worktreePath = "";
+    try {
+      const code = await runCli([
+        "work",
+        "start",
+        taskId,
+        "--agent",
+        "CODER",
+        "--slug",
+        "work-start",
+        "--worktree",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ work start");
+      branchName = `task/${taskId}/work-start`;
+      worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-work-start`);
+    } finally {
+      io.restore();
+    }
+
+    await expect(
+      execFileAsync("git", ["show-ref", "--verify", `refs/heads/${branchName}`], { cwd: root }),
+    ).resolves.toBeDefined();
+
+    const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
+      cwd: root,
+    });
+    expect(stdout).toContain(worktreePath);
   });
 
   it("hooks install writes managed hooks and shim", async () => {
