@@ -50,5 +50,11 @@ export function renderHelp(): string {
     "Start commands:",
     "  agentplane start <task-id> --author <id> --body <text> [--commit-from-comment]",
     "",
+    "Block commands:",
+    "  agentplane block <task-id> --author <id> --body <text>",
+    "",
+    "Finish commands:",
+    "  agentplane finish <task-id> --author <id> --body <text>",
+    "",
   ].join("\n");
 }

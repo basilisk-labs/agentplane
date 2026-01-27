@@ -375,6 +375,8 @@ const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
 const GUARD_COMMIT_USAGE = "Usage: agentplane guard commit <task-id> -m <message>";
 const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
 const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text>";
+const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <text>";
+const FINISH_USAGE = "Usage: agentplane finish <task-id> --author <id> --body <text>";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
   if (prefix === "." || prefix === "") return true;
@@ -406,6 +408,16 @@ function requireStructuredComment(body: string, prefix: string, minChars: number
       message: `Comment body must be at least ${minChars} characters`,
     });
   }
+}
+
+async function readHeadCommit(cwd: string): Promise<{ hash: string; message: string }> {
+  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], { cwd });
+  const trimmed = stdout.trim();
+  const [hash, message] = trimmed.split(":", 2);
+  if (!hash || !message) {
+    throw new Error("Unable to read git HEAD commit");
+  }
+  return { hash, message };
 }
 
 function deriveCommitMessageFromComment(opts: {
@@ -1051,6 +1063,129 @@ async function cmdStart(opts: {
   }
 }
 
+async function cmdBlock(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  author: string;
+  body: string;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    const { prefix, min_chars: minChars } = loaded.config.tasks.comments.blocked;
+    requireStructuredComment(opts.body, prefix, minChars);
+
+    const task = await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+
+    const nextFrontmatter: Record<string, unknown> = {
+      ...(task.frontmatter as Record<string, unknown>),
+      status: "BLOCKED",
+      doc_version: 2,
+      doc_updated_at: nowIso(),
+      doc_updated_by: "agentplane",
+    };
+
+    const existingComments = Array.isArray(nextFrontmatter.comments)
+      ? nextFrontmatter.comments.filter(
+          (item): item is { author: string; body: string } =>
+            !!item &&
+            typeof item === "object" &&
+            "author" in item &&
+            "body" in item &&
+            typeof (item as { author?: unknown }).author === "string" &&
+            typeof (item as { body?: unknown }).body === "string",
+        )
+      : [];
+    nextFrontmatter.comments = [...existingComments, { author: opts.author, body: opts.body }];
+
+    const nextText = renderTaskReadme(nextFrontmatter, task.body);
+    await writeFile(task.readmePath, nextText, "utf8");
+
+    process.stdout.write("✅ blocked\n");
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "block", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdFinish(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  author: string;
+  body: string;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    const { prefix, min_chars: minChars } = loaded.config.tasks.comments.verified;
+    requireStructuredComment(opts.body, prefix, minChars);
+
+    const task = await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+
+    const headCommit = await readHeadCommit(resolved.gitRoot);
+    const nextFrontmatter: Record<string, unknown> = {
+      ...(task.frontmatter as Record<string, unknown>),
+      status: "DONE",
+      commit: { hash: headCommit.hash, message: headCommit.message },
+      doc_version: 2,
+      doc_updated_at: nowIso(),
+      doc_updated_by: "agentplane",
+    };
+
+    const existingComments = Array.isArray(nextFrontmatter.comments)
+      ? nextFrontmatter.comments.filter(
+          (item): item is { author: string; body: string } =>
+            !!item &&
+            typeof item === "object" &&
+            "author" in item &&
+            "body" in item &&
+            typeof (item as { author?: unknown }).author === "string" &&
+            typeof (item as { body?: unknown }).body === "string",
+        )
+      : [];
+    nextFrontmatter.comments = [...existingComments, { author: opts.author, body: opts.body }];
+
+    const nextText = renderTaskReadme(nextFrontmatter, task.body);
+    await writeFile(task.readmePath, nextText, "utf8");
+
+    await writeTasksExport({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const lintResult = await lintTasksFile({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    if (lintResult.errors.length > 0) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: lintResult.errors.join("\n"),
+      });
+    }
+
+    process.stdout.write("✅ finished\n");
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "finish", root: opts.rootOverride ?? null });
+  }
+}
+
 async function cmdHooksInstall(opts: {
   cwd: string;
   rootOverride?: string;
@@ -1649,7 +1784,14 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "start") {
-      const taskId = command;
+      let taskId = command;
+      let startArgs = args;
+      if (!taskId || taskId.startsWith("-")) {
+        if (taskId?.startsWith("-")) {
+          startArgs = [taskId, ...args];
+        }
+        taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+      }
       if (!taskId) {
         throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
       }
@@ -1664,18 +1806,18 @@ export async function runCli(argv: string[]): Promise<number> {
       let confirmStatusCommit = false;
       let quiet = false;
 
-      for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
+      for (let i = 0; i < startArgs.length; i++) {
+        const arg = startArgs[i];
         if (!arg) continue;
         if (arg === "--author") {
-          const next = args[i + 1];
+          const next = startArgs[i + 1];
           if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
           author = next;
           i++;
           continue;
         }
         if (arg === "--body") {
-          const next = args[i + 1];
+          const next = startArgs[i + 1];
           if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
           body = next;
           i++;
@@ -1686,14 +1828,14 @@ export async function runCli(argv: string[]): Promise<number> {
           continue;
         }
         if (arg === "--commit-emoji") {
-          const next = args[i + 1];
+          const next = startArgs[i + 1];
           if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
           commitEmoji = next;
           i++;
           continue;
         }
         if (arg === "--commit-allow") {
-          const next = args[i + 1];
+          const next = startArgs[i + 1];
           if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
           commitAllow.push(next);
           i++;
@@ -1742,6 +1884,106 @@ export async function runCli(argv: string[]): Promise<number> {
         commitRequireClean,
         confirmStatusCommit,
         quiet,
+      });
+    }
+
+    if (namespace === "block") {
+      let taskId = command;
+      let blockArgs = args;
+      if (!taskId || taskId.startsWith("-")) {
+        if (taskId?.startsWith("-")) {
+          blockArgs = [taskId, ...args];
+        }
+        taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+      }
+      if (!taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+      }
+
+      let author = "";
+      let body = "";
+      for (let i = 0; i < blockArgs.length; i++) {
+        const arg = blockArgs[i];
+        if (!arg) continue;
+        if (arg === "--author") {
+          const next = blockArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          author = next;
+          i++;
+          continue;
+        }
+        if (arg === "--body") {
+          const next = blockArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          body = next;
+          i++;
+          continue;
+        }
+        if (arg.startsWith("--")) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+        }
+      }
+
+      if (!author || !body) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+      }
+
+      return await cmdBlock({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        author,
+        body,
+      });
+    }
+
+    if (namespace === "finish") {
+      let taskId = command;
+      let finishArgs = args;
+      if (!taskId || taskId.startsWith("-")) {
+        if (taskId?.startsWith("-")) {
+          finishArgs = [taskId, ...args];
+        }
+        taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+      }
+      if (!taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+      }
+
+      let author = "";
+      let body = "";
+      for (let i = 0; i < finishArgs.length; i++) {
+        const arg = finishArgs[i];
+        if (!arg) continue;
+        if (arg === "--author") {
+          const next = finishArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          author = next;
+          i++;
+          continue;
+        }
+        if (arg === "--body") {
+          const next = finishArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          body = next;
+          i++;
+          continue;
+        }
+        if (arg.startsWith("--")) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+        }
+      }
+
+      if (!author || !body) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+      }
+
+      return await cmdFinish({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        author,
+        body,
       });
     }
 
