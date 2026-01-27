@@ -1,15 +1,17 @@
 ---
 id: "202601270943-DEBAMR"
 title: "AP-007: Implement workflow mode get/set"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["nodejs", "cli", "config", "roadmap"]
 verify: ["bun run ci"]
+commit: { hash: "47a83183d1db0ec2609dbc68033bd5421a915f00", message: "✨ DEBAMR AP-007: add mode get/set" }
 comments:
   - { author: "CODER", body: "Start: AP-007 implement agentplane mode get|set backed by .agentplane/config.json." }
   - { author: "CODER", body: "Start: implementing mode get/set CLI commands and wiring to config workflow_mode." }
+  - { author: "CODER", body: "verified: bun run ci passed | details: mode get/set implemented and tested." }
 doc_version: 2
 doc_updated_at: "2026-01-27T09:43:43+00:00"
 doc_updated_by: "agentctl"
