@@ -1,15 +1,17 @@
 ---
 id: "202601270958-Z5B9P9"
 title: "Prepare npm publishable packages"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["nodejs", "packaging", "npm"]
 verify: ["bun run ci"]
+commit: { hash: "4216dbc965593e84b35a8f9e5245566dfd0308e4", message: "✨ Z5B9P9 prepare npm publish" }
 comments:
   - { author: "CODER", body: "Start: preparing agentplane packages for npm publish (bin shim, files whitelist, metadata)." }
   - { author: "CODER", body: "Start: implementing npm publish readiness for agentplane CLI (bin shim, files, metadata, npm pack checks)." }
+  - { author: "CODER", body: "verified: bun run ci passed | details: npm pack --dry-run produces clean tarballs for agentplane and @agentplane/core." }
 doc_version: 2
 doc_updated_at: "2026-01-27T09:58:22+00:00"
 doc_updated_by: "agentctl"
