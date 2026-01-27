@@ -1,12 +1,15 @@
 ---
 id: "202601271201-64SSC0"
 title: "AP-016: git hooks install/uninstall"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: ["202601271200-960Y3S", "202601271200-2YFSTJ"]
 tags: ["nodejs", "roadmap", "git", "hooks"]
 verify: ["bun run ci"]
+commit: { hash: "bffcb1f041bf5d7d0a4c14feb4b5ed6089d20e26", message: "✨ 64SSC0 AP-016: stabilize hook tests" }
+comments:
+  - { author: "CODER", body: "verified: bun run ci passed via pre-commit (format, typecheck, lint, coverage)." }
 doc_version: 2
 doc_updated_at: "2026-01-27T12:33:32+00:00"
 doc_updated_by: "agentctl"
