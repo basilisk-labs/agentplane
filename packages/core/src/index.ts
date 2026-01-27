@@ -66,3 +66,5 @@ export {
   validateCommitSubject,
   type CommitPolicyResult,
 } from "./commit-policy.js";
+
+export { getStagedFiles, getUnstagedFiles } from "./git-utils.js";

@@ -585,6 +585,183 @@ describe("runCli", () => {
     }
   });
 
+  it("guard clean succeeds when no staged files", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "clean", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard clean fails when staged files exist", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "clean", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Staged files exist");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard suggest-allow outputs prefixes for staged files", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "suggest-allow", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("src");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard suggest-allow supports args format", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "suggest-allow", "--format", "args", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("--allow file.txt");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard suggest-allow rejects invalid format", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "suggest-allow", "--format", "nope", "--root", root]);
+      expect(code).toBe(2);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit validates allowlist and message", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF add guard checks",
+        "--allow",
+        "src",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("OK");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit fails without allowlist", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF add guard checks",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Provide at least one --allow");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit fails when tasks.json is staged without allow-tasks", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "tasks.json"), "{}", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF add guard checks",
+        "--allow",
+        ".agentplane",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("forbidden by default");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit fails with --require-clean and unstaged changes", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await writeFile(path.join(root, "other.txt"), "y", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF add guard checks",
+        "--allow",
+        ".",
+        "--require-clean",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Working tree is dirty");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task lint reports OK for a valid export", async () => {
     const root = await mkGitRepoRoot();
 
