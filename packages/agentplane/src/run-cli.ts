@@ -5,15 +5,18 @@ import { promisify } from "node:util";
 
 import {
   createTask,
+  extractTaskSuffix,
   getBaseBranch,
   getStagedFiles,
   getUnstagedFiles,
+  type AgentplaneConfig,
   setPinnedBaseBranch,
   listTasks,
   lintTasksFile,
   loadConfig,
   readTask,
   resolveProject,
+  renderTaskReadme,
   saveConfig,
   setByDottedKey,
   setTaskDocSection,
@@ -23,6 +26,7 @@ import {
 } from "@agentplane/core";
 
 import { CliError, formatJsonError } from "./errors.js";
+import { formatCommentBodyForCommit } from "./comment-format.js";
 import { renderHelp } from "./help.js";
 import { getVersion } from "./version.js";
 
@@ -370,6 +374,7 @@ async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promis
 const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
 const GUARD_COMMIT_USAGE = "Usage: agentplane guard commit <task-id> -m <message>";
 const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
+const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text>";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
   if (prefix === "." || prefix === "") return true;
@@ -379,6 +384,90 @@ function pathIsUnder(candidate: string, prefix: string): boolean {
 
 function normalizeAllowPrefix(prefix: string): string {
   return prefix.replace(/\/+$/, "");
+}
+
+function nowIso(): string {
+  return new Date().toISOString();
+}
+
+function requireStructuredComment(body: string, prefix: string, minChars: number): void {
+  const normalized = body.trim();
+  if (!normalized.toLowerCase().startsWith(prefix.toLowerCase())) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Comment body must start with ${prefix}`,
+    });
+  }
+  if (normalized.length < minChars) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Comment body must be at least ${minChars} characters`,
+    });
+  }
+}
+
+function deriveCommitMessageFromComment(opts: {
+  taskId: string;
+  body: string;
+  emoji: string;
+  formattedComment?: string | null;
+  config: AgentplaneConfig;
+}): string {
+  const summary = (opts.formattedComment ?? formatCommentBodyForCommit(opts.body, opts.config))
+    .trim()
+    .replaceAll(/\s+/g, " ");
+  if (!summary) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Comment body is required to build a commit message from the task comment",
+    });
+  }
+  const prefix = opts.emoji.trim();
+  if (!prefix) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Emoji prefix is required when deriving commit messages from task comments",
+    });
+  }
+  const suffix = extractTaskSuffix(opts.taskId);
+  if (!suffix) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Invalid task id: ${opts.taskId}`,
+    });
+  }
+  return `${prefix} ${suffix} ${summary}`;
+}
+
+function enforceStatusCommitPolicy(opts: {
+  policy: AgentplaneConfig["status_commit_policy"];
+  action: string;
+  confirmed: boolean;
+  quiet: boolean;
+}): void {
+  if (opts.policy === "off") return;
+  if (opts.policy === "warn") {
+    if (!opts.quiet && !opts.confirmed) {
+      process.stderr.write(
+        `⚠️ ${opts.action}: status/comment-driven commit requested; policy=warn (pass --confirm-status-commit to acknowledge)\n`,
+      );
+    }
+    return;
+  }
+  if (opts.policy === "confirm" && !opts.confirmed) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        `${opts.action}: status/comment-driven commit blocked by status_commit_policy='confirm' ` +
+        "(pass --confirm-status-commit to proceed)",
+    });
+  }
 }
 
 function suggestAllowPrefixes(paths: string[]): string[] {
@@ -641,6 +730,150 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
   }
 }
 
+async function gitStatusChangedPaths(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<string[]> {
+  const resolved = await resolveProject({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
+  const { stdout } = await execFileAsync("git", ["status", "--porcelain", "-uall"], {
+    cwd: resolved.gitRoot,
+  });
+  const files: string[] = [];
+  for (const line of stdout.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const filePart = trimmed.slice(2).trim();
+    if (!filePart) continue;
+    const name = filePart.includes("->") ? filePart.split("->").at(-1)?.trim() : filePart;
+    if (name) files.push(name);
+  }
+  return files;
+}
+
+async function stageAllowlist(opts: {
+  cwd: string;
+  rootOverride?: string;
+  allow: string[];
+  allowTasks: boolean;
+}): Promise<string[]> {
+  const resolved = await resolveProject({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
+  const changed = await gitStatusChangedPaths({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+  if (changed.length === 0) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "No changes to stage" });
+  }
+
+  const allow = opts.allow.map((prefix) =>
+    normalizeAllowPrefix(prefix.trim().replace(/^\.?\//, "")),
+  );
+  const denied = new Set<string>();
+  if (!opts.allowTasks) denied.add(".agentplane/tasks.json");
+
+  const staged: string[] = [];
+  for (const filePath of changed) {
+    if (denied.has(filePath)) continue;
+    if (allow.some((prefix) => pathIsUnder(filePath, prefix))) {
+      staged.push(filePath);
+    }
+  }
+
+  const unique = [...new Set(staged)].toSorted((a, b) => a.localeCompare(b));
+  if (unique.length === 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        "No changes matched the allowed prefixes (use --commit-auto-allow or broaden --commit-allow)",
+    });
+  }
+
+  await execFileAsync("git", ["add", "--", ...unique], { cwd: resolved.gitRoot });
+  return unique;
+}
+
+async function commitFromComment(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  commentBody: string;
+  formattedComment: string | null;
+  emoji: string;
+  allow: string[];
+  autoAllow: boolean;
+  allowTasks: boolean;
+  requireClean: boolean;
+  quiet: boolean;
+  config: AgentplaneConfig;
+}): Promise<{ hash: string; message: string; staged: string[] }> {
+  let allowPrefixes = opts.allow.map((prefix) => prefix.trim()).filter(Boolean);
+  if (opts.autoAllow && allowPrefixes.length === 0) {
+    const changed = await gitStatusChangedPaths({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    allowPrefixes = suggestAllowPrefixes(changed);
+  }
+  if (allowPrefixes.length === 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Provide at least one --commit-allow prefix or enable --commit-auto-allow",
+    });
+  }
+
+  const staged = await stageAllowlist({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    allow: allowPrefixes,
+    allowTasks: opts.allowTasks,
+  });
+
+  const message = deriveCommitMessageFromComment({
+    taskId: opts.taskId,
+    body: opts.commentBody,
+    emoji: opts.emoji,
+    formattedComment: opts.formattedComment,
+    config: opts.config,
+  });
+
+  await guardCommitCheck({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    taskId: opts.taskId,
+    message,
+    allow: allowPrefixes,
+    allowTasks: opts.allowTasks,
+    requireClean: opts.requireClean,
+    quiet: opts.quiet,
+  });
+
+  const resolved = await resolveProject({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
+  const env = {
+    ...process.env,
+    AGENT_PLANE_TASK_ID: opts.taskId,
+    AGENT_PLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
+    AGENT_PLANE_ALLOW_BASE: opts.allowTasks ? "1" : "0",
+  };
+  await execFileAsync("git", ["commit", "-m", message], { cwd: resolved.gitRoot, env });
+
+  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], {
+    cwd: resolved.gitRoot,
+  });
+  const trimmed = stdout.trim();
+  const [hash, subject] = trimmed.split(":", 2);
+  if (!opts.quiet) {
+    process.stdout.write(
+      `✅ committed ${hash?.slice(0, 12) ?? ""} ${subject ?? ""} (staged: ${staged.join(", ")})\n`,
+    );
+  }
+  return { hash: hash ?? "", message: subject ?? "", staged };
+}
+
 async function cmdGuardCommit(opts: GuardCommitOptions): Promise<number> {
   try {
     await guardCommitCheck(opts);
@@ -713,6 +946,108 @@ async function cmdCommit(opts: {
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "commit", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdStart(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  author: string;
+  body: string;
+  commitFromComment: boolean;
+  commitEmoji?: string;
+  commitAllow: string[];
+  commitAutoAllow: boolean;
+  commitAllowTasks: boolean;
+  commitRequireClean: boolean;
+  confirmStatusCommit: boolean;
+  quiet: boolean;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+
+    if (opts.commitFromComment) {
+      enforceStatusCommitPolicy({
+        policy: loaded.config.status_commit_policy,
+        action: "start",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+      });
+    }
+
+    const { prefix, min_chars: minChars } = loaded.config.tasks.comments.start;
+    requireStructuredComment(opts.body, prefix, minChars);
+
+    const task = await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+
+    const formattedComment = opts.commitFromComment
+      ? formatCommentBodyForCommit(opts.body, loaded.config)
+      : null;
+    const commentBody = formattedComment ?? opts.body;
+
+    const nextFrontmatter: Record<string, unknown> = {
+      ...(task.frontmatter as Record<string, unknown>),
+      status: "DOING",
+      doc_version: 2,
+      doc_updated_at: nowIso(),
+      doc_updated_by: "agentplane",
+    };
+
+    const existingComments = Array.isArray(nextFrontmatter.comments)
+      ? nextFrontmatter.comments.filter(
+          (item): item is { author: string; body: string } =>
+            !!item &&
+            typeof item === "object" &&
+            "author" in item &&
+            "body" in item &&
+            typeof (item as { author?: unknown }).author === "string" &&
+            typeof (item as { body?: unknown }).body === "string",
+        )
+      : [];
+    const commentsValue: { author: string; body: string }[] = [
+      ...existingComments,
+      { author: opts.author, body: commentBody },
+    ];
+    nextFrontmatter.comments = commentsValue;
+
+    const nextText = renderTaskReadme(nextFrontmatter, task.body);
+    await writeFile(task.readmePath, nextText, "utf8");
+
+    let commitInfo: { hash: string; message: string } | null = null;
+    if (opts.commitFromComment) {
+      commitInfo = await commitFromComment({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: opts.taskId,
+        commentBody: opts.body,
+        formattedComment,
+        emoji: opts.commitEmoji ?? "🚧",
+        allow: opts.commitAllow,
+        autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
+        allowTasks: opts.commitAllowTasks,
+        requireClean: opts.commitRequireClean,
+        quiet: opts.quiet,
+        config: loaded.config,
+      });
+    }
+
+    if (!opts.quiet) {
+      const suffix = commitInfo ? ` (commit=${commitInfo.hash.slice(0, 12)})` : "";
+      process.stdout.write(`✅ started ${opts.taskId}${suffix}\n`);
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "start", root: opts.rootOverride ?? null });
   }
 }
 
@@ -1309,6 +1644,103 @@ export async function runCli(argv: string[]): Promise<number> {
         allowTasks,
         allowBase,
         requireClean,
+        quiet,
+      });
+    }
+
+    if (namespace === "start") {
+      const taskId = command;
+      if (!taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+      }
+      let author = "";
+      let body = "";
+      let commitFromComment = false;
+      let commitEmoji: string | undefined;
+      const commitAllow: string[] = [];
+      let commitAutoAllow = false;
+      let commitAllowTasks = true;
+      let commitRequireClean = false;
+      let confirmStatusCommit = false;
+      let quiet = false;
+
+      for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (!arg) continue;
+        if (arg === "--author") {
+          const next = args[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          author = next;
+          i++;
+          continue;
+        }
+        if (arg === "--body") {
+          const next = args[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          body = next;
+          i++;
+          continue;
+        }
+        if (arg === "--commit-from-comment") {
+          commitFromComment = true;
+          continue;
+        }
+        if (arg === "--commit-emoji") {
+          const next = args[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          commitEmoji = next;
+          i++;
+          continue;
+        }
+        if (arg === "--commit-allow") {
+          const next = args[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          commitAllow.push(next);
+          i++;
+          continue;
+        }
+        if (arg === "--commit-auto-allow") {
+          commitAutoAllow = true;
+          continue;
+        }
+        if (arg === "--commit-allow-tasks") {
+          commitAllowTasks = true;
+          continue;
+        }
+        if (arg === "--commit-require-clean") {
+          commitRequireClean = true;
+          continue;
+        }
+        if (arg === "--confirm-status-commit") {
+          confirmStatusCommit = true;
+          continue;
+        }
+        if (arg === "--quiet") {
+          quiet = true;
+          continue;
+        }
+        if (arg.startsWith("--")) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+        }
+      }
+
+      if (!author || !body) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+      }
+
+      return await cmdStart({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        author,
+        body,
+        commitFromComment,
+        commitEmoji,
+        commitAllow,
+        commitAutoAllow,
+        commitAllowTasks,
+        commitRequireClean,
+        confirmStatusCommit,
         quiet,
       });
     }
