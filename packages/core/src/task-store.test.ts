@@ -3,7 +3,13 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 
-import { createTask, listTasks, readTask } from "./index.js";
+import {
+  createTask,
+  listTasks,
+  readTask,
+  setTaskDocSection,
+  validateTaskDocMetadata,
+} from "./index.js";
 
 async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-task-store-test-"));
@@ -148,5 +154,115 @@ describe("task-store", () => {
       randomSpy.mockRestore();
       vi.useRealTimers();
     }
+  });
+
+  it("setTaskDocSection updates the section and bumps doc metadata", async () => {
+    const root = await mkGitRepoRoot();
+
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-01-01T00:00:00Z"));
+
+    try {
+      const created = await createTask({
+        cwd: root,
+        rootOverride: root,
+        title: "My task",
+        description: "Why it matters",
+        owner: "CODER",
+        priority: "med",
+        tags: ["nodejs"],
+        dependsOn: [],
+        verify: [],
+      });
+
+      const before = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+      expect(before.frontmatter.doc_updated_at).toBe("2026-01-01T00:00:00.000Z");
+      expect(before.frontmatter.doc_updated_by).toBe("agentplane");
+
+      vi.setSystemTime(new Date("2026-01-01T00:00:01Z"));
+
+      await setTaskDocSection({
+        cwd: root,
+        rootOverride: root,
+        taskId: created.id,
+        section: "Summary",
+        text: "Hello",
+        updatedBy: "CODER",
+      });
+
+      const after = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+      expect(after.frontmatter.doc_updated_at).toBe("2026-01-01T00:00:01.000Z");
+      expect(after.frontmatter.doc_updated_by).toBe("CODER");
+
+      const readme = await readFile(after.readmePath, "utf8");
+      expect(readme).toContain("## Summary");
+      expect(readme).toContain("Hello");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("setTaskDocSection appends a missing section and validates inputs", async () => {
+    const root = await mkGitRepoRoot();
+
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "My task",
+      description: "Why it matters",
+      owner: "CODER",
+      priority: "med",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: created.id,
+      section: "Notes",
+      text: "More details",
+      updatedBy: "CODER",
+    });
+
+    const readme = await readFile(created.readmePath, "utf8");
+    expect(readme).toContain("## Notes");
+    expect(readme).toContain("More details");
+
+    await expect(
+      setTaskDocSection({
+        cwd: root,
+        rootOverride: root,
+        taskId: created.id,
+        section: "Nope",
+        text: "x",
+        updatedBy: "CODER",
+      }),
+    ).rejects.toThrow(/unknown doc section/i);
+
+    await expect(
+      setTaskDocSection({
+        cwd: root,
+        rootOverride: root,
+        taskId: created.id,
+        section: "Summary",
+        text: "x",
+        updatedBy: "   ",
+      }),
+    ).rejects.toThrow(/doc_updated_by/i);
+  });
+
+  it("validateTaskDocMetadata reports missing required metadata", () => {
+    const errors = validateTaskDocMetadata({
+      doc_version: 1,
+      doc_updated_at: "nope",
+      doc_updated_by: "",
+    });
+    expect(errors).toEqual([
+      "doc_version must be 2",
+      "doc_updated_at must be an ISO timestamp",
+      "doc_updated_by must be a non-empty string",
+    ]);
   });
 });

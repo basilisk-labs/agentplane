@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -8,6 +9,8 @@ import {
   resolveProject,
   saveConfig,
   setByDottedKey,
+  setTaskDocSection,
+  validateTaskDocMetadata,
 } from "@agentplane/core";
 
 import { CliError, formatJsonError } from "./errors.js";
@@ -284,9 +287,20 @@ async function cmdTaskShow(opts: {
       rootOverride: opts.rootOverride ?? null,
       taskId: opts.taskId,
     });
+    const metadataErrors = validateTaskDocMetadata(
+      task.frontmatter as unknown as Record<string, unknown>,
+    );
+    if (metadataErrors.length > 0) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Invalid task README metadata: ${metadataErrors.join("; ")}`,
+      });
+    }
     process.stdout.write(`${JSON.stringify(task.frontmatter, null, 2)}\n`);
     return 0;
   } catch (err) {
+    if (err instanceof CliError) throw err;
     throw mapCoreError(err, {
       command: "task show",
       root: opts.rootOverride ?? null,
@@ -304,6 +318,111 @@ async function cmdTaskList(opts: { cwd: string; rootOverride?: string }): Promis
     return 0;
   } catch (err) {
     throw mapCoreError(err, { command: "task list", root: opts.rootOverride ?? null });
+  }
+}
+
+const TASK_DOC_SET_USAGE =
+  "Usage: agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)";
+
+type TaskDocSetFlags = {
+  section?: string;
+  text?: string;
+  file?: string;
+  updatedBy?: string;
+};
+
+function parseTaskDocSetFlags(args: string[]): TaskDocSetFlags {
+  const out: TaskDocSetFlags = {};
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (!arg.startsWith("--")) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unexpected argument: ${arg}` });
+    }
+
+    const next = args[i + 1];
+    if (!next) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+    }
+
+    switch (arg) {
+      case "--section": {
+        out.section = next;
+        break;
+      }
+      case "--text": {
+        out.text = next;
+        break;
+      }
+      case "--file": {
+        out.file = next;
+        break;
+      }
+      case "--updated-by": {
+        out.updatedBy = next;
+        break;
+      }
+      default: {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
+      }
+    }
+
+    i++;
+  }
+
+  return out;
+}
+
+async function cmdTaskDocSet(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseTaskDocSetFlags(opts.args);
+
+  if (!flags.section) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: TASK_DOC_SET_USAGE });
+  }
+
+  const hasText = flags.text !== undefined;
+  const hasFile = flags.file !== undefined;
+  if (hasText === hasFile) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: TASK_DOC_SET_USAGE });
+  }
+
+  const updatedBy = (flags.updatedBy ?? "agentplane").trim();
+  if (updatedBy.length === 0) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "--updated-by must be non-empty" });
+  }
+
+  let text = flags.text ?? "";
+  if (hasFile) {
+    try {
+      text = await readFile(path.resolve(opts.cwd, flags.file ?? ""), "utf8");
+    } catch (err) {
+      throw mapCoreError(err, { command: "task doc set", filePath: flags.file ?? "" });
+    }
+  }
+
+  try {
+    const updated = await setTaskDocSection({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+      section: flags.section,
+      text,
+      updatedBy,
+    });
+    process.stdout.write(`${updated.readmePath}\n`);
+    return 0;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.startsWith("Unknown doc section:")) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message });
+    }
+    throw mapCoreError(err, { command: "task doc set", root: opts.rootOverride ?? null });
   }
 }
 
@@ -373,6 +492,19 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "task" && command === "list") {
       return await cmdTaskList({ cwd: process.cwd(), rootOverride: globals.root });
+    }
+
+    if (namespace === "task" && command === "doc") {
+      const [subcommand, taskId, ...restArgs] = args;
+      if (subcommand !== "set" || !taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: TASK_DOC_SET_USAGE });
+      }
+      return await cmdTaskDocSet({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        args: restArgs,
+      });
     }
 
     process.stderr.write("Not implemented yet. Run `agentplane --help`.\n");
