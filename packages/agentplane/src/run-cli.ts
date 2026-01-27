@@ -4,6 +4,8 @@ import path from "node:path";
 import {
   createTask,
   getBaseBranch,
+  getStagedFiles,
+  getUnstagedFiles,
   setPinnedBaseBranch,
   listTasks,
   lintTasksFile,
@@ -14,6 +16,7 @@ import {
   setByDottedKey,
   setTaskDocSection,
   validateTaskDocMetadata,
+  validateCommitSubject,
   writeTasksExport,
 } from "@agentplane/core";
 
@@ -361,6 +364,140 @@ async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promis
 }
 
 const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
+const GUARD_COMMIT_USAGE = "Usage: agentplane guard commit <task-id> -m <message>";
+
+function pathIsUnder(candidate: string, prefix: string): boolean {
+  if (candidate === prefix) return true;
+  return candidate.startsWith(`${prefix}/`);
+}
+
+function normalizeAllowPrefix(prefix: string): string {
+  return prefix.replace(/\/+$/, "");
+}
+
+function suggestAllowPrefixes(paths: string[]): string[] {
+  const out = new Set<string>();
+  for (const filePath of paths) {
+    if (!filePath) continue;
+    const idx = filePath.lastIndexOf("/");
+    if (idx <= 0) out.add(filePath);
+    else out.add(filePath.slice(0, idx));
+  }
+  return [...out].toSorted((a, b) => a.localeCompare(b));
+}
+
+async function cmdGuardClean(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    if (staged.length > 0) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: "Staged files exist",
+      });
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "guard clean", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdGuardSuggestAllow(opts: {
+  cwd: string;
+  rootOverride?: string;
+  format: "lines" | "args";
+}): Promise<number> {
+  try {
+    const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const prefixes = suggestAllowPrefixes(staged);
+    if (opts.format === "args") {
+      const args = prefixes.map((p) => `--allow ${p}`).join(" ");
+      process.stdout.write(`${args}\n`);
+    } else {
+      for (const prefix of prefixes) process.stdout.write(`${prefix}\n`);
+    }
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "guard suggest-allow", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdGuardCommit(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  message: string;
+  allow: string[];
+  allowTasks: boolean;
+  requireClean: boolean;
+  quiet: boolean;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    const policy = validateCommitSubject({
+      subject: opts.message,
+      taskId: opts.taskId,
+      genericTokens: loaded.config.commit.generic_tokens,
+    });
+    if (!policy.ok) {
+      throw new CliError({ exitCode: 5, code: "E_GIT", message: policy.errors.join("\n") });
+    }
+
+    const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    if (staged.length === 0) {
+      throw new CliError({ exitCode: 5, code: "E_GIT", message: "No staged files" });
+    }
+    if (opts.allow.length === 0) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: "Provide at least one --allow <path> prefix",
+      });
+    }
+
+    const allow = opts.allow.map((prefix) => normalizeAllowPrefix(prefix));
+    const denied = new Set<string>();
+    if (!opts.allowTasks) denied.add(".agentplane/tasks.json");
+
+    if (opts.requireClean) {
+      const unstaged = await getUnstagedFiles({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      if (unstaged.length > 0) {
+        throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree is dirty" });
+      }
+    }
+
+    for (const filePath of staged) {
+      if (denied.has(filePath)) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: `Staged file is forbidden by default: ${filePath} (use --allow-tasks to override)`,
+        });
+      }
+      if (!allow.some((prefix) => pathIsUnder(filePath, prefix))) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: `Staged file is outside allowlist: ${filePath}`,
+        });
+      }
+    }
+
+    if (!opts.quiet) process.stdout.write("OK\n");
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "guard commit", root: opts.rootOverride ?? null });
+  }
+}
 
 async function cmdBranchBaseGet(opts: { cwd: string; rootOverride?: string }): Promise<number> {
   try {
@@ -604,6 +741,98 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+    }
+
+    if (namespace === "guard") {
+      const subcommand = command;
+      const restArgs = args;
+      if (subcommand === "clean") {
+        return await cmdGuardClean({ cwd: process.cwd(), rootOverride: globals.root });
+      }
+      if (subcommand === "suggest-allow") {
+        const formatFlagIndex = restArgs.indexOf("--format");
+        let format: "lines" | "args" = "lines";
+        if (formatFlagIndex !== -1) {
+          const next = restArgs[formatFlagIndex + 1];
+          if (next !== "lines" && next !== "args") {
+            throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Invalid --format" });
+          }
+          format = next;
+        }
+        return await cmdGuardSuggestAllow({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          format,
+        });
+      }
+      if (subcommand === "commit") {
+        const taskId = restArgs[0];
+        if (!taskId) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+        }
+
+        const allow: string[] = [];
+        let message = "";
+        let allowTasks = false;
+        let requireClean = false;
+        let quiet = false;
+
+        for (let i = 1; i < restArgs.length; i++) {
+          const arg = restArgs[i];
+          if (!arg) continue;
+          if (arg === "--allow") {
+            const next = restArgs[i + 1];
+            if (!next)
+              throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+            allow.push(next);
+            i++;
+            continue;
+          }
+          if (arg === "-m" || arg === "--message") {
+            const next = restArgs[i + 1];
+            if (!next)
+              throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+            message = next;
+            i++;
+            continue;
+          }
+          if (arg === "--allow-tasks") {
+            allowTasks = true;
+            continue;
+          }
+          if (arg === "--require-clean") {
+            requireClean = true;
+            continue;
+          }
+          if (arg === "--quiet") {
+            quiet = true;
+            continue;
+          }
+          if (arg.startsWith("--")) {
+            throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+          }
+        }
+
+        if (!message) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+        }
+
+        return await cmdGuardCommit({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          taskId,
+          message,
+          allow,
+          allowTasks,
+          requireClean,
+          quiet,
+        });
+      }
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Usage: agentplane guard <subcommand>",
+      });
     }
 
     process.stderr.write("Not implemented yet. Run `agentplane --help`.\n");
