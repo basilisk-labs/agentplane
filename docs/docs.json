@@ -1,6 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "name": "Agent Plane",
+  "theme": "mint",
   "navigation": [
     {
       "group": "Getting Started",
