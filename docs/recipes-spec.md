@@ -1,0 +1,81 @@
+# Recipes specification (v1)
+
+Recipes are **optional, content-first extensions** for `agentplane` projects. The core engine must work with zero installed recipes.
+
+This document defines:
+- Recipe archive layout (what gets installed)
+- `manifest.json` contract (fields, semantics)
+- `agentplane recipe …` CLI surface (minimum v1)
+
+## 1) Terminology
+
+- **Recipe**: a versioned bundle of agents, tools, scenarios, and assets.
+- **Installed recipe**: extracted under `.agentplane/recipes/<id>/<version>/`.
+- **Official catalog**: a remote `index.json` (v1: GitHub Releases-based) fetched only by explicit commands.
+
+## 2) Archive format and layout
+
+Recipe archives MAY be `.zip` or `.tar.gz`.
+
+At minimum, an archive contains `manifest.json` at the root. Optional folders:
+
+```
+manifest.json
+agents/        # optional: agent JSON profiles
+tools/         # optional: executable tools (node or bash in v1)
+scenarios/     # optional: scenario definitions
+assets/        # optional: static files (html/templates/etc.)
+README.md      # optional: human docs
+```
+
+## 3) `manifest.json` schema (v1)
+
+The `manifest.json` file must validate against `schemas/recipe-manifest.schema.json`.
+
+High-level rules:
+- `id` is stable and lowercase (recommended: `viewer`, `redmine`, `qa-pack`).
+- `version` is SemVer.
+- `summary` is short (used in “list” output and `.agentplane/RECIPES.md` index).
+- `description` can be longer and is shown by `agentplane recipe info <id>`.
+
+### 3.1 `schema_version`
+
+v1 uses `schema_version: "1"` for the recipe manifest.
+
+## 4) Install and lockfile
+
+Installing a recipe creates/updates:
+
+- `.agentplane/recipes/<id>/<version>/...` (the extracted content)
+- `.agentplane/recipes.lock.json` (installed set, pinned versions, checksums)
+- `.agentplane/RECIPES.md` (a context-minimized index: `id` + `summary` + “what it solves”)
+
+Recommended `recipes.lock.json` fields (v1):
+- `schema_version: 1`
+- `recipes[]`: `{ id, version, sha256, source }`
+
+## 5) CLI surface (minimum v1)
+
+Commands are namespaced under `agentplane recipe`:
+
+- `agentplane recipe list` — list locally installed recipes (id, version, summary).
+- `agentplane recipe info <id>` — show detailed information from the manifest.
+- `agentplane recipe install <url|id|path>` — install from:
+  - local path (offline)
+  - URL (explicit-network)
+  - catalog id (explicit-network)
+- `agentplane recipe remove <id>` — uninstall.
+- `agentplane recipe list-remote` — list recipes from the remote catalog cache (explicit-network; cached).
+
+Optional but recommended in v1:
+- `agentplane recipe pin <id>@<version>` (or lockfile-only “pin” semantics)
+- `agentplane recipe refresh` (refresh remote catalog cache)
+
+## 6) Permissions (v1)
+
+v1 does not sandbox recipe tools. Instead:
+- tool permissions MUST be declared in the manifest (informational)
+- the CLI MUST warn before executing a tool that declares network or filesystem write access
+
+Sandboxing is deferred to v2.
+

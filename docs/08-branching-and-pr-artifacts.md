@@ -1,0 +1,36 @@
+# Branching and PR Artifacts
+
+## workflow_mode
+Configured in `.agentplane/config.json`.
+
+### direct
+- Single-checkout workflow.
+- Task branches and PR artifacts are optional.
+- Tasks can be implemented and closed on the current branch.
+
+### branch_pr
+- Task branches and worktrees are required.
+- Canonical task writes happen only on the base branch.
+- INTEGRATOR performs verify, merge, and finish.
+
+## Task Branches and Worktrees
+- Branch naming: `task/<task-id>/<slug>` by default (config: `branch.task_prefix`).
+- Worktrees live under `.agentplane/worktrees/` by default (config: `paths.worktrees_dir`).
+
+## PR Artifacts
+- Location: `.agentplane/tasks/<task-id>/pr/`.
+- Files: `meta.json`, `diffstat.txt`, `verify.log`, `review.md`.
+- Purpose: local PR simulation for review and integration.
+
+## Handoff Notes
+- Reviewers and executors record handoff notes in `review.md`.
+- INTEGRATOR appends notes into the task closure record.
+
+## Commands
+See `docs/cli-contract.md` for the authoritative command surface. The v1 workflow uses:
+- `agentplane work start` (create task branch + worktree)
+- `agentplane pr open|update|check|note`
+- `agentplane integrate` (branch_pr integration)
+
+## Legacy note
+The legacy Python toolchain uses `.agent-plane/` paths; the v1 target uses `.agentplane/`.

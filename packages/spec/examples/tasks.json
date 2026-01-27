@@ -1,0 +1,29 @@
+{
+  "tasks": [
+    {
+      "id": "202601010101-ABCDE",
+      "title": "Example task title",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": ["nodejs", "example"],
+      "verify": ["node --version"],
+      "commit": null,
+      "comments": [{ "author": "owner", "body": "Context about the task." }],
+      "doc_version": 2,
+      "doc_updated_at": "2026-01-27T00:00:00Z",
+      "doc_updated_by": "agentplane",
+      "description": "Short description of why the task matters.",
+      "dirty": false,
+      "id_source": "generated"
+    }
+  ],
+  "meta": {
+    "schema_version": 1,
+    "managed_by": "agentplane",
+    "checksum_algo": "sha256",
+    "checksum": "0000000000000000000000000000000000000000000000000000000000000000"
+  }
+}
+

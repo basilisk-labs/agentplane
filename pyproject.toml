@@ -1,0 +1,58 @@
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = [
+  ".venv",
+  ".agent-plane/worktrees",
+]
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "lf"
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+  "BLE001",
+  "COM812",
+  "C901",
+  "D",
+  "EM101",
+  "EM102",
+  "EXE001",
+  "FBT001",
+  "FLY002",
+  "ISC001",
+  "N818",
+  "N806",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+  "PLR2004",
+  "PLW0602",
+  "PLW0603",
+  "RUF001",
+  "S603",
+  "S602",
+  "S310",
+  "S607",
+  "T201",
+  "T203",
+  "TRY003",
+  "TRY300",
+  "TRY301",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+show_error_codes = true
+warn_unreachable = true
+warn_unused_configs = true
+exclude = "(^\\.venv/|^\\.agent-plane/worktrees/)"
+files = [
+  ".agent-plane",
+  ".github/scripts",
+]

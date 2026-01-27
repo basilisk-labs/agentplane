@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentplane.dev/schemas/task-readme-frontmatter.schema.json",
+  "title": "Task README frontmatter (v1)",
+  "description": "Task READMEs are Markdown with YAML frontmatter. This schema describes the frontmatter keys.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "title",
+    "status",
+    "priority",
+    "owner",
+    "depends_on",
+    "tags",
+    "doc_version",
+    "doc_updated_at",
+    "doc_updated_by",
+    "description"
+  ],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["TODO", "DOING", "DONE", "BLOCKED"] },
+    "priority": { "type": "string", "enum": ["low", "normal", "med", "high"] },
+    "owner": { "type": "string", "minLength": 1 },
+    "depends_on": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "tags": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "doc_version": { "type": "integer", "const": 2 },
+    "doc_updated_at": { "type": "string", "format": "date-time" },
+    "doc_updated_by": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" }
+  }
+}
+

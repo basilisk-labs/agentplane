@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentplane.dev/schemas/config.schema.json",
+  "title": "agentplane config.json (v1)",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "workflow_mode", "paths", "tasks", "commit", "tasks_backend"],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "workflow_mode": { "type": "string", "enum": ["direct", "branch_pr"] },
+    "status_commit_policy": { "type": "string", "enum": ["off", "warn", "confirm"] },
+    "finish_auto_status_commit": { "type": "boolean" },
+    "base_branch": { "type": "string", "minLength": 1 },
+    "paths": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["agents_dir", "agentctl_docs_path", "tasks_path", "workflow_dir", "worktrees_dir"],
+      "properties": {
+        "agents_dir": { "type": "string", "minLength": 1 },
+        "agentctl_docs_path": { "type": "string", "minLength": 1 },
+        "tasks_path": { "type": "string", "minLength": 1 },
+        "workflow_dir": { "type": "string", "minLength": 1 },
+        "worktrees_dir": { "type": "string", "minLength": 1 }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["task_prefix"],
+      "properties": {
+        "task_prefix": { "type": "string", "minLength": 1 }
+      }
+    },
+    "framework": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["source", "last_update"],
+      "properties": {
+        "source": { "type": "string", "minLength": 1 },
+        "last_update": { "type": ["string", "null"], "format": "date-time" }
+      }
+    },
+    "tasks": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id_suffix_length_default", "verify", "doc", "comments"],
+      "properties": {
+        "id_suffix_length_default": { "type": "integer", "minimum": 3, "maximum": 16 },
+        "verify": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["required_tags"],
+          "properties": {
+            "required_tags": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            }
+          }
+        },
+        "doc": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["sections", "required_sections"],
+          "properties": {
+            "sections": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "required_sections": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "comments": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["start", "blocked", "verified"],
+          "properties": {
+            "start": { "$ref": "#/$defs/comment_policy" },
+            "blocked": { "$ref": "#/$defs/comment_policy" },
+            "verified": { "$ref": "#/$defs/comment_policy" }
+          }
+        }
+      }
+    },
+    "commit": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["generic_tokens"],
+      "properties": {
+        "generic_tokens": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "tasks_backend": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["config_path"],
+      "properties": {
+        "config_path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "closure_commit_requires_approval": { "type": "boolean" }
+  },
+  "$defs": {
+    "comment_policy": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["prefix", "min_chars"],
+      "properties": {
+        "prefix": { "type": "string", "minLength": 1 },
+        "min_chars": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "workflow_mode": "direct",
+  "status_commit_policy": "warn",
+  "finish_auto_status_commit": true,
+  "base_branch": "main",
+  "paths": {
+    "agents_dir": ".agentplane/agents",
+    "agentctl_docs_path": ".agentplane/agentctl.md",
+    "tasks_path": ".agentplane/tasks.json",
+    "workflow_dir": ".agentplane/tasks",
+    "worktrees_dir": ".agentplane/worktrees"
+  },
+  "branch": { "task_prefix": "task" },
+  "framework": {
+    "source": "https://github.com/basilisk-labs/agent-plane",
+    "last_update": null
+  },
+  "tasks": {
+    "id_suffix_length_default": 6,
+    "verify": { "required_tags": ["code", "backend", "frontend"] },
+    "doc": {
+      "sections": ["Summary", "Context", "Scope", "Risks", "Verify Steps", "Rollback Plan", "Notes"],
+      "required_sections": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
+    },
+    "comments": {
+      "start": { "prefix": "Start:", "min_chars": 40 },
+      "blocked": { "prefix": "Blocked:", "min_chars": 40 },
+      "verified": { "prefix": "Verified:", "min_chars": 60 }
+    }
+  },
+  "commit": { "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"] },
+  "tasks_backend": { "config_path": ".agentplane/backends/local/backend.json" },
+  "closure_commit_requires_approval": false
+}
+

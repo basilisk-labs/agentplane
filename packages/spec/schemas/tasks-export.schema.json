@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentplane.dev/schemas/tasks-export.schema.json",
+  "title": "tasks.json export snapshot (v1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["tasks", "meta"],
+  "properties": {
+    "tasks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/task" }
+    },
+    "meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "managed_by", "checksum_algo", "checksum"],
+      "properties": {
+        "schema_version": { "type": "integer", "const": 1 },
+        "managed_by": { "type": "string", "minLength": 1 },
+        "checksum_algo": { "type": "string", "enum": ["sha256"] },
+        "checksum": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "task": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "id",
+        "title",
+        "status",
+        "priority",
+        "owner",
+        "depends_on",
+        "tags",
+        "verify",
+        "comments",
+        "doc_version",
+        "doc_updated_at",
+        "doc_updated_by",
+        "description",
+        "dirty",
+        "id_source"
+      ],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "status": { "type": "string", "enum": ["TODO", "DOING", "DONE", "BLOCKED"] },
+        "priority": { "type": "string", "enum": ["low", "normal", "med", "high"] },
+        "owner": { "type": "string", "minLength": 1 },
+        "depends_on": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "tags": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "verify": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "commit": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["hash", "message"],
+          "properties": {
+            "hash": { "type": "string", "minLength": 7 },
+            "message": { "type": "string", "minLength": 1 }
+          }
+        },
+        "comments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["author", "body"],
+            "properties": {
+              "author": { "type": "string", "minLength": 1 },
+              "body": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "doc_version": { "type": "integer", "const": 2 },
+        "doc_updated_at": { "type": "string", "format": "date-time" },
+        "doc_updated_by": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "dirty": { "type": "boolean" },
+        "id_source": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
+
