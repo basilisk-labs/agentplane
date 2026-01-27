@@ -2549,6 +2549,507 @@ describe("runCli", () => {
     }
   });
 
+  it("verify requires a task id", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    const previous = process.env.AGENT_PLANE_TASK_ID;
+    delete process.env.AGENT_PLANE_TASK_ID;
+    try {
+      const code = await runCli(["verify", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane verify");
+    } finally {
+      io.restore();
+      if (previous === undefined) delete process.env.AGENT_PLANE_TASK_ID;
+      else process.env.AGENT_PLANE_TASK_ID = previous;
+    }
+  });
+
+  it("verify reports when no commands are configured", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify info",
+        "--description",
+        "No verify commands configured",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", taskId, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("no verify commands configured");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("verify --require fails when no commands are configured", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify required",
+        "--description",
+        "Require verify commands",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", taskId, "--require", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("no verify commands configured");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("verify runs commands and updates pr meta/log", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
+    const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const headSha = headOut.trim();
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify task",
+        "--description",
+        "Verify command runs",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "echo ok",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    const metaPath = path.join(prDir, "meta.json");
+    const now = new Date().toISOString();
+    await writeFile(
+      metaPath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          created_at: now,
+          updated_at: now,
+          last_verified_sha: null,
+          last_verified_at: null,
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", taskId, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ verify passed");
+    } finally {
+      io.restore();
+    }
+
+    const logText = await readFile(path.join(prDir, "verify.log"), "utf8");
+    expect(logText).toContain("$ echo ok");
+    expect(logText).toContain("verified_sha=");
+
+    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
+      last_verified_sha?: string;
+      last_verified_at?: string;
+      verify?: { status?: string };
+    };
+    expect(meta.last_verified_sha).toBe(headSha);
+    expect(meta.last_verified_at).toBeTruthy();
+    expect(meta.verify?.status).toBe("pass");
+  });
+
+  it("verify skips when unchanged and updates log", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/\n", "utf8");
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".gitignore", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
+    const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const headSha = headOut.trim();
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify skip",
+        "--description",
+        "Verify skip-if-unchanged",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "echo ok",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    const metaPath = path.join(prDir, "meta.json");
+    const now = new Date().toISOString();
+    await writeFile(
+      metaPath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          task_id: taskId,
+          created_at: now,
+          updated_at: now,
+          last_verified_sha: headSha,
+          last_verified_at: now,
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", taskId, "--skip-if-unchanged", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("verify skipped");
+    } finally {
+      io.restore();
+    }
+
+    const logText = await readFile(path.join(prDir, "verify.log"), "utf8");
+    expect(logText).toContain("skipped (unchanged verified_sha=");
+  });
+
+  it("verify rejects unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify flags",
+        "--description",
+        "Unknown verify flag",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "echo ok",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", taskId, "--nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane verify");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("verify supports --quiet", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify quiet",
+        "--description",
+        "Quiet verify output",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "echo ok",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", taskId, "--quiet", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("verify rejects --cwd outside repo root", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify cwd",
+        "--description",
+        "Reject cwd outside root",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "echo ok",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const outside = path.join(os.tmpdir(), "agentplane-verify-outside");
+      const code = await runCli(["verify", taskId, "--cwd", outside, "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--cwd must stay under repo root");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("verify rejects --log outside repo root", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify log",
+        "--description",
+        "Reject log outside root",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "echo ok",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const outside = path.join(os.tmpdir(), "agentplane-verify.log");
+      const code = await runCli(["verify", taskId, "--log", outside, "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--log must stay under repo root");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("verify returns command exit code on failure", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify failure",
+        "--description",
+        "Verify command fails",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "exit 3",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", taskId, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Verify command failed");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("verify uses env task id when flags come first", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify env",
+        "--description",
+        "Verify uses env task id",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "echo ok",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const previous = process.env.AGENT_PLANE_TASK_ID;
+    process.env.AGENT_PLANE_TASK_ID = taskId;
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", "--quiet", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("");
+    } finally {
+      io.restore();
+      if (previous === undefined) delete process.env.AGENT_PLANE_TASK_ID;
+      else process.env.AGENT_PLANE_TASK_ID = previous;
+    }
+  });
+
   it("work start requires task id and flags", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -2940,6 +3441,101 @@ describe("runCli", () => {
       "utf8",
     );
     expect(review).toContain("DOCS: Handoff: reviewed docs changes.");
+  });
+
+  it("pr note requires branch_pr workflow", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR note direct",
+        "--description",
+        "Branch_pr required",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "note",
+        taskId,
+        "--author",
+        "DOCS",
+        "--body",
+        "Handoff: should fail in direct mode.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("workflow_mode=branch_pr");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr note maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "note",
+        "202601010101-ABCDEF",
+        "--author",
+        "DOCS",
+        "--body",
+        "Handoff: should fail without git repo.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr note rejects empty author or body", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "note",
+        "202601010101-ABCDEF",
+        "--author",
+        "   ",
+        "--body",
+        "Handoff: should fail on empty author.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr note");
+    } finally {
+      io.restore();
+    }
   });
 
   it("pr check passes when artifacts exist", async () => {
@@ -3348,6 +3944,123 @@ describe("runCli", () => {
     }
   });
 
+  it("pr check reports missing auto summary markers", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR check markers",
+        "--description",
+        "Missing auto summary markers",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCli([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-check-markers`,
+      "--root",
+      root,
+    ]);
+
+    const reviewPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "review.md");
+    const review = await readFile(reviewPath, "utf8");
+    const stripped = review
+      .replace("<!-- BEGIN AUTO SUMMARY -->", "")
+      .replace("<!-- END AUTO SUMMARY -->", "");
+    await writeFile(reviewPath, stripped, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", taskId, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Missing auto summary start marker");
+      expect(io.stderr).toContain("Missing auto summary end marker");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr check reports invalid meta.json", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR check invalid meta",
+        "--description",
+        "Invalid meta.json",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCli([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-check-meta`,
+      "--root",
+      root,
+    ]);
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    await writeFile(metaPath, "{ not-json", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", taskId, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Expected property name");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("pr check rejects extra arguments", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const io = captureStdIO();
@@ -3355,6 +4068,18 @@ describe("runCli", () => {
       const code = await runCli(["pr", "check", "202601010101-ABCDEF", "--extra", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage: agentplane pr check");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr check maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
     } finally {
       io.restore();
     }
@@ -3483,6 +4208,18 @@ describe("runCli", () => {
       io.restore();
     }
   }, 15_000);
+
+  it("hooks install maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "install", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
+    } finally {
+      io.restore();
+    }
+  });
 
   it("hooks rejects unknown subcommands", async () => {
     const root = await mkGitRepoRoot();

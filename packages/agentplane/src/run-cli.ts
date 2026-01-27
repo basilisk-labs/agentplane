@@ -388,6 +388,8 @@ const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
 const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text>";
 const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <text>";
 const FINISH_USAGE = "Usage: agentplane finish <task-id> --author <id> --body <text>";
+const VERIFY_USAGE =
+  "Usage: agentplane verify <task-id> [--cwd <path>] [--log <path>] [--skip-if-unchanged] [--quiet] [--require]";
 const WORK_START_USAGE =
   "Usage: agentplane work start <task-id> --agent <id> --slug <slug> --worktree";
 const PR_OPEN_USAGE = "Usage: agentplane pr open <task-id> --author <id> [--branch <name>]";
@@ -692,6 +694,52 @@ function parsePrMeta(raw: string, taskId: string): PrMeta {
   if (!isIsoDate(parsed.created_at)) throw new Error("pr/meta.json created_at must be ISO");
   if (!isIsoDate(parsed.updated_at)) throw new Error("pr/meta.json updated_at must be ISO");
   return parsed as PrMeta;
+}
+
+function extractLastVerifiedSha(logText: string): string | null {
+  const regex = /verified_sha=([0-9a-f]{7,40})/gi;
+  let match: RegExpExecArray | null = null;
+  let last: string | null = null;
+  while ((match = regex.exec(logText))) {
+    last = match[1] ?? null;
+  }
+  return last;
+}
+
+async function appendVerifyLog(logPath: string, header: string, content: string): Promise<void> {
+  await mkdir(path.dirname(logPath), { recursive: true });
+  const lines = [header.trimEnd()];
+  if (content) lines.push(content.trimEnd());
+  lines.push("");
+  await writeFile(logPath, `${lines.join("\n")}\n`, { flag: "a" });
+}
+
+async function runShellCommand(
+  command: string,
+  cwd: string,
+): Promise<{
+  code: number;
+  output: string;
+}> {
+  try {
+    const { stdout, stderr } = await execFileAsync("sh", ["-lc", command], {
+      cwd,
+      env: process.env,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    let output = "";
+    if (stdout) output += stdout;
+    if (stderr) output += (output && !output.endsWith("\n") ? "\n" : "") + stderr;
+    return { code: 0, output };
+  } catch (err) {
+    const error = err as { code?: number | string; stdout?: string; stderr?: string };
+    let output = "";
+    if (error.stdout) output += String(error.stdout);
+    if (error.stderr)
+      output += (output && !output.endsWith("\n") ? "\n" : "") + String(error.stderr);
+    const code = typeof error.code === "number" ? error.code : 1;
+    return { code, output };
+  }
 }
 
 function renderPrReviewTemplate(opts: {
@@ -1348,6 +1396,184 @@ async function cmdFinish(opts: {
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "finish", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdVerify(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  execCwd?: string;
+  logPath?: string;
+  skipIfUnchanged: boolean;
+  quiet: boolean;
+  require: boolean;
+}): Promise<number> {
+  try {
+    const task = await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+
+    const rawVerify = (task.frontmatter as Record<string, unknown>).verify;
+    if (rawVerify !== undefined && rawVerify !== null && !Array.isArray(rawVerify)) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `${task.id}: verify must be a list of strings`,
+      });
+    }
+    const commands = Array.isArray(rawVerify)
+      ? rawVerify
+          .filter((item): item is string => typeof item === "string")
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [];
+
+    if (commands.length === 0) {
+      if (opts.require) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `${task.id}: no verify commands configured`,
+        });
+      }
+      if (!opts.quiet) {
+        process.stdout.write(`ℹ️ ${task.id}: no verify commands configured\n`);
+      }
+      return 0;
+    }
+
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+
+    const execCwd = opts.execCwd ? path.resolve(opts.cwd, opts.execCwd) : resolved.gitRoot;
+    if (!isPathWithin(resolved.gitRoot, execCwd)) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `--cwd must stay under repo root: ${execCwd}`,
+      });
+    }
+
+    const taskDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir, opts.taskId);
+    const prDir = path.join(taskDir, "pr");
+    const metaPath = path.join(prDir, "meta.json");
+
+    let logPath: string | null = null;
+    if (opts.logPath) {
+      logPath = path.resolve(opts.cwd, opts.logPath);
+      if (!isPathWithin(resolved.gitRoot, logPath)) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `--log must stay under repo root: ${logPath}`,
+        });
+      }
+    } else if (await fileExists(prDir)) {
+      logPath = path.join(prDir, "verify.log");
+    }
+
+    let meta: PrMeta | null = null;
+    if (await fileExists(metaPath)) {
+      const rawMeta = await readFile(metaPath, "utf8");
+      meta = parsePrMeta(rawMeta, opts.taskId);
+    }
+
+    const headSha = await gitRevParse(execCwd, ["HEAD"]);
+    const currentSha = headSha;
+
+    if (opts.skipIfUnchanged) {
+      const changed = await gitStatusChangedPaths({
+        cwd: execCwd,
+        rootOverride: opts.rootOverride,
+      });
+      if (changed.length > 0) {
+        if (!opts.quiet) {
+          process.stdout.write(
+            `⚠️ ${task.id}: working tree is dirty; ignoring --skip-if-unchanged\n`,
+          );
+        }
+      } else {
+        let lastVerifiedSha = meta?.last_verified_sha ?? null;
+        if (!lastVerifiedSha && logPath && (await fileExists(logPath))) {
+          const logText = await readFile(logPath, "utf8");
+          lastVerifiedSha = extractLastVerifiedSha(logText);
+        }
+        if (lastVerifiedSha && lastVerifiedSha === currentSha) {
+          const header = `[${nowIso()}] ℹ️ skipped (unchanged verified_sha=${currentSha})`;
+          if (logPath) {
+            await appendVerifyLog(logPath, header, "");
+          }
+          if (!opts.quiet) {
+            process.stdout.write(
+              `ℹ️ ${task.id}: verify skipped (unchanged sha ${currentSha.slice(0, 12)})\n`,
+            );
+          }
+          if (meta) {
+            const nextMeta: PrMeta = {
+              ...meta,
+              last_verified_sha: currentSha,
+              last_verified_at: nowIso(),
+              verify: meta.verify ? { ...meta.verify, status: "pass" } : { status: "pass" },
+            };
+            await writeFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
+          }
+          return 0;
+        }
+      }
+    }
+
+    for (const command of commands) {
+      if (!opts.quiet) {
+        process.stdout.write(`$ ${command}\n`);
+      }
+      const timestamp = nowIso();
+      const result = await runShellCommand(command, execCwd);
+      const shaPrefix = currentSha ? `sha=${currentSha} ` : "";
+      const header = `[${timestamp}] ${shaPrefix}$ ${command}`.trimEnd();
+      if (logPath) {
+        await appendVerifyLog(logPath, header, result.output);
+      }
+      if (result.code !== 0) {
+        throw new CliError({
+          exitCode: result.code || 1,
+          code: "E_IO",
+          message: `Verify command failed: ${command}`,
+        });
+      }
+    }
+
+    if (currentSha) {
+      const header = `[${nowIso()}] ✅ verified_sha=${currentSha}`;
+      if (logPath) {
+        await appendVerifyLog(logPath, header, "");
+      }
+    }
+    if (!opts.quiet) {
+      process.stdout.write(`✅ verify passed for ${task.id}\n`);
+    }
+
+    if (meta) {
+      const nextMeta: PrMeta = {
+        ...meta,
+        last_verified_sha: currentSha,
+        last_verified_at: nowIso(),
+        verify: meta.verify
+          ? { ...meta.verify, status: "pass", command: commands.join(" && ") }
+          : { status: "pass", command: commands.join(" && ") },
+      };
+      await writeFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
+    }
+
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "verify", root: opts.rootOverride ?? null });
   }
 }
 
@@ -2678,6 +2904,71 @@ export async function runCli(argv: string[]): Promise<number> {
         taskId,
         author,
         body,
+      });
+    }
+
+    if (namespace === "verify") {
+      let taskId = command;
+      let verifyArgs = args;
+      if (!taskId || taskId.startsWith("-")) {
+        if (taskId?.startsWith("-")) {
+          verifyArgs = [taskId, ...args];
+        }
+        taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+      }
+      if (!taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: VERIFY_USAGE });
+      }
+
+      let cwdOverride: string | undefined;
+      let logPath: string | undefined;
+      let skipIfUnchanged = false;
+      let quiet = false;
+      let require = false;
+
+      for (let i = 0; i < verifyArgs.length; i++) {
+        const arg = verifyArgs[i];
+        if (!arg) continue;
+        if (arg === "--cwd") {
+          const next = verifyArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: VERIFY_USAGE });
+          cwdOverride = next;
+          i++;
+          continue;
+        }
+        if (arg === "--log") {
+          const next = verifyArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: VERIFY_USAGE });
+          logPath = next;
+          i++;
+          continue;
+        }
+        if (arg === "--skip-if-unchanged") {
+          skipIfUnchanged = true;
+          continue;
+        }
+        if (arg === "--quiet") {
+          quiet = true;
+          continue;
+        }
+        if (arg === "--require") {
+          require = true;
+          continue;
+        }
+        if (arg.startsWith("--")) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: VERIFY_USAGE });
+        }
+      }
+
+      return await cmdVerify({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        execCwd: cwdOverride,
+        logPath,
+        skipIfUnchanged,
+        quiet,
+        require,
       });
     }
 
