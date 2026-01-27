@@ -5,6 +5,8 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
+import { defaultConfig } from "@agentplane/core";
+
 import { runCli } from "./run-cli.js";
 
 function captureStdIO() {
@@ -46,6 +48,28 @@ async function mkGitRepoRoot(): Promise<string> {
   const execFileAsync = promisify(execFile);
   await mkdir(path.join(root, ".git"), { recursive: true });
   await execFileAsync("git", ["init", "-q"], { cwd: root });
+  return root;
+}
+
+async function writeDefaultConfig(root: string): Promise<void> {
+  const agentplaneDir = path.join(root, ".agentplane");
+  await mkdir(agentplaneDir, { recursive: true });
+  const configPath = path.join(agentplaneDir, "config.json");
+  await writeFile(configPath, JSON.stringify(defaultConfig(), null, 2), "utf8");
+}
+
+async function writeConfig(root: string, config: ReturnType<typeof defaultConfig>): Promise<void> {
+  const agentplaneDir = path.join(root, ".agentplane");
+  await mkdir(agentplaneDir, { recursive: true });
+  const configPath = path.join(agentplaneDir, "config.json");
+  await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
+}
+
+async function mkGitRepoRootWithBranch(branch: string): Promise<string> {
+  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+  const execFileAsync = promisify(execFile);
+  await execFileAsync("git", ["init", "-q"], { cwd: root });
+  await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
   return root;
 }
 
@@ -759,6 +783,382 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Working tree is dirty");
     } finally {
       io.restore();
+    }
+  });
+
+  it("hooks install writes managed hooks and shim", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "install", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const hooksDir = path.join(root, ".git", "hooks");
+    const commitMsg = await readFile(path.join(hooksDir, "commit-msg"), "utf8");
+    const preCommit = await readFile(path.join(hooksDir, "pre-commit"), "utf8");
+    const shim = await readFile(path.join(root, ".agentplane", "bin", "agentplane"), "utf8");
+
+    expect(commitMsg).toContain("agentplane-hook");
+    expect(preCommit).toContain("agentplane-hook");
+    expect(shim).toContain("agentplane-hook-shim");
+  });
+
+  it("hooks install refuses to overwrite unmanaged hook", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await mkdir(path.join(root, ".git", "hooks"), { recursive: true });
+    await writeFile(path.join(root, ".git", "hooks", "commit-msg"), "custom", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "install", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Refusing to overwrite existing hook");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks install is idempotent for managed hooks", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await runCli(["hooks", "install", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "install", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks install supports --quiet", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "install", "--quiet", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks uninstall removes managed hooks", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await runCli(["hooks", "install", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "uninstall", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const hookPath = path.join(root, ".git", "hooks", "commit-msg");
+    await expect(readFile(hookPath, "utf8")).rejects.toThrow();
+  });
+
+  it("hooks uninstall reports when no hooks are present", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "uninstall", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("No agentplane hooks found");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks run commit-msg requires a message file", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Missing commit message file");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks run commit-msg enforces task id env", async () => {
+    const root = await mkGitRepoRoot();
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ ABCDEF add guard checks\n", "utf8");
+    const prev = process.env.AGENT_PLANE_TASK_ID;
+    process.env.AGENT_PLANE_TASK_ID = "202601010101-ABCDEF";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
+      else process.env.AGENT_PLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run rejects unknown hook", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane hooks run <hook>");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks run commit-msg rejects empty subject", async () => {
+    const root = await mkGitRepoRoot();
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "# comment\n\n", "utf8");
+    const prev = process.env.AGENT_PLANE_TASK_ID;
+    delete process.env.AGENT_PLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Commit message subject is empty");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
+      else process.env.AGENT_PLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run commit-msg rejects missing suffix", async () => {
+    const root = await mkGitRepoRoot();
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "chore: update\n", "utf8");
+    const prev = process.env.AGENT_PLANE_TASK_ID;
+    process.env.AGENT_PLANE_TASK_ID = "202601010101-ABCDEF";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
+      else process.env.AGENT_PLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run commit-msg uses task list when env is unset", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Context",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    const suffix = taskId.split("-").at(-1) ?? "";
+    await writeFile(messagePath, `feat: ${suffix} add hooks\n`, "utf8");
+    const prev = process.env.AGENT_PLANE_TASK_ID;
+    delete process.env.AGENT_PLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
+      else process.env.AGENT_PLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run commit-msg fails when no tasks exist", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "feat: add hooks\n", "utf8");
+    const prev = process.env.AGENT_PLANE_TASK_ID;
+    delete process.env.AGENT_PLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("No task IDs available");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
+      else process.env.AGENT_PLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run pre-commit succeeds when nothing is staged", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks run pre-commit blocks tasks.json without allow flag", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, ".agentplane", "tasks.json"), "{}", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
+
+    const prev = process.env.AGENT_PLANE_ALLOW_TASKS;
+    process.env.AGENT_PLANE_ALLOW_TASKS = "0";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("protected by agentplane hooks");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_TASKS;
+      else process.env.AGENT_PLANE_ALLOW_TASKS = prev;
+    }
+  });
+
+  it("hooks run pre-push returns success", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-push", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks run pre-commit allows tasks.json with env override", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, ".agentplane", "tasks.json"), "{}", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
+
+    const prev = process.env.AGENT_PLANE_ALLOW_TASKS;
+    process.env.AGENT_PLANE_ALLOW_TASKS = "1";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_TASKS;
+      else process.env.AGENT_PLANE_ALLOW_TASKS = prev;
+    }
+  });
+
+  it("hooks run pre-commit allows base branch with allowBase", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+
+    const prev = process.env.AGENT_PLANE_ALLOW_BASE;
+    process.env.AGENT_PLANE_ALLOW_BASE = "1";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_BASE;
+      else process.env.AGENT_PLANE_ALLOW_BASE = prev;
+    }
+  });
+
+  it("hooks run pre-commit enforces branch_pr base restrictions", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("forbidden on main");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks run pre-commit blocks tasks.json off base in branch_pr", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "feature"], { cwd: root });
+    await writeFile(path.join(root, ".agentplane", "tasks.json"), "{}", "utf8");
+    await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
+
+    const prev = process.env.AGENT_PLANE_ALLOW_TASKS;
+    process.env.AGENT_PLANE_ALLOW_TASKS = "1";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("allowed only on main");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_TASKS;
+      else process.env.AGENT_PLANE_ALLOW_TASKS = prev;
     }
   });
 
