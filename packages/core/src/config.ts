@@ -135,6 +135,12 @@ export function validateConfig(raw: unknown): AgentplaneConfig {
     throw new Error("config.tasks.verify.required_tags must be array");
   }
   if (
+    typeof raw.tasks.id_suffix_length_default !== "number" ||
+    !Number.isInteger(raw.tasks.id_suffix_length_default)
+  ) {
+    throw new Error("config.tasks.id_suffix_length_default must be integer");
+  }
+  if (
     !isRecord(raw.tasks.doc) ||
     !Array.isArray(raw.tasks.doc.sections) ||
     !Array.isArray(raw.tasks.doc.required_sections)
@@ -217,7 +223,7 @@ function parseScalar(value: string): unknown {
       return value;
     }
   }
-  if (/^-?\\d+(?:\\.\\d+)?$/.test(trimmed)) return Number(trimmed);
+  if (/^-?\d+(?:\.\d+)?$/.test(trimmed)) return Number(trimmed);
   return value;
 }
 

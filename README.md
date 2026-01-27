@@ -32,8 +32,8 @@ The CLI creates `.agentplane/` (config, tasks, caches, recipes).
 ## Developing in this repo (current)
 
 ```bash
-npm install
-npm -w agentplane run build
+bun install
+bun -w agentplane run build
 node packages/agentplane/dist/cli.js --help
 ```
 
@@ -42,6 +42,7 @@ node packages/agentplane/dist/cli.js --help
 - Start here: `docs/README.md`
 - Command contract: `docs/cli-contract.md`
 - Recipes spec: `docs/recipes-spec.md`
+- Quality gates: `docs/code-quality.md`
 - Format schemas/examples: `packages/spec/`
 
 ## Repository layout (high level)

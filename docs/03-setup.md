@@ -7,7 +7,7 @@ End users install and run the CLI as:
 ```bash
 npx agentplane --help
 # or
-npm i -g agentplane
+bun add -g agentplane
 agentplane --help
 ```
 
@@ -26,8 +26,8 @@ This creates `.agentplane/` (config, agents, tasks, caches). v1 is offline-first
 This repository contains the in-progress Node.js workspace under `packages/`. For local development:
 
 ```bash
-npm install
-npm -w agentplane run build
+bun install
+bun -w agentplane run build
 node packages/agentplane/dist/cli.js --help
 ```
 

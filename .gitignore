@@ -11,6 +11,8 @@ dmypy.json
 .venv
 node_modules
 dist
+coverage
+*.tsbuildinfo
 .agentplane
 .agent-plane/worktrees
 .agent-plane/tasks.json

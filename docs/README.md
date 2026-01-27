@@ -18,8 +18,9 @@ This is the entry point for Agent Plane documentation. The root `README.md` is a
 10. Commands reference: [`09-commands.md`](09-commands.md)
 11. CLI contract (v1): [`cli-contract.md`](cli-contract.md)
 12. Recipes spec (v1): [`recipes-spec.md`](recipes-spec.md)
-13. Troubleshooting: [`10-troubleshooting.md`](10-troubleshooting.md)
-14. Glossary: [`11-glossary.md`](11-glossary.md)
+13. Code quality gates: [`code-quality.md`](code-quality.md)
+14. Troubleshooting: [`10-troubleshooting.md`](10-troubleshooting.md)
+15. Glossary: [`11-glossary.md`](11-glossary.md)
 
 ## Updates
 

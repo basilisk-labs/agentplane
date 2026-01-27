@@ -69,8 +69,8 @@ agentplane recipe list-remote --refresh
 ## Developing the CLI in this repo
 
 ```bash
-npm install
-npm -w agentplane run build
+bun install
+bun -w agentplane run build
 node packages/agentplane/dist/cli.js --help
 ```
 

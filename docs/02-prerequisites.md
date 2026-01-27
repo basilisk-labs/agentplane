@@ -3,7 +3,7 @@
 ## Required
 
 - Git (any recent version).
-- Node.js 20 LTS+ and npm (or pnpm).
+- Node.js 20 LTS+ and bun (recommended).
 - OpenAI Codex plugin in your IDE (Cursor, VS Code, JetBrains).
 
 ## Recommended

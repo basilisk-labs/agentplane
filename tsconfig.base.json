@@ -3,12 +3,6 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "types": ["node"],
-    "baseUrl": ".",
-    "paths": {
-      "@agentplane/core": ["packages/core/src/index.ts"],
-      "@agentplane/recipes": ["packages/recipes/src/index.ts"],
-      "@agentplane/testkit": ["packages/testkit/src/index.ts"]
-    },
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "strict": true,

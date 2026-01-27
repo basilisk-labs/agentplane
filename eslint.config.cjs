@@ -10,7 +10,7 @@ const promisePlugin = require("eslint-plugin-promise");
 const unicornPlugin = require("eslint-plugin-unicorn").default;
 const prettierConfig = require("eslint-config-prettier");
 
-const tsconfigProjects = ["./packages/*/tsconfig.json"];
+const tsconfigProjects = ["./tsconfig.eslint.json", "./packages/*/tsconfig.json"];
 
 /** @type {import("eslint").Linter.FlatConfig[]} */
 module.exports = [

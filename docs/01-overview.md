@@ -26,7 +26,7 @@ Agent Plane is a local, repo-scoped workflow framework for using OpenAI Codex in
 
 - [`AGENTS.md`](../AGENTS.md): global rules and workflow policies.
 - `.agentplane/`: project state directory created by `agentplane init` (config, tasks, caches, recipes).
-- `agentplane`: the Node.js CLI users run (`npx agentplane …` or `npm i -g agentplane`).
+- `agentplane`: the Node.js CLI users run (`npx agentplane …` or `bun add -g agentplane`).
 - [`docs/cli-contract.md`](cli-contract.md): the authoritative v1 command surface.
 - [`packages/spec/`](../packages/spec/): v1 schemas/examples for config/tasks exports/PR meta.
 

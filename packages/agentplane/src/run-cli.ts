@@ -138,7 +138,7 @@ export async function runCli(argv: string[]): Promise<number> {
     const [namespace, command, ...args] = rest;
 
     if (namespace === "config" && command === "show") {
-      return cmdConfigShow({ cwd: process.cwd(), rootOverride: globals.root });
+      return await cmdConfigShow({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "config" && command === "set") {
@@ -150,7 +150,7 @@ export async function runCli(argv: string[]): Promise<number> {
           message: "Usage: agentplane config set <key> <value>",
         });
       }
-      return cmdConfigSet({ cwd: process.cwd(), rootOverride: globals.root, key, value });
+      return await cmdConfigSet({ cwd: process.cwd(), rootOverride: globals.root, key, value });
     }
 
     process.stderr.write("Not implemented yet. Run `agentplane --help`.\n");
