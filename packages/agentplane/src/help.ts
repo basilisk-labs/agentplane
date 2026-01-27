@@ -26,6 +26,7 @@ export function renderHelp(): string {
     "  agentplane task list",
     "  agentplane task show <task-id>",
     "  agentplane task new --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]",
+    "  agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)",
     "",
   ].join("\n");
 }

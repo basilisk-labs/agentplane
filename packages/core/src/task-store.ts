@@ -36,6 +36,24 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+export function validateTaskDocMetadata(frontmatter: Record<string, unknown>): string[] {
+  const errors: string[] = [];
+
+  if (frontmatter.doc_version !== 2) errors.push("doc_version must be 2");
+
+  const updatedAt = frontmatter.doc_updated_at;
+  if (typeof updatedAt !== "string" || Number.isNaN(Date.parse(updatedAt))) {
+    errors.push("doc_updated_at must be an ISO timestamp");
+  }
+
+  const updatedBy = frontmatter.doc_updated_by;
+  if (typeof updatedBy !== "string" || updatedBy.trim().length === 0) {
+    errors.push("doc_updated_by must be a non-empty string");
+  }
+
+  return errors;
+}
+
 const ID_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 function randomSuffix(length: number): string {
@@ -102,6 +120,41 @@ function defaultTaskBody(): string {
   ].join("\n");
 }
 
+function escapeRegExp(text: string): string {
+  return text.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\\$&`);
+}
+
+function setMarkdownSection(body: string, section: string, text: string): string {
+  const lines = body.replaceAll("\r\n", "\n").split("\n");
+  const headingRe = new RegExp(String.raw`^##\s+${escapeRegExp(section)}\s*$`);
+
+  let start = -1;
+  let nextHeading = lines.length;
+
+  for (const [i, line] of lines.entries()) {
+    if (!line.startsWith("## ")) continue;
+    if (start === -1) {
+      if (headingRe.test(line)) start = i;
+      continue;
+    }
+    nextHeading = i;
+    break;
+  }
+
+  const newTextLines = text.replaceAll("\r\n", "\n").split("\n");
+  const replacement = ["", ...newTextLines, ""];
+
+  if (start === -1) {
+    const out = [...lines];
+    if (out.length > 0 && out.at(-1)?.trim() !== "") out.push("");
+    out.push(`## ${section}`, ...replacement);
+    return `${out.join("\n")}\n`;
+  }
+
+  const out = [...lines.slice(0, start + 1), ...replacement, ...lines.slice(nextHeading)];
+  return `${out.join("\n")}\n`;
+}
+
 export async function createTask(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -151,6 +204,43 @@ export async function createTask(opts: {
   }
 
   throw new Error("Failed to generate a unique task id");
+}
+
+export async function setTaskDocSection(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  taskId: string;
+  section: string;
+  text: string;
+  updatedBy?: string | null;
+}): Promise<{ readmePath: string }> {
+  const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  const loaded = await loadConfig(resolved.agentplaneDir);
+
+  const allowed = loaded.config.tasks.doc.sections;
+  if (!allowed.includes(opts.section)) {
+    throw new Error(`Unknown doc section: ${opts.section}`);
+  }
+
+  const tasksDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir);
+  const readmePath = taskReadmePath(tasksDir, opts.taskId);
+  const original = await readFile(readmePath, "utf8");
+  const parsed = parseTaskReadme(original);
+
+  const updatedBy = (opts.updatedBy ?? "agentplane").trim();
+  if (updatedBy.length === 0) throw new Error("doc_updated_by must be a non-empty string");
+
+  const nextFrontmatter: Record<string, unknown> = {
+    ...parsed.frontmatter,
+    doc_version: 2,
+    doc_updated_at: nowIso(),
+    doc_updated_by: updatedBy,
+  };
+
+  const nextBody = setMarkdownSection(parsed.body, opts.section, opts.text);
+  const nextText = renderTaskReadme(nextFrontmatter, nextBody);
+  await writeFile(readmePath, nextText, "utf8");
+  return { readmePath };
 }
 
 export async function readTask(opts: {

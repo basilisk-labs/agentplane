@@ -308,6 +308,283 @@ describe("runCli", () => {
     }
   });
 
+  it("task doc set updates a task README section and bumps metadata", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    let id = "";
+    try {
+      const code1 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(0);
+      id = io1.stdout.trim();
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "--section",
+        "Summary",
+        "--text",
+        "Hello",
+        "--updated-by",
+        "DOCS",
+        "--root",
+        root,
+      ]);
+      expect(code2).toBe(0);
+      expect(io2.stdout).toContain(path.join(root, ".agentplane", "tasks", id, "README.md"));
+    } finally {
+      io2.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("## Summary");
+    expect(readme).toContain("Hello");
+    expect(readme).toContain('doc_updated_by: "DOCS"');
+  });
+
+  it("task doc set validates usage and maps unknown doc sections", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    try {
+      const code1 = await runCli(["task", "doc", "set", "X", "--root", root]);
+      expect(code1).toBe(2);
+      expect(io1.stderr).toContain("Usage: agentplane task doc set");
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    let id = "";
+    try {
+      const code2 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code2).toBe(0);
+      id = io2.stdout.trim();
+    } finally {
+      io2.restore();
+    }
+
+    const io3 = captureStdIO();
+    try {
+      const code3 = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "--section",
+        "Nope",
+        "--text",
+        "x",
+        "--root",
+        root,
+      ]);
+      expect(code3).toBe(2);
+      expect(io3.stderr).toContain("Unknown doc section");
+    } finally {
+      io3.restore();
+    }
+
+    const io4 = captureStdIO();
+    try {
+      const code4 = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "--section",
+        "Summary",
+        "--root",
+        root,
+      ]);
+      expect(code4).toBe(2);
+      expect(io4.stderr).toContain("Usage: agentplane task doc set");
+    } finally {
+      io4.restore();
+    }
+  });
+
+  it("task doc set maps missing task/file to E_IO", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    try {
+      const code1 = await runCli([
+        "task",
+        "doc",
+        "set",
+        "202601010101-ABCDEF",
+        "--section",
+        "Summary",
+        "--text",
+        "x",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(4);
+      expect(io1.stderr).toMatch(/ENOENT|no such file/i);
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code2).toBe(0);
+    } finally {
+      io2.restore();
+    }
+
+    const id = io2.stdout.trim();
+
+    const io3 = captureStdIO();
+    try {
+      const code3 = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "--section",
+        "Notes",
+        "--file",
+        path.join(root, "does-not-exist.txt"),
+        "--root",
+        root,
+      ]);
+      expect(code3).toBe(4);
+      expect(io3.stderr).toMatch(/ENOENT|no such file/i);
+    } finally {
+      io3.restore();
+    }
+  });
+
+  it("task doc rejects unknown subcommands", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "doc", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane task doc set");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("wraps unexpected errors as E_INTERNAL", async () => {
+    const origStdoutWrite = process.stdout.write.bind(process.stdout);
+    const origStderrWrite = process.stderr.write.bind(process.stderr);
+
+    let stderr = "";
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (process.stdout.write as any) = () => {
+      throw new Error("boom");
+    };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (process.stderr.write as any) = (chunk: unknown) => {
+      stderr += String(chunk);
+      return true;
+    };
+
+    try {
+      const code = await runCli(["--version"]);
+      expect(code).toBe(1);
+      expect(stderr).toContain("boom");
+    } finally {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (process.stdout.write as any) = origStdoutWrite;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (process.stderr.write as any) = origStderrWrite;
+    }
+  });
+
+  it("task show fails when required doc metadata is missing", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io1 = captureStdIO();
+    let id = "";
+    try {
+      const code1 = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Why it matters",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(0);
+      id = io1.stdout.trim();
+    } finally {
+      io1.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
+    const original = await readFile(readmePath, "utf8");
+    await writeFile(readmePath, original.replace(/^\s*doc_updated_by:.*\n/m, ""), "utf8");
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["task", "show", id, "--root", root]);
+      expect(code2).toBe(3);
+      expect(io2.stderr).toContain("Invalid task README metadata");
+      expect(io2.stderr).toContain("doc_updated_by");
+    } finally {
+      io2.restore();
+    }
+  });
+
   it("task show requires an id", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
