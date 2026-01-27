@@ -73,6 +73,12 @@ async function mkGitRepoRootWithBranch(branch: string): Promise<string> {
   return root;
 }
 
+async function configureGitUser(root: string): Promise<void> {
+  const execFileAsync = promisify(execFile);
+  await execFileAsync("git", ["config", "user.email", "test@example.com"], { cwd: root });
+  await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: root });
+}
+
 describe("runCli", () => {
   it("prints help on --help", async () => {
     const io = captureStdIO();
@@ -758,6 +764,61 @@ describe("runCli", () => {
     }
   });
 
+  it("guard commit allows tasks.json with --allow-tasks", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "tasks.json"), "{}", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF allow tasks",
+        "--allow",
+        ".agentplane",
+        "--allow-tasks",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("OK");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit quiet suppresses output", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF quiet guard",
+        "--allow",
+        "file.txt",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("guard commit fails with --require-clean and unstaged changes", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "file.txt"), "x", "utf8");
@@ -781,6 +842,102 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(5);
       expect(io.stderr).toContain("Working tree is dirty");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("commit wrapper creates a commit with allowlist", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit wrapper",
+        "--allow",
+        "file.txt",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ committed");
+    } finally {
+      io.restore();
+    }
+
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+    expect(stdout.trim()).toBe("✨ ABCDEF commit wrapper");
+  });
+
+  it("commit wrapper supports --quiet", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF quiet commit",
+        "--allow",
+        "file.txt",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("commit wrapper supports auto-allow", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF auto allow",
+        "--auto-allow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("commit wrapper requires a message", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["commit", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane commit");
     } finally {
       io.restore();
     }
