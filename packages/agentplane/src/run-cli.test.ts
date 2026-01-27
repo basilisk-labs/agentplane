@@ -507,6 +507,173 @@ describe("runCli", () => {
     }
   });
 
+  it("task doc set rejects missing flag values and unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+
+    let id = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Doc set flags",
+        "--description",
+        "Flag validation coverage",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      id = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io1 = captureStdIO();
+    try {
+      const code1 = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "--section",
+        "Summary",
+        "--text",
+        "x",
+        "--updated-by",
+        "--root",
+        root,
+      ]);
+      expect(code1).toBe(2);
+      expect(io1.stderr).toContain("Missing value for --updated-by");
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "--section",
+        "Summary",
+        "--text",
+        "x",
+        "--nope",
+        "y",
+        "--root",
+        root,
+      ]);
+      expect(code2).toBe(2);
+      expect(io2.stderr).toContain("Unknown flag");
+    } finally {
+      io2.restore();
+    }
+  });
+
+  it("task doc set rejects empty --updated-by", async () => {
+    const root = await mkGitRepoRoot();
+
+    let id = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Doc set updated-by",
+        "--description",
+        "Updated-by validation",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      id = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "--section",
+        "Summary",
+        "--text",
+        "x",
+        "--updated-by",
+        "   ",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--updated-by must be non-empty");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task doc set rejects unexpected arguments", async () => {
+    const root = await mkGitRepoRoot();
+
+    let id = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Doc set unexpected arg",
+        "--description",
+        "Unexpected arg validation",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      id = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "oops",
+        "--section",
+        "Summary",
+        "--text",
+        "x",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unexpected argument: oops");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task doc set maps missing task/file to E_IO", async () => {
     const root = await mkGitRepoRoot();
 
@@ -630,6 +797,18 @@ describe("runCli", () => {
     }
   });
 
+  it("branch base get maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "base", "get", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("branch base set writes git config and returns value", async () => {
     const root = await mkGitRepoRoot();
     const io1 = captureStdIO();
@@ -648,6 +827,54 @@ describe("runCli", () => {
       expect(io2.stdout.trim()).toBe("develop");
     } finally {
       io2.restore();
+    }
+  });
+
+  it("branch base set maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "base", "set", "main", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("branch base set rejects blank values", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "base", "set", "   ", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane branch base");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("branch base set requires a value", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "base", "set", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane branch base");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("branch base rejects unknown subcommands", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "base", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane branch base");
+    } finally {
+      io.restore();
     }
   });
 
@@ -2517,6 +2744,681 @@ describe("runCli", () => {
     expect(stdout).toContain(worktreePath);
   });
 
+  it("pr open creates PR artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open task",
+        "--description",
+        "PR open creates artifacts",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--branch",
+        `task/${taskId}/pr-open`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ pr open");
+    } finally {
+      io.restore();
+    }
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const metaRaw = await readFile(path.join(prDir, "meta.json"), "utf8");
+    const meta = JSON.parse(metaRaw) as { task_id?: string; branch?: string };
+    expect(meta.task_id).toBe(taskId);
+    expect(meta.branch).toBe(`task/${taskId}/pr-open`);
+    await readFile(path.join(prDir, "review.md"), "utf8");
+    await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+    await readFile(path.join(prDir, "verify.log"), "utf8");
+  });
+
+  it("pr update refreshes diffstat and auto summary", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR update task",
+        "--description",
+        "PR update writes diffstat",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCli([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-update`,
+      "--root",
+      root,
+    ]);
+
+    await execFileAsync("git", ["checkout", "-b", `task/${taskId}/pr-update`], { cwd: root });
+    await writeFile(path.join(root, "change.txt"), "change", "utf8");
+    await execFileAsync("git", ["add", "change.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "change"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "update", taskId, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const diffstat = await readFile(path.join(prDir, "diffstat.txt"), "utf8");
+    expect(diffstat).toContain("change.txt");
+    const review = await readFile(path.join(prDir, "review.md"), "utf8");
+    expect(review).toContain("BEGIN AUTO SUMMARY");
+    expect(review).toContain("change.txt");
+  });
+
+  it("pr note appends to handoff notes", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR note task",
+        "--description",
+        "PR note appends handoff notes",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCli([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-note`,
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "note",
+        taskId,
+        "--author",
+        "DOCS",
+        "--body",
+        "Handoff: reviewed docs changes.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const review = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "review.md"),
+      "utf8",
+    );
+    expect(review).toContain("DOCS: Handoff: reviewed docs changes.");
+  });
+
+  it("pr check passes when artifacts exist", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR check task",
+        "--description",
+        "PR check validates artifacts",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCli([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-check`,
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", taskId, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ pr check");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr open requires --author", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open requires author",
+        "--description",
+        "PR open must have author flag",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "open", taskId, "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr open");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr open rejects unknown flags", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open unknown flag",
+        "--description",
+        "PR open should reject unknown flags",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "CODER",
+        "--nope",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr open");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr open uses current branch when --branch is omitted", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open branch default",
+        "--description",
+        "PR open uses current branch",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+
+    const metaRaw = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
+      "utf8",
+    );
+    const meta = JSON.parse(metaRaw) as { branch?: string };
+    expect(meta.branch).toBe("main");
+  });
+
+  it("pr open is idempotent when artifacts exist", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR open idempotent task",
+        "--description",
+        "PR open can be re-run safely",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCli([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-open`,
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "open",
+        taskId,
+        "--author",
+        "REVIEWER",
+        "--branch",
+        `task/${taskId}/pr-open`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr update rejects missing artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR update missing artifacts",
+        "--description",
+        "PR update should error without pr open",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "update", taskId, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("PR artifacts missing");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr update rejects extra arguments", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "update", "202601010101-ABCDEF", "--extra", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr update");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr note rejects missing review", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR note missing review",
+        "--description",
+        "PR note requires review",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "note",
+        taskId,
+        "--author",
+        "DOCS",
+        "--body",
+        "Handoff: missing review should fail.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Missing pr/review.md");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr check fails when verify requirements are unmet", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "PR check verify task",
+        "--description",
+        "PR check should fail until verify passes",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "bun run ci",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    await runCli([
+      "pr",
+      "open",
+      taskId,
+      "--author",
+      "CODER",
+      "--branch",
+      `task/${taskId}/pr-check`,
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", taskId, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Verify requirements not satisfied");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr check rejects extra arguments", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "check", "202601010101-ABCDEF", "--extra", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr check");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr note rejects unknown flags", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "pr",
+        "note",
+        "202601010101-ABCDEF",
+        "--author",
+        "DOCS",
+        "--body",
+        "Handoff: unknown flag check.",
+        "--nope",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr note");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr note requires --author and --body", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "note", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr note");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr commands require a task id", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "open", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr open");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("pr rejects unknown subcommands", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "nope", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane pr open|update|check|note");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("hooks install writes managed hooks and shim", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -2620,6 +3522,18 @@ describe("runCli", () => {
       const code = await runCli(["hooks", "uninstall", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("No agentplane hooks found");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks uninstall maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "uninstall", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
     } finally {
       io.restore();
     }
@@ -2748,6 +3662,51 @@ describe("runCli", () => {
     }
   });
 
+  it("hooks run commit-msg rejects missing suffix from task list", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Suffix required",
+        "--description",
+        "Commit hook validation",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "feat: add hooks\n", "utf8");
+    const prev = process.env.AGENT_PLANE_TASK_ID;
+    delete process.env.AGENT_PLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Commit subject must mention a task suffix");
+      expect(taskId).not.toEqual("");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
+      else process.env.AGENT_PLANE_TASK_ID = prev;
+    }
+  });
+
   it("hooks run commit-msg fails when no tasks exist", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -2776,6 +3735,18 @@ describe("runCli", () => {
     try {
       const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
       expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("hooks run pre-commit maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
     } finally {
       io.restore();
     }
