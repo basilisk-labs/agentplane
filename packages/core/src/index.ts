@@ -59,3 +59,10 @@ export {
 } from "./tasks-lint.js";
 
 export { getBaseBranch, getPinnedBaseBranch, setPinnedBaseBranch } from "./base-branch.js";
+
+export {
+  extractTaskSuffix,
+  isGenericSubject,
+  validateCommitSubject,
+  type CommitPolicyResult,
+} from "./commit-policy.js";
