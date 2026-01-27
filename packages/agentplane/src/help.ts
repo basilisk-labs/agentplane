@@ -47,5 +47,8 @@ export function renderHelp(): string {
     "  agentplane task export",
     "  agentplane task lint",
     "",
+    "Start commands:",
+    "  agentplane start <task-id> --author <id> --body <text> [--commit-from-comment]",
+    "",
   ].join("\n");
 }
