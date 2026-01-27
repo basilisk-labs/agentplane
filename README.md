@@ -33,8 +33,23 @@ The CLI creates `.agentplane/` (config, tasks, caches, recipes).
 
 ```bash
 bun install
-bun -w agentplane run build
-node packages/agentplane/dist/cli.js --help
+bun run --filter=agentplane build
+node packages/agentplane/bin/agentplane.js --help
+```
+
+## Publishing to npm (maintainers)
+
+This repository is a monorepo. The CLI package depends on `@agentplane/core`, so publish in this order:
+
+```bash
+bun install
+bun run ci
+
+cd packages/core
+npm publish --access public
+
+cd ../agentplane
+npm publish
 ```
 
 ## Documentation

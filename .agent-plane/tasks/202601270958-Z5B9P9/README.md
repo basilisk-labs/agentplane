@@ -1,0 +1,43 @@
+---
+id: "202601270958-Z5B9P9"
+title: "Prepare npm publishable packages"
+status: "DOING"
+priority: "high"
+owner: "CODER"
+depends_on: []
+tags: ["nodejs", "packaging", "npm"]
+verify: ["bun run ci"]
+comments:
+  - { author: "CODER", body: "Start: preparing agentplane packages for npm publish (bin shim, files whitelist, metadata)." }
+  - { author: "CODER", body: "Start: implementing npm publish readiness for agentplane CLI (bin shim, files, metadata, npm pack checks)." }
+doc_version: 2
+doc_updated_at: "2026-01-27T09:58:22+00:00"
+doc_updated_by: "agentctl"
+description: "Prepare packages/agentplane (and its runtime deps) so it can be published to npmjs via npm publish: add bin shim, files whitelist, package metadata, and verify npm pack output."
+---
+## Summary
+
+Prepare the repository for npm publication: make the agentplane CLI package publishable with an npm-compatible bin shim and files whitelist, and ensure npm pack produces a correct tarball.
+
+## Scope
+
+- Add `packages/agentplane/bin/agentplane.js` npm CLI shim
+- Update `packages/agentplane/package.json` for publishing (bin, files, engines, scripts)
+- Make runtime dependency packages publishable where needed (e.g. @agentplane/core)
+- Validate with `npm pack --dry-run`
+
+## Risks
+
+- Publishing a workspace package requires all workspace: protocol deps to resolve to publishable versions.
+- Ensure published artifacts do not depend on bun at runtime (only build-time).
+
+## Verify Steps
+
+- `bun run ci`
+- `npm pack --dry-run` in `packages/core` and `packages/agentplane` shows expected files (bin + dist + README + LICENSE)
+
+## Rollback Plan
+
+- Revert commits; restore package.json privacy flags and bin entries
+- Remove `bin/` shims and package READMEs
+

@@ -27,8 +27,8 @@ This repository contains the in-progress Node.js workspace under `packages/`. Fo
 
 ```bash
 bun install
-bun -w agentplane run build
-node packages/agentplane/dist/cli.js --help
+bun run --filter=agentplane build
+node packages/agentplane/bin/agentplane.js --help
 ```
 
 ## Optional clean slate (repo maintenance)

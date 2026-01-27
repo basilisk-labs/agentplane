@@ -1,17 +1,36 @@
 {
   "name": "agentplane",
   "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "bin": {
-    "agentplane": "dist/cli.js"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/basilisk-labs/agentplane.git"
   },
+  "homepage": "https://github.com/basilisk-labs/agentplane",
+  "bugs": {
+    "url": "https://github.com/basilisk-labs/agentplane/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "agentplane": "bin/agentplane.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --test"
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
+    "build": "tsc -b",
+    "typecheck": "tsc -b",
+    "prepack": "bun run clean && bun run build",
+    "prepublishOnly": "bun run prepack"
   },
   "dependencies": {
-    "@agentplane/core": "workspace:*"
+    "@agentplane/core": "0.0.0"
   }
 }

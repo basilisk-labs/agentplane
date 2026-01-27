@@ -76,8 +76,8 @@ agentplane recipe list-remote --refresh
 
 ```bash
 bun install
-bun -w agentplane run build
-node packages/agentplane/dist/cli.js --help
+bun run --filter=agentplane build
+node packages/agentplane/bin/agentplane.js --help
 ```
 
 ## Legacy note
