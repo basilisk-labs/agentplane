@@ -39,3 +39,14 @@ export {
   type TaskRecord,
   type TaskStatus,
 } from "./task-store.js";
+
+export {
+  buildTasksExportSnapshot,
+  canonicalTasksPayload,
+  canonicalizeJson,
+  computeTasksChecksum,
+  writeTasksExport,
+  type TasksExportMeta,
+  type TasksExportSnapshot,
+  type TasksExportTask,
+} from "./tasks-export.js";
