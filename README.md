@@ -1,4 +1,4 @@
-![Agent Plane Header](assets/header.png)
+![Agent Plane Header](docs/assets/header.png)
 
 # Agent Plane (`agentplane`)
 
