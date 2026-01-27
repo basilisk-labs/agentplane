@@ -18,3 +18,10 @@ export {
   type StatusCommitPolicy,
   type WorkflowMode,
 } from "./config.js";
+
+export {
+  parseTaskReadme,
+  renderTaskFrontmatter,
+  renderTaskReadme,
+  type ParsedTaskReadme,
+} from "./task-readme.js";
