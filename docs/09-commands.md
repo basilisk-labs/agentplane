@@ -21,8 +21,14 @@ agentplane init
 
 ```bash
 agentplane config show
-agentplane config set workflow_mode branch_pr
 agentplane config set tasks.verify.required_tags '["code","backend"]'
+```
+
+## Mode
+
+```bash
+agentplane mode get
+agentplane mode set branch_pr
 ```
 
 ## Tasks

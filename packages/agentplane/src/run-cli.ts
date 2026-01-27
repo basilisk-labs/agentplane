@@ -121,6 +121,45 @@ async function cmdConfigSet(opts: {
   }
 }
 
+async function cmdModeGet(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    process.stdout.write(`${loaded.config.workflow_mode}\n`);
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "mode get", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdModeSet(opts: {
+  cwd: string;
+  rootOverride?: string;
+  mode: "direct" | "branch_pr";
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    const raw = { ...loaded.raw };
+    setByDottedKey(raw, "workflow_mode", opts.mode);
+    await saveConfig(resolved.agentplaneDir, raw);
+    process.stdout.write(`${opts.mode}\n`);
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, {
+      command: "mode set",
+      root: opts.rootOverride ?? null,
+      mode: opts.mode,
+    });
+  }
+}
+
 export async function runCli(argv: string[]): Promise<number> {
   try {
     const { globals, rest } = parseGlobalArgs(argv);
@@ -151,6 +190,22 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdConfigSet({ cwd: process.cwd(), rootOverride: globals.root, key, value });
+    }
+
+    if (namespace === "mode" && command === "get") {
+      return await cmdModeGet({ cwd: process.cwd(), rootOverride: globals.root });
+    }
+
+    if (namespace === "mode" && command === "set") {
+      const [mode] = args;
+      if (mode !== "direct" && mode !== "branch_pr") {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Usage: agentplane mode set <direct|branch_pr>",
+        });
+      }
+      return await cmdModeSet({ cwd: process.cwd(), rootOverride: globals.root, mode });
     }
 
     process.stderr.write("Not implemented yet. Run `agentplane --help`.\n");

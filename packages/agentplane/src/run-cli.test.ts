@@ -185,4 +185,54 @@ describe("runCli", () => {
     const text = await readFile(configPath, "utf8");
     expect(text).toContain('"workflow_mode": "direct"');
   });
+
+  it("mode get prints workflow mode (default)", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["mode", "get", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("direct");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("mode set persists workflow_mode and prints the new mode", async () => {
+    const root = await mkGitRepoRoot();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["mode", "set", "branch_pr", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("branch_pr");
+    } finally {
+      io.restore();
+    }
+
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const text = await readFile(configPath, "utf8");
+    expect(text).toContain('"workflow_mode": "branch_pr"');
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["mode", "get", "--root", root]);
+      expect(code2).toBe(0);
+      expect(io2.stdout.trim()).toBe("branch_pr");
+    } finally {
+      io2.restore();
+    }
+  });
+
+  it("mode set rejects invalid values", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["mode", "set", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane mode set");
+    } finally {
+      io.restore();
+    }
+  });
 });

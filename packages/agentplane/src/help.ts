@@ -6,8 +6,8 @@ export function renderHelp(): string {
     "  agentplane [--root <path>] [--json] <namespace> <command> [options]",
     "  agentplane [--root <path>] [--json] <command> [options]",
     "",
-    "Core namespaces (implemented in this prototype): config",
-    "Core namespaces (planned): task, mode, ide, backend, recipe",
+    "Core namespaces (implemented in this prototype): config, mode",
+    "Core namespaces (planned): task, ide, backend, recipe",
     "",
     "Flags:",
     "  --help, -h     Show help",
@@ -17,6 +17,10 @@ export function renderHelp(): string {
     "Config commands:",
     "  agentplane config show",
     "  agentplane config set <key> <value>",
+    "",
+    "Mode commands:",
+    "  agentplane mode get",
+    "  agentplane mode set <direct|branch_pr>",
     "",
   ].join("\n");
 }
