@@ -1,6 +1,8 @@
+import { execFile } from "node:child_process";
 import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
@@ -41,7 +43,9 @@ function captureStdIO() {
 
 async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+  const execFileAsync = promisify(execFile);
   await mkdir(path.join(root, ".git"), { recursive: true });
+  await execFileAsync("git", ["init", "-q"], { cwd: root });
   return root;
 }
 
@@ -546,6 +550,39 @@ describe("runCli", () => {
     expect(Array.isArray(parsed.tasks)).toBe(true);
     expect(typeof parsed.meta.checksum).toBe("string");
     expect(parsed.meta.checksum.length).toBeGreaterThan(0);
+  });
+
+  it("branch base get returns default when not pinned", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "base", "get", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("main");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("branch base set writes git config and returns value", async () => {
+    const root = await mkGitRepoRoot();
+    const io1 = captureStdIO();
+    try {
+      const code1 = await runCli(["branch", "base", "set", "develop", "--root", root]);
+      expect(code1).toBe(0);
+      expect(io1.stdout.trim()).toBe("develop");
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["branch", "base", "get", "--root", root]);
+      expect(code2).toBe(0);
+      expect(io2.stdout.trim()).toBe("develop");
+    } finally {
+      io2.restore();
+    }
   });
 
   it("task lint reports OK for a valid export", async () => {

@@ -57,3 +57,5 @@ export {
   readTasksExport,
   type TasksLintResult,
 } from "./tasks-lint.js";
+
+export { getBaseBranch, getPinnedBaseBranch, setPinnedBaseBranch } from "./base-branch.js";

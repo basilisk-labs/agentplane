@@ -3,6 +3,8 @@ import path from "node:path";
 
 import {
   createTask,
+  getBaseBranch,
+  setPinnedBaseBranch,
   listTasks,
   lintTasksFile,
   loadConfig,
@@ -358,6 +360,40 @@ async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promis
   }
 }
 
+const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
+
+async function cmdBranchBaseGet(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const value = await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    process.stdout.write(`${value}\n`);
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "branch base get", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdBranchBaseSet(opts: {
+  cwd: string;
+  rootOverride?: string;
+  value: string;
+}): Promise<number> {
+  const trimmed = opts.value.trim();
+  if (trimmed.length === 0) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+  }
+  try {
+    const value = await setPinnedBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      value: trimmed,
+    });
+    process.stdout.write(`${value}\n`);
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "branch base set", root: opts.rootOverride ?? null });
+  }
+}
+
 const TASK_DOC_SET_USAGE =
   "Usage: agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)";
 
@@ -550,6 +586,24 @@ export async function runCli(argv: string[]): Promise<number> {
         taskId,
         args: restArgs,
       });
+    }
+
+    if (namespace === "branch" && command === "base") {
+      const [subcommand, value] = args;
+      if (subcommand === "get") {
+        return await cmdBranchBaseGet({ cwd: process.cwd(), rootOverride: globals.root });
+      }
+      if (subcommand === "set") {
+        if (!value) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+        }
+        return await cmdBranchBaseSet({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          value,
+        });
+      }
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
     }
 
     process.stderr.write("Not implemented yet. Run `agentplane --help`.\n");
