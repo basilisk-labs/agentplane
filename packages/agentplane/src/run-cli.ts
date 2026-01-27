@@ -1,5 +1,7 @@
-import { readFile } from "node:fs/promises";
+import { execFile } from "node:child_process";
+import { access, chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import {
   createTask,
@@ -23,6 +25,8 @@ import {
 import { CliError, formatJsonError } from "./errors.js";
 import { renderHelp } from "./help.js";
 import { getVersion } from "./version.js";
+
+const execFileAsync = promisify(execFile);
 
 type ParsedArgs = {
   help: boolean;
@@ -386,6 +390,148 @@ function suggestAllowPrefixes(paths: string[]): string[] {
   return [...out].toSorted((a, b) => a.localeCompare(b));
 }
 
+const HOOK_MARKER = "agentplane-hook";
+const SHIM_MARKER = "agentplane-hook-shim";
+const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push"] as const;
+
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isPathWithin(parent: string, candidate: string): boolean {
+  const rel = path.relative(parent, candidate);
+  return rel === "" || (!rel.startsWith("..") && !path.isAbsolute(rel));
+}
+
+async function gitRevParse(cwd: string, args: string[]): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["rev-parse", ...args], { cwd });
+  const trimmed = stdout.trim();
+  if (!trimmed) throw new Error("Failed to resolve git path");
+  return trimmed;
+}
+
+async function gitCurrentBranch(cwd: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], { cwd });
+  const trimmed = stdout.trim();
+  if (!trimmed) throw new Error("Failed to resolve git branch");
+  return trimmed;
+}
+
+async function resolveGitHooksDir(cwd: string): Promise<string> {
+  const repoRoot = await gitRevParse(cwd, ["--show-toplevel"]);
+  const commonDirRaw = await gitRevParse(cwd, ["--git-common-dir"]);
+  const hooksRaw = await gitRevParse(cwd, ["--git-path", "hooks"]);
+  const commonDir = path.resolve(
+    path.isAbsolute(commonDirRaw) ? commonDirRaw : path.join(repoRoot, commonDirRaw),
+  );
+  const hooksDir = path.resolve(
+    path.isAbsolute(hooksRaw) ? hooksRaw : path.join(repoRoot, hooksRaw),
+  );
+  const resolvedRoot = path.resolve(repoRoot);
+
+  if (!isPathWithin(resolvedRoot, hooksDir) && !isPathWithin(commonDir, hooksDir)) {
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: [
+        "Refusing to manage git hooks outside the repository.",
+        `hooks_path=${hooksDir}`,
+        `repo_root=${resolvedRoot}`,
+        `common_dir=${commonDir}`,
+        "Fix:",
+        "  1) Use a repo-relative core.hooksPath (e.g., .git/hooks)",
+        "  2) Re-run `agentplane hooks install`",
+      ].join("\n"),
+    });
+  }
+  return hooksDir;
+}
+
+async function fileIsManaged(filePath: string, marker: string): Promise<boolean> {
+  try {
+    const content = await readFile(filePath, "utf8");
+    return content.includes(marker);
+  } catch {
+    return false;
+  }
+}
+
+function hookScriptText(hook: (typeof HOOK_NAMES)[number]): string {
+  return [
+    "#!/usr/bin/env sh",
+    `# ${HOOK_MARKER} (do not edit)`,
+    "set -e",
+    'ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"',
+    'if [ -z "$ROOT" ]; then',
+    '  echo "agentplane hooks: unable to resolve repo root" >&2',
+    "  exit 1",
+    "fi",
+    'exec "$ROOT/.agentplane/bin/agentplane" hooks run ' + hook + ' "$@"',
+    "",
+  ].join("\n");
+}
+
+function shimScriptText(): string {
+  return [
+    "#!/usr/bin/env sh",
+    `# ${SHIM_MARKER} (do not edit)`,
+    "set -e",
+    'ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"',
+    'if [ -z "$ROOT" ]; then',
+    '  echo "agentplane shim: unable to resolve repo root" >&2',
+    "  exit 1",
+    "fi",
+    'if [ -f "$ROOT/packages/agentplane/dist/cli.js" ]; then',
+    "  if command -v node >/dev/null 2>&1; then",
+    '    exec node "$ROOT/packages/agentplane/bin/agentplane.js" "$@"',
+    "  fi",
+    "fi",
+    "if command -v bun >/dev/null 2>&1; then",
+    '  exec bun "$ROOT/packages/agentplane/src/cli.ts" "$@"',
+    "fi",
+    'echo "agentplane shim: bun or built dist required" >&2',
+    "exit 1",
+    "",
+  ].join("\n");
+}
+
+async function ensureShim(agentplaneDir: string, gitRoot: string): Promise<void> {
+  const shimDir = path.join(agentplaneDir, "bin");
+  const shimPath = path.join(shimDir, "agentplane");
+  await mkdir(shimDir, { recursive: true });
+  if (await fileExists(shimPath)) {
+    const managed = await fileIsManaged(shimPath, SHIM_MARKER);
+    if (!managed) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `Refusing to overwrite existing shim: ${path.relative(gitRoot, shimPath)}`,
+      });
+    }
+  }
+  await writeFile(shimPath, shimScriptText(), "utf8");
+  await chmod(shimPath, 0o755);
+}
+
+function readCommitSubject(message: string): string {
+  for (const line of message.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    return trimmed;
+  }
+  return "";
+}
+
+function subjectHasSuffix(subject: string, suffixes: string[]): boolean {
+  const lowered = subject.toLowerCase();
+  return suffixes.some((suffix) => suffix && lowered.includes(suffix.toLowerCase()));
+}
+
 async function cmdGuardClean(opts: { cwd: string; rootOverride?: string }): Promise<number> {
   try {
     const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
@@ -496,6 +642,194 @@ async function cmdGuardCommit(opts: {
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "guard commit", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdHooksInstall(opts: {
+  cwd: string;
+  rootOverride?: string;
+  quiet: boolean;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const hooksDir = await resolveGitHooksDir(resolved.gitRoot);
+    await mkdir(hooksDir, { recursive: true });
+    await mkdir(resolved.agentplaneDir, { recursive: true });
+    await ensureShim(resolved.agentplaneDir, resolved.gitRoot);
+
+    for (const hook of HOOK_NAMES) {
+      const hookPath = path.join(hooksDir, hook);
+      if (await fileExists(hookPath)) {
+        const managed = await fileIsManaged(hookPath, HOOK_MARKER);
+        if (!managed) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_GIT",
+            message: `Refusing to overwrite existing hook: ${path.relative(resolved.gitRoot, hookPath)}`,
+          });
+        }
+      }
+      await writeFile(hookPath, hookScriptText(hook), "utf8");
+      await chmod(hookPath, 0o755);
+    }
+
+    if (!opts.quiet) {
+      process.stdout.write(`${path.relative(resolved.gitRoot, hooksDir)}\n`);
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "hooks install", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdHooksUninstall(opts: {
+  cwd: string;
+  rootOverride?: string;
+  quiet: boolean;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const hooksDir = await resolveGitHooksDir(resolved.gitRoot);
+    let removed = 0;
+    for (const hook of HOOK_NAMES) {
+      const hookPath = path.join(hooksDir, hook);
+      if (!(await fileExists(hookPath))) continue;
+      const managed = await fileIsManaged(hookPath, HOOK_MARKER);
+      if (!managed) continue;
+      await rm(hookPath, { force: true });
+      removed++;
+    }
+    if (!opts.quiet) {
+      process.stdout.write(removed > 0 ? "OK\n" : "No agentplane hooks found\n");
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "hooks uninstall", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdHooksRun(opts: {
+  cwd: string;
+  rootOverride?: string;
+  hook: (typeof HOOK_NAMES)[number];
+  args: string[];
+}): Promise<number> {
+  try {
+    if (opts.hook === "commit-msg") {
+      const messagePath = opts.args[0];
+      if (!messagePath) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Missing commit message file",
+        });
+      }
+      const raw = await readFile(messagePath, "utf8");
+      const subject = readCommitSubject(raw);
+      if (!subject) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: "Commit message subject is empty",
+        });
+      }
+      const taskId = (process.env.AGENT_PLANE_TASK_ID ?? "").trim();
+      if (taskId) {
+        const suffix = taskId.split("-").at(-1) ?? "";
+        if (!subject.includes(taskId) && (suffix.length === 0 || !subject.includes(suffix))) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_GIT",
+            message: "Commit subject must include task id or suffix",
+          });
+        }
+        return 0;
+      }
+
+      const tasks = await listTasks({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+      const suffixes = tasks.map((task) => task.id.split("-").at(-1) ?? "").filter(Boolean);
+      if (suffixes.length === 0) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: "No task IDs available to validate commit subject",
+        });
+      }
+      if (!subjectHasSuffix(subject, suffixes)) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: "Commit subject must mention a task suffix",
+        });
+      }
+      return 0;
+    }
+
+    if (opts.hook === "pre-commit") {
+      const staged = await getStagedFiles({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      if (staged.length === 0) return 0;
+      const allowTasks = (process.env.AGENT_PLANE_ALLOW_TASKS ?? "").trim() === "1";
+      const allowBase = (process.env.AGENT_PLANE_ALLOW_BASE ?? "").trim() === "1";
+
+      const resolved = await resolveProject({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      const loaded = await loadConfig(resolved.agentplaneDir);
+      const tasksPath = loaded.config.paths.tasks_path;
+      const tasksStaged = staged.includes(tasksPath);
+      const nonTasks = staged.filter((entry) => entry !== tasksPath);
+
+      if (tasksStaged && !allowTasks) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: `${tasksPath} is protected by agentplane hooks (set AGENT_PLANE_ALLOW_TASKS=1 to override)`,
+        });
+      }
+
+      if (loaded.config.workflow_mode === "branch_pr") {
+        const baseBranch = await getBaseBranch({
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride ?? null,
+        });
+        const currentBranch = await gitCurrentBranch(resolved.gitRoot);
+        if (tasksStaged && currentBranch !== baseBranch) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_GIT",
+            message: `${tasksPath} commits are allowed only on ${baseBranch} in branch_pr mode`,
+          });
+        }
+        if (nonTasks.length > 0 && currentBranch === baseBranch && !allowBase) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_GIT",
+            message: `Code commits are forbidden on ${baseBranch} in branch_pr mode`,
+          });
+        }
+      }
+      return 0;
+    }
+
+    if (opts.hook === "pre-push") {
+      return 0;
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: `hooks run ${opts.hook}`, root: opts.rootOverride ?? null });
   }
 }
 
@@ -832,6 +1166,40 @@ export async function runCli(argv: string[]): Promise<number> {
         exitCode: 2,
         code: "E_USAGE",
         message: "Usage: agentplane guard <subcommand>",
+      });
+    }
+
+    if (namespace === "hooks") {
+      const subcommand = command;
+      const restArgs = args;
+      if (subcommand === "install") {
+        const quiet = restArgs.includes("--quiet");
+        return await cmdHooksInstall({ cwd: process.cwd(), rootOverride: globals.root, quiet });
+      }
+      if (subcommand === "uninstall") {
+        const quiet = restArgs.includes("--quiet");
+        return await cmdHooksUninstall({ cwd: process.cwd(), rootOverride: globals.root, quiet });
+      }
+      if (subcommand === "run") {
+        const hook = restArgs[0] as (typeof HOOK_NAMES)[number] | undefined;
+        if (!hook || !HOOK_NAMES.includes(hook)) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Usage: agentplane hooks run <hook>",
+          });
+        }
+        return await cmdHooksRun({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          hook,
+          args: restArgs.slice(1),
+        });
+      }
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Usage: agentplane hooks install|uninstall",
       });
     }
 
