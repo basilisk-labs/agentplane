@@ -883,6 +883,51 @@ describe("runCli", () => {
     }
   });
 
+  it("guard commit requires a message", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "commit", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane guard commit");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit rejects unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF guard",
+        "--nope",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane guard commit");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard rejects unknown subcommands", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane guard");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("commit wrapper creates a commit with allowlist", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -967,11 +1012,98 @@ describe("runCli", () => {
     }
   });
 
+  it("commit wrapper supports --allow-base and --require-clean", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "base.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF allow base",
+        "--allow",
+        "base.txt",
+        "--allow-base",
+        "--require-clean",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("commit wrapper supports --allow-tasks flag", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "note.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "note.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF allow tasks",
+        "--allow",
+        "note.txt",
+        "--allow-tasks",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("commit wrapper requires a message", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
     try {
       const code = await runCli(["commit", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane commit");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("commit wrapper requires a task id", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["commit", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane commit");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("commit wrapper rejects unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit",
+        "--nope",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage: agentplane commit");
     } finally {
@@ -993,6 +1125,8 @@ describe("runCli", () => {
 
   it("start requires a task id", async () => {
     const root = await mkGitRepoRoot();
+    const previous = process.env.AGENT_PLANE_TASK_ID;
+    delete process.env.AGENT_PLANE_TASK_ID;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -1008,6 +1142,7 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Usage: agentplane start");
     } finally {
       io.restore();
+      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
     }
   });
 
@@ -1078,6 +1213,56 @@ describe("runCli", () => {
       expect(code).toBe(0);
     } finally {
       io.restore();
+    }
+  });
+
+  it("start uses env task id when omitted", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Env start task",
+        "--description",
+        "Start uses env task id",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const previous = process.env.AGENT_PLANE_TASK_ID;
+    process.env.AGENT_PLANE_TASK_ID = taskId;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "start",
+        "--author",
+        "CODER",
+        "--body",
+        "Start: use env task id for start command with required prefix and length.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
+      else delete process.env.AGENT_PLANE_TASK_ID;
     }
   });
 
@@ -1753,6 +1938,340 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("No changes matched the allowed prefixes");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("block updates status and appends comment", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Block task",
+        "--description",
+        "Block command updates status",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "block",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Blocked: waiting on upstream API response to unblock direct workflow testing.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ blocked");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.status).toBe("BLOCKED");
+    expect(task.frontmatter.comments.at(-1)?.author).toBe("CODER");
+  });
+
+  it("block uses env task id when omitted", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Env block task",
+        "--description",
+        "Block uses env task id",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const previous = process.env.AGENT_PLANE_TASK_ID;
+    process.env.AGENT_PLANE_TASK_ID = taskId;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "block",
+        "--author",
+        "CODER",
+        "--body",
+        "Blocked: waiting on upstream API response to unblock env task id flow.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
+      else delete process.env.AGENT_PLANE_TASK_ID;
+    }
+  });
+
+  it("block requires --author and --body", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["block", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane block");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("block requires a task id when env is unset", async () => {
+    const root = await mkGitRepoRoot();
+    const previous = process.env.AGENT_PLANE_TASK_ID;
+    delete process.env.AGENT_PLANE_TASK_ID;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "block",
+        "--author",
+        "CODER",
+        "--body",
+        "Blocked: missing task id should trigger usage error in block.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane block");
+    } finally {
+      io.restore();
+      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
+    }
+  });
+
+  it("block rejects unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "block",
+        "202601010101-ABCDEF",
+        "--author",
+        "CODER",
+        "--body",
+        "Blocked: test unknown flag handling for block command errors.",
+        "--nope",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane block");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("finish marks done and records commit metadata", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Finish task",
+        "--description",
+        "Finish command updates commit metadata",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "bun run ci",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: direct workflow finish updates export and lint with commit metadata present.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ finished");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
+    expect(task.frontmatter.commit?.hash).toBeTruthy();
+    const tasksJson = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
+    expect(tasksJson).toContain(taskId);
+  });
+
+  it("finish uses env task id when omitted", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Env finish task",
+        "--description",
+        "Finish uses env task id",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const previous = process.env.AGENT_PLANE_TASK_ID;
+    process.env.AGENT_PLANE_TASK_ID = taskId;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: finish with env task id should record commit metadata and close task.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
+      else delete process.env.AGENT_PLANE_TASK_ID;
+    }
+  });
+
+  it("finish requires --author and --body", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["finish", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane finish");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("finish requires a task id when env is unset", async () => {
+    const root = await mkGitRepoRoot();
+    const previous = process.env.AGENT_PLANE_TASK_ID;
+    delete process.env.AGENT_PLANE_TASK_ID;
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: missing task id should trigger usage error in finish command.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane finish");
+    } finally {
+      io.restore();
+      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
+    }
+  });
+
+  it("finish rejects unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        "202601010101-ABCDEF",
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: test unknown flag handling for finish command errors in direct mode.",
+        "--nope",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane finish");
     } finally {
       io.restore();
     }
