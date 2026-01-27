@@ -2,28 +2,45 @@
   "$schema": "https://mintlify.com/docs.json",
   "name": "Agent Plane",
   "theme": "mint",
-  "navigation": [
+  "description": "Offline-first workflow framework for using OpenAI Codex in your IDE.",
+  "logo": {
+    "light": "/assets/agentplane.svg",
+    "dark": "/assets/agentplane.svg"
+  },
+  "favicon": "/assets/agentplane-favicon.svg",
+  "colors": {
+    "primary": "#0F766E"
+  },
+  "topbarLinks": [
     {
-      "group": "Getting Started",
-      "pages": ["index", "overview", "prerequisites", "setup"]
-    },
-    {
-      "group": "Concepts",
-      "pages": [
-        "architecture",
-        "workflow",
-        "agents",
-        "tasks-and-backends",
-        "branching-and-pr-artifacts"
-      ]
-    },
-    {
-      "group": "Reference",
-      "pages": ["commands", "cli-contract", "recipes-spec", "code-quality"]
-    },
-    {
-      "group": "Help",
-      "pages": ["troubleshooting", "glossary", "redmine"]
+      "name": "GitHub",
+      "url": "https://github.com/basilisk-labs/agentplane"
     }
-  ]
+  ],
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": ["index", "overview", "prerequisites", "setup"]
+      },
+      {
+        "group": "Concepts",
+        "pages": [
+          "architecture",
+          "workflow",
+          "agents",
+          "tasks-and-backends",
+          "branching-and-pr-artifacts"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": ["commands", "cli-contract", "recipes-spec", "code-quality"]
+      },
+      {
+        "group": "Help",
+        "pages": ["troubleshooting", "glossary", "redmine"]
+      }
+    ]
+  }
 }

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="64" viewBox="0 0 320 64" fill="none">
+  <rect x="0" y="0" width="320" height="64" rx="16" fill="#0F766E" />
+  <circle cx="36" cy="32" r="18" fill="white" opacity="0.95" />
+  <path
+    d="M28 40V24h10.2c4.8 0 7.8 2.4 7.8 6.2 0 3.9-3 6.3-7.8 6.3H32.8V40H28Zm4.8-7.2h5.2c2.6 0 4-1 4-2.6 0-1.5-1.4-2.5-4-2.5h-5.2v5.1Z"
+    fill="#0F766E"
+  />
+  <text x="72" y="40" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" font-size="22" font-weight="700" fill="white">
+    Agent Plane
+  </text>
+</svg>
+
