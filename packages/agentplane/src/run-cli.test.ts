@@ -1127,6 +1127,9 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
 
+    const prev = process.env.AGENT_PLANE_ALLOW_BASE;
+    delete process.env.AGENT_PLANE_ALLOW_BASE;
+
     const io = captureStdIO();
     try {
       const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
@@ -1134,6 +1137,8 @@ describe("runCli", () => {
       expect(io.stderr).toContain("forbidden on main");
     } finally {
       io.restore();
+      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_BASE;
+      else process.env.AGENT_PLANE_ALLOW_BASE = prev;
     }
   });
 
