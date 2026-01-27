@@ -1,6 +1,11 @@
 export const CORE_VERSION = "0.0.0";
 
-export { findGitRoot, resolveProject, type ResolvedProject, type ResolveProjectOptions } from "./project-root.js";
+export {
+  findGitRoot,
+  resolveProject,
+  type ResolvedProject,
+  type ResolveProjectOptions,
+} from "./project-root.js";
 
 export {
   defaultConfig,
@@ -11,5 +16,5 @@ export {
   type AgentplaneConfig,
   type LoadedConfig,
   type StatusCommitPolicy,
-  type WorkflowMode
+  type WorkflowMode,
 } from "./config.js";

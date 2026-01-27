@@ -17,6 +17,6 @@ export function renderHelp(): string {
     "Config commands:",
     "  agentplane config show",
     "  agentplane config set <key> <value>",
-    ""
+    "",
   ].join("\n");
 }

@@ -20,7 +20,15 @@
     "id_suffix_length_default": 6,
     "verify": { "required_tags": ["code", "backend", "frontend"] },
     "doc": {
-      "sections": ["Summary", "Context", "Scope", "Risks", "Verify Steps", "Rollback Plan", "Notes"],
+      "sections": [
+        "Summary",
+        "Context",
+        "Scope",
+        "Risks",
+        "Verify Steps",
+        "Rollback Plan",
+        "Notes"
+      ],
       "required_sections": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
     },
     "comments": {
@@ -29,8 +37,9 @@
       "verified": { "prefix": "Verified:", "min_chars": 60 }
     }
   },
-  "commit": { "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"] },
+  "commit": {
+    "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
+  },
   "tasks_backend": { "config_path": ".agentplane/backends/local/backend.json" },
   "closure_commit_requires_approval": false
 }
-

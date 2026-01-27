@@ -1,6 +1,7 @@
 # Redmine backend (Node.js v1)
 
 ## Summary
+
 Redmine is a canonical backend option for tasks. When enabled:
 
 - Redmine issues store the source of truth.
@@ -9,6 +10,7 @@ Redmine is a canonical backend option for tasks. When enabled:
 ## Enablement model (v1)
 
 Per `ROADMAP.md` (AP-039), Redmine support is implemented in core for parity, and a recipe can be used to:
+
 - add the backend config template under `.agentplane/backends/redmine/backend.json`
 - add optional Redmine-focused agents/scenarios
 
@@ -21,15 +23,18 @@ agentplane backend sync redmine --direction push|pull
 ```
 
 Conflict handling:
+
 - `--conflict diff|prefer-local|prefer-remote|fail`
 
 ## Environment variables (`.env`)
 
 Per `ROADMAP.md` (AP-040), `agentplane` autoloads `.env` from the repo root:
+
 - it must not override already-set environment variables
 - it uses a single, consistent parser
 
 Expected variables (see `.env.example`):
+
 - `CODEXSWARM_REDMINE_URL`
 - `CODEXSWARM_REDMINE_API_KEY`
 - `CODEXSWARM_REDMINE_PROJECT_ID`
@@ -37,7 +42,7 @@ Expected variables (see `.env.example`):
 
 ## Field mapping
 
-Task IDs map to a Redmine custom field (commonly named `task_id`) using the `YYYYMMDDHHMM-<RAND>` format. The rest of the task metadata (verify/commit/doc/comments/doc_version/doc_updated_*) is mapped according to the backend config template.
+Task IDs map to a Redmine custom field (commonly named `task_id`) using the `YYYYMMDDHHMM-<RAND>` format. The rest of the task metadata (verify/commit/doc/comments/doc*version/doc_updated*\*) is mapped according to the backend config template.
 
 ## Troubleshooting
 
@@ -45,5 +50,5 @@ Task IDs map to a Redmine custom field (commonly named `task_id`) using the `YYY
 - Missing/misconfigured custom fields: updates may fail or drop metadata; validate the backend config template.
 
 ## Legacy note
-The repository currently contains a legacy Python Redmine backend. This page documents the target Node.js v1 behavior.
 
+The repository currently contains a legacy Python Redmine backend. This page documents the target Node.js v1 behavior.

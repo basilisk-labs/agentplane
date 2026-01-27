@@ -45,6 +45,6 @@ export async function resolveProject(opts: ResolveProjectOptions): Promise<Resol
   }
   return {
     gitRoot,
-    agentplaneDir: path.join(gitRoot, ".agentplane")
+    agentplaneDir: path.join(gitRoot, ".agentplane"),
   };
 }

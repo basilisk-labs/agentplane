@@ -1,9 +1,11 @@
 # Documentation Index
 
 ## Purpose
+
 This is the entry point for Agent Plane documentation. The root `README.md` is a lightweight quickstart; use this page for the full guide and reading order.
 
 ## Document Map (Suggested Reading Order)
+
 1. Roadmap (source of truth): [`../ROADMAP.md`](../ROADMAP.md)
 2. Overview: [`01-overview.md`](01-overview.md)
 3. Prerequisites: [`02-prerequisites.md`](02-prerequisites.md)
@@ -20,11 +22,14 @@ This is the entry point for Agent Plane documentation. The root `README.md` is a
 14. Glossary: [`11-glossary.md`](11-glossary.md)
 
 ## Updates
+
 - `ROADMAP.md` defines the target Node.js v1 behavior; docs should follow it.
 - `docs/cli-contract.md` is the authoritative command surface for v1.
 
 ## Help
+
 If you are unsure which document applies, start with [`01-overview.md`](01-overview.md) and [`05-workflow.md`](05-workflow.md).
 
 ## Legacy note
+
 This repository still contains a legacy Python implementation under `.agent-plane/`. The documentation in `docs/` is written to describe the **target Node.js CLI** (`agentplane`) and the `.agentplane/` project layout.

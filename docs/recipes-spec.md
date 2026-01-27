@@ -3,6 +3,7 @@
 Recipes are **optional, content-first extensions** for `agentplane` projects. The core engine must work with zero installed recipes.
 
 This document defines:
+
 - Recipe archive layout (what gets installed)
 - `manifest.json` contract (fields, semantics)
 - `agentplane recipe …` CLI surface (minimum v1)
@@ -33,6 +34,7 @@ README.md      # optional: human docs
 The `manifest.json` file must validate against `schemas/recipe-manifest.schema.json`.
 
 High-level rules:
+
 - `id` is stable and lowercase (recommended: `viewer`, `redmine`, `qa-pack`).
 - `version` is SemVer.
 - `summary` is short (used in “list” output and `.agentplane/RECIPES.md` index).
@@ -51,6 +53,7 @@ Installing a recipe creates/updates:
 - `.agentplane/RECIPES.md` (a context-minimized index: `id` + `summary` + “what it solves”)
 
 Recommended `recipes.lock.json` fields (v1):
+
 - `schema_version: 1`
 - `recipes[]`: `{ id, version, sha256, source }`
 
@@ -68,14 +71,15 @@ Commands are namespaced under `agentplane recipe`:
 - `agentplane recipe list-remote` — list recipes from the remote catalog cache (explicit-network; cached).
 
 Optional but recommended in v1:
+
 - `agentplane recipe pin <id>@<version>` (or lockfile-only “pin” semantics)
 - `agentplane recipe refresh` (refresh remote catalog cache)
 
 ## 6) Permissions (v1)
 
 v1 does not sandbox recipe tools. Instead:
+
 - tool permissions MUST be declared in the manifest (informational)
 - the CLI MUST warn before executing a tool that declares network or filesystem write access
 
 Sandboxing is deferred to v2.
-

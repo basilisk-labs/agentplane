@@ -1,6 +1,7 @@
 # Tasks and Backends (Node.js v1)
 
 ## Summary
+
 Tasks are operated through `agentplane`, which routes reads/writes to the active backend. The backend decides the canonical store:
 
 - `local`: `.agentplane/tasks/` is canonical.
@@ -10,12 +11,13 @@ Tasks are operated through `agentplane`, which routes reads/writes to the active
 
 ## Routing model
 
-1) `agentplane` resolves the repo root and loads `.agentplane/config.json`.
-2) The config points to an active backend (`tasks_backend.config_path`).
-3) Writes go to the canonical backend, then the local cache is refreshed as needed.
-4) Sync is explicit: `agentplane backend sync <id>`.
+1. `agentplane` resolves the repo root and loads `.agentplane/config.json`.
+2. The config points to an active backend (`tasks_backend.config_path`).
+3. Writes go to the canonical backend, then the local cache is refreshed as needed.
+4. Sync is explicit: `agentplane backend sync <id>`.
 
 ## Task identity
+
 - ID format: `YYYYMMDDHHMM-<RAND>`
 - IDs are immutable once created.
 
@@ -28,6 +30,7 @@ Each task lives in:
 ```
 
 The README begins with YAML frontmatter; the v1 contract is represented as a JSON Schema in:
+
 - `packages/spec/schemas/task-readme-frontmatter.schema.json`
 
 ## Exported snapshot (`tasks.json`)
@@ -39,9 +42,11 @@ The exported view lives at:
 ```
 
 Schema:
+
 - `packages/spec/schemas/tasks-export.schema.json`
 
 Canonicalization rules (checksum stability) are described in:
+
 - `packages/spec/README.md`
 
 ## Sync and conflicts (remote backends)
@@ -60,13 +65,15 @@ Config file:
 ```
 
 Schema:
+
 - `packages/spec/schemas/config.schema.json`
 
 ## Commands reference
 
 The authoritative command surface is documented in:
+
 - `docs/cli-contract.md`
 
 ## Legacy note
-This repository still includes a Python backend implementation under `.agent-plane/` for the legacy toolchain. The target v1 system uses `.agentplane/` and `agentplane`.
 
+This repository still includes a Python backend implementation under `.agent-plane/` for the legacy toolchain. The target v1 system uses `.agentplane/` and `agentplane`.

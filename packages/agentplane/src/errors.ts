@@ -12,7 +12,12 @@ export class CliError extends Error {
   public readonly code: ErrorCode;
   public readonly context?: Record<string, unknown>;
 
-  constructor(opts: { exitCode: number; code: ErrorCode; message: string; context?: Record<string, unknown> }) {
+  constructor(opts: {
+    exitCode: number;
+    code: ErrorCode;
+    message: string;
+    context?: Record<string, unknown>;
+  }) {
     super(opts.message);
     this.exitCode = opts.exitCode;
     this.code = opts.code;
@@ -26,11 +31,10 @@ export function formatJsonError(err: CliError): string {
       error: {
         code: err.code,
         message: err.message,
-        context: err.context ?? undefined
-      }
+        context: err.context ?? undefined,
+      },
     },
     null,
-    2
+    2,
   );
 }
-

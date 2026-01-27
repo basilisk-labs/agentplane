@@ -21,7 +21,8 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
 
   const rest: string[] = [];
   for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i]!;
+    const arg = argv[i];
+    if (!arg) continue;
     if (arg === "--help" || arg === "-h") {
       help = true;
       continue;
@@ -36,7 +37,8 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
     }
     if (arg === "--root") {
       const next = argv[i + 1];
-      if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --root" });
+      if (!next)
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --root" });
       root = next;
       i++;
       continue;
@@ -62,7 +64,12 @@ function mapCoreError(err: unknown, context: Record<string, unknown>): CliError 
   }
 
   if (err instanceof SyntaxError) {
-    return new CliError({ exitCode: 3, code: "E_VALIDATION", message: `Invalid JSON: ${message}`, context });
+    return new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Invalid JSON: ${message}`,
+      context,
+    });
   }
 
   if (message.includes("schema_version") || message.startsWith("config.")) {
@@ -74,7 +81,10 @@ function mapCoreError(err: unknown, context: Record<string, unknown>): CliError 
 
 async function cmdConfigShow(opts: { cwd: string; rootOverride?: string }): Promise<number> {
   try {
-    const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
     const loaded = await loadConfig(resolved.agentplaneDir);
     process.stdout.write(`${JSON.stringify(loaded.raw, null, 2)}\n`);
     return 0;
@@ -83,17 +93,31 @@ async function cmdConfigShow(opts: { cwd: string; rootOverride?: string }): Prom
   }
 }
 
-async function cmdConfigSet(opts: { cwd: string; rootOverride?: string; key: string; value: string }): Promise<number> {
+async function cmdConfigSet(opts: {
+  cwd: string;
+  rootOverride?: string;
+  key: string;
+  value: string;
+}): Promise<number> {
   try {
-    const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
     const loaded = await loadConfig(resolved.agentplaneDir);
     const raw = { ...loaded.raw };
     setByDottedKey(raw, opts.key, opts.value);
     await saveConfig(resolved.agentplaneDir, raw);
-    process.stdout.write(`${path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "config.json"))}\n`);
+    process.stdout.write(
+      `${path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "config.json"))}\n`,
+    );
     return 0;
   } catch (err) {
-    throw mapCoreError(err, { command: "config set", key: opts.key, root: opts.rootOverride ?? null });
+    throw mapCoreError(err, {
+      command: "config set",
+      key: opts.key,
+      root: opts.rootOverride ?? null,
+    });
   }
 }
 
@@ -120,7 +144,11 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "config" && command === "set") {
       const [key, value] = args;
       if (!key || value === undefined) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Usage: agentplane config set <key> <value>" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Usage: agentplane config set <key> <value>",
+        });
       }
       return cmdConfigSet({ cwd: process.cwd(), rootOverride: globals.root, key, value });
     }

@@ -1,28 +1,35 @@
 # Troubleshooting
 
 ## tasks.json mismatch or stale data
+
 - Cause: `tasks.json` is an exported view and may be stale.
 - Fix: re-run `agentplane task export` (writes `.agentplane/tasks.json`).
 
 ## Dirty working tree before commit
+
 - Cause: unrelated edits or forgotten files.
 - Fix: `git status --short`, then stash or commit only what belongs to the task.
 
 ## Outdated task state
+
 - Cause: viewing stale data from cache or a previous export.
 - Fix: re-run `agentplane task list` or `agentplane task show`, then sync if needed.
 
 ## Redmine unreachable
+
 - Cause: network outage or API credentials expired.
 - Fix: keep working against the offline cache (when configured), then run `agentplane backend sync redmine` once connectivity returns.
 
 ## Redmine sync conflicts
+
 - Cause: local cache diverged from Redmine.
 - Fix: re-run sync and choose a conflict strategy (`--conflict diff|prefer-local|prefer-remote|fail`) after reviewing the diff.
 
 ## agentplane command failures
+
 - Cause: running outside a git repo, or missing Node.js 20+.
 - Fix: run inside a git repository (or pass `--root <path>`) and ensure Node.js 20+ is available.
 
 ## IDE or plugin stops responding
+
 - Fix: restart the IDE or reload the project, then re-run the last command manually.

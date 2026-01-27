@@ -3,6 +3,7 @@
 This package hosts **versioned specifications** (JSON Schemas + examples) for `agentplane`.
 
 v1 focuses on stabilizing:
+
 - `.agentplane/config.json`
 - Task README frontmatter (YAML, represented here as a JSON object schema)
 - `tasks.json` export snapshot (including checksum metadata)
@@ -13,6 +14,7 @@ v1 focuses on stabilizing:
 `tasks.json` is a checksum-bearing export. The checksum is computed over a canonical JSON serialization.
 
 v1 canonicalization rules:
+
 - UTF-8 encoding
 - `\n` line endings
 - Object keys are sorted recursively
@@ -36,4 +38,3 @@ packages/spec/
     tasks.json
     pr-meta.json
 ```
-

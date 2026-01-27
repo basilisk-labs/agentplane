@@ -14,4 +14,3 @@ test("setByDottedKey sets nested fields and preserves object shape", () => {
   assert.equal(validated.workflow_mode, "branch_pr");
   assert.equal(validated.paths.tasks_path, ".agentplane/tasks.json");
 });
-

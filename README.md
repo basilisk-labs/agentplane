@@ -51,4 +51,3 @@ node packages/agentplane/dist/cli.js --help
 - `packages/spec/`: v1 schemas + examples
 - `docs/`: Node-first documentation
 - `.agent-plane/`: legacy Python toolchain (deprecated)
-

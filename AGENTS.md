@@ -86,10 +86,10 @@ shared_state:
 - All staging/commits run through agentctl (guard commit/commit); use comment-driven flags only when you intend to create a commit. Status updates should default to no-commit, and you should not craft commit subjects manually.
 - Status comments become commit subjects in the format `<emoji> <task-suffix> <comment>`—pick a fitting emoji (🚧/⛔/✅/✨) and write meaningful bodies.
 - Default to a task-branch cadence (planning on the pinned base branch, execution on a task branch, closure on the pinned base branch):
-  1) **Planning (base branch)**: add/update the task via `agentctl` + create/update `.agent-plane/tasks/<task-id>/README.md` (skeleton/spec) and commit them together.
-  2) **Implementation (task branch + worktree)**: ship code/tests/docs changes in the task branch worktree and keep the tracked PR artifact up to date under `.agent-plane/tasks/<task-id>/pr/`.
-  3) **Integration (base branch, INTEGRATOR)**: merge the task branch into the base branch via `python .agent-plane/agentctl.py integrate …` (optionally running verify and capturing output in `.agent-plane/tasks/<task-id>/pr/verify.log`).
-  4) **Verification/closure (base branch, INTEGRATOR)**: update `.agent-plane/tasks/<task-id>/README.md`, mark the task `DONE` via `python .agent-plane/agentctl.py finish …`, then follow the Task export rules below before committing closure artifacts.
+  1. **Planning (base branch)**: add/update the task via `agentctl` + create/update `.agent-plane/tasks/<task-id>/README.md` (skeleton/spec) and commit them together.
+  2. **Implementation (task branch + worktree)**: ship code/tests/docs changes in the task branch worktree and keep the tracked PR artifact up to date under `.agent-plane/tasks/<task-id>/pr/`.
+  3. **Integration (base branch, INTEGRATOR)**: merge the task branch into the base branch via `python .agent-plane/agentctl.py integrate …` (optionally running verify and capturing output in `.agent-plane/tasks/<task-id>/pr/verify.log`).
+  4. **Verification/closure (base branch, INTEGRATOR)**: update `.agent-plane/tasks/<task-id>/README.md`, mark the task `DONE` via `python .agent-plane/agentctl.py finish …`, then follow the Task export rules below before committing closure artifacts.
 - Before creating the final **verification/closure** commit, check `closure_commit_requires_approval` in `.agent-plane/config.json`; if true, ask the user to approve it, otherwise proceed without confirmation.
 - Do not finish a task until `.agent-plane/tasks/<task-id>/README.md` is fully filled in (no placeholder `...`).
 - Avoid dedicated commits for intermediate status-only changes (e.g., a standalone "start/DOING" commit). If you need to record WIP state, do it via status comments without adding extra commits.
@@ -185,13 +185,19 @@ Schema (JSON):
       "owner": "human",
       "tags": ["codextown", "normalizer"],
       "verify": ["python -m pytest -q"],
-      "comments": [
-        { "author": "owner", "body": "Context, review notes, or follow-ups." }
-      ],
-      "commit": { "hash": "abc123...", "message": "🛠️ ABCDE add detailed changelog-style description here..." }
+      "comments": [{ "author": "owner", "body": "Context, review notes, or follow-ups." }],
+      "commit": {
+        "hash": "abc123...",
+        "message": "🛠️ ABCDE add detailed changelog-style description here..."
+      }
     }
   ],
-  "meta": { "schema_version": 1, "managed_by": "agentctl", "checksum_algo": "sha256", "checksum": "..." }
+  "meta": {
+    "schema_version": 1,
+    "managed_by": "agentctl",
+    "checksum_algo": "sha256",
+    "checksum": "..."
+  }
 }
 ```
 
@@ -253,18 +259,10 @@ All agents, including ORCHESTRATOR, are defined as JSON files inside the `.agent
   "id": "AGENT_ID",
   "role": "One-line role summary.",
   "description": "Optional longer description of the agent.",
-  "inputs": [
-    "Describe the required inputs."
-  ],
-  "outputs": [
-    "Describe the outputs produced by this agent."
-  ],
-  "permissions": [
-    "RESOURCE: access mode or limitation."
-  ],
-  "workflow": [
-    "Step-by-step behavioural instructions."
-  ]
+  "inputs": ["Describe the required inputs."],
+  "outputs": ["Describe the outputs produced by this agent."],
+  "permissions": ["RESOURCE: access mode or limitation."],
+  "workflow": ["Step-by-step behavioural instructions."]
 }
 ```
 

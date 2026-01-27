@@ -18,16 +18,16 @@ agentplane [--root <path>] [--json] <command> [options]
 
 The CLI uses stable exit codes for common failure classes:
 
-| Code | Meaning |
-| ---: | --- |
-| 0 | Success |
-| 2 | Usage error (invalid args, missing required args) |
-| 3 | Validation error (schema/invariants) |
-| 4 | Filesystem / IO error |
-| 5 | Git / workflow guardrail error |
-| 6 | Backend error (local or remote backend) |
-| 7 | Network error (only for commands that explicitly allow network) |
-| 1 | Any other error (unexpected/unclassified) |
+| Code | Meaning                                                         |
+| ---: | --------------------------------------------------------------- |
+|    0 | Success                                                         |
+|    2 | Usage error (invalid args, missing required args)               |
+|    3 | Validation error (schema/invariants)                            |
+|    4 | Filesystem / IO error                                           |
+|    5 | Git / workflow guardrail error                                  |
+|    6 | Backend error (local or remote backend)                         |
+|    7 | Network error (only for commands that explicitly allow network) |
+|    1 | Any other error (unexpected/unclassified)                       |
 
 ## 3) `--json` error format
 
@@ -47,6 +47,7 @@ When `--json` is provided and an error occurs, the CLI prints a single JSON obje
 ```
 
 Rules:
+
 - JSON errors are written to stdout; human-readable diagnostics go to stderr only when `--json` is not set.
 - `error.code` is a stable string enum (`E_USAGE`, `E_VALIDATION`, `E_IO`, `E_GIT`, `E_BACKEND`, `E_NETWORK`, `E_INTERNAL`).
 - `context` is optional and must not include secrets.
@@ -54,11 +55,13 @@ Rules:
 ## 4) Namespaces and collision rules
 
 Reserved namespaces (v1):
+
 - `task`, `work`, `pr`, `branch`, `guard`, `hooks`, `commit`
 - `mode`, `config`, `verify`, `ready`, `integrate`, `cleanup`, `finish`, `start`, `block`
 - `ide`, `backend`, `recipe`, `scenario`, `upgrade`
 
 Collision resolution:
+
 - `sync` is reserved as a subcommand name in multiple domains and MUST be namespaced:
   - IDE entrypoints: `agentplane ide sync`
   - Backends: `agentplane backend sync <id>`
@@ -69,58 +72,58 @@ This table lists commands and required minimum flags. Implementation may add add
 
 ### 5.1 Core (offline-first)
 
-| Command | Purpose | Notes |
-| --- | --- | --- |
-| `agentplane init` | Initialize `.agentplane/` in a repo | Interactive by default; supports non‑TTY flags |
-| `agentplane config show` | Print effective project config | JSON output |
-| `agentplane config set <key> <value>` | Update project config | Dotted keys; `--json` for structured values |
-| `agentplane mode get` | Print workflow mode | `direct` \| `branch_pr` |
-| `agentplane mode set <mode>` | Change workflow mode | Must not lose task data |
-| `agentplane task <subcommand>` | Task CRUD + exports + doc tools | See 5.3 |
-| `agentplane start <task-id>` | Mark task `DOING` + comment | Comment required |
-| `agentplane block <task-id>` | Mark task `BLOCKED` + comment | Comment required |
-| `agentplane finish <task-id> [...]` | Mark task(s) `DONE` + commit metadata | Typically after code commit |
-| `agentplane verify <task-id>` | Run per-task verify commands | `--skip-if-unchanged` supported |
-| `agentplane ready <task-id>` | Readiness check (deps DONE) | Non-zero exit on not-ready |
-| `agentplane guard <subcommand>` | Staging/commit guardrails | See 5.4 |
-| `agentplane commit <task-id>` | Guarded `git commit` wrapper | Enforces commit policy |
-| `agentplane hooks install|uninstall` | Optional git hooks | Must be safe/idempotent |
-| `agentplane ide sync` | Generate IDE entrypoints from `AGENTS.md` | Cursor + Windsurf |
+| Command                               | Purpose                                   | Notes                                          |
+| ------------------------------------- | ----------------------------------------- | ---------------------------------------------- | ----------------------- |
+| `agentplane init`                     | Initialize `.agentplane/` in a repo       | Interactive by default; supports non‑TTY flags |
+| `agentplane config show`              | Print effective project config            | JSON output                                    |
+| `agentplane config set <key> <value>` | Update project config                     | Dotted keys; `--json` for structured values    |
+| `agentplane mode get`                 | Print workflow mode                       | `direct` \| `branch_pr`                        |
+| `agentplane mode set <mode>`          | Change workflow mode                      | Must not lose task data                        |
+| `agentplane task <subcommand>`        | Task CRUD + exports + doc tools           | See 5.3                                        |
+| `agentplane start <task-id>`          | Mark task `DOING` + comment               | Comment required                               |
+| `agentplane block <task-id>`          | Mark task `BLOCKED` + comment             | Comment required                               |
+| `agentplane finish <task-id> [...]`   | Mark task(s) `DONE` + commit metadata     | Typically after code commit                    |
+| `agentplane verify <task-id>`         | Run per-task verify commands              | `--skip-if-unchanged` supported                |
+| `agentplane ready <task-id>`          | Readiness check (deps DONE)               | Non-zero exit on not-ready                     |
+| `agentplane guard <subcommand>`       | Staging/commit guardrails                 | See 5.4                                        |
+| `agentplane commit <task-id>`         | Guarded `git commit` wrapper              | Enforces commit policy                         |
+| `agentplane hooks install             | uninstall`                                | Optional git hooks                             | Must be safe/idempotent |
+| `agentplane ide sync`                 | Generate IDE entrypoints from `AGENTS.md` | Cursor + Windsurf                              |
 
 ### 5.2 Explicit-network commands
 
-| Command | Purpose | Network |
-| --- | --- | --- |
-| `agentplane upgrade` | Update embedded templates/bundles from upstream | Yes |
-| `agentplane recipe list-remote` | List recipes from remote index | Yes |
-| `agentplane recipe install <id>` | Install recipe by id from remote index | Yes |
+| Command                          | Purpose                                         | Network |
+| -------------------------------- | ----------------------------------------------- | ------- |
+| `agentplane upgrade`             | Update embedded templates/bundles from upstream | Yes     |
+| `agentplane recipe list-remote`  | List recipes from remote index                  | Yes     |
+| `agentplane recipe install <id>` | Install recipe by id from remote index          | Yes     |
 
 ### 5.3 `task` namespace
 
 Minimum subcommands (v1):
 
-| Command | Purpose |
-| --- | --- |
-| `agentplane task new` | Create task with auto-generated id |
-| `agentplane task update` | Update a task |
-| `agentplane task list` | List tasks |
-| `agentplane task show <task-id>` | Show one task |
-| `agentplane task search <query>` | Search tasks |
-| `agentplane task comment <task-id>` | Add a comment |
-| `agentplane task set-status <task-id> <status>` | Update status with readiness checks |
-| `agentplane task doc show|set <task-id>` | Task README metadata + section updates |
-| `agentplane task lint` | Validate export invariants + checksum |
-| `agentplane task export` | Export `tasks.json` snapshot |
+| Command                                         | Purpose                               |
+| ----------------------------------------------- | ------------------------------------- | -------------------------------------- |
+| `agentplane task new`                           | Create task with auto-generated id    |
+| `agentplane task update`                        | Update a task                         |
+| `agentplane task list`                          | List tasks                            |
+| `agentplane task show <task-id>`                | Show one task                         |
+| `agentplane task search <query>`                | Search tasks                          |
+| `agentplane task comment <task-id>`             | Add a comment                         |
+| `agentplane task set-status <task-id> <status>` | Update status with readiness checks   |
+| `agentplane task doc show                       | set <task-id>`                        | Task README metadata + section updates |
+| `agentplane task lint`                          | Validate export invariants + checksum |
+| `agentplane task export`                        | Export `tasks.json` snapshot          |
 
 ### 5.4 `guard` namespace
 
 Minimum subcommands (v1):
 
-| Command | Purpose |
-| --- | --- |
-| `agentplane guard clean` | Fail if staged files exist |
-| `agentplane guard suggest-allow` | Suggest minimal allowlist prefixes for staged files |
-| `agentplane guard commit <task-id> -m <msg>` | Validate staged files + planned commit message |
+| Command                                      | Purpose                                             |
+| -------------------------------------------- | --------------------------------------------------- |
+| `agentplane guard clean`                     | Fail if staged files exist                          |
+| `agentplane guard suggest-allow`             | Suggest minimal allowlist prefixes for staged files |
+| `agentplane guard commit <task-id> -m <msg>` | Validate staged files + planned commit message      |
 
 ## 6) Compatibility notes
 

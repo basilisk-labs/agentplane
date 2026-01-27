@@ -75,5 +75,5 @@ node packages/agentplane/dist/cli.js --help
 ```
 
 ## Legacy note
-The repository contains legacy Python commands under `.agent-plane/`. This page intentionally documents the Node.js `agentplane` target per `ROADMAP.md`.
 
+The repository contains legacy Python commands under `.agent-plane/`. This page intentionally documents the Node.js `agentplane` target per `ROADMAP.md`.

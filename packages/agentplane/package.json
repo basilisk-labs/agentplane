@@ -12,7 +12,6 @@
     "test": "node --test"
   },
   "dependencies": {
-    "@agentplane/core": "workspace:*"
+    "@agentplane/core": "0.0.0"
   }
 }
-
