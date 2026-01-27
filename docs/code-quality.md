@@ -19,6 +19,28 @@ bun run coverage
 
 `bun run ci` is the recommended single command.
 
+## Enforcement
+
+### Local (git hooks)
+
+This repo installs a `pre-commit` hook via `lefthook` that runs:
+
+```bash
+bun run ci
+```
+
+Hooks are installed automatically on `bun install` (via the root `postinstall` script). If you ever need to reinstall them:
+
+```bash
+bun run hooks:install
+```
+
+> You can bypass hooks with `git commit --no-verify`, but it is strongly discouraged.
+
+### CI (GitHub Actions)
+
+GitHub Actions runs `bun run ci` on every pull request and on pushes to `main`.
+
 ## Tests
 
 - Any new behavior MUST include tests.
