@@ -390,6 +390,10 @@ const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <tex
 const FINISH_USAGE = "Usage: agentplane finish <task-id> --author <id> --body <text>";
 const WORK_START_USAGE =
   "Usage: agentplane work start <task-id> --agent <id> --slug <slug> --worktree";
+const PR_OPEN_USAGE = "Usage: agentplane pr open <task-id> --author <id> [--branch <name>]";
+const PR_UPDATE_USAGE = "Usage: agentplane pr update <task-id>";
+const PR_CHECK_USAGE = "Usage: agentplane pr check <task-id>";
+const PR_NOTE_USAGE = "Usage: agentplane pr note <task-id> --author <id> --body <text>";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
   if (prefix === "." || prefix === "") return true;
@@ -659,6 +663,109 @@ function validateWorkAgent(agent: string): void {
       message: "Agent id must be uppercase letters, numbers, or underscores",
     });
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function isIsoDate(value: unknown): boolean {
+  return typeof value === "string" && !Number.isNaN(Date.parse(value));
+}
+
+type PrMeta = {
+  schema_version: 1;
+  task_id: string;
+  branch?: string;
+  created_at: string;
+  updated_at: string;
+  last_verified_sha: string | null;
+  last_verified_at: string | null;
+  verify?: { status?: "pass" | "fail" | "skipped"; command?: string };
+};
+
+function parsePrMeta(raw: string, taskId: string): PrMeta {
+  const parsed = JSON.parse(raw) as unknown;
+  if (!isRecord(parsed)) throw new Error("pr/meta.json must be an object");
+  if (parsed.schema_version !== 1) throw new Error("pr/meta.json schema_version must be 1");
+  if (parsed.task_id !== taskId) throw new Error("pr/meta.json task_id mismatch");
+  if (!isIsoDate(parsed.created_at)) throw new Error("pr/meta.json created_at must be ISO");
+  if (!isIsoDate(parsed.updated_at)) throw new Error("pr/meta.json updated_at must be ISO");
+  return parsed as PrMeta;
+}
+
+function renderPrReviewTemplate(opts: {
+  author: string;
+  createdAt: string;
+  branch: string;
+}): string {
+  return [
+    "# PR Review",
+    "",
+    `Opened by ${opts.author} on ${opts.createdAt}`,
+    `Branch: ${opts.branch}`,
+    "",
+    "## Summary",
+    "",
+    "- ",
+    "",
+    "## Checklist",
+    "",
+    "- [ ] Tests added/updated",
+    "- [ ] Lint/format passes",
+    "- [ ] Docs updated",
+    "",
+    "## Handoff Notes",
+    "",
+    "- ",
+    "",
+    "<!-- BEGIN AUTO SUMMARY -->",
+    "<!-- END AUTO SUMMARY -->",
+    "",
+  ].join("\n");
+}
+
+function updateAutoSummaryBlock(body: string, summary: string): string {
+  const begin = "<!-- BEGIN AUTO SUMMARY -->";
+  const end = "<!-- END AUTO SUMMARY -->";
+  const normalizedBody = body.replaceAll("\r\n", "\n");
+  const beginIndex = normalizedBody.indexOf(begin);
+  const endIndex = normalizedBody.indexOf(end);
+  const block = `${begin}\n${summary}\n${end}`;
+  if (beginIndex !== -1 && endIndex !== -1 && endIndex > beginIndex) {
+    const before = normalizedBody.slice(0, beginIndex);
+    const after = normalizedBody.slice(endIndex + end.length);
+    return `${before}${block}${after}`;
+  }
+  const trimmed = normalizedBody.trimEnd();
+  return `${trimmed}\n\n${block}\n`;
+}
+
+function appendHandoffNote(body: string, noteLine: string): string {
+  const normalized = body.replaceAll("\r\n", "\n");
+  const heading = "## Handoff Notes";
+  const lines = normalized.split("\n");
+  const headingIndex = lines.findIndex((line) => line.trim() === heading);
+  const note = `- ${noteLine}`;
+
+  if (headingIndex === -1) {
+    const trimmed = normalized.trimEnd();
+    return `${trimmed}\n\n${heading}\n\n${note}\n`;
+  }
+
+  let nextHeading = lines.length;
+  for (let i = headingIndex + 1; i < lines.length; i++) {
+    if (lines[i]?.startsWith("## ")) {
+      nextHeading = i;
+      break;
+    }
+  }
+
+  const before = lines.slice(0, nextHeading);
+  const after = lines.slice(nextHeading);
+  if (before.at(-1)?.trim() !== "") before.push("");
+  before.push(note, "");
+  return [...before, ...after].join("\n");
 }
 
 async function ensureShim(agentplaneDir: string, gitRoot: string): Promise<void> {
@@ -1327,6 +1434,300 @@ async function cmdWorkStart(opts: {
   }
 }
 
+async function resolvePrPaths(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+}): Promise<{
+  resolved: { gitRoot: string; agentplaneDir: string };
+  config: AgentplaneConfig;
+  prDir: string;
+  metaPath: string;
+  diffstatPath: string;
+  verifyLogPath: string;
+  reviewPath: string;
+}> {
+  const resolved = await resolveProject({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
+  const loaded = await loadConfig(resolved.agentplaneDir);
+  const taskDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir, opts.taskId);
+  const prDir = path.join(taskDir, "pr");
+  return {
+    resolved,
+    config: loaded.config,
+    prDir,
+    metaPath: path.join(prDir, "meta.json"),
+    diffstatPath: path.join(prDir, "diffstat.txt"),
+    verifyLogPath: path.join(prDir, "verify.log"),
+    reviewPath: path.join(prDir, "review.md"),
+  };
+}
+
+async function cmdPrOpen(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  author: string;
+  branch?: string;
+}): Promise<number> {
+  try {
+    const author = opts.author.trim();
+    if (!author) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+
+    const task = await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+    const { resolved, config, prDir, metaPath, diffstatPath, verifyLogPath, reviewPath } =
+      await resolvePrPaths(opts);
+
+    if (config.workflow_mode !== "branch_pr") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "pr commands require workflow_mode=branch_pr",
+      });
+    }
+
+    const branch = (opts.branch ?? (await gitCurrentBranch(resolved.gitRoot))).trim();
+    if (!branch) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+
+    await mkdir(prDir, { recursive: true });
+
+    const now = nowIso();
+    let meta: PrMeta | null = null;
+    if (await fileExists(metaPath)) {
+      const raw = await readFile(metaPath, "utf8");
+      meta = parsePrMeta(raw, task.id);
+    }
+    const createdAt = meta?.created_at ?? now;
+    const nextMeta: PrMeta = {
+      schema_version: 1,
+      task_id: task.id,
+      branch,
+      created_at: createdAt,
+      updated_at: now,
+      last_verified_sha: meta?.last_verified_sha ?? null,
+      last_verified_at: meta?.last_verified_at ?? null,
+      verify: meta?.verify ?? { status: "skipped" },
+    };
+    await writeFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
+
+    if (!(await fileExists(diffstatPath))) await writeFile(diffstatPath, "", "utf8");
+    if (!(await fileExists(verifyLogPath))) await writeFile(verifyLogPath, "", "utf8");
+    if (!(await fileExists(reviewPath))) {
+      const review = renderPrReviewTemplate({ author, createdAt, branch });
+      await writeFile(reviewPath, review, "utf8");
+    }
+
+    process.stdout.write(`✅ pr open ${path.relative(resolved.gitRoot, prDir)}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "pr open", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdPrUpdate(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+}): Promise<number> {
+  try {
+    await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+    const { resolved, config, prDir, metaPath, diffstatPath, reviewPath } =
+      await resolvePrPaths(opts);
+
+    if (config.workflow_mode !== "branch_pr") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "pr commands require workflow_mode=branch_pr",
+      });
+    }
+
+    if (!(await fileExists(metaPath)) || !(await fileExists(reviewPath))) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: "PR artifacts missing: run `agentplane pr open` first",
+      });
+    }
+
+    const baseBranch = await getBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const branch = await gitCurrentBranch(resolved.gitRoot);
+    const { stdout: diffStatOut } = await execFileAsync(
+      "git",
+      ["diff", "--stat", `${baseBranch}...HEAD`],
+      { cwd: resolved.gitRoot, env: gitEnv() },
+    );
+    const diffstat = diffStatOut.trimEnd();
+    await writeFile(diffstatPath, diffstat ? `${diffstat}\n` : "", "utf8");
+
+    const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: resolved.gitRoot,
+      env: gitEnv(),
+    });
+    const headSha = headOut.trim();
+    const summaryLines = [
+      `- Updated: ${nowIso()}`,
+      `- Branch: ${branch}`,
+      `- Head: ${headSha.slice(0, 12)}`,
+      "- Diffstat:",
+      "```",
+      diffstat || "No changes detected.",
+      "```",
+    ];
+    const reviewText = await readFile(reviewPath, "utf8");
+    const nextReview = updateAutoSummaryBlock(reviewText, summaryLines.join("\n"));
+    await writeFile(reviewPath, nextReview, "utf8");
+
+    const rawMeta = await readFile(metaPath, "utf8");
+    const meta = parsePrMeta(rawMeta, opts.taskId);
+    const nextMeta: PrMeta = {
+      ...meta,
+      branch,
+      updated_at: nowIso(),
+      last_verified_sha: meta.last_verified_sha ?? null,
+      last_verified_at: meta.last_verified_at ?? null,
+    };
+    await writeFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
+
+    process.stdout.write(`✅ pr update ${path.relative(resolved.gitRoot, prDir)}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "pr update", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdPrCheck(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+}): Promise<number> {
+  try {
+    const task = await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+    const { resolved, config, prDir, metaPath, diffstatPath, verifyLogPath, reviewPath } =
+      await resolvePrPaths(opts);
+
+    if (config.workflow_mode !== "branch_pr") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "pr commands require workflow_mode=branch_pr",
+      });
+    }
+
+    const errors: string[] = [];
+    if (!(await fileExists(prDir))) errors.push("Missing PR directory");
+    if (!(await fileExists(metaPath))) errors.push("Missing pr/meta.json");
+    if (!(await fileExists(diffstatPath))) errors.push("Missing pr/diffstat.txt");
+    if (!(await fileExists(verifyLogPath))) errors.push("Missing pr/verify.log");
+    if (!(await fileExists(reviewPath))) errors.push("Missing pr/review.md");
+
+    let meta: PrMeta | null = null;
+    if (await fileExists(metaPath)) {
+      try {
+        meta = parsePrMeta(await readFile(metaPath, "utf8"), task.id);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        errors.push(message);
+      }
+    }
+
+    if (await fileExists(reviewPath)) {
+      const review = await readFile(reviewPath, "utf8");
+      const requiredSections = ["## Summary", "## Checklist", "## Handoff Notes"];
+      for (const section of requiredSections) {
+        if (!review.includes(section)) errors.push(`Missing section: ${section}`);
+      }
+      if (!review.includes("<!-- BEGIN AUTO SUMMARY -->")) {
+        errors.push("Missing auto summary start marker");
+      }
+      if (!review.includes("<!-- END AUTO SUMMARY -->")) {
+        errors.push("Missing auto summary end marker");
+      }
+    }
+
+    if (task.frontmatter.verify.length > 0) {
+      if (meta?.verify?.status !== "pass") {
+        errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
+      }
+      if (!meta?.last_verified_sha || !meta.last_verified_at) {
+        errors.push("Verify metadata missing (last_verified_sha/last_verified_at)");
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new CliError({ exitCode: 3, code: "E_VALIDATION", message: errors.join("\n") });
+    }
+
+    process.stdout.write(`✅ pr check ${path.relative(resolved.gitRoot, prDir)}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "pr check", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdPrNote(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  author: string;
+  body: string;
+}): Promise<number> {
+  try {
+    const author = opts.author.trim();
+    const body = opts.body.trim();
+    if (!author || !body) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+    }
+
+    const { config, reviewPath } = await resolvePrPaths(opts);
+    if (config.workflow_mode !== "branch_pr") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "pr commands require workflow_mode=branch_pr",
+      });
+    }
+
+    if (!(await fileExists(reviewPath))) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: "Missing pr/review.md (run `agentplane pr open`)",
+      });
+    }
+
+    const review = await readFile(reviewPath, "utf8");
+    const updated = appendHandoffNote(review, `${author}: ${body}`);
+    await writeFile(reviewPath, updated, "utf8");
+
+    process.stdout.write("✅ pr note\n");
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "pr note", root: opts.rootOverride ?? null });
+  }
+}
+
 async function cmdHooksInstall(opts: {
   cwd: string;
   rootOverride?: string;
@@ -1805,6 +2206,109 @@ export async function runCli(argv: string[]): Promise<number> {
         agent,
         slug,
         worktree,
+      });
+    }
+
+    if (namespace === "pr") {
+      const [taskId, ...restArgs] = args;
+      if (!taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+      }
+
+      if (command === "open") {
+        let author = "";
+        let branch: string | undefined;
+        for (let i = 0; i < restArgs.length; i++) {
+          const arg = restArgs[i];
+          if (!arg) continue;
+          if (arg === "--author") {
+            const next = restArgs[i + 1];
+            if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+            author = next;
+            i++;
+            continue;
+          }
+          if (arg === "--branch") {
+            const next = restArgs[i + 1];
+            if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+            branch = next;
+            i++;
+            continue;
+          }
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+        }
+        if (!author) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+        }
+        return await cmdPrOpen({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          taskId,
+          author,
+          branch,
+        });
+      }
+
+      if (command === "update") {
+        if (restArgs.length > 0) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_UPDATE_USAGE });
+        }
+        return await cmdPrUpdate({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          taskId,
+        });
+      }
+
+      if (command === "check") {
+        if (restArgs.length > 0) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_CHECK_USAGE });
+        }
+        return await cmdPrCheck({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          taskId,
+        });
+      }
+
+      if (command === "note") {
+        let author = "";
+        let body = "";
+        for (let i = 0; i < restArgs.length; i++) {
+          const arg = restArgs[i];
+          if (!arg) continue;
+          if (arg === "--author") {
+            const next = restArgs[i + 1];
+            if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+            author = next;
+            i++;
+            continue;
+          }
+          if (arg === "--body") {
+            const next = restArgs[i + 1];
+            if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+            body = next;
+            i++;
+            continue;
+          }
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+        }
+        if (!author || !body) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+        }
+        return await cmdPrNote({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          taskId,
+          author,
+          body,
+        });
+      }
+
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Usage: agentplane pr open|update|check|note <task-id>",
       });
     }
 
