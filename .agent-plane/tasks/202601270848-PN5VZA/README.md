@@ -1,13 +1,15 @@
 ---
 id: "202601270848-PN5VZA"
 title: "Add JS/TS quality toolchain (eslint/prettier + scripts)"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["nodejs", "tooling", "lint"]
+commit: { hash: "9b5f88afccf1715f38445bf0091e599eff12fcbc", message: "✨ PN5VZA tooling: add eslint+prettier configs, scripts, and TS path mapping" }
 comments:
   - { author: "CODER", body: "Start: adding ESLint+Prettier toolchain (latest versions) for the Node.js/TypeScript workspaces with strict, high-signal defaults." }
+  - { author: "CODER", body: "verified: npm install ok | details: npm run lint ok; npm run format:check ok. Added ESLint+Prettier configs and TS node types+paths." }
 doc_version: 2
 doc_updated_at: "2026-01-27T08:49:10+00:00"
 doc_updated_by: "agentctl"
