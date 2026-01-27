@@ -202,7 +202,7 @@ CLI `recipe list-remote` читает `index.json` по фиксированно
   - принять модель: `agentplane ide sync` (IDE entrypoints) и `agentplane backend sync <id>` (backends).
 - Зафиксировать стабильные exit codes + базовый формат `--json` ошибок.  
   **DoD:**
-- Документ `docs/cli-contract.md` с таблицей команд, флагов, кодов ошибок.
+- Документ `docs/cli-contract.mdx` с таблицей команд, флагов, кодов ошибок.
 
 ### AP-002 Зафиксировать файловые форматы v1 (tasks/exports/config/PR meta)
 
@@ -229,7 +229,7 @@ CLI `recipe list-remote` читает `index.json` по фиксированно
   - lockfile (если нужен в v1),
   - список CLI команд recipes.  
     **DoD:**
-- `schemas/recipe-manifest.schema.json` и `docs/recipes-spec.md`.
+- `schemas/recipe-manifest.schema.json` и `docs/recipes-spec.mdx`.
 
 ### AP-004 Создать Node/TS монорепо и сборку CLI (ESM, node20)
 

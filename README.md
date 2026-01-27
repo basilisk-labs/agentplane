@@ -4,11 +4,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/02-prerequisites.md)
-[![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/cli-contract.md)
+[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/prerequisites.mdx)
+[![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/cli-contract.mdx)
 [![Roadmap](https://img.shields.io/badge/Roadmap-ROADMAP.md-6b7280.svg)](ROADMAP.md)
 [![Specs](https://img.shields.io/badge/Specs-packages%2Fspec-0f766e.svg)](packages/spec/README.md)
-[![Docs](https://img.shields.io/badge/Docs-Start%20Here-6b7280.svg)](docs/README.md)
+[![Docs](https://img.shields.io/badge/Docs-Start%20Here-6b7280.svg)](docs/index.mdx)
 
 Agent Plane is an offline-first workflow framework for using OpenAI Codex in your IDE. The v1 target is a globally installable Node.js CLI named `agentplane` that manages tasks, workflows, guardrails, backends, and optional recipes.
 
@@ -54,10 +54,10 @@ npm publish
 
 ## Documentation
 
-- Start here: `docs/README.md`
-- Command contract: `docs/cli-contract.md`
-- Recipes spec: `docs/recipes-spec.md`
-- Quality gates: `docs/code-quality.md`
+- Start here: `docs/index.mdx`
+- Command contract: `docs/cli-contract.mdx`
+- Recipes spec: `docs/recipes-spec.mdx`
+- Quality gates: `docs/code-quality.mdx`
 - Format schemas/examples: `packages/spec/`
 
 ## Repository layout (high level)

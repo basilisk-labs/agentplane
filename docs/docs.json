@@ -1,0 +1,28 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Agent Plane",
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["index", "overview", "prerequisites", "setup"]
+    },
+    {
+      "group": "Concepts",
+      "pages": [
+        "architecture",
+        "workflow",
+        "agents",
+        "tasks-and-backends",
+        "branching-and-pr-artifacts"
+      ]
+    },
+    {
+      "group": "Reference",
+      "pages": ["commands", "cli-contract", "recipes-spec", "code-quality"]
+    },
+    {
+      "group": "Help",
+      "pages": ["troubleshooting", "glossary", "redmine"]
+    }
+  ]
+}
