@@ -1,13 +1,15 @@
 ---
 id: "202601291450-J773F8"
 title: "Add agentplane-recipes as submodule"
-status: "DOING"
+status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
 tags: ["git", "recipes"]
+commit: { hash: "03ea920539c25dd926344d51524087a5d36b2210", message: "✨ J773F8 add recipes submodule" }
 comments:
   - { author: "CODER", body: "Start: add agentplane-recipes submodule at repo root." }
+  - { author: "CODER", body: "verified: submodule added at agentplane-recipes/ and lint ignores updated." }
 doc_version: 2
 doc_updated_at: "2026-01-29T14:50:35+00:00"
 doc_updated_by: "agentctl"
