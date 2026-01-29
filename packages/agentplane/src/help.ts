@@ -35,7 +35,7 @@ export function renderHelp(): string {
     "  agentplane recipe list",
     "  agentplane recipe list-remote [--refresh]",
     "  agentplane recipe info <id>",
-    "  agentplane recipe install <path>",
+    "  agentplane recipe install <path|url|id>",
     "  agentplane recipe remove <id>",
     "",
     "Branch commands:",
