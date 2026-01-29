@@ -235,6 +235,17 @@ function toStringArray(value: unknown): string[] {
   return value.filter((v): v is string => typeof v === "string");
 }
 
+function normalizePriority(value: unknown): string {
+  const raw = toStringSafe(value).trim().toLowerCase();
+  if (!raw) return "med";
+  if (raw === "low") return "low";
+  if (raw === "normal") return "normal";
+  if (raw === "medium" || raw === "med") return "med";
+  if (raw === "high") return "high";
+  if (raw === "urgent" || raw === "immediate") return "high";
+  return "med";
+}
+
 export function taskRecordToData(record: TaskRecord): TaskData {
   const fm = record.frontmatter as unknown as Record<string, unknown>;
   const comments = Array.isArray(fm.comments)
@@ -1079,7 +1090,7 @@ export class RedmineBackend implements TaskBackend {
           : null;
 
     const priorityVal = isRecord(issue.priority) ? issue.priority : null;
-    const priorityName = priorityVal ? toStringSafe(priorityVal.name) : "";
+    const priorityName = normalizePriority(priorityVal?.name);
 
     const tags: string[] = [];
     if (Array.isArray(issue.tags)) {
