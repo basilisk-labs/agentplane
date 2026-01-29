@@ -1,13 +1,15 @@
 ---
 id: "202601291434-JPNWPQ"
 title: "Fix pr check invalid meta.json test expectation"
-status: "DOING"
+status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
 tags: ["testing", "lint"]
+commit: { hash: "a585b879ee2e09ed57e45821dbbda00c096c004a", message: "✨ JPNWPQ fix pr check test" }
 comments:
   - { author: "CODER", body: "Start: adjust failing pr check test assertion for JSON parse errors." }
+  - { author: "CODER", body: "verified: manual review only | details: test assertion updated to stable JSON parse error prefix." }
 doc_version: 2
 doc_updated_at: "2026-01-29T14:34:57+00:00"
 doc_updated_by: "agentctl"
