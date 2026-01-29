@@ -101,6 +101,21 @@ async function createRecipeArchive(opts?: {
     scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
   };
   await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
+  const agentsDir = path.join(recipeDir, "agents");
+  await mkdir(agentsDir, { recursive: true });
+  await writeFile(
+    path.join(agentsDir, "recipe.json"),
+    JSON.stringify(
+      {
+        id: "RECIPE_AGENT",
+        role: "Recipe agent",
+        description: "Example agent installed from a recipe.",
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
   const format = opts?.format ?? "tar";
   const archivePath =
     format === "zip" ? path.join(baseDir, "recipe.zip") : path.join(baseDir, "recipe.tar.gz");
@@ -6562,6 +6577,24 @@ describe("runCli", () => {
       "manifest.json",
     );
     expect(await pathExists(installedManifestPath)).toBe(true);
+    const installedAgentPath = path.join(
+      root,
+      ".agentplane",
+      "agents",
+      `${manifestId}__RECIPE_AGENT.json`,
+    );
+    expect(await pathExists(installedAgentPath)).toBe(true);
+    const installedAgentText = await readFile(installedAgentPath, "utf8");
+    expect(installedAgentText).toContain(`"id": "${manifestId}__RECIPE_AGENT"`);
+    const scenariosPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      manifestId,
+      manifestVersion,
+      "scenarios.json",
+    );
+    expect(await pathExists(scenariosPath)).toBe(true);
 
     const lockPath = path.join(root, ".agentplane", "recipes.lock.json");
     const lockText = await readFile(lockPath, "utf8");
@@ -6642,6 +6675,40 @@ describe("runCli", () => {
 
     const indexText = await readFile(path.join(root, ".agentplane", "RECIPES.md"), "utf8");
     expect(indexText).toContain("Updated summary");
+  });
+
+  it("recipe install renames agents on conflict when requested", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const agentsDir = path.join(root, ".agentplane", "agents");
+    await mkdir(agentsDir, { recursive: true });
+    await writeFile(
+      path.join(agentsDir, "viewer__RECIPE_AGENT.json"),
+      JSON.stringify({ id: "viewer__RECIPE_AGENT", role: "Existing agent" }, null, 2),
+      "utf8",
+    );
+
+    const { archivePath } = await createRecipeArchive({ id: "viewer" });
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "recipe",
+        "install",
+        archivePath,
+        "--on-conflict",
+        "rename",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const renamedPath = path.join(agentsDir, "viewer__RECIPE_AGENT__1.json");
+    expect(await pathExists(renamedPath)).toBe(true);
+    const renamedText = await readFile(renamedPath, "utf8");
+    expect(renamedText).toContain(`"id": "viewer__RECIPE_AGENT__1"`);
   });
 
   it("recipe install accepts zip archives with a top-level folder", async () => {

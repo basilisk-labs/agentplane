@@ -95,11 +95,11 @@ This table lists commands and required minimum flags. Implementation may add add
 
 ### 5.2 Explicit-network commands
 
-| Command                          | Purpose                                         | Network |
-| -------------------------------- | ----------------------------------------------- | ------- |
-| `agentplane upgrade`             | Update embedded templates/bundles from upstream | Yes     |
-| `agentplane recipe list-remote`  | List recipes from remote index                  | Yes     |
-| `agentplane recipe install <id>` | Install recipe by id from remote index          | Yes     |
+| Command                                              | Purpose                                         | Network      |
+| ---------------------------------------------------- | ----------------------------------------------- | ------------ | -------------------------------------- | --- |
+| `agentplane upgrade`                                 | Update embedded templates/bundles from upstream | Yes          |
+| `agentplane recipe list-remote`                      | List recipes from remote index                  | Yes          |
+| `agentplane recipe install <id> [--on-conflict <fail | rename                                          | overwrite>]` | Install recipe by id from remote index | Yes |
 
 ### 5.3 `task` namespace
 
