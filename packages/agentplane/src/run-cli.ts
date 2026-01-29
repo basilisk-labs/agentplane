@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import {
   access,
   chmod,
+  lstat,
   mkdir,
   mkdtemp,
   readdir,
@@ -243,6 +244,8 @@ type InitFlags = {
   workflow?: "direct" | "branch_pr";
   hooks?: boolean;
   recipes?: string[];
+  force?: boolean;
+  backup?: boolean;
   yes: boolean;
 };
 
@@ -292,6 +295,14 @@ function parseInitFlags(args: string[]): InitFlags {
     }
     if (arg === "--yes") {
       out.yes = true;
+      continue;
+    }
+    if (arg === "--force") {
+      out.force = true;
+      continue;
+    }
+    if (arg === "--backup") {
+      out.backup = true;
       continue;
     }
     const next = args[i + 1];
@@ -347,6 +358,13 @@ function parseInitFlags(args: string[]): InitFlags {
       }
     }
     i++;
+  }
+  if (out.force && out.backup) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Use either --force or --backup (not both).",
+    });
   }
   return out;
 }
@@ -519,6 +537,25 @@ async function promptYesNo(prompt: string, defaultValue: boolean): Promise<boole
   return ["y", "yes", "true", "1", "on"].includes(trimmed);
 }
 
+async function getPathKind(filePath: string): Promise<"file" | "dir" | null> {
+  try {
+    const stats = await lstat(filePath);
+    return stats.isDirectory() ? "dir" : "file";
+  } catch {
+    return null;
+  }
+}
+
+async function backupPath(filePath: string): Promise<string> {
+  const stamp = new Date().toISOString().replaceAll(/[:.]/g, "");
+  let dest = `${filePath}.bak-${stamp}`;
+  if (await fileExists(dest)) {
+    dest = `${filePath}.bak-${stamp}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+  await rename(filePath, dest);
+  return dest;
+}
+
 async function cmdInit(opts: {
   cwd: string;
   rootOverride?: string;
@@ -540,7 +577,7 @@ async function cmdInit(opts: {
       exitCode: 2,
       code: "E_USAGE",
       message:
-        "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> [--recipes <...>] [--yes]",
+        "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> [--recipes <...>] [--yes] [--force|--backup]",
     });
   }
 
@@ -581,12 +618,47 @@ async function cmdInit(opts: {
       rootOverride: opts.rootOverride ?? null,
     });
     const configPath = path.join(resolved.agentplaneDir, "config.json");
-    if (await fileExists(configPath)) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_IO",
-        message: `Project already initialized: ${path.relative(resolved.gitRoot, configPath)}`,
-      });
+    const backendPath = path.join(resolved.agentplaneDir, "backends", "local", "backend.json");
+    const initDirs = [
+      resolved.agentplaneDir,
+      path.join(resolved.agentplaneDir, "tasks"),
+      path.join(resolved.agentplaneDir, "agents"),
+      path.join(resolved.agentplaneDir, "cache"),
+      path.join(resolved.agentplaneDir, "backends"),
+      path.join(resolved.agentplaneDir, "backends", "local"),
+    ];
+    const initFiles = [configPath, backendPath];
+    const conflicts: string[] = [];
+
+    for (const dir of initDirs) {
+      const kind = await getPathKind(dir);
+      if (kind && kind !== "dir") conflicts.push(dir);
+    }
+    for (const filePath of initFiles) {
+      if (await fileExists(filePath)) conflicts.push(filePath);
+    }
+
+    if (conflicts.length > 0) {
+      if (flags.backup) {
+        for (const conflict of conflicts) {
+          await backupPath(conflict);
+        }
+      } else if (flags.force) {
+        for (const conflict of conflicts) {
+          await rm(conflict, { recursive: true, force: true });
+        }
+      } else {
+        const rendered = conflicts
+          .map((conflict) => `- ${path.relative(resolved.gitRoot, conflict)}`)
+          .join("\n");
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message:
+            `Init conflicts detected:\n${rendered}\n` +
+            "Re-run with --force to overwrite or --backup to preserve existing files.",
+        });
+      }
     }
 
     await mkdir(resolved.agentplaneDir, { recursive: true });
@@ -599,7 +671,6 @@ async function cmdInit(opts: {
     setByDottedKey(rawConfig, "workflow_mode", workflow);
     await saveConfig(resolved.agentplaneDir, rawConfig);
 
-    const backendPath = path.join(resolved.agentplaneDir, "backends", "local", "backend.json");
     const backendPayload = {
       id: "local",
       version: 1,
@@ -3802,7 +3873,7 @@ export async function runCli(argv: string[]): Promise<number> {
           exitCode: 2,
           code: "E_USAGE",
           message:
-            "Usage: agentplane init [--ide <...>] [--workflow <...>] [--hooks <...>] [--recipes <...>] [--yes]",
+            "Usage: agentplane init [--ide <...>] [--workflow <...>] [--hooks <...>] [--recipes <...>] [--yes] [--force|--backup]",
         });
       }
       return await cmdInit({ cwd: process.cwd(), rootOverride: globals.root, args: initArgs });

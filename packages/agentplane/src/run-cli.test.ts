@@ -6338,10 +6338,82 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--yes", "--root", root]);
       expect(code).toBe(5);
-      expect(io.stderr).toContain("Project already initialized");
+      expect(io.stderr).toContain("Init conflicts detected");
+      expect(io.stderr).toContain(".agentplane/config.json");
     } finally {
       io.restore();
     }
+  });
+
+  it("init lists conflicts for existing files by default", async () => {
+    const root = await mkGitRepoRoot();
+    const agentplaneDir = path.join(root, ".agentplane");
+    const configPath = path.join(agentplaneDir, "config.json");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.join(agentplaneDir, "backends", "local"), { recursive: true });
+    await writeFile(configPath, "legacy-config", "utf8");
+    await writeFile(backendPath, "legacy-backend", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Init conflicts detected");
+      expect(io.stderr).toContain(".agentplane/config.json");
+      expect(io.stderr).toContain(".agentplane/backends/local/backend.json");
+      expect(io.stderr).toContain("--force");
+      expect(io.stderr).toContain("--backup");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("init --force overwrites conflicting files", async () => {
+    const root = await mkGitRepoRoot();
+    const agentplaneDir = path.join(root, ".agentplane");
+    const configPath = path.join(agentplaneDir, "config.json");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.join(agentplaneDir, "backends", "local"), { recursive: true });
+    await writeFile(configPath, "legacy-config", "utf8");
+    await writeFile(backendPath, "legacy-backend", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--force", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"workflow_mode": "direct"');
+  });
+
+  it("init --backup preserves conflicting files with timestamped backups", async () => {
+    const root = await mkGitRepoRoot();
+    const agentplaneDir = path.join(root, ".agentplane");
+    const configPath = path.join(agentplaneDir, "config.json");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.join(agentplaneDir, "backends", "local"), { recursive: true });
+    await writeFile(configPath, "legacy-config", "utf8");
+    await writeFile(backendPath, "legacy-backend", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--backup", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const agentplaneEntries = await readdir(agentplaneDir);
+    expect(agentplaneEntries.some((entry) => entry.startsWith("config.json.bak-"))).toBe(true);
+
+    const backendEntries = await readdir(path.join(agentplaneDir, "backends", "local"));
+    expect(backendEntries.some((entry) => entry.startsWith("backend.json.bak-"))).toBe(true);
+
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"workflow_mode": "direct"');
   });
 
   it("recipe install/list/info/remove manages local recipes", async () => {

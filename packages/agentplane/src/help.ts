@@ -15,7 +15,7 @@ export function renderHelp(): string {
     "  --root <path>  Treat <path> as project root",
     "",
     "Init commands:",
-    "  agentplane init [--ide <none|cursor|windsurf|both>] [--workflow <direct|branch_pr>] [--hooks <yes|no>] [--recipes <list>] [--yes]",
+    "  agentplane init [--ide <none|cursor|windsurf|both>] [--workflow <direct|branch_pr>] [--hooks <yes|no>] [--recipes <list>] [--yes] [--force|--backup]",
     "",
     "Config commands:",
     "  agentplane config show",
