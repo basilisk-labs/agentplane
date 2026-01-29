@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import {
   access,
   chmod,
@@ -112,6 +113,29 @@ async function createRecipeArchive(opts?: {
       : execFileAsync("tar", ["-czf", archivePath, "-C", recipeDir, "."]));
   }
   return { archivePath, manifest };
+}
+
+async function createUpgradeBundle(files: Record<string, string>): Promise<{
+  bundlePath: string;
+  checksumPath: string;
+}> {
+  const execFileAsync = promisify(execFile);
+  const baseDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-bundle-"));
+  const bundleDir = path.join(baseDir, "bundle");
+  await mkdir(bundleDir, { recursive: true });
+  for (const [relPath, content] of Object.entries(files)) {
+    const fullPath = path.join(bundleDir, relPath);
+    await mkdir(path.dirname(fullPath), { recursive: true });
+    await writeFile(fullPath, content, "utf8");
+  }
+  const bundlePath = path.join(baseDir, "agentplane-upgrade.tar.gz");
+  await execFileAsync("tar", ["-czf", bundlePath, "-C", bundleDir, "."]);
+  const checksum = createHash("sha256")
+    .update(await readFile(bundlePath))
+    .digest("hex");
+  const checksumPath = `${bundlePath}.sha256`;
+  await writeFile(checksumPath, `${checksum}  agentplane-upgrade.tar.gz\n`, "utf8");
+  return { bundlePath, checksumPath };
 }
 
 async function mkGitRepoRootWithBranch(branch: string): Promise<string> {
@@ -6414,6 +6438,81 @@ describe("runCli", () => {
 
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "direct"');
+  });
+
+  it("upgrade applies bundle changes and writes backups by default", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"),
+      '{"legacy":true}\n',
+      "utf8",
+    );
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "AGENTS.md": "# AGENTS\n\nUpdated\n",
+      ".agentplane/agents/ORCHESTRATOR.json": '{"updated":true}\n',
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "upgrade",
+        "--bundle",
+        bundlePath,
+        "--checksum",
+        checksumPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Upgrade applied");
+    } finally {
+      io.restore();
+    }
+
+    const agentsText = await readFile(path.join(root, "AGENTS.md"), "utf8");
+    expect(agentsText).toContain("Updated");
+
+    const agentEntries = await readdir(path.join(root, ".agentplane", "agents"));
+    expect(agentEntries.some((entry) => entry.startsWith("ORCHESTRATOR.json.bak-"))).toBe(true);
+    const rootEntries = await readdir(root);
+    expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(true);
+  });
+
+  it("upgrade --dry-run reports changes without modifying files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "AGENTS.md": "# AGENTS\n\nUpdated\n",
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "upgrade",
+        "--dry-run",
+        "--bundle",
+        bundlePath,
+        "--checksum",
+        checksumPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Upgrade dry-run");
+    } finally {
+      io.restore();
+    }
+
+    const agentsText = await readFile(path.join(root, "AGENTS.md"), "utf8");
+    expect(agentsText).toContain("legacy agents");
+    const rootEntries = await readdir(root);
+    expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
   });
 
   it("recipe install/list/info/remove manages local recipes", async () => {

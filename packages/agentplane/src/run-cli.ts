@@ -273,6 +273,10 @@ const RECIPE_USAGE = "Usage: agentplane recipe <list|info|install|remove> [args]
 const RECIPE_INFO_USAGE = "Usage: agentplane recipe info <id>";
 const RECIPE_INSTALL_USAGE = "Usage: agentplane recipe install <path>";
 const RECIPE_REMOVE_USAGE = "Usage: agentplane recipe remove <id>";
+const UPGRADE_USAGE =
+  "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
+const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
+const DEFAULT_UPGRADE_CHECKSUM_ASSET = `${DEFAULT_UPGRADE_ASSET}.sha256`;
 
 function parseBooleanFlag(value: string, flag: string): boolean {
   const normalized = value.trim().toLowerCase();
@@ -365,6 +369,74 @@ function parseInitFlags(args: string[]): InitFlags {
       code: "E_USAGE",
       message: "Use either --force or --backup (not both).",
     });
+  }
+  return out;
+}
+
+type UpgradeFlags = {
+  source?: string;
+  tag?: string;
+  bundle?: string;
+  checksum?: string;
+  asset?: string;
+  checksumAsset?: string;
+  dryRun: boolean;
+  backup: boolean;
+};
+
+function parseUpgradeFlags(args: string[]): UpgradeFlags {
+  const out: UpgradeFlags = { dryRun: false, backup: true };
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (!arg.startsWith("--")) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: UPGRADE_USAGE });
+    }
+    if (arg === "--dry-run") {
+      out.dryRun = true;
+      continue;
+    }
+    if (arg === "--no-backup") {
+      out.backup = false;
+      continue;
+    }
+    const next = args[i + 1];
+    if (!next) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+    }
+    switch (arg) {
+      case "--source": {
+        out.source = next;
+        break;
+      }
+      case "--tag": {
+        out.tag = next;
+        break;
+      }
+      case "--bundle": {
+        out.bundle = next;
+        break;
+      }
+      case "--checksum": {
+        out.checksum = next;
+        break;
+      }
+      case "--asset": {
+        out.asset = next;
+        break;
+      }
+      case "--checksum-asset": {
+        out.checksumAsset = next;
+        break;
+      }
+      default: {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: UPGRADE_USAGE });
+      }
+    }
+    i++;
+  }
+  if ((out.bundle && !out.checksum) || (!out.bundle && out.checksum)) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: UPGRADE_USAGE });
   }
   return out;
 }
@@ -495,6 +567,82 @@ async function extractArchive(archivePath: string, destDir: string): Promise<voi
 async function sha256File(filePath: string): Promise<string> {
   const data = await readFile(filePath);
   return createHash("sha256").update(data).digest("hex");
+}
+
+function parseSha256Text(text: string): string {
+  const trimmed = text.trim();
+  if (!trimmed) return "";
+  return trimmed.split(/\s+/)[0];
+}
+
+async function fetchJson(url: string): Promise<unknown> {
+  const res = await fetch(url, { headers: { "User-Agent": "agentplane" } });
+  if (!res.ok) {
+    throw new CliError({
+      exitCode: 6,
+      code: "E_NETWORK",
+      message: `Failed to fetch ${url} (${res.status} ${res.statusText})`,
+    });
+  }
+  return await res.json();
+}
+
+async function downloadToFile(url: string, destPath: string): Promise<void> {
+  const res = await fetch(url, { headers: { "User-Agent": "agentplane" } });
+  if (!res.ok) {
+    throw new CliError({
+      exitCode: 6,
+      code: "E_NETWORK",
+      message: `Failed to download ${url} (${res.status} ${res.statusText})`,
+    });
+  }
+  const buffer = Buffer.from(await res.arrayBuffer());
+  await writeFile(destPath, buffer);
+}
+
+function parseGitHubRepo(source: string): { owner: string; repo: string } {
+  const trimmed = source.trim();
+  if (!trimmed) throw new Error("config.framework.source must be non-empty");
+  if (!trimmed.includes("github.com")) {
+    throw new Error("upgrade supports GitHub sources only");
+  }
+  try {
+    const url = new URL(trimmed);
+    const parts = url.pathname.replaceAll(".git", "").split("/").filter(Boolean);
+    if (parts.length < 2) throw new Error("Invalid GitHub repo URL");
+    return { owner: parts[0], repo: parts[1] };
+  } catch {
+    throw new Error("Invalid GitHub repo URL");
+  }
+}
+
+async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
+  const entries = await readdir(extractedDir, { withFileTypes: true });
+  const dirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+  const files = entries.filter((entry) => entry.isFile()).map((entry) => entry.name);
+  if (files.length === 0 && dirs.length === 1) {
+    return path.join(extractedDir, dirs[0]);
+  }
+  return extractedDir;
+}
+
+async function listFilesRecursive(rootDir: string): Promise<string[]> {
+  const out: string[] = [];
+  const entries = await readdir(rootDir, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      out.push(...(await listFilesRecursive(fullPath)));
+    } else if (entry.isFile()) {
+      out.push(fullPath);
+    }
+  }
+  return out;
+}
+
+function isAllowedUpgradePath(relPath: string): boolean {
+  if (relPath === "AGENTS.md") return true;
+  return relPath.startsWith(".agentplane/");
 }
 
 function renderRecipesIndex(recipes: { id: string; version: string; summary: string }[]): string {
@@ -702,6 +850,178 @@ async function cmdInit(opts: {
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "init", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdUpgrade(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseUpgradeFlags(opts.args);
+
+  const resolved = await resolveProject({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
+  const loaded = await loadConfig(resolved.agentplaneDir);
+  const source = flags.source ?? loaded.config.framework.source;
+
+  let tempRoot: string | null = null;
+  let extractRoot: string | null = null;
+
+  try {
+    tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-"));
+    let bundlePath = "";
+    let checksumPath = "";
+
+    if (flags.bundle) {
+      const isUrl = flags.bundle.startsWith("http://") || flags.bundle.startsWith("https://");
+      bundlePath = isUrl ? path.join(tempRoot, "bundle.tar.gz") : path.resolve(flags.bundle);
+      if (isUrl) {
+        await downloadToFile(flags.bundle, bundlePath);
+      }
+      const checksumValue = flags.checksum ?? "";
+      const checksumIsUrl =
+        checksumValue.startsWith("http://") || checksumValue.startsWith("https://");
+      checksumPath = checksumIsUrl
+        ? path.join(tempRoot, "bundle.tar.gz.sha256")
+        : path.resolve(checksumValue);
+      if (checksumIsUrl) {
+        await downloadToFile(checksumValue, checksumPath);
+      }
+    } else {
+      const { owner, repo } = parseGitHubRepo(source);
+      const releaseUrl = flags.tag
+        ? `https://api.github.com/repos/${owner}/${repo}/releases/tags/${flags.tag}`
+        : `https://api.github.com/repos/${owner}/${repo}/releases/latest`;
+      const release = (await fetchJson(releaseUrl)) as {
+        assets?: { name?: string; browser_download_url?: string }[];
+      };
+      const assets = Array.isArray(release.assets) ? release.assets : [];
+      const assetName = flags.asset ?? DEFAULT_UPGRADE_ASSET;
+      const checksumName = flags.checksumAsset ?? DEFAULT_UPGRADE_CHECKSUM_ASSET;
+      const asset = assets.find((entry) => entry.name === assetName);
+      const checksumAsset = assets.find((entry) => entry.name === checksumName);
+      if (!asset?.browser_download_url || !checksumAsset?.browser_download_url) {
+        throw new CliError({
+          exitCode: 6,
+          code: "E_NETWORK",
+          message: `Upgrade assets not found in ${owner}/${repo} release`,
+        });
+      }
+      bundlePath = path.join(tempRoot, assetName);
+      checksumPath = path.join(tempRoot, checksumName);
+      await downloadToFile(asset.browser_download_url, bundlePath);
+      await downloadToFile(checksumAsset.browser_download_url, checksumPath);
+    }
+
+    const expected = parseSha256Text(await readFile(checksumPath, "utf8"));
+    if (!expected) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: "Upgrade checksum file is empty or invalid",
+      });
+    }
+    const actual = await sha256File(bundlePath);
+    if (actual !== expected) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Upgrade checksum mismatch (expected ${expected}, got ${actual})`,
+      });
+    }
+
+    extractRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-extract-"));
+    await extractArchive(bundlePath, extractRoot);
+    const bundleRoot = await resolveUpgradeRoot(extractRoot);
+
+    const files = await listFilesRecursive(bundleRoot);
+    const additions: string[] = [];
+    const updates: string[] = [];
+    const skipped: string[] = [];
+    const fileContents = new Map<string, Buffer>();
+
+    for (const filePath of files) {
+      let rel = path.relative(bundleRoot, filePath).replaceAll("\\", "/");
+      if (!rel || rel.startsWith("..") || path.isAbsolute(rel)) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Invalid bundle path: ${filePath}`,
+        });
+      }
+      if (rel === ".git" || rel.startsWith(".git/")) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Upgrade bundle cannot write to .git (${rel})`,
+        });
+      }
+      if (!isAllowedUpgradePath(rel)) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Upgrade bundle path not allowed: ${rel}`,
+        });
+      }
+
+      const destPath = path.join(resolved.gitRoot, rel);
+      const kind = await getPathKind(destPath);
+      if (kind === "dir") {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Upgrade target is a directory: ${rel}`,
+        });
+      }
+
+      const data = await readFile(filePath);
+      fileContents.set(rel, data);
+      if (kind === null) {
+        additions.push(rel);
+      } else {
+        const existing = await readFile(destPath);
+        if (Buffer.compare(existing, data) === 0) {
+          skipped.push(rel);
+        } else {
+          updates.push(rel);
+        }
+      }
+    }
+
+    if (flags.dryRun) {
+      process.stdout.write(
+        `Upgrade dry-run: ${additions.length} add, ${updates.length} update, ${skipped.length} unchanged\n`,
+      );
+      for (const rel of additions) process.stdout.write(`ADD ${rel}\n`);
+      for (const rel of updates) process.stdout.write(`UPDATE ${rel}\n`);
+      for (const rel of skipped) process.stdout.write(`SKIP ${rel}\n`);
+      return 0;
+    }
+
+    for (const rel of [...additions, ...updates]) {
+      const destPath = path.join(resolved.gitRoot, rel);
+      if (flags.backup && (await fileExists(destPath))) {
+        await backupPath(destPath);
+      }
+      await mkdir(path.dirname(destPath), { recursive: true });
+      const data = fileContents.get(rel);
+      if (data) await writeFile(destPath, data);
+    }
+
+    const raw = { ...loaded.raw };
+    setByDottedKey(raw, "framework.last_update", new Date().toISOString());
+    await saveConfig(resolved.agentplaneDir, raw);
+
+    process.stdout.write(
+      `Upgrade applied: ${additions.length} add, ${updates.length} update, ${skipped.length} unchanged\n`,
+    );
+    return 0;
+  } finally {
+    if (extractRoot) await rm(extractRoot, { recursive: true, force: true });
+    if (tempRoot) await rm(tempRoot, { recursive: true, force: true });
   }
 }
 
@@ -3877,6 +4197,18 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdInit({ cwd: process.cwd(), rootOverride: globals.root, args: initArgs });
+    }
+
+    if (namespace === "upgrade") {
+      const upgradeArgs = command ? [command, ...args] : [];
+      if (command && !command.startsWith("--")) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: UPGRADE_USAGE });
+      }
+      return await cmdUpgrade({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args: upgradeArgs,
+      });
     }
 
     if (namespace === "config" && command === "show") {
