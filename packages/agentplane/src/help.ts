@@ -33,6 +33,7 @@ export function renderHelp(): string {
     "",
     "Recipe commands:",
     "  agentplane recipe list",
+    "  agentplane recipe list-remote [--refresh]",
     "  agentplane recipe info <id>",
     "  agentplane recipe install <path>",
     "  agentplane recipe remove <id>",
