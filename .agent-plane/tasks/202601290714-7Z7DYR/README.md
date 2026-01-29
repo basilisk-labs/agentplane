@@ -1,13 +1,15 @@
 ---
 id: "202601290714-7Z7DYR"
 title: "AP-038: viewer recipe (optional)"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: ["202601290714-VWQMR5", "202601290714-TZBJ1M"]
 tags: ["roadmap", "nodejs", "recipes", "viewer"]
+commit: { hash: "45f3f303c2991e05506b44986bf3c0706688f5d5", message: "✨ 7Z7DYR viewer recipe" }
 comments:
   - { author: "CODER", body: "Start: package viewer recipe with assets, tool, and scenario." }
+  - { author: "CODER", body: "verified: viewer recipe added in external repo agentplane-recipes (commit db18c1b) | details: tests not run." }
 doc_version: 2
 doc_updated_at: "2026-01-29T14:48:31+00:00"
 doc_updated_by: "agentctl"
