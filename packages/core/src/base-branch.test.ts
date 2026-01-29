@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp } from "node:fs/promises";
+import { mkdir, mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -28,6 +28,13 @@ describe("base-branch", () => {
     await setPinnedBaseBranch({ cwd: root, rootOverride: root, value: "develop" });
     const pinned = await getPinnedBaseBranch({ cwd: root, rootOverride: root });
     expect(pinned).toBe("develop");
+  });
+
+  it("getBaseBranch prefers pinned value when present", async () => {
+    const root = await mkGitRepoRoot();
+    await setPinnedBaseBranch({ cwd: root, rootOverride: root, value: "develop" });
+    const base = await getBaseBranch({ cwd: root, rootOverride: root });
+    expect(base).toBe("develop");
   });
 
   it("keeps pinned branch even if config exists", async () => {
@@ -81,5 +88,20 @@ describe("base-branch", () => {
 
     const pinned = await getPinnedBaseBranch({ cwd: root, rootOverride: root });
     expect(pinned).toBe("develop");
+  });
+
+  it("rejects blank pinned base branch values", async () => {
+    const root = await mkGitRepoRoot();
+    await expect(
+      setPinnedBaseBranch({ cwd: root, rootOverride: root, value: "   " }),
+    ).rejects.toThrow("base branch must be non-empty");
+  });
+
+  it("surfaces git config errors when reading pinned branch", async () => {
+    const root = await mkGitRepoRoot();
+    const configPath = path.join(root, ".git", "config");
+    await rm(configPath);
+    await mkdir(configPath);
+    await expect(getPinnedBaseBranch({ cwd: root, rootOverride: root })).rejects.toThrow();
   });
 });
