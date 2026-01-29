@@ -22,6 +22,20 @@ bun run coverage
 
 `bun run ci` is the recommended single command.
 
+## Scoped checks (faster dev loop)
+
+When you only need to validate a specific package during development, use the scoped CI scripts:
+
+```bash
+bun run ci:agentplane
+bun run ci:core
+bun run ci:recipes
+bun run ci:spec
+bun run ci:testkit
+```
+
+These run Prettier, ESLint, TypeScript, and tests only for the selected package. Full `bun run ci` is still required before merge/push.
+
 ## Enforcement
 
 ### Local (git hooks)
