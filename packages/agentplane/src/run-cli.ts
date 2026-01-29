@@ -45,6 +45,7 @@ import { CliError, formatJsonError } from "./errors.js";
 import { formatCommentBodyForCommit } from "./comment-format.js";
 import { renderHelp } from "./help.js";
 import { getVersion } from "./version.js";
+import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -789,6 +790,39 @@ function renderRecipesIndex(recipes: { id: string; version: string; summary: str
   return `${lines.join("\n")}\n`;
 }
 
+function listBundledRecipes(): { id: string; summary: string; version: string }[] {
+  return BUNDLED_RECIPES_CATALOG.recipes.map((recipe) => ({
+    id: recipe.id,
+    summary: recipe.summary,
+    version: recipe.versions.at(-1)?.version ?? "unknown",
+  }));
+}
+
+function renderBundledRecipesHint(): string {
+  const entries = listBundledRecipes();
+  if (entries.length === 0) {
+    return "Available bundled recipes: none";
+  }
+  return `Available bundled recipes: ${entries.map((entry) => entry.id).join(", ")}`;
+}
+
+function validateBundledRecipesSelection(recipes: string[]): void {
+  if (recipes.length === 0) return;
+  const available = listBundledRecipes().map((entry) => entry.id);
+  if (available.length === 0) {
+    process.stdout.write(`${renderBundledRecipesHint()}\n`);
+    return;
+  }
+  const missing = recipes.filter((recipe) => !available.includes(recipe));
+  if (missing.length > 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Unknown recipes: ${missing.join(", ")}. ${renderBundledRecipesHint()}`,
+    });
+  }
+}
+
 async function loadRecipesIndexEntries(
   resolved: { agentplaneDir: string },
   lock: RecipesLock,
@@ -906,6 +940,7 @@ async function cmdInit(opts: {
     }
     if (!flags.recipes) {
       const rl = createInterface({ input: process.stdin, output: process.stdout });
+      process.stdout.write(`${renderBundledRecipesHint()}\n`);
       const answer = await rl.question("Install optional recipes (comma separated, or none): ");
       rl.close();
       const trimmed = answer.trim();
@@ -924,6 +959,8 @@ async function cmdInit(opts: {
     hooks = flags.hooks ?? defaults.hooks;
     recipes = flags.recipes ?? defaults.recipes;
   }
+
+  validateBundledRecipesSelection(recipes);
 
   try {
     const resolved = await resolveProject({
@@ -1007,7 +1044,11 @@ async function cmdInit(opts: {
     }
 
     if (recipes.length > 0) {
-      process.stdout.write("Recipes install is not implemented yet; skipping.\n");
+      if (listBundledRecipes().length === 0) {
+        process.stdout.write("Bundled recipes catalog is empty; skipping install.\n");
+      } else {
+        process.stdout.write("Recipes install is not implemented yet; skipping.\n");
+      }
     }
 
     process.stdout.write(`${path.relative(resolved.gitRoot, resolved.agentplaneDir)}\n`);

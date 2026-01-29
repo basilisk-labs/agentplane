@@ -18,6 +18,7 @@ import { describe, expect, it } from "vitest";
 import { defaultConfig, extractTaskSuffix, readTask } from "@agentplane/core";
 
 import { runCli } from "./run-cli.js";
+import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
 
 function captureStdIO() {
   let stdout = "";
@@ -6365,6 +6366,27 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Init conflicts detected");
       expect(io.stderr).toContain(".agentplane/config.json");
     } finally {
+      io.restore();
+    }
+  });
+
+  it("init validates recipes against bundled catalog", async () => {
+    const root = await mkGitRepoRoot();
+    const original = [...BUNDLED_RECIPES_CATALOG.recipes];
+    BUNDLED_RECIPES_CATALOG.recipes.length = 0;
+    BUNDLED_RECIPES_CATALOG.recipes.push({
+      id: "viewer",
+      summary: "Viewer recipe",
+      versions: [{ version: "1.0.0" }],
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--recipes", "viewer", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      BUNDLED_RECIPES_CATALOG.recipes.length = 0;
+      BUNDLED_RECIPES_CATALOG.recipes.push(...original);
       io.restore();
     }
   });
