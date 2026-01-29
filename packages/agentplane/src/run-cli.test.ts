@@ -4792,6 +4792,23 @@ describe("runCli", () => {
     }
   });
 
+  it("cleanup merged --quiet suppresses output", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--quiet", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("cleanup merged lists candidates without --yes", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
@@ -5865,6 +5882,31 @@ describe("runCli", () => {
       const code = await runCli(["init", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage: agentplane init");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("init rejects unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--wat", "x", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unknown flag");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("init refuses to overwrite existing config", async () => {
+    const root = await mkGitRepoRoot();
+    await runCli(["init", "--yes", "--root", root]);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Project already initialized");
     } finally {
       io.restore();
     }
