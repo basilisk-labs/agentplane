@@ -6586,6 +6586,42 @@ describe("runCli", () => {
     ).toBe(false);
   });
 
+  it("recipe list syncs RECIPES.md with manifest summaries", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({ summary: "Original summary" });
+
+    await runCli(["recipe", "install", archivePath, "--root", root]);
+
+    const manifestId = String(manifest.id);
+    const manifestVersion = String(manifest.version);
+    const manifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      manifestId,
+      manifestVersion,
+      "manifest.json",
+    );
+    const updatedManifest = {
+      ...manifest,
+      summary: "Updated summary",
+    };
+    await writeFile(manifestPath, JSON.stringify(updatedManifest, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "list", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Updated summary");
+    } finally {
+      io.restore();
+    }
+
+    const indexText = await readFile(path.join(root, ".agentplane", "RECIPES.md"), "utf8");
+    expect(indexText).toContain("Updated summary");
+  });
+
   it("recipe install accepts zip archives with a top-level folder", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

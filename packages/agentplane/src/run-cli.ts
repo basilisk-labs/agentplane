@@ -657,6 +657,39 @@ function renderRecipesIndex(recipes: { id: string; version: string; summary: str
   return `${lines.join("\n")}\n`;
 }
 
+async function loadRecipesIndexEntries(
+  resolved: { agentplaneDir: string },
+  lock: RecipesLock,
+): Promise<{ id: string; version: string; summary: string }[]> {
+  const entries = [];
+  for (const recipe of lock.recipes) {
+    const manifestPath = path.join(
+      resolved.agentplaneDir,
+      RECIPES_DIR_NAME,
+      recipe.id,
+      recipe.version,
+      "manifest.json",
+    );
+    let summary = "";
+    try {
+      const manifest = await readRecipeManifest(manifestPath);
+      summary = manifest.summary;
+    } catch {
+      summary = "Manifest missing or invalid.";
+    }
+    entries.push({ id: recipe.id, version: recipe.version, summary });
+  }
+  return entries;
+}
+
+async function writeRecipesIndex(
+  resolved: { agentplaneDir: string },
+  entries: { id: string; version: string; summary: string }[],
+): Promise<void> {
+  const indexPath = path.join(resolved.agentplaneDir, RECIPES_INDEX_NAME);
+  await writeFileIfChanged(indexPath, renderRecipesIndex(entries));
+}
+
 async function promptChoice(
   prompt: string,
   choices: string[],
@@ -1071,28 +1104,13 @@ async function cmdRecipeList(opts: { cwd: string; rootOverride?: string }): Prom
     const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
     const lock = await readRecipesLock(lockPath);
     if (lock.recipes.length === 0) {
+      await writeRecipesIndex(resolved, []);
       process.stdout.write("No recipes installed.\n");
       return 0;
     }
 
-    const entries = [];
-    for (const entry of lock.recipes) {
-      const manifestPath = path.join(
-        resolved.agentplaneDir,
-        RECIPES_DIR_NAME,
-        entry.id,
-        entry.version,
-        "manifest.json",
-      );
-      let summary = "";
-      try {
-        const manifest = await readRecipeManifest(manifestPath);
-        summary = manifest.summary;
-      } catch {
-        summary = "Manifest missing or invalid.";
-      }
-      entries.push({ id: entry.id, version: entry.version, summary });
-    }
+    const entries = await loadRecipesIndexEntries(resolved, lock);
+    await writeRecipesIndex(resolved, entries);
 
     for (const entry of entries) {
       process.stdout.write(`${entry.id}@${entry.version} - ${entry.summary}\n`);
@@ -1221,31 +1239,10 @@ async function cmdRecipeInstall(opts: {
         sha256,
         source: opts.source,
       });
-      await writeRecipesLock(lockPath, { schema_version: 1, recipes: updated });
-
-      const indexPath = path.join(resolved.agentplaneDir, RECIPES_INDEX_NAME);
-      const indexEntries = updated.map((entry) => ({
-        id: entry.id,
-        version: entry.version,
-        summary: entry.id === manifest.id ? manifest.summary : "",
-      }));
-      for (const entry of indexEntries) {
-        if (entry.summary) continue;
-        try {
-          const manifestPath = path.join(
-            resolved.agentplaneDir,
-            RECIPES_DIR_NAME,
-            entry.id,
-            entry.version,
-            "manifest.json",
-          );
-          const loaded = await readRecipeManifest(manifestPath);
-          entry.summary = loaded.summary;
-        } catch {
-          entry.summary = "Manifest missing or invalid.";
-        }
-      }
-      await writeFile(indexPath, renderRecipesIndex(indexEntries), "utf8");
+      const updatedLock = sortRecipesLock({ schema_version: 1, recipes: updated });
+      await writeRecipesLock(lockPath, updatedLock);
+      const indexEntries = await loadRecipesIndexEntries(resolved, updatedLock);
+      await writeRecipesIndex(resolved, indexEntries);
 
       process.stdout.write(`Installed recipe ${manifest.id}@${manifest.version}\n`);
       return 0;
@@ -1282,32 +1279,10 @@ async function cmdRecipeRemove(opts: {
     await rm(recipeDir, { recursive: true, force: true });
 
     const updated = lock.recipes.filter((recipe) => recipe.id !== opts.id);
-    await writeRecipesLock(lockPath, { schema_version: 1, recipes: updated });
-
-    const indexPath = path.join(resolved.agentplaneDir, RECIPES_INDEX_NAME);
-    if (updated.length === 0) {
-      await writeFile(indexPath, renderRecipesIndex([]), "utf8");
-    } else {
-      const indexEntries = [];
-      for (const recipe of updated) {
-        const manifestPath = path.join(
-          resolved.agentplaneDir,
-          RECIPES_DIR_NAME,
-          recipe.id,
-          recipe.version,
-          "manifest.json",
-        );
-        let summary = "";
-        try {
-          const manifest = await readRecipeManifest(manifestPath);
-          summary = manifest.summary;
-        } catch {
-          summary = "Manifest missing or invalid.";
-        }
-        indexEntries.push({ id: recipe.id, version: recipe.version, summary });
-      }
-      await writeFile(indexPath, renderRecipesIndex(indexEntries), "utf8");
-    }
+    const updatedLock = sortRecipesLock({ schema_version: 1, recipes: updated });
+    await writeRecipesLock(lockPath, updatedLock);
+    const indexEntries = await loadRecipesIndexEntries(resolved, updatedLock);
+    await writeRecipesIndex(resolved, indexEntries);
 
     process.stdout.write(`Removed recipe ${entry.id}@${entry.version}\n`);
     return 0;
