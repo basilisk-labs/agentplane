@@ -4253,7 +4253,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["integrate", taskId, "--root", root]);
+      const code = await runCli(["integrate", taskId, "--quiet", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("workflow_mode=branch_pr");
     } finally {
@@ -5937,6 +5937,54 @@ describe("runCli", () => {
       const code = await runCli(["init", "--yes", "--wat", "x", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Unknown flag");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("init rejects unexpected arguments", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "extra", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane init");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("init rejects invalid --ide values", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--ide", "vscode", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: --ide <none|cursor|windsurf|both>");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("init rejects invalid --workflow values", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--workflow", "fast", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: --workflow <direct|branch_pr>");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("init rejects invalid --hooks values", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--hooks", "maybe", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Invalid value for --hooks");
     } finally {
       io.restore();
     }
