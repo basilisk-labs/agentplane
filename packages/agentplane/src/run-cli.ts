@@ -258,7 +258,13 @@ type RecipeManifest = {
   summary: string;
   description: string;
   agents?: { id?: string; summary?: string; file?: string }[];
-  tools?: { id?: string; summary?: string; entrypoint?: string }[];
+  tools?: {
+    id?: string;
+    summary?: string;
+    runtime?: "node" | "bash";
+    entrypoint?: string;
+    permissions?: string[];
+  }[];
   scenarios?: { id?: string; summary?: string }[];
 };
 
@@ -312,8 +318,9 @@ const RECIPE_LIST_REMOTE_USAGE =
 const DEFAULT_RECIPES_INDEX_URL =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
 const RECIPE_CONFLICT_MODES = ["fail", "rename", "overwrite"] as const;
-const SCENARIO_USAGE = "Usage: agentplane scenario <list|info> [args]";
+const SCENARIO_USAGE = "Usage: agentplane scenario <list|info|run> [args]";
 const SCENARIO_INFO_USAGE = "Usage: agentplane scenario info <recipe:scenario>";
+const SCENARIO_RUN_USAGE = "Usage: agentplane scenario run <recipe:scenario>";
 const UPGRADE_USAGE =
   "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
@@ -698,6 +705,36 @@ async function readScenarioIndex(filePath: string): Promise<{
     }))
     .filter((entry) => entry.id);
   return { schema_version: 1, scenarios };
+}
+
+function normalizeScenarioToolStep(
+  raw: unknown,
+  sourcePath: string,
+): { tool: string; args: string[]; env: Record<string, string> } {
+  if (!isRecord(raw)) {
+    throw new Error(`scenario step must be an object (${sourcePath})`);
+  }
+  const tool = typeof raw.tool === "string" ? raw.tool.trim() : "";
+  if (!tool) {
+    throw new Error(`scenario step is missing tool id (${sourcePath})`);
+  }
+  const args = Array.isArray(raw.args) ? raw.args.filter((arg) => typeof arg === "string") : [];
+  if (Array.isArray(raw.args) && args.length !== raw.args.length) {
+    throw new Error(`scenario step args must be strings (${sourcePath})`);
+  }
+  const env: Record<string, string> = {};
+  if (raw.env !== undefined) {
+    if (!isRecord(raw.env)) {
+      throw new Error(`scenario step env must be an object (${sourcePath})`);
+    }
+    for (const [key, value] of Object.entries(raw.env)) {
+      if (typeof value !== "string") {
+        throw new Error(`scenario step env values must be strings (${sourcePath})`);
+      }
+      env[key] = value;
+    }
+  }
+  return { tool, args, env };
 }
 
 async function readRecipesLock(lockPath: string): Promise<RecipesLock> {
@@ -1682,6 +1719,223 @@ async function cmdScenarioInfo(opts: {
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "scenario info", root: opts.rootOverride ?? null });
+  }
+}
+
+async function executeRecipeTool(opts: {
+  runtime: "node" | "bash";
+  entrypoint: string;
+  args: string[];
+  cwd: string;
+  env: Record<string, string>;
+}): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  try {
+    const command = opts.runtime === "node" ? "node" : "bash";
+    const { stdout, stderr } = await execFileAsync(command, [opts.entrypoint, ...opts.args], {
+      cwd: opts.cwd,
+      env: opts.env,
+    });
+    return { exitCode: 0, stdout: String(stdout), stderr: String(stderr) };
+  } catch (err) {
+    let execErr: { code?: number; stdout?: string; stderr?: string } | null = null;
+    if (err && typeof err === "object") {
+      execErr = err as { code?: number; stdout?: string; stderr?: string };
+    }
+    const exitCode = typeof execErr?.code === "number" ? execErr.code : 1;
+    return {
+      exitCode,
+      stdout: String(execErr?.stdout ?? ""),
+      stderr: String(execErr?.stderr ?? ""),
+    };
+  }
+}
+
+function sanitizeRunId(value: string): string {
+  return value.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+async function cmdScenarioRun(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const [recipeId, scenarioId] = opts.id.split(":");
+    if (!recipeId || !scenarioId) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_RUN_USAGE });
+    }
+    const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
+    const lock = await readRecipesLock(lockPath);
+    const entry = lock.recipes.find((recipe) => recipe.id === recipeId);
+    if (!entry) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Recipe not installed: ${recipeId}`,
+      });
+    }
+    const recipeDir = path.join(resolved.agentplaneDir, RECIPES_DIR_NAME, entry.id, entry.version);
+    const manifestPath = path.join(recipeDir, "manifest.json");
+    const manifest = await readRecipeManifest(manifestPath);
+    const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
+    if ((await getPathKind(scenariosDir)) !== "dir") {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Scenario definitions not found for recipe: ${recipeId}`,
+      });
+    }
+    let scenario: ScenarioDefinition | null = null;
+    const files = await readdir(scenariosDir);
+    const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
+    for (const file of jsonFiles) {
+      const candidate = await readScenarioDefinition(path.join(scenariosDir, file));
+      if (candidate.id === scenarioId) {
+        scenario = candidate;
+        break;
+      }
+    }
+    if (!scenario) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Scenario not found: ${recipeId}:${scenarioId}`,
+      });
+    }
+
+    const runsRoot = path.join(resolved.agentplaneDir, RECIPES_DIR_NAME, recipeId, "runs");
+    await mkdir(runsRoot, { recursive: true });
+    const runId = `${new Date()
+      .toISOString()
+      .replaceAll(":", "-")
+      .replaceAll(".", "-")}-${sanitizeRunId(scenarioId)}`;
+    const runDir = path.join(runsRoot, runId);
+    await mkdir(runDir, { recursive: true });
+
+    const stepsMeta: {
+      tool: string;
+      runtime: string;
+      entrypoint: string;
+      exitCode: number;
+      duration_ms: number;
+    }[] = [];
+
+    for (let index = 0; index < scenario.steps.length; index++) {
+      const step = normalizeScenarioToolStep(scenario.steps[index], `${recipeId}:${scenarioId}`);
+      const toolEntry = manifest.tools?.find((tool) => tool?.id === step.tool);
+      if (!toolEntry) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Tool not found in recipe manifest: ${step.tool}`,
+        });
+      }
+      const runtime =
+        toolEntry.runtime === "node" || toolEntry.runtime === "bash" ? toolEntry.runtime : "";
+      const entrypoint = typeof toolEntry.entrypoint === "string" ? toolEntry.entrypoint : "";
+      if (!runtime || !entrypoint) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Tool entry is missing runtime/entrypoint: ${step.tool}`,
+        });
+      }
+      if (Array.isArray(toolEntry.permissions) && toolEntry.permissions.length > 0) {
+        process.stdout.write(
+          `Warning: tool ${toolEntry.id} declares permissions: ${toolEntry.permissions.join(
+            ", ",
+          )}\n`,
+        );
+      }
+
+      const entrypointPath = path.join(recipeDir, entrypoint);
+      if (!(await fileExists(entrypointPath))) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Tool entrypoint not found: ${entrypoint}`,
+        });
+      }
+
+      const stepDir = path.join(runDir, `step-${index + 1}-${sanitizeRunId(step.tool)}`);
+      await mkdir(stepDir, { recursive: true });
+
+      const env = {
+        ...process.env,
+        ...step.env,
+        AGENTPLANE_RUN_DIR: runDir,
+        AGENTPLANE_STEP_DIR: stepDir,
+        AGENTPLANE_RECIPE_ID: recipeId,
+        AGENTPLANE_SCENARIO_ID: scenarioId,
+        AGENTPLANE_TOOL_ID: step.tool,
+      } as Record<string, string>;
+
+      const startedAt = Date.now();
+      const result = await executeRecipeTool({
+        runtime,
+        entrypoint: entrypointPath,
+        args: step.args,
+        cwd: recipeDir,
+        env,
+      });
+      const durationMs = Date.now() - startedAt;
+      await writeFile(path.join(stepDir, "stdout.log"), result.stdout, "utf8");
+      await writeFile(path.join(stepDir, "stderr.log"), result.stderr, "utf8");
+      stepsMeta.push({
+        tool: step.tool,
+        runtime,
+        entrypoint,
+        exitCode: result.exitCode,
+        duration_ms: durationMs,
+      });
+
+      if (result.exitCode !== 0) {
+        await writeFile(
+          path.join(runDir, "meta.json"),
+          `${JSON.stringify(
+            {
+              recipe: recipeId,
+              scenario: scenarioId,
+              run_id: runId,
+              steps: stepsMeta,
+            },
+            null,
+            2,
+          )}\n`,
+          "utf8",
+        );
+        throw new CliError({
+          exitCode: result.exitCode,
+          code: "E_INTERNAL",
+          message: `Scenario step failed: ${step.tool}`,
+        });
+      }
+    }
+
+    await writeFile(
+      path.join(runDir, "meta.json"),
+      `${JSON.stringify(
+        {
+          recipe: recipeId,
+          scenario: scenarioId,
+          run_id: runId,
+          steps: stepsMeta,
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    process.stdout.write(`Run artifacts: ${path.relative(resolved.gitRoot, runDir)}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "scenario run", root: opts.rootOverride ?? null });
   }
 }
 
@@ -5649,6 +5903,16 @@ export async function runCli(argv: string[]): Promise<number> {
           throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_INFO_USAGE });
         }
         return await cmdScenarioInfo({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          id: args[0],
+        });
+      }
+      if (subcommand === "run") {
+        if (args.length !== 1) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_RUN_USAGE });
+        }
+        return await cmdScenarioRun({
           cwd: process.cwd(),
           rootOverride: globals.root,
           id: args[0],

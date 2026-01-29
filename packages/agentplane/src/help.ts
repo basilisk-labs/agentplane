@@ -39,6 +39,7 @@ export function renderHelp(): string {
     "  agentplane recipe remove <id>",
     "  agentplane scenario list",
     "  agentplane scenario info <recipe:scenario>",
+    "  agentplane scenario run <recipe:scenario>",
     "",
     "Branch commands:",
     "  agentplane branch base get",

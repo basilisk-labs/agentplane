@@ -97,7 +97,9 @@ async function createRecipeArchive(opts?: {
     summary: opts?.summary ?? "Preview task artifacts",
     description: opts?.description ?? "Provides a local viewer for task artifacts.",
     agents: [{ id: "RECIPE_AGENT", summary: "Recipe agent", file: "agents/recipe.json" }],
-    tools: [{ id: "RECIPE_TOOL", summary: "Recipe tool", entrypoint: "tools/run.sh" }],
+    tools: [
+      { id: "RECIPE_TOOL", summary: "Recipe tool", runtime: "bash", entrypoint: "tools/run.sh" },
+    ],
     scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
   };
   await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
@@ -114,6 +116,17 @@ async function createRecipeArchive(opts?: {
       null,
       2,
     ),
+    "utf8",
+  );
+  const toolsDir = path.join(recipeDir, "tools");
+  await mkdir(toolsDir, { recursive: true });
+  await writeFile(
+    path.join(toolsDir, "run.sh"),
+    [
+      "#!/usr/bin/env bash",
+      "set -euo pipefail",
+      'echo "ok" > "$AGENTPLANE_RUN_DIR/artifact.txt"',
+    ].join("\n"),
     "utf8",
   );
   const scenariosDir = path.join(recipeDir, "scenarios");
@@ -6730,6 +6743,37 @@ describe("runCli", () => {
     } finally {
       ioInfo.restore();
     }
+  });
+
+  it("scenario run executes tools and writes artifacts", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+
+    await runCli(["recipe", "install", archivePath, "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "scenario",
+        "run",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Run artifacts:");
+    } finally {
+      io.restore();
+    }
+
+    const runsRoot = path.join(root, ".agentplane", "recipes", manifestId, "runs");
+    const runs = await readdir(runsRoot);
+    expect(runs.length).toBeGreaterThan(0);
+    const runDir = path.join(runsRoot, runs[0]);
+    const artifactPath = path.join(runDir, "artifact.txt");
+    expect(await pathExists(artifactPath)).toBe(true);
   });
 
   it("recipe install renames agents on conflict when requested", async () => {

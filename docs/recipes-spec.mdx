@@ -45,6 +45,11 @@ Scenario files live under `scenarios/*.json` and are validated on install. Minim
 
 Optional fields: `summary`, `description`.
 
+Execution (v1):
+
+- `agentplane scenario run <recipe-id>:<scenario-id>` executes tools in order.
+- Logs and artifacts are written under `.agentplane/recipes/<recipe-id>/runs/...`.
+
 ## 3) `manifest.json` schema (v1)
 
 The `manifest.json` file must validate against `schemas/recipe-manifest.schema.json`.
