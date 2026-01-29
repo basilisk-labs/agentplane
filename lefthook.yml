@@ -1,4 +1,10 @@
 pre-commit:
   commands:
+    format:
+      run: bun run format:check
+    lint:
+      run: bun run lint
+pre-push:
+  commands:
     ci:
       run: bun run ci

@@ -26,10 +26,15 @@ bun run coverage
 
 ### Local (git hooks)
 
-This repo installs a `pre-commit` hook via `lefthook` that runs:
+This repo installs `pre-commit` and `pre-push` hooks via `lefthook`:
 
 ```bash
-bun run ci
+pre-commit:
+- bun run format:check
+- bun run lint
+
+pre-push:
+- bun run ci
 ```
 
 Hooks are installed automatically on `bun install` (via the root `postinstall` script). If you ever need to reinstall them:
