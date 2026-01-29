@@ -4226,7 +4226,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["pr", "check", taskId, "--root", root]);
       expect(code).toBe(3);
-      expect(io.stderr).toContain("Expected property name");
+      expect(io.stderr).toContain("JSON Parse error:");
     } finally {
       io.restore();
     }
