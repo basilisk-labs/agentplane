@@ -976,7 +976,7 @@ export class RedmineBackend implements TaskBackend {
     this.issueCache.clear();
 
     while (true) {
-      const payload = await this.requestJson("GET", "issues.json", {
+      const payload = await this.requestJson("GET", "issues.json", undefined, {
         project_id: this.projectId,
         limit,
         offset,
@@ -1033,7 +1033,7 @@ export class RedmineBackend implements TaskBackend {
     if (cached) return cached;
 
     const taskField = this.taskIdFieldId();
-    const payload = await this.requestJson("GET", "issues.json", {
+    const payload = await this.requestJson("GET", "issues.json", undefined, {
       project_id: this.projectId,
       status_id: "*",
       [`cf_${String(taskField)}`]: id,
