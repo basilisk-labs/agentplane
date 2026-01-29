@@ -266,13 +266,34 @@ type RecipesLock = {
   recipes: { id: string; version: string; sha256: string; source: string }[];
 };
 
+type RecipesIndex = {
+  schema_version: 1;
+  recipes: {
+    id: string;
+    summary: string;
+    description?: string;
+    versions: {
+      version: string;
+      url: string;
+      sha256: string;
+      min_agentplane_version?: string;
+      tags?: string[];
+    }[];
+  }[];
+};
+
 const RECIPES_LOCK_NAME = "recipes.lock.json";
 const RECIPES_DIR_NAME = "recipes";
 const RECIPES_INDEX_NAME = "RECIPES.md";
-const RECIPE_USAGE = "Usage: agentplane recipe <list|info|install|remove> [args]";
+const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";
+const RECIPE_USAGE = "Usage: agentplane recipe <list|info|install|remove|list-remote> [args]";
 const RECIPE_INFO_USAGE = "Usage: agentplane recipe info <id>";
 const RECIPE_INSTALL_USAGE = "Usage: agentplane recipe install <path>";
 const RECIPE_REMOVE_USAGE = "Usage: agentplane recipe remove <id>";
+const RECIPE_LIST_REMOTE_USAGE =
+  "Usage: agentplane recipe list-remote [--refresh] [--index <path|url>]";
+const DEFAULT_RECIPES_INDEX_URL =
+  "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
 const UPGRADE_USAGE =
   "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
@@ -441,6 +462,41 @@ function parseUpgradeFlags(args: string[]): UpgradeFlags {
   return out;
 }
 
+type RecipeListRemoteFlags = {
+  refresh: boolean;
+  index?: string;
+};
+
+function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
+  const out: RecipeListRemoteFlags = { refresh: false };
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (!arg.startsWith("--")) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_LIST_REMOTE_USAGE });
+    }
+    if (arg === "--refresh") {
+      out.refresh = true;
+      continue;
+    }
+    const next = args[i + 1];
+    if (!next) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+    }
+    switch (arg) {
+      case "--index": {
+        out.index = next;
+        break;
+      }
+      default: {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_LIST_REMOTE_USAGE });
+      }
+    }
+    i++;
+  }
+  return out;
+}
+
 function normalizeRecipeId(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) throw new Error("manifest.id must be non-empty");
@@ -506,6 +562,48 @@ function sortRecipesLock(lock: RecipesLock): RecipesLock {
     if (byId !== 0) return byId;
     return a.version.localeCompare(b.version);
   });
+  return { schema_version: 1, recipes };
+}
+
+function validateRecipesIndex(raw: unknown): RecipesIndex {
+  if (!isRecord(raw)) throw new Error("recipes index must be an object");
+  if (raw.schema_version !== 1) throw new Error("recipes index schema_version must be 1");
+  if (!Array.isArray(raw.recipes)) throw new Error("recipes index recipes must be array");
+
+  const recipes = raw.recipes
+    .filter((entry) => isRecord(entry))
+    .map((entry) => {
+      const id = typeof entry.id === "string" ? entry.id : "";
+      const summary = typeof entry.summary === "string" ? entry.summary : "";
+      const description = typeof entry.description === "string" ? entry.description : undefined;
+      const versionsRaw = Array.isArray(entry.versions) ? entry.versions : [];
+      if (!id || !summary || versionsRaw.length === 0) {
+        throw new Error("recipes index entries must include id, summary, and versions");
+      }
+      const versions = versionsRaw
+        .filter((version) => isRecord(version))
+        .map((version) => {
+          const versionId = typeof version.version === "string" ? version.version : "";
+          const url = typeof version.url === "string" ? version.url : "";
+          const sha256 = typeof version.sha256 === "string" ? version.sha256 : "";
+          if (!versionId || !url || !sha256) {
+            throw new Error("recipes index versions must include version, url, sha256");
+          }
+          return {
+            version: versionId,
+            url,
+            sha256,
+            min_agentplane_version:
+              typeof version.min_agentplane_version === "string"
+                ? version.min_agentplane_version
+                : undefined,
+            tags: Array.isArray(version.tags)
+              ? version.tags.filter((tag) => typeof tag === "string")
+              : undefined,
+          };
+        });
+      return { id, summary, description, versions };
+    });
   return { schema_version: 1, recipes };
 }
 
@@ -1118,6 +1216,50 @@ async function cmdRecipeList(opts: { cwd: string; rootOverride?: string }): Prom
     return 0;
   } catch (err) {
     throw mapCoreError(err, { command: "recipe list", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdRecipeListRemote(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseRecipeListRemoteFlags(opts.args);
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const cacheDir = path.join(resolved.agentplaneDir, "cache");
+    const cachePath = path.join(cacheDir, RECIPES_REMOTE_INDEX_NAME);
+
+    let rawIndex: unknown;
+    if (flags.refresh || !(await fileExists(cachePath))) {
+      const source = flags.index ?? DEFAULT_RECIPES_INDEX_URL;
+      if (source.startsWith("http://") || source.startsWith("https://")) {
+        rawIndex = await fetchJson(source);
+      } else {
+        const rawText = await readFile(path.resolve(opts.cwd, source), "utf8");
+        rawIndex = JSON.parse(rawText) as unknown;
+      }
+      await mkdir(cacheDir, { recursive: true });
+      await writeFile(cachePath, `${JSON.stringify(rawIndex, null, 2)}\n`, "utf8");
+    } else {
+      rawIndex = JSON.parse(await readFile(cachePath, "utf8")) as unknown;
+    }
+
+    const index = validateRecipesIndex(rawIndex);
+    for (const recipe of index.recipes) {
+      const latest = [...recipe.versions]
+        .toSorted((a, b) => a.version.localeCompare(b.version))
+        .at(-1);
+      if (!latest) continue;
+      process.stdout.write(`${recipe.id}@${latest.version} - ${recipe.summary}\n`);
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipe list-remote", root: opts.rootOverride ?? null });
   }
 }
 
@@ -4998,6 +5140,13 @@ export async function runCli(argv: string[]): Promise<number> {
           throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
         }
         return await cmdRecipeList({ cwd: process.cwd(), rootOverride: globals.root });
+      }
+      if (subcommand === "list-remote") {
+        return await cmdRecipeListRemote({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          args,
+        });
       }
       if (subcommand === "info") {
         if (args.length !== 1) {

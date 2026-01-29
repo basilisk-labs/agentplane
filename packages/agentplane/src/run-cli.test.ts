@@ -6664,6 +6664,87 @@ describe("runCli", () => {
     }
   });
 
+  it("recipe list-remote reads cached index", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const cacheDir = path.join(root, ".agentplane", "cache");
+    await mkdir(cacheDir, { recursive: true });
+    const indexPath = path.join(cacheDir, "recipes-index.json");
+    const index = {
+      schema_version: 1,
+      recipes: [
+        {
+          id: "viewer",
+          summary: "Viewer recipe",
+          versions: [
+            {
+              version: "1.2.3",
+              url: "https://example.com/viewer.tar.gz",
+              sha256: "abc123",
+            },
+          ],
+        },
+      ],
+    };
+    await writeFile(indexPath, JSON.stringify(index, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "list-remote", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("viewer@1.2.3 - Viewer recipe");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe list-remote refreshes cache from local index", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-index-"));
+    const localIndexPath = path.join(tempDir, "index.json");
+    const index = {
+      schema_version: 1,
+      recipes: [
+        {
+          id: "redmine",
+          summary: "Redmine sync",
+          versions: [
+            {
+              version: "2.0.0",
+              url: "https://example.com/redmine.tar.gz",
+              sha256: "def456",
+            },
+          ],
+        },
+      ],
+    };
+    await writeFile(localIndexPath, JSON.stringify(index, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "recipe",
+        "list-remote",
+        "--refresh",
+        "--index",
+        localIndexPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("redmine@2.0.0 - Redmine sync");
+    } finally {
+      io.restore();
+    }
+
+    const cacheText = await readFile(
+      path.join(root, ".agentplane", "cache", "recipes-index.json"),
+      "utf8",
+    );
+    expect(cacheText).toContain('"redmine"');
+  });
+
   it("recipe install rejects unsupported archives", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
