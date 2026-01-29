@@ -288,7 +288,7 @@ const RECIPES_INDEX_NAME = "RECIPES.md";
 const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";
 const RECIPE_USAGE = "Usage: agentplane recipe <list|info|install|remove|list-remote> [args]";
 const RECIPE_INFO_USAGE = "Usage: agentplane recipe info <id>";
-const RECIPE_INSTALL_USAGE = "Usage: agentplane recipe install <path>";
+const RECIPE_INSTALL_USAGE = "Usage: agentplane recipe install <path|url|id>";
 const RECIPE_REMOVE_USAGE = "Usage: agentplane recipe remove <id>";
 const RECIPE_LIST_REMOTE_USAGE =
   "Usage: agentplane recipe list-remote [--refresh] [--index <path|url>]";
@@ -696,6 +696,40 @@ async function downloadToFile(url: string, destPath: string): Promise<void> {
   }
   const buffer = Buffer.from(await res.arrayBuffer());
   await writeFile(destPath, buffer);
+}
+
+function isHttpUrl(value: string): boolean {
+  return value.startsWith("http://") || value.startsWith("https://");
+}
+
+async function readRecipesIndexSource(source: string, cwd: string): Promise<unknown> {
+  if (isHttpUrl(source)) {
+    return await fetchJson(source);
+  }
+  const rawText = await readFile(path.resolve(cwd, source), "utf8");
+  return JSON.parse(rawText) as unknown;
+}
+
+async function loadRecipesRemoteIndex(opts: {
+  resolved: { agentplaneDir: string };
+  cwd: string;
+  source?: string;
+  refresh: boolean;
+}): Promise<RecipesIndex> {
+  const cacheDir = path.join(opts.resolved.agentplaneDir, "cache");
+  const cachePath = path.join(cacheDir, RECIPES_REMOTE_INDEX_NAME);
+  let rawIndex: unknown;
+
+  if (opts.refresh || !(await fileExists(cachePath))) {
+    const source = opts.source ?? DEFAULT_RECIPES_INDEX_URL;
+    rawIndex = await readRecipesIndexSource(source, opts.cwd);
+    await mkdir(cacheDir, { recursive: true });
+    await writeFile(cachePath, `${JSON.stringify(rawIndex, null, 2)}\n`, "utf8");
+  } else {
+    rawIndex = JSON.parse(await readFile(cachePath, "utf8")) as unknown;
+  }
+
+  return validateRecipesIndex(rawIndex);
 }
 
 function parseGitHubRepo(source: string): { owner: string; repo: string } {
@@ -1230,25 +1264,12 @@ async function cmdRecipeListRemote(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const cacheDir = path.join(resolved.agentplaneDir, "cache");
-    const cachePath = path.join(cacheDir, RECIPES_REMOTE_INDEX_NAME);
-
-    let rawIndex: unknown;
-    if (flags.refresh || !(await fileExists(cachePath))) {
-      const source = flags.index ?? DEFAULT_RECIPES_INDEX_URL;
-      if (source.startsWith("http://") || source.startsWith("https://")) {
-        rawIndex = await fetchJson(source);
-      } else {
-        const rawText = await readFile(path.resolve(opts.cwd, source), "utf8");
-        rawIndex = JSON.parse(rawText) as unknown;
-      }
-      await mkdir(cacheDir, { recursive: true });
-      await writeFile(cachePath, `${JSON.stringify(rawIndex, null, 2)}\n`, "utf8");
-    } else {
-      rawIndex = JSON.parse(await readFile(cachePath, "utf8")) as unknown;
-    }
-
-    const index = validateRecipesIndex(rawIndex);
+    const index = await loadRecipesRemoteIndex({
+      resolved,
+      cwd: opts.cwd,
+      source: flags.index,
+      refresh: flags.refresh,
+    });
     for (const recipe of index.recipes) {
       const latest = [...recipe.versions]
         .toSorted((a, b) => a.version.localeCompare(b.version))
@@ -1342,17 +1363,84 @@ async function cmdRecipeInstall(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const sourcePath = await resolvePathFallback(opts.source);
-    if (!(await fileExists(sourcePath))) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_IO",
-        message: `Recipe archive not found: ${opts.source}`,
-      });
-    }
 
     const tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
     try {
+      let sourcePath = "";
+      let sourceLabel = opts.source;
+      let expectedSha = "";
+
+      if (isHttpUrl(opts.source)) {
+        const url = new URL(opts.source);
+        const filename = path.basename(url.pathname) || "recipe.tar.gz";
+        sourcePath = path.join(tempRoot, filename);
+        await downloadToFile(opts.source, sourcePath);
+      } else {
+        const candidate = await resolvePathFallback(opts.source);
+        if (await fileExists(candidate)) {
+          sourcePath = candidate;
+        } else {
+          const index = await loadRecipesRemoteIndex({
+            resolved,
+            cwd: opts.cwd,
+            refresh: false,
+          });
+          const entry = index.recipes.find((recipe) => recipe.id === opts.source);
+          if (!entry) {
+            throw new CliError({
+              exitCode: 5,
+              code: "E_IO",
+              message: `Recipe not found in remote index: ${opts.source}`,
+            });
+          }
+          const latest = [...entry.versions]
+            .toSorted((a, b) => a.version.localeCompare(b.version))
+            .at(-1);
+          if (!latest) {
+            throw new CliError({
+              exitCode: 3,
+              code: "E_VALIDATION",
+              message: `Recipe ${entry.id} has no versions in the remote index`,
+            });
+          }
+          expectedSha = latest.sha256;
+          sourceLabel = `${entry.id}@${latest.version}`;
+
+          if (isHttpUrl(latest.url)) {
+            const url = new URL(latest.url);
+            const filename = path.basename(url.pathname) || "recipe.tar.gz";
+            sourcePath = path.join(tempRoot, filename);
+            await downloadToFile(latest.url, sourcePath);
+          } else {
+            sourcePath = path.resolve(opts.cwd, latest.url);
+            if (!(await fileExists(sourcePath))) {
+              throw new CliError({
+                exitCode: 5,
+                code: "E_IO",
+                message: `Recipe archive not found: ${latest.url}`,
+              });
+            }
+          }
+
+          const actualSha = await sha256File(sourcePath);
+          if (expectedSha && actualSha !== expectedSha) {
+            throw new CliError({
+              exitCode: 3,
+              code: "E_VALIDATION",
+              message: `Recipe checksum mismatch for ${sourceLabel}`,
+            });
+          }
+        }
+      }
+
+      if (!sourcePath) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Recipe archive not found: ${opts.source}`,
+        });
+      }
+
       await extractArchive(sourcePath, tempRoot);
       const recipeRoot = await resolveRecipeRoot(tempRoot);
       const manifest = await readRecipeManifest(path.join(recipeRoot, "manifest.json"));
@@ -1379,7 +1467,7 @@ async function cmdRecipeInstall(opts: {
         id: manifest.id,
         version: manifest.version,
         sha256,
-        source: opts.source,
+        source: sourceLabel,
       });
       const updatedLock = sortRecipesLock({ schema_version: 1, recipes: updated });
       await writeRecipesLock(lockPath, updatedLock);

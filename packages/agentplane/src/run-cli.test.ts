@@ -6745,6 +6745,57 @@ describe("runCli", () => {
     expect(cacheText).toContain('"redmine"');
   });
 
+  it("recipe install supports id from cached index", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({
+      id: "viewer",
+      version: "1.0.0",
+      summary: "Viewer recipe",
+    });
+    const sha256 = createHash("sha256")
+      .update(await readFile(archivePath))
+      .digest("hex");
+    const cacheDir = path.join(root, ".agentplane", "cache");
+    await mkdir(cacheDir, { recursive: true });
+    const indexPath = path.join(cacheDir, "recipes-index.json");
+    const index = {
+      schema_version: 1,
+      recipes: [
+        {
+          id: String(manifest.id),
+          summary: "Viewer recipe",
+          versions: [
+            {
+              version: String(manifest.version),
+              url: archivePath,
+              sha256,
+            },
+          ],
+        },
+      ],
+    };
+    await writeFile(indexPath, JSON.stringify(index, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "install", "viewer", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const manifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      String(manifest.id),
+      String(manifest.version),
+      "manifest.json",
+    );
+    expect(await pathExists(manifestPath)).toBe(true);
+  });
+
   it("recipe install rejects unsupported archives", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
