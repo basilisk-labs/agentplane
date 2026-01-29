@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { access, chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { access, chmod, mkdir, readFile, realpath, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -398,6 +398,8 @@ const PR_CHECK_USAGE = "Usage: agentplane pr check <task-id>";
 const PR_NOTE_USAGE = "Usage: agentplane pr note <task-id> --author <id> --body <text>";
 const INTEGRATE_USAGE =
   "Usage: agentplane integrate <task-id> [--branch <name>] [--base <name>] [--merge-strategy squash|merge|rebase] [--run-verify] [--dry-run] [--quiet]";
+const CLEANUP_MERGED_USAGE =
+  "Usage: agentplane cleanup merged [--base <name>] [--yes] [--archive] [--quiet]";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
   if (prefix === "." || prefix === "") return true;
@@ -527,6 +529,28 @@ async function fileExists(filePath: string): Promise<boolean> {
   }
 }
 
+async function archivePrArtifacts(taskDir: string): Promise<string | null> {
+  const prDir = path.join(taskDir, "pr");
+  if (!(await fileExists(prDir))) return null;
+  const archiveRoot = path.join(taskDir, "pr-archive");
+  await mkdir(archiveRoot, { recursive: true });
+  const stamp = new Date().toISOString().replaceAll(/[:.]/g, "");
+  let dest = path.join(archiveRoot, stamp);
+  if (await fileExists(dest)) {
+    dest = path.join(archiveRoot, `${stamp}-${Math.random().toString(36).slice(2, 8)}`);
+  }
+  await rename(prDir, dest);
+  return dest;
+}
+
+async function resolvePathFallback(filePath: string): Promise<string> {
+  try {
+    return await realpath(filePath);
+  } catch {
+    return path.resolve(filePath);
+  }
+}
+
 function isPathWithin(parent: string, candidate: string): boolean {
   const rel = path.relative(parent, candidate);
   return rel === "" || (!rel.startsWith("..") && !path.isAbsolute(rel));
@@ -624,6 +648,30 @@ async function findWorktreeForBranch(cwd: string, branch: string): Promise<strin
       entry.branch === branch || entry.branch === target || entry.branch === `refs/heads/${branch}`,
   );
   return match ? match.path : null;
+}
+
+function stripBranchRef(branch: string): string {
+  return branch.startsWith("refs/heads/") ? branch.slice("refs/heads/".length) : branch;
+}
+
+function parseTaskIdFromBranch(prefix: string, branch: string): string | null {
+  const normalized = stripBranchRef(branch);
+  if (!normalized.startsWith(`${prefix}/`)) return null;
+  const rest = normalized.slice(prefix.length + 1);
+  const taskId = rest.split("/", 1)[0];
+  return taskId ? taskId.trim() : null;
+}
+
+async function gitListTaskBranches(cwd: string, prefix: string): Promise<string[]> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["for-each-ref", "--format=%(refname:short)", `refs/heads/${prefix}`],
+    { cwd, env: gitEnv() },
+  );
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
 }
 
 async function resolveGitHooksDir(cwd: string): Promise<string> {
@@ -2541,6 +2589,144 @@ async function cmdIntegrate(opts: {
   }
 }
 
+async function cmdCleanupMerged(opts: {
+  cwd: string;
+  rootOverride?: string;
+  base?: string;
+  yes: boolean;
+  archive: boolean;
+  quiet: boolean;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    if (loaded.config.workflow_mode !== "branch_pr") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "cleanup merged is only supported when workflow_mode=branch_pr",
+      });
+    }
+
+    await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+
+    const baseBranch = (
+      opts.base ?? (await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }))
+    ).trim();
+    if (!baseBranch) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+    }
+    if (!(await gitBranchExists(resolved.gitRoot, baseBranch))) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `Unknown base branch: ${baseBranch}`,
+      });
+    }
+
+    const currentBranch = await gitCurrentBranch(resolved.gitRoot);
+    if (currentBranch !== baseBranch) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `cleanup merged must run on base branch ${baseBranch} (current: ${currentBranch})`,
+      });
+    }
+
+    const repoRoot = await resolvePathFallback(resolved.gitRoot);
+
+    const tasks = await listTasks({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const tasksById = new Map(tasks.map((task) => [task.id, task]));
+    const prefix = loaded.config.branch.task_prefix;
+    const branches = await gitListTaskBranches(resolved.gitRoot, prefix);
+
+    const candidates: { taskId: string; branch: string; worktreePath: string | null }[] = [];
+    for (const branch of branches) {
+      if (branch === baseBranch) continue;
+      const taskId = parseTaskIdFromBranch(prefix, branch);
+      if (!taskId) continue;
+      const task = tasksById.get(taskId);
+      if (!task) continue;
+      const status = String(task.frontmatter.status || "").toUpperCase();
+      if (status !== "DONE") continue;
+      const diff = await gitDiffNames(resolved.gitRoot, baseBranch, branch);
+      if (diff.length > 0) continue;
+      const worktreePath = await findWorktreeForBranch(resolved.gitRoot, branch);
+      candidates.push({ taskId, branch, worktreePath });
+    }
+
+    candidates.sort((a, b) => a.taskId.localeCompare(b.taskId));
+
+    if (!opts.quiet) {
+      const archiveLabel = opts.archive ? " archive=on" : "";
+      process.stdout.write(`cleanup merged (base=${baseBranch}${archiveLabel})\n`);
+      if (candidates.length === 0) {
+        process.stdout.write("no candidates\n");
+        return 0;
+      }
+      for (const item of candidates) {
+        process.stdout.write(
+          `- ${item.taskId}: branch=${item.branch} worktree=${item.worktreePath ?? "-"}\n`,
+        );
+      }
+    }
+
+    if (!opts.yes) {
+      if (!opts.quiet) {
+        process.stdout.write("Re-run with --yes to delete these branches/worktrees.\n");
+      }
+      return 0;
+    }
+
+    for (const item of candidates) {
+      const worktreePath = item.worktreePath ? await resolvePathFallback(item.worktreePath) : null;
+      if (worktreePath) {
+        if (!isPathWithin(repoRoot, worktreePath)) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_GIT",
+            message: `Refusing to remove worktree outside repo: ${worktreePath}`,
+          });
+        }
+        if (worktreePath === repoRoot) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_GIT",
+            message: "Refusing to remove the current worktree",
+          });
+        }
+      }
+
+      if (opts.archive) {
+        const taskDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir, item.taskId);
+        await archivePrArtifacts(taskDir);
+      }
+
+      if (worktreePath) {
+        await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        });
+      }
+      await execFileAsync("git", ["branch", "-D", item.branch], {
+        cwd: resolved.gitRoot,
+        env: gitEnv(),
+      });
+    }
+
+    if (!opts.quiet) {
+      process.stdout.write(`✅ cleanup merged deleted=${candidates.length}\n`);
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "cleanup merged", root: opts.rootOverride ?? null });
+  }
+}
+
 async function cmdHooksInstall(opts: {
   cwd: string;
   rootOverride?: string;
@@ -3621,6 +3807,55 @@ export async function runCli(argv: string[]): Promise<number> {
         mergeStrategy,
         runVerify,
         dryRun,
+        quiet,
+      });
+    }
+
+    if (namespace === "cleanup") {
+      const subcommand = command;
+      if (subcommand !== "merged") {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+      }
+      let base: string | undefined;
+      let yes = false;
+      let archive = false;
+      let quiet = false;
+
+      for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (!arg) continue;
+        if (arg === "--base") {
+          const next = args[i + 1];
+          if (!next)
+            throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+          base = next;
+          i++;
+          continue;
+        }
+        if (arg === "--yes") {
+          yes = true;
+          continue;
+        }
+        if (arg === "--archive") {
+          archive = true;
+          continue;
+        }
+        if (arg === "--quiet") {
+          quiet = true;
+          continue;
+        }
+        if (arg.startsWith("--")) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+        }
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+      }
+
+      return await cmdCleanupMerged({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        base,
+        yes,
+        archive,
         quiet,
       });
     }
