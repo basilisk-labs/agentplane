@@ -1,13 +1,15 @@
 ---
 id: "202601290714-QE3NNN"
 title: "AP-035: apply recipe assets/agents/scenarios"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: ["202601290714-GGRDKD"]
 tags: ["roadmap", "nodejs", "recipes"]
+commit: { hash: "d7452c06dbd2bddae01a9452f5babca7bb059aac", message: "✨ QE3NNN apply recipe install" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: implement recipe apply for agents/assets/scenarios with deterministic conflict handling." }
+  - { author: "ORCHESTRATOR", body: "verified: manual review | details: tests not run (suggest bun test packages/agentplane/src/run-cli.test.ts)." }
 doc_version: 2
 doc_updated_at: "2026-01-29T13:16:29+00:00"
 doc_updated_by: "agentctl"
