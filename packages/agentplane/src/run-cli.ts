@@ -396,6 +396,8 @@ const PR_OPEN_USAGE = "Usage: agentplane pr open <task-id> --author <id> [--bran
 const PR_UPDATE_USAGE = "Usage: agentplane pr update <task-id>";
 const PR_CHECK_USAGE = "Usage: agentplane pr check <task-id>";
 const PR_NOTE_USAGE = "Usage: agentplane pr note <task-id> --author <id> --body <text>";
+const INTEGRATE_USAGE =
+  "Usage: agentplane integrate <task-id> [--branch <name>] [--base <name>] [--merge-strategy squash|merge|rebase] [--run-verify] [--dry-run] [--quiet]";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
   if (prefix === "." || prefix === "") return true;
@@ -559,6 +561,69 @@ async function gitBranchExists(cwd: string, branch: string): Promise<boolean> {
     if (code === 1) return false;
     throw err;
   }
+}
+
+function toGitPath(filePath: string): string {
+  return filePath.split(path.sep).join("/");
+}
+
+async function gitShowFile(cwd: string, ref: string, relPath: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["show", `${ref}:${relPath}`], {
+    cwd,
+    env: gitEnv(),
+  });
+  return stdout;
+}
+
+async function gitDiffNames(cwd: string, base: string, branch: string): Promise<string[]> {
+  const { stdout } = await execFileAsync("git", ["diff", "--name-only", `${base}...${branch}`], {
+    cwd,
+    env: gitEnv(),
+  });
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+async function gitDiffStat(cwd: string, base: string, branch: string): Promise<string> {
+  const { stdout } = await execFileAsync("git", ["diff", "--stat", `${base}...${branch}`], {
+    cwd,
+    env: gitEnv(),
+  });
+  return stdout.trimEnd();
+}
+
+async function listWorktrees(cwd: string): Promise<{ path: string; branch: string | null }[]> {
+  const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
+    cwd,
+    env: gitEnv(),
+  });
+  const worktrees: { path: string; branch: string | null }[] = [];
+  const lines = stdout.split("\n");
+  let current: { path: string; branch: string | null } | null = null;
+  for (const line of lines) {
+    if (line.startsWith("worktree ")) {
+      if (current) worktrees.push(current);
+      current = { path: line.slice("worktree ".length).trim(), branch: null };
+      continue;
+    }
+    if (line.startsWith("branch ") && current) {
+      current.branch = line.slice("branch ".length).trim();
+    }
+  }
+  if (current) worktrees.push(current);
+  return worktrees;
+}
+
+async function findWorktreeForBranch(cwd: string, branch: string): Promise<string | null> {
+  const target = branch.startsWith("refs/heads/") ? branch : `refs/heads/${branch}`;
+  const worktrees = await listWorktrees(cwd);
+  const match = worktrees.find(
+    (entry) =>
+      entry.branch === branch || entry.branch === target || entry.branch === `refs/heads/${branch}`,
+  );
+  return match ? match.path : null;
 }
 
 async function resolveGitHooksDir(cwd: string): Promise<string> {
@@ -976,6 +1041,24 @@ async function gitStatusChangedPaths(opts: {
     if (name) files.push(name);
   }
   return files;
+}
+
+async function ensureGitClean(opts: { cwd: string; rootOverride?: string }): Promise<void> {
+  const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  if (staged.length > 0) {
+    throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree has staged changes" });
+  }
+  const unstaged = await getUnstagedFiles({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
+  if (unstaged.length > 0) {
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: "Working tree has unstaged changes",
+    });
+  }
 }
 
 async function stageAllowlist(opts: {
@@ -1954,6 +2037,510 @@ async function cmdPrNote(opts: {
   }
 }
 
+async function readPrArtifact(opts: {
+  resolved: { gitRoot: string };
+  prDir: string;
+  fileName: string;
+  branch: string;
+}): Promise<string | null> {
+  const filePath = path.join(opts.prDir, opts.fileName);
+  if (await fileExists(filePath)) {
+    return await readFile(filePath, "utf8");
+  }
+  const rel = toGitPath(path.relative(opts.resolved.gitRoot, filePath));
+  try {
+    return await gitShowFile(opts.resolved.gitRoot, opts.branch, rel);
+  } catch {
+    return null;
+  }
+}
+
+function validateReviewContents(review: string, errors: string[]): void {
+  const requiredSections = ["## Summary", "## Checklist", "## Handoff Notes"];
+  for (const section of requiredSections) {
+    if (!review.includes(section)) errors.push(`Missing section: ${section}`);
+  }
+  if (!review.includes("<!-- BEGIN AUTO SUMMARY -->")) {
+    errors.push("Missing auto summary start marker");
+  }
+  if (!review.includes("<!-- END AUTO SUMMARY -->")) {
+    errors.push("Missing auto summary end marker");
+  }
+}
+
+async function cmdIntegrate(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  branch?: string;
+  base?: string;
+  mergeStrategy: "squash" | "merge" | "rebase";
+  runVerify: boolean;
+  dryRun: boolean;
+  quiet: boolean;
+}): Promise<number> {
+  let tempWorktreePath: string | null = null;
+  let createdTempWorktree = false;
+  try {
+    const task = await readTask({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      taskId: opts.taskId,
+    });
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    if (loaded.config.workflow_mode !== "branch_pr") {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "integrate is only supported when workflow_mode=branch_pr",
+      });
+    }
+
+    await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+
+    const baseBranch = (
+      opts.base ?? (await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }))
+    ).trim();
+    const currentBranch = await gitCurrentBranch(resolved.gitRoot);
+    if (currentBranch !== baseBranch) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `integrate must run on base branch ${baseBranch} (current: ${currentBranch})`,
+      });
+    }
+
+    const { prDir, metaPath, diffstatPath, verifyLogPath } = await resolvePrPaths({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+    });
+
+    let meta: PrMeta | null = null;
+    let branch = (opts.branch ?? "").trim();
+    if (await fileExists(metaPath)) {
+      meta = parsePrMeta(await readFile(metaPath, "utf8"), task.id);
+      if (!branch) branch = (meta.branch ?? "").trim();
+    }
+    if (!branch) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+    }
+    if (!(await gitBranchExists(resolved.gitRoot, branch))) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Unknown branch: ${branch}`,
+      });
+    }
+
+    const metaSource =
+      meta ??
+      parsePrMeta(
+        await gitShowFile(
+          resolved.gitRoot,
+          branch,
+          toGitPath(path.relative(resolved.gitRoot, metaPath)),
+        ),
+        task.id,
+      );
+    const baseCandidate =
+      opts.base ?? (metaSource as Record<string, unknown>).base_branch ?? baseBranch;
+    const base =
+      typeof baseCandidate === "string" && baseCandidate.trim().length > 0
+        ? baseCandidate.trim()
+        : baseBranch;
+
+    const errors: string[] = [];
+    const diffstatText = await readPrArtifact({
+      resolved,
+      prDir,
+      fileName: "diffstat.txt",
+      branch,
+    });
+    if (diffstatText === null) errors.push("Missing pr/diffstat.txt");
+    const verifyLogText = await readPrArtifact({
+      resolved,
+      prDir,
+      fileName: "verify.log",
+      branch,
+    });
+    if (verifyLogText === null) errors.push("Missing pr/verify.log");
+    const reviewText = await readPrArtifact({
+      resolved,
+      prDir,
+      fileName: "review.md",
+      branch,
+    });
+    if (reviewText === null) errors.push("Missing pr/review.md");
+    if (reviewText) validateReviewContents(reviewText, errors);
+    if (errors.length > 0) {
+      throw new CliError({ exitCode: 3, code: "E_VALIDATION", message: errors.join("\n") });
+    }
+
+    const changedPaths = await gitDiffNames(resolved.gitRoot, base, branch);
+    const tasksPath = loaded.config.paths.tasks_path;
+    if (changedPaths.includes(tasksPath)) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `Branch ${branch} modifies ${tasksPath} (single-writer violation)`,
+      });
+    }
+
+    const rawVerify = (task.frontmatter as Record<string, unknown>).verify;
+    const verifyCommands = Array.isArray(rawVerify)
+      ? rawVerify
+          .filter((item): item is string => typeof item === "string")
+          .map((item) => item.trim())
+          .filter(Boolean)
+      : [];
+    let branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
+    let alreadyVerifiedSha: string | null = null;
+    if (verifyCommands.length > 0) {
+      const metaVerified = metaSource?.last_verified_sha ?? null;
+      if (metaVerified && metaVerified === branchHeadSha) {
+        alreadyVerifiedSha = branchHeadSha;
+      } else if (verifyLogText) {
+        const logSha = extractLastVerifiedSha(verifyLogText);
+        if (logSha && logSha === branchHeadSha) alreadyVerifiedSha = logSha;
+      }
+    }
+    let shouldRunVerify =
+      opts.runVerify || (verifyCommands.length > 0 && alreadyVerifiedSha === null);
+
+    if (opts.dryRun) {
+      if (!opts.quiet) {
+        process.stdout.write(
+          `✅ integrate dry-run ${task.id} (base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"})\n`,
+        );
+      }
+      return 0;
+    }
+
+    let worktreePath = await findWorktreeForBranch(resolved.gitRoot, branch);
+    if (opts.mergeStrategy === "rebase" && !worktreePath) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "rebase strategy requires an existing worktree for the task branch",
+      });
+    }
+
+    if (shouldRunVerify && !worktreePath) {
+      const worktreesDir = path.resolve(resolved.gitRoot, loaded.config.paths.worktrees_dir);
+      if (!isPathWithin(resolved.gitRoot, worktreesDir)) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: `worktrees_dir must be inside the repo: ${worktreesDir}`,
+        });
+      }
+      tempWorktreePath = path.join(worktreesDir, `_integrate_tmp_${task.id}`);
+      const tempExists = await fileExists(tempWorktreePath);
+      if (tempExists) {
+        const registered = await findWorktreeForBranch(resolved.gitRoot, branch);
+        if (!registered) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_GIT",
+            message: `Temp worktree path exists but is not registered: ${tempWorktreePath}`,
+          });
+        }
+      } else {
+        await mkdir(worktreesDir, { recursive: true });
+        await execFileAsync("git", ["worktree", "add", tempWorktreePath, branch], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        });
+        createdTempWorktree = true;
+      }
+      worktreePath = tempWorktreePath;
+    }
+
+    const verifyEntries: { header: string; content: string }[] = [];
+    if (opts.mergeStrategy !== "rebase" && shouldRunVerify && verifyCommands.length > 0) {
+      if (!worktreePath) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Unable to locate or create a worktree for verify execution",
+        });
+      }
+      for (const command of verifyCommands) {
+        if (!opts.quiet) process.stdout.write(`$ ${command}\n`);
+        const timestamp = nowIso();
+        const result = await runShellCommand(command, worktreePath);
+        const shaPrefix = branchHeadSha ? `sha=${branchHeadSha} ` : "";
+        verifyEntries.push({
+          header: `[${timestamp}] ${shaPrefix}$ ${command}`.trimEnd(),
+          content: result.output,
+        });
+        if (result.code !== 0) {
+          throw new CliError({
+            exitCode: result.code || 1,
+            code: "E_IO",
+            message: `Verify command failed: ${command}`,
+          });
+        }
+      }
+      if (branchHeadSha) {
+        verifyEntries.push({
+          header: `[${nowIso()}] ✅ verified_sha=${branchHeadSha}`,
+          content: "",
+        });
+      }
+      if (!opts.quiet) {
+        process.stdout.write(`✅ verify passed for ${task.id}\n`);
+      }
+    }
+
+    const baseShaBeforeMerge = await gitRevParse(resolved.gitRoot, [base]);
+    const headBeforeMerge = await gitRevParse(resolved.gitRoot, ["HEAD"]);
+    let mergeHash = "";
+
+    if (opts.mergeStrategy === "squash") {
+      try {
+        await execFileAsync("git", ["merge", "--squash", branch], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        });
+      } catch (err) {
+        await execFileAsync("git", ["reset", "--hard", headBeforeMerge], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        });
+        const message = err instanceof Error ? err.message : "git merge --squash failed";
+        throw new CliError({ exitCode: 2, code: "E_GIT", message });
+      }
+      const { stdout: staged } = await execFileAsync("git", ["diff", "--cached", "--name-only"], {
+        cwd: resolved.gitRoot,
+        env: gitEnv(),
+      });
+      if (!staged.trim()) {
+        await execFileAsync("git", ["reset", "--hard", headBeforeMerge], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `Nothing to integrate: ${branch} is already merged into ${base}`,
+        });
+      }
+      const { stdout: subjectOut } = await execFileAsync(
+        "git",
+        ["log", "-1", "--pretty=format:%s", branch],
+        { cwd: resolved.gitRoot, env: gitEnv() },
+      );
+      let subject = subjectOut.trim();
+      if (!subject.includes(task.id)) {
+        subject = `🧩 ${task.id} integrate ${branch}`;
+      }
+      const env = {
+        ...process.env,
+        AGENT_PLANE_TASK_ID: task.id,
+        AGENT_PLANE_ALLOW_BASE: "1",
+        AGENT_PLANE_ALLOW_TASKS: "0",
+      };
+      try {
+        await execFileAsync("git", ["commit", "-m", subject], {
+          cwd: resolved.gitRoot,
+          env,
+        });
+      } catch (err) {
+        await execFileAsync("git", ["reset", "--hard", headBeforeMerge], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        });
+        const message = err instanceof Error ? err.message : "git commit failed";
+        throw new CliError({ exitCode: 2, code: "E_GIT", message });
+      }
+      mergeHash = await gitRevParse(resolved.gitRoot, ["HEAD"]);
+    } else if (opts.mergeStrategy === "merge") {
+      const env = {
+        ...process.env,
+        AGENT_PLANE_TASK_ID: task.id,
+        AGENT_PLANE_ALLOW_BASE: "1",
+        AGENT_PLANE_ALLOW_TASKS: "0",
+      };
+      try {
+        await execFileAsync(
+          "git",
+          ["merge", "--no-ff", branch, "-m", `🔀 ${task.id} merge ${branch}`],
+          {
+            cwd: resolved.gitRoot,
+            env,
+          },
+        );
+      } catch (err) {
+        await execFileAsync("git", ["merge", "--abort"], { cwd: resolved.gitRoot, env: gitEnv() });
+        const message = err instanceof Error ? err.message : "git merge failed";
+        throw new CliError({ exitCode: 2, code: "E_GIT", message });
+      }
+      mergeHash = await gitRevParse(resolved.gitRoot, ["HEAD"]);
+    } else {
+      if (!worktreePath) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "rebase strategy requires an existing worktree for the task branch",
+        });
+      }
+      try {
+        await execFileAsync("git", ["rebase", base], { cwd: worktreePath, env: gitEnv() });
+      } catch (err) {
+        await execFileAsync("git", ["rebase", "--abort"], { cwd: worktreePath, env: gitEnv() });
+        const message = err instanceof Error ? err.message : "git rebase failed";
+        throw new CliError({ exitCode: 2, code: "E_GIT", message });
+      }
+      branchHeadSha = await gitRevParse(resolved.gitRoot, [branch]);
+      if (!opts.runVerify && verifyCommands.length > 0) {
+        alreadyVerifiedSha = null;
+        const metaVerified = metaSource?.last_verified_sha ?? null;
+        if (metaVerified && metaVerified === branchHeadSha) {
+          alreadyVerifiedSha = branchHeadSha;
+        } else if (verifyLogText) {
+          const logSha = extractLastVerifiedSha(verifyLogText);
+          if (logSha && logSha === branchHeadSha) alreadyVerifiedSha = logSha;
+        }
+        shouldRunVerify = alreadyVerifiedSha === null;
+      }
+      if (shouldRunVerify && verifyCommands.length > 0) {
+        if (!worktreePath) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Unable to locate or create a worktree for verify execution",
+          });
+        }
+        for (const command of verifyCommands) {
+          if (!opts.quiet) process.stdout.write(`$ ${command}\n`);
+          const timestamp = nowIso();
+          const result = await runShellCommand(command, worktreePath);
+          const shaPrefix = branchHeadSha ? `sha=${branchHeadSha} ` : "";
+          verifyEntries.push({
+            header: `[${timestamp}] ${shaPrefix}$ ${command}`.trimEnd(),
+            content: result.output,
+          });
+          if (result.code !== 0) {
+            throw new CliError({
+              exitCode: result.code || 1,
+              code: "E_IO",
+              message: `Verify command failed: ${command}`,
+            });
+          }
+        }
+        if (branchHeadSha) {
+          verifyEntries.push({
+            header: `[${nowIso()}] ✅ verified_sha=${branchHeadSha}`,
+            content: "",
+          });
+        }
+        if (!opts.quiet) {
+          process.stdout.write(`✅ verify passed for ${task.id}\n`);
+        }
+      }
+      try {
+        await execFileAsync("git", ["merge", "--ff-only", branch], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        });
+      } catch (err) {
+        await execFileAsync("git", ["reset", "--hard", headBeforeMerge], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        }).catch(() => null);
+        const message = err instanceof Error ? err.message : "git merge --ff-only failed";
+        throw new CliError({ exitCode: 2, code: "E_GIT", message });
+      }
+      mergeHash = await gitRevParse(resolved.gitRoot, ["HEAD"]);
+    }
+
+    if (!(await fileExists(prDir))) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Missing PR artifact dir after merge: ${prDir}`,
+      });
+    }
+
+    if (verifyEntries.length > 0) {
+      for (const entry of verifyEntries) {
+        await appendVerifyLog(verifyLogPath, entry.header, entry.content);
+      }
+    }
+
+    const rawMeta = await readFile(metaPath, "utf8");
+    const mergedMeta = parsePrMeta(rawMeta, task.id);
+    const now = nowIso();
+    const nextMeta: Record<string, unknown> = {
+      ...mergedMeta,
+      branch,
+      base_branch: base,
+      merge_strategy: opts.mergeStrategy,
+      status: "MERGED",
+      merged_at: (mergedMeta as Record<string, unknown>).merged_at ?? now,
+      merge_commit: mergeHash,
+      head_sha: branchHeadSha,
+      updated_at: now,
+    };
+    if (verifyCommands.length > 0 && (shouldRunVerify || alreadyVerifiedSha)) {
+      nextMeta.last_verified_sha = branchHeadSha;
+      nextMeta.last_verified_at = now;
+      nextMeta.verify = mergedMeta.verify
+        ? { ...mergedMeta.verify, status: "pass" }
+        : { status: "pass", command: verifyCommands.join(" && ") };
+    }
+    await writeFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
+
+    const diffstat = await gitDiffStat(resolved.gitRoot, baseShaBeforeMerge, branch);
+    await writeFile(diffstatPath, diffstat ? `${diffstat}\n` : "", "utf8");
+
+    const verifyDesc =
+      verifyCommands.length === 0
+        ? "skipped(no commands)"
+        : shouldRunVerify
+          ? "ran"
+          : alreadyVerifiedSha
+            ? `skipped(already verified_sha=${alreadyVerifiedSha})`
+            : "skipped";
+    const finishBody = `Verified: Integrated via ${opts.mergeStrategy}; verify=${verifyDesc}; pr=${path.relative(
+      resolved.gitRoot,
+      prDir,
+    )}.`;
+    await cmdFinish({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: task.id,
+      author: "INTEGRATOR",
+      body: finishBody,
+    });
+
+    if (!opts.quiet) {
+      process.stdout.write(`✅ integrate ${task.id} (merge=${mergeHash.slice(0, 12)})\n`);
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "integrate", root: opts.rootOverride ?? null });
+  } finally {
+    if (createdTempWorktree && tempWorktreePath) {
+      try {
+        await execFileAsync("git", ["worktree", "remove", "--force", tempWorktreePath], {
+          cwd: opts.cwd,
+          env: gitEnv(),
+        });
+      } catch {
+        // ignore cleanup errors
+      }
+    }
+  }
+}
+
 async function cmdHooksInstall(opts: {
   cwd: string;
   rootOverride?: string;
@@ -2132,9 +2719,6 @@ async function cmdHooksRun(opts: {
       return 0;
     }
 
-    if (opts.hook === "pre-push") {
-      return 0;
-    }
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -2969,6 +3553,75 @@ export async function runCli(argv: string[]): Promise<number> {
         skipIfUnchanged,
         quiet,
         require,
+      });
+    }
+
+    if (namespace === "integrate") {
+      const taskId = command;
+      if (!taskId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+      }
+      let branch: string | undefined;
+      let base: string | undefined;
+      let mergeStrategy: "squash" | "merge" | "rebase" = "squash";
+      let runVerify = false;
+      let dryRun = false;
+      let quiet = false;
+
+      for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        if (!arg) continue;
+        if (arg === "--branch") {
+          const next = args[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+          branch = next;
+          i++;
+          continue;
+        }
+        if (arg === "--base") {
+          const next = args[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+          base = next;
+          i++;
+          continue;
+        }
+        if (arg === "--merge-strategy") {
+          const next = args[i + 1];
+          if (next !== "squash" && next !== "merge" && next !== "rebase") {
+            throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+          }
+          mergeStrategy = next;
+          i++;
+          continue;
+        }
+        if (arg === "--run-verify") {
+          runVerify = true;
+          continue;
+        }
+        if (arg === "--dry-run") {
+          dryRun = true;
+          continue;
+        }
+        if (arg === "--quiet") {
+          quiet = true;
+          continue;
+        }
+        if (arg.startsWith("--")) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+        }
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+      }
+
+      return await cmdIntegrate({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        branch,
+        base,
+        mergeStrategy,
+        runVerify,
+        dryRun,
+        quiet,
       });
     }
 

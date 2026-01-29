@@ -79,6 +79,17 @@ async function configureGitUser(root: string): Promise<void> {
   await execFileAsync("git", ["config", "user.name", "Test User"], { cwd: root });
 }
 
+function cleanGitEnv(): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = { ...process.env };
+  delete env.GIT_DIR;
+  delete env.GIT_WORK_TREE;
+  delete env.GIT_COMMON_DIR;
+  delete env.GIT_INDEX_FILE;
+  delete env.GIT_OBJECT_DIRECTORY;
+  delete env.GIT_ALTERNATE_OBJECT_DIRECTORIES;
+  return env;
+}
+
 describe("runCli", () => {
   it("prints help on --help", async () => {
     const io = captureStdIO();
@@ -238,6 +249,8 @@ describe("runCli", () => {
         "CODER",
         "--tag",
         "nodejs",
+        "--verify",
+        "sleep 1",
         "--root",
         root,
       ]);
@@ -4083,6 +4096,581 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("integrate requires a task id", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane integrate");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate rejects invalid merge strategy", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate task",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--merge-strategy", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane integrate");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate rejects unexpected arguments", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", "202601010101-ABCDEF", "extra"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane integrate");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate rejects unknown flags", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", "202601010101-ABCDEF", "--nope"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane integrate");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate requires branch_pr workflow", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "direct";
+    await writeConfig(root, config);
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate task",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("workflow_mode=branch_pr");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", "202601010101-ABCDEF", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate merges branch and marks task done", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate task",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/integrate`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ integrate");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
+
+    const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
+    const meta = await readFile(metaPath, "utf8");
+    expect(meta).toContain('"status": "MERGED"');
+  });
+
+  it("integrate supports dry-run", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Dry run integrate",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/dry-run`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    const { stdout: headBefore } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--dry-run",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("dry-run");
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: headAfter } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    expect(headAfter.trim()).toBe(headBefore.trim());
+  });
+
+  it("integrate supports merge strategy", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Merge strategy integrate",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/merge`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--merge-strategy",
+        "merge",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ integrate");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate supports rebase strategy", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Rebase integrate",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/rebase`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
+    const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
+    await execFileAsync("git", ["worktree", "add", worktreePath, branch], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--merge-strategy",
+        "rebase",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ integrate");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate fails when post-merge hook removes pr dir", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate missing PR",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/integrate-missing-pr`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    const hookPath = path.join(root, ".git", "hooks", "post-merge");
+    const hookBody = `#!/bin/sh\nrm -rf "${prDir}"\n`;
+    await writeFile(hookPath, hookBody, "utf8");
+    await chmod(hookPath, 0o755);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--merge-strategy",
+        "merge",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Missing PR artifact dir after merge");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate runs verify when requested", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify integrate",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "echo ok",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/verify`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--base",
+        "main",
+        "--run-verify",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const verifyLog = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "pr", "verify.log"),
+      "utf8",
+    );
+    expect(verifyLog).toContain("verified_sha=");
   });
 
   it("pr note rejects unknown flags", async () => {
