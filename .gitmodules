@@ -1,0 +1,3 @@
+[submodule "agentplane-recipes"]
+	path = agentplane-recipes
+	url = https://github.com/basilisk-labs/agentplane-recipes.git
