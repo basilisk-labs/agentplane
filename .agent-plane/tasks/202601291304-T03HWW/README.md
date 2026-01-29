@@ -1,13 +1,15 @@
 ---
 id: "202601291304-T03HWW"
 title: "Remove agentplane-recipes gitlink from main repo"
-status: "DOING"
+status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["git", "workflow"]
+commit: { hash: "735ba4a1142f62c7b9942c7fafd977b8c66bca4b", message: "🚧 T03HWW remove recipes gitlink" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: remove unintended agentplane-recipes gitlink from main repo." }
+  - { author: "ORCHESTRATOR", body: "verified: removed the agentplane-recipes gitlink from the main repo and added an ignore rule | details: git status --short is clean." }
 doc_version: 2
 doc_updated_at: "2026-01-29T13:04:21+00:00"
 doc_updated_by: "agentctl"
