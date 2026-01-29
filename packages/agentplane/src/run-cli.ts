@@ -20,25 +20,19 @@ import { promisify } from "node:util";
 
 import {
   defaultConfig,
-  createTask,
   extractTaskSuffix,
   getBaseBranch,
   getStagedFiles,
   getUnstagedFiles,
   type AgentplaneConfig,
   setPinnedBaseBranch,
-  listTasks,
   lintTasksFile,
   loadConfig,
-  readTask,
   resolveProject,
-  renderTaskReadme,
   saveConfig,
   setByDottedKey,
-  setTaskDocSection,
   validateTaskDocMetadata,
   validateCommitSubject,
-  writeTasksExport,
 } from "@agentplane/core";
 
 import { CliError, formatJsonError } from "./errors.js";
@@ -46,6 +40,7 @@ import { formatCommentBodyForCommit } from "./comment-format.js";
 import { renderHelp } from "./help.js";
 import { getVersion } from "./version.js";
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
+import { BackendError, loadTaskBackend, type TaskData } from "./task-backend.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -131,6 +126,18 @@ function mapCoreError(err: unknown, context: Record<string, unknown>): CliError 
   }
 
   return new CliError({ exitCode: 4, code: "E_IO", message, context });
+}
+
+function mapBackendError(err: unknown, context: Record<string, unknown>): CliError {
+  if (err instanceof BackendError) {
+    return new CliError({
+      exitCode: 6,
+      code: err.code,
+      message: err.message,
+      context,
+    });
+  }
+  return mapCoreError(err, context);
 }
 
 async function writeFileIfChanged(filePath: string, content: string): Promise<boolean> {
@@ -321,6 +328,8 @@ const RECIPE_CONFLICT_MODES = ["fail", "rename", "overwrite"] as const;
 const SCENARIO_USAGE = "Usage: agentplane scenario <list|info|run> [args]";
 const SCENARIO_INFO_USAGE = "Usage: agentplane scenario info <recipe:scenario>";
 const SCENARIO_RUN_USAGE = "Usage: agentplane scenario run <recipe:scenario>";
+const BACKEND_SYNC_USAGE =
+  "Usage: agentplane backend sync <id> --direction <push|pull> [--conflict <diff|prefer-local|prefer-remote|fail>] [--yes]";
 const UPGRADE_USAGE =
   "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
@@ -864,6 +873,62 @@ function parseRecipeInstallArgs(args: string[]): {
   }
 
   return { source, onConflict };
+}
+
+type BackendSyncFlags = {
+  backendId: string;
+  direction: "push" | "pull";
+  conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+  confirm: boolean;
+};
+
+function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
+  let backendId = "";
+  let direction: "push" | "pull" | null = null;
+  let conflict: BackendSyncFlags["conflict"] = "diff";
+  let confirm = false;
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (!arg.startsWith("--")) {
+      if (backendId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+      }
+      backendId = arg;
+      continue;
+    }
+
+    if (arg === "--direction") {
+      const next = args[i + 1];
+      if (!next || (next !== "push" && next !== "pull")) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+      }
+      direction = next;
+      i++;
+      continue;
+    }
+    if (arg === "--conflict") {
+      const next = args[i + 1];
+      if (!next || !["diff", "prefer-local", "prefer-remote", "fail"].includes(next)) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+      }
+      conflict = next as BackendSyncFlags["conflict"];
+      i++;
+      continue;
+    }
+    if (arg === "--yes") {
+      confirm = true;
+      continue;
+    }
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+  }
+
+  if (!backendId || !direction) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+  }
+
+  return { backendId, direction, conflict, confirm };
 }
 
 async function applyRecipeAgents(opts: {
@@ -2191,6 +2256,44 @@ async function cmdRecipeRemove(opts: {
   }
 }
 
+async function cmdBackendSync(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseBackendSyncArgs(opts.args);
+  try {
+    const { backend, backendId } = await loadTaskBackend({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    if (flags.backendId && backendId && flags.backendId !== backendId) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Configured backend is "${backendId}", not "${flags.backendId}"`,
+      });
+    }
+    if (!backend.sync) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Configured backend does not support sync()",
+      });
+    }
+    await backend.sync({
+      direction: flags.direction,
+      conflict: flags.conflict,
+      quiet: false,
+      confirm: flags.confirm,
+    });
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapBackendError(err, { command: "backend sync", root: opts.rootOverride ?? null });
+  }
+}
+
 type TaskNewFlags = {
   title?: string;
   description?: string;
@@ -2278,21 +2381,40 @@ async function cmdTaskNew(opts: {
   }
 
   try {
-    const created = await createTask({
+    const { backend, config } = await loadTaskBackend({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
+    });
+    const suffixLength = config.tasks.id_suffix_length_default;
+    if (!backend.generateTaskId) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: "Configured backend does not support generateTaskId()",
+      });
+    }
+    const taskId = await backend.generateTaskId({ length: suffixLength, attempts: 1000 });
+    const task: TaskData = {
+      id: taskId,
       title: flags.title,
       description: flags.description,
-      owner: flags.owner,
+      status: "TODO",
       priority,
+      owner: flags.owner,
       tags: flags.tags,
-      dependsOn: flags.dependsOn,
+      depends_on: flags.dependsOn,
       verify: flags.verify,
-    });
-    process.stdout.write(`${created.id}\n`);
+      comments: [],
+      doc_version: 2,
+      doc_updated_at: nowIso(),
+      doc_updated_by: "agentplane",
+      id_source: "generated",
+    };
+    await backend.writeTask(task);
+    process.stdout.write(`${taskId}\n`);
     return 0;
   } catch (err) {
-    throw mapCoreError(err, { command: "task new", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "task new", root: opts.rootOverride ?? null });
   }
 }
 
@@ -2302,26 +2424,27 @@ async function cmdTaskShow(opts: {
   taskId: string;
 }): Promise<number> {
   try {
-    const task = await readTask({
+    const { task, backendId } = await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
-    const metadataErrors = validateTaskDocMetadata(
-      task.frontmatter as unknown as Record<string, unknown>,
-    );
-    if (metadataErrors.length > 0) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: `Invalid task README metadata: ${metadataErrors.join("; ")}`,
-      });
+    const frontmatter = taskDataToFrontmatter(task);
+    if (backendId === "local") {
+      const metadataErrors = validateTaskDocMetadata(frontmatter);
+      if (metadataErrors.length > 0) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Invalid task README metadata: ${metadataErrors.join("; ")}`,
+        });
+      }
     }
-    process.stdout.write(`${JSON.stringify(task.frontmatter, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(frontmatter, null, 2)}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, {
+    throw mapBackendError(err, {
       command: "task show",
       root: opts.rootOverride ?? null,
       taskId: opts.taskId,
@@ -2331,30 +2454,39 @@ async function cmdTaskShow(opts: {
 
 async function cmdTaskList(opts: { cwd: string; rootOverride?: string }): Promise<number> {
   try {
-    const tasks = await listTasks({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const { backend } = await loadTaskBackend({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const tasks = await backend.listTasks();
     for (const t of tasks) {
-      process.stdout.write(`${t.id} [${t.frontmatter.status}] ${t.frontmatter.title}\n`);
+      process.stdout.write(`${t.id} [${t.status}] ${t.title}\n`);
     }
     return 0;
   } catch (err) {
-    throw mapCoreError(err, { command: "task list", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "task list", root: opts.rootOverride ?? null });
   }
 }
 
 async function cmdTaskExport(opts: { cwd: string; rootOverride?: string }): Promise<number> {
   try {
-    const resolved = await resolveProject({
+    const { backend, resolved, config } = await loadTaskBackend({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const result = await writeTasksExport({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    process.stdout.write(`${path.relative(resolved.gitRoot, result.path)}\n`);
+    const outPath = path.join(resolved.gitRoot, config.paths.tasks_path);
+    if (!backend.exportTasksJson) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: "Configured backend does not support exportTasksJson()",
+      });
+    }
+    await backend.exportTasksJson(outPath);
+    process.stdout.write(`${path.relative(resolved.gitRoot, outPath)}\n`);
     return 0;
   } catch (err) {
-    throw mapCoreError(err, { command: "task export", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "task export", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3334,9 +3466,9 @@ async function cmdStart(opts: {
     const { prefix, min_chars: minChars } = loaded.config.tasks.comments.start;
     requireStructuredComment(opts.body, prefix, minChars);
 
-    const task = await readTask({
+    const { backend, task } = await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
 
@@ -3345,33 +3477,27 @@ async function cmdStart(opts: {
       : null;
     const commentBody = formattedComment ?? opts.body;
 
-    const nextFrontmatter: Record<string, unknown> = {
-      ...(task.frontmatter as Record<string, unknown>),
-      status: "DOING",
-      doc_version: 2,
-      doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
-    };
-
-    const existingComments = Array.isArray(nextFrontmatter.comments)
-      ? nextFrontmatter.comments.filter(
+    const existingComments = Array.isArray(task.comments)
+      ? task.comments.filter(
           (item): item is { author: string; body: string } =>
-            !!item &&
-            typeof item === "object" &&
-            "author" in item &&
-            "body" in item &&
-            typeof (item as { author?: unknown }).author === "string" &&
-            typeof (item as { body?: unknown }).body === "string",
+            !!item && typeof item.author === "string" && typeof item.body === "string",
         )
       : [];
     const commentsValue: { author: string; body: string }[] = [
       ...existingComments,
       { author: opts.author, body: commentBody },
     ];
-    nextFrontmatter.comments = commentsValue;
 
-    const nextText = renderTaskReadme(nextFrontmatter, task.body);
-    await writeFile(task.readmePath, nextText, "utf8");
+    const nextTask: TaskData = {
+      ...task,
+      status: "DOING",
+      comments: commentsValue,
+      doc_version: 2,
+      doc_updated_at: nowIso(),
+      doc_updated_by: "agentplane",
+    };
+
+    await backend.writeTask(nextTask);
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
@@ -3398,7 +3524,7 @@ async function cmdStart(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "start", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "start", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3418,41 +3544,35 @@ async function cmdBlock(opts: {
     const { prefix, min_chars: minChars } = loaded.config.tasks.comments.blocked;
     requireStructuredComment(opts.body, prefix, minChars);
 
-    const task = await readTask({
+    const { backend, task } = await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
 
-    const nextFrontmatter: Record<string, unknown> = {
-      ...(task.frontmatter as Record<string, unknown>),
+    const existingComments = Array.isArray(task.comments)
+      ? task.comments.filter(
+          (item): item is { author: string; body: string } =>
+            !!item && typeof item.author === "string" && typeof item.body === "string",
+        )
+      : [];
+    const commentsValue = [...existingComments, { author: opts.author, body: opts.body }];
+    const nextTask: TaskData = {
+      ...task,
       status: "BLOCKED",
+      comments: commentsValue,
       doc_version: 2,
       doc_updated_at: nowIso(),
       doc_updated_by: "agentplane",
     };
 
-    const existingComments = Array.isArray(nextFrontmatter.comments)
-      ? nextFrontmatter.comments.filter(
-          (item): item is { author: string; body: string } =>
-            !!item &&
-            typeof item === "object" &&
-            "author" in item &&
-            "body" in item &&
-            typeof (item as { author?: unknown }).author === "string" &&
-            typeof (item as { body?: unknown }).body === "string",
-        )
-      : [];
-    nextFrontmatter.comments = [...existingComments, { author: opts.author, body: opts.body }];
-
-    const nextText = renderTaskReadme(nextFrontmatter, task.body);
-    await writeFile(task.readmePath, nextText, "utf8");
+    await backend.writeTask(nextTask);
 
     process.stdout.write("✅ blocked\n");
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "block", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "block", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3472,39 +3592,41 @@ async function cmdFinish(opts: {
     const { prefix, min_chars: minChars } = loaded.config.tasks.comments.verified;
     requireStructuredComment(opts.body, prefix, minChars);
 
-    const task = await readTask({
+    const { backend, task, config } = await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
 
     const headCommit = await readHeadCommit(resolved.gitRoot);
-    const nextFrontmatter: Record<string, unknown> = {
-      ...(task.frontmatter as Record<string, unknown>),
+    const existingComments = Array.isArray(task.comments)
+      ? task.comments.filter(
+          (item): item is { author: string; body: string } =>
+            !!item && typeof item.author === "string" && typeof item.body === "string",
+        )
+      : [];
+    const commentsValue = [...existingComments, { author: opts.author, body: opts.body }];
+    const nextTask: TaskData = {
+      ...task,
       status: "DONE",
       commit: { hash: headCommit.hash, message: headCommit.message },
+      comments: commentsValue,
       doc_version: 2,
       doc_updated_at: nowIso(),
       doc_updated_by: "agentplane",
     };
 
-    const existingComments = Array.isArray(nextFrontmatter.comments)
-      ? nextFrontmatter.comments.filter(
-          (item): item is { author: string; body: string } =>
-            !!item &&
-            typeof item === "object" &&
-            "author" in item &&
-            "body" in item &&
-            typeof (item as { author?: unknown }).author === "string" &&
-            typeof (item as { body?: unknown }).body === "string",
-        )
-      : [];
-    nextFrontmatter.comments = [...existingComments, { author: opts.author, body: opts.body }];
+    await backend.writeTask(nextTask);
 
-    const nextText = renderTaskReadme(nextFrontmatter, task.body);
-    await writeFile(task.readmePath, nextText, "utf8");
-
-    await writeTasksExport({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const outPath = path.join(resolved.gitRoot, config.paths.tasks_path);
+    if (!backend.exportTasksJson) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: "Configured backend does not support exportTasksJson()",
+      });
+    }
+    await backend.exportTasksJson(outPath);
     const lintResult = await lintTasksFile({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
@@ -3521,7 +3643,7 @@ async function cmdFinish(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "finish", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "finish", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3536,13 +3658,13 @@ async function cmdVerify(opts: {
   require: boolean;
 }): Promise<number> {
   try {
-    const task = await readTask({
+    const { task } = await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
 
-    const rawVerify = (task.frontmatter as Record<string, unknown>).verify;
+    const rawVerify = task.verify;
     if (rawVerify !== undefined && rawVerify !== null && !Array.isArray(rawVerify)) {
       throw new CliError({
         exitCode: 2,
@@ -3699,7 +3821,7 @@ async function cmdVerify(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "verify", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "verify", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3731,9 +3853,9 @@ async function cmdWorkStart(opts: {
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
     }
 
-    await readTask({
+    await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
 
@@ -3782,7 +3904,7 @@ async function cmdWorkStart(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "work start", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "work start", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3828,9 +3950,9 @@ async function cmdPrOpen(opts: {
     const author = opts.author.trim();
     if (!author) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
 
-    const task = await readTask({
+    const { task } = await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
     const { resolved, config, prDir, metaPath, diffstatPath, verifyLogPath, reviewPath } =
@@ -3879,7 +4001,7 @@ async function cmdPrOpen(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "pr open", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "pr open", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3889,9 +4011,9 @@ async function cmdPrUpdate(opts: {
   taskId: string;
 }): Promise<number> {
   try {
-    await readTask({
+    await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
     const { resolved, config, prDir, metaPath, diffstatPath, reviewPath } =
@@ -3959,7 +4081,7 @@ async function cmdPrUpdate(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "pr update", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "pr update", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3969,9 +4091,9 @@ async function cmdPrCheck(opts: {
   taskId: string;
 }): Promise<number> {
   try {
-    const task = await readTask({
+    const { task } = await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
     const { resolved, config, prDir, metaPath, diffstatPath, verifyLogPath, reviewPath } =
@@ -4016,7 +4138,7 @@ async function cmdPrCheck(opts: {
       }
     }
 
-    if (task.frontmatter.verify.length > 0) {
+    if (task.verify && task.verify.length > 0) {
       if (meta?.verify?.status !== "pass") {
         errors.push("Verify requirements not satisfied (meta.verify.status != pass)");
       }
@@ -4033,7 +4155,7 @@ async function cmdPrCheck(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "pr check", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "pr check", root: opts.rootOverride ?? null });
   }
 }
 
@@ -4125,9 +4247,9 @@ async function cmdIntegrate(opts: {
   let tempWorktreePath: string | null = null;
   let createdTempWorktree = false;
   try {
-    const task = await readTask({
+    const { task } = await loadBackendTask({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
     const resolved = await resolveProject({
@@ -4569,7 +4691,7 @@ async function cmdIntegrate(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "integrate", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "integrate", root: opts.rootOverride ?? null });
   } finally {
     if (createdTempWorktree && tempWorktreePath) {
       try {
@@ -4633,7 +4755,11 @@ async function cmdCleanupMerged(opts: {
 
     const repoRoot = await resolvePathFallback(resolved.gitRoot);
 
-    const tasks = await listTasks({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const { backend } = await loadTaskBackend({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const tasks = await backend.listTasks();
     const tasksById = new Map(tasks.map((task) => [task.id, task]));
     const prefix = loaded.config.branch.task_prefix;
     const branches = await gitListTaskBranches(resolved.gitRoot, prefix);
@@ -4645,7 +4771,7 @@ async function cmdCleanupMerged(opts: {
       if (!taskId) continue;
       const task = tasksById.get(taskId);
       if (!task) continue;
-      const status = String(task.frontmatter.status || "").toUpperCase();
+      const status = String(task.status || "").toUpperCase();
       if (status !== "DONE") continue;
       const diff = await gitDiffNames(resolved.gitRoot, baseBranch, branch);
       if (diff.length > 0) continue;
@@ -4718,7 +4844,7 @@ async function cmdCleanupMerged(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "cleanup merged", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "cleanup merged", root: opts.rootOverride ?? null });
   }
 }
 
@@ -4831,7 +4957,11 @@ async function cmdHooksRun(opts: {
         return 0;
       }
 
-      const tasks = await listTasks({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+      const { backend } = await loadTaskBackend({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      const tasks = await backend.listTasks();
       const suffixes = tasks.map((task) => task.id.split("-").at(-1) ?? "").filter(Boolean);
       if (suffixes.length === 0) {
         throw new CliError({
@@ -4903,7 +5033,10 @@ async function cmdHooksRun(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: `hooks run ${opts.hook}`, root: opts.rootOverride ?? null });
+    throw mapBackendError(err, {
+      command: `hooks run ${opts.hook}`,
+      root: opts.rootOverride ?? null,
+    });
   }
 }
 
@@ -4937,6 +5070,104 @@ async function cmdBranchBaseSet(opts: {
   } catch (err) {
     throw mapCoreError(err, { command: "branch base set", root: opts.rootOverride ?? null });
   }
+}
+
+function escapeRegExp(text: string): string {
+  return text.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\\$&`);
+}
+
+function setMarkdownSection(body: string, section: string, text: string): string {
+  const lines = body.replaceAll("\r\n", "\n").split("\n");
+  const headingRe = new RegExp(String.raw`^##\\s+${escapeRegExp(section)}\\s*$`);
+
+  let start = -1;
+  let nextHeading = lines.length;
+
+  for (const [i, line] of lines.entries()) {
+    if (!line.startsWith("## ")) continue;
+    if (start === -1) {
+      if (headingRe.test(line)) start = i;
+      continue;
+    }
+    nextHeading = i;
+    break;
+  }
+
+  const newTextLines = text.replaceAll("\r\n", "\n").split("\n");
+  const replacement = ["", ...newTextLines, ""];
+
+  if (start === -1) {
+    const out = [...lines];
+    if (out.length > 0 && out.at(-1)?.trim() !== "") out.push("");
+    out.push(`## ${section}`, ...replacement);
+    return `${out.join("\n")}\n`;
+  }
+
+  const out = [...lines.slice(0, start + 1), ...replacement, ...lines.slice(nextHeading)];
+  return `${out.join("\n")}\n`;
+}
+
+function ensureDocSections(doc: string, required: string[]): string {
+  const trimmed = doc.trim();
+  if (!trimmed) {
+    const blocks = required.map((section) => `## ${section}\n`);
+    return `${blocks.join("\n").trimEnd()}\n`;
+  }
+  let out = doc.endsWith("\n") ? doc : `${doc}\n`;
+  for (const section of required) {
+    const needle = `## ${section}`;
+    if (!out.split("\n").some((line) => line.trim() === needle)) {
+      out = `${out.trimEnd()}\n\n${needle}\n`;
+    }
+  }
+  return out.endsWith("\n") ? out : `${out}\n`;
+}
+
+function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
+  return {
+    id: task.id,
+    title: task.title,
+    status: task.status,
+    priority: task.priority,
+    owner: task.owner,
+    depends_on: task.depends_on ?? [],
+    tags: task.tags ?? [],
+    verify: task.verify ?? [],
+    commit: task.commit ?? null,
+    comments: task.comments ?? [],
+    doc_version: task.doc_version,
+    doc_updated_at: task.doc_updated_at,
+    doc_updated_by: task.doc_updated_by,
+    description: task.description ?? "",
+  };
+}
+
+async function loadBackendTask(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+}): Promise<{
+  backend: Awaited<ReturnType<typeof loadTaskBackend>>["backend"];
+  backendId: string;
+  resolved: Awaited<ReturnType<typeof loadTaskBackend>>["resolved"];
+  config: Awaited<ReturnType<typeof loadTaskBackend>>["config"];
+  task: TaskData;
+}> {
+  const { backend, backendId, resolved, config } = await loadTaskBackend({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+  });
+  const task = await backend.getTask(opts.taskId);
+  if (!task) {
+    const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
+    const readmePath = path.join(tasksDir, opts.taskId, "README.md");
+    throw new CliError({
+      exitCode: 4,
+      code: "E_IO",
+      message: `ENOENT: no such file or directory, open '${readmePath}'`,
+    });
+  }
+  return { backend, backendId, resolved, config, task };
 }
 
 const TASK_DOC_SET_USAGE =
@@ -5025,22 +5256,35 @@ async function cmdTaskDocSet(opts: {
   }
 
   try {
-    const updated = await setTaskDocSection({
+    const { backend, resolved, config } = await loadTaskBackend({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
-      taskId: opts.taskId,
-      section: flags.section,
-      text,
-      updatedBy,
     });
-    process.stdout.write(`${updated.readmePath}\n`);
+    if (!backend.getTaskDoc || !backend.setTaskDoc) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Configured backend does not support task docs",
+      });
+    }
+    const allowed = config.tasks.doc.sections;
+    if (!allowed.includes(flags.section)) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Unknown doc section: ${flags.section}`,
+      });
+    }
+    const existing = await backend.getTaskDoc(opts.taskId);
+    const baseDoc = ensureDocSections(existing ?? "", config.tasks.doc.required_sections);
+    const nextDoc = setMarkdownSection(baseDoc, flags.section, text);
+    await backend.setTaskDoc(opts.taskId, nextDoc, updatedBy);
+    const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
+    process.stdout.write(`${path.join(tasksDir, opts.taskId, "README.md")}\n`);
     return 0;
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    if (message.startsWith("Unknown doc section:")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message });
-    }
-    throw mapCoreError(err, { command: "task doc set", root: opts.rootOverride ?? null });
+    if (err instanceof CliError) throw err;
+    throw mapBackendError(err, { command: "task doc set", root: opts.rootOverride ?? null });
   }
 }
 
@@ -5969,6 +6213,18 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+    }
+
+    if (namespace === "backend") {
+      const subcommand = command;
+      if (subcommand !== "sync") {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+      }
+      return await cmdBackendSync({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "hooks") {
