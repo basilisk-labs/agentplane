@@ -1,5 +1,14 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import {
+  access,
+  chmod,
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  realpath,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -88,6 +97,43 @@ function cleanGitEnv(): NodeJS.ProcessEnv {
   delete env.GIT_OBJECT_DIRECTORY;
   delete env.GIT_ALTERNATE_OBJECT_DIRECTORIES;
   return env;
+}
+
+async function pathExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function gitBranchExists(root: string, branch: string): Promise<boolean> {
+  const execFileAsync = promisify(execFile);
+  try {
+    await execFileAsync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
+  }
+}
+
+async function commitAll(root: string, message: string): Promise<void> {
+  const execFileAsync = promisify(execFile);
+  await execFileAsync("git", ["add", "."], { cwd: root });
+  await execFileAsync("git", ["commit", "-m", message], { cwd: root });
+}
+
+async function stageGitignoreIfPresent(root: string): Promise<void> {
+  const gitignorePath = path.join(root, ".gitignore");
+  if (!(await pathExists(gitignorePath))) return;
+  const execFileAsync = promisify(execFile);
+  await execFileAsync("git", ["add", ".gitignore"], { cwd: root });
 }
 
 describe("runCli", () => {
@@ -4236,6 +4282,8 @@ describe("runCli", () => {
 
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await stageGitignoreIfPresent(root);
     await execFileAsync("git", ["add", "README.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
@@ -4304,6 +4352,8 @@ describe("runCli", () => {
 
     const execFileAsync = promisify(execFile);
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await stageGitignoreIfPresent(root);
     await execFileAsync("git", ["add", "README.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
 
@@ -4671,6 +4721,223 @@ describe("runCli", () => {
       "utf8",
     );
     expect(verifyLog).toContain("verified_sha=");
+  });
+
+  it("cleanup merged requires branch_pr workflow", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("workflow_mode=branch_pr");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged rejects unknown subcommands", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged rejects missing --base value", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--base", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged rejects unknown flags", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged reports no candidates", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await commitAll(root, "chore base");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("no candidates");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged lists candidates without --yes", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await commitAll(root, "chore base");
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Cleanup dry run",
+        "--description",
+        "cleanup candidate",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await commitAll(root, `chore ${taskId} scaffold`);
+
+    const task = await readTask({ cwd: root, taskId });
+    const readmeText = await readFile(task.readmePath, "utf8");
+    await writeFile(
+      task.readmePath,
+      readmeText.replace('status: "TODO"', 'status: "DONE"'),
+      "utf8",
+    );
+    await commitAll(root, `chore ${taskId} done`);
+
+    const branch = `task/${taskId}/cleanup`;
+    const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-cleanup`);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const resolvedWorktreePath = await realpath(worktreePath);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`branch=${branch}`);
+      expect(io.stdout).toContain(`worktree=${resolvedWorktreePath}`);
+      expect(io.stdout).toContain("Re-run with --yes");
+    } finally {
+      io.restore();
+    }
+
+    expect(await gitBranchExists(root, branch)).toBe(true);
+    expect(await pathExists(worktreePath)).toBe(true);
+  });
+
+  it("cleanup merged deletes branches/worktrees and archives pr artifacts", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await commitAll(root, "chore base");
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Cleanup delete",
+        "--description",
+        "cleanup candidate",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await commitAll(root, `chore ${taskId} scaffold`);
+
+    const task = await readTask({ cwd: root, taskId });
+    const readmeText = await readFile(task.readmePath, "utf8");
+    await writeFile(
+      task.readmePath,
+      readmeText.replace('status: "TODO"', 'status: "DONE"'),
+      "utf8",
+    );
+    await commitAll(root, `chore ${taskId} done`);
+
+    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
+    await mkdir(prDir, { recursive: true });
+    await writeFile(path.join(prDir, "meta.json"), "{\n}\n", "utf8");
+    await commitAll(root, `chore ${taskId} pr artifacts`);
+
+    const branch = `task/${taskId}/cleanup-delete`;
+    const worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-cleanup-delete`);
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--yes", "--archive", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ cleanup merged");
+    } finally {
+      io.restore();
+    }
+
+    expect(await gitBranchExists(root, branch)).toBe(false);
+    expect(await pathExists(worktreePath)).toBe(false);
+
+    const archiveRoot = path.join(root, ".agentplane", "tasks", taskId, "pr-archive");
+    const entries = await readdir(archiveRoot);
+    expect(entries.length).toBe(1);
+    expect(await pathExists(path.join(archiveRoot, entries[0]))).toBe(true);
+    expect(await pathExists(prDir)).toBe(false);
   });
 
   it("pr note rejects unknown flags", async () => {
