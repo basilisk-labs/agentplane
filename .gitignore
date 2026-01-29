@@ -20,3 +20,5 @@ coverage
 .agent-plane/.runs
 .agent-plane/cache
 .agent-plane/recipes/bundle.json
+# Keep the external recipes repo out of the main repo index.
+agentplane-recipes/
