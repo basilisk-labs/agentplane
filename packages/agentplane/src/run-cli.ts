@@ -1,9 +1,11 @@
 import { execFile } from "node:child_process";
 import { access, chmod, mkdir, readFile, realpath, rename, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { createInterface } from "node:readline/promises";
 import { promisify } from "node:util";
 
 import {
+  defaultConfig,
   createTask,
   extractTaskSuffix,
   getBaseBranch,
@@ -206,6 +208,251 @@ async function cmdModeSet(opts: {
       root: opts.rootOverride ?? null,
       mode: opts.mode,
     });
+  }
+}
+
+const DEFAULT_AGENTS_MD = [
+  "# AGENTS",
+  "",
+  "This file defines the operating rules for Codex inside your repo.",
+  "Edit this file to update agent behavior and workflow constraints.",
+  "",
+  "## Instructions",
+  "",
+  "- Keep work local to this repo.",
+  "- Use agentplane for task operations and commits.",
+  "- Record every task with Summary, Scope, Risks, Verify Steps, Rollback Plan.",
+  "",
+].join("\n");
+
+type InitFlags = {
+  ide?: "none" | "cursor" | "windsurf" | "both";
+  workflow?: "direct" | "branch_pr";
+  hooks?: boolean;
+  recipes?: string[];
+  yes: boolean;
+};
+
+function parseBooleanFlag(value: string, flag: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  if (["1", "true", "yes", "y", "on"].includes(normalized)) return true;
+  if (["0", "false", "no", "n", "off"].includes(normalized)) return false;
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: `Invalid value for ${flag}: ${value}`,
+  });
+}
+
+function parseInitFlags(args: string[]): InitFlags {
+  const out: InitFlags = { yes: false };
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (!arg.startsWith("--")) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unexpected argument: ${arg}` });
+    }
+    if (arg === "--yes") {
+      out.yes = true;
+      continue;
+    }
+    const next = args[i + 1];
+    if (!next) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+    }
+    switch (arg) {
+      case "--ide": {
+        const normalized = next.trim().toLowerCase();
+        if (
+          normalized !== "none" &&
+          normalized !== "cursor" &&
+          normalized !== "windsurf" &&
+          normalized !== "both"
+        ) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Usage: --ide <none|cursor|windsurf|both>",
+          });
+        }
+        out.ide = normalized as InitFlags["ide"];
+        break;
+      }
+      case "--workflow": {
+        if (next !== "direct" && next !== "branch_pr") {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Usage: --workflow <direct|branch_pr>",
+          });
+        }
+        out.workflow = next;
+        break;
+      }
+      case "--hooks": {
+        out.hooks = parseBooleanFlag(next, "--hooks");
+        break;
+      }
+      case "--recipes": {
+        const normalized = next.trim().toLowerCase();
+        out.recipes =
+          normalized === "none" || normalized === ""
+            ? []
+            : next
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean);
+        break;
+      }
+      default: {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
+      }
+    }
+    i++;
+  }
+  return out;
+}
+
+async function promptChoice(
+  prompt: string,
+  choices: string[],
+  defaultValue: string,
+): Promise<string> {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const question = `${prompt} [${choices.join("/")}] (default ${defaultValue}): `;
+  const answer = await rl.question(question);
+  rl.close();
+  const trimmed = answer.trim();
+  if (!trimmed) return defaultValue;
+  if (!choices.includes(trimmed)) {
+    process.stdout.write(`Invalid choice, using default ${defaultValue}\n`);
+    return defaultValue;
+  }
+  return trimmed;
+}
+
+async function promptYesNo(prompt: string, defaultValue: boolean): Promise<boolean> {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  const question = `${prompt} [${defaultValue ? "Y/n" : "y/N"}]: `;
+  const answer = await rl.question(question);
+  rl.close();
+  const trimmed = answer.trim().toLowerCase();
+  if (!trimmed) return defaultValue;
+  return ["y", "yes", "true", "1", "on"].includes(trimmed);
+}
+
+async function cmdInit(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseInitFlags(opts.args);
+  const defaults = { ide: "none", workflow: "direct", hooks: false, recipes: [] as string[] };
+  let ide = flags.ide ?? defaults.ide;
+  let workflow = flags.workflow ?? defaults.workflow;
+  let hooks = flags.hooks ?? defaults.hooks;
+  let recipes = flags.recipes ?? defaults.recipes;
+
+  if (
+    !process.stdin.isTTY &&
+    !flags.yes &&
+    (!flags.ide || !flags.workflow || flags.hooks === undefined)
+  ) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> [--recipes <...>] [--yes]",
+    });
+  }
+
+  if (process.stdin.isTTY && !flags.yes) {
+    if (!flags.ide) {
+      ide = await promptChoice("Select IDE", ["none", "cursor", "windsurf", "both"], ide);
+    }
+    if (!flags.workflow) {
+      workflow = await promptChoice("Select workflow mode", ["direct", "branch_pr"], workflow);
+    }
+    if (flags.hooks === undefined) {
+      hooks = await promptYesNo("Install git hooks?", hooks);
+    }
+    if (!flags.recipes) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout });
+      const answer = await rl.question("Install optional recipes (comma separated, or none): ");
+      rl.close();
+      const trimmed = answer.trim();
+      recipes = trimmed
+        ? trimmed
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean)
+        : [];
+    }
+  }
+
+  if (flags.yes) {
+    ide = flags.ide ?? defaults.ide;
+    workflow = flags.workflow ?? defaults.workflow;
+    hooks = flags.hooks ?? defaults.hooks;
+    recipes = flags.recipes ?? defaults.recipes;
+  }
+
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const configPath = path.join(resolved.agentplaneDir, "config.json");
+    if (await fileExists(configPath)) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Project already initialized: ${path.relative(resolved.gitRoot, configPath)}`,
+      });
+    }
+
+    await mkdir(resolved.agentplaneDir, { recursive: true });
+    await mkdir(path.join(resolved.agentplaneDir, "tasks"), { recursive: true });
+    await mkdir(path.join(resolved.agentplaneDir, "agents"), { recursive: true });
+    await mkdir(path.join(resolved.agentplaneDir, "cache"), { recursive: true });
+    await mkdir(path.join(resolved.agentplaneDir, "backends", "local"), { recursive: true });
+
+    const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
+    setByDottedKey(rawConfig, "workflow_mode", workflow);
+    await saveConfig(resolved.agentplaneDir, rawConfig);
+
+    const backendPath = path.join(resolved.agentplaneDir, "backends", "local", "backend.json");
+    const backendPayload = {
+      id: "local",
+      version: 1,
+      module: "backend.py",
+      class: "LocalBackend",
+      settings: { dir: ".agentplane/tasks" },
+    };
+    await writeFile(backendPath, `${JSON.stringify(backendPayload, null, 2)}\n`, "utf8");
+
+    const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
+    if (!(await fileExists(agentsPath))) {
+      await writeFile(agentsPath, `${DEFAULT_AGENTS_MD}\n`, "utf8");
+    }
+
+    if (hooks) {
+      await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
+    }
+
+    if (ide !== "none") {
+      await cmdIdeSync({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    }
+
+    if (recipes.length > 0) {
+      process.stdout.write("Recipes install is not implemented yet; skipping.\n");
+    }
+
+    process.stdout.write(`${path.relative(resolved.gitRoot, resolved.agentplaneDir)}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "init", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3114,6 +3361,19 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     const [namespace, command, ...args] = rest;
+
+    if (namespace === "init") {
+      const initArgs = command ? [command, ...args] : [];
+      if (command && !command.startsWith("--")) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message:
+            "Usage: agentplane init [--ide <...>] [--workflow <...>] [--hooks <...>] [--recipes <...>] [--yes]",
+        });
+      }
+      return await cmdInit({ cwd: process.cwd(), rootOverride: globals.root, args: initArgs });
+    }
 
     if (namespace === "config" && command === "show") {
       return await cmdConfigShow({ cwd: process.cwd(), rootOverride: globals.root });

@@ -5803,4 +5803,70 @@ describe("runCli", () => {
       io.restore();
     }
   });
+
+  it("init --yes creates baseline project files", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const backendPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
+    const agentsPath = path.join(root, "AGENTS.md");
+    expect(await pathExists(configPath)).toBe(true);
+    expect(await pathExists(backendPath)).toBe(true);
+    expect(await pathExists(agentsPath)).toBe(true);
+
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"workflow_mode": "direct"');
+  });
+
+  it("init applies workflow, installs hooks, and runs ide sync", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--workflow",
+        "branch_pr",
+        "--ide",
+        "cursor",
+        "--hooks",
+        "yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"workflow_mode": "branch_pr"');
+
+    const cursorPath = path.join(root, ".cursor", "rules", "agentplane.mdc");
+    expect(await pathExists(cursorPath)).toBe(true);
+
+    const hooksDir = path.join(root, ".git", "hooks");
+    const commitMsgPath = path.join(hooksDir, "commit-msg");
+    const commitMsg = await readFile(commitMsgPath, "utf8");
+    expect(commitMsg).toContain("agentplane-hook");
+  });
+
+  it("init rejects missing flags in non-tty mode", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane init");
+    } finally {
+      io.restore();
+    }
+  });
 });
