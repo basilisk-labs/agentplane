@@ -1,13 +1,16 @@
 ---
 id: "202601290714-76XDR6"
 title: "AP-034: agentplane-recipes repo + release pipeline"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: ["202601270756-779J2V"]
 tags: ["roadmap", "recipes", "infra"]
+commit: { hash: "36c163f37f4e467675d22b70e33bef6f67b9428f", message: "chore: 76XDR6 recipes repo scaffold" }
 comments:
   - { author: "CODER", body: "Start: scaffold agentplane-recipes repo structure, schemas, index, and release script." }
+  - { author: "ORCHESTRATOR", body: "verified: manual review (2026-01-29). | details: Scope: scaffolded agentplane-recipes repo and release pipeline." }
+  - { author: "ORCHESTRATOR", body: "verified: manual review (2026-01-29). | details: Scope: scaffolded agentplane-recipes repo and release pipeline." }
 doc_version: 2
 doc_updated_at: "2026-01-29T12:59:19+00:00"
 doc_updated_by: "agentctl"
