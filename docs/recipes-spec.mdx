@@ -32,6 +32,19 @@ assets/        # optional: static files (html/templates/etc.)
 README.md      # optional: human docs
 ```
 
+### 2.1 Scenario definitions (v1)
+
+Scenario files live under `scenarios/*.json` and are validated on install. Minimal fields:
+
+- `schema_version: "1"`
+- `id`: stable id (referenced as `<recipe-id>:<scenario-id>`)
+- `goal`: what the scenario accomplishes
+- `inputs`: inputs required (object/array)
+- `outputs`: outputs produced (object/array)
+- `steps`: ordered steps (array)
+
+Optional fields: `summary`, `description`.
+
 ## 3) `manifest.json` schema (v1)
 
 The `manifest.json` file must validate against `schemas/recipe-manifest.schema.json`.

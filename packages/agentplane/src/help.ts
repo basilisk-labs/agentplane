@@ -37,6 +37,8 @@ export function renderHelp(): string {
     "  agentplane recipe info <id>",
     "  agentplane recipe install <path|url|id> [--on-conflict <fail|rename|overwrite>]",
     "  agentplane recipe remove <id>",
+    "  agentplane scenario list",
+    "  agentplane scenario info <recipe:scenario>",
     "",
     "Branch commands:",
     "  agentplane branch base get",

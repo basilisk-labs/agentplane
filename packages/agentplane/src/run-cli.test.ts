@@ -116,6 +116,25 @@ async function createRecipeArchive(opts?: {
     ),
     "utf8",
   );
+  const scenariosDir = path.join(recipeDir, "scenarios");
+  await mkdir(scenariosDir, { recursive: true });
+  await writeFile(
+    path.join(scenariosDir, "recipe-scenario.json"),
+    JSON.stringify(
+      {
+        schema_version: "1",
+        id: "RECIPE_SCENARIO",
+        summary: "Recipe scenario",
+        goal: "Preview installed tasks.",
+        inputs: [{ name: "task_id", type: "string" }],
+        outputs: [{ name: "report", type: "html" }],
+        steps: [{ tool: "RECIPE_TOOL" }],
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
   const format = opts?.format ?? "tar";
   const archivePath =
     format === "zip" ? path.join(baseDir, "recipe.zip") : path.join(baseDir, "recipe.tar.gz");
@@ -6675,6 +6694,42 @@ describe("runCli", () => {
 
     const indexText = await readFile(path.join(root, ".agentplane", "RECIPES.md"), "utf8");
     expect(indexText).toContain("Updated summary");
+  });
+
+  it("scenario list and info read installed recipe scenarios", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+
+    await runCli(["recipe", "install", archivePath, "--root", root]);
+
+    const ioList = captureStdIO();
+    try {
+      const code = await runCli(["scenario", "list", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioList.stdout).toContain(`${manifestId}:RECIPE_SCENARIO`);
+    } finally {
+      ioList.restore();
+    }
+
+    const ioInfo = captureStdIO();
+    try {
+      const code = await runCli([
+        "scenario",
+        "info",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioInfo.stdout).toContain("Goal:");
+      expect(ioInfo.stdout).toContain("Inputs:");
+      expect(ioInfo.stdout).toContain("Outputs:");
+      expect(ioInfo.stdout).toContain("Steps:");
+    } finally {
+      ioInfo.restore();
+    }
   });
 
   it("recipe install renames agents on conflict when requested", async () => {
