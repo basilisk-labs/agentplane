@@ -1,13 +1,37 @@
 ---
 id: "202601290713-TACT48"
 title: "AP-028: upgrade command (GitHub source, dry-run, backup)"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: ["202601290713-51T41E"]
 tags: ["roadmap", "nodejs", "upgrade"]
+commit: { hash: "554ddb2ec2114b948f572832990c04d807b6c3db", message: "feat: TACT48 upgrade command" }
+comments:
+  - { author: "CODER", body: "Start: implement agentplane upgrade (GitHub source, dry-run, backup) and tests." }
+  - { author: "CODER", body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: upgrade command with bundle download, checksum validation, backups, and tests." }
 doc_version: 2
-doc_updated_at: "2026-01-29T07:13:58+00:00"
+doc_updated_at: "2026-01-29T09:40:24+00:00"
 doc_updated_by: "agentctl"
 description: "Implement agentplane upgrade to fetch GitHub bundle, verify sha256, support --dry-run diff, and default backups."
 ---
+## Summary
+
+Implement agentplane upgrade to fetch a release bundle, verify sha256, support --dry-run, and apply upgrades with backups by default.
+
+## Scope
+
+- Add upgrade command with GitHub release downloads, checksum validation, and safe bundle extraction.\n- Apply bundle files to AGENTS/.agentplane with default backups and --dry-run reporting.\n- Add CLI help text and upgrade tests using local bundles.
+
+## Risks
+
+- Bundle contents could still be wrong/malicious; path allowlist reduces scope to AGENTS.md and .agentplane/.\n- Backup growth can accumulate; users may need to prune old .bak files.
+
+## Verify Steps
+
+- 2026-01-29: bun run ci:agentplane (pass)
+
+## Rollback Plan
+
+- Revert the upgrade command commits to restore previous behavior.
+
