@@ -4799,6 +4799,9 @@ describe("runCli", () => {
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
 
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await commitAll(root, "chore base");
+
     const io = captureStdIO();
     try {
       const code = await runCli(["cleanup", "merged", "--quiet", "--root", root]);
