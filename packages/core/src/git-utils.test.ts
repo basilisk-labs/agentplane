@@ -15,6 +15,11 @@ async function mkGitRepoRoot(): Promise<string> {
   return root;
 }
 
+async function configureGitUser(root: string): Promise<void> {
+  await execFileAsync("git", ["config", "user.email", "agentplane@example.com"], { cwd: root });
+  await execFileAsync("git", ["config", "user.name", "Agentplane"], { cwd: root });
+}
+
 describe("git-utils", () => {
   it("lists staged files", async () => {
     const root = await mkGitRepoRoot();
@@ -38,5 +43,27 @@ describe("git-utils", () => {
     await writeFile(path.join(root, "file.txt"), "y", "utf8");
     const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
     expect(unstaged).toEqual(["file.txt"]);
+  });
+
+  it("ignores staged-only files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
+    expect(unstaged).toEqual([]);
+  });
+
+  it("includes renamed files when modified after rename", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "init"], { cwd: root });
+
+    await execFileAsync("git", ["mv", "file.txt", "renamed.txt"], { cwd: root });
+    await writeFile(path.join(root, "renamed.txt"), "y", "utf8");
+
+    const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
+    expect(unstaged).toContain("renamed.txt");
   });
 });
