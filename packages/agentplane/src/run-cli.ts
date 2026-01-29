@@ -2927,7 +2927,13 @@ type PrMeta = {
 };
 
 function parsePrMeta(raw: string, taskId: string): PrMeta {
-  const parsed = JSON.parse(raw) as unknown;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw) as unknown;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(`JSON Parse error: ${message}`);
+  }
   if (!isRecord(parsed)) throw new Error("pr/meta.json must be an object");
   if (parsed.schema_version !== 1) throw new Error("pr/meta.json schema_version must be 1");
   if (parsed.task_id !== taskId) throw new Error("pr/meta.json task_id mismatch");
@@ -4356,7 +4362,7 @@ async function cmdIntegrate(opts: {
       });
     }
 
-    const rawVerify = (task.frontmatter as Record<string, unknown>).verify;
+    const rawVerify = task.verify;
     const verifyCommands = Array.isArray(rawVerify)
       ? rawVerify
           .filter((item): item is string => typeof item === "string")

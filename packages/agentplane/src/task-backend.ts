@@ -62,7 +62,7 @@ function docChanged(existing: string, updated: string): boolean {
   return normalizeDoc(existing) !== normalizeDoc(updated);
 }
 
-function ensureDocMetadata(task: TaskData, updatedBy?: string): void {
+function ensureDocMetadata(task: TaskDocMeta, updatedBy?: string): void {
   task.doc_version = DOC_VERSION;
   task.doc_updated_at = nowIso();
   task.doc_updated_by = updatedBy ?? DEFAULT_DOC_UPDATED_BY;
@@ -194,6 +194,8 @@ export type TaskData = {
   dirty?: boolean;
   id_source?: string;
 };
+
+type TaskDocMeta = Pick<TaskData, "doc" | "doc_version" | "doc_updated_at" | "doc_updated_by">;
 
 export type TaskBackend = {
   id: string;
@@ -462,6 +464,10 @@ export class LocalBackend implements TaskBackend {
     const payload: Record<string, unknown> = { ...task };
     delete payload.doc;
 
+    for (const [key, value] of Object.entries(payload)) {
+      if (value === undefined) delete payload[key];
+    }
+
     for (const key of ["doc_version", "doc_updated_at", "doc_updated_by"]) {
       if (payload[key] === undefined && existingFrontmatter[key] !== undefined) {
         payload[key] = existingFrontmatter[key];
@@ -669,7 +675,7 @@ export class RedmineBackend implements TaskBackend {
       if (!issue) throw new Error(`Unknown task id: ${taskId}`);
       const issueIdText = toStringSafe(issue.id);
       if (!issueIdText) throw new Error("Missing Redmine issue id for task");
-      const taskDoc: TaskData = { id: taskId, doc: String(doc ?? "") };
+      const taskDoc: TaskDocMeta = { doc: String(doc ?? "") };
       ensureDocMetadata(taskDoc, updatedBy);
       const customFields: Record<string, unknown>[] = [];
       this.appendCustomField(customFields, "doc", taskDoc.doc);
@@ -709,7 +715,7 @@ export class RedmineBackend implements TaskBackend {
       const issueIdText = toStringSafe(issue.id);
       if (!issueIdText) throw new Error("Missing Redmine issue id for task");
       const docValue = this.customFieldValue(issue, this.customFields.doc);
-      const taskDoc: TaskData = { id: taskId, doc: docValue ?? "" };
+      const taskDoc: TaskDocMeta = { doc: docValue ?? "" };
       ensureDocMetadata(taskDoc, updatedBy);
       const customFields: Record<string, unknown>[] = [];
       this.appendCustomField(customFields, "doc_version", taskDoc.doc_version);
@@ -825,7 +831,7 @@ export class RedmineBackend implements TaskBackend {
     throw new BackendError("Unsupported direction", "E_BACKEND");
   }
 
-  private ensureDocMetadata(task: TaskData): void {
+  private ensureDocMetadata(task: TaskDocMeta): void {
     if (task.doc === undefined) return;
     if (task.doc_version !== DOC_VERSION) task.doc_version = DOC_VERSION;
     task.doc_updated_at ??= nowIso();
