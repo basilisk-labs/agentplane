@@ -70,6 +70,8 @@ Commands are namespaced under `agentplane recipe`:
   - local path (offline)
   - URL (explicit-network)
   - catalog id (explicit-network)
+  - `--on-conflict <fail|rename|overwrite>` controls how agent ID collisions are handled
+- Agents installed from recipes are namespaced as `<recipe-id>__<agent-id>` in `.agentplane/agents`.
 - `agentplane recipe remove <id>` — uninstall.
 - `agentplane recipe list-remote` — list recipes from the remote catalog cache (explicit-network; cached).
 

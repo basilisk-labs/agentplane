@@ -262,6 +262,8 @@ type RecipeManifest = {
   scenarios?: { id?: string; summary?: string }[];
 };
 
+type RecipeConflictMode = "fail" | "rename" | "overwrite";
+
 type RecipesLock = {
   schema_version: 1;
   recipes: { id: string; version: string; sha256: string; source: string }[];
@@ -289,12 +291,14 @@ const RECIPES_INDEX_NAME = "RECIPES.md";
 const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";
 const RECIPE_USAGE = "Usage: agentplane recipe <list|info|install|remove|list-remote> [args]";
 const RECIPE_INFO_USAGE = "Usage: agentplane recipe info <id>";
-const RECIPE_INSTALL_USAGE = "Usage: agentplane recipe install <path|url|id>";
+const RECIPE_INSTALL_USAGE =
+  "Usage: agentplane recipe install <path|url|id> [--on-conflict <fail|rename|overwrite>]";
 const RECIPE_REMOVE_USAGE = "Usage: agentplane recipe remove <id>";
 const RECIPE_LIST_REMOTE_USAGE =
   "Usage: agentplane recipe list-remote [--refresh] [--index <path|url>]";
 const DEFAULT_RECIPES_INDEX_URL =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
+const RECIPE_CONFLICT_MODES = ["fail", "rename", "overwrite"] as const;
 const UPGRADE_USAGE =
   "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
@@ -510,6 +514,18 @@ function normalizeRecipeId(value: string): string {
   return trimmed;
 }
 
+function normalizeAgentId(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) throw new Error("agent.id must be non-empty");
+  if (trimmed.includes("/") || trimmed.includes("\\")) {
+    throw new Error("agent.id must not contain path separators");
+  }
+  if (trimmed === "." || trimmed === "..") {
+    throw new Error("agent.id must not be '.' or '..'");
+  }
+  return trimmed;
+}
+
 function validateRecipeManifest(raw: unknown): RecipeManifest {
   if (!isRecord(raw)) throw new Error("manifest must be an object");
   if (raw.schema_version !== "1") throw new Error("manifest.schema_version must be '1'");
@@ -697,6 +713,122 @@ async function downloadToFile(url: string, destPath: string): Promise<void> {
   }
   const buffer = Buffer.from(await res.arrayBuffer());
   await writeFile(destPath, buffer);
+}
+
+function parseRecipeInstallArgs(args: string[]): {
+  source: string;
+  onConflict: RecipeConflictMode;
+} {
+  let source: string | null = null;
+  let onConflict: RecipeConflictMode = "fail";
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (arg === "--on-conflict") {
+      const next = args[i + 1];
+      if (!next) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+      }
+      if (!RECIPE_CONFLICT_MODES.includes(next as RecipeConflictMode)) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+      }
+      onConflict = next as RecipeConflictMode;
+      i++;
+      continue;
+    }
+    if (arg.startsWith("--")) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+    }
+    if (source) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+    }
+    source = arg;
+  }
+
+  if (!source) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+  }
+
+  return { source, onConflict };
+}
+
+async function applyRecipeAgents(opts: {
+  manifest: RecipeManifest;
+  recipeDir: string;
+  agentplaneDir: string;
+  onConflict: RecipeConflictMode;
+}): Promise<void> {
+  const agents = opts.manifest.agents ?? [];
+  if (agents.length === 0) return;
+
+  const agentsDir = path.join(opts.agentplaneDir, "agents");
+  await mkdir(agentsDir, { recursive: true });
+
+  for (const agent of agents) {
+    const rawId = typeof agent?.id === "string" ? agent.id : "";
+    const rawFile = typeof agent?.file === "string" ? agent.file : "";
+    if (!rawId.trim() || !rawFile.trim()) {
+      throw new Error("manifest.agents entries must include id and file");
+    }
+    const agentId = normalizeAgentId(rawId);
+    const sourcePath = path.join(opts.recipeDir, rawFile);
+    if (!(await fileExists(sourcePath))) {
+      throw new Error(`Recipe agent file not found: ${rawFile}`);
+    }
+
+    const rawAgent = JSON.parse(await readFile(sourcePath, "utf8")) as unknown;
+    if (!isRecord(rawAgent)) {
+      throw new Error(`Recipe agent file must be a JSON object: ${rawFile}`);
+    }
+
+    const baseId = `${opts.manifest.id}__${agentId}`;
+    let targetId = baseId;
+    let targetPath = path.join(agentsDir, `${targetId}.json`);
+    if (await getPathKind(targetPath)) {
+      if (opts.onConflict === "fail") {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Agent already exists: ${targetId}`,
+        });
+      }
+      if (opts.onConflict === "rename") {
+        let counter = 1;
+        while (await getPathKind(targetPath)) {
+          targetId = `${baseId}__${counter}`;
+          targetPath = path.join(agentsDir, `${targetId}.json`);
+          counter += 1;
+        }
+      }
+    }
+
+    rawAgent.id = targetId;
+    await writeFile(targetPath, `${JSON.stringify(rawAgent, null, 2)}\n`, "utf8");
+  }
+}
+
+async function applyRecipeScenarios(opts: {
+  manifest: RecipeManifest;
+  recipeDir: string;
+}): Promise<void> {
+  const scenarios = opts.manifest.scenarios ?? [];
+  if (scenarios.length === 0) return;
+
+  const payload = {
+    schema_version: 1,
+    scenarios: scenarios
+      .filter((scenario) => isRecord(scenario))
+      .map((scenario) => ({
+        id: typeof scenario.id === "string" ? scenario.id : "",
+        summary: typeof scenario.summary === "string" ? scenario.summary : "",
+      }))
+      .filter((scenario) => scenario.id),
+  };
+
+  if (payload.scenarios.length === 0) return;
+  const scenariosPath = path.join(opts.recipeDir, "scenarios.json");
+  await writeFile(scenariosPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 }
 
 function isHttpUrl(value: string): boolean {
@@ -1398,6 +1530,7 @@ async function cmdRecipeInstall(opts: {
   cwd: string;
   rootOverride?: string;
   source: string;
+  onConflict: RecipeConflictMode;
 }): Promise<number> {
   try {
     const resolved = await resolveProject({
@@ -1499,6 +1632,19 @@ async function cmdRecipeInstall(opts: {
       await mkdir(path.dirname(destDir), { recursive: true });
       await mkdir(recipesDir, { recursive: true });
       await rename(recipeRoot, destDir);
+
+      try {
+        await applyRecipeAgents({
+          manifest,
+          recipeDir: destDir,
+          agentplaneDir: resolved.agentplaneDir,
+          onConflict: opts.onConflict,
+        });
+        await applyRecipeScenarios({ manifest, recipeDir: destDir });
+      } catch (err) {
+        await rm(destDir, { recursive: true, force: true });
+        throw err;
+      }
 
       const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
       const lock = await readRecipesLock(lockPath);
@@ -5288,13 +5434,12 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       if (subcommand === "install") {
-        if (args.length !== 1) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
-        }
+        const parsed = parseRecipeInstallArgs(args);
         return await cmdRecipeInstall({
           cwd: process.cwd(),
           rootOverride: globals.root,
-          source: args[0],
+          source: parsed.source,
+          onConflict: parsed.onConflict,
         });
       }
       if (subcommand === "remove") {
