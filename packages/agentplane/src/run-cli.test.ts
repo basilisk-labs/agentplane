@@ -4772,6 +4772,18 @@ describe("runCli", () => {
     }
   });
 
+  it("cleanup merged rejects unexpected arguments", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "extra", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("cleanup merged reports no candidates", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
@@ -4807,6 +4819,34 @@ describe("runCli", () => {
       const code = await runCli(["cleanup", "merged", "--quiet", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged accepts --base and --archive", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await commitAll(root, "chore base");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "cleanup",
+        "merged",
+        "--base",
+        "main",
+        "--archive",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
     } finally {
       io.restore();
     }
