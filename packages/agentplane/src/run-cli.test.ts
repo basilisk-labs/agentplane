@@ -74,6 +74,46 @@ async function writeConfig(root: string, config: ReturnType<typeof defaultConfig
   await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
 }
 
+async function createRecipeArchive(opts?: {
+  id?: string;
+  version?: string;
+  name?: string;
+  summary?: string;
+  description?: string;
+  format?: "tar" | "zip";
+  wrapDir?: boolean;
+}): Promise<{ archivePath: string; manifest: Record<string, unknown> }> {
+  const execFileAsync = promisify(execFile);
+  const baseDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
+  const recipeDir = path.join(baseDir, opts?.wrapDir ? "bundle" : "recipe");
+  await mkdir(recipeDir, { recursive: true });
+  const manifest = {
+    schema_version: "1",
+    id: opts?.id ?? "viewer",
+    version: opts?.version ?? "1.2.3",
+    name: opts?.name ?? "Viewer",
+    summary: opts?.summary ?? "Preview task artifacts",
+    description: opts?.description ?? "Provides a local viewer for task artifacts.",
+    agents: [{ id: "RECIPE_AGENT", summary: "Recipe agent", file: "agents/recipe.json" }],
+    tools: [{ id: "RECIPE_TOOL", summary: "Recipe tool", entrypoint: "tools/run.sh" }],
+    scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
+  };
+  await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
+  const format = opts?.format ?? "tar";
+  const archivePath =
+    format === "zip" ? path.join(baseDir, "recipe.zip") : path.join(baseDir, "recipe.tar.gz");
+  if (format === "zip") {
+    await (opts?.wrapDir
+      ? execFileAsync("zip", ["-qr", archivePath, path.basename(recipeDir)], { cwd: baseDir })
+      : execFileAsync("zip", ["-qr", archivePath, "."], { cwd: recipeDir }));
+  } else {
+    await (opts?.wrapDir
+      ? execFileAsync("tar", ["-czf", archivePath, "-C", baseDir, path.basename(recipeDir)])
+      : execFileAsync("tar", ["-czf", archivePath, "-C", recipeDir, "."]));
+  }
+  return { archivePath, manifest };
+}
+
 async function mkGitRepoRootWithBranch(branch: string): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
   const execFileAsync = promisify(execFile);
@@ -4570,6 +4610,168 @@ describe("runCli", () => {
     }
   });
 
+  it("integrate rebase fails when base changes during verify", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    const verifyCmd = `cd "${root}" && echo bump >> bump.txt && git add bump.txt && git commit -m "chore bump"`;
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Rebase integrate failure",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        verifyCmd,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/rebase-fail`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
+
+    const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
+    await execFileAsync("git", ["worktree", "add", worktreePath, branch], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--merge-strategy",
+        "rebase",
+        "--run-verify",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("merge --ff-only");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("integrate rebase fails when verify command fails", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Rebase verify failure",
+        "--description",
+        "Branch integration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--verify",
+        "false",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/rebase-verify-fail`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
+
+    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-rebase-"));
+    await execFileAsync("git", ["worktree", "add", worktreePath, branch], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "integrate",
+        taskId,
+        "--branch",
+        branch,
+        "--merge-strategy",
+        "rebase",
+        "--run-verify",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(1);
+      expect(io.stderr).toContain("Verify command failed");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("integrate fails when post-merge hook removes pr dir", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await configureGitUser(root);
@@ -4731,6 +4933,75 @@ describe("runCli", () => {
       const code = await runCli(["cleanup", "merged", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("workflow_mode=branch_pr");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged requires running on base branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await commitAll(root, "chore config");
+
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["checkout", "-b", "feature"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("cleanup merged must run on base branch");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged maps errors for non-git roots", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Not a git repository");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged rejects blank base branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await commitAll(root, "chore config");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--base", " ", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("cleanup merged rejects unknown base branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await commitAll(root, "chore config");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--base", "nope", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Unknown base branch");
     } finally {
       io.restore();
     }
@@ -4998,6 +5269,76 @@ describe("runCli", () => {
     expect(entries.length).toBe(1);
     expect(await pathExists(path.join(archiveRoot, entries[0]))).toBe(true);
     expect(await pathExists(prDir)).toBe(false);
+  });
+
+  it("cleanup merged refuses worktrees outside repo", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await commitAll(root, "chore base");
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Cleanup outside worktree",
+        "--description",
+        "cleanup candidate",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await commitAll(root, `chore ${taskId} scaffold`);
+
+    const task = await readTask({ cwd: root, taskId });
+    const readmeText = await readFile(task.readmePath, "utf8");
+    await writeFile(
+      task.readmePath,
+      readmeText.replace('status: "TODO"', 'status: "DONE"'),
+      "utf8",
+    );
+    await commitAll(root, `chore ${taskId} done`);
+
+    const branch = `task/${taskId}/cleanup-outside`;
+    const worktreePath = await mkdtemp(path.join(os.tmpdir(), "agentplane-worktree-"));
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["worktree", "add", "-b", branch, worktreePath, "main"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["cleanup", "merged", "--yes", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Refusing to remove worktree outside repo");
+    } finally {
+      io.restore();
+    }
+
+    await execFileAsync("git", ["worktree", "remove", "--force", worktreePath], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    await execFileAsync("git", ["branch", "-D", branch], { cwd: root, env: cleanGitEnv() });
   });
 
   it("pr note rejects unknown flags", async () => {
@@ -5998,6 +6339,205 @@ describe("runCli", () => {
       const code = await runCli(["init", "--yes", "--root", root]);
       expect(code).toBe(5);
       expect(io.stderr).toContain("Project already initialized");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe install/list/info/remove manages local recipes", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive();
+
+    const ioInstall = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "install", archivePath, "--root", root]);
+      expect(code).toBe(0);
+      expect(ioInstall.stdout).toContain("Installed recipe");
+    } finally {
+      ioInstall.restore();
+    }
+
+    const manifestId = String(manifest.id);
+    const manifestVersion = String(manifest.version);
+    const installedManifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      manifestId,
+      manifestVersion,
+      "manifest.json",
+    );
+    expect(await pathExists(installedManifestPath)).toBe(true);
+
+    const lockPath = path.join(root, ".agentplane", "recipes.lock.json");
+    const lockText = await readFile(lockPath, "utf8");
+    expect(lockText).toContain(manifestId);
+    expect(lockText).toContain(manifestVersion);
+
+    const indexPath = path.join(root, ".agentplane", "RECIPES.md");
+    const indexText = await readFile(indexPath, "utf8");
+    expect(indexText).toContain(String(manifest.summary));
+
+    const ioList = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "list", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioList.stdout).toContain(`${manifestId}@${manifestVersion}`);
+    } finally {
+      ioList.restore();
+    }
+
+    const ioInfo = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "info", manifestId, "--root", root]);
+      expect(code).toBe(0);
+      expect(ioInfo.stdout).toContain(`Recipe: ${manifestId}@${manifestVersion}`);
+      expect(ioInfo.stdout).toContain(String(manifest.description));
+      expect(ioInfo.stdout).toContain("Agents:");
+      expect(ioInfo.stdout).toContain("Tools:");
+      expect(ioInfo.stdout).toContain("Scenarios:");
+    } finally {
+      ioInfo.restore();
+    }
+
+    const ioRemove = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "remove", manifestId, "--root", root]);
+      expect(code).toBe(0);
+      expect(ioRemove.stdout).toContain("Removed recipe");
+    } finally {
+      ioRemove.restore();
+    }
+
+    expect(
+      await pathExists(path.join(root, ".agentplane", "recipes", manifestId, manifestVersion)),
+    ).toBe(false);
+  });
+
+  it("recipe install accepts zip archives with a top-level folder", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({
+      id: "zipper",
+      version: "0.1.0",
+      format: "zip",
+      wrapDir: true,
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "install", archivePath, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const manifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      String(manifest.id),
+      String(manifest.version),
+      "manifest.json",
+    );
+    expect(await pathExists(manifestPath)).toBe(true);
+  });
+
+  it("recipe list reports when no recipes are installed", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "list", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("No recipes installed.");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe install rejects unsupported archives", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const filePath = path.join(root, "recipe.txt");
+    await writeFile(filePath, "not an archive", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "install", filePath, "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipe install");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe list rejects extra args", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "list", "extra"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipe");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe info rejects missing id", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "info"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipe info");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe rejects missing subcommand", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipe");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe rejects unknown subcommand", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "noop"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipe");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe install rejects extra args", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "install", "a.tar.gz", "extra", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipe install");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipe remove rejects extra args", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "remove", "id", "extra", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipe remove");
     } finally {
       io.restore();
     }
