@@ -1,0 +1,31 @@
+{
+  "tasks": [
+    {
+      "id": "202601010101-ABCDE",
+      "title": "Sample Task",
+      "description": "Fixture task for parity testing.",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "CODER",
+      "tags": ["nodejs"],
+      "depends_on": [],
+      "verify": ["bun run ci"]
+    },
+    {
+      "id": "202601010102-BCDEF",
+      "title": "Followup Task",
+      "description": "Second fixture task.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "TESTER",
+      "tags": ["testing"],
+      "depends_on": ["202601010101-ABCDE"]
+    }
+  ],
+  "meta": {
+    "schema_version": 1,
+    "managed_by": "agentctl",
+    "checksum_algo": "sha256",
+    "checksum": "86598e2133698eef6acb5f817ffb9a4d1980c2d834ad11373c27c8ca86e18f80"
+  }
+}
