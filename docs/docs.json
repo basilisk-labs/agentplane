@@ -26,11 +26,13 @@
       {
         "group": "Concepts",
         "pages": [
+          "design-principles",
           "architecture",
           "project-layout",
           "workflow",
           "agents",
           "tasks-and-backends",
+          "backends",
           "branching-and-pr-artifacts",
           "configuration"
         ]
@@ -43,9 +45,11 @@
           "recipes-spec",
           "recipes-how-it-works",
           "recipes-development",
+          "recipes-safety",
           "testing-and-quality",
           "release-and-publishing",
-          "code-quality"
+          "code-quality",
+          "contributing"
         ]
       },
       {

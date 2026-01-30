@@ -1,40 +1,54 @@
 ---
 title: "Architecture"
-description: "Understand the CLI, project state directory, backends, exports, and recipes at a high level."
+description: "How the CLI, backends, tasks, and recipes fit together."
 ---
 
-## Summary
+## Overview
 
-Agent Plane v1 is a Node.js CLI (`agentplane`) plus a per-project state directory (`.agentplane/`). It combines JSON-defined agents, a pluggable task backend, and explicit workflow guardrails so multi-agent work stays planned and traceable.
+Agent Plane is a CLI-first workflow framework. The CLI orchestrates task state, workflow guardrails, and optional automation. Core behavior is deterministic and offline-first, while optional features are shipped as recipes.
 
-## Key Concepts
+## Core components
 
-- Global rules are defined in [`AGENTS.md`](../AGENTS.md).
-- Agents are defined in `.agentplane/agents/` (created/managed by `agentplane init` and recipes).
-- Task source-of-truth is backend-driven (local folder or Redmine).
-- Local task storage lives under `.agentplane/tasks/` and doubles as a cache when backend=redmine.
-- Backend plugin configs live under `.agentplane/backends/`.
-- `tasks.json` is an exported view for local browsing and integrations (checksum-bearing).
+### CLI (`agentplane`)
 
-## Architectural Layers
+- Entry point: `packages/agentplane/src/run-cli.ts`.
+- Parses commands and enforces guardrails.
+- Routes task operations to the configured backend.
 
-1. **Agent layer:** Orchestrator + specialist agents (core set + recipe-installed).
-2. **Workflow layer:** `agentplane` CLI enforces guardrails and routes task ops to the active backend.
-3. **Backend layer:** pluggable task storage (local or Redmine), with offline-first behavior and explicit sync.
-4. **Export layer:** `tasks.json` generated from the canonical backend; consumers should treat it as a read-only snapshot.
-5. **Recipes layer:** optional, installable extensions (agents/tools/scenarios/assets) that do not block core operation.
+### Core library (`@agentplane/core`)
 
-## Where to Read Next
+- Project resolution and configuration parsing.
+- Task README parsing and export helpers.
 
-- [`../ROADMAP.md`](../ROADMAP.md) for the v1 scope and milestones.
-- [`workflow`](workflow) for end-to-end process details.
-- [`tasks-and-backends`](tasks-and-backends) for backend behavior and the task ID format.
-- [`branching-and-pr-artifacts`](branching-and-pr-artifacts) for `workflow_mode` specifics.
-- [`cli-contract`](cli-contract) for the command surface.
-- [`recipes-spec`](recipes-spec) for recipes behavior.
+### Task backends
 
-## Planned Expansions
+- Local backend stores tasks under `.agent-plane/tasks/`.
+- Remote backends (e.g., Redmine) are optional and require explicit sync.
 
-- Add a parity matrix vs the legacy Python implementation.
-- Add a sequence diagram for offline fallback and explicit sync.
-- Document backend plugin loading and validation rules.
+### Recipes
+
+- Live under `.agent-plane/recipes/`.
+- Provide scenarios, tools, and optional agents.
+- Must comply with safety rules and I/O allowlists.
+
+## Data flow
+
+1. CLI reads `.agentplane/config.json`.
+2. CLI resolves the active backend config.
+3. Task commands read/write through the backend.
+4. Exports are written to `.agent-plane/tasks.json` for integrations.
+5. Recipe runs write artifacts under `.agent-plane/.runs/`.
+
+## Guardrails
+
+- Structured comments for start/block/finish actions.
+- Commit subject validation with task ID suffix.
+- PR artifacts required in `branch_pr` mode.
+
+## Related docs
+
+- [Workflow](workflow)
+- [Tasks and backends](tasks-and-backends)
+- [Backends deep dive](backends)
+- [Recipes spec](recipes-spec)
+

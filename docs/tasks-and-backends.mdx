@@ -1,82 +1,49 @@
 ---
-title: "Tasks and Backends (v1)"
-description: "Understand task IDs, exports, and how the active backend determines the canonical source of truth."
+title: "Tasks and backends"
+description: "How tasks are stored and how backends are configured."
 ---
 
-## Summary
+## Task storage
 
-Tasks are operated through `agentplane`, which routes reads/writes to the active backend. The backend decides the canonical store:
+Tasks are stored under `.agent-plane/tasks/` as README files with frontmatter. Each task includes:
 
-- `local`: `.agentplane/tasks/` is canonical.
-- `redmine`: Redmine is canonical; `.agentplane/tasks/` is an offline cache layer.
+- Status, owner, priority, tags.
+- Structured doc sections (Summary, Scope, Risks, Verify Steps, Rollback Plan).
 
-`tasks.json` is an exported snapshot for browsing and integrations (checksum-bearing).
+## Task export
 
-## Routing model
+A snapshot export is written to `.agent-plane/tasks.json` for integrations.
 
-1. `agentplane` resolves the repo root and loads `.agentplane/config.json`.
-2. The config points to an active backend (`tasks_backend.config_path`).
-3. Writes go to the canonical backend, then the local cache is refreshed as needed.
-4. Sync is explicit: `agentplane backend sync <id>`.
-
-## Task identity
-
-- ID format: `YYYYMMDDHHMM-<RAND>`
-- IDs are immutable once created.
-
-## Local task layout
-
-Each task lives in:
-
-```
-.agentplane/tasks/<task-id>/README.md
+```bash
+agentplane task export
 ```
 
-The README begins with YAML frontmatter; the v1 contract is represented as a JSON Schema in:
+## Backends
 
-- `packages/spec/schemas/task-readme-frontmatter.schema.json`
+The active backend is configured in `.agentplane/config.json`:
 
-## Exported snapshot (`tasks.json`)
-
-The exported view lives at:
-
-```
-.agentplane/tasks.json
-```
-
-Schema:
-
-- `packages/spec/schemas/tasks-export.schema.json`
-
-Canonicalization rules (checksum stability) are described in:
-
-- `packages/spec/README.md`
-
-## Sync and conflicts (remote backends)
-
-For remote backends (v1 parity: Redmine), sync is explicit and supports conflict strategy:
-
-- `agentplane backend sync redmine --direction push|pull`
-- `--conflict diff|prefer-local|prefer-remote|fail`
-
-## Configuration
-
-Config file:
-
-```
-.agentplane/config.json
+```json
+{
+  "tasks_backend": {
+    "config_path": ".agent-plane/backends/local/backend.json"
+  }
+}
 ```
 
-Schema:
+- Local backend is the default.
+- Remote backends require explicit configuration and sync.
 
-- `packages/spec/schemas/config.schema.json`
+## Sync
 
-## Commands reference
+```bash
+agentplane sync <backend> --direction pull
+agentplane sync <backend> --direction push --yes
+```
 
-The authoritative command surface is documented in:
+Conflict strategies: `diff`, `prefer-local`, `prefer-remote`, `fail`.
 
-- `cli-contract`
+## Notes
 
-## Legacy note
+- Treat `.agent-plane/tasks.json` as a derived snapshot.
+- Prefer `agentplane task doc set` for README updates.
 
-This repository still includes a Python backend implementation under `.agent-plane/` for the legacy toolchain. The target v1 system uses `.agentplane/` and `agentplane`.

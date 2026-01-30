@@ -1,13 +1,9 @@
 ---
 title: "Commands"
-description: "A practical cheat sheet of common Agent Plane commands and workflows."
+description: "A practical CLI guide for common workflows."
 ---
 
-`cli-contract` is the canonical, stable contract for the v1 CLI surface.
-
-This page provides a quick “what do I type” view.
-
-## Help / version
+## Help and version
 
 ```bash
 agentplane --help
@@ -20,30 +16,17 @@ agentplane --version
 agentplane init
 ```
 
-Init prompts you for workflow, hooks, and approval toggles (plan/network). For non-interactive use:
+Non-interactive:
 
 ```bash
 agentplane init --yes --require-plan-approval yes --require-network-approval no
-```
-
-## Upgrade
-
-```bash
-agentplane upgrade
 ```
 
 ## Config
 
 ```bash
 agentplane config show
-agentplane config set tasks.verify.required_tags '["code","backend"]'
-```
-
-## Mode
-
-```bash
-agentplane mode get
-agentplane mode set branch_pr
+agentplane config set workflow_mode branch_pr
 ```
 
 ## Tasks
@@ -52,29 +35,18 @@ agentplane mode set branch_pr
 agentplane task list
 agentplane task show <task-id>
 agentplane task new --title "..." --description "..." --priority med --owner CODER --tag nodejs
-agentplane task doc show <task-id>
 agentplane task doc set <task-id> --section Summary --text "..."
-agentplane task export
-agentplane task lint
-```
-
-## Backend sync
-
-```bash
-agentplane backend sync redmine --direction push --yes
-agentplane backend sync redmine --direction pull --conflict diff
 ```
 
 ## Workflow
 
 ```bash
-agentplane start <task-id>
-agentplane block <task-id>
+agentplane start <task-id> --author CODER --body "Start: ..."
 agentplane verify <task-id>
-agentplane finish <task-id> --commit <git-rev>
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..."
 ```
 
-## Branching / PR artifacts (branch_pr)
+## Branching (branch_pr)
 
 ```bash
 agentplane work start <task-id> --agent CODER --slug <slug> --worktree
@@ -88,20 +60,7 @@ agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
 
 ```bash
 agentplane recipe list
-agentplane recipe info <id>
-agentplane recipe install <url|id|path>
-agentplane recipe remove <id>
-agentplane recipe list-remote --refresh
+agentplane scenario list
+agentplane scenario run <recipe:scenario>
 ```
 
-## Developing the CLI in this repo
-
-```bash
-bun install
-bun run --filter=agentplane build
-node packages/agentplane/bin/agentplane.js --help
-```
-
-## Legacy note
-
-The repository contains legacy Python commands under `.agent-plane/`. This page intentionally documents the Node.js `agentplane` target per `ROADMAP.md`.

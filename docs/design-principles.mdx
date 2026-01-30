@@ -1,0 +1,47 @@
+---
+title: "Design principles"
+description: "The core principles that guide Agent Plane's architecture and workflows."
+---
+
+## Goals
+
+Agent Plane is designed to make agent-driven development predictable and auditable. The system favors explicitness over convenience and makes workflow state visible and recoverable.
+
+## Principles
+
+### 1) Single source of truth
+
+- Task state lives in `.agent-plane/tasks/`.
+- Avoid manual edits; use the CLI for changes.
+
+### 2) Explicit workflow transitions
+
+- Start, block, verify, and finish are explicit operations.
+- Status comments are structured and traceable.
+
+### 3) Deterministic artifacts
+
+- PR artifacts and task docs are structured and stable.
+- Exports are reproducible from source data.
+
+### 4) Minimal core, extensible edges
+
+- Core provides task, workflow, and guardrails.
+- Optional automation ships as recipes, not core behavior.
+
+### 5) Offline-first by default
+
+- No network use unless explicitly required.
+- CLI should be safe to run locally without external dependencies.
+
+### 6) Auditability
+
+- Every task has a doc, verify steps, and rollback plan.
+- Commits are tied to task IDs and include changelog detail.
+
+## What this means for contributors
+
+- Prefer explicit configs and clear CLI output over implicit behavior.
+- Keep new functionality behind recipes when it is optional.
+- Extend docs when new commands or flows are added.
+
