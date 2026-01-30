@@ -9,17 +9,35 @@ It complements the formal contract in [`recipes-spec`](recipes-spec) with implem
 ## 1) What a recipe is (in code)
 
 A recipe is a versioned archive that contains optional agents, tools, scenarios, and assets.
-When installed, it is extracted into `.agentplane/recipes/<id>/<version>/` and tracked by
-`.agentplane/recipes.lock.json`.
+When installed, it is extracted into a global cache and tracked by `.agentplane/recipes.lock.json`.
 
 Key paths the CLI reads/writes:
 
-- `.agentplane/recipes/<id>/<version>/` — extracted recipe contents.
+- `.agentplane/recipes/<id>/<version>/` — project-layer recipe contents (symlink or copy).
+- `~/.agentplane/recipes-cache/<id>/<version>/` — global cache of recipe contents (overridable via `AGENTPLANE_HOME`).
 - `.agentplane/recipes.lock.json` — installed recipes list (id, version, sha256, source).
 - `.agentplane/RECIPES.md` — human-friendly index written by `recipe list`.
 - `.agentplane/cache/recipes-index.json` — cached remote catalog (`recipe list-remote`).
 - `.agentplane/recipes/<id>/runs/<timestamp>-<scenario>/` — scenario run artifacts.
-- `.agentplane/recipes/<id>/<version>/scenarios.json` — scenario summary index.
+- `.agentplane/recipes/<id>/<version>/scenarios.json` — scenario summary index (mirrors cache when linked).
+
+### Example: minimal recipe layout
+
+```text
+manifest.json
+```
+
+Even a single-file recipe is valid as long as `manifest.json` is present and valid.
+
+### Example: recipe with tools + scenario
+
+```text
+manifest.json
+tools/
+  list-projects.mjs
+scenarios/
+  list-projects.json
+```
 
 ## 2) Manifest and scenario validation
 
@@ -35,9 +53,51 @@ Scenario definitions (`scenarios/*.json`) are validated when installed or listed
 - Required fields: `id`, `goal`, `inputs`, `outputs`, `steps`.
 - `steps` must be an array; each step must include a tool id.
 
+### Example: minimal manifest (Node tool + scenario index)
+
+```json
+{
+  "schema_version": "1",
+  "id": "dokploy",
+  "version": "0.1.0",
+  "name": "Dokploy Toolkit",
+  "summary": "Utility tools for Dokploy automation.",
+  "description": "Simple CLI-level tools and scenarios for Dokploy API workflows.",
+  "tools": [
+    {
+      "id": "list-projects",
+      "summary": "List projects from Dokploy.",
+      "runtime": "node",
+      "entrypoint": "tools/list-projects.mjs",
+      "permissions": {
+        "network": true
+      }
+    }
+  ],
+  "scenarios": [
+    { "id": "list-projects", "summary": "Fetch and print projects." }
+  ]
+}
+```
+
+### Example: scenario definition (single tool step)
+
+```json
+{
+  "schema_version": "1",
+  "id": "list-projects",
+  "goal": "Fetch Dokploy projects",
+  "inputs": [],
+  "outputs": ["projects"],
+  "steps": [
+    { "tool": "list-projects" }
+  ]
+}
+```
+
 ## 3) Installing recipes
 
-Command: `agentplane recipe install <path|url|id> [--on-conflict <fail|rename|overwrite>]`
+Command: `agentplane recipe install <path|url|id> [--on-conflict <fail|rename|overwrite>] [--storage <link|copy|global>]`
 
 Install flow (in order):
 
@@ -53,9 +113,13 @@ Install flow (in order):
    - If `manifest.json` is at the archive root, use that.
    - Otherwise, the archive must contain **exactly one** top-level directory with `manifest.json`.
 4. **Install content**
-   - Moves the extracted folder to `.agentplane/recipes/<id>/<version>/`.
+   - Moves the extracted folder to the global cache at `~/.agentplane/recipes-cache/<id>/<version>/`.
    - Applies agent and scenario metadata (see below).
-5. **Update lock + index**
+5. **Create project layer (storage mode)**
+   - `link` (default): creates a symlink in `.agentplane/recipes/<id>/<version>/` to the global cache.
+   - `copy`: copies the cache contents into `.agentplane/recipes/<id>/<version>/`.
+   - `global`: skips the project layer and reads content directly from the cache.
+6. **Update lock + index**
    - Writes/updates `.agentplane/recipes.lock.json` (sorted by id/version).
    - Rebuilds `.agentplane/RECIPES.md` using manifest summaries.
 
@@ -64,6 +128,12 @@ Version behavior to be aware of:
 - Installing a new version **does not remove** older recipe directories.
 - The lockfile only keeps one entry per recipe id (the latest installed), so old
   versions can linger on disk until manually removed.
+
+Storage notes:
+
+- The lockfile records `storage` for each recipe (`link`, `copy`, or `global`).
+- `global` mode keeps recipe content in the cache only; run artifacts still live under the project.
+- The default storage mode can be set via `recipes.storage_default` in `config.json`.
 
 ### Agent conflicts during install
 
@@ -106,6 +176,7 @@ cannot execute scenarios.
 
 - Removes only the version recorded in `.agentplane/recipes.lock.json`.
 - Does **not** delete any agents previously copied into `.agentplane/agents`.
+- Does **not** delete cached content in `~/.agentplane/recipes-cache/` (use `recipe cache prune`).
 
 ## 5) Remote catalog (`recipe list-remote`)
 
@@ -145,6 +216,16 @@ Artifacts:
 - Creates `.agentplane/recipes/<id>/runs/<timestamp>-<scenario>/`.
 - For each step, writes `stdout.log` and `stderr.log` under a `step-N-<tool>` folder.
 - Writes `meta.json` with recipe, scenario, run id, and per-step exit info.
+
+Example artifacts layout:
+
+```text
+.agentplane/recipes/dokploy/runs/2026-01-30T19-22-10Z-list-projects/
+  meta.json
+  step-1-list-projects/
+    stdout.log
+    stderr.log
+```
 
 Environment variables injected into tools:
 
