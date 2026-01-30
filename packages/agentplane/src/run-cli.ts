@@ -99,10 +99,39 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
 }
 
 function writeError(err: CliError, jsonErrors: boolean): void {
+  const hint = renderErrorHint(err);
   if (jsonErrors) {
-    process.stdout.write(`${formatJsonError(err)}\n`);
+    process.stdout.write(`${formatJsonError(err, { hint })}\n`);
   } else {
-    process.stderr.write(`${err.message}\n`);
+    const header = `error [${err.code}]`;
+    if (err.message.includes("\n")) {
+      process.stderr.write(`${header}\n${err.message}\n`);
+    } else {
+      process.stderr.write(`${header}: ${err.message}\n`);
+    }
+    if (hint) {
+      process.stderr.write(`hint: ${hint}\n`);
+    }
+  }
+}
+
+function renderErrorHint(err: CliError): string | undefined {
+  switch (err.code) {
+    case "E_USAGE": {
+      return "Run `agentplane --help` for usage.";
+    }
+    case "E_GIT": {
+      return "Run inside a git repository or pass --root <path>.";
+    }
+    case "E_NETWORK": {
+      return "Check network connectivity and credentials.";
+    }
+    case "E_BACKEND": {
+      return "Check backend configuration in .agentplane/backends.";
+    }
+    default: {
+      return undefined;
+    }
   }
 }
 
@@ -5311,8 +5340,10 @@ async function cmdTaskDocSet(opts: {
 }
 
 export async function runCli(argv: string[]): Promise<number> {
+  let jsonErrors = argv.includes("--json");
   try {
     const { globals, rest } = parseGlobalArgs(argv);
+    jsonErrors = globals.jsonErrors;
 
     if (globals.version) {
       process.stdout.write(`${getVersion()}\n`);
@@ -6285,11 +6316,12 @@ export async function runCli(argv: string[]): Promise<number> {
       });
     }
 
-    process.stderr.write("Not implemented yet. Run `agentplane --help`.\n");
-    return 2;
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Not implemented yet. Run `agentplane --help`.",
+    });
   } catch (err) {
-    const jsonErrors = argv.includes("--json");
-
     if (err instanceof CliError) {
       writeError(err, jsonErrors);
       return err.exitCode;
