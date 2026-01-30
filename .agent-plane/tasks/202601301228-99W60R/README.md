@@ -1,11 +1,14 @@
 ---
 id: "202601301228-99W60R"
 title: "Sync config.json format with code"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["config", "docs"]
+commit: { hash: "0e9d07c1b46118f7cb600143436ebc71b626b6a3", message: "✨ 99W60R sync config.json formatting with code" }
+comments:
+  - { author: "ORCHESTRATOR", body: "verified: Formatting-only change | details: no automated tests run beyond pre-commit format/lint hooks." }
 doc_version: 2
 doc_updated_at: "2026-01-30T12:29:12+00:00"
 doc_updated_by: "agentctl"
