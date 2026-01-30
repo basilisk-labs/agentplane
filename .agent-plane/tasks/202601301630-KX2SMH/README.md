@@ -1,13 +1,15 @@
 ---
 id: "202601301630-KX2SMH"
 title: "Revamp developer documentation"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["docs", "devguide"]
+commit: { hash: "cbf4320e2b4c5b19edfcaefc25c0734a1513126b", message: "✅ KX2SMH close: record task doc" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: audit docs and redesign developer documentation structure." }
+  - { author: "ORCHESTRATOR", body: "verified: docs restructured with new developer guide sections and navigation updated." }
 doc_version: 2
 doc_updated_at: "2026-01-30T16:31:05+00:00"
 doc_updated_by: "agentctl"
