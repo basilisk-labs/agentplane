@@ -1,0 +1,50 @@
+---
+title: "Recipes development"
+description: "How to build, validate, and ship recipes."
+---
+
+## Recipe layout
+
+Each recipe lives under `.agent-plane/recipes/<slug>/` and includes:
+
+- `manifest.json`
+- `scenarios/*.md`
+- `scenarios/*.inputs.json`
+- `tools/` (optional)
+- `README.md` (recommended)
+
+## Manifest rules
+
+- `schema_version` must be `recipe-manifest@1`.
+- `slug` must match the folder name.
+- `entrypoints` must include `ide` and/or `cli`.
+- Each scenario must define `id`, `path`, and `inputs_schema`.
+
+## Inventory and bundle
+
+Update the inventory after changing manifests:
+
+```bash
+python .agent-plane/recipes.py scan --recipes-dir .agent-plane/recipes --output docs/recipes-inventory.json
+```
+
+Build the global bundle when needed:
+
+```bash
+python .agent-plane/recipes.py bundle build --out .agent-plane/recipes/bundle.json
+```
+
+## Safety and I/O rules
+
+- Do not write outside the manifest allowlist.
+- Do not use network unless explicitly allowed in the manifest.
+- Never edit `.agent-plane/tasks/**` directly; use `agentctl` when required.
+
+## Running a scenario
+
+```bash
+agentplane scenario run <recipe:scenario>
+```
+
+If the recipe includes tools, they run with inputs from the scenario form or JSON file.
+
