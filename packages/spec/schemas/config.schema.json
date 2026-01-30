@@ -11,6 +11,22 @@
     "status_commit_policy": { "type": "string", "enum": ["off", "warn", "confirm"] },
     "finish_auto_status_commit": { "type": "boolean" },
     "base_branch": { "type": "string", "minLength": 1 },
+    "agents": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["approvals"],
+      "properties": {
+        "approvals": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["require_plan", "require_network"],
+          "properties": {
+            "require_plan": { "type": "boolean" },
+            "require_network": { "type": "boolean" }
+          }
+        }
+      }
+    },
     "paths": {
       "type": "object",
       "additionalProperties": true,

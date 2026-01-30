@@ -6451,6 +6451,10 @@ describe("runCli", () => {
         "cursor",
         "--hooks",
         "yes",
+        "--require-plan-approval",
+        "yes",
+        "--require-network-approval",
+        "no",
         "--root",
         root,
       ]);
@@ -6462,6 +6466,8 @@ describe("runCli", () => {
     const configPath = path.join(root, ".agentplane", "config.json");
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "branch_pr"');
+    expect(configText).toContain('"require_plan": true');
+    expect(configText).toContain('"require_network": false');
 
     const cursorPath = path.join(root, ".cursor", "rules", "agentplane.mdc");
     expect(await pathExists(cursorPath)).toBe(true);

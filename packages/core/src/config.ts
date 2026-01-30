@@ -10,6 +10,12 @@ export type AgentplaneConfig = {
   status_commit_policy: StatusCommitPolicy;
   finish_auto_status_commit: boolean;
   base_branch: string;
+  agents?: {
+    approvals: {
+      require_plan: boolean;
+      require_network: boolean;
+    };
+  };
   paths: {
     agents_dir: string;
     agentctl_docs_path: string;
@@ -41,6 +47,12 @@ export function defaultConfig(): AgentplaneConfig {
     status_commit_policy: "warn",
     finish_auto_status_commit: true,
     base_branch: "main",
+    agents: {
+      approvals: {
+        require_plan: true,
+        require_network: true,
+      },
+    },
     paths: {
       agents_dir: ".agentplane/agents",
       agentctl_docs_path: ".agentplane/agentctl.md",
@@ -100,6 +112,16 @@ export function validateConfig(raw: unknown): AgentplaneConfig {
     throw new Error("config.finish_auto_status_commit must be boolean");
   if (typeof raw.base_branch !== "string" || raw.base_branch.length === 0)
     throw new Error("config.base_branch must be string");
+  if (raw.agents !== undefined) {
+    if (!isRecord(raw.agents)) throw new Error("config.agents must be object");
+    if (!isRecord(raw.agents.approvals)) throw new Error("config.agents.approvals must be object");
+    if (typeof raw.agents.approvals.require_plan !== "boolean") {
+      throw new Error("config.agents.approvals.require_plan must be boolean");
+    }
+    if (typeof raw.agents.approvals.require_network !== "boolean") {
+      throw new Error("config.agents.approvals.require_network must be boolean");
+    }
+  }
   if (!isRecord(raw.paths)) throw new Error("config.paths must be object");
   if (!isRecord(raw.branch)) throw new Error("config.branch must be object");
   if (!isRecord(raw.framework)) throw new Error("config.framework must be object");

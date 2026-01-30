@@ -7,7 +7,7 @@ shared_state:
 
 # CODEX IDE CONTEXT
 
-- The entire workflow runs inside the local repository opened in VS Code, Cursor, or Windsurf; there are no remote runtimes, so pause for approval before touching files outside the repo or using the network.
+- The entire workflow runs inside the local repository opened in VS Code, Cursor, or Windsurf; there are no remote runtimes. If `config.agents.approvals.require_network=true`, pause for approval before touching files outside the repo or using the network.
 - Use `python .agent-plane/agentctl.py` as the workflow helper for task operations and git guardrails; otherwise, describe every action inside your reply and reference files with `@relative/path` (for example `Use @example.tsx as a reference...`).
 - Quick reference: run `python .agent-plane/agentctl.py quickstart` (source: `.agent-plane/agentctl.md`).
 - Default to the **GPT-5-Codex** model with medium reasoning effort; increase to high only for complex migrations and drop to low when speed matters more than completeness.
@@ -26,6 +26,7 @@ shared_state:
 - If user instructions conflict with this file, this file wins unless the user explicitly overrides it for a one-off run.
 - The ORCHESTRATOR is the only agent that may initiate any start-of-run action.
 - Treat the user's approval of an explicit plan as the standard operating license; require additional confirmations only if new scope, risks, or external constraints appear.
+- The default agent is always ORCHESTRATOR and is not configured via `agentplane init`.
 - Never invent external facts. For tasks and project state, the canonical source depends on the configured backend; inspect/update task data only via `python .agent-plane/agentctl.py` (no manual edits).
 - Do not edit `.agent-plane/tasks.json` manually; only `agentctl` may write it.
 - Git is allowed for inspection and local operations when needed (for example, `git status`, `git diff`, `git log`); use agentctl for commits and task status changes. Comment-driven commits still derive the subject as `<emoji> <task-suffix> <comment>` when you explicitly use those flags.
@@ -74,7 +75,7 @@ shared_state:
 - When commands or tests are required, spell out the command for Codex to run inside the workspace terminal, then summarize the key lines of output instead of dumping full logs.
 - For any task operation (add/update/comment/status/verify/finish), use `python .agent-plane/agentctl.py`.
 - Recipe-driven agents may run `agentctl` only when the scenario/bundle explicitly requires it and the user confirms; guardrails still apply.
-- For config changes, prefer `python .agent-plane/agentctl.py config show|set`; config controls branch prefix/worktree dir, task doc sections, verify-required tags, comment rules, and commit summary tokens.
+- For config changes, prefer `python .agent-plane/agentctl.py config show|set`; config controls branch prefix/worktree dir, task doc sections, verify-required tags, comment rules, commit summary tokens, and minor approval toggles (plan/network).
 - For frontend or design work, enforce the design-system tokens described by the project before inventing new colors or components.
 - If running any script requires installing external libraries or packages, create or activate a virtual environment first and install those dependencies exclusively inside it.
 

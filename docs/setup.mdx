@@ -24,6 +24,8 @@ agentplane init
 
 This creates `.agentplane/` (config, agents, tasks, caches). v1 is offline-first; network is used only by explicit commands.
 
+During init, you choose minor approval toggles (plan approval and network access). The default agent remains ORCHESTRATOR and is not configured via init. Paths are backend-defined and not user-configurable during init.
+
 ## Upgrade a workspace
 
 ```bash
