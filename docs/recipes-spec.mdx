@@ -130,8 +130,10 @@ At a high level:
 Environment handling (v1):
 
 - Tools inherit the current process environment.
-- `.env` is **not** auto-loaded for recipe execution today. If your tools depend on values from
-  `.env`, export them first (e.g., `set -a; source .env; set +a`) before running a scenario.
+- The CLI auto-loads `.env` from the repo root when a command resolves a project. Recipe tools
+  inherit that environment (and `.env` never overrides already-set variables).
+- If you run scenarios outside a repo or need different values, export variables first (e.g.,
+  `set -a; source .env; set +a`) before running a scenario.
 
 ## 8) Permissions (v1)
 
