@@ -42,6 +42,19 @@ Expected variables (see `.env.example`):
 - `CODEXSWARM_REDMINE_API_KEY`
 - `CODEXSWARM_REDMINE_PROJECT_ID`
 - `CODEXSWARM_REDMINE_ASSIGNEE_ID`
+- `CODEXSWARM_REDMINE_OWNER` (optional)
+- `CODEXSWARM_REDMINE_OWNER_AGENT` (optional alias)
+
+Priority:
+
+- Environment variables take precedence over backend config settings.
+- Backend config is used when the corresponding env var is not set.
+- Defaults apply last (for example, owner defaults to `REDMINE`).
+
+Parser notes:
+
+- Lines starting with `#` are ignored.
+- Quoted values support basic escapes (`\n`, `\r`, `\t`, `\"`, `\\`) when double-quoted.
 
 ## Field mapping
 

@@ -37,6 +37,7 @@ import {
 
 import { CliError, formatJsonError } from "./errors.js";
 import { formatCommentBodyForCommit } from "./comment-format.js";
+import { loadDotEnv } from "./env.js";
 import { renderHelp } from "./help.js";
 import { getVersion } from "./version.js";
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
@@ -126,6 +127,21 @@ function mapCoreError(err: unknown, context: Record<string, unknown>): CliError 
   }
 
   return new CliError({ exitCode: 4, code: "E_IO", message, context });
+}
+
+async function maybeLoadDotEnv(opts: { cwd: string; rootOverride?: string }): Promise<void> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    await loadDotEnv(resolved.gitRoot);
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith("Not a git repository")) {
+      return;
+    }
+    throw err;
+  }
 }
 
 function mapBackendError(err: unknown, context: Record<string, unknown>): CliError {
@@ -5307,6 +5323,8 @@ export async function runCli(argv: string[]): Promise<number> {
       process.stdout.write(`${renderHelp()}\n`);
       return 0;
     }
+
+    await maybeLoadDotEnv({ cwd: process.cwd(), rootOverride: globals.root });
 
     const [namespace, command, ...args] = rest;
 

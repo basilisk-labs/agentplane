@@ -381,6 +381,35 @@ describe("runCli", () => {
     }
   });
 
+  it("autoloads .env without overriding existing variables", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(
+      path.join(root, ".env"),
+      ["CODEXSWARM_REDMINE_URL=https://redmine.env", "CODEXSWARM_REDMINE_API_KEY=from-env"].join(
+        "\n",
+      ),
+      "utf8",
+    );
+    const prevUrl = process.env.CODEXSWARM_REDMINE_URL;
+    const prevKey = process.env.CODEXSWARM_REDMINE_API_KEY;
+    delete process.env.CODEXSWARM_REDMINE_URL;
+    process.env.CODEXSWARM_REDMINE_API_KEY = "preserve";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(process.env.CODEXSWARM_REDMINE_URL).toBe("https://redmine.env");
+      expect(process.env.CODEXSWARM_REDMINE_API_KEY).toBe("preserve");
+    } finally {
+      io.restore();
+      if (prevUrl === undefined) delete process.env.CODEXSWARM_REDMINE_URL;
+      else process.env.CODEXSWARM_REDMINE_URL = prevUrl;
+      if (prevKey === undefined) delete process.env.CODEXSWARM_REDMINE_API_KEY;
+      else process.env.CODEXSWARM_REDMINE_API_KEY = prevKey;
+    }
+  });
+
   it("config set writes .agentplane/config.json", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
