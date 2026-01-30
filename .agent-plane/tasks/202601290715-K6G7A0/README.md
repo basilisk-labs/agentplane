@@ -1,13 +1,16 @@
 ---
 id: "202601290715-K6G7A0"
 title: "AP-044: v1 release hardening"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: ["202601290715-0XACWT"]
 tags: ["roadmap", "release"]
+commit: { hash: "be651467a8a33e45e06f85c29401bbb6812554b4", message: "✨ K6G7A0 harden errors and add CLI smoke test" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: scoping AP-044 release hardening; will outline plan and risks." }
+  - { author: "ORCHESTRATOR", body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed." }
+  - { author: "ORCHESTRATOR", body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed." }
 doc_version: 2
 doc_updated_at: "2026-01-30T08:44:26+00:00"
 doc_updated_by: "agentctl"
