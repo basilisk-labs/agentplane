@@ -1,11 +1,14 @@
 ---
 id: "202601301232-VD2W05"
 title: "Unify config namespace formatting"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["config", "docs"]
+commit: { hash: "1977c7b25fbebec771482884733965826ef2187c", message: "✨ VD2W05 align config example paths with .agent-plane" }
+comments:
+  - { author: "ORCHESTRATOR", body: "verified: Example/config formatting change only | details: no automated tests run beyond pre-commit format/lint hooks." }
 doc_version: 2
 doc_updated_at: "2026-01-30T12:33:39+00:00"
 doc_updated_by: "agentctl"
