@@ -13,12 +13,19 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import { defaultConfig, extractTaskSuffix, readTask } from "@agentplane/core";
+import {
+  defaultConfig,
+  extractTaskSuffix,
+  readTask,
+  renderTaskReadme,
+  type ResolvedProject,
+} from "@agentplane/core";
 
 import { runCli } from "./run-cli.js";
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
+import * as taskBackend from "./task-backend.js";
 
 function captureStdIO() {
   let stdout = "";
@@ -602,6 +609,111 @@ describe("runCli", () => {
     expect(readme).toContain("## Summary");
     expect(readme).toContain("Hello");
     expect(readme).toContain('doc_updated_by: "DOCS"');
+  });
+
+  it("task doc set appends required sections when missing", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202601300000-ABCD";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+      "## Summary\n\nOnly summary",
+    );
+    await writeFile(path.join(taskDir, "README.md"), readme, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Summary",
+        "--text",
+        "Updated",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const updated = await readFile(path.join(taskDir, "README.md"), "utf8");
+    expect(updated).toContain("## Summary");
+    expect(updated).toContain("Updated");
+    expect(updated).toContain("## Scope");
+    expect(updated).toContain("## Risks");
+  });
+
+  it("task doc set fails when backend lacks doc support", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202601300000-BCDE";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+      "## Summary\n\nDoc",
+    );
+    await writeFile(path.join(taskDir, "README.md"), readme, "utf8");
+
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: { id: "fake" } as taskBackend.TaskBackend,
+      backendId: "fake",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Summary",
+        "--text",
+        "Hello",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Configured backend does not support task docs");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
   });
 
   it("task doc set validates usage and maps unknown doc sections", async () => {
@@ -6774,6 +6886,106 @@ describe("runCli", () => {
     const runDir = path.join(runsRoot, runs[0]);
     const artifactPath = path.join(runDir, "artifact.txt");
     expect(await pathExists(artifactPath)).toBe(true);
+  });
+
+  it("scenario rejects unknown subcommands", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["scenario", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane scenario");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("scenario rejects missing subcommand and extra args", async () => {
+    const ioMissing = captureStdIO();
+    try {
+      const code = await runCli(["scenario"]);
+      expect(code).toBe(2);
+      expect(ioMissing.stderr).toContain("Usage: agentplane scenario");
+    } finally {
+      ioMissing.restore();
+    }
+
+    const ioExtra = captureStdIO();
+    try {
+      const code = await runCli(["scenario", "list", "extra"]);
+      expect(code).toBe(2);
+      expect(ioExtra.stderr).toContain("Usage: agentplane scenario");
+    } finally {
+      ioExtra.restore();
+    }
+  });
+
+  it("scenario info and run reject missing ids", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const ioInfo = captureStdIO();
+    try {
+      const code = await runCli(["scenario", "info", "--root", root]);
+      expect(code).toBe(2);
+      expect(ioInfo.stderr).toContain("Usage: agentplane scenario info");
+    } finally {
+      ioInfo.restore();
+    }
+
+    const ioRun = captureStdIO();
+    try {
+      const code = await runCli(["scenario", "run", "--root", root]);
+      expect(code).toBe(2);
+      expect(ioRun.stderr).toContain("Usage: agentplane scenario run");
+    } finally {
+      ioRun.restore();
+    }
+  });
+
+  it("backend rejects unknown subcommands", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["backend", "nope", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane backend sync");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("backend sync routes to configured backend", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "sync",
+        "local",
+        "--direction",
+        "pull",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Configured backend does not support sync()");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("upgrade rejects unexpected positional args", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["upgrade", "extra"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane upgrade");
+    } finally {
+      io.restore();
+    }
   });
 
   it("recipe install renames agents on conflict when requested", async () => {
