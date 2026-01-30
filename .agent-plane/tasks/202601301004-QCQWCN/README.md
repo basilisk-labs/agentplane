@@ -1,13 +1,15 @@
 ---
 id: "202601301004-QCQWCN"
 title: "Node CLI parity: task subcommands"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: ["202601300958-HRNHRH"]
 tags: ["nodejs", "cli", "parity", "tasks"]
+commit: { hash: "c57b3e36e72a3a321ac24ad3c3b841d3345227e9", message: "✨ QCQWCN task subcommands parity" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: Implement Node CLI task subcommands parity with agentctl." }
+  - { author: "ORCHESTRATOR", body: "verified: Implemented task subcommand parity, updated help, and added tests | details: no runtime tests run." }
 doc_version: 2
 doc_updated_at: "2026-01-30T10:30:33+00:00"
 doc_updated_by: "agentctl"
