@@ -1,11 +1,14 @@
 ---
 id: "202601301236-NMBQGT"
 title: "Remove unintended task artifact from prior commit"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["cleanup", "tasks"]
+commit: { hash: "ab41aff33d8cd4518bf8d3f3f26b883596380796", message: "✨ NMBQGT remove unintended task artifact" }
+comments:
+  - { author: "ORCHESTRATOR", body: "verified: Removed unintended task artifact | details: no automated tests run beyond pre-commit format/lint hooks." }
 doc_version: 2
 doc_updated_at: "2026-01-30T12:37:12+00:00"
 doc_updated_by: "agentctl"
