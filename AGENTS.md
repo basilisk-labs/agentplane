@@ -96,15 +96,18 @@ No step may be skipped unless the user explicitly authorizes skipping it.
 Before any planning or execution, ORCHESTRATOR must run:
 
 1. `python .agent-plane/agentctl.py config show`
-2. `python .agent-plane/agentctl.py task list`
-3. `git status --short --untracked-files=no`
+2. Read `.agent-plane/agentctl.md` (CLI instructions)
+3. `python .agent-plane/agentctl.py task list`
+4. `git status --short --untracked-files=no`
 
-Then report (in the response) the effective values:
+Then report (in the response) only that the data was loaded:
 
-- `workflow_mode` (direct vs branch_pr)
-- `require_plan`
-- `require_network`
-- `base_branch` (if applicable)
+- Config loaded
+- CLI instructions loaded
+- Task list loaded
+- Git status checked
+
+Do not output the contents of the config or CLI instructions unless the user explicitly asks for them.
 
 ---
 

@@ -10,12 +10,14 @@
       "require_network": true
     }
   },
+  "recipes": {
+    "storage_default": "link"
+  },
   "paths": {
-    "agents_dir": ".agent-plane/agents",
-    "agentctl_docs_path": ".agent-plane/agentctl.md",
-    "tasks_path": ".agent-plane/tasks.json",
-    "workflow_dir": ".agent-plane/tasks",
-    "worktrees_dir": ".agent-plane/worktrees"
+    "agents_dir": ".agentplane/agents",
+    "tasks_path": ".agentplane/tasks.json",
+    "workflow_dir": ".agentplane/tasks",
+    "worktrees_dir": ".agentplane/worktrees"
   },
   "branch": { "task_prefix": "task" },
   "framework": {

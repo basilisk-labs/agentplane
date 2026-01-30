@@ -8,12 +8,13 @@ import {
   readdir,
   readFile,
   realpath,
+  rm,
   writeFile,
 } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it, vi } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import {
   defaultConfig,
@@ -26,6 +27,25 @@ import {
 import { runCli } from "./run-cli.js";
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
 import * as taskBackend from "./task-backend.js";
+
+const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
+let agentplaneHome: string | null = null;
+
+beforeAll(async () => {
+  agentplaneHome = await mkdtemp(path.join(os.tmpdir(), "agentplane-home-"));
+  process.env.AGENTPLANE_HOME = agentplaneHome;
+});
+
+afterAll(async () => {
+  if (agentplaneHome) {
+    await rm(agentplaneHome, { recursive: true, force: true });
+  }
+  if (originalAgentplaneHome === undefined) {
+    delete process.env.AGENTPLANE_HOME;
+  } else {
+    process.env.AGENTPLANE_HOME = originalAgentplaneHome;
+  }
+});
 
 function captureStdIO() {
   let stdout = "";
@@ -7665,6 +7685,130 @@ describe("runCli", () => {
     expect(
       await pathExists(path.join(root, ".agentplane", "recipes", manifestId, manifestVersion)),
     ).toBe(false);
+  });
+
+  it("recipe install supports global-only storage", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "recipe",
+        "install",
+        archivePath,
+        "--storage",
+        "global",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const manifestId = String(manifest.id);
+    const manifestVersion = String(manifest.version);
+    const projectManifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      manifestId,
+      manifestVersion,
+      "manifest.json",
+    );
+    expect(await pathExists(projectManifestPath)).toBe(false);
+
+    const cacheManifestPath = path.join(
+      agentplaneHome ?? "",
+      "recipes-cache",
+      manifestId,
+      manifestVersion,
+      "manifest.json",
+    );
+    expect(await pathExists(cacheManifestPath)).toBe(true);
+  });
+
+  it("recipe install uses config storage default when flag omitted", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.recipes = { storage_default: "global" };
+    await writeConfig(root, config);
+    const { archivePath, manifest } = await createRecipeArchive({ id: "config-default" });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "install", archivePath, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const manifestId = String(manifest.id);
+    const manifestVersion = String(manifest.version);
+    const projectManifestPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      manifestId,
+      manifestVersion,
+      "manifest.json",
+    );
+    expect(await pathExists(projectManifestPath)).toBe(false);
+
+    const cacheManifestPath = path.join(
+      agentplaneHome ?? "",
+      "recipes-cache",
+      manifestId,
+      manifestVersion,
+      "manifest.json",
+    );
+    expect(await pathExists(cacheManifestPath)).toBe(true);
+  });
+
+  it("recipe cache prune removes unreferenced cached recipes", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath: alphaArchive, manifest: alphaManifest } = await createRecipeArchive({
+      id: "cache-alpha",
+    });
+    const { archivePath: betaArchive, manifest: betaManifest } = await createRecipeArchive({
+      id: "cache-beta",
+      version: "9.9.9",
+    });
+
+    await runCli(["recipe", "install", alphaArchive, "--root", root]);
+    await runCli(["recipe", "install", betaArchive, "--storage", "global", "--root", root]);
+    await runCli(["recipe", "remove", String(betaManifest.id), "--root", root]);
+
+    const betaCacheManifestPath = path.join(
+      agentplaneHome ?? "",
+      "recipes-cache",
+      String(betaManifest.id),
+      String(betaManifest.version),
+      "manifest.json",
+    );
+    expect(await pathExists(betaCacheManifestPath)).toBe(true);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipe", "cache", "prune", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Removed");
+    } finally {
+      io.restore();
+    }
+
+    expect(await pathExists(betaCacheManifestPath)).toBe(false);
+    const alphaCacheManifestPath = path.join(
+      agentplaneHome ?? "",
+      "recipes-cache",
+      String(alphaManifest.id),
+      String(alphaManifest.version),
+      "manifest.json",
+    );
+    expect(await pathExists(alphaCacheManifestPath)).toBe(true);
   });
 
   it("recipe list syncs RECIPES.md with manifest summaries", async () => {

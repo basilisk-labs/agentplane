@@ -1,13 +1,15 @@
 ---
 id: "202601301647-5GRN1Q"
 title: "Deepen recipes docs and troubleshooting"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["docs", "recipes"]
+commit: { hash: "73b06a7728e47bae58c94eb7dd0072ca880bfa69", message: "202601301647-5GRN1Q docs: add recipe examples and troubleshooting-by-symptom nav" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: add recipes examples and troubleshooting-by-symptom doc." }
+  - { author: "ORCHESTRATOR", body: "verified: expanded recipes docs with examples, added troubleshooting-by-symptom page, and updated docs navigation." }
 doc_version: 2
 doc_updated_at: "2026-01-30T16:51:00+00:00"
 doc_updated_by: "agentctl"
