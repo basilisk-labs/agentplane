@@ -1571,6 +1571,260 @@ describe("runCli", () => {
     }
   });
 
+  it("ready reports readiness details", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const depId = "202601301111-READY01";
+    const taskId = "202601301111-READY02";
+
+    await runCli([
+      "task",
+      "add",
+      depId,
+      "--title",
+      "Dep task",
+      "--description",
+      "Dep",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "nodejs",
+      "--root",
+      root,
+    ]);
+    await runCli([
+      "task",
+      "add",
+      taskId,
+      "--title",
+      "Main task",
+      "--description",
+      "Main",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "nodejs",
+      "--depends-on",
+      depId,
+      "--root",
+      root,
+    ]);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    await runCli([
+      "finish",
+      depId,
+      "--author",
+      "INTEGRATOR",
+      "--body",
+      "Verified: dependency completed for readiness test; checks done locally; no issues found.",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["ready", taskId, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(`Task: ${taskId}`);
+      expect(io.stdout).toContain("✅ ready");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("ready reports missing dependencies", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const taskId = "202601301111-READY03";
+    await runCli([
+      "task",
+      "add",
+      taskId,
+      "--title",
+      "Waiting task",
+      "--description",
+      "Waiting",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "nodejs",
+      "--depends-on",
+      "202601301111-MISSING",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["ready", taskId, "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stdout).toContain("missing deps");
+      expect(io.stdout).toContain("⛔ not ready");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("role prints role guidance from agentctl.md", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const docsPath = path.join(root, ".agentplane", "agentctl.md");
+    await writeFile(
+      docsPath,
+      [
+        "# agentctl",
+        "",
+        "## Role/phase command guide (when to use what)",
+        "",
+        "### CODER",
+        "- Use task start for new work.",
+        "",
+        "## Other section",
+      ].join("\n"),
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["role", "CODER", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("### CODER");
+      expect(io.stdout).toContain("Use task start");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("agents lists agent json files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const agentsDir = path.join(root, ".agentplane", "agents");
+    await mkdir(agentsDir, { recursive: true });
+    await writeFile(
+      path.join(agentsDir, "CODER.json"),
+      JSON.stringify({ id: "CODER", role: "Code changes" }, null, 2),
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["agents", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("ID");
+      expect(io.stdout).toContain("CODER");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("sync forwards flags to the backend", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: { id: "redmine", sync } as taskBackend.TaskBackend,
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "sync",
+        "redmine",
+        "--direction",
+        "pull",
+        "--conflict",
+        "prefer-remote",
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(sync).toHaveBeenCalledWith({
+        direction: "pull",
+        conflict: "prefer-remote",
+        quiet: false,
+        confirm: true,
+      });
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("branch status reports ahead/behind", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+    await execFileAsync("git", ["checkout", "-b", "task/202601301111-STAT01/test"], {
+      cwd: root,
+    });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: add"], { cwd: root });
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "branch",
+        "status",
+        "--branch",
+        "task/202601301111-STAT01/test",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("branch=task/202601301111-STAT01/test");
+      expect(io.stdout).toContain("ahead=");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("branch remove deletes the branch", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+    await execFileAsync("git", ["checkout", "-b", "feature"], { cwd: root });
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "remove", "--branch", "feature", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ removed branch feature");
+    } finally {
+      io.restore();
+    }
+    expect(await gitBranchExists(root, "feature")).toBe(false);
+  });
+
   it("guard clean succeeds when no staged files", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

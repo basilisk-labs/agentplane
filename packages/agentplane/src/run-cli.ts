@@ -378,7 +378,16 @@ const SCENARIO_USAGE = "Usage: agentplane scenario <list|info|run> [args]";
 const SCENARIO_INFO_USAGE = "Usage: agentplane scenario info <recipe:scenario>";
 const SCENARIO_RUN_USAGE = "Usage: agentplane scenario run <recipe:scenario>";
 const BACKEND_SYNC_USAGE =
-  "Usage: agentplane backend sync <id> --direction <push|pull> [--conflict <diff|prefer-local|prefer-remote|fail>] [--yes]";
+  "Usage: agentplane backend sync <id> --direction <push|pull> [--conflict <diff|prefer-local|prefer-remote|fail>] [--yes] [--quiet]";
+const SYNC_USAGE =
+  "Usage: agentplane sync [<id>] [--direction <push|pull>] [--conflict <diff|prefer-local|prefer-remote|fail>] [--yes] [--quiet]";
+const READY_USAGE = "Usage: agentplane ready <task-id>";
+const ROLE_USAGE = "Usage: agentplane role <role>";
+const AGENTS_USAGE = "Usage: agentplane agents";
+const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
+const BRANCH_STATUS_USAGE = "Usage: agentplane branch status [--branch <name>] [--base <name>]";
+const BRANCH_REMOVE_USAGE =
+  "Usage: agentplane branch remove [--branch <name>] [--worktree <path>] [--force] [--quiet]";
 const UPGRADE_USAGE =
   "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
@@ -937,6 +946,7 @@ type BackendSyncFlags = {
   direction: "push" | "pull";
   conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
   confirm: boolean;
+  quiet: boolean;
 };
 
 function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
@@ -944,6 +954,7 @@ function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
   let direction: "push" | "pull" | null = null;
   let conflict: BackendSyncFlags["conflict"] = "diff";
   let confirm = false;
+  let quiet = false;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -978,6 +989,10 @@ function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
       confirm = true;
       continue;
     }
+    if (arg === "--quiet") {
+      quiet = true;
+      continue;
+    }
     throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
   }
 
@@ -985,7 +1000,65 @@ function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
     throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
   }
 
-  return { backendId, direction, conflict, confirm };
+  return { backendId, direction, conflict, confirm, quiet };
+}
+
+type SyncFlags = {
+  backendId: string | null;
+  direction: "push" | "pull";
+  conflict: "diff" | "prefer-local" | "prefer-remote" | "fail";
+  confirm: boolean;
+  quiet: boolean;
+};
+
+function parseSyncArgs(args: string[]): SyncFlags {
+  let backendId: string | null = null;
+  let direction: "push" | "pull" = "push";
+  let conflict: SyncFlags["conflict"] = "diff";
+  let confirm = false;
+  let quiet = false;
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (!arg.startsWith("--")) {
+      if (backendId) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: SYNC_USAGE });
+      }
+      backendId = arg;
+      continue;
+    }
+
+    if (arg === "--direction") {
+      const next = args[i + 1];
+      if (!next || (next !== "push" && next !== "pull")) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: SYNC_USAGE });
+      }
+      direction = next;
+      i++;
+      continue;
+    }
+    if (arg === "--conflict") {
+      const next = args[i + 1];
+      if (!next || !["diff", "prefer-local", "prefer-remote", "fail"].includes(next)) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: SYNC_USAGE });
+      }
+      conflict = next as SyncFlags["conflict"];
+      i++;
+      continue;
+    }
+    if (arg === "--yes") {
+      confirm = true;
+      continue;
+    }
+    if (arg === "--quiet") {
+      quiet = true;
+      continue;
+    }
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: SYNC_USAGE });
+  }
+
+  return { backendId, direction, conflict, confirm, quiet };
 }
 
 async function applyRecipeAgents(opts: {
@@ -1666,6 +1739,162 @@ async function cmdIdeSync(opts: { cwd: string; rootOverride?: string }): Promise
     return 0;
   } catch (err) {
     throw mapCoreError(err, { command: "ide sync", root: opts.rootOverride ?? null });
+  }
+}
+
+function parseRoleBlocks(docText: string): { blocks: Record<string, string[]>; roles: string[] } {
+  const sectionHeader = "## Role/phase command guide (when to use what)";
+  const rolePrefix = "### ";
+  const blocks: Record<string, string[]> = {};
+  const roles: string[] = [];
+  let inSection = false;
+  let currentRole = "";
+  let currentLines: string[] = [];
+
+  for (const line of docText.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed === sectionHeader) {
+      inSection = true;
+      continue;
+    }
+    if (inSection && trimmed.startsWith("## ")) {
+      break;
+    }
+    if (!inSection) continue;
+    if (trimmed.startsWith(rolePrefix)) {
+      if (currentRole) {
+        blocks[currentRole] = currentLines;
+        currentLines = [];
+      }
+      currentRole = trimmed.slice(rolePrefix.length).trim();
+      if (currentRole) {
+        roles.push(currentRole);
+        currentLines.push(line);
+      }
+      continue;
+    }
+    if (currentRole) {
+      currentLines.push(line);
+    }
+  }
+  if (currentRole) {
+    blocks[currentRole] = currentLines;
+  }
+  return { blocks, roles };
+}
+
+async function cmdRole(opts: {
+  cwd: string;
+  rootOverride?: string;
+  role: string;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const docPath = path.join(resolved.agentplaneDir, "agentctl.md");
+    if (!(await fileExists(docPath))) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Missing ${docPath} (run agentctl quickstart to see default output)`,
+      });
+    }
+    const roleRaw = opts.role.trim();
+    if (!roleRaw) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: ROLE_USAGE });
+    }
+    const docText = await readFile(docPath, "utf8");
+    const { blocks, roles } = parseRoleBlocks(docText);
+    const normalized: Record<string, string> = {};
+    for (const key of Object.keys(blocks)) normalized[key.toUpperCase()] = key;
+    const roleKey = normalized[roleRaw.toUpperCase()];
+    if (!roleKey) {
+      const available = roles.length > 0 ? roles.toSorted().join(", ") : "none";
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Unknown role: ${roleRaw}. Available roles: ${available}`,
+      });
+    }
+    const output = blocks[roleKey].join("\n").trimEnd();
+    if (!output) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `No content found for role: ${roleRaw}`,
+      });
+    }
+    process.stdout.write(`${output}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "role", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdAgents(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const agentsDir = path.join(resolved.agentplaneDir, "agents");
+    if (!(await fileExists(agentsDir))) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Missing directory: ${agentsDir}`,
+      });
+    }
+    const entriesRaw = await readdir(agentsDir);
+    const entries = entriesRaw.filter((name) => name.endsWith(".json")).toSorted();
+    if (entries.length === 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `No agents found under ${agentsDir}`,
+      });
+    }
+
+    const rows: [string, string, string][] = [];
+    const seen = new Set<string>();
+    const duplicates: string[] = [];
+    for (const entry of entries) {
+      const filePath = path.join(agentsDir, entry);
+      const raw = JSON.parse(await readFile(filePath, "utf8")) as Record<string, unknown>;
+      const rawId = typeof raw.id === "string" ? raw.id : "";
+      const rawRole = typeof raw.role === "string" ? raw.role : "";
+      const agentId = rawId.trim() || "<missing-id>";
+      const role = rawRole.trim() || "-";
+      if (seen.has(agentId)) {
+        duplicates.push(agentId);
+      } else {
+        seen.add(agentId);
+      }
+      rows.push([agentId, role, entry]);
+    }
+
+    const widthId = Math.max(...rows.map((row) => row[0].length), "ID".length);
+    const widthFile = Math.max(...rows.map((row) => row[2].length), "FILE".length);
+    process.stdout.write(`${"ID".padEnd(widthId)}  ${"FILE".padEnd(widthFile)}  ROLE\n`);
+    process.stdout.write(`${"-".repeat(widthId)}  ${"-".repeat(widthFile)}  ----\n`);
+    for (const [agentId, role, filename] of rows) {
+      process.stdout.write(`${agentId.padEnd(widthId)}  ${filename.padEnd(widthFile)}  ${role}\n`);
+    }
+
+    if (duplicates.length > 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Duplicate agent ids: ${dedupeStrings(duplicates).toSorted().join(", ")}`,
+      });
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "agents", root: opts.rootOverride ?? null });
   }
 }
 
@@ -2367,13 +2596,51 @@ async function cmdBackendSync(opts: {
     await backend.sync({
       direction: flags.direction,
       conflict: flags.conflict,
-      quiet: false,
+      quiet: flags.quiet,
       confirm: flags.confirm,
     });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "backend sync", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdSync(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseSyncArgs(opts.args);
+  try {
+    const { backend, backendId } = await loadTaskBackend({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    if (flags.backendId && backendId && flags.backendId !== backendId) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Configured backend is "${backendId}", not "${flags.backendId}"`,
+      });
+    }
+    if (!backend.sync) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Configured backend does not support sync()",
+      });
+    }
+    await backend.sync({
+      direction: flags.direction,
+      conflict: flags.conflict,
+      quiet: flags.quiet,
+      confirm: flags.confirm,
+    });
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapBackendError(err, { command: "sync", root: opts.rootOverride ?? null });
   }
 }
 
@@ -3123,6 +3390,61 @@ async function cmdTaskNext(opts: {
   }
 }
 
+async function cmdReady(opts: {
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+}): Promise<number> {
+  try {
+    const { backend } = await loadTaskBackend({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const tasks = await backend.listTasks();
+    const depState = buildDependencyState(tasks);
+    const task = tasks.find((item) => item.id === opts.taskId);
+    const warnings: string[] = [];
+    if (task) {
+      const dep = depState.get(task.id);
+      if ((dep?.missing.length ?? 0) > 0) {
+        warnings.push(`${task.id}: missing deps: ${dep.missing.join(", ")}`);
+      }
+      if ((dep?.incomplete.length ?? 0) > 0) {
+        warnings.push(`${task.id}: incomplete deps: ${dep.incomplete.join(", ")}`);
+      }
+    } else {
+      warnings.push(`Unknown task id: ${opts.taskId}`);
+    }
+
+    for (const warning of warnings) {
+      process.stdout.write(`⚠️ ${warning}\n`);
+    }
+
+    if (task) {
+      const status = String(task.status || "TODO").toUpperCase();
+      const title = task.title?.trim() || "(untitled task)";
+      const owner = task.owner?.trim() || "-";
+      const dep = depState.get(task.id);
+      const dependsOn = dep?.dependsOn ?? [];
+      process.stdout.write(`Task: ${task.id} [${status}] ${title}\n`);
+      process.stdout.write(`Owner: ${owner}\n`);
+      process.stdout.write(`Depends on: ${dependsOn.length > 0 ? dependsOn.join(", ") : "-"}\n`);
+      if ((dep?.missing.length ?? 0) > 0) {
+        process.stdout.write(`Missing deps: ${dep.missing.join(", ")}\n`);
+      }
+      if ((dep?.incomplete.length ?? 0) > 0) {
+        process.stdout.write(`Incomplete deps: ${dep.incomplete.join(", ")}\n`);
+      }
+    }
+
+    const ready = warnings.length === 0;
+    process.stdout.write(`${ready ? "✅ ready" : "⛔ not ready"}\n`);
+    return ready ? 0 : 2;
+  } catch (err) {
+    throw mapBackendError(err, { command: "ready", root: opts.rootOverride ?? null });
+  }
+}
+
 function taskTextBlob(task: TaskData): string {
   const parts: string[] = [];
   for (const key of ["id", "title", "description", "status", "priority", "owner"] as const) {
@@ -3723,7 +4045,6 @@ async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promis
   }
 }
 
-const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
 const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
 const GUARD_COMMIT_USAGE = "Usage: agentplane guard commit <task-id> -m <message>";
 const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
@@ -4069,6 +4390,25 @@ async function gitDiffStat(cwd: string, base: string, branch: string): Promise<s
     env: gitEnv(),
   });
   return stdout.trimEnd();
+}
+
+async function gitAheadBehind(
+  cwd: string,
+  base: string,
+  branch: string,
+): Promise<{ ahead: number; behind: number }> {
+  const { stdout } = await execFileAsync(
+    "git",
+    ["rev-list", "--left-right", "--count", `${base}...${branch}`],
+    { cwd, env: gitEnv() },
+  );
+  const trimmed = stdout.trim();
+  if (!trimmed) return { ahead: 0, behind: 0 };
+  const parts = trimmed.split(/\s+/);
+  if (parts.length !== 2) return { ahead: 0, behind: 0 };
+  const behind = Number.parseInt(parts[0] ?? "0", 10) || 0;
+  const ahead = Number.parseInt(parts[1] ?? "0", 10) || 0;
+  return { ahead, behind };
 }
 
 async function listWorktrees(cwd: string): Promise<{ path: string; branch: string | null }[]> {
@@ -6609,6 +6949,122 @@ async function cmdBranchBaseSet(opts: {
   }
 }
 
+async function cmdBranchStatus(opts: {
+  cwd: string;
+  rootOverride?: string;
+  branch?: string;
+  base?: string;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    const branch = (opts.branch ?? (await gitCurrentBranch(resolved.gitRoot))).trim();
+    const base = (
+      opts.base ?? (await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }))
+    ).trim();
+    if (!branch || !base) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_STATUS_USAGE });
+    }
+    if (!(await gitBranchExists(resolved.gitRoot, branch))) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Unknown branch: ${branch}`,
+      });
+    }
+    if (!(await gitBranchExists(resolved.gitRoot, base))) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Unknown base branch: ${base}`,
+      });
+    }
+
+    const taskId = parseTaskIdFromBranch(loaded.config.branch.task_prefix, branch);
+    const worktree = await findWorktreeForBranch(resolved.gitRoot, branch);
+    const { ahead, behind } = await gitAheadBehind(resolved.gitRoot, base, branch);
+
+    process.stdout.write(
+      `branch=${branch} base=${base} ahead=${ahead} behind=${behind} task_id=${taskId ?? "-"}\n`,
+    );
+    if (worktree) {
+      process.stdout.write(`worktree=${worktree}\n`);
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "branch status", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdBranchRemove(opts: {
+  cwd: string;
+  rootOverride?: string;
+  branch?: string;
+  worktree?: string;
+  force: boolean;
+  quiet: boolean;
+}): Promise<number> {
+  const branch = (opts.branch ?? "").trim();
+  const worktree = (opts.worktree ?? "").trim();
+  if (!branch && !worktree) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_REMOVE_USAGE });
+  }
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+
+    if (worktree) {
+      const worktreePath = path.isAbsolute(worktree)
+        ? await resolvePathFallback(worktree)
+        : await resolvePathFallback(path.join(resolved.gitRoot, worktree));
+      const worktreesRoot = path.resolve(resolved.gitRoot, loaded.config.paths.worktrees_dir);
+      if (!isPathWithin(worktreesRoot, worktreePath)) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `Refusing to remove worktree outside ${worktreesRoot}: ${worktreePath}`,
+        });
+      }
+      await execFileAsync(
+        "git",
+        ["worktree", "remove", ...(opts.force ? ["--force"] : []), worktreePath],
+        { cwd: resolved.gitRoot, env: gitEnv() },
+      );
+      if (!opts.quiet) {
+        process.stdout.write(`✅ removed worktree ${worktreePath}\n`);
+      }
+    }
+
+    if (branch) {
+      if (!(await gitBranchExists(resolved.gitRoot, branch))) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `Unknown branch: ${branch}`,
+        });
+      }
+      await execFileAsync("git", ["branch", opts.force ? "-D" : "-d", branch], {
+        cwd: resolved.gitRoot,
+        env: gitEnv(),
+      });
+      if (!opts.quiet) {
+        process.stdout.write(`✅ removed branch ${branch}\n`);
+      }
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "branch remove", root: opts.rootOverride ?? null });
+  }
+}
+
 function escapeRegExp(text: string): string {
   return text.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\\$&`);
 }
@@ -7014,6 +7470,27 @@ export async function runCli(argv: string[]): Promise<number> {
       return await cmdModeSet({ cwd: process.cwd(), rootOverride: globals.root, mode });
     }
 
+    if (namespace === "role") {
+      if (!command || command.startsWith("--") || args.length > 0) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: ROLE_USAGE });
+      }
+      return await cmdRole({ cwd: process.cwd(), rootOverride: globals.root, role: command });
+    }
+
+    if (namespace === "agents") {
+      if (command) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: AGENTS_USAGE });
+      }
+      return await cmdAgents({ cwd: process.cwd(), rootOverride: globals.root });
+    }
+
+    if (namespace === "ready") {
+      if (!command || command.startsWith("--") || args.length > 0) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: READY_USAGE });
+      }
+      return await cmdReady({ cwd: process.cwd(), rootOverride: globals.root, taskId: command });
+    }
+
     if (namespace === "ide") {
       if (command !== "sync" || args.length > 0) {
         throw new CliError({ exitCode: 2, code: "E_USAGE", message: IDE_SYNC_USAGE });
@@ -7325,19 +7802,124 @@ export async function runCli(argv: string[]): Promise<number> {
       });
     }
 
-    if (namespace === "branch" && command === "base") {
-      const [subcommand, value] = args;
-      if (subcommand === "get") {
-        return await cmdBranchBaseGet({ cwd: process.cwd(), rootOverride: globals.root });
-      }
-      if (subcommand === "set") {
-        if (!value) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+    if (namespace === "branch") {
+      if (command === "base") {
+        const [subcommand, value] = args;
+        if (subcommand === "get") {
+          return await cmdBranchBaseGet({ cwd: process.cwd(), rootOverride: globals.root });
         }
-        return await cmdBranchBaseSet({
+        if (subcommand === "set") {
+          if (!value) {
+            throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+          }
+          return await cmdBranchBaseSet({
+            cwd: process.cwd(),
+            rootOverride: globals.root,
+            value,
+          });
+        }
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+      }
+      if (command === "status") {
+        let branch: string | undefined;
+        let base: string | undefined;
+        for (let i = 0; i < args.length; i++) {
+          const arg = args[i];
+          if (!arg) continue;
+          if (arg === "--branch") {
+            const next = args[i + 1];
+            if (!next)
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: BRANCH_STATUS_USAGE,
+              });
+            branch = next;
+            i++;
+            continue;
+          }
+          if (arg === "--base") {
+            const next = args[i + 1];
+            if (!next)
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: BRANCH_STATUS_USAGE,
+              });
+            base = next;
+            i++;
+            continue;
+          }
+          if (arg.startsWith("--")) {
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: BRANCH_STATUS_USAGE,
+            });
+          }
+        }
+        return await cmdBranchStatus({
           cwd: process.cwd(),
           rootOverride: globals.root,
-          value,
+          branch,
+          base,
+        });
+      }
+      if (command === "remove") {
+        let branch: string | undefined;
+        let worktree: string | undefined;
+        let force = false;
+        let quiet = false;
+        for (let i = 0; i < args.length; i++) {
+          const arg = args[i];
+          if (!arg) continue;
+          if (arg === "--branch") {
+            const next = args[i + 1];
+            if (!next)
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: BRANCH_REMOVE_USAGE,
+              });
+            branch = next;
+            i++;
+            continue;
+          }
+          if (arg === "--worktree") {
+            const next = args[i + 1];
+            if (!next)
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: BRANCH_REMOVE_USAGE,
+              });
+            worktree = next;
+            i++;
+            continue;
+          }
+          if (arg === "--force") {
+            force = true;
+            continue;
+          }
+          if (arg === "--quiet") {
+            quiet = true;
+            continue;
+          }
+          if (arg.startsWith("--")) {
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: BRANCH_REMOVE_USAGE,
+            });
+          }
+        }
+        return await cmdBranchRemove({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          branch,
+          worktree,
+          force,
+          quiet,
         });
       }
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
@@ -8334,6 +8916,19 @@ export async function runCli(argv: string[]): Promise<number> {
         cwd: process.cwd(),
         rootOverride: globals.root,
         args,
+      });
+    }
+
+    if (namespace === "sync") {
+      const syncArgs = command ? [command, ...args] : [];
+      if (command?.startsWith("--")) {
+        syncArgs.shift();
+        syncArgs.unshift(command, ...args);
+      }
+      return await cmdSync({
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args: syncArgs,
       });
     }
 
