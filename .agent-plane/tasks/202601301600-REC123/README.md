@@ -6,9 +6,10 @@ priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["docs", "recipes", "analysis"]
-commit: { hash: "c01f1d72f530d0ba104be3a2c92d91c1dd9645ec", message: "✅ 8D6XRX close: record task doc" }
+commit: { hash: "b4c70ce1d0ca7c8c3052d568952ffb1b299660de", message: "✨ REC123 document recipes behavior" }
 comments:
   - { author: "ORCHESTRATOR", body: "verified: Not run (documentation-only change) | details: lint/tests skipped by request. Notes: recipes behavior documented from current Node CLI implementation." }
+  - { author: "ORCHESTRATOR", body: "verified: Not run (documentation-only change). Notes: lint/tests skipped | details: behavior documented from current Node CLI implementation." }
 doc_version: 2
 doc_updated_at: "2026-01-30T15:33:38+00:00"
 doc_updated_by: "agentctl"
