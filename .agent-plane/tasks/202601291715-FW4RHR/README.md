@@ -1,11 +1,12 @@
 ---
 id: "202601291715-FW4RHR"
 title: "Add GitHub sync recipe"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: ["202601290715-46R6VZ"]
 tags: ["recipes", "github", "sync"]
+commit: { hash: "acdc0e8f58aee85f03189caee3b228c2b082dbbd", message: "✨ 202601291715-FW4RHR 202601291715-KJ12XA add github-sync and dokploy recipes" }
 doc_version: 2
 doc_updated_at: "2026-01-30T03:08:45+00:00"
 doc_updated_by: "agentctl"
