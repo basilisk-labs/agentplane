@@ -498,6 +498,387 @@ describe("runCli", () => {
     expect(task.frontmatter.verify).toContain("bun run ci");
   });
 
+  it("task add creates tasks with explicit ids", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    const taskIds = ["202601010101-ABCD", "202601010102-BCDE"];
+    try {
+      const code = await runCli([
+        "task",
+        "add",
+        ...taskIds,
+        "--title",
+        "Added task",
+        "--description",
+        "Added description",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    for (const taskId of taskIds) {
+      const task = await readTask({ cwd: root, rootOverride: root, taskId });
+      expect(task.frontmatter.id).toBe(taskId);
+      expect(task.frontmatter.title).toBe("Added task");
+    }
+  });
+
+  it("task update appends tags and depends-on", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Update task",
+          "--description",
+          "Needs update",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "update",
+        taskId,
+        "--tag",
+        "nodejs",
+        "--depends-on",
+        "202601010101-ABCD",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.tags).toContain("nodejs");
+    expect(task.frontmatter.depends_on).toContain("202601010101-ABCD");
+  });
+
+  it("task scrub replaces values across tasks", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Scrub task",
+          "--description",
+          "hello world",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "scrub",
+          "--find",
+          "hello",
+          "--replace",
+          "hi",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.description).toContain("hi");
+  });
+
+  it("task next shows ready tasks only", async () => {
+    const root = await mkGitRepoRoot();
+    let taskA = "";
+    let taskB = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Ready task",
+          "--description",
+          "No deps",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskA = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Blocked task",
+          "--description",
+          "Depends on A",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--depends-on",
+          taskA,
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskB = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "next", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(taskA);
+      expect(io.stdout).not.toContain(taskB);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task search finds matching tasks", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Searchable task",
+          "--description",
+          "Find me",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "search", "Searchable", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(taskId);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task doc show prints section content", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Doc task",
+          "--description",
+          "Has doc",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Summary",
+          "--text",
+          "Doc section text",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "show",
+        taskId,
+        "--section",
+        "Summary",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Doc section text");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task comment and set-status update task metadata", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Status task",
+          "--description",
+          "Tracks status",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "comment",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Comment body",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--author",
+          "CODER",
+          "--body",
+          "Status update body",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.status).toBe("DOING");
+    expect(task.frontmatter.comments.length).toBeGreaterThan(0);
+  });
+
   it("task show prints task frontmatter json", async () => {
     const root = await mkGitRepoRoot();
 
@@ -579,7 +960,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "list", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout.trim()).toBe("");
+      expect(io.stdout).toContain("Total: 0");
     } finally {
       io.restore();
     }
