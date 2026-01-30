@@ -1831,6 +1831,19 @@ describe("runCli", () => {
     try {
       const code = await runCli(["guard", "clean", "--root", root]);
       expect(code).toBe(0);
+      expect(io.stdout).toContain("index clean");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard clean supports --quiet", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["guard", "clean", "--quiet", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("");
     } finally {
       io.restore();
     }
@@ -1918,6 +1931,31 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stdout.trim()).toBe("OK");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit supports --auto-allow", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601301004-B2MTY4",
+        "-m",
+        "✨ B2MTY4 allow auto list",
+        "--auto-allow",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("OK");
     } finally {
       io.restore();
     }
