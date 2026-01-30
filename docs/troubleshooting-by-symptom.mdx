@@ -1,0 +1,71 @@
+---
+title: "Troubleshooting by symptom"
+description: "Common problems and how to fix them quickly."
+---
+
+## `agentplane` commands fail with E_USAGE
+
+**Symptom:** CLI prints `E_USAGE` or "Usage: ..." errors.
+
+**Fix:**
+- Run `agentplane --help` to confirm the correct syntax.
+- Check whether a subcommand is missing required flags.
+
+## Task doc changes rejected
+
+**Symptom:** Guardrails complain about missing doc metadata or manual edits.
+
+**Fix:**
+- Use `agentplane task doc set <task-id>` instead of editing README by hand.
+- Ensure required sections exist (Summary, Scope, Risks, Verify Steps, Rollback Plan).
+
+## Finish fails due to readiness
+
+**Symptom:** `agentplane finish` complains about missing dependencies.
+
+**Fix:**
+- Use `agentplane task show <task-id>` to see dependencies.
+- Finish dependencies first or use `--force` if you have explicit approval.
+
+## Verify skipped unexpectedly
+
+**Symptom:** `agentplane verify` does nothing.
+
+**Fix:**
+- Ensure the task has verify commands in its metadata.
+- Use `--require` to fail if verify is missing.
+
+## Branch/worktree errors
+
+**Symptom:** branch_pr operations fail or worktree paths are rejected.
+
+**Fix:**
+- Ensure `workflow_mode` is `branch_pr`.
+- Use `agentplane work start <task-id> ... --worktree` to create a valid worktree.
+- Check that worktrees live under `.agent-plane/worktrees`.
+
+## Recipe fails due to missing inputs
+
+**Symptom:** Recipe output shows "Pending Actions".
+
+**Fix:**
+- Provide the missing fields in the recipe inputs form or JSON.
+- Re-run the scenario.
+
+## Recipe blocked by safety rules
+
+**Symptom:** Tool execution or file writes are denied.
+
+**Fix:**
+- Ensure the manifest allowlists the files you need to read/write.
+- Ensure network access is allowed in the manifest if required.
+
+## Sync fails for remote backend
+
+**Symptom:** `agentplane sync` errors or reports network failures.
+
+**Fix:**
+- Confirm backend settings in `.agent-plane/backends/<id>/backend.json`.
+- Retry with `--direction pull` to refresh local cache.
+- Check custom field mappings if using Redmine.
+
