@@ -7006,6 +7006,50 @@ describe("runCli", () => {
     }
   });
 
+  it("backend sync forwards flags to the backend", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: { id: "redmine", sync } as taskBackend.TaskBackend,
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "sync",
+        "redmine",
+        "--direction",
+        "push",
+        "--conflict",
+        "prefer-local",
+        "--yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(sync).toHaveBeenCalledWith({
+        direction: "push",
+        conflict: "prefer-local",
+        quiet: false,
+        confirm: true,
+      });
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("upgrade rejects unexpected positional args", async () => {
     const io = captureStdIO();
     try {
