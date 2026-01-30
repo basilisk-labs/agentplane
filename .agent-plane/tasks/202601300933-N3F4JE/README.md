@@ -1,13 +1,15 @@
 ---
 id: "202601300933-N3F4JE"
 title: "Remove Redmine cached task artifacts"
-status: "DOING"
+status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: ["202601131356-PDFC2R"]
 tags: ["cleanup", "tasks"]
+commit: { hash: "ca749de0a1b64c6526dc80724010c834e729440b", message: "✨ N3F4JE record removal of redmine cached tasks" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: remove unintended Redmine cached task files committed during validation." }
+  - { author: "ORCHESTRATOR", body: "verified: removed unintended Redmine cached task artifacts | details: no tests required." }
 doc_version: 2
 doc_updated_at: "2026-01-30T09:36:33+00:00"
 doc_updated_by: "agentctl"
