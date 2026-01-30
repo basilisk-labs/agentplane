@@ -1,9 +1,14 @@
 <!--
-AGENTS_SPEC: v0.2
+AGENTS_SPEC: v0.2.1
 default_agent: ORCHESTRATOR
 shared_state:
   - .agent-plane/tasks
 -->
+
+# PURPOSE
+
+This document is the **behavioral policy** for Codex-style agents operating inside this repository (CLI + VS Code extension).
+Goal: **deterministic execution**, **tight guardrails**, and **minimum accidental changes** by enforcing a strict, inspectable pipeline.
 
 # CODEX IDE CONTEXT
 
@@ -17,25 +22,43 @@ shared_state:
 
 # GLOBAL_RULES
 
+## Sources of truth
+
 - Sources of truth (highest to lowest): `AGENTS.md`, `@.agent-plane/agentctl.md`, `.agent-plane/config.json`, then `.agent-plane/agents/*.json`.
 - If two sources conflict, prefer the higher-priority source.
 - Keep shared workflow rules centralized in AGENTS.md and `.agent-plane/agentctl.md`; JSON agents should stay role-specific and reference those docs.
-- Default model: GPT-5-Codex (medium reasoning). If unavailable, use a compatible GPT-5.\* model with equivalent capabilities.
-  - Clarify only when critical information is missing; otherwise make reasonable assumptions.
-  - Think step by step internally. DO NOT print full reasoning, only concise results, plans, and key checks.
-  - Prefer structured outputs (lists, tables, JSON) when they help execution.
 - If user instructions conflict with this file, this file wins unless the user explicitly overrides it for a one-off run.
+
+## Orchestration
+
 - The ORCHESTRATOR is the only agent that may initiate any start-of-run action.
-- Treat the user's approval of an explicit plan as the standard operating license; require additional confirmations only if new scope, risks, or external constraints appear.
+- Treat the user's approval of an explicit plan as the standard operating license.
+- Require additional confirmation only if new scope, risks, network/outside-repo actions, or external constraints appear.
 - The default agent is always ORCHESTRATOR and is not configured via `agentplane init`.
+
+## Safety & fidelity
+
 - Never invent external facts. For tasks and project state, the canonical source depends on the configured backend; inspect/update task data only via `python .agent-plane/agentctl.py` (no manual edits).
 - Do not edit `.agent-plane/tasks.json` manually; only `agentctl` may write it.
 - Git is allowed for inspection and local operations when needed (for example, `git status`, `git diff`, `git log`); use agentctl for commits and task status changes. Comment-driven commits still derive the subject as `<emoji> <task-suffix> <comment>` when you explicitly use those flags.
-- Ignore new/untracked files you did not create; do not pause or comment on them. Only stage and commit files you intentionally modified for the task.
+
+## Cleanliness & untracked files
+
+- Ignore new/untracked files you did not create; do not pause or comment on them.
+- Only stage and commit files you intentionally modified for the task.
 - "Clean" means: no tracked changes (`git status --short --untracked-files=no` is empty).
 - Pre-existing untracked files may be ignored unless they interfere with verify/guardrails or fall within the task scope paths.
 - The workspace is always a git repository. After completing task work that changes tracked files, create a human-readable commit before continuing; status-only updates should not create commits.
-- Keep the core framework minimal (agent runtime + agentctl guardrails); all feature expansion should be implemented as recipes.
+
+## Network definition (for approvals)
+
+The following counts as **network use** and requires approval when `require_network=true`:
+
+- `pip`, `npm`, `bun install`, `curl`, `wget`, `git fetch/pull`, downloading binaries/models, calling external HTTP APIs.
+
+The following counts as **outside-repo touching** and requires approval when `require_network=true`:
+
+- reading/writing outside the repo (home dir, `/etc`, global git config, keychains/ssh keys), or executing tools that modify outside-repo state.
 
 ---
 
@@ -45,7 +68,24 @@ shared_state:
 - Create, update, and close tasks only via `python .agent-plane/agentctl.py`.
 - Every task must include Summary, Scope, Risks, Verify Steps, and Rollback Plan in its doc before closure.
 - Verification and closure are explicit steps; do not skip verify or finish flows.
+- Keep the core framework minimal (agent runtime + agentctl guardrails); feature expansion should be implemented as recipes.
 - Keep the local backend in core; any remote backends (for example, Redmine) must be delivered as recipes that can be enabled or disabled.
+
+---
+
+# MANDATORY PREFLIGHT (Runbook)
+
+Before any planning or execution, ORCHESTRATOR must do:
+
+1. `python .agent-plane/agentctl.py config show`
+2. `python .agent-plane/agentctl.py task list`
+3. `git status --short --untracked-files=no`
+
+Then record (in the reply) the effective:
+
+- `workflow_mode` (direct vs branch_pr),
+- `require_plan`, `require_network`,
+- `base_branch` (if relevant).
 
 ---
 
@@ -54,8 +94,8 @@ shared_state:
 - The ORCHESTRATOR always receives the first user message and turns it into a top-level plan.
 - After forming the top-level plan, decompose the request into atomic tasks that can be assigned to existing agents; if a required agent is missing, add a plan step for CREATOR to define it before execution.
 - Present the top-level plan and its decomposition for explicit user approval and wait for approval before executing any step; once the user accepts the plan, proceed with the steps unless new constraints or scope changes demand another check-in.
-- After approval, create exactly one top-level tracking task via agentctl unless the user explicitly opts out; include any additional tasks from the approved decomposition and reference downstream task IDs in the top-level task description or comments.
-- If the user opts out of task creation, proceed without tasks and track progress in replies against the approved plan.
+- After approval, always create exactly one top-level tracking task via agentctl. Reference downstream task IDs in the top-level task description or comments.
+- PLANNER creates any additional tasks from the approved decomposition and reprioritizes the backlog.
 
 ---
 
@@ -73,6 +113,8 @@ shared_state:
 # THINKING & TOOLING
 
 - Think step by step internally, surfacing only the concise plan, key checks, and final answer. Avoid spilling raw chain-of-thought.
+- Clarify only when critical information is missing; otherwise make reasonable assumptions.
+- Prefer structured outputs (lists, tables, JSON) when they help execution.
 - When work spans multiple sub-steps, write a short numbered plan directly in your reply before editing anything. Update that list as progress is made so everyone can see the latest path.
 - Describe every edit, command, or validation precisely (file + snippet + replacement) because no automation surface exists; keep changes incremental so Codex can apply them verbatim.
 - When commands or tests are required, spell out the command for Codex to run inside the workspace terminal, then summarize the key lines of output instead of dumping full logs.
@@ -85,6 +127,45 @@ shared_state:
 ---
 
 # COMMIT_WORKFLOW
+
+## Message semantics (must match agentctl)
+
+There are two supported commit modes:
+
+1. **Explicit commit message** (manual message, still policy-governed):
+   - `python .agent-plane/agentctl.py guard commit <task-id> -m "✨ <suffix> <detailed changelog ...>" ...`
+   - In this mode, `-m` is the commit message and must follow the format described in `@.agent-plane/agentctl.md`.
+
+2. **Comment-driven commit subject** (auto-built by agentctl):
+   - Use `--commit-from-comment` / `--status-commit` flags (where supported).
+   - agentctl builds the subject as `<emoji> <suffix> <formatted comment>` from your status/finish body.
+   - Use comment-driven commits only when you explicitly intend to create a commit.
+
+Agents must not invent alternate commit formats.
+
+## Mode-dependent workflow
+
+Always follow the effective `workflow_mode` from `.agent-plane/config.json`.
+
+### A) direct mode (single-checkout)
+
+- Do all work in the current checkout; do not create task branches/worktrees (agentctl rejects them).
+- `.agent-plane/tasks/<task-id>/pr/` is optional (may still be used for verify logs/review notes).
+- Implementation rule of thumb:
+  1. `start` (status comment; no commit by default)
+  2. implement changes
+  3. run verify commands (or `agentctl verify`)
+  4. commit implementation via agentctl (`guard commit` / `commit`) with a tight allowlist
+  5. `finish` with `--commit <git-rev>` and a Verified body
+  6. `task export`
+
+### B) branch_pr mode (parallel work)
+
+- Planning and closure happen only in the repo root checkout on the pinned base branch.
+- Implementation happens only on per-task branch + worktree.
+- Single-writer rule: at any time, only one agent may write to a given task worktree; others contribute via `pr note` / review.
+- WIP commits are allowed in the task branch. The base branch should receive a single squash commit per task (integration owned by INTEGRATOR).
+- Do not write/commit task exports from task branches.
 
 - Treat each plan task (`<task-id>`) as an atomic unit of work and keep commits minimal.
 - All staging/commits run through agentctl (guard commit/commit); use comment-driven flags only when you intend to create a commit. Status updates should default to no-commit, and you should not craft commit subjects manually.
@@ -221,7 +302,7 @@ Schema (JSON):
 
 ### Status Transition Protocol
 
-- **Create / Reprioritize (PLANNER only, on the base branch).** PLANNER is the sole creator of new tasks and the only agent that may change priorities (via `python .agent-plane/agentctl.py`).
+- **Create / Reprioritize (PLANNER only, on the base branch).** PLANNER is the sole creator of new tasks and the only agent that may change priorities (via `python .agent-plane/agentctl.py`). Exception: ORCHESTRATOR may create the single top-level tracking task after plan approval.
 - **Work in branches.** During implementation, do not update the export; record progress and verification notes in `.agent-plane/tasks/<task-id>/README.md` and `.agent-plane/tasks/<task-id>/pr/`.
 - Any creation/update of `.agent-plane/tasks/<task-id>/README.md` must be performed via `python .agent-plane/agentctl.py task doc ...` commands; manual edits are prohibited.
 - **Integrate + close (INTEGRATOR, on the base branch).** INTEGRATOR merges the task branch into the base branch, runs verify, marks tasks `DONE` via `python .agent-plane/agentctl.py finish`, then runs `python .agent-plane/agentctl.py task export`.
@@ -287,5 +368,26 @@ All agents, including ORCHESTRATOR, are defined as JSON files inside the `.agent
 # STARTUP RULE
 
 - Always begin any work by engaging the ORCHESTRATOR; no other agent may initiate a run.
+- Always perform the MANDATORY PREFLIGHT before planning or execution.
 - The first user message is always treated as a top-level plan and must follow the Orchestration Flow.
 - Start by producing the top-level plan + task decomposition. Do not execute or change files before explicit user approval.
+
+---
+
+# CONFIG PATCH (Recommended)
+
+Apply the following changes to `.agent-plane/config.json` to match this policy (minimize accidental status commits).
+
+JSON Merge Patch:
+
+```json
+{
+  "status_commit_policy": "confirm",
+  "finish_auto_status_commit": false
+}
+```
+
+Notes:
+
+- `status_commit_policy="confirm"` ensures comment-driven/status commits are intentional (requires `--confirm-status-commit`).
+- `finish_auto_status_commit=false` ensures `finish` does not create a status commit implicitly when `--author` and `--body` are provided.
