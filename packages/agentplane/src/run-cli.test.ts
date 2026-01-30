@@ -1676,6 +1676,21 @@ describe("runCli", () => {
     }
   });
 
+  it("quickstart prints agentctl.md contents when available", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const docsPath = path.join(root, ".agentplane", "agentctl.md");
+    await writeFile(docsPath, "# agentctl\n\nquickstart content\n", "utf8");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["quickstart", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("quickstart content");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("role prints role guidance from agentctl.md", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
