@@ -23,7 +23,7 @@ Agent Plane is a local, repo-scoped workflow framework for using OpenAI Codex in
 - Backend-driven truth: the canonical task source depends on the active backend.
 - Traceability: every task ties back to a stable ID and a commit.
 - Role clarity: each agent has a defined scope and permissions.
-- Explicit approvals: plans require human approval; closure approvals follow the project config (`closure_commit_requires_approval`).
+- Explicit approvals: plan and network approvals are controlled via config (`agents.approvals.*`); closure approvals follow `closure_commit_requires_approval`.
 
 ## Core Components
 

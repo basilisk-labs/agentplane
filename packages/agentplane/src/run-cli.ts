@@ -296,6 +296,8 @@ type InitFlags = {
   ide?: "none" | "cursor" | "windsurf" | "both";
   workflow?: "direct" | "branch_pr";
   hooks?: boolean;
+  requirePlanApproval?: boolean;
+  requireNetworkApproval?: boolean;
   recipes?: string[];
   force?: boolean;
   backup?: boolean;
@@ -446,6 +448,14 @@ function parseInitFlags(args: string[]): InitFlags {
       }
       case "--hooks": {
         out.hooks = parseBooleanFlag(next, "--hooks");
+        break;
+      }
+      case "--require-plan-approval": {
+        out.requirePlanApproval = parseBooleanFlag(next, "--require-plan-approval");
+        break;
+      }
+      case "--require-network-approval": {
+        out.requireNetworkApproval = parseBooleanFlag(next, "--require-network-approval");
         break;
       }
       case "--recipes": {
@@ -1272,22 +1282,35 @@ async function cmdInit(opts: {
   args: string[];
 }): Promise<number> {
   const flags = parseInitFlags(opts.args);
-  const defaults = { ide: "none", workflow: "direct", hooks: false, recipes: [] as string[] };
+  const defaults = {
+    ide: "none",
+    workflow: "direct",
+    hooks: false,
+    recipes: [] as string[],
+    requirePlanApproval: true,
+    requireNetworkApproval: true,
+  };
   let ide = flags.ide ?? defaults.ide;
   let workflow = flags.workflow ?? defaults.workflow;
   let hooks = flags.hooks ?? defaults.hooks;
   let recipes = flags.recipes ?? defaults.recipes;
+  let requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
+  let requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
 
   if (
     !process.stdin.isTTY &&
     !flags.yes &&
-    (!flags.ide || !flags.workflow || flags.hooks === undefined)
+    (!flags.ide ||
+      !flags.workflow ||
+      flags.hooks === undefined ||
+      flags.requirePlanApproval === undefined ||
+      flags.requireNetworkApproval === undefined)
   ) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
       message:
-        "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> [--recipes <...>] [--yes] [--force|--backup]",
+        "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> --require-plan-approval <...> --require-network-approval <...> [--recipes <...>] [--yes] [--force|--backup]",
     });
   }
 
@@ -1300,6 +1323,15 @@ async function cmdInit(opts: {
     }
     if (flags.hooks === undefined) {
       hooks = await promptYesNo("Install git hooks?", hooks);
+    }
+    if (flags.requirePlanApproval === undefined) {
+      requirePlanApproval = await promptYesNo("Require plan approval?", requirePlanApproval);
+    }
+    if (flags.requireNetworkApproval === undefined) {
+      requireNetworkApproval = await promptYesNo(
+        "Require explicit approval for network access?",
+        requireNetworkApproval,
+      );
     }
     if (!flags.recipes) {
       const rl = createInterface({ input: process.stdin, output: process.stdout });
@@ -1321,6 +1353,8 @@ async function cmdInit(opts: {
     workflow = flags.workflow ?? defaults.workflow;
     hooks = flags.hooks ?? defaults.hooks;
     recipes = flags.recipes ?? defaults.recipes;
+    requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
+    requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
   }
 
   validateBundledRecipesSelection(recipes);
@@ -1382,6 +1416,8 @@ async function cmdInit(opts: {
 
     const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
     setByDottedKey(rawConfig, "workflow_mode", workflow);
+    setByDottedKey(rawConfig, "agents.approvals.require_plan", String(requirePlanApproval));
+    setByDottedKey(rawConfig, "agents.approvals.require_network", String(requireNetworkApproval));
     await saveConfig(resolved.agentplaneDir, rawConfig);
 
     const backendPayload = {
@@ -5366,7 +5402,7 @@ export async function runCli(argv: string[]): Promise<number> {
           exitCode: 2,
           code: "E_USAGE",
           message:
-            "Usage: agentplane init [--ide <...>] [--workflow <...>] [--hooks <...>] [--recipes <...>] [--yes] [--force|--backup]",
+            "Usage: agentplane init [--ide <...>] [--workflow <...>] [--hooks <...>] [--require-plan-approval <...>] [--require-network-approval <...>] [--recipes <...>] [--yes] [--force|--backup]",
         });
       }
       return await cmdInit({ cwd: process.cwd(), rootOverride: globals.root, args: initArgs });

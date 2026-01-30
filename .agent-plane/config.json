@@ -75,5 +75,11 @@
   "tasks_backend": {
     "config_path": ".agent-plane/backends/local/backend.json"
   },
-  "closure_commit_requires_approval": false
+  "closure_commit_requires_approval": false,
+  "agents": {
+    "approvals": {
+      "require_plan": true,
+      "require_network": true
+    }
+  }
 }

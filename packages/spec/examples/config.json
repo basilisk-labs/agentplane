@@ -4,6 +4,12 @@
   "status_commit_policy": "warn",
   "finish_auto_status_commit": true,
   "base_branch": "main",
+  "agents": {
+    "approvals": {
+      "require_plan": true,
+      "require_network": true
+    }
+  },
   "paths": {
     "agents_dir": ".agentplane/agents",
     "agentctl_docs_path": ".agentplane/agentctl.md",

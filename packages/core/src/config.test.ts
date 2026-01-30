@@ -10,6 +10,12 @@ describe("config", () => {
     expect(() => validateConfig(defaultConfig())).not.toThrow();
   });
 
+  it("validateConfig allows missing agents approvals", () => {
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    delete raw.agents;
+    expect(() => validateConfig(raw)).not.toThrow();
+  });
+
   it("loadConfig returns default config when config.json is missing", async () => {
     const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-missing-"));
     const agentplaneDir = path.join(tmp, ".agentplane");
