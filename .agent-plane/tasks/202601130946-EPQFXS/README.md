@@ -6,9 +6,10 @@ priority: "normal"
 owner: "CODER"
 depends_on: []
 tags: ["agents", "docs", "agentctl"]
-commit: { hash: "e558a94abb44db168c91b3382e06004b9ca0312b", message: "✅ GZ15T6 verified: task deemed not актуальна | details: closing without changes." }
+commit: { hash: "56784335a5f6585a0d8cdd34dfb579aa79a6ac1b", message: "✅ TNM8G3 close: record finish status for prod-v1.0 policy update" }
 comments:
   - { author: "CODER", body: "Start: deduplicate shared guidance in agent JSON files and add batch task add/finish guidance in docs." }
+  - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
   - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
   - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
   - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
