@@ -1,13 +1,15 @@
 ---
 id: "202601301641-3S674K"
 title: "Expand developer docs depth"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["docs", "devguide"]
+commit: { hash: "c46e04789e2c69a6a17ae0a6edab6b94a2a4d9f7", message: "✅ 3S674K close: record task doc" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: expand core docs depth and add new developer guide pages." }
+  - { author: "ORCHESTRATOR", body: "verified: expanded core docs pages and added contributing/design/backends/recipes safety guides | details: navigation updated." }
 doc_version: 2
 doc_updated_at: "2026-01-30T16:42:22+00:00"
 doc_updated_by: "agentctl"
