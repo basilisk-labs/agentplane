@@ -1,13 +1,15 @@
 ---
 id: "202601301004-B2MTY4"
 title: "Node CLI parity: commit/guard flags"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: ["202601300958-HRNHRH"]
 tags: ["nodejs", "cli", "parity", "git"]
+commit: { hash: "6466b3577ad6c67ca319aa4cd4d23cf28c0db4c3", message: "B2MTY4 align guard/commit flags" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: parity for commit/guard flags; review agentctl behavior and align Node CLI." }
+  - { author: "ORCHESTRATOR", body: "verified: bun run test | details: packages/agentplane/src/run-cli.test.ts" }
 doc_version: 2
 doc_updated_at: "2026-01-30T11:45:19+00:00"
 doc_updated_by: "agentctl"
