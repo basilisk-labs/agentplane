@@ -23,10 +23,7 @@ See:
 
 ### 1) Missing Node equivalents for Python support scripts
 
-- `clean.sh` / `clean.ps1` cleanup helpers.
-- `viewer.sh` tasks viewer launcher.
 - `.agent-plane/recipes.py` (inventory + bundle tooling).
-- `.github/scripts/sync_tasks.py` GitHub sync helper (now partly replaced by recipe).
 - `scripts/ci-scope.mjs` is standalone (not wired into CLI).
 
 ### 2) Missing Node command: `quickstart`
@@ -50,14 +47,13 @@ See:
 
 1. Add `agentplane quickstart` that prints `.agent-plane/agentctl.md` (match Python behavior).
 2. Decide on support-script parity:
-   - Either port `clean.sh`, `clean.ps1`, `viewer.sh`, and `recipes.py` into Node CLI commands,
-   - or explicitly declare them as supported external scripts and keep them shipped/linked.
+   - Either port `.agent-plane/recipes.py` into Node CLI commands,
+   - or explicitly declare it as a supported external script.
 
 ### P1 (parity hardening)
 
-3. Add Node wrappers for `clean` and `viewer` (even if they call scripts) to match operator workflow.
-4. Port `recipes.py` functionality into Node (scan/show/bundle/refresh), or document a stable Python dependency.
-5. Clarify GitHub sync: keep `sync_tasks.py` or replace it fully with the GitHub sync recipe + documented flow.
+3. Port `recipes.py` functionality into Node (scan/show/bundle/refresh), or document a stable Python dependency.
+4. Clarify GitHub sync: rely on the recipe-based workflow + documented flow.
 
 ### P2 (behavioral verification)
 

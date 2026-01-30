@@ -55,9 +55,6 @@ Status legend: FULL = implemented with matching intent, PARTIAL = implemented bu
 | Python/script                   | Node.js equivalent         | Status  | Notes                                                                                                        |
 | ------------------------------- | -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
 | `.agent-plane/recipes.py`       | (script retained)          | PARTIAL | Node has `agentplane recipe` runtime commands, but recipe bundle/inventory tooling remains in Python script. |
-| `clean.sh` / `clean.ps1`        | (none)                     | MISSING | Cleanup scripts are not wired into Node CLI.                                                                 |
-| `viewer.sh`                     | Viewer recipe / tasks.html | PARTIAL | Viewer exists but not via CLI command.                                                                       |
-| `.github/scripts/sync_tasks.py` | GitHub sync recipe         | PARTIAL | Node relies on recipe; Python script still present.                                                          |
 | `scripts/ci-scope.mjs`          | (none)                     | MISSING | CI scoping script is standalone.                                                                             |
 
 ## Node-only functionality (no Python agentctl analog)

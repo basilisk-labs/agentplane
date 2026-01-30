@@ -16,12 +16,15 @@ export type AgentplaneConfig = {
       require_network: boolean;
     };
   };
+  recipes?: {
+    storage_default: "link" | "copy" | "global";
+  };
   paths: {
     agents_dir: string;
-    agentctl_docs_path: string;
     tasks_path: string;
     workflow_dir: string;
     worktrees_dir: string;
+    agentctl_docs_path?: string;
   };
   branch: { task_prefix: string };
   framework: { source: string; last_update: string | null };
@@ -53,9 +56,11 @@ export function defaultConfig(): AgentplaneConfig {
         require_network: true,
       },
     },
+    recipes: {
+      storage_default: "link",
+    },
     paths: {
       agents_dir: ".agentplane/agents",
-      agentctl_docs_path: ".agentplane/agentctl.md",
       tasks_path: ".agentplane/tasks.json",
       workflow_dir: ".agentplane/tasks",
       worktrees_dir: ".agentplane/worktrees",
@@ -122,6 +127,13 @@ export function validateConfig(raw: unknown): AgentplaneConfig {
       throw new Error("config.agents.approvals.require_network must be boolean");
     }
   }
+  if (raw.recipes !== undefined) {
+    if (!isRecord(raw.recipes)) throw new Error("config.recipes must be object");
+    const storageDefault = raw.recipes.storage_default;
+    if (storageDefault !== "link" && storageDefault !== "copy" && storageDefault !== "global") {
+      throw new Error("config.recipes.storage_default must be 'link' | 'copy' | 'global'");
+    }
+  }
   if (!isRecord(raw.paths)) throw new Error("config.paths must be object");
   if (!isRecord(raw.branch)) throw new Error("config.branch must be object");
   if (!isRecord(raw.framework)) throw new Error("config.framework must be object");
@@ -133,16 +145,16 @@ export function validateConfig(raw: unknown): AgentplaneConfig {
   }
 
   // Minimal path fields validation.
-  for (const key of [
-    "agents_dir",
-    "agentctl_docs_path",
-    "tasks_path",
-    "workflow_dir",
-    "worktrees_dir",
-  ] as const) {
+  for (const key of ["agents_dir", "tasks_path", "workflow_dir", "worktrees_dir"] as const) {
     const v = raw.paths[key];
     if (typeof v !== "string" || v.length === 0)
       throw new Error(`config.paths.${key} must be string`);
+  }
+  if (raw.paths.agentctl_docs_path !== undefined) {
+    const v = raw.paths.agentctl_docs_path;
+    if (typeof v !== "string" || v.length === 0) {
+      throw new Error("config.paths.agentctl_docs_path must be string");
+    }
   }
   if (typeof raw.branch.task_prefix !== "string" || raw.branch.task_prefix.length === 0) {
     throw new Error("config.branch.task_prefix must be string");

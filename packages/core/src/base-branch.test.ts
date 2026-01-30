@@ -51,7 +51,6 @@ describe("base-branch", () => {
       base_branch: "release",
       paths: {
         agents_dir: ".agentplane/agents",
-        agentctl_docs_path: ".agentplane/agentctl.md",
         tasks_path: ".agentplane/tasks.json",
         workflow_dir: ".agentplane/tasks",
         worktrees_dir: ".agentplane/worktrees",

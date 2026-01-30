@@ -95,6 +95,7 @@ This table lists commands and required minimum flags. Implementation may add add
 | `agentplane scenario list`             | List installed scenarios                  | Uses recipes registry                                                       |
 | `agentplane scenario info <recipe:id>` | Show scenario details                     | `<recipe-id>:<scenario-id>`                                                 |
 | `agentplane scenario run <recipe:id>`  | Run scenario tools                        | Logs to `.agentplane/recipes/<id>/runs/...`                                 |
+| `agentplane recipe cache prune`        | Prune global recipe cache                 | Removes cached recipes not referenced by the current project                |
 
 ### 5.2 Explicit-network commands
 
@@ -102,7 +103,7 @@ This table lists commands and required minimum flags. Implementation may add add
 | ---------------------------------------------------- | ----------------------------------------------- | ------------ | -------------------------------------- | --- |
 | `agentplane upgrade`                                 | Update embedded templates/bundles from upstream | Yes          |
 | `agentplane recipe list-remote`                      | List recipes from remote index                  | Yes          |
-| `agentplane recipe install <id> [--on-conflict <fail | rename                                          | overwrite>]` | Install recipe by id from remote index | Yes |
+| `agentplane recipe install <id> [--on-conflict <fail | rename                                          | overwrite>] [--storage <link | copy | global>]` | Install recipe by id from remote index | Yes |
 
 ### 5.3 `task` namespace
 

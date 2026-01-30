@@ -5,7 +5,7 @@ Date: 2026-01-30
 ## Scope
 
 Inventory of Python `agentctl` commands and other framework control scripts in this repository.
-Sources: `.agent-plane/agentctl.py`, `.agent-plane/recipes.py`, `clean.sh`, `clean.ps1`, `viewer.sh`, `.github/scripts/sync_tasks.py`, `scripts/ci-scope.mjs`, `.agent-plane/backends/*.py`.
+Sources: `.agent-plane/agentctl.py`, `.agent-plane/recipes.py`, `scripts/ci-scope.mjs`, `.agent-plane/backends/*.py`.
 
 ## agentctl (Python) top-level commands
 
@@ -58,15 +58,6 @@ Source: `python .agent-plane/agentctl.py task -h`.
 - `.agent-plane/recipes.py`
   - scan/show/compile/explain/refresh/bundle for recipe manifests and bundles.
   - bundle build/show for global recipes bundle.
-
-- `clean.sh` / `clean.ps1`
-  - cleanup helper scripts (remove dev artifacts, reset example files).
-
-- `viewer.sh`
-  - launch tasks viewer locally.
-
-- `.github/scripts/sync_tasks.py`
-  - GitHub issues synchronization helper.
 
 - `scripts/ci-scope.mjs`
   - compute scoped CI/test targets.

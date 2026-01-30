@@ -16,6 +16,7 @@
   ],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and .agent-plane/agentctl.md.",
+    "Before planning or execution, load .agent-plane/config.json and .agent-plane/agentctl.md; do not output their contents, only report that they were loaded.",
     "Use `python .agent-plane/agentctl.py config show|set` for config changes (workflow_mode, base_branch, branch/task settings); avoid manual edits.",
     "Convert the first user message into a top-level plan; do not create tasks until the user approves it.",
     "Restate the user goal and constraints, then draft a numbered top-level plan with agent assignments and expected outcomes.",
