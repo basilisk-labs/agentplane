@@ -24,6 +24,14 @@ agentplane init
 
 This creates `.agentplane/` (config, agents, tasks, caches). v1 is offline-first; network is used only by explicit commands.
 
+## Upgrade a workspace
+
+```bash
+agentplane upgrade
+```
+
+Use this to refresh framework assets (recipes index, docs scaffolds, hooks).
+
 ## Developing inside this repo (current)
 
 This repository contains the in-progress Node.js workspace under `packages/`. For local development:
@@ -46,3 +54,14 @@ If you want to scrub repo-specific artifacts in a copy:
 
 - Configure the active backend in `.agentplane/config.json` (`tasks_backend.config_path`).
 - Redmine credentials are loaded from `.env` without overriding already-set environment variables (see `redmine`).
+
+## Optional recipes
+
+Install optional recipes to enable extra workflows:
+
+```bash
+agentplane recipe install redmine
+agentplane recipe install viewer
+```
+
+See `recipes-spec` for authoring or distributing recipes.
