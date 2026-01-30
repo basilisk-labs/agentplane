@@ -1,7 +1,19 @@
 {
   "name": "agentplane",
   "version": "0.0.0",
+  "description": "Agent Plane CLI for task workflows, recipes, and project automation.",
+  "keywords": [
+    "agentplane",
+    "agent-plane",
+    "cli",
+    "tasks",
+    "workflow",
+    "recipes",
+    "automation",
+    "orchestration"
+  ],
   "license": "MIT",
+  "author": "Basilisk Labs",
   "repository": {
     "type": "git",
     "url": "https://github.com/basilisk-labs/agentplane.git"
@@ -27,8 +39,9 @@
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
     "build": "tsc -b",
     "typecheck": "tsc -b",
-    "prepack": "bun run clean && bun run build",
-    "prepublishOnly": "bun run prepack"
+    "prepare": "npm run build",
+    "prepack": "npm run clean && npm run build",
+    "prepublishOnly": "npm run prepack"
   },
   "dependencies": {
     "@agentplane/core": "0.0.0"
