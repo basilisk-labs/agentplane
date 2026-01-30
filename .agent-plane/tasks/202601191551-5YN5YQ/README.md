@@ -1,13 +1,15 @@
 ---
 id: "202601191551-5YN5YQ"
 title: "Explain feature-spec-to-tasks recipe"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["recipes", "docs"]
+commit: { hash: "f9ff22e97f43eae7d139d1eba26712387cd89344", message: "✨ 5YN5YQ defer feature-spec-to-tasks recipe doc" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: document feature-spec-to-tasks recipe usage and behavior." }
+  - { author: "ORCHESTRATOR", body: "verified: task deferred per request | details: no tests required and no code changes made." }
 doc_version: 2
 doc_updated_at: "2026-01-30T09:53:12+00:00"
 doc_updated_by: "agentctl"
