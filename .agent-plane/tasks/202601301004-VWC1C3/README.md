@@ -1,13 +1,15 @@
 ---
 id: "202601301004-VWC1C3"
 title: "Node CLI parity: start/block/finish flags"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: ["202601300958-HRNHRH"]
 tags: ["nodejs", "cli", "parity", "workflow"]
+commit: { hash: "dde1e7b60f59644ce330be1134035a739b180408", message: "VWC1C3 align start/block/finish parity and integrate finish" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: Extend start/block/finish flags for parity with agentctl and update tests." }
+  - { author: "ORCHESTRATOR", body: "verified: bun run test | details: packages/agentplane/src/run-cli.test.ts" }
 doc_version: 2
 doc_updated_at: "2026-01-30T10:51:20+00:00"
 doc_updated_by: "agentctl"
