@@ -1,0 +1,366 @@
+{
+  "generated_at": "2026-01-30T12:07:48Z",
+  "schema_version": "recipes-inventory@1",
+  "recipes": [
+    {
+      "slug": "docs-scaffold",
+      "name": "Docs scaffold",
+      "summary": "Generates a documentation scaffold for a new feature",
+      "tags": [
+        "docs",
+        "scaffold",
+        "workflow",
+        "agent-plane"
+      ],
+      "version": "0.1.0",
+      "entrypoints": {
+        "ide": {
+          "action_id": "codexSwarm.recipe.run",
+          "ui": {
+            "form": "scenarios/from-context.inputs.json"
+          }
+        }
+      },
+      "scenarios": [
+        {
+          "id": "from-context",
+          "path": "scenarios/from-context.md",
+          "title": "From feature context",
+          "inputs_schema": "scenarios/from-context.inputs.json",
+          "outputs": [
+            {
+              "id": "docs_scaffold",
+              "path_template": "docs/<docs_slug>.md"
+            }
+          ],
+          "required_agents": [
+            "ORCHESTRATOR",
+            "DOCS",
+            "REVIEWER"
+          ]
+        }
+      ],
+      "tools": [],
+      "requires": {
+        "services": [],
+        "features": [
+          "agentctl",
+          "orchestrator"
+        ]
+      },
+      "env": []
+    },
+    {
+      "slug": "feature-spec-to-tasks",
+      "name": "Task to roadmap",
+      "summary": "Turns a top-level task or issue into a detailed roadmap and task draft",
+      "tags": [
+        "product",
+        "planning",
+        "roadmap",
+        "tasks",
+        "agent-plane"
+      ],
+      "version": "0.2.0",
+      "entrypoints": {
+        "ide": {
+          "action_id": "codexSwarm.recipe.run",
+          "ui": {
+            "form": "scenarios/from-text.inputs.json"
+          }
+        },
+        "cli": {
+          "command": "node .agent-plane/recipes/feature-spec-to-tasks/tools/run-feature.js",
+          "args_contract": "json-file"
+        }
+      },
+      "scenarios": [
+        {
+          "id": "from-text",
+          "path": "scenarios/from-text.md",
+          "title": "From task text",
+          "inputs_schema": "scenarios/from-text.inputs.json",
+          "outputs": [
+            {
+              "id": "roadmap",
+              "path_template": "docs/roadmaps/<roadmap_slug>.roadmap.md"
+            },
+            {
+              "id": "plan",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
+            },
+            {
+              "id": "tasks_draft",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
+            }
+          ],
+          "required_agents": [
+            "ORCHESTRATOR",
+            "PLANNER",
+            "CODER",
+            "REVIEWER"
+          ]
+        },
+        {
+          "id": "from-issue",
+          "path": "scenarios/from-issue.md",
+          "title": "From issue text",
+          "inputs_schema": "scenarios/from-issue.inputs.json",
+          "outputs": [
+            {
+              "id": "roadmap",
+              "path_template": "docs/roadmaps/<roadmap_slug>.roadmap.md"
+            },
+            {
+              "id": "plan",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
+            },
+            {
+              "id": "tasks_draft",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
+            }
+          ],
+          "required_agents": [
+            "ORCHESTRATOR",
+            "PLANNER",
+            "CODER",
+            "REVIEWER"
+          ]
+        },
+        {
+          "id": "refactor-existing",
+          "path": "scenarios/refactor-existing.md",
+          "title": "Refactor existing",
+          "inputs_schema": "scenarios/refactor-existing.inputs.json",
+          "outputs": [
+            {
+              "id": "roadmap",
+              "path_template": "docs/roadmaps/<roadmap_slug>.roadmap.md"
+            },
+            {
+              "id": "plan",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
+            },
+            {
+              "id": "tasks_draft",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
+            },
+            {
+              "id": "migration",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.migration.md"
+            }
+          ],
+          "required_agents": [
+            "ORCHESTRATOR",
+            "PLANNER",
+            "CODER",
+            "REVIEWER"
+          ]
+        }
+      ],
+      "tools": [
+        {
+          "id": "runner",
+          "type": "node",
+          "command": "node tools/run-feature.js",
+          "cwd": ".agent-plane/recipes/feature-spec-to-tasks",
+          "reads": [
+            ".agent-plane/.runs/"
+          ],
+          "writes": [
+            "docs/roadmaps/",
+            ".agent-plane/.runs/"
+          ],
+          "network": "deny",
+          "env": [
+            "RECIPE_INPUTS_PATH",
+            "RECIPE_SCENARIO_ID",
+            "RECIPE_RUN_ID"
+          ]
+        }
+      ],
+      "requires": {
+        "services": [],
+        "features": [
+          "agentctl",
+          "orchestrator"
+        ]
+      },
+      "env": []
+    },
+    {
+      "slug": "qa-plan",
+      "name": "QA plan",
+      "summary": "Builds a QA checklist and test plan for a release",
+      "tags": [
+        "qa",
+        "testing",
+        "release",
+        "workflow",
+        "agent-plane"
+      ],
+      "version": "0.1.0",
+      "entrypoints": {
+        "ide": {
+          "action_id": "codexSwarm.recipe.run",
+          "ui": {
+            "form": "scenarios/from-context.inputs.json"
+          }
+        }
+      },
+      "scenarios": [
+        {
+          "id": "from-context",
+          "path": "scenarios/from-context.md",
+          "title": "From release context",
+          "inputs_schema": "scenarios/from-context.inputs.json",
+          "outputs": [
+            {
+              "id": "qa_plan",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<release_slug>.qa.md"
+            }
+          ],
+          "required_agents": [
+            "ORCHESTRATOR",
+            "TESTER",
+            "REVIEWER"
+          ]
+        }
+      ],
+      "tools": [],
+      "requires": {
+        "services": [],
+        "features": [
+          "agentctl",
+          "orchestrator"
+        ]
+      },
+      "env": []
+    },
+    {
+      "slug": "release-checklist",
+      "name": "Release checklist",
+      "summary": "Creates a release checklist with verification and rollback steps",
+      "tags": [
+        "release",
+        "deploy",
+        "checklist",
+        "workflow",
+        "agent-plane"
+      ],
+      "version": "0.1.0",
+      "entrypoints": {
+        "ide": {
+          "action_id": "codexSwarm.recipe.run",
+          "ui": {
+            "form": "scenarios/from-context.inputs.json"
+          }
+        }
+      },
+      "scenarios": [
+        {
+          "id": "from-context",
+          "path": "scenarios/from-context.md",
+          "title": "From release context",
+          "inputs_schema": "scenarios/from-context.inputs.json",
+          "outputs": [
+            {
+              "id": "release_checklist",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<release_slug>.release.md"
+            }
+          ],
+          "required_agents": [
+            "ORCHESTRATOR",
+            "CODER",
+            "REVIEWER"
+          ]
+        }
+      ],
+      "tools": [],
+      "requires": {
+        "services": [],
+        "features": [
+          "agentctl",
+          "orchestrator"
+        ]
+      },
+      "env": []
+    },
+    {
+      "slug": "spec-to-tasks",
+      "name": "Spec to tasks",
+      "summary": "Turns a written spec into a task batch and plan",
+      "tags": [
+        "planning",
+        "spec",
+        "tasks",
+        "agent-plane"
+      ],
+      "version": "0.1.0",
+      "entrypoints": {
+        "ide": {
+          "action_id": "codexSwarm.recipe.run",
+          "ui": {
+            "form": "scenarios/from-spec.inputs.json"
+          }
+        },
+        "cli": {
+          "command": "node .agent-plane/recipes/spec-to-tasks/tools/run-spec.js",
+          "args_contract": "json-file"
+        }
+      },
+      "scenarios": [
+        {
+          "id": "from-spec",
+          "path": "scenarios/from-spec.md",
+          "title": "From spec text",
+          "inputs_schema": "scenarios/from-spec.inputs.json",
+          "outputs": [
+            {
+              "id": "plan",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<spec_slug>.plan.json"
+            },
+            {
+              "id": "tasks_draft",
+              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<spec_slug>.tasks.draft.md"
+            }
+          ],
+          "required_agents": [
+            "ORCHESTRATOR",
+            "PLANNER",
+            "CODER",
+            "REVIEWER"
+          ]
+        }
+      ],
+      "tools": [
+        {
+          "id": "runner",
+          "type": "node",
+          "command": "node tools/run-spec.js",
+          "cwd": ".agent-plane/recipes/spec-to-tasks",
+          "reads": [
+            ".agent-plane/.runs/"
+          ],
+          "writes": [
+            ".agent-plane/.runs/"
+          ],
+          "network": "deny",
+          "env": [
+            "RECIPE_INPUTS_PATH",
+            "RECIPE_SCENARIO_ID",
+            "RECIPE_RUN_ID"
+          ]
+        }
+      ],
+      "requires": {
+        "services": [],
+        "features": [
+          "agentctl",
+          "orchestrator"
+        ]
+      },
+      "env": []
+    }
+  ]
+}

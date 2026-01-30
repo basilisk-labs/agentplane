@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QA plan - from release context",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "release_slug": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9-]{1,63}$",
+      "description": "Short slug for output files and paths."
+    },
+    "release_title": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 140,
+      "description": "Human-readable release title."
+    },
+    "scope_summary": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Short description of the release scope."
+    },
+    "risk_areas": {
+      "type": "string",
+      "default": "",
+      "description": "Known risk areas (bullet list)."
+    },
+    "environments": {
+      "type": "string",
+      "default": "",
+      "description": "Target environments and constraints."
+    },
+    "existing_tests": {
+      "type": "string",
+      "default": "",
+      "description": "Existing test coverage or suites."
+    },
+    "constraints": {
+      "type": "string",
+      "default": "",
+      "description": "Constraints (time, infra, tools)."
+    },
+    "non_goals": {
+      "type": "string",
+      "default": "",
+      "description": "Items explicitly out of scope."
+    },
+    "target_date": {
+      "type": "string",
+      "default": "",
+      "description": "Target release date or window."
+    },
+    "runs_dir": {
+      "type": "string",
+      "default": ".agent-plane/.runs",
+      "description": "Directory for run artifacts."
+    }
+  },
+  "required": [
+    "release_slug",
+    "release_title",
+    "scope_summary"
+  ]
+}
