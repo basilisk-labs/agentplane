@@ -1676,45 +1676,29 @@ describe("runCli", () => {
     }
   });
 
-  it("quickstart prints agentctl.md contents when available", async () => {
+  it("quickstart prints CLI help output", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const docsPath = path.join(root, ".agentplane", "agentctl.md");
-    await writeFile(docsPath, "# agentctl\n\nquickstart content\n", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["quickstart", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("quickstart content");
+      expect(io.stdout).toContain("agentplane (v1 prototype)");
+      expect(io.stdout).toContain("Usage:");
     } finally {
       io.restore();
     }
   });
 
-  it("role prints role guidance from agentctl.md", async () => {
+  it("role prints CLI help output", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const docsPath = path.join(root, ".agentplane", "agentctl.md");
-    await writeFile(
-      docsPath,
-      [
-        "# agentctl",
-        "",
-        "## Role/phase command guide (when to use what)",
-        "",
-        "### CODER",
-        "- Use task start for new work.",
-        "",
-        "## Other section",
-      ].join("\n"),
-      "utf8",
-    );
     const io = captureStdIO();
     try {
       const code = await runCli(["role", "CODER", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("### CODER");
-      expect(io.stdout).toContain("Use task start");
+      expect(io.stdout).toContain("agentplane (v1 prototype)");
+      expect(io.stdout).toContain("Usage:");
     } finally {
       io.restore();
     }
