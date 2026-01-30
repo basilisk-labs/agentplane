@@ -5,7 +5,7 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: ["202601191510-0AWCPY"]
-tags: []
+tags: ["recipes", "docs"]
 commit: { hash: "154970d7be5a455048d1fc55b85ff7f922f9a9bd", message: "✨ 6ZKD5S update recipes prompt rules: add outputs guidance" }
 comments:
   - { author: "DOCS", body: "verified: updated RECIPES.md outputs guidance and reviewed recipes doc references for consistency." }

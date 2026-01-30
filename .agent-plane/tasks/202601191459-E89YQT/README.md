@@ -1,35 +1,43 @@
 ---
 id: "202601191459-E89YQT"
 title: "Add minimal tags to completed tasks"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["tasks", "workflow"]
+comments:
+  - { author: "ORCHESTRATOR", body: "Start: identify DONE tasks missing tags and add minimal tags." }
 doc_version: 2
-doc_updated_at: "2026-01-19T14:59:56+00:00"
+doc_updated_at: "2026-01-30T09:40:46+00:00"
 doc_updated_by: "agentctl"
 description: "Review completed tasks lacking tags and assign a minimal, navigable tag set without inflating tag counts."
 ---
 ## Summary
-Added minimal tags to completed tasks that were missing tags to improve navigation without inflating tag counts.
+
+Audit DONE tasks with missing tags and add minimal tags to improve navigation without inflating tag counts.
 
 ## Context
+
 Completed tasks had empty tags, which made filtering and browsing less useful.
 
 ## Scope
-- Set 1-3 tags per DONE task with empty tags.
-- Used agentctl updates and avoided verify-required tags when not allowed.
+
+- Export tasks snapshot from local backend.\n- Identify DONE tasks with empty/missing tags.\n- Add 1-2 minimal tags per task via agentctl task update.\n- Export tasks and document changes.
 
 ## Risks
-Tags may need follow-up tuning for edge cases or inconsistent naming.
+
+- Over-tagging could dilute signal; keep tags minimal and consistent.\n- Touching many tasks increases churn in tasks.json; batch updates carefully.
 
 ## Verify Steps
-- None (metadata-only changes).
+
+python .agent-plane/agentctl.py task export
 
 ## Rollback Plan
-Revert tag edits in task README files via git or re-run agentctl to restore previous tags.
+
+Revert the commit to restore previous tag state in tasks.json.
 
 ## Notes
+
 Mapping was keyword-based with a workflow fallback for uncategorized titles.
 

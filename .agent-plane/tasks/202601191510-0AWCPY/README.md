@@ -5,7 +5,7 @@ status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: ["202601191510-QN0W0P"]
-tags: []
+tags: ["recipes", "cli"]
 commit: { hash: "b5d407ce6f52d57fc1103f2be5f3e9ebde18fbc8", message: "✨ 0AWCPY implement recipes CLI: add scan/show/compile/explain and bundle compiler" }
 comments:
   - { author: "CODER", body: "verified: ran python .agent-plane/recipes.py --help to confirm CLI wiring and subcommand registration." }

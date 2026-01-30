@@ -5,7 +5,7 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: ["202601191511-BZPKM2"]
-tags: []
+tags: ["recipes", "cli"]
 commit: { hash: "6aecb4d3a6fc86a0020032ac0a232c9ff6d77597", message: "✨ A1GYQB document overall recipes delivery" }
 comments:
   - { author: "ORCHESTRATOR", body: "verified: all recipe PRD tasks completed and documented | details: CLI and docs changes integrated." }
