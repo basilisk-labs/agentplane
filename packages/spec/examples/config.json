@@ -11,11 +11,11 @@
     }
   },
   "paths": {
-    "agents_dir": ".agentplane/agents",
-    "agentctl_docs_path": ".agentplane/agentctl.md",
-    "tasks_path": ".agentplane/tasks.json",
-    "workflow_dir": ".agentplane/tasks",
-    "worktrees_dir": ".agentplane/worktrees"
+    "agents_dir": ".agent-plane/agents",
+    "agentctl_docs_path": ".agent-plane/agentctl.md",
+    "tasks_path": ".agent-plane/tasks.json",
+    "workflow_dir": ".agent-plane/tasks",
+    "worktrees_dir": ".agent-plane/worktrees"
   },
   "branch": { "task_prefix": "task" },
   "framework": {
@@ -46,6 +46,6 @@
   "commit": {
     "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
   },
-  "tasks_backend": { "config_path": ".agentplane/backends/local/backend.json" },
+  "tasks_backend": { "config_path": ".agent-plane/backends/local/backend.json" },
   "closure_commit_requires_approval": false
 }
