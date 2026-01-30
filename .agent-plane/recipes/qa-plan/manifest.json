@@ -1,0 +1,68 @@
+{
+  "schema_version": "recipe-manifest@1",
+  "slug": "qa-plan",
+  "name": "QA plan",
+  "summary": "Builds a QA checklist and test plan for a release",
+  "tags": [
+    "qa",
+    "testing",
+    "release",
+    "workflow",
+    "agent-plane"
+  ],
+  "version": "0.1.0",
+  "entrypoints": {
+    "ide": {
+      "action_id": "codexSwarm.recipe.run",
+      "ui": {
+        "form": "scenarios/from-context.inputs.json"
+      }
+    }
+  },
+  "scenarios": [
+    {
+      "id": "from-context",
+      "path": "scenarios/from-context.md",
+      "title": "From release context",
+      "inputs_schema": "scenarios/from-context.inputs.json",
+      "outputs": [
+        {
+          "id": "qa_plan",
+          "path_template": ".agent-plane/.runs/<run_id>/artifacts/<release_slug>.qa.md"
+        }
+      ],
+      "required_agents": [
+        "ORCHESTRATOR",
+        "TESTER",
+        "REVIEWER"
+      ]
+    }
+  ],
+  "context": {
+    "include": [
+      "README.md",
+      "docs/**/*.md",
+      ".agent-plane/config.*",
+      "AGENTS.md",
+      ".agent-plane/agents/*.json"
+    ],
+    "exclude": [
+      ".agent-plane/tasks/**",
+      ".env",
+      "**/*secret*",
+      "**/*key*"
+    ]
+  },
+  "requires": {
+    "services": [],
+    "features": [
+      "agentctl",
+      "orchestrator"
+    ]
+  },
+  "safety": {
+    "no_invented_inputs": true,
+    "no_network_by_default": true,
+    "writes_must_match_manifest": true
+  }
+}
