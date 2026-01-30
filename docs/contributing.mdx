@@ -1,0 +1,53 @@
+---
+title: "Contributing"
+description: "How to contribute changes to Agent Plane."
+---
+
+## Quick start
+
+```bash
+bun install
+bun run test
+```
+
+## Workflow expectations
+
+- Use `agentplane` CLI for task operations (no manual edits to tasks).
+- Keep commits tied to a task ID.
+- Follow the configured workflow mode (`direct` or `branch_pr`).
+
+## Where to change things
+
+- CLI behavior: `packages/agentplane/src/run-cli.ts`
+- Core logic: `packages/core/src/`
+- Task backends: `packages/agentplane/src/task-backend.ts`
+- Documentation: `docs/`
+
+## Testing
+
+Run the CLI tests:
+
+```bash
+bun run test -- packages/agentplane/src/run-cli.test.ts
+```
+
+Run full checks when touching multiple areas:
+
+```bash
+bun run format:check
+bun run lint
+bun run typecheck
+bun run test
+```
+
+## Documentation updates
+
+- Keep docs in English.
+- Update `docs/docs.json` when adding pages.
+- Prefer clear, actionable examples.
+
+## Submitting changes
+
+- Ensure the working tree is clean except for intended changes.
+- Provide a brief verification summary in task comments.
+

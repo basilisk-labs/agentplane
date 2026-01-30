@@ -1,0 +1,61 @@
+---
+title: "Backends deep dive"
+description: "How task backends work, how they store data, and how sync behaves."
+---
+
+## Overview
+
+A backend defines where tasks are stored and how synchronization happens. The CLI loads the configured backend from `.agentplane/config.json` and routes all task commands through it.
+
+## Local backend (default)
+
+- Stores tasks under `.agent-plane/tasks/` as structured READMEs.
+- Exports snapshots to `.agent-plane/tasks.json` for integrations.
+- Supports task docs, comments, and metadata enforcement.
+
+## Remote backends
+
+Remote backends (for example Redmine) are optional and should be installed and configured explicitly. They typically include:
+
+- Connection settings (URL, API key, project).
+- Custom field mappings for task metadata.
+- Sync direction and conflict policy.
+
+## Sync model
+
+Use explicit sync commands:
+
+```bash
+agentplane sync <backend> --direction pull
+agentplane sync <backend> --direction push --yes
+```
+
+The CLI may maintain a local cache and falls back to it when remote services are unavailable.
+
+## Conflict strategies
+
+- `diff` — report differences without overwriting.
+- `prefer-local` — local state wins.
+- `prefer-remote` — remote state wins.
+- `fail` — abort when conflicts exist.
+
+## Backend configuration
+
+Backend config file path is stored in `.agentplane/config.json` under `tasks_backend.config_path`.
+
+Example:
+
+```json
+{
+  "tasks_backend": {
+    "config_path": ".agent-plane/backends/local/backend.json"
+  }
+}
+```
+
+## Adding a backend
+
+- Implement the backend interface in the CLI.
+- Provide a config template under `.agent-plane/backends/<id>/`.
+- Document required fields and safety caveats.
+

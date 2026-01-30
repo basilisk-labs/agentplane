@@ -1,0 +1,31 @@
+---
+title: "Recipes safety"
+description: "Safety rules and guardrails for recipe execution."
+---
+
+## Safety model
+
+Recipes are optional automation packs. They are powerful and must be constrained by explicit rules.
+
+## Core rules
+
+- No network use unless the manifest explicitly allows it.
+- Do not write outside the manifest allowlist.
+- Do not edit `.agent-plane/tasks/**` directly; use the CLI.
+- Do not invent missing inputs; surface pending actions.
+
+## Inputs
+
+If required inputs are missing, the recipe should stop and list the missing fields. Do not guess or infer values.
+
+## Tool execution
+
+- Use tools declared in the manifest.
+- Respect `reads` and `writes` allowlists.
+- Report output artifacts clearly.
+
+## Review and approval
+
+- Always review generated outputs before applying changes.
+- When in doubt, require explicit user confirmation.
+

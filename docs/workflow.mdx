@@ -1,47 +1,44 @@
 ---
 title: "Workflow"
-description: "Follow the end-to-end workflow: planning, implementation, verification, and closure."
+description: "How work moves from plan to completion in Agent Plane."
 ---
 
-## End-to-End Flow
+## Lifecycle
 
-1. You state a goal to the ORCHESTRATOR.
-2. ORCHESTRATOR proposes a plan and asks for approval.
-3. PLANNER creates or updates tasks via `agentplane` against the active backend.
-4. Execution agents implement changes and update workflow artifacts.
-5. REVIEWER assesses changes and leaves handoff notes.
-6. INTEGRATOR verifies, merges, and closes tasks (when `workflow_mode=branch_pr`).
+1. **Plan**: create tasks and dependencies.
+2. **Start**: mark a task DOING with a structured comment.
+3. **Verify**: run required checks.
+4. **Finish**: mark DONE and attach commit metadata.
 
-## Planning and Tasks
+## direct mode
 
-- Every task is atomic and tracked by ID (`YYYYMMDDHHMM-<RAND>`).
-- The canonical task source depends on the backend:
-  - `local`: `.agentplane/tasks/` is canonical.
-  - `redmine`: Redmine is canonical; `.agentplane/tasks/` is a cache/offline layer.
-- Task changes are done only via `agentplane` (no manual edits to exports).
+- Work in a single checkout.
+- Optional `agentplane work start` only scaffolds artifacts.
 
-## Implementation
+## branch_pr mode
 
-- CODER implements changes with tight diffs and clear validation notes.
-- TESTER adds or updates tests when behavior changes.
-- DOCS updates user-facing docs and task artifacts.
-- Before handoff, update the task doc metadata (Summary/Scope/Risks/Verify Steps/Rollback Plan).
-- Each agent leaving a task must leave a handoff comment:
-  - `workflow_mode=branch_pr`: add notes under `## Handoff Notes` in `.agentplane/tasks/<task-id>/pr/review.md`.
-  - `workflow_mode=direct`: use `agentplane task comment <task-id> --author <ROLE> --body "..."`
+- One task per branch/worktree.
+- PR artifacts live under `.agent-plane/tasks/<task-id>/pr/`.
+- Integration requires PR checks and verify logs.
 
-## Verification and Closure
+## Status transitions
 
-- Use `agentplane verify <task-id>` to run declared checks.
-- Closure updates the canonical backend via `finish`, then refreshes the local cache/export (`tasks.json`).
-- A clean git status is required before handoff.
+```bash
+agentplane start <task-id> --author CODER --body "Start: ..."
+agentplane block <task-id> --author CODER --body "Blocked: ..."
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..."
+```
 
-## Commit Expectations
+## Commit guardrails
 
-- One task maps to one implementation commit.
-- Planning and closure commits are used when required by the workflow.
-- Commit messages are short, emoji-prefixed, and include the task ID.
+- Use `agentplane guard commit` to validate message and paths.
+- Commit subjects must include the task ID suffix.
 
-## Notes
+## Verification
 
-- This document describes the v1 target workflow per `ROADMAP.md`; individual commands may land incrementally.
+```bash
+agentplane verify <task-id>
+```
+
+Use `--skip-if-unchanged` to avoid re-running checks for the same commit.
+
