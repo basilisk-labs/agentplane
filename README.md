@@ -2,34 +2,103 @@
 
 # Agent Plane (`agentplane`)
 
+[![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
+[![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/prerequisites.mdx)
 [![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/cli-contract.mdx)
 [![Roadmap](https://img.shields.io/badge/Roadmap-ROADMAP.md-6b7280.svg)](ROADMAP.md)
-[![Specs](https://img.shields.io/badge/Specs-packages%2Fspec-0f766e.svg)](packages/spec/README.md)
-[![Docs](https://img.shields.io/badge/Docs-Start%20Here-6b7280.svg)](docs/index.mdx)
 
-Agent Plane is an offline-first workflow framework for using OpenAI Codex in your IDE. The v1 target is a globally installable Node.js CLI named `agentplane` that manages tasks, workflows, guardrails, backends, and optional recipes.
+Agent Plane is an offline-first workflow framework and CLI for running task-driven development with agent workflows. It provides task lifecycle management, guardrails, workflow modes, and recipe-driven automation in a single installable tool.
 
-## Status
+## Why Agent Plane
 
-- Source of truth for scope and ordering: `ROADMAP.md`.
-- Node.js workspace (in progress): `packages/agentplane`, `packages/core`, `packages/recipes`, `packages/spec`, `packages/testkit`.
-- Legacy Python implementation still exists under `.agent-plane/` and will be retired as the Node.js CLI reaches parity.
+- **Reliable task lifecycle**: create, track, verify, and close work with explicit metadata.
+- **Workflow modes**: direct or branch_pr with PR artifacts and verify gates.
+- **Guardrails**: enforce clean commits and consistent task docs.
+- **Recipes**: optional automation packs for planning, sync, and operations.
 
-## Quick start (target UX)
-
-In a git repository:
+## Install
 
 ```bash
-npx agentplane init
-agentplane --help
+npm i -g agentplane@latest
 ```
 
-The CLI creates `.agentplane/` (config, tasks, caches, recipes).
+## Quickstart
 
-## Developing in this repo (current)
+From a git repository:
+
+```bash
+agentplane init
+agentplane quickstart
+```
+
+`agentplane init` creates `.agentplane/` (config, tasks, recipes, caches). `agentplane quickstart` prints the current CLI help output.
+
+## Core CLI workflows
+
+Common commands:
+
+```bash
+agentplane task list
+agentplane task show <task-id>
+agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag>
+agentplane start <task-id> --author CODER --body "Start: ..."
+agentplane verify <task-id>
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..."
+```
+
+Use `agentplane --help` for the full command reference.
+
+## Workflow modes
+
+- **direct**: work in a single checkout; no task branches required.
+- **branch_pr**: per-task branches and worktrees with PR artifacts and verify gates.
+
+Switch modes:
+
+```bash
+agentplane mode get
+agentplane mode set <direct|branch_pr>
+```
+
+## Recipes
+
+Recipes are optional automation packs installed and run via CLI:
+
+```bash
+agentplane recipe list
+agentplane scenario list
+agentplane scenario run <recipe:scenario>
+```
+
+See `docs/recipes-spec.mdx` for the recipe format and safety rules.
+
+## Configuration
+
+Configuration lives in `.agentplane/config.json` and can be updated via CLI:
+
+```bash
+agentplane config show
+agentplane config set tasks.verify.required_tags '["code","backend"]'
+```
+
+## Project layout (high level)
+
+- `packages/agentplane/`: Node.js CLI entrypoint (TypeScript + ESM)
+- `packages/core/`: core libraries (project resolution, config, task models)
+- `packages/spec/`: schemas + examples
+- `docs/`: user documentation
+- `.agent-plane/`: legacy Python toolchain (deprecated)
+
+## Documentation
+
+- Start here: `docs/index.mdx`
+- Commands reference: `docs/commands.mdx`
+- CLI contract: `docs/cli-contract.mdx`
+- Recipes spec: `docs/recipes-spec.mdx`
+
+## Development
 
 ```bash
 bun install
@@ -37,33 +106,6 @@ bun run --filter=agentplane build
 node packages/agentplane/bin/agentplane.js --help
 ```
 
-## Publishing to npm (maintainers)
+## License
 
-This repository is a monorepo. The CLI package depends on `@agentplane/core`, so publish in this order:
-
-```bash
-bun install
-bun run ci
-
-cd packages/core
-npm publish --access public
-
-cd ../agentplane
-npm publish
-```
-
-## Documentation
-
-- Start here: `docs/index.mdx`
-- Command contract: `docs/cli-contract.mdx`
-- Recipes spec: `docs/recipes-spec.mdx`
-- Quality gates: `docs/code-quality.mdx`
-- Format schemas/examples: `packages/spec/`
-
-## Repository layout (high level)
-
-- `packages/agentplane/`: Node.js CLI entrypoint (TypeScript + ESM)
-- `packages/core/`: core libraries (project resolution, config, later: tasks/backends/workflow)
-- `packages/spec/`: v1 schemas + examples
-- `docs/`: Node-first documentation
-- `.agent-plane/`: legacy Python toolchain (deprecated)
+MIT. See `LICENSE`.
