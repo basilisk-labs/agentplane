@@ -1,13 +1,15 @@
 ---
 id: "202601300859-7DK2JB"
 title: "Add agent behavior toggles to config + init dialog"
-status: "DOING"
+status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: ["202601131236-DBW16S"]
 tags: ["config", "agents", "init", "cli"]
+commit: { hash: "605718025fac6af036b8ad6072cfa774dfa05d62", message: "✨ 7DK2JB add approvals config and init prompts" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: add minor agent behavior toggles to config and wire into init prompts; document defaults." }
+  - { author: "ORCHESTRATOR", body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed." }
 doc_version: 2
 doc_updated_at: "2026-01-30T09:00:53+00:00"
 doc_updated_by: "agentctl"
