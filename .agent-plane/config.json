@@ -4,6 +4,12 @@
   "status_commit_policy": "warn",
   "finish_auto_status_commit": true,
   "base_branch": "main",
+  "agents": {
+    "approvals": {
+      "require_plan": true,
+      "require_network": true
+    }
+  },
   "paths": {
     "agents_dir": ".agent-plane/agents",
     "agentctl_docs_path": ".agent-plane/agentctl.md",
@@ -11,22 +17,14 @@
     "workflow_dir": ".agent-plane/tasks",
     "worktrees_dir": ".agent-plane/worktrees"
   },
-  "branch": {
-    "task_prefix": "task"
-  },
+  "branch": { "task_prefix": "task" },
   "framework": {
     "source": "https://github.com/basilisk-labs/agent-plane",
     "last_update": null
   },
   "tasks": {
     "id_suffix_length_default": 6,
-    "verify": {
-      "required_tags": [
-        "code",
-        "backend",
-        "frontend"
-      ]
-    },
+    "verify": { "required_tags": ["code", "backend", "frontend"] },
     "doc": {
       "sections": [
         "Summary",
@@ -37,49 +35,17 @@
         "Rollback Plan",
         "Notes"
       ],
-      "required_sections": [
-        "Summary",
-        "Scope",
-        "Risks",
-        "Verify Steps",
-        "Rollback Plan"
-      ]
+      "required_sections": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
     },
     "comments": {
-      "start": {
-        "prefix": "Start:",
-        "min_chars": 40
-      },
-      "blocked": {
-        "prefix": "Blocked:",
-        "min_chars": 40
-      },
-      "verified": {
-        "prefix": "Verified:",
-        "min_chars": 60
-      }
+      "start": { "prefix": "Start:", "min_chars": 40 },
+      "blocked": { "prefix": "Blocked:", "min_chars": 40 },
+      "verified": { "prefix": "Verified:", "min_chars": 60 }
     }
   },
   "commit": {
-    "generic_tokens": [
-      "start",
-      "status",
-      "mark",
-      "done",
-      "wip",
-      "update",
-      "tasks",
-      "task"
-    ]
+    "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
   },
-  "tasks_backend": {
-    "config_path": ".agent-plane/backends/local/backend.json"
-  },
-  "closure_commit_requires_approval": false,
-  "agents": {
-    "approvals": {
-      "require_plan": true,
-      "require_network": true
-    }
-  }
+  "tasks_backend": { "config_path": ".agent-plane/backends/local/backend.json" },
+  "closure_commit_requires_approval": false
 }
