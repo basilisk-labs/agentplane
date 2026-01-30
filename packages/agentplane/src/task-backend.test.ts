@@ -9,6 +9,7 @@ import {
   BackendError,
   LocalBackend,
   RedmineBackend,
+  RedmineUnavailable,
   buildTasksExportSnapshotFromTasks,
   extractTaskDoc,
   loadTaskBackend,
@@ -23,6 +24,21 @@ const TMP_PREFIX = "agentplane-task-backend-";
 async function makeTempDir(): Promise<string> {
   return await mkdtemp(path.join(os.tmpdir(), TMP_PREFIX));
 }
+
+const makeIssue = (priorityName?: string): Record<string, unknown> => ({
+  id: 1,
+  subject: "Subject",
+  description: "Desc",
+  status: { id: 1 },
+  priority: priorityName ? { name: priorityName } : undefined,
+  custom_fields: [
+    { id: 2, value: '["echo ok"]' },
+    { id: 3, value: '{"hash":"h","message":"m"}' },
+    { id: 4, value: "note" },
+    { id: 5, value: "2" },
+  ],
+  updated_on: "2026-01-30T00:00:00Z",
+});
 
 describe("task-backend helpers", () => {
   it("extractTaskDoc returns the doc section and excludes auto summary", () => {
@@ -63,6 +79,11 @@ describe("task-backend helpers", () => {
   it("mergeTaskDoc returns original body when doc is empty", () => {
     const body = "## Summary\n\nBody\n";
     expect(mergeTaskDoc(body, "")).toBe(body);
+  });
+
+  it("mergeTaskDoc treats null doc as empty", () => {
+    const body = "## Summary\n\nBody\n";
+    expect(mergeTaskDoc(body, null as unknown as string)).toBe(body);
   });
 
   it("taskRecordToData parses doc, comments, commit, and dirty", () => {
@@ -120,6 +141,23 @@ describe("task-backend helpers", () => {
     expect(data.priority).toBe("");
     expect(data.commit).toBeNull();
     expect(data.comments).toEqual([]);
+  });
+
+  it("taskRecordToData falls back to record.id when frontmatter id is missing", () => {
+    const record = {
+      id: "202601300000-ABCD",
+      frontmatter: {
+        id: 123,
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+      },
+      body: "",
+    } as unknown as TaskRecord;
+    const data = taskRecordToData(record);
+    expect(data.id).toBe("202601300000-ABCD");
   });
 
   it("buildTasksExportSnapshotFromTasks produces checksum and stable order", () => {
@@ -259,6 +297,114 @@ describe("LocalBackend", () => {
     await expect(backend.listTasks()).rejects.toThrow(/Duplicate task id/);
   });
 
+  it("skips malformed task entries when listing tasks", async () => {
+    const backend = new LocalBackend({ dir: tempDir });
+    await mkdir(tempDir, { recursive: true });
+    await writeFile(path.join(tempDir, "note.txt"), "hi", "utf8");
+
+    const noReadme = path.join(tempDir, "NO_README");
+    await mkdir(noReadme, { recursive: true });
+
+    const badReadmeDir = path.join(tempDir, "BAD_README");
+    await mkdir(badReadmeDir, { recursive: true });
+    await writeFile(path.join(badReadmeDir, "README.md"), "---\n- list\n---\n", "utf8");
+
+    const emptyFrontmatterDir = path.join(tempDir, "EMPTY");
+    await mkdir(emptyFrontmatterDir, { recursive: true });
+    await writeFile(path.join(emptyFrontmatterDir, "README.md"), "---\n---\nBody\n", "utf8");
+
+    const noIdDir = path.join(tempDir, "202601300000-ABCE");
+    await mkdir(noIdDir, { recursive: true });
+    await writeFile(
+      path.join(noIdDir, "README.md"),
+      [
+        "---",
+        'title: "No id"',
+        'description: ""',
+        'status: "TODO"',
+        'priority: "med"',
+        'owner: "tester"',
+        "---",
+        "## Summary",
+        "",
+        "Doc",
+      ].join("\n"),
+      "utf8",
+    );
+
+    await backend.writeTask({
+      id: "202601300000-ABCD",
+      title: "Valid",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    });
+
+    const tasks = await backend.listTasks();
+    expect(tasks).toHaveLength(2);
+  });
+
+  it("rejects invalid task ids when listing tasks", async () => {
+    const backend = new LocalBackend({ dir: tempDir });
+    const readme = renderTaskReadme(
+      {
+        id: "BAD-ID",
+        title: "Bad",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+      "## Summary\n\nDoc",
+    );
+    await mkdir(path.join(tempDir, "BAD"), { recursive: true });
+    await writeFile(path.join(tempDir, "BAD", "README.md"), readme, "utf8");
+    await expect(backend.listTasks()).rejects.toThrow(/Invalid task id/);
+  });
+
+  it("uses default root when no settings are provided", () => {
+    const backend = new LocalBackend();
+    expect(backend.root.endsWith(path.join(".agentplane", "tasks"))).toBe(true);
+  });
+
+  it("returns null when getTask cannot find a task", async () => {
+    const backend = new LocalBackend({ dir: tempDir });
+    const task = await backend.getTask("202601300000-ABCD");
+    expect(task).toBeNull();
+  });
+
+  it("throws when getTask cannot read the README", async () => {
+    const backend = new LocalBackend({ dir: tempDir });
+    const taskId = "202601300000-ABCD";
+    const readmeDir = path.join(tempDir, taskId, "README.md");
+    await mkdir(readmeDir, { recursive: true });
+    await expect(backend.getTask(taskId)).rejects.toBeInstanceOf(Error);
+  });
+
+  it("rejects writeTask when id is missing", async () => {
+    const backend = new LocalBackend({ dir: tempDir });
+    await expect(
+      backend.writeTask({
+        id: "",
+        title: "Task",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      }),
+    ).rejects.toThrow(/Task id is required/);
+  });
+
   it("generates task ids and enforces minimum length", async () => {
     const backend = new LocalBackend({ dir: tempDir });
     await expect(backend.generateTaskId({ length: 3, attempts: 1 })).rejects.toThrow(
@@ -266,6 +412,34 @@ describe("LocalBackend", () => {
     );
     const id = await backend.generateTaskId({ length: 4, attempts: 1 });
     expect(id).toMatch(/^\d{12}-[0-9A-Z]{4,}$/u);
+  });
+
+  it("setTaskDoc keeps metadata when doc is unchanged", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300000-ABCD";
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        doc_version: 2,
+        doc_updated_at: "2026-01-30T00:00:00Z",
+        doc_updated_by: "tester",
+      },
+      "## Summary\n\nDoc",
+    );
+    await mkdir(path.join(tempDir, taskId), { recursive: true });
+    await writeFile(path.join(tempDir, taskId, "README.md"), readme, "utf8");
+
+    await backend.setTaskDoc(taskId, "## Summary\n\nDoc", "other");
+    const updated = await readFile(path.join(tempDir, taskId, "README.md"), "utf8");
+    expect(updated).toContain('doc_updated_by: "tester"');
   });
 });
 
@@ -453,6 +627,68 @@ describe("RedmineBackend (mocked)", () => {
     expect(createdPayload?.start_date).toBe("2026-01-30");
   });
 
+  it("builds payloads with existing assignees and status mapping", () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1 },
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      taskToIssuePayload: (
+        task: TaskData,
+        existingIssue?: Record<string, unknown>,
+      ) => Record<string, unknown>;
+    };
+    const payload = helper.taskToIssuePayload(
+      {
+        id: "202601300000-ABCD",
+        title: "Title",
+        description: "Desc",
+        status: "TODO",
+        priority: 2,
+        owner: "REDMINE",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+      { assigned_to: { id: 999 } },
+    );
+    expect(payload.status_id).toBe(1);
+    expect(payload.priority_id).toBe(2);
+    expect(payload.assigned_to_id).toBeUndefined();
+  });
+
+  it("normalizes priority values when mapping issues", () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1 },
+        custom_fields: { task_id: 1, verify: 2, commit: 3, comments: 4, doc_version: 5 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) => TaskData | null;
+    };
+
+    expect(helper.issueToTask(makeIssue("low"), "202601300000-ABCD")?.priority).toBe("low");
+    expect(helper.issueToTask(makeIssue("normal"), "202601300000-ABCD")?.priority).toBe("normal");
+    expect(helper.issueToTask(makeIssue("medium"), "202601300000-ABCD")?.priority).toBe("med");
+    expect(helper.issueToTask(makeIssue("med"), "202601300000-ABCD")?.priority).toBe("med");
+    expect(helper.issueToTask(makeIssue("high"), "202601300000-ABCD")?.priority).toBe("high");
+    expect(helper.issueToTask(makeIssue("urgent"), "202601300000-ABCD")?.priority).toBe("high");
+    expect(helper.issueToTask(makeIssue("immediate"), "202601300000-ABCD")?.priority).toBe("high");
+    expect(helper.issueToTask(makeIssue("weird"), "202601300000-ABCD")?.priority).toBe("med");
+    expect(helper.issueToTask(makeIssue(), "202601300000-ABCD")?.priority).toBe("med");
+  });
+
   it("throws when duplicate task_id values exist", async () => {
     const issues: Record<string, unknown>[] = [
       {
@@ -585,6 +821,717 @@ describe("RedmineBackend (mocked)", () => {
       backend.sync({ direction: "pull", conflict: "diff", quiet: true, confirm: false }),
     ).rejects.toBeInstanceOf(BackendError);
   });
+
+  it("exercises parsing helpers and comment sync rules", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1, DONE: 5 },
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helpers = backend as unknown as {
+      maybeParseJson: (value: unknown) => unknown;
+      coerceDocVersion: (value: unknown) => number | null;
+      normalizeComments: (value: unknown) => { author: string; body: string }[];
+      commentsToPairs: (comments: { author: string; body: string }[]) => [string, string][];
+      formatCommentNote: (author?: string, body?: string) => string;
+      appendCommentNotes: (
+        issueId: string,
+        existingComments: { author: string; body: string }[],
+        desiredComments: { author: string; body: string }[],
+      ) => Promise<void>;
+      startDateFromTaskId: (taskId: string) => string | null;
+      doneRatioForStatus: (status: string) => number | null;
+      customFieldValue: (issue: Record<string, unknown>, fieldId: unknown) => string | null;
+    };
+
+    expect(helpers.maybeParseJson("[1,2]")).toEqual([1, 2]);
+    expect(helpers.maybeParseJson('{"a":1}')).toEqual({ a: 1 });
+    expect(helpers.maybeParseJson("{bad")).toBe("{bad");
+    expect(helpers.maybeParseJson("  ")).toBeNull();
+
+    expect(helpers.coerceDocVersion(3)).toBe(3);
+    expect(helpers.coerceDocVersion("7")).toBe(7);
+    expect(helpers.coerceDocVersion("v2")).toBeNull();
+
+    expect(helpers.normalizeComments(" note ")).toEqual([{ author: "redmine", body: "note" }]);
+    expect(helpers.normalizeComments({ author: "a", body: "b" })).toEqual([
+      { author: "a", body: "b" },
+    ]);
+    expect(
+      helpers.normalizeComments([
+        { author: "a", body: "b" },
+        { author: "x", body: 1 },
+      ]),
+    ).toEqual([{ author: "a", body: "b" }]);
+
+    expect(
+      helpers.commentsToPairs([
+        { author: "", body: "" },
+        { author: "a", body: "b" },
+      ]),
+    ).toEqual([["a", "b"]]);
+    expect(helpers.formatCommentNote("a", "b")).toBe("[comment] a: b");
+
+    const calls: string[] = [];
+    vi.stubGlobal("fetch", (_url: string, init?: RequestInit) => {
+      if (init?.body && typeof init.body === "string") {
+        const parsed = JSON.parse(init.body) as { issue?: { notes?: string } };
+        if (parsed.issue?.notes) calls.push(parsed.issue.notes);
+      }
+      return Response.json({}, { status: 200 });
+    });
+
+    await helpers.appendCommentNotes("1", [{ author: "a", body: "b" }], []);
+    await helpers.appendCommentNotes(
+      "1",
+      [{ author: "a", body: "b" }],
+      [{ author: "a", body: "b" }],
+    );
+    await helpers.appendCommentNotes(
+      "1",
+      [{ author: "a", body: "b" }],
+      [{ author: "x", body: "y" }],
+    );
+    await helpers.appendCommentNotes(
+      "1",
+      [{ author: "a", body: "b" }],
+      [
+        { author: "a", body: "b" },
+        { author: "c", body: "d" },
+      ],
+    );
+    expect(calls).toEqual(["[comment] c: d"]);
+
+    expect(helpers.startDateFromTaskId("202601300000-ABCD")).toBe("2026-01-30");
+    expect(helpers.startDateFromTaskId("2026AA30-ABCD")).toBeNull();
+    expect(helpers.startDateFromTaskId("2026013-ABCD")).toBeNull();
+    expect(helpers.startDateFromTaskId("202601300000ABCD")).toBeNull();
+
+    expect(helpers.doneRatioForStatus("DONE")).toBe(100);
+    expect(helpers.doneRatioForStatus("TODO")).toBe(0);
+    expect(helpers.doneRatioForStatus("")).toBeNull();
+
+    expect(
+      helpers.customFieldValue(
+        {
+          custom_fields: [
+            { id: 1, value: null },
+            { id: 2, value: 0 },
+          ],
+        },
+        2,
+      ),
+    ).toBe("0");
+    expect(helpers.customFieldValue({ custom_fields: [{ id: 1, value: null }] }, 1)).toBe("");
+    expect(helpers.customFieldValue({ custom_fields: [] }, 3)).toBeNull();
+  });
+
+  it("retries requestJson and handles malformed responses", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helpers = backend as unknown as {
+      requestJson: (
+        method: string,
+        path: string,
+        payload?: Record<string, unknown>,
+        params?: Record<string, unknown>,
+        opts?: { attempts?: number; backoff?: number },
+      ) => Promise<Record<string, unknown>>;
+    };
+
+    let call = 0;
+    vi.stubGlobal("fetch", () => {
+      call += 1;
+      if (call === 1) {
+        return new Response("boom", { status: 500 });
+      }
+      if (call === 2) {
+        return new Response("[]", { status: 200 });
+      }
+      return new Response("not-json", { status: 200 });
+    });
+
+    expect(
+      await helpers.requestJson("GET", "issues.json", undefined, undefined, {
+        attempts: 2,
+        backoff: 0,
+      }),
+    ).toEqual({});
+    expect(await helpers.requestJson("GET", "issues.json")).toEqual({});
+
+    let retryCall = 0;
+    vi.stubGlobal("fetch", () => {
+      retryCall += 1;
+      if (retryCall === 1) {
+        throw new Error("transient");
+      }
+      return new Response("{}", { status: 200 });
+    });
+    expect(
+      await helpers.requestJson("GET", "issues.json", undefined, undefined, {
+        attempts: 2,
+        backoff: 0,
+      }),
+    ).toEqual({});
+
+    vi.stubGlobal("fetch", () => new Response("", { status: 200 }));
+    expect(await helpers.requestJson("GET", "issues.json")).toEqual({});
+
+    vi.stubGlobal("fetch", () => new Response("bad", { status: 400 }));
+    await expect(helpers.requestJson("GET", "issues.json")).rejects.toBeInstanceOf(BackendError);
+
+    vi.stubGlobal("fetch", () => {
+      throw new Error("offline");
+    });
+    await expect(
+      helpers.requestJson("GET", "issues.json", undefined, undefined, { attempts: 1, backoff: 0 }),
+    ).rejects.toBeInstanceOf(RedmineUnavailable);
+  });
+
+  it("generates task ids via redmine backend", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      listTasksRemote: () => Promise<TaskData[]>;
+    };
+    helper.listTasksRemote = vi.fn(() => []);
+    const id = await backend.generateTaskId({ length: 4, attempts: 1 });
+    expect(id).toMatch(/^\d{12}-[0-9A-Z]{4}$/u);
+  });
+
+  it("finds issues by task id from remote payloads", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+      requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
+    };
+    helper.requestJson = vi.fn(() => ({
+      issues: [{ id: 1, custom_fields: [{ id: 1, value: "202601300000-ABCD" }] }],
+    }));
+
+    const issue = await helper.findIssueByTaskId("202601300000-ABCD");
+    expect(issue?.id).toBe(1);
+  });
+
+  it("covers batch pause, custom field updates, and sync errors", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2 },
+        batch_size: 1,
+        batch_pause: 0.01,
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      setIssueCustomFieldValue: (
+        issue: Record<string, unknown>,
+        fieldId: unknown,
+        value: unknown,
+      ) => void;
+      cacheTask: (task: TaskData, dirty: boolean) => Promise<void>;
+      writeTask: (task: TaskData) => Promise<void>;
+    };
+    helper.writeTask = vi.fn(() => Promise.resolve());
+
+    vi.useFakeTimers();
+    const task: TaskData = {
+      id: "202601300000-ABCD",
+      title: "Task",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    const promise = backend.writeTasks([task]);
+    await vi.runAllTimersAsync();
+    await promise;
+    vi.useRealTimers();
+
+    const issue: Record<string, unknown> = {
+      custom_fields: [{ id: 1, value: "old" }],
+    };
+    helper.setIssueCustomFieldValue(issue, 1, "new");
+    helper.setIssueCustomFieldValue(issue, 3, "added");
+    expect(issue.custom_fields).toEqual([
+      { id: 1, value: "new" },
+      { id: 3, value: "added" },
+    ]);
+
+    await expect(
+      (
+        backend as unknown as {
+          sync: (opts: {
+            direction: string;
+            conflict: string;
+            quiet: boolean;
+            confirm: boolean;
+          }) => Promise<void>;
+        }
+      ).sync({ direction: "nope", conflict: "diff", quiet: true, confirm: false }),
+    ).rejects.toBeInstanceOf(BackendError);
+
+    const noCache = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: null },
+    );
+    await (
+      noCache as unknown as { cacheTask: (task: TaskData, dirty: boolean) => Promise<void> }
+    ).cacheTask(task, true);
+  });
+
+  it("rejects setTaskDoc when doc custom field is missing", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    await expect(backend.setTaskDoc("202601300000-ABCD", "Doc")).rejects.toBeInstanceOf(
+      BackendError,
+    );
+  });
+
+  it("handles redmine unavailability with cache fallbacks", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    const task: TaskData = {
+      id: "202601300000-ABCD",
+      title: "Cached",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await cache.writeTask(task);
+
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2 },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as {
+      listTasksRemote: () => Promise<TaskData[]>;
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+    };
+    helper.listTasksRemote = vi.fn(() => {
+      throw new RedmineUnavailable("down");
+    });
+    const tasks = await backend.listTasks();
+    expect(tasks).toHaveLength(1);
+
+    helper.findIssueByTaskId = vi.fn(() => {
+      throw new RedmineUnavailable("down");
+    });
+    const cached = await backend.getTask(task.id);
+    expect(cached?.id).toBe(task.id);
+
+    await backend.setTaskDoc(task.id, "Doc");
+    const updated = await cache.getTask(task.id);
+    expect(updated?.dirty).toBe(true);
+    const readme = await readFile(path.join(tempDir, task.id, "README.md"), "utf8");
+    expect(readme).toContain("Doc");
+
+    await backend.touchTaskDocMetadata(task.id, "tester");
+    const touched = await cache.getTask(task.id);
+    expect(touched?.dirty).toBe(true);
+  });
+
+  it("surfaces errors when redmine unavailable without cache", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2 },
+      },
+      { cache: null },
+    );
+    const helper = backend as unknown as {
+      listTasksRemote: () => Promise<TaskData[]>;
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+    };
+    helper.listTasksRemote = vi.fn(() => {
+      throw new RedmineUnavailable("down");
+    });
+    await expect(backend.listTasks()).rejects.toBeInstanceOf(RedmineUnavailable);
+
+    helper.findIssueByTaskId = vi.fn(() => {
+      throw new RedmineUnavailable("down");
+    });
+    await expect(backend.getTask("202601300000-ABCD")).rejects.toBeInstanceOf(RedmineUnavailable);
+  });
+
+  it("validates task id resolution and generateTaskId errors", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      listTasksRemote: () => Promise<TaskData[]>;
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+    };
+    helper.listTasksRemote = vi.fn(() => {
+      throw new Error("boom");
+    });
+    await expect(backend.generateTaskId({ length: 4, attempts: 1 })).rejects.toThrow("boom");
+
+    helper.findIssueByTaskId = vi.fn(() => null);
+    expect(await backend.getTask("202601300000-ABCD")).toBeNull();
+  });
+
+  it("uses cache for generateTaskId when redmine is unavailable", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    await cache.writeTask({
+      id: "202601300000-ABCD",
+      title: "Cached",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as { listTasksRemote: () => Promise<TaskData[]> };
+    helper.listTasksRemote = vi.fn(() => {
+      throw new RedmineUnavailable("down");
+    });
+    const id = await backend.generateTaskId({ length: 4, attempts: 1 });
+    expect(id).toMatch(/^\d{12}-[0-9A-Z]{4}$/u);
+  });
+
+  it("handles syncPull conflict strategies", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    await cache.writeTask({
+      id: "202601300000-ABCD",
+      title: "Local",
+      description: "Local",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+      dirty: true,
+    });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1 },
+        custom_fields: { task_id: 1 },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as {
+      listTasksRemote: () => Promise<TaskData[]>;
+      writeTask: (task: TaskData) => Promise<void>;
+      cacheTask: (task: TaskData, dirty: boolean) => Promise<void>;
+    };
+    helper.listTasksRemote = vi.fn(() => [
+      {
+        id: "202601300000-ABCD",
+        title: "Remote",
+        description: "Remote",
+        status: "TODO",
+        priority: "med",
+        owner: "REDMINE",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+    ]);
+
+    helper.writeTask = vi.fn(() => Promise.resolve());
+    await backend.sync({
+      direction: "pull",
+      conflict: "prefer-local",
+      quiet: true,
+      confirm: false,
+    });
+    expect(helper.writeTask).toHaveBeenCalled();
+
+    helper.cacheTask = vi.fn(() => Promise.resolve());
+    await backend.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: false,
+    });
+    expect(helper.cacheTask).toHaveBeenCalled();
+
+    await expect(
+      backend.sync({ direction: "pull", conflict: "fail", quiet: true, confirm: false }),
+    ).rejects.toBeInstanceOf(BackendError);
+  });
+
+  it("surfaces task doc errors when issues are missing", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+      requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
+    };
+
+    helper.findIssueByTaskId = vi.fn(() => null);
+    await expect(backend.setTaskDoc("202601300000-ABCD", "Doc")).rejects.toThrow(/Unknown task id/);
+
+    helper.findIssueByTaskId = vi.fn(() => ({ id: null }));
+    await expect(backend.setTaskDoc("202601300000-ABCD", "Doc")).rejects.toThrow(
+      /Missing Redmine issue id/,
+    );
+
+    helper.findIssueByTaskId = vi.fn(() => null);
+    await expect(backend.touchTaskDocMetadata("202601300000-ABCD")).rejects.toThrow(
+      /Unknown task id/,
+    );
+
+    helper.findIssueByTaskId = vi.fn(() => ({ id: null }));
+    await expect(backend.touchTaskDocMetadata("202601300000-ABCD")).rejects.toThrow(
+      /Missing Redmine issue id/,
+    );
+  });
+
+  it("allows setTaskDoc and touchTaskDocMetadata when issueToTask returns null", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2, doc_version: 3, doc_updated_at: 4, doc_updated_by: 5 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+      issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) => TaskData | null;
+      requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
+    };
+    helper.findIssueByTaskId = vi.fn(() => ({ id: 1 }));
+    helper.issueToTask = vi.fn(() => null);
+    helper.requestJson = vi.fn(() => ({}));
+
+    await backend.setTaskDoc("202601300000-ABCD", null as unknown as string);
+    await backend.touchTaskDocMetadata("202601300000-ABCD");
+    expect(helper.requestJson).toHaveBeenCalled();
+  });
+
+  it("throws when getTaskDoc is missing", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const spy = vi.spyOn(backend, "getTask").mockResolvedValue(null);
+    await expect(backend.getTaskDoc("202601300000-ABCD")).rejects.toThrow(/Unknown task id/);
+    spy.mockRestore();
+  });
+
+  it("skips touchTaskDocMetadata when no doc fields are configured", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+      requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
+    };
+    helper.findIssueByTaskId = vi.fn(() => ({ id: 5 }));
+    helper.requestJson = vi.fn(() => ({}));
+    await backend.touchTaskDocMetadata("202601300000-ABCD");
+    expect(helper.requestJson).not.toHaveBeenCalled();
+  });
+
+  it("syncPush handles empty and confirmed pushes", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    await cache.writeTask({
+      id: "202601300000-ABCD",
+      title: "Clean",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+      dirty: false,
+    });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache },
+    );
+    await backend.sync({ direction: "push", conflict: "diff", quiet: false, confirm: true });
+
+    await cache.writeTask({
+      id: "202601300000-BCDE",
+      title: "Dirty",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+      dirty: true,
+    });
+    const helper = backend as unknown as { writeTasks: (tasks: TaskData[]) => Promise<void> };
+    helper.writeTasks = vi.fn(() => Promise.resolve());
+    await backend.sync({ direction: "push", conflict: "diff", quiet: false, confirm: true });
+    expect(helper.writeTasks).toHaveBeenCalled();
+  });
+
+  it("marks tasks dirty when writeTask hits redmine unavailability", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as {
+      findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
+    };
+    helper.findIssueByTaskId = vi.fn(() => {
+      throw new RedmineUnavailable("down");
+    });
+    await backend.writeTask({
+      id: "202601300000-ABCD",
+      title: "Dirty",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    });
+    const cached = await cache.getTask("202601300000-ABCD");
+    expect(cached?.dirty).toBe(true);
+  });
+
+  it("paginates listTasksRemote when total_count exceeds page size", async () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1 },
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      requestJson: (
+        method: string,
+        path: string,
+        payload?: Record<string, unknown>,
+        params?: Record<string, unknown>,
+      ) => Promise<Record<string, unknown>>;
+      listTasksRemote: () => Promise<TaskData[]>;
+    };
+    helper.requestJson = vi.fn((_method, _path, _payload, params) => {
+      const { offset = 0 } = (params ?? {}) as { offset?: number };
+      const offsetValue = Number(offset);
+      const taskId = offsetValue === 0 ? "202601300000-ABCD" : "202601300000-ABCE";
+      const issue = {
+        id: offsetValue === 0 ? 1 : 2,
+        subject: "Issue",
+        description: "Desc",
+        status: { id: 1 },
+        priority: { name: "Normal" },
+        custom_fields: [{ id: 1, value: taskId }],
+      };
+      return { issues: [issue], total_count: 150 };
+    });
+    const tasks = await helper.listTasksRemote();
+    expect(tasks).toHaveLength(2);
+  });
 });
 
 describe("loadTaskBackend", () => {
@@ -641,5 +1588,158 @@ describe("loadTaskBackend", () => {
     expect(result.backend).toBeInstanceOf(RedmineBackend);
     expect(process.env.CODEXSWARM_REDMINE_API_KEY).toBe("preserve");
     expect(process.env.CODEXSWARM_REDMINE_URL).toBe("https://redmine.env");
+  });
+
+  it("parses quoted .env values and resolves backend directories", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(
+      backendPath,
+      JSON.stringify({
+        id: "redmine",
+        settings: {
+          url: "https://redmine.example",
+          api_key: "from-config",
+          project_id: "proj",
+          custom_fields: { task_id: 1 },
+          cache_dir: "cache",
+        },
+      }),
+      "utf8",
+    );
+    await writeFile(
+      path.join(tempDir, ".env"),
+      [
+        'CODEXSWARM_REDMINE_URL="https://redmine.env/"',
+        String.raw`CODEXSWARM_REDMINE_API_KEY="env\nkey"`,
+        "CODEXSWARM_REDMINE_PROJECT_ID=proj",
+        "CODEXSWARM_REDMINE_OWNER='  owner  '",
+        "CODEXSWARM_REDMINE_EXTRA=plain",
+        "# ignored line",
+        "BADLINE",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const result = await loadTaskBackend({ cwd: tempDir });
+    expect(result.backendId).toBe("redmine");
+    expect(process.env.CODEXSWARM_REDMINE_URL).toBe("https://redmine.env/");
+    expect(process.env.CODEXSWARM_REDMINE_API_KEY).toBe("env\nkey");
+    expect(process.env.CODEXSWARM_REDMINE_OWNER).toBe("  owner  ");
+    expect(process.env.CODEXSWARM_REDMINE_EXTRA).toBe("plain");
+
+    const localBackendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await writeFile(
+      localBackendPath,
+      JSON.stringify({ id: "local", settings: { dir: "custom-tasks" } }),
+      "utf8",
+    );
+    const localResult = await loadTaskBackend({ cwd: tempDir });
+    expect(localResult.backendId).toBe("local");
+    const local = localResult.backend as LocalBackend;
+    expect(local.root).toBe(path.join(tempDir, "custom-tasks"));
+  });
+
+  it("loads redmine backend when .env is missing", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(
+      backendPath,
+      JSON.stringify({
+        id: "redmine",
+        settings: {
+          url: "https://redmine.example",
+          api_key: "from-config",
+          project_id: "proj",
+          custom_fields: { task_id: 1 },
+        },
+      }),
+      "utf8",
+    );
+    await rm(path.join(tempDir, ".env"), { force: true });
+
+    const result = await loadTaskBackend({ cwd: tempDir });
+    expect(result.backendId).toBe("redmine");
+  });
+
+  it("fails when .env is not readable", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(
+      backendPath,
+      JSON.stringify({
+        id: "redmine",
+        settings: {
+          url: "https://redmine.example",
+          api_key: "from-config",
+          project_id: "proj",
+          custom_fields: { task_id: 1 },
+        },
+      }),
+      "utf8",
+    );
+    await mkdir(path.join(tempDir, ".env"), { recursive: true });
+
+    await expect(loadTaskBackend({ cwd: tempDir })).rejects.toBeInstanceOf(Error);
+  });
+
+  it("exports task snapshots with coerced fields", () => {
+    const snapshot = buildTasksExportSnapshotFromTasks([
+      {
+        id: "202601300000-ABCD",
+        title: undefined as unknown as string,
+        description: undefined as unknown as string,
+        status: undefined as unknown as string,
+        priority: 3,
+        owner: undefined as unknown as string,
+        depends_on: "nope" as unknown as string[],
+        tags: ["tag", 2] as unknown as string[],
+        verify: ["echo ok", 1] as unknown as string[],
+        comments: [
+          { author: "a", body: "b" },
+          { author: "x", body: 2 },
+        ] as unknown as { author: string; body: string }[],
+      } as TaskData,
+      {
+        id: "202601300000-ABCE",
+        title: "Empty priority",
+        description: "",
+        status: "TODO",
+        priority: undefined as unknown as string,
+        owner: "tester",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      } as TaskData,
+    ]);
+    const task = snapshot.tasks[0];
+    expect(task?.priority).toBe("3");
+    expect(task?.depends_on).toEqual([]);
+    expect(task?.tags).toEqual(["tag"]);
+    expect(task?.verify).toEqual(["echo ok"]);
+    expect(task?.comments).toEqual([{ author: "a", body: "b" }]);
+    expect(snapshot.tasks[1]?.priority).toBe("");
+  });
+
+  it("falls back to local backend when backend config is not an object", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(backendPath, JSON.stringify([1, 2, 3]), "utf8");
+
+    const result = await loadTaskBackend({ cwd: tempDir });
+    expect(result.backendId).toBe("local");
+  });
+
+  it("throws when backend config is invalid json", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(backendPath, "{broken", "utf8");
+
+    await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow();
   });
 });
