@@ -1,13 +1,16 @@
 ---
 id: "202601131356-PDFC2R"
 title: "Validate Redmine backend sync against local backend"
-status: "DOING"
+status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["redmine", "sync"]
+commit: { hash: "64f25223740a60e5b3284888c3dc3ef980d41f42", message: "✨ PDFC2R validate redmine sync" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: validate Redmine backend sync against local backend using sandbox Redmine." }
+  - { author: "ORCHESTRATOR", body: "verified: ran Redmine sync validation steps (local export count 317, redmine pull count 4, sync push showed no dirty tasks) and restored local backend config." }
+  - { author: "ORCHESTRATOR", body: "verified: ran Redmine sync validation steps (local export count 317, redmine pull count 4, sync push showed no dirty tasks) and restored local backend config." }
 doc_version: 2
 doc_updated_at: "2026-01-30T09:27:32+00:00"
 doc_updated_by: "agentctl"
