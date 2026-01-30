@@ -1,6 +1,24 @@
 {
   "name": "@agentplane/testkit",
   "version": "0.0.0",
+  "description": "Test helpers for Agent Plane packages (internal package).",
+  "keywords": [
+    "agentplane",
+    "agent-plane",
+    "testing",
+    "testkit",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "Basilisk Labs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/basilisk-labs/agentplane.git"
+  },
+  "homepage": "https://github.com/basilisk-labs/agentplane",
+  "bugs": {
+    "url": "https://github.com/basilisk-labs/agentplane/issues"
+  },
   "private": true,
   "type": "module",
   "exports": {

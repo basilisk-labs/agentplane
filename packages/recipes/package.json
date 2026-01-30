@@ -1,6 +1,24 @@
 {
   "name": "@agentplane/recipes",
   "version": "0.0.0",
+  "description": "Recipe runtime helpers for Agent Plane (internal package).",
+  "keywords": [
+    "agentplane",
+    "agent-plane",
+    "recipes",
+    "automation",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "Basilisk Labs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/basilisk-labs/agentplane.git"
+  },
+  "homepage": "https://github.com/basilisk-labs/agentplane",
+  "bugs": {
+    "url": "https://github.com/basilisk-labs/agentplane/issues"
+  },
   "private": true,
   "type": "module",
   "exports": {
