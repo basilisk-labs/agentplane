@@ -1,17 +1,18 @@
 ---
 id: "202601121711-GZ15T6"
 title: "Polish cleanup scripts and tasks viewer"
-status: "DOING"
+status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
 tags: ["cleanup", "ui"]
 verify: null
-commit: null
+commit: { hash: "d5bf9588909d674c8f82de1f28efbae56c731b55", message: "✅ 00002 verified: agent registry is already JSON under .agent-plane/agents | details: closing legacy backfill." }
 comments:
   - { author: "CODER", body: "Polish tasks viewer UI (iOS palette, sticky header, order toggle, tooltip tags, metadata) and update clean scripts to remove dev files." }
+  - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
 doc_version: 2
-doc_updated_at: "2026-01-12T17:12:41+00:00"
+doc_updated_at: "2026-01-30T12:22:03+00:00"
 doc_updated_by: "agentctl"
 description: "Remove dev-only files in clean scripts and refine tasks viewer UI (iOS palette, order toggle, sticky header, tooltip tags, metadata) and fix layout issues."
 dirty: false
@@ -19,21 +20,21 @@ id_source: "custom"
 ---
 ## Summary
 
-- Update clean.sh/clean.ps1 to remove dev-only files and refresh tasks viewer UI (iOS palette, header, order toggle, tooltip tags, metadata).
+- Task is no longer актуальна; closing without changes.
 
 ## Scope
 
-- clean.sh/clean.ps1 remove pyproject.toml and requirements-dev.txt; tasks.html updates palette, header behavior, ordering, tooltips, and metadata.
+- No changes; task closed as obsolete.
 
 ## Risks
 
-- UI styling regressions or layout differences across browsers.
+- Some polish items might remain undocumented if needed later.
 
 ## Verify Steps
 
-- Manual: run ./viewer.sh, check sticky header, full-height background, tooltip tag wrapping, order toggle; run clean.sh on a test copy.
+- None (task closed as not актуальна).
 
 ## Rollback Plan
 
-- Revert this commit to restore the previous tasks viewer and clean scripts.
+- Reopen the task if cleanup/UI polish becomes required again.
 
