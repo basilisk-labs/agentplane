@@ -5,7 +5,7 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: []
+tags: ["recipes", "planning"]
 commit: { hash: "0ea527fc32c0ae37ade477632126e3dff3becb8c", message: "✨ QN0W0P document recipes PRD analysis: capture CLI/doc requirements and risks" }
 comments:
   - { author: "ORCHESTRATOR", body: "verified: analysis notes captured | details: no runtime checks required." }
