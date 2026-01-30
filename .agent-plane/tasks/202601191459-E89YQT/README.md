@@ -1,13 +1,15 @@
 ---
 id: "202601191459-E89YQT"
 title: "Add minimal tags to completed tasks"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["tasks", "workflow"]
+commit: { hash: "936d13947c2e68f35dd9a8ab4a5ee8bcf3cfe04b", message: "✨ E89YQT add minimal tags to completed tasks" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: identify DONE tasks missing tags and add minimal tags." }
+  - { author: "ORCHESTRATOR", body: "verified: ran agentctl task export after tagging completed tasks." }
 doc_version: 2
 doc_updated_at: "2026-01-30T09:40:46+00:00"
 doc_updated_by: "agentctl"
