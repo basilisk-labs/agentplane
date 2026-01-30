@@ -4046,7 +4046,8 @@ async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promis
 }
 
 const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
-const GUARD_COMMIT_USAGE = "Usage: agentplane guard commit <task-id> -m <message>";
+const GUARD_COMMIT_USAGE =
+  "Usage: agentplane guard commit <task-id> -m <message> --allow <path> [--allow <path>...] [--auto-allow] [--allow-tasks] [--require-clean] [--quiet]";
 const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
 const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text> [flags]";
 const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <text> [flags]";
@@ -4760,7 +4761,11 @@ function subjectHasSuffix(subject: string, suffixes: string[]): boolean {
   return suffixes.some((suffix) => suffix && lowered.includes(suffix.toLowerCase()));
 }
 
-async function cmdGuardClean(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+async function cmdGuardClean(opts: {
+  cwd: string;
+  rootOverride?: string;
+  quiet: boolean;
+}): Promise<number> {
   try {
     const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
     if (staged.length > 0) {
@@ -4769,6 +4774,9 @@ async function cmdGuardClean(opts: { cwd: string; rootOverride?: string }): Prom
         code: "E_GIT",
         message: "Staged files exist",
       });
+    }
+    if (!opts.quiet) {
+      process.stdout.write("✅ index clean (no staged files)\n");
     }
     return 0;
   } catch (err) {
@@ -4784,6 +4792,9 @@ async function cmdGuardSuggestAllow(opts: {
 }): Promise<number> {
   try {
     const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    if (staged.length === 0) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "No staged files" });
+    }
     const prefixes = suggestAllowPrefixes(staged);
     if (opts.format === "args") {
       const args = prefixes.map((p) => `--allow ${p}`).join(" ");
@@ -8081,7 +8092,8 @@ export async function runCli(argv: string[]): Promise<number> {
       const subcommand = command;
       const restArgs = args;
       if (subcommand === "clean") {
-        return await cmdGuardClean({ cwd: process.cwd(), rootOverride: globals.root });
+        const quiet = restArgs.includes("--quiet");
+        return await cmdGuardClean({ cwd: process.cwd(), rootOverride: globals.root, quiet });
       }
       if (subcommand === "suggest-allow") {
         const formatFlagIndex = restArgs.indexOf("--format");
@@ -8107,7 +8119,9 @@ export async function runCli(argv: string[]): Promise<number> {
 
         const allow: string[] = [];
         let message = "";
+        let autoAllow = false;
         let allowTasks = false;
+        let allowDirty = false;
         let requireClean = false;
         let quiet = false;
 
@@ -8134,6 +8148,14 @@ export async function runCli(argv: string[]): Promise<number> {
             allowTasks = true;
             continue;
           }
+          if (arg === "--auto-allow") {
+            autoAllow = true;
+            continue;
+          }
+          if (arg === "--allow-dirty") {
+            allowDirty = true;
+            continue;
+          }
           if (arg === "--require-clean") {
             requireClean = true;
             continue;
@@ -8149,6 +8171,22 @@ export async function runCli(argv: string[]): Promise<number> {
 
         if (!message) {
           throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+        }
+
+        if (autoAllow && allow.length === 0) {
+          const staged = await getStagedFiles({
+            cwd: process.cwd(),
+            rootOverride: globals.root ?? null,
+          });
+          const prefixes = suggestAllowPrefixes(staged);
+          if (prefixes.length === 0) {
+            throw new CliError({ exitCode: 5, code: "E_GIT", message: "No staged files" });
+          }
+          allow.push(...prefixes);
+        }
+
+        if (allowDirty) {
+          // Deprecated no-op for parity with agentctl.
         }
 
         return await cmdGuardCommit({
