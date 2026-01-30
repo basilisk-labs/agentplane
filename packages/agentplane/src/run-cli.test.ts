@@ -2231,6 +2231,101 @@ describe("runCli", () => {
     }
   });
 
+  it("start enforces dependency readiness unless forced", async () => {
+    const root = await mkGitRepoRoot();
+    let taskA = "";
+    let taskB = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Dep task",
+          "--description",
+          "Dependency",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskA = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Needs deps",
+          "--description",
+          "Depends on A",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--depends-on",
+          taskA,
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskB = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskB,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: attempt start without deps completed should fail for readiness check.",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "start",
+        taskB,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: force start even though deps are incomplete to bypass readiness check.",
+        "--force",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("start --commit-from-comment commits and updates status", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -3183,6 +3278,86 @@ describe("runCli", () => {
       if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
       else delete process.env.AGENT_PLANE_TASK_ID;
     }
+  });
+
+  it("finish supports multiple task ids", async () => {
+    const root = await mkGitRepoRoot();
+    const execFileAsync = promisify(execFile);
+    let taskA = "";
+    let taskB = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish A",
+          "--description",
+          "First task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskA = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish B",
+          "--description",
+          "Second task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskB = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    await writeFile(path.join(root, "finish.txt"), "done\n", "utf8");
+    await execFileAsync("git", ["add", "."], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "finish changes"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        taskA,
+        taskB,
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: finish two tasks with a shared comment to close both records.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const a = await readTask({ cwd: root, rootOverride: root, taskId: taskA });
+    const b = await readTask({ cwd: root, rootOverride: root, taskId: taskB });
+    expect(a.frontmatter.status).toBe("DONE");
+    expect(b.frontmatter.status).toBe("DONE");
   });
 
   it("finish requires --author and --body", async () => {

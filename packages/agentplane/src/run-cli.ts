@@ -24,26 +24,26 @@ import {
   getBaseBranch,
   getStagedFiles,
   getUnstagedFiles,
-  type AgentplaneConfig,
-  setPinnedBaseBranch,
   lintTasksFile,
   loadConfig,
   renderTaskReadme,
   resolveProject,
   saveConfig,
   setByDottedKey,
+  setPinnedBaseBranch,
   taskReadmePath,
-  validateTaskDocMetadata,
   validateCommitSubject,
+  validateTaskDocMetadata,
+  type AgentplaneConfig,
 } from "@agentplane/core";
 
-import { CliError, formatJsonError } from "./errors.js";
+import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
 import { formatCommentBodyForCommit } from "./comment-format.js";
 import { loadDotEnv } from "./env.js";
+import { CliError, formatJsonError } from "./errors.js";
 import { renderHelp } from "./help.js";
-import { getVersion } from "./version.js";
-import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
 import { BackendError, loadTaskBackend, type TaskData } from "./task-backend.js";
+import { getVersion } from "./version.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -3727,9 +3727,10 @@ const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
 const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
 const GUARD_COMMIT_USAGE = "Usage: agentplane guard commit <task-id> -m <message>";
 const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
-const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text>";
-const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <text>";
-const FINISH_USAGE = "Usage: agentplane finish <task-id> --author <id> --body <text>";
+const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text> [flags]";
+const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <text> [flags]";
+const FINISH_USAGE =
+  "Usage: agentplane finish <task-id> [<task-id>...] --author <id> --body <text> [flags]";
 const VERIFY_USAGE =
   "Usage: agentplane verify <task-id> [--cwd <path>] [--log <path>] [--skip-if-unchanged] [--quiet] [--require]";
 const WORK_START_USAGE =
@@ -4776,6 +4777,7 @@ async function cmdStart(opts: {
   commitAllowTasks: boolean;
   commitRequireClean: boolean;
   confirmStatusCommit: boolean;
+  force: boolean;
   quiet: boolean;
 }): Promise<number> {
   try {
@@ -4802,6 +4804,36 @@ async function cmdStart(opts: {
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
+
+    const currentStatus = String(task.status || "TODO").toUpperCase();
+    if (!opts.force && !isTransitionAllowed(currentStatus, "DOING")) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Refusing status transition ${currentStatus} -> DOING (use --force to override)`,
+      });
+    }
+
+    if (!opts.force) {
+      const allTasks = await backend.listTasks();
+      const depState = buildDependencyState(allTasks);
+      const dep = depState.get(task.id);
+      if (dep && (dep.missing.length > 0 || dep.incomplete.length > 0)) {
+        if (!opts.quiet) {
+          if (dep.missing.length > 0) {
+            process.stderr.write(`⚠️ missing deps: ${dep.missing.join(", ")}\n`);
+          }
+          if (dep.incomplete.length > 0) {
+            process.stderr.write(`⚠️ incomplete deps: ${dep.incomplete.join(", ")}\n`);
+          }
+        }
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `Task is not ready: ${task.id} (use --force to override)`,
+        });
+      }
+    }
 
     const formattedComment = opts.commitFromComment
       ? formatCommentBodyForCommit(opts.body, loaded.config)
@@ -4865,6 +4897,15 @@ async function cmdBlock(opts: {
   taskId: string;
   author: string;
   body: string;
+  commitFromComment: boolean;
+  commitEmoji?: string;
+  commitAllow: string[];
+  commitAutoAllow: boolean;
+  commitAllowTasks: boolean;
+  commitRequireClean: boolean;
+  confirmStatusCommit: boolean;
+  force: boolean;
+  quiet: boolean;
 }): Promise<number> {
   try {
     const resolved = await resolveProject({
@@ -4872,6 +4913,16 @@ async function cmdBlock(opts: {
       rootOverride: opts.rootOverride ?? null,
     });
     const loaded = await loadConfig(resolved.agentplaneDir);
+
+    if (opts.commitFromComment) {
+      enforceStatusCommitPolicy({
+        policy: loaded.config.status_commit_policy,
+        action: "block",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+      });
+    }
+
     const { prefix, min_chars: minChars } = loaded.config.tasks.comments.blocked;
     requireStructuredComment(opts.body, prefix, minChars);
 
@@ -4881,13 +4932,27 @@ async function cmdBlock(opts: {
       taskId: opts.taskId,
     });
 
+    const currentStatus = String(task.status || "TODO").toUpperCase();
+    if (!opts.force && !isTransitionAllowed(currentStatus, "BLOCKED")) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Refusing status transition ${currentStatus} -> BLOCKED (use --force to override)`,
+      });
+    }
+
+    const formattedComment = opts.commitFromComment
+      ? formatCommentBodyForCommit(opts.body, loaded.config)
+      : null;
+    const commentBody = formattedComment ?? opts.body;
+
     const existingComments = Array.isArray(task.comments)
       ? task.comments.filter(
           (item): item is { author: string; body: string } =>
             !!item && typeof item.author === "string" && typeof item.body === "string",
         )
       : [];
-    const commentsValue = [...existingComments, { author: opts.author, body: opts.body }];
+    const commentsValue = [...existingComments, { author: opts.author, body: commentBody }];
     const nextTask: TaskData = {
       ...task,
       status: "BLOCKED",
@@ -4899,7 +4964,28 @@ async function cmdBlock(opts: {
 
     await backend.writeTask(nextTask);
 
-    process.stdout.write("✅ blocked\n");
+    let commitInfo: { hash: string; message: string } | null = null;
+    if (opts.commitFromComment) {
+      commitInfo = await commitFromComment({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: opts.taskId,
+        commentBody: opts.body,
+        formattedComment,
+        emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("BLOCKED"),
+        allow: opts.commitAllow,
+        autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
+        allowTasks: opts.commitAllowTasks,
+        requireClean: opts.commitRequireClean,
+        quiet: opts.quiet,
+        config: loaded.config,
+      });
+    }
+
+    if (!opts.quiet) {
+      const suffix = commitInfo ? ` (commit=${commitInfo.hash.slice(0, 12)})` : "";
+      process.stdout.write(`✅ blocked ${opts.taskId}${suffix}\n`);
+    }
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -4910,11 +4996,31 @@ async function cmdBlock(opts: {
 async function cmdFinish(opts: {
   cwd: string;
   rootOverride?: string;
-  taskId: string;
+  taskIds: string[];
   author: string;
   body: string;
+  commit?: string;
+  skipVerify: boolean;
+  force: boolean;
+  noRequireTaskIdInCommit: boolean;
+  commitFromComment: boolean;
+  commitEmoji?: string;
+  commitAllow: string[];
+  commitAutoAllow: boolean;
+  commitAllowTasks: boolean;
+  commitRequireClean: boolean;
+  statusCommit: boolean;
+  statusCommitEmoji?: string;
+  statusCommitAllow: string[];
+  statusCommitAutoAllow: boolean;
+  statusCommitRequireClean: boolean;
+  confirmStatusCommit: boolean;
+  quiet: boolean;
 }): Promise<number> {
   try {
+    if (opts.noRequireTaskIdInCommit) {
+      // Parity flag (commit subject checks are not enforced in node CLI).
+    }
     const resolved = await resolveProject({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
@@ -4922,34 +5028,80 @@ async function cmdFinish(opts: {
     const loaded = await loadConfig(resolved.agentplaneDir);
     const { prefix, min_chars: minChars } = loaded.config.tasks.comments.verified;
     requireStructuredComment(opts.body, prefix, minChars);
+    if (opts.commitFromComment || opts.statusCommit) {
+      enforceStatusCommitPolicy({
+        policy: loaded.config.status_commit_policy,
+        action: "finish",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+      });
+    }
+    if ((opts.commitFromComment || opts.statusCommit) && opts.taskIds.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--commit-from-comment/--status-commit requires exactly one task id",
+      });
+    }
+    const primaryTaskId = opts.taskIds[0] ?? "";
+    if ((opts.commitFromComment || opts.statusCommit) && !primaryTaskId) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--commit-from-comment/--status-commit requires exactly one task id",
+      });
+    }
 
-    const { backend, task, config } = await loadBackendTask({
+    const { backend, config } = await loadTaskBackend({
       cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
+      rootOverride: opts.rootOverride ?? null,
     });
 
-    const headCommit = await readHeadCommit(resolved.gitRoot);
-    const existingComments = Array.isArray(task.comments)
-      ? task.comments.filter(
-          (item): item is { author: string; body: string } =>
-            !!item && typeof item.author === "string" && typeof item.body === "string",
-        )
-      : [];
-    const commentsValue = [...existingComments, { author: opts.author, body: opts.body }];
-    const nextTask: TaskData = {
-      ...task,
-      status: "DONE",
-      commit: { hash: headCommit.hash, message: headCommit.message },
-      comments: commentsValue,
-      doc_version: 2,
-      doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
-    };
+    const commitInfo = opts.commit
+      ? await readCommitInfo(resolved.gitRoot, opts.commit)
+      : await readHeadCommit(resolved.gitRoot);
 
-    await backend.writeTask(nextTask);
+    for (const taskId of opts.taskIds) {
+      const { task } = await loadBackendTask({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId,
+      });
 
-    const outPath = path.join(resolved.gitRoot, config.paths.tasks_path);
+      if (!opts.force) {
+        const currentStatus = String(task.status || "TODO").toUpperCase();
+        if (currentStatus === "DONE") {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: `Task is already DONE: ${task.id} (use --force to override)`,
+          });
+        }
+      }
+
+      const existingComments = Array.isArray(task.comments)
+        ? task.comments.filter(
+            (item): item is { author: string; body: string } =>
+              !!item && typeof item.author === "string" && typeof item.body === "string",
+          )
+        : [];
+      const commentsValue = [...existingComments, { author: opts.author, body: opts.body }];
+      const nextTask: TaskData = {
+        ...task,
+        status: "DONE",
+        commit: { hash: commitInfo.hash, message: commitInfo.message },
+        comments: commentsValue,
+        doc_version: 2,
+        doc_updated_at: nowIso(),
+        doc_updated_by: "agentplane",
+      };
+      await backend.writeTask(nextTask);
+    }
+
+    if (!opts.skipVerify) {
+      // No-op for parity; verify is handled by `agentplane verify`.
+    }
+
     if (!backend.exportTasksJson) {
       throw new CliError({
         exitCode: 3,
@@ -4957,6 +5109,7 @@ async function cmdFinish(opts: {
         message: "Configured backend does not support exportTasksJson()",
       });
     }
+    const outPath = path.join(resolved.gitRoot, config.paths.tasks_path);
     await backend.exportTasksJson(outPath);
     const lintResult = await lintTasksFile({
       cwd: opts.cwd,
@@ -4970,7 +5123,43 @@ async function cmdFinish(opts: {
       });
     }
 
-    process.stdout.write("✅ finished\n");
+    if (opts.commitFromComment) {
+      await commitFromComment({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: primaryTaskId,
+        commentBody: opts.body,
+        formattedComment: formatCommentBodyForCommit(opts.body, loaded.config),
+        emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DONE"),
+        allow: opts.commitAllow,
+        autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
+        allowTasks: opts.commitAllowTasks,
+        requireClean: opts.commitRequireClean,
+        quiet: opts.quiet,
+        config: loaded.config,
+      });
+    }
+
+    if (opts.statusCommit) {
+      await commitFromComment({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: primaryTaskId,
+        commentBody: opts.body,
+        formattedComment: formatCommentBodyForCommit(opts.body, loaded.config),
+        emoji: opts.statusCommitEmoji ?? defaultCommitEmojiForStatus("DONE"),
+        allow: opts.statusCommitAllow,
+        autoAllow: opts.statusCommitAutoAllow || opts.statusCommitAllow.length === 0,
+        allowTasks: true,
+        requireClean: opts.statusCommitRequireClean,
+        quiet: opts.quiet,
+        config: loaded.config,
+      });
+    }
+
+    if (!opts.quiet) {
+      process.stdout.write("✅ finished\n");
+    }
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -6011,9 +6200,26 @@ async function cmdIntegrate(opts: {
     await cmdFinish({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
-      taskId: task.id,
+      taskIds: [task.id],
       author: "INTEGRATOR",
       body: finishBody,
+      commit: undefined,
+      skipVerify: false,
+      force: false,
+      noRequireTaskIdInCommit: false,
+      commitFromComment: false,
+      commitEmoji: undefined,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitEmoji: undefined,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: opts.quiet,
     });
 
     if (!opts.quiet) {
@@ -7475,6 +7681,7 @@ export async function runCli(argv: string[]): Promise<number> {
       let commitAllowTasks = true;
       let commitRequireClean = false;
       let confirmStatusCommit = false;
+      let force = false;
       let quiet = false;
 
       for (let i = 0; i < startArgs.length; i++) {
@@ -7528,6 +7735,10 @@ export async function runCli(argv: string[]): Promise<number> {
           confirmStatusCommit = true;
           continue;
         }
+        if (arg === "--force") {
+          force = true;
+          continue;
+        }
         if (arg === "--quiet") {
           quiet = true;
           continue;
@@ -7554,6 +7765,7 @@ export async function runCli(argv: string[]): Promise<number> {
         commitAllowTasks,
         commitRequireClean,
         confirmStatusCommit,
+        force,
         quiet,
       });
     }
@@ -7573,6 +7785,15 @@ export async function runCli(argv: string[]): Promise<number> {
 
       let author = "";
       let body = "";
+      let commitFromComment = false;
+      let commitEmoji: string | undefined;
+      const commitAllow: string[] = [];
+      let commitAutoAllow = false;
+      let commitAllowTasks = true;
+      let commitRequireClean = false;
+      let confirmStatusCommit = false;
+      let force = false;
+      let quiet = false;
       for (let i = 0; i < blockArgs.length; i++) {
         const arg = blockArgs[i];
         if (!arg) continue;
@@ -7590,6 +7811,48 @@ export async function runCli(argv: string[]): Promise<number> {
           i++;
           continue;
         }
+        if (arg === "--commit-from-comment") {
+          commitFromComment = true;
+          continue;
+        }
+        if (arg === "--commit-emoji") {
+          const next = blockArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          commitEmoji = next;
+          i++;
+          continue;
+        }
+        if (arg === "--commit-allow") {
+          const next = blockArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          commitAllow.push(next);
+          i++;
+          continue;
+        }
+        if (arg === "--commit-auto-allow") {
+          commitAutoAllow = true;
+          continue;
+        }
+        if (arg === "--commit-allow-tasks") {
+          commitAllowTasks = true;
+          continue;
+        }
+        if (arg === "--commit-require-clean") {
+          commitRequireClean = true;
+          continue;
+        }
+        if (arg === "--confirm-status-commit") {
+          confirmStatusCommit = true;
+          continue;
+        }
+        if (arg === "--force") {
+          force = true;
+          continue;
+        }
+        if (arg === "--quiet") {
+          quiet = true;
+          continue;
+        }
         if (arg.startsWith("--")) {
           throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
         }
@@ -7605,39 +7868,159 @@ export async function runCli(argv: string[]): Promise<number> {
         taskId,
         author,
         body,
+        commitFromComment,
+        commitEmoji,
+        commitAllow,
+        commitAutoAllow,
+        commitAllowTasks,
+        commitRequireClean,
+        confirmStatusCommit,
+        force,
+        quiet,
       });
     }
 
     if (namespace === "finish") {
-      let taskId = command;
       let finishArgs = args;
-      if (!taskId || taskId.startsWith("-")) {
-        if (taskId?.startsWith("-")) {
-          finishArgs = [taskId, ...args];
-        }
-        taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+      const taskIds: string[] = [];
+      if (command && !command.startsWith("--")) {
+        taskIds.push(command);
+      } else if (command?.startsWith("-")) {
+        finishArgs = [command, ...args];
       }
-      if (!taskId) {
+      let argIndex = 0;
+      while (argIndex < finishArgs.length) {
+        const arg = finishArgs[argIndex];
+        if (!arg || arg.startsWith("--")) break;
+        taskIds.push(arg);
+        argIndex += 1;
+      }
+      const flagArgs = finishArgs.slice(argIndex);
+      if (taskIds.length === 0) {
+        const envTaskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+        if (envTaskId) taskIds.push(envTaskId);
+      }
+      if (taskIds.length === 0) {
         throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
       }
 
       let author = "";
       let body = "";
-      for (let i = 0; i < finishArgs.length; i++) {
-        const arg = finishArgs[i];
+      let commit: string | undefined;
+      let skipVerify = false;
+      let force = false;
+      let noRequireTaskIdInCommit = false;
+      let commitFromComment = false;
+      let commitEmoji: string | undefined;
+      const commitAllow: string[] = [];
+      let commitAutoAllow = false;
+      let commitAllowTasks = true;
+      let commitRequireClean = false;
+      let statusCommit = false;
+      let statusCommitEmoji: string | undefined;
+      const statusCommitAllow: string[] = [];
+      let statusCommitAutoAllow = false;
+      let statusCommitRequireClean = false;
+      let confirmStatusCommit = false;
+      let quiet = false;
+      for (let i = 0; i < flagArgs.length; i++) {
+        const arg = flagArgs[i];
         if (!arg) continue;
         if (arg === "--author") {
-          const next = finishArgs[i + 1];
+          const next = flagArgs[i + 1];
           if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
           author = next;
           i++;
           continue;
         }
         if (arg === "--body") {
-          const next = finishArgs[i + 1];
+          const next = flagArgs[i + 1];
           if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
           body = next;
           i++;
+          continue;
+        }
+        if (arg === "--commit") {
+          const next = flagArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          commit = next;
+          i++;
+          continue;
+        }
+        if (arg === "--skip-verify") {
+          skipVerify = true;
+          continue;
+        }
+        if (arg === "--quiet") {
+          quiet = true;
+          continue;
+        }
+        if (arg === "--force") {
+          force = true;
+          continue;
+        }
+        if (arg === "--no-require-task-id-in-commit") {
+          noRequireTaskIdInCommit = true;
+          continue;
+        }
+        if (arg === "--commit-from-comment") {
+          commitFromComment = true;
+          continue;
+        }
+        if (arg === "--commit-emoji") {
+          const next = flagArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          commitEmoji = next;
+          i++;
+          continue;
+        }
+        if (arg === "--commit-allow") {
+          const next = flagArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          commitAllow.push(next);
+          i++;
+          continue;
+        }
+        if (arg === "--commit-auto-allow") {
+          commitAutoAllow = true;
+          continue;
+        }
+        if (arg === "--commit-allow-tasks") {
+          commitAllowTasks = true;
+          continue;
+        }
+        if (arg === "--commit-require-clean") {
+          commitRequireClean = true;
+          continue;
+        }
+        if (arg === "--status-commit") {
+          statusCommit = true;
+          continue;
+        }
+        if (arg === "--status-commit-emoji") {
+          const next = flagArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          statusCommitEmoji = next;
+          i++;
+          continue;
+        }
+        if (arg === "--status-commit-allow") {
+          const next = flagArgs[i + 1];
+          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          statusCommitAllow.push(next);
+          i++;
+          continue;
+        }
+        if (arg === "--status-commit-auto-allow") {
+          statusCommitAutoAllow = true;
+          continue;
+        }
+        if (arg === "--status-commit-require-clean") {
+          statusCommitRequireClean = true;
+          continue;
+        }
+        if (arg === "--confirm-status-commit") {
+          confirmStatusCommit = true;
           continue;
         }
         if (arg.startsWith("--")) {
@@ -7652,9 +8035,26 @@ export async function runCli(argv: string[]): Promise<number> {
       return await cmdFinish({
         cwd: process.cwd(),
         rootOverride: globals.root,
-        taskId,
+        taskIds,
         author,
         body,
+        commit,
+        skipVerify,
+        force,
+        noRequireTaskIdInCommit,
+        commitFromComment,
+        commitEmoji,
+        commitAllow,
+        commitAutoAllow,
+        commitAllowTasks,
+        commitRequireClean,
+        statusCommit,
+        statusCommitEmoji,
+        statusCommitAllow,
+        statusCommitAutoAllow,
+        statusCommitRequireClean,
+        confirmStatusCommit,
+        quiet,
       });
     }
 
