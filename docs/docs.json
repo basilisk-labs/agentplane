@@ -35,7 +35,13 @@
       },
       {
         "group": "Reference",
-        "pages": ["commands", "cli-contract", "recipes-spec", "code-quality"]
+        "pages": [
+          "commands",
+          "cli-contract",
+          "recipes-spec",
+          "recipes-how-it-works",
+          "code-quality"
+        ]
       },
       {
         "group": "Help",

@@ -1,0 +1,181 @@
+---
+title: "How Recipes Work"
+description: "Implementation notes for recipe install, scenario execution, and on-disk state in the Node.js CLI."
+---
+
+This document describes **how recipes work in the Node.js CLI** (`packages/agentplane/src/run-cli.ts`).
+It complements the formal contract in [`recipes-spec`](recipes-spec) with implementation details.
+
+## 1) What a recipe is (in code)
+
+A recipe is a versioned archive that contains optional agents, tools, scenarios, and assets.
+When installed, it is extracted into `.agentplane/recipes/<id>/<version>/` and tracked by
+`.agentplane/recipes.lock.json`.
+
+Key paths the CLI reads/writes:
+
+- `.agentplane/recipes/<id>/<version>/` — extracted recipe contents.
+- `.agentplane/recipes.lock.json` — installed recipes list (id, version, sha256, source).
+- `.agentplane/RECIPES.md` — human-friendly index written by `recipe list`.
+- `.agentplane/cache/recipes-index.json` — cached remote catalog (`recipe list-remote`).
+- `.agentplane/recipes/<id>/runs/<timestamp>-<scenario>/` — scenario run artifacts.
+- `.agentplane/recipes/<id>/<version>/scenarios.json` — scenario summary index.
+
+## 2) Manifest and scenario validation
+
+The CLI validates the manifest at install time (`manifest.json` at the archive root):
+
+- `schema_version` must be `"1"`.
+- `id`, `version`, `name`, `summary`, `description` are required.
+- `id` must be non-empty and **must not contain path separators**.
+
+Scenario definitions (`scenarios/*.json`) are validated when installed or listed:
+
+- `schema_version` is optional, but if present must be `"1"`.
+- Required fields: `id`, `goal`, `inputs`, `outputs`, `steps`.
+- `steps` must be an array; each step must include a tool id.
+
+## 3) Installing recipes
+
+Command: `agentplane recipe install <path|url|id> [--on-conflict <fail|rename|overwrite>]`
+
+Install flow (in order):
+
+1. **Resolve source**
+   - Local path: used directly if the file exists.
+   - URL: downloaded to a temp file.
+   - Catalog id: the CLI loads the remote index, picks the latest version, and
+     downloads the archive. If the index provides a checksum, it verifies SHA256.
+2. **Extract archive**
+   - Supported formats: `.tar.gz` / `.tgz` and `.zip`.
+   - Extraction is done via `tar` or `unzip` binaries.
+3. **Resolve recipe root**
+   - If `manifest.json` is at the archive root, use that.
+   - Otherwise, the archive must contain **exactly one** top-level directory with `manifest.json`.
+4. **Install content**
+   - Moves the extracted folder to `.agentplane/recipes/<id>/<version>/`.
+   - Applies agent and scenario metadata (see below).
+5. **Update lock + index**
+   - Writes/updates `.agentplane/recipes.lock.json` (sorted by id/version).
+   - Rebuilds `.agentplane/RECIPES.md` using manifest summaries.
+
+Version behavior to be aware of:
+
+- Installing a new version **does not remove** older recipe directories.
+- The lockfile only keeps one entry per recipe id (the latest installed), so old
+  versions can linger on disk until manually removed.
+
+### Agent conflicts during install
+
+If `manifest.agents` is present, each agent is copied into `.agentplane/agents` with a
+namespaced id: `<recipe-id>__<agent-id>`.
+
+`--on-conflict` controls collisions:
+
+- `fail` (default): aborts if a file already exists.
+- `rename`: appends `__<n>` until a free id is found.
+- `overwrite`: writes the file with the same id, replacing the existing one.
+
+### Scenarios during install
+
+The installer builds `scenarios.json` inside the recipe directory:
+
+- If `scenarios/` exists: it reads and validates each `*.json` file and records
+  `id` + `summary` in the index.
+- If `scenarios/` does **not** exist: it uses `manifest.scenarios` to build the index.
+
+Important: **`scenario run` requires actual scenario definition files** under
+`scenarios/`. If only `manifest.scenarios` exists, the CLI can list summaries but
+cannot execute scenarios.
+
+## 4) Listing and inspecting recipes
+
+`agentplane recipe list`:
+
+- Reads `.agentplane/recipes.lock.json` (or treats it as empty if missing).
+- Writes `.agentplane/RECIPES.md`.
+- Prints `<id>@<version> - <summary>` for each installed recipe.
+- If a manifest is missing, the summary becomes `"Manifest missing or invalid."`.
+
+`agentplane recipe info <id>`:
+
+- Reads the installed manifest and prints basic fields plus manifest-defined
+  agents/tools/scenarios lists.
+
+`agentplane recipe remove <id>`:
+
+- Removes only the version recorded in `.agentplane/recipes.lock.json`.
+- Does **not** delete any agents previously copied into `.agentplane/agents`.
+
+## 5) Remote catalog (`recipe list-remote`)
+
+`agentplane recipe list-remote [--refresh] [--index <path|url>]`:
+
+- Loads the remote index and caches it at `.agentplane/cache/recipes-index.json`.
+- Without `--refresh`, the cached copy is reused if present.
+- For each recipe, it prints the **latest** version (lexicographically sorted).
+
+When `recipe install` is given an id, it uses the same cached index (unless the
+cache is missing), so installing by id can reflect stale data until refreshed.
+
+## 6) Scenarios: list, info, and run
+
+### `agentplane scenario list`
+
+- For each installed recipe, it prefers `scenarios/*.json` definitions if present.
+- Otherwise it falls back to `scenarios.json` (generated during install).
+- Outputs `recipe:scenario - summary`.
+
+### `agentplane scenario info <recipe:scenario>`
+
+- If a full scenario definition exists, prints goal/inputs/outputs/steps.
+- If only the index exists, prints the summary and notes that details are missing.
+
+### `agentplane scenario run <recipe:scenario>`
+
+Execution model:
+
+- Loads the manifest and scenario definition from `scenarios/`.
+- Each step references a tool id defined in `manifest.tools`.
+- Tools must have `runtime: "node" | "bash"` and `entrypoint` paths.
+- If a tool declares `permissions`, the CLI prints a warning (no enforcement).
+
+Artifacts:
+
+- Creates `.agentplane/recipes/<id>/runs/<timestamp>-<scenario>/`.
+- For each step, writes `stdout.log` and `stderr.log` under a `step-N-<tool>` folder.
+- Writes `meta.json` with recipe, scenario, run id, and per-step exit info.
+
+Environment variables injected into tools:
+
+- `AGENTPLANE_RUN_DIR`
+- `AGENTPLANE_STEP_DIR`
+- `AGENTPLANE_RECIPE_ID`
+- `AGENTPLANE_SCENARIO_ID`
+- `AGENTPLANE_TOOL_ID`
+
+## 7) Environment handling
+
+Before command execution, the CLI loads `.env` from the repo root (if present) and
+**does not overwrite existing environment variables**. Scenario tools inherit this
+environment plus any per-step `env` defined in the scenario JSON.
+
+## 8) Bundled recipes and init
+
+`agentplane init` accepts `--recipes` and validates selections against the
+bundled catalog (`packages/agentplane/src/bundled-recipes.ts`).
+
+Current behavior:
+
+- If the bundled catalog is empty, init prints a message and skips install.
+- If the catalog is non-empty, init **still** prints that recipe install
+  is not implemented yet.
+
+This means `init --recipes ...` is validation-only in the current implementation.
+
+## 9) Legacy note
+
+The repository also contains a Python helper at `.agent-plane/recipes.py` and
+recipe assets under `.agent-plane/recipes/`. Those scripts power the legacy
+agentctl-based workflow and are **separate** from the Node CLI `agentplane recipe`
+commands documented above.
