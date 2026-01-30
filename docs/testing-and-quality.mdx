@@ -1,0 +1,51 @@
+---
+title: "Testing and quality"
+description: "How to run tests, lint, typecheck, and enforce quality gates."
+---
+
+## Local checks
+
+From repo root:
+
+```bash
+bun install
+bun run format:check
+bun run lint
+bun run typecheck
+bun run test
+```
+
+## Package-specific checks
+
+```bash
+bun run --filter=agentplane build
+bun run --filter=agentplane test
+```
+
+## CI scoping (internal)
+
+The repo includes a helper script that runs checks on a single scope:
+
+```bash
+node scripts/ci-scope.mjs --scope agentplane
+```
+
+Scopes: `agentplane`, `core`, `recipes`, `spec`, `testkit`.
+
+This is intended for CI/local optimization; it is not part of the public CLI.
+
+## Git hooks
+
+Optional hooks enforce formatting and commit hygiene:
+
+```bash
+agentplane hooks install
+agentplane hooks uninstall
+```
+
+## Coverage and parity tests
+
+- CLI tests live in `packages/agentplane/src/run-cli.test.ts`.
+- Backend tests live in `packages/agentplane/src/task-backend.test.ts`.
+- Parity audits are documented under `docs/audits/`.
+

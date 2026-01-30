@@ -1,0 +1,42 @@
+---
+title: "Release and publishing"
+description: "How to version and publish the CLI and core packages."
+---
+
+## Versioning
+
+Use semantic versioning. The CLI depends on `@agentplane/core`, so bump versions together when APIs change.
+
+## Build and pack
+
+```bash
+cd packages/agentplane
+npm pack
+```
+
+Review the tarball contents before publishing.
+
+## Publish order
+
+If both packages are public, publish in this order:
+
+```bash
+cd packages/core
+npm publish --access public
+
+cd ../agentplane
+npm publish --access public
+```
+
+## Global install check
+
+```bash
+npm i -g agentplane@latest
+agentplane --help
+```
+
+## Notes
+
+- Ensure `dist/` is up to date before publishing.
+- Keep metadata in `package.json` accurate (description, keywords, repository, etc.).
+

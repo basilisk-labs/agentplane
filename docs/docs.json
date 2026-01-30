@@ -21,25 +21,30 @@
     "groups": [
       {
         "group": "Getting Started",
-        "pages": ["index", "overview", "prerequisites", "setup"]
+        "pages": ["index", "overview", "prerequisites", "setup", "breaking-changes"]
       },
       {
         "group": "Concepts",
         "pages": [
           "architecture",
+          "project-layout",
           "workflow",
           "agents",
           "tasks-and-backends",
-          "branching-and-pr-artifacts"
+          "branching-and-pr-artifacts",
+          "configuration"
         ]
       },
       {
-        "group": "Reference",
+        "group": "Developer Guide",
         "pages": [
           "commands",
           "cli-contract",
           "recipes-spec",
           "recipes-how-it-works",
+          "recipes-development",
+          "testing-and-quality",
+          "release-and-publishing",
           "code-quality"
         ]
       },

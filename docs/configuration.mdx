@@ -1,0 +1,67 @@
+---
+title: "Configuration"
+description: "How .agentplane/config.json works and how to change it safely."
+---
+
+## Overview
+
+Agent Plane reads configuration from `.agentplane/config.json`. Use the CLI to view and update settings to avoid invalid edits.
+
+```bash
+agentplane config show
+agentplane config set workflow_mode branch_pr
+```
+
+## Key sections
+
+### workflow_mode
+
+Controls workflow enforcement:
+
+- `direct` — single checkout, no task branches.
+- `branch_pr` — per-task branches/worktrees with PR artifacts.
+
+### paths
+
+Paths for core assets:
+
+- `agents_dir` — `.agent-plane/agents`
+- `tasks_path` — `.agent-plane/tasks.json` export
+- `workflow_dir` — `.agent-plane/tasks`
+- `worktrees_dir` — `.agent-plane/worktrees`
+
+### tasks
+
+- `id_suffix_length_default` — length of generated task suffix.
+- `verify.required_tags` — tags that require verify commands (e.g., `code`, `backend`).
+- `doc.sections` — section names for task README.
+- `doc.required_sections` — required doc sections.
+- `comments.*` — structured comment rules.
+
+### branch
+
+- `task_prefix` — task branch prefix (`task/<task-id>/<slug>`).
+
+### tasks_backend
+
+- `config_path` — path to the backend config file (local or remote backend).
+
+### agents.approvals
+
+- `require_plan` — force plan approval before execution.
+- `require_network` — force approval before network use.
+
+## Examples
+
+Set required verify tags:
+
+```bash
+agentplane config set tasks.verify.required_tags '["code","backend"]'
+```
+
+Switch to branch workflow:
+
+```bash
+agentplane config set workflow_mode branch_pr
+```
+
