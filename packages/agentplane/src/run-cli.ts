@@ -1798,7 +1798,7 @@ async function cmdRole(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `Missing ${docPath} (run agentctl quickstart to see default output)`,
+        message: `Missing ${docPath} (run agentplane quickstart to see default output)`,
       });
     }
     const roleRaw = opts.role.trim();
@@ -1831,6 +1831,43 @@ async function cmdRole(opts: {
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "role", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdQuickstart(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const docPath = path.join(resolved.agentplaneDir, "agentctl.md");
+    if (await fileExists(docPath)) {
+      const output = await readFile(docPath, "utf8");
+      process.stdout.write(output.trimEnd() + "\n");
+      return 0;
+    }
+    const fallback = [
+      "agentplane quickstart",
+      "",
+      "This repo uses agentplane to manage .agentplane/tasks safely (no manual edits).",
+      "",
+      "Common commands:",
+      "  agentplane task list",
+      "  agentplane task show <task-id>",
+      "  agentplane task lint",
+      "  agentplane ready <task-id>",
+      '  agentplane start <task-id> --author CODER --body "Start: ..."',
+      "  agentplane verify <task-id>",
+      '  agentplane guard commit <task-id> -m "✨ <task-id> ..." --allow <path-prefix>',
+      '  agentplane finish <task-id> --author REVIEWER --body "Verified: ..."',
+      "",
+      `Tip: create ${docPath} to override this output.`,
+    ].join("\n");
+    process.stdout.write(`${fallback}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "quickstart", root: opts.rootOverride ?? null });
   }
 }
 
@@ -7479,6 +7516,13 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdModeSet({ cwd: process.cwd(), rootOverride: globals.root, mode });
+    }
+
+    if (namespace === "quickstart") {
+      if (command) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Usage: agentplane quickstart" });
+      }
+      return await cmdQuickstart({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "role") {
