@@ -20,6 +20,12 @@ agentplane --version
 agentplane init
 ```
 
+## Upgrade
+
+```bash
+agentplane upgrade
+```
+
 ## Config
 
 ```bash
@@ -44,6 +50,13 @@ agentplane task doc show <task-id>
 agentplane task doc set <task-id> --section Summary --text "..."
 agentplane task export
 agentplane task lint
+```
+
+## Backend sync
+
+```bash
+agentplane backend sync redmine --direction push --yes
+agentplane backend sync redmine --direction pull --conflict diff
 ```
 
 ## Workflow
