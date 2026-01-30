@@ -38,10 +38,10 @@ import {
 } from "@agentplane/core";
 
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
+import { renderHelp } from "./help.js";
 import { formatCommentBodyForCommit } from "./comment-format.js";
 import { loadDotEnv } from "./env.js";
 import { CliError, formatJsonError } from "./errors.js";
-import { renderHelp } from "./help.js";
 import { BackendError, loadTaskBackend, type TaskData } from "./task-backend.js";
 import { getVersion } from "./version.js";
 
@@ -1742,91 +1742,17 @@ async function cmdIdeSync(opts: { cwd: string; rootOverride?: string }): Promise
   }
 }
 
-function parseRoleBlocks(docText: string): { blocks: Record<string, string[]>; roles: string[] } {
-  const sectionHeader = "## Role/phase command guide (when to use what)";
-  const rolePrefix = "### ";
-  const blocks: Record<string, string[]> = {};
-  const roles: string[] = [];
-  let inSection = false;
-  let currentRole = "";
-  let currentLines: string[] = [];
-
-  for (const line of docText.split("\n")) {
-    const trimmed = line.trim();
-    if (trimmed === sectionHeader) {
-      inSection = true;
-      continue;
-    }
-    if (inSection && trimmed.startsWith("## ")) {
-      break;
-    }
-    if (!inSection) continue;
-    if (trimmed.startsWith(rolePrefix)) {
-      if (currentRole) {
-        blocks[currentRole] = currentLines;
-        currentLines = [];
-      }
-      currentRole = trimmed.slice(rolePrefix.length).trim();
-      if (currentRole) {
-        roles.push(currentRole);
-        currentLines.push(line);
-      }
-      continue;
-    }
-    if (currentRole) {
-      currentLines.push(line);
-    }
-  }
-  if (currentRole) {
-    blocks[currentRole] = currentLines;
-  }
-  return { blocks, roles };
-}
-
 async function cmdRole(opts: {
   cwd: string;
   rootOverride?: string;
   role: string;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const docPath = path.join(resolved.agentplaneDir, "agentctl.md");
-    if (!(await fileExists(docPath))) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Missing ${docPath} (run agentplane quickstart to see default output)`,
-      });
-    }
     const roleRaw = opts.role.trim();
     if (!roleRaw) {
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: ROLE_USAGE });
     }
-    const docText = await readFile(docPath, "utf8");
-    const { blocks, roles } = parseRoleBlocks(docText);
-    const normalized: Record<string, string> = {};
-    for (const key of Object.keys(blocks)) normalized[key.toUpperCase()] = key;
-    const roleKey = normalized[roleRaw.toUpperCase()];
-    if (!roleKey) {
-      const available = roles.length > 0 ? roles.toSorted().join(", ") : "none";
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Unknown role: ${roleRaw}. Available roles: ${available}`,
-      });
-    }
-    const output = blocks[roleKey].join("\n").trimEnd();
-    if (!output) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `No content found for role: ${roleRaw}`,
-      });
-    }
-    process.stdout.write(`${output}\n`);
+    process.stdout.write(`${renderHelp()}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -1836,34 +1762,11 @@ async function cmdRole(opts: {
 
 async function cmdQuickstart(opts: { cwd: string; rootOverride?: string }): Promise<number> {
   try {
-    const resolved = await resolveProject({
+    await resolveProject({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const docPath = path.join(resolved.agentplaneDir, "agentctl.md");
-    if (await fileExists(docPath)) {
-      const output = await readFile(docPath, "utf8");
-      process.stdout.write(output.trimEnd() + "\n");
-      return 0;
-    }
-    const fallback = [
-      "agentplane quickstart",
-      "",
-      "This repo uses agentplane to manage .agentplane/tasks safely (no manual edits).",
-      "",
-      "Common commands:",
-      "  agentplane task list",
-      "  agentplane task show <task-id>",
-      "  agentplane task lint",
-      "  agentplane ready <task-id>",
-      '  agentplane start <task-id> --author CODER --body "Start: ..."',
-      "  agentplane verify <task-id>",
-      '  agentplane guard commit <task-id> -m "✨ <task-id> ..." --allow <path-prefix>',
-      '  agentplane finish <task-id> --author REVIEWER --body "Verified: ..."',
-      "",
-      `Tip: create ${docPath} to override this output.`,
-    ].join("\n");
-    process.stdout.write(`${fallback}\n`);
+    process.stdout.write(`${renderHelp()}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -3443,11 +3346,13 @@ async function cmdReady(opts: {
     const warnings: string[] = [];
     if (task) {
       const dep = depState.get(task.id);
-      if ((dep?.missing.length ?? 0) > 0) {
-        warnings.push(`${task.id}: missing deps: ${dep.missing.join(", ")}`);
+      const missing = dep?.missing ?? [];
+      const incomplete = dep?.incomplete ?? [];
+      if (missing.length > 0) {
+        warnings.push(`${task.id}: missing deps: ${missing.join(", ")}`);
       }
-      if ((dep?.incomplete.length ?? 0) > 0) {
-        warnings.push(`${task.id}: incomplete deps: ${dep.incomplete.join(", ")}`);
+      if (incomplete.length > 0) {
+        warnings.push(`${task.id}: incomplete deps: ${incomplete.join(", ")}`);
       }
     } else {
       warnings.push(`Unknown task id: ${opts.taskId}`);
@@ -3466,11 +3371,13 @@ async function cmdReady(opts: {
       process.stdout.write(`Task: ${task.id} [${status}] ${title}\n`);
       process.stdout.write(`Owner: ${owner}\n`);
       process.stdout.write(`Depends on: ${dependsOn.length > 0 ? dependsOn.join(", ") : "-"}\n`);
-      if ((dep?.missing.length ?? 0) > 0) {
-        process.stdout.write(`Missing deps: ${dep.missing.join(", ")}\n`);
+      const missing = dep?.missing ?? [];
+      const incomplete = dep?.incomplete ?? [];
+      if (missing.length > 0) {
+        process.stdout.write(`Missing deps: ${missing.join(", ")}\n`);
       }
-      if ((dep?.incomplete.length ?? 0) > 0) {
-        process.stdout.write(`Incomplete deps: ${dep.incomplete.join(", ")}\n`);
+      if (incomplete.length > 0) {
+        process.stdout.write(`Incomplete deps: ${incomplete.join(", ")}\n`);
       }
     }
 
@@ -7219,7 +7126,7 @@ function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
 
 async function loadBackendTask(opts: {
   cwd: string;
-  rootOverride?: string;
+  rootOverride?: string | null;
   taskId: string;
 }): Promise<{
   backend: Awaited<ReturnType<typeof loadTaskBackend>>["backend"];
@@ -7520,7 +7427,11 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "quickstart") {
       if (command) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Usage: agentplane quickstart" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Usage: agentplane quickstart",
+        });
       }
       return await cmdQuickstart({ cwd: process.cwd(), rootOverride: globals.root });
     }
