@@ -1,3 +1,5 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
@@ -33,6 +35,16 @@ Hello world.
     const parsed = parseTaskReadme(sample);
     const rendered = renderTaskReadme(parsed.frontmatter, parsed.body);
     expect(rendered).toBe(sample);
+  });
+
+  it("roundtrips the agentctl README fixture", async () => {
+    const raw = await readFile(
+      path.join(process.cwd(), "packages", "core", "testdata", "agentctl", "task-readme.md"),
+      "utf8",
+    );
+    const parsed = parseTaskReadme(raw);
+    const rendered = renderTaskReadme(parsed.frontmatter, parsed.body);
+    expect(rendered).toBe(raw);
   });
 
   it("renders updates deterministically", () => {
