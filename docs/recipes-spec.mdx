@@ -17,7 +17,24 @@ This document defines:
 - **Installed recipe**: extracted under `.agentplane/recipes/<id>/<version>/`.
 - **Official catalog**: a remote `index.json` (v1: GitHub Releases-based) fetched only by explicit commands.
 
-## 2) Archive format and layout
+## 2) Built-in recipes and catalogs
+
+Recipes are opt-in. The CLI does not auto-install anything.
+
+- **Bundled catalog**: compiled into the CLI at `packages/agentplane/src/bundled-recipes.ts`.
+  - In this repo it is empty (as of **January 30, 2026**), so there are no built-in recipes.
+- **Official catalog**: lives in the `agentplane-recipes` repository (`index.json`).
+  - Use `agentplane recipe list-remote` and `agentplane recipe install <id>` to discover/install.
+  - The catalog can change over time; always check the remote index for the current list.
+
+Current official recipes (January 30, 2026):
+
+- `viewer` — task artifacts viewer
+- `redmine` — Redmine backend installer
+- `github-sync` — GitHub Issues/Projects sync workflow installer
+- `dokploy` — Dokploy API tooling
+
+## 3) Archive format and layout
 
 Recipe archives MAY be `.zip` or `.tar.gz`.
 
@@ -32,7 +49,7 @@ assets/        # optional: static files (html/templates/etc.)
 README.md      # optional: human docs
 ```
 
-### 2.1 Scenario definitions (v1)
+### 3.1 Scenario definitions (v1)
 
 Scenario files live under `scenarios/*.json` and are validated on install. Minimal fields:
 
@@ -50,7 +67,7 @@ Execution (v1):
 - `agentplane scenario run <recipe-id>:<scenario-id>` executes tools in order.
 - Logs and artifacts are written under `.agentplane/recipes/<recipe-id>/runs/...`.
 
-## 3) `manifest.json` schema (v1)
+## 4) `manifest.json` schema (v1)
 
 The `manifest.json` file must validate against `schemas/recipe-manifest.schema.json`.
 
@@ -61,11 +78,11 @@ High-level rules:
 - `summary` is short (used in “list” output and `.agentplane/RECIPES.md` index).
 - `description` can be longer and is shown by `agentplane recipe info <id>`.
 
-### 3.1 `schema_version`
+### 4.1 `schema_version`
 
 v1 uses `schema_version: "1"` for the recipe manifest.
 
-## 4) Install and lockfile
+## 5) Install and lockfile
 
 Installing a recipe creates/updates:
 
@@ -78,7 +95,7 @@ Recommended `recipes.lock.json` fields (v1):
 - `schema_version: 1`
 - `recipes[]`: `{ id, version, sha256, source }`
 
-## 5) CLI surface (minimum v1)
+## 6) CLI surface (minimum v1)
 
 Commands are namespaced under `agentplane recipe`:
 
@@ -98,7 +115,25 @@ Optional but recommended in v1:
 - `agentplane recipe pin <id>@<version>` (or lockfile-only “pin” semantics)
 - `agentplane recipe refresh` (refresh remote catalog cache)
 
-## 6) Permissions (v1)
+## 7) How recipes run (execution model)
+
+At a high level:
+
+1. **Install**: `agentplane recipe install <path|url|id>` extracts the archive into
+   `.agentplane/recipes/<id>/<version>/`, writes `recipes.lock.json`, and rebuilds the
+   local recipes index.
+2. **Inspect**: `agentplane scenario list` and `agentplane scenario info <recipe:scenario>`
+   enumerate the installed scenarios and tools.
+3. **Run**: `agentplane scenario run <recipe:scenario>` executes the scenario steps in order.
+   Each run writes artifacts to `.agentplane/recipes/<recipe-id>/runs/<timestamp>-<scenario>/`.
+
+Environment handling (v1):
+
+- Tools inherit the current process environment.
+- `.env` is **not** auto-loaded for recipe execution today. If your tools depend on values from
+  `.env`, export them first (e.g., `set -a; source .env; set +a`) before running a scenario.
+
+## 8) Permissions (v1)
 
 v1 does not sandbox recipe tools. Instead:
 
@@ -106,3 +141,31 @@ v1 does not sandbox recipe tools. Instead:
 - the CLI MUST warn before executing a tool that declares network or filesystem write access
 
 Sandboxing is deferred to v2.
+
+## 9) Developer guide: adding new recipes
+
+Source-of-truth for official recipes lives in the `agentplane-recipes` repository.
+
+1. **Create the recipe folder**
+   - `agentplane-recipes/recipes/<id>/manifest.json`
+   - Optional: `tools/`, `scenarios/`, `assets/`, `agents/`, `README.md`
+2. **Define tools and scenarios**
+   - Tools should be executable scripts (v1: `node` or `bash`).
+   - Each scenario is a JSON file in `scenarios/` referencing tools by `id`.
+3. **Validate locally**
+   - Build a local archive:
+     - `tar -czf /tmp/<id>-<version>.tar.gz -C recipes <id>`
+   - Install and run from a test repo:
+     - `agentplane recipe install /tmp/<id>-<version>.tar.gz`
+     - `agentplane scenario list`
+     - `agentplane scenario run <id>:<scenario>`
+4. **Build release artifacts**
+   - From `agentplane-recipes` root:
+     - `bun scripts/build-release.ts --tag vX.Y.Z`
+   - This generates `dist/*.tar.gz` and updates `index.json` + `dist/index.json` with SHA256s.
+5. **Publish**
+   - Create a GitHub release in `basilisk-labs/agentplane-recipes` with tag `vX.Y.Z`.
+   - Upload the `dist/*.tar.gz` and `dist/index.json` assets.
+6. **Consume**
+   - In `agentplane`, update the submodule pointer if you track recipes as a submodule.
+   - Refresh the remote index in projects: `agentplane recipe list-remote --refresh`.
