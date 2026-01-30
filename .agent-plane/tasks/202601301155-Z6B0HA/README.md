@@ -6,8 +6,9 @@ priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["agents", "docs"]
-commit: { hash: "3cb4ec44d20499e1dc3480b7e456892b9d5cd177", message: "✨ Z6B0HA update AGENTS policy: add purpose, preflight runbook, approvals definitions, commit modes, config patch note" }
+commit: { hash: "dfe8bde0e62aa129ea63873ccc9ce428317abfce", message: "✨ Z6B0HA apply AGENTS policy updates (preflight, approvals, commit modes, config patch)" }
 comments:
+  - { author: "ORCHESTRATOR", body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit formatting/lint hooks; AGENTS.md formatted with Prettier." }
   - { author: "ORCHESTRATOR", body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit formatting/lint hooks; AGENTS.md formatted with Prettier." }
 doc_version: 2
 doc_updated_at: "2026-01-30T11:57:28+00:00"
