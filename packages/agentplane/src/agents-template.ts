@@ -9,7 +9,7 @@ const HEADING_RE = /^(#+)\s+(.*)$/;
 
 type Heading = { index: number; level: number; title: string };
 
-type WorkflowMode = "direct" | "branch_pr";
+export type WorkflowMode = "direct" | "branch_pr";
 
 type AgentTemplate = { fileName: string; contents: string };
 
