@@ -60,6 +60,15 @@ describe("task-backend helpers", () => {
     expect(extractTaskDoc("No summary here")).toBe("");
   });
 
+  it("extractTaskDoc returns empty for empty body", () => {
+    expect(extractTaskDoc("")).toBe("");
+  });
+
+  it("extractTaskDoc returns summary when auto summary is absent", () => {
+    const body = ["# Header", "", "## Summary", "", "Doc line"].join("\n");
+    expect(extractTaskDoc(body)).toBe("## Summary\n\nDoc line");
+  });
+
   it("mergeTaskDoc keeps prefix and auto summary blocks", () => {
     const body = [
       "# Header",
@@ -86,6 +95,71 @@ describe("task-backend helpers", () => {
     expect(mergeTaskDoc(body, null as unknown as string)).toBe(body);
   });
 
+  it("mergeTaskDoc inserts doc when no prefix or auto summary exists", () => {
+    const body = ["## Summary", "", "Old doc"].join("\n");
+    const merged = mergeTaskDoc(body, "## Summary\n\nNew doc");
+    expect(merged).toBe("## Summary\n\nNew doc\n");
+  });
+
+  it("taskRecordToData tolerates missing or invalid frontmatter fields", () => {
+    const record: TaskRecord = {
+      id: "202601300000-ABCD",
+      frontmatter: {
+        id: 123,
+        title: 456,
+        description: 789,
+        status: 42,
+        priority: {},
+        owner: 77,
+        depends_on: "nope",
+        tags: 99,
+        verify: null,
+        commit: { hash: "abc", message: 123 },
+        comments: "bad",
+      },
+      body: "No summary here",
+    };
+    const data = taskRecordToData(record);
+    expect(data.commit).toBeNull();
+    expect(data.comments).toEqual([]);
+    expect(data.doc).toBeUndefined();
+    expect(data.title).toBe("");
+    expect(data.description).toBe("");
+    expect(data.owner).toBe("");
+    expect(data.priority).toBe("");
+  });
+
+  it("buildTasksExportSnapshotFromTasks normalizes task fields", () => {
+    const snapshot = buildTasksExportSnapshotFromTasks([
+      {
+        id: "202601300000-ABCD",
+        title: "Title",
+        description: "Desc",
+        status: "TODO",
+        priority: 2,
+        owner: "CODER",
+        depends_on: "nope" as unknown as string[],
+        tags: ["ok", 1 as unknown as string],
+        verify: null as unknown as string[],
+        comments: [
+          { author: "a", body: "b" },
+          { author: 1 as unknown as string, body: "c" },
+        ],
+      },
+    ]);
+
+    const task = snapshot.tasks[0];
+    if (!task) throw new Error("missing task");
+    expect(task.priority).toBe("2");
+    expect(task.depends_on).toEqual([]);
+    expect(task.tags).toEqual(["ok"]);
+    expect(task.verify).toEqual([]);
+    expect(task.comments).toEqual([{ author: "a", body: "b" }]);
+    expect(task.doc_version).toBe(2);
+    expect(task.doc_updated_by).toBe("agentplane");
+    expect(task.dirty).toBe(false);
+    expect(task.id_source).toBe("generated");
+  });
   it("taskRecordToData parses doc, comments, commit, and dirty", () => {
     const record: TaskRecord = {
       id: "202601300000-ABCD",

@@ -71,6 +71,26 @@ describe("comment-format", () => {
     expect(formatCommentBodyForCommit(body, config)).toBe("start: summary | details: detail");
   });
 
+  it("ignores empty prefixes in config", () => {
+    const mutated = defaultConfig();
+    mutated.tasks.comments.start.prefix = "";
+    mutated.tasks.comments.blocked.prefix = "";
+    mutated.tasks.comments.verified.prefix = "";
+    expect(formatCommentBodyForCommit("Start: hello", mutated)).toBe("Start: hello");
+  });
+
+  it("respects prefixes without trailing colon", () => {
+    const mutated = defaultConfig();
+    mutated.tasks.comments.start.prefix = "Start";
+    expect(formatCommentBodyForCommit("Start summary", mutated)).toBe("start: summary");
+  });
+
+  it("splitSummaryAndDetails returns empty for whitespace-only input", () => {
+    const result = splitSummaryAndDetails("   ");
+    expect(result.summary).toBe("");
+    expect(result.details).toEqual([]);
+  });
+
   it("splitSummaryAndDetails handles pipe-separated summaries", () => {
     const result = splitSummaryAndDetails("summary | detail one | detail two");
     expect(result.summary).toBe("summary");

@@ -224,10 +224,12 @@ Source-of-truth for official recipes lives in the `agentplane-recipes` repositor
 3. **Validate locally**
    - Build a local archive:
      - `tar -czf /tmp/<id>-<version>.tar.gz -C recipes <id>`
-  - Install and run from a test repo:
-    - `agentplane recipes install --path /tmp/<id>-<version>.tar.gz`
-    - `agentplane scenario list`
-    - `agentplane scenario run <id>:<scenario>`
+
+- Install and run from a test repo:
+  - `agentplane recipes install --path /tmp/<id>-<version>.tar.gz`
+  - `agentplane scenario list`
+  - `agentplane scenario run <id>:<scenario>`
+
 4. **Build release artifacts**
    - From `agentplane-recipes` root:
      - `bun scripts/build-release.ts --tag vX.Y.Z`
@@ -237,4 +239,5 @@ Source-of-truth for official recipes lives in the `agentplane-recipes` repositor
    - Upload the `dist/*.tar.gz` and `dist/index.json` assets.
 6. **Consume**
    - In `agentplane`, update the submodule pointer if you track recipes as a submodule.
-  - Refresh the remote index in projects: `agentplane recipes list-remote --refresh`.
+
+- Refresh the remote index in projects: `agentplane recipes list-remote --refresh`.

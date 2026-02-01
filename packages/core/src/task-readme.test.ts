@@ -57,4 +57,17 @@ Hello world.
   it("rejects markdown without frontmatter", () => {
     expect(() => parseTaskReadme("# hello\n")).toThrow(/frontmatter/i);
   });
+
+  it("rejects non-mapping frontmatter", () => {
+    const bad = `---\n- item\n---\n## Summary\n`;
+    expect(() => parseTaskReadme(bad)).toThrow(/frontmatter must be a YAML mapping/i);
+  });
+
+  it("rejects unsupported scalar values", () => {
+    const parsed = parseTaskReadme(sample);
+    const bad = { ...parsed.frontmatter, weird: Symbol("x") as unknown };
+    expect(() => renderTaskReadme(bad as Record<string, unknown>, parsed.body)).toThrow(
+      /Unsupported scalar type/,
+    );
+  });
 });

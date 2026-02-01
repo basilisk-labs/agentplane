@@ -97,19 +97,19 @@ This table lists commands and required minimum flags. Implementation may add add
 | `agentplane scenario list`             | List installed scenarios                  | Uses recipes registry                                                       |
 | `agentplane scenario info <recipe:id>` | Show scenario details                     | `<recipe-id>:<scenario-id>`                                                 |
 | `agentplane scenario run <recipe:id>`  | Run scenario tools                        | Logs to `.agentplane/recipes/<id>/runs/...`                                 |
-| `agentplane recipes list`             | List installed recipes                    | `--full` for metadata, `--tag <tag>` for tag filter                          |
-| `agentplane recipes info <id>`        | Show recipe metadata                       | Basic manifest fields                                                       |
-| `agentplane recipes explain <id>`     | Show detailed recipe info                  | Includes scenario details when available                                    |
+| `agentplane recipes list`              | List installed recipes                    | `--full` for metadata, `--tag <tag>` for tag filter                         |
+| `agentplane recipes info <id>`         | Show recipe metadata                      | Basic manifest fields                                                       |
+| `agentplane recipes explain <id>`      | Show detailed recipe info                 | Includes scenario details when available                                    |
 | `agentplane recipes cache prune`       | Prune global recipe cache                 | Removes installed recipes not referenced by `recipes.json`                  |
 
 ### 5.2 Explicit-network commands
 
-| Command                                              | Purpose                                         | Network      |
-| ---------------------------------------------------- | ----------------------------------------------- | ------------ | -------------------------------------- | --- |
-| `agentplane upgrade`                                 | Update embedded templates/bundles from upstream | Yes          |
-| `agentplane recipes list-remote`                     | List recipes from remote index                  | Yes          |
-| `agentplane recipes install --name <id>`             | Install recipe by id from remote index          | Yes          |
-| `agentplane recipes install --url <url>`             | Install recipe from URL                          | Yes          |
+| Command                                  | Purpose                                         | Network |
+| ---------------------------------------- | ----------------------------------------------- | ------- |
+| `agentplane upgrade`                     | Update embedded templates/bundles from upstream | Yes     |
+| `agentplane recipes list-remote`         | List recipes from remote index                  | Yes     |
+| `agentplane recipes install --name <id>` | Install recipe by id from remote index          | Yes     |
+| `agentplane recipes install --url <url>` | Install recipe from URL                         | Yes     |
 
 ### 5.3 `task` namespace
 

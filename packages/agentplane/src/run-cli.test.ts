@@ -201,6 +201,39 @@ async function createRecipeArchive(opts?: {
   return { archivePath, manifest };
 }
 
+async function createRecipeArchiveWithManifest(opts: {
+  manifest: Record<string, unknown>;
+  files?: Record<string, string>;
+  format?: "tar" | "zip";
+  wrapDir?: boolean;
+}): Promise<string> {
+  const execFileAsync = promisify(execFile);
+  const baseDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-bad-"));
+  const recipeDir = path.join(baseDir, opts.wrapDir ? "bundle" : "recipe");
+  await mkdir(recipeDir, { recursive: true });
+  await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(opts.manifest, null, 2));
+  if (opts.files) {
+    for (const [relPath, content] of Object.entries(opts.files)) {
+      const fullPath = path.join(recipeDir, relPath);
+      await mkdir(path.dirname(fullPath), { recursive: true });
+      await writeFile(fullPath, content, "utf8");
+    }
+  }
+  const format = opts.format ?? "tar";
+  const archivePath =
+    format === "zip" ? path.join(baseDir, "recipe.zip") : path.join(baseDir, "recipe.tar.gz");
+  if (format === "zip") {
+    await (opts.wrapDir
+      ? execFileAsync("zip", ["-qr", archivePath, path.basename(recipeDir)], { cwd: baseDir })
+      : execFileAsync("zip", ["-qr", archivePath, "."], { cwd: recipeDir }));
+  } else {
+    await (opts.wrapDir
+      ? execFileAsync("tar", ["-czf", archivePath, "-C", baseDir, path.basename(recipeDir)])
+      : execFileAsync("tar", ["-czf", archivePath, "-C", recipeDir, "."]));
+  }
+  return archivePath;
+}
+
 async function createUpgradeBundle(files: Record<string, string>): Promise<{
   bundlePath: string;
   checksumPath: string;
@@ -382,6 +415,22 @@ describe("runCli", () => {
     }
   });
 
+  it("maps schema validation errors to E_VALIDATION", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    (config as typeof config & { schema_version: number }).schema_version = 99;
+    await writeConfig(root, config);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("schema_version");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("maps IO errors while reading config to E_IO", async () => {
     const root = await mkGitRepoRoot();
     await mkdir(path.join(root, ".agentplane"), { recursive: true });
@@ -529,6 +578,30 @@ describe("runCli", () => {
     expect(task.frontmatter.verify).toContain("bun run ci");
   });
 
+  it("task new requires values for flags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Needs tag",
+        "--description",
+        "Missing tag value should error",
+        "--owner",
+        "CODER",
+        "--tag",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Missing value for --tag");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task add creates tasks with explicit ids", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -615,6 +688,124 @@ describe("runCli", () => {
     expect(task.frontmatter.depends_on).toContain("202601010101-ABCD");
   });
 
+  it("task update supports replace flags", async () => {
+    const root = await mkGitRepoRoot();
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Replace flags",
+        "--description",
+        "Replace tags/depends/verify",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--depends-on",
+        "202601010101-ABCDEF",
+        "--verify",
+        "bun run lint",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "update",
+        taskId,
+        "--replace-tags",
+        "--tag",
+        "code",
+        "--replace-depends-on",
+        "--depends-on",
+        "202601020202-BCDEFG",
+        "--replace-verify",
+        "--verify",
+        "bun run test",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.tags).toEqual(["code"]);
+    expect(task.frontmatter.depends_on).toEqual(["202601020202-BCDEFG"]);
+    expect(task.frontmatter.verify).toEqual(["bun run test"]);
+  });
+
+  it("task update requires verify commands for code tags", async () => {
+    const root = await mkGitRepoRoot();
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify required",
+        "--description",
+        "Ensure verify required",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "update", taskId, "--tag", "code", "--root", root]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("verify commands are required");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task update rejects missing and unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const cases: { args: string[]; msg: string }[] = [
+      {
+        args: ["task", "update", "202601010101-ABCDEF", "--title"],
+        msg: "Missing value for --title",
+      },
+      {
+        args: ["task", "update", "202601010101-ABCDEF", "--wat", "x"],
+        msg: "Unknown flag: --wat",
+      },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("task scrub replaces values across tasks", async () => {
     const root = await mkGitRepoRoot();
     let taskId = "";
@@ -665,6 +856,75 @@ describe("runCli", () => {
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
     expect(task.frontmatter.description).toContain("hi");
+  });
+
+  it("task scrub supports dry-run and quiet", async () => {
+    const root = await mkGitRepoRoot();
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Scrub dry-run",
+        "--description",
+        "dry-run value",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "scrub",
+        "--find",
+        "dry-run",
+        "--replace",
+        "ignored",
+        "--dry-run",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.description).toContain("dry-run value");
+  });
+
+  it("task scrub rejects missing find/replace values and unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["task", "scrub"], msg: "Usage: agentplane task scrub --find" },
+      { args: ["task", "scrub", "--find"], msg: "Missing value for --find" },
+      { args: ["task", "scrub", "--replace"], msg: "Missing value for --replace" },
+      { args: ["task", "scrub", "--nope", "x"], msg: "Unknown flag: --nope" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
+    }
   });
 
   it("task next shows ready tasks only", async () => {
@@ -734,6 +994,104 @@ describe("runCli", () => {
     }
   });
 
+  it("task next supports limit and quiet flags", async () => {
+    const root = await mkGitRepoRoot();
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Ready task",
+          "--description",
+          "Limit test",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "next", "--limit", "1", "--quiet", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task next applies status, owner, and tag filters", async () => {
+    const root = await mkGitRepoRoot();
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Filtered next",
+          "--description",
+          "Filter me",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "next",
+        "--status",
+        "TODO",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task next rejects invalid limit values", async () => {
+    const root = await mkGitRepoRoot();
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["task", "next", "--limit"], msg: "Missing value for --limit" },
+      { args: ["task", "next", "--limit", "nope"], msg: "Invalid --limit value" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("task search finds matching tasks", async () => {
     const root = await mkGitRepoRoot();
     let taskId = "";
@@ -767,6 +1125,127 @@ describe("runCli", () => {
       const code = await runCli(["task", "search", "Searchable", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(taskId);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task search supports regex and limit filters", async () => {
+    const root = await mkGitRepoRoot();
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Regex task",
+          "--description",
+          "Searchable content",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "search",
+        "Regex.*",
+        "--regex",
+        "--limit",
+        "1",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task search applies status, owner, and tag filters", async () => {
+    const root = await mkGitRepoRoot();
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Filtered search",
+          "--description",
+          "Search scope",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "search",
+        "Filtered",
+        "--status",
+        "TODO",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task search rejects empty queries and invalid limits", async () => {
+    const root = await mkGitRepoRoot();
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["task", "search", "  "], msg: "Query must be non-empty" },
+      { args: ["task", "search", "query", "--limit"], msg: "Missing value for --limit" },
+      { args: ["task", "search", "query", "--limit", "nope"], msg: "Invalid --limit value" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
+  it("task search rejects invalid regex", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "search", "(", "--regex", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Invalid regex");
     } finally {
       io.restore();
     }
@@ -834,6 +1313,72 @@ describe("runCli", () => {
       expect(io.stdout).toContain("Doc section text");
     } finally {
       io.restore();
+    }
+  });
+
+  it("task doc show supports quiet when section is missing", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Doc show quiet",
+          "--description",
+          "Missing section",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "show",
+        taskId,
+        "--section",
+        "Notes",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task doc show rejects missing values and unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202602011330-DOC01";
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["task", "doc", "show", taskId, "--section"], msg: "Missing value for --section" },
+      { args: ["task", "doc", "show", taskId, "--nope"], msg: "Unknown flag: --nope" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
     }
   });
 
@@ -997,6 +1542,73 @@ describe("runCli", () => {
     }
   });
 
+  it("task list supports filters and quiet mode", async () => {
+    const root = await mkGitRepoRoot();
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Filter task",
+          "--description",
+          "Tagged task",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "list",
+        "--status",
+        "TODO",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task list rejects missing filter values and unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["task", "list", "--status"], msg: "Missing value for --status" },
+      { args: ["task", "list", "--owner"], msg: "Missing value for --owner" },
+      { args: ["task", "list", "--tag"], msg: "Missing value for --tag" },
+      { args: ["task", "list", "--nope"], msg: "Unknown flag: --nope" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("task doc set updates a task README section and bumps metadata", async () => {
     const root = await mkGitRepoRoot();
 
@@ -1050,6 +1662,193 @@ describe("runCli", () => {
     expect(readme).toContain("## Summary");
     expect(readme).toContain("Hello");
     expect(readme).toContain('doc_updated_by: "DOCS"');
+  });
+
+  it("task scaffold writes and enforces overwrite", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202602011330-SCAF01";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "scaffold", taskId, "--force", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("wrote");
+    } finally {
+      io.restore();
+    }
+
+    const ioOverwrite = captureStdIO();
+    try {
+      const code = await runCli(["task", "scaffold", taskId, "--root", root]);
+      expect(code).toBe(2);
+      expect(ioOverwrite.stderr).toContain("File already exists");
+    } finally {
+      ioOverwrite.restore();
+    }
+
+    const ioForce = captureStdIO();
+    try {
+      const code = await runCli(["task", "scaffold", taskId, "--overwrite", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      ioForce.restore();
+    }
+  });
+
+  it("task scaffold supports quiet and title", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202602011330-SCAF02";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "scaffold",
+        taskId,
+        "--title",
+        "Custom title",
+        "--force",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("task scaffold rejects missing title values and unknown flags", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202602011330-SCAF03";
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["task", "scaffold", taskId, "--title"], msg: "Missing value for --title" },
+      { args: ["task", "scaffold", taskId, "--nope", "x"], msg: "Unknown flag: --nope" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
+  it("task normalize and migrate support quiet/force flags", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202602011330-NRM01";
+
+    const addCode = await runCli([
+      "task",
+      "add",
+      taskId,
+      "--title",
+      "Normalize task",
+      "--description",
+      "Normalize test",
+      "--priority",
+      "med",
+      "--owner",
+      "CODER",
+      "--tag",
+      "nodejs",
+      "--root",
+      root,
+    ]);
+    expect(addCode).toBe(0);
+
+    const ioNormalize = captureStdIO();
+    try {
+      const code = await runCli(["task", "normalize", "--quiet", "--force", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioNormalize.stdout).toBe("");
+    } finally {
+      ioNormalize.restore();
+    }
+
+    const exportPath = path.join(root, "tasks-export.json");
+    await writeFile(
+      exportPath,
+      JSON.stringify(
+        {
+          tasks: [
+            {
+              id: "202602011330-MGR01",
+              title: "Migrated task",
+              description: "Migrate test",
+              status: "TODO",
+              priority: "med",
+              owner: "CODER",
+              depends_on: [],
+              tags: ["nodejs"],
+              verify: [],
+              comments: [],
+              doc_version: 2,
+              doc_updated_at: new Date().toISOString(),
+              doc_updated_by: "agentplane",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const ioMigrate = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "migrate",
+        "--source",
+        path.relative(root, exportPath),
+        "--quiet",
+        "--force",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioMigrate.stdout).toBe("");
+    } finally {
+      ioMigrate.restore();
+    }
+
+    const migrated = await readTask({
+      cwd: root,
+      rootOverride: root,
+      taskId: "202602011330-MGR01",
+    });
+    expect(migrated?.id).toBe("202602011330-MGR01");
+  });
+
+  it("task normalize and migrate reject unknown flags and missing source values", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["task", "normalize", "--nope"], msg: "Unknown flag" },
+      { args: ["task", "migrate", "--source"], msg: "Missing value for --source" },
+      { args: ["task", "migrate", "--nope"], msg: "Unknown flag" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
+    }
   });
 
   it("task doc set appends required sections when missing", async () => {
@@ -1796,6 +2595,104 @@ describe("runCli", () => {
     } finally {
       io.restore();
       spy.mockRestore();
+    }
+  });
+
+  it("sync rejects backend id mismatches", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockResolvedValue();
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: { id: "redmine", sync } as taskBackend.TaskBackend,
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["sync", "local", "--direction", "push", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain('Configured backend is "redmine", not "local"');
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("sync maps backend errors with hints", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: {
+        id: "redmine",
+        sync: vi.fn().mockImplementation(() => {
+          throw new taskBackend.BackendError("Network down", "E_NETWORK");
+        }),
+      } as taskBackend.TaskBackend,
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["sync", "redmine", "--direction", "push", "--root", root]);
+      expect(code).toBe(6);
+      expect(io.stderr).toContain("error [E_NETWORK]");
+      expect(io.stderr).toContain("Check network connectivity and credentials.");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("sync flag parsing rejects invalid usage", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["sync", "--direction"], msg: "Usage: agentplane sync" },
+      { args: ["sync", "--conflict"], msg: "Usage: agentplane sync" },
+      { args: ["sync", "--direction", "sideways"], msg: "Usage: agentplane sync" },
+      { args: ["sync", "--conflict", "nope"], msg: "Usage: agentplane sync" },
+      { args: ["sync", "--wat"], msg: "Usage: agentplane sync" },
+      { args: ["sync", "a", "b"], msg: "Usage: agentplane sync" },
+      { args: ["backend", "sync"], msg: "Usage: agentplane backend sync" },
+      {
+        args: ["backend", "sync", "redmine", "--direction"],
+        msg: "Usage: agentplane backend sync",
+      },
+      {
+        args: ["backend", "sync", "redmine", "--direction", "noop"],
+        msg: "Usage: agentplane backend sync",
+      },
+      {
+        args: ["backend", "sync", "redmine", "--conflict", "nope"],
+        msg: "Usage: agentplane backend sync",
+      },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
     }
   });
 
@@ -3377,6 +4274,55 @@ describe("runCli", () => {
     expect(task.frontmatter.comments.at(-1)?.author).toBe("CODER");
   });
 
+  it("block supports --quiet output", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Quiet block task",
+        "--description",
+        "Block command with quiet flag",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "block",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Blocked: testing quiet output in block command.",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("block uses env task id when omitted", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -3493,6 +4439,7 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", "file.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+    const { stdout: commitHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -3530,6 +4477,10 @@ describe("runCli", () => {
         "CODER",
         "--body",
         "Verified: direct workflow finish updates export and lint with commit metadata present.",
+        "--commit",
+        commitHash.trim(),
+        "--skip-verify",
+        "--force",
         "--root",
         root,
       ]);
@@ -3739,6 +4690,102 @@ describe("runCli", () => {
     }
   });
 
+  it("finish requires a commit value when --commit is provided", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        "202601010101-ABCDEF",
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: missing commit hash should trigger usage error for finish.",
+        "--commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane finish");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("finish rejects missing values for commit and status commit flags", async () => {
+    const root = await mkGitRepoRoot();
+    const cases: { args: string[]; label: string }[] = [
+      { args: ["--commit-emoji"], label: "--commit-emoji" },
+      { args: ["--commit-allow"], label: "--commit-allow" },
+      { args: ["--status-commit-emoji"], label: "--status-commit-emoji" },
+      { args: ["--status-commit-allow"], label: "--status-commit-allow" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          "202601010101-ABCDEF",
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: missing finish flag values should trigger usage errors for parsing.",
+          ...entry.args,
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Usage: agentplane finish");
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
+  it("finish rejects commit-from-comment with multiple task ids", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        "202601010101-AAA111",
+        "202601010101-BBB222",
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: finish with multiple task ids should fail when status-commit is requested.",
+        "--commit-from-comment",
+        "--no-require-task-id-in-commit",
+        "--commit-emoji",
+        "✅",
+        "--commit-allow",
+        "docs/",
+        "--commit-auto-allow",
+        "--commit-allow-tasks",
+        "--commit-require-clean",
+        "--status-commit",
+        "--status-commit-emoji",
+        "✅",
+        "--status-commit-allow",
+        "docs/",
+        "--status-commit-auto-allow",
+        "--status-commit-require-clean",
+        "--confirm-status-commit",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain(
+        "--commit-from-comment/--status-commit requires exactly one task id",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("verify requires a task id", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -3752,6 +4799,18 @@ describe("runCli", () => {
       io.restore();
       if (previous === undefined) delete process.env.AGENT_PLANE_TASK_ID;
       else process.env.AGENT_PLANE_TASK_ID = previous;
+    }
+  });
+
+  it("verify requires a value for --log", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["verify", "202601010101-ABCDEF", "--log", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane verify");
+    } finally {
+      io.restore();
     }
   });
 
@@ -5699,7 +6758,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 15_000);
 
   it("integrate rebase fails when base changes during verify", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -5936,7 +6995,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 15_000);
 
   it("integrate runs verify when requested", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -7609,6 +8668,89 @@ describe("runCli", () => {
     expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
   });
 
+  it("upgrade validates bundle/checksum flag combinations", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "AGENTS.md": "# AGENTS\n\nUpdated\n",
+    });
+
+    const cases = [
+      {
+        args: ["upgrade", "--bundle", bundlePath, "--root", root],
+        msg: "Usage: agentplane upgrade",
+      },
+      {
+        args: ["upgrade", "--checksum", checksumPath, "--root", root],
+        msg: "Usage: agentplane upgrade",
+      },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(entry.args);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
+  it("upgrade parses extended flags with a bundle", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "AGENTS.md": "# AGENTS\n\nUpdated\n",
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "upgrade",
+        "--dry-run",
+        "--no-backup",
+        "--tag",
+        "v1.0.0",
+        "--asset",
+        "agentplane-upgrade.tar.gz",
+        "--checksum-asset",
+        "agentplane-upgrade.tar.gz.sha256",
+        "--bundle",
+        bundlePath,
+        "--checksum",
+        checksumPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Upgrade dry-run");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("upgrade rejects non-github framework sources", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const config = JSON.parse(await readFile(configPath, "utf8")) as Record<string, unknown>;
+    (config.framework as Record<string, unknown>).source = "https://example.com/agentplane";
+    await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["upgrade", "--dry-run", "--root", root]);
+      expect(code).toBe(1);
+      expect(io.stderr).toContain("upgrade supports GitHub sources only");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("recipes install/list/info/remove manages installed recipes", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -7718,6 +8860,55 @@ describe("runCli", () => {
     ).toBe(false);
   });
 
+  it("recipes explain falls back to scenarios index when definitions are missing", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({ id: "index-only" });
+
+    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+    const recipeDir = path.join(
+      agentplaneHome ?? "",
+      "recipes",
+      String(manifest.id),
+      String(manifest.version),
+    );
+    await rm(path.join(recipeDir, "scenarios"), { recursive: true, force: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "explain", String(manifest.id)]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Details: Scenario definition not found in recipe.");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes explain falls back to manifest scenarios when index is missing", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive({ id: "manifest-only" });
+
+    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+    const recipeDir = path.join(
+      agentplaneHome ?? "",
+      "recipes",
+      String(manifest.id),
+      String(manifest.version),
+    );
+    await rm(path.join(recipeDir, "scenarios"), { recursive: true, force: true });
+    await rm(path.join(recipeDir, "scenarios.json"), { force: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "explain", String(manifest.id)]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Details: Scenario definition not found in recipe.");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("recipes list filters by tag", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -7775,6 +8966,28 @@ describe("runCli", () => {
     expect(await pathExists(alphaInstallPath)).toBe(true);
   });
 
+  it("recipes cache prune supports flags", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "recipes",
+        "cache",
+        "prune",
+        "--dry-run",
+        "--all",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("scenario list and info read installed recipe scenarios", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -7808,6 +9021,122 @@ describe("runCli", () => {
       expect(ioInfo.stdout).toContain("Steps:");
     } finally {
       ioInfo.restore();
+    }
+  });
+
+  it("scenario list rejects invalid env blocks", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+    const manifestVersion = String(manifest.version);
+
+    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const scenariosDir = path.join(
+      agentplaneHome ?? "",
+      "recipes",
+      manifestId,
+      manifestVersion,
+      "scenarios",
+    );
+    await mkdir(scenariosDir, { recursive: true });
+    const scenarioPath = path.join(scenariosDir, "recipe-scenario.json");
+    if (!(await pathExists(scenarioPath))) {
+      await writeFile(
+        scenarioPath,
+        JSON.stringify(
+          {
+            schema_version: "1",
+            id: "RECIPE_SCENARIO",
+            summary: "Recipe scenario",
+            goal: "Preview installed tasks.",
+            inputs: [{ name: "task_id", type: "string" }],
+            outputs: [{ name: "report", type: "html" }],
+            steps: [{ tool: "RECIPE_TOOL" }],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+    }
+    const scenario = JSON.parse(await readFile(scenarioPath, "utf8")) as Record<string, unknown>;
+    scenario.steps = [{ tool: "RECIPE_TOOL", env: ["bad"] }];
+    await writeFile(scenarioPath, JSON.stringify(scenario, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "scenario",
+        "run",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("scenario step env must be an object");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("scenario list rejects non-string env values", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+    const manifestVersion = String(manifest.version);
+
+    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const scenariosDir = path.join(
+      agentplaneHome ?? "",
+      "recipes",
+      manifestId,
+      manifestVersion,
+      "scenarios",
+    );
+    await mkdir(scenariosDir, { recursive: true });
+    const scenarioPath = path.join(scenariosDir, "recipe-scenario.json");
+    if (!(await pathExists(scenarioPath))) {
+      await writeFile(
+        scenarioPath,
+        JSON.stringify(
+          {
+            schema_version: "1",
+            id: "RECIPE_SCENARIO",
+            summary: "Recipe scenario",
+            goal: "Preview installed tasks.",
+            inputs: [{ name: "task_id", type: "string" }],
+            outputs: [{ name: "report", type: "html" }],
+            steps: [{ tool: "RECIPE_TOOL" }],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+    }
+    const scenario = JSON.parse(await readFile(scenarioPath, "utf8")) as Record<string, unknown>;
+    scenario.steps = [{ tool: "RECIPE_TOOL", env: { KEY: 123 } }];
+    await writeFile(scenarioPath, JSON.stringify(scenario, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "scenario",
+        "run",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("scenario step env values must be strings");
+    } finally {
+      io.restore();
     }
   });
 
@@ -7928,6 +9257,31 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Configured backend does not support sync()");
     } finally {
       io.restore();
+    }
+  });
+
+  it("backend sync rejects invalid flags", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const cases: { args: string[]; msg: string }[] = [
+      {
+        args: ["backend", "sync", "--direction", "sideways"],
+        msg: "Usage: agentplane backend sync",
+      },
+      { args: ["backend", "sync", "--conflict", "nope"], msg: "Usage: agentplane backend sync" },
+      { args: ["backend", "sync", "one", "two"], msg: "Usage: agentplane backend sync" },
+      { args: ["backend", "sync", "--wat"], msg: "Usage: agentplane backend sync" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
     }
   });
 
@@ -8063,6 +9417,235 @@ describe("runCli", () => {
     }
   });
 
+  it("recipes list supports --full output", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
+    const archivePath = await createRecipeArchiveWithManifest({
+      manifest: {
+        schema_version: "1",
+        id: "full",
+        version: "1.0.0",
+        name: "Full recipe",
+        summary: "Full summary",
+        description: "Full description",
+      },
+    });
+    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "list", "--full", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain('"id": "full"');
+      expect(io.stdout).toContain('"version": "1.0.0"');
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes list rejects empty tag values", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "list", "--tag", " ", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipes");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes list rejects invalid recipes.json entries", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
+    const recipesPath = path.join(agentplaneHome ?? "", "recipes.json");
+    await writeFile(
+      recipesPath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          updated_at: new Date().toISOString(),
+          recipes: [
+            {
+              id: "bad",
+              version: "1.0.0",
+              source: "",
+              installed_at: "",
+              manifest: {
+                schema_version: "1",
+                id: "bad",
+                version: "1.0.0",
+                name: "Bad",
+                summary: "Bad",
+                description: "Bad",
+              },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "list"]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("recipes.json entries must include id, version, source");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes install rejects invalid manifest tags", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
+    const archivePath = await createRecipeArchiveWithManifest({
+      manifest: {
+        schema_version: "1",
+        id: "invalid-tags",
+        version: "1.0.0",
+        name: "Invalid Tags",
+        summary: "Invalid",
+        description: "Invalid",
+        tags: "nope",
+      },
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("manifest.tags must be an array of strings");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes install rejects invalid manifest id", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
+    const archivePath = await createRecipeArchiveWithManifest({
+      manifest: {
+        schema_version: "1",
+        id: "bad/path",
+        version: "1.0.0",
+        name: "Invalid Id",
+        summary: "Invalid",
+        description: "Invalid",
+      },
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("manifest.id must not contain path separators");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes install rejects invalid agent and scenario assets", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const cases: {
+      manifest: Record<string, unknown>;
+      files?: Record<string, string>;
+      pattern: RegExp;
+    }[] = [
+      {
+        manifest: {
+          schema_version: "1",
+          id: "bad-agent-id",
+          version: "1.0.0",
+          name: "Bad Agent",
+          summary: "Bad Agent",
+          description: "Bad Agent",
+          agents: [{ id: "bad/id", summary: "Bad", file: "agents/bad.json" }],
+        },
+        files: { "agents/bad.json": '{"id":"X"}' },
+        pattern: /agent\.id must not contain path separators/,
+      },
+      {
+        manifest: {
+          schema_version: "1",
+          id: "missing-agent-file",
+          version: "1.0.0",
+          name: "Missing Agent",
+          summary: "Missing Agent",
+          description: "Missing Agent",
+          agents: [{ id: "AGENT", summary: "Agent", file: "agents/missing.json" }],
+        },
+        pattern: /Recipe agent file not found/,
+      },
+      {
+        manifest: {
+          schema_version: "1",
+          id: "bad-agent-json",
+          version: "1.0.0",
+          name: "Bad Agent Json",
+          summary: "Bad Agent Json",
+          description: "Bad Agent Json",
+          agents: [{ id: "AGENT", summary: "Agent", file: "agents/bad.json" }],
+        },
+        files: { "agents/bad.json": "[]" },
+        pattern: /Recipe agent file must be a JSON object/,
+      },
+      {
+        manifest: {
+          schema_version: "1",
+          id: "bad-scenario-id",
+          version: "1.0.0",
+          name: "Bad Scenario",
+          summary: "Bad Scenario",
+          description: "Bad Scenario",
+          tools: [{ id: "TOOL", summary: "Tool", runtime: "bash", entrypoint: "tools/run.sh" }],
+        },
+        files: {
+          "tools/run.sh": "#!/usr/bin/env bash\n",
+          "scenarios/bad.json": JSON.stringify(
+            {
+              schema_version: "1",
+              id: "..",
+              summary: "Bad",
+              goal: "Goal",
+              inputs: [],
+              outputs: [],
+              steps: [{ tool: "TOOL" }],
+            },
+            null,
+            2,
+          ),
+        },
+        pattern: /scenario\.id must not be/,
+      },
+    ];
+
+    for (const entry of cases) {
+      await resetAgentplaneHomeRecipes();
+      const archivePath = await createRecipeArchiveWithManifest({
+        manifest: entry.manifest,
+        files: entry.files,
+      });
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+        expect(code).toBe(4);
+        expect(io.stderr).toMatch(entry.pattern);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("recipes list-remote reads cached index", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -8092,6 +9675,70 @@ describe("runCli", () => {
       expect(io.stdout).toContain("viewer@1.2.3 - Viewer recipe");
     } finally {
       io.restore();
+    }
+  });
+
+  it("recipes list-remote rejects invalid cached index", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const indexPath = path.join(agentplaneHome ?? "", "recipes-index.json");
+    const index = {
+      schema_version: 1,
+      recipes: [{ id: "broken", summary: "Broken", versions: [] }],
+    };
+    await writeFile(indexPath, JSON.stringify(index, null, 2), "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "list-remote"]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("recipes index entries must include id, summary, and versions");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes flag parsing rejects invalid usage", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const cases: { args: string[]; msg: string }[] = [
+      { args: ["recipes", "install"], msg: "Usage: agentplane recipes install" },
+      { args: ["recipes", "install", "--name"], msg: "Usage: agentplane recipes install" },
+      { args: ["recipes", "install", "--path"], msg: "Usage: agentplane recipes install" },
+      { args: ["recipes", "install", "--url"], msg: "Usage: agentplane recipes install" },
+      {
+        args: ["recipes", "install", "--name", "x", "--path", "y"],
+        msg: "Usage: agentplane recipes install",
+      },
+      {
+        args: ["recipes", "install", "--path", "x", "extra"],
+        msg: "Usage: agentplane recipes install",
+      },
+      {
+        args: ["recipes", "install", "--conflict", "nope", "--path", "x"],
+        msg: "Usage: agentplane recipes install",
+      },
+      { args: ["recipes", "list", "--tag"], msg: "Usage: agentplane recipes" },
+      { args: ["recipes", "list", "--nope"], msg: "Usage: agentplane recipes" },
+      { args: ["recipes", "cache"], msg: "Usage: agentplane recipes cache <prune> [args]" },
+      { args: ["recipes", "cache", "nope"], msg: "Usage: agentplane recipes cache <prune> [args]" },
+      {
+        args: ["recipes", "cache", "prune", "--wat"],
+        msg: "Usage: agentplane recipes cache prune",
+      },
+      { args: ["recipes", "list-remote", "--index"], msg: "Missing value for --index" },
+      { args: ["recipes", "list-remote", "--wat"], msg: "Missing value for --wat" },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([...entry.args, "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain(entry.msg);
+      } finally {
+        io.restore();
+      }
     }
   });
 
@@ -8129,6 +9776,50 @@ describe("runCli", () => {
 
     const cacheText = await readFile(path.join(agentplaneHome ?? "", "recipes-index.json"), "utf8");
     expect(cacheText).toContain('"redmine"');
+  });
+
+  it("recipes list-remote refreshes cache from remote index", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
+    const index = {
+      schema_version: 1,
+      recipes: [
+        {
+          id: "remote-recipe",
+          summary: "Remote recipe",
+          versions: [{ version: "1.0.0", url: "https://example.com/remote.tgz", sha256: "abc" }],
+        },
+      ],
+    };
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: "OK",
+          json: () => Promise.resolve(index),
+        }),
+      ),
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "recipes",
+        "list-remote",
+        "--refresh",
+        "--index",
+        "https://example.com/index.json",
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("remote-recipe@1.0.0");
+    } finally {
+      io.restore();
+      vi.unstubAllGlobals();
+    }
   });
 
   it("recipes install supports id from indexed catalog", async () => {

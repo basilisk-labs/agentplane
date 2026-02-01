@@ -5,6 +5,9 @@ import { mkdtemp, readFile } from "node:fs/promises";
 
 import { defaultConfig, loadConfig, saveConfig, setByDottedKey, validateConfig } from "./index.js";
 
+const makeConfigRecord = (): Record<string, unknown> =>
+  structuredClone(defaultConfig()) as Record<string, unknown>;
+
 describe("config", () => {
   it("defaultConfig validates", () => {
     expect(() => validateConfig(defaultConfig())).not.toThrow();
@@ -108,5 +111,119 @@ describe("config", () => {
     };
     raw.tasks.id_suffix_length_default = 1.25;
     expect(() => validateConfig(raw)).toThrow(/id_suffix_length_default/);
+  });
+
+  it("validateConfig rejects invalid field shapes", () => {
+    const cases: [string, (raw: Record<string, unknown>) => void, RegExp][] = [
+      ["workflow_mode", (raw) => (raw.workflow_mode = "nope"), /workflow_mode/],
+      ["status_commit_policy", (raw) => (raw.status_commit_policy = "bad"), /status_commit_policy/],
+      [
+        "finish_auto_status_commit",
+        (raw) => (raw.finish_auto_status_commit = "nope"),
+        /finish_auto_status_commit/,
+      ],
+      ["base_branch", (raw) => (raw.base_branch = ""), /base_branch/],
+      ["agents", (raw) => (raw.agents = "nope"), /agents must be object/],
+      [
+        "agents.approvals",
+        (raw) => ((raw.agents as Record<string, unknown>).approvals = "nope"),
+        /agents\.approvals must be object/,
+      ],
+      [
+        "agents.approvals.require_plan",
+        (raw) =>
+          ((
+            (raw.agents as Record<string, unknown>).approvals as Record<string, unknown>
+          ).require_plan = "nope"),
+        /require_plan must be boolean/,
+      ],
+      [
+        "agents.approvals.require_network",
+        (raw) =>
+          ((
+            (raw.agents as Record<string, unknown>).approvals as Record<string, unknown>
+          ).require_network = "nope"),
+        /require_network must be boolean/,
+      ],
+      ["recipes", (raw) => (raw.recipes = "nope"), /recipes must be object/],
+      [
+        "recipes.storage_default",
+        (raw) => ((raw.recipes as Record<string, unknown>).storage_default = "bad"),
+        /recipes\.storage_default/,
+      ],
+      ["paths", (raw) => (raw.paths = "nope"), /paths must be object/],
+      ["branch", (raw) => (raw.branch = "nope"), /branch must be object/],
+      ["framework", (raw) => (raw.framework = "nope"), /framework must be object/],
+      ["tasks", (raw) => (raw.tasks = "nope"), /tasks must be object/],
+      ["commit", (raw) => (raw.commit = "nope"), /commit must be object/],
+      ["tasks_backend", (raw) => (raw.tasks_backend = "nope"), /tasks_backend must be object/],
+      [
+        "closure_commit_requires_approval",
+        (raw) => (raw.closure_commit_requires_approval = "nope"),
+        /closure_commit_requires_approval/,
+      ],
+      [
+        "paths.agents_dir",
+        (raw) => ((raw.paths as Record<string, unknown>).agents_dir = ""),
+        /paths\.agents_dir/,
+      ],
+      [
+        "paths.agentctl_docs_path",
+        (raw) => ((raw.paths as Record<string, unknown>).agentctl_docs_path = ""),
+        /agentctl_docs_path/,
+      ],
+      [
+        "branch.task_prefix",
+        (raw) => ((raw.branch as Record<string, unknown>).task_prefix = ""),
+        /branch\.task_prefix/,
+      ],
+      [
+        "framework.source",
+        (raw) => ((raw.framework as Record<string, unknown>).source = ""),
+        /framework\.source/,
+      ],
+      [
+        "framework.last_update",
+        (raw) => ((raw.framework as Record<string, unknown>).last_update = 123),
+        /framework\.last_update/,
+      ],
+      [
+        "tasks.verify.required_tags",
+        (raw) => ((raw.tasks as Record<string, unknown>).verify = {}),
+        /verify\.required_tags/,
+      ],
+      [
+        "tasks.doc.sections",
+        (raw) => ((raw.tasks as Record<string, unknown>).doc = {}),
+        /tasks\.doc\.sections/,
+      ],
+      [
+        "tasks.comments",
+        (raw) => ((raw.tasks as Record<string, unknown>).comments = "nope"),
+        /tasks\.comments must be object/,
+      ],
+      [
+        "tasks.comments.start",
+        (raw) =>
+          (((raw.tasks as Record<string, unknown>).comments as Record<string, unknown>).start = {}),
+        /tasks\.comments\.start/,
+      ],
+      [
+        "commit.generic_tokens",
+        (raw) => ((raw.commit as Record<string, unknown>).generic_tokens = "nope"),
+        /commit\.generic_tokens/,
+      ],
+      [
+        "tasks_backend.config_path",
+        (raw) => ((raw.tasks_backend as Record<string, unknown>).config_path = ""),
+        /tasks_backend\.config_path/,
+      ],
+    ];
+
+    for (const [_name, mutate, pattern] of cases) {
+      const raw = makeConfigRecord();
+      mutate(raw);
+      expect(() => validateConfig(raw)).toThrow(pattern);
+    }
   });
 });

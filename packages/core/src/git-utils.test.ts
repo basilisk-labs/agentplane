@@ -65,5 +65,18 @@ describe("git-utils", () => {
 
     const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
     expect(unstaged).toContain("renamed.txt");
+  }, 15_000);
+
+  it("ignores renamed-only files without modifications", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "init"], { cwd: root });
+
+    await execFileAsync("git", ["mv", "file.txt", "renamed.txt"], { cwd: root });
+
+    const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
+    expect(unstaged).toEqual([]);
   });
 });

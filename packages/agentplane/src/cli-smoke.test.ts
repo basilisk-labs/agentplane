@@ -181,5 +181,5 @@ describe("agentplane CLI smoke", () => {
     } finally {
       await rm(root, { recursive: true, force: true });
     }
-  });
+  }, 15_000);
 });

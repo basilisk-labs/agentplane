@@ -52,10 +52,10 @@ Status legend: FULL = implemented with matching intent, PARTIAL = implemented bu
 
 ## Other framework scripts
 
-| Python/script                   | Node.js equivalent         | Status  | Notes                                                                                                        |
-| ------------------------------- | -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
-| `.agent-plane/recipes.py`       | `agentplane recipes` CLI   | PARTIAL | Node CLI supports centralized recipes (`recipes.json`, list/list --full/--tag, list-remote, install/remove, explain); bundle/compile remain Python-only but the registry file is updated on install. |
-| `scripts/ci-scope.mjs`          | (none)                     | MISSING | CI scoping script is standalone (not intended for CLI parity).                                               |
+| Python/script             | Node.js equivalent       | Status  | Notes                                                                                                                                                                                                |
+| ------------------------- | ------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.agent-plane/recipes.py` | `agentplane recipes` CLI | PARTIAL | Node CLI supports centralized recipes (`recipes.json`, list/list --full/--tag, list-remote, install/remove, explain); bundle/compile remain Python-only but the registry file is updated on install. |
+| `scripts/ci-scope.mjs`    | (none)                   | MISSING | CI scoping script is standalone (not intended for CLI parity).                                                                                                                                       |
 
 ## Node-only functionality (no Python agentctl analog)
 
