@@ -1,14 +1,5 @@
 import { execFile } from "node:child_process";
-import {
-  chmod,
-  mkdir,
-  mkdtemp,
-  readdir,
-  readFile,
-  realpath,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readdir, readFile, realpath, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -24,7 +15,11 @@ import {
 
 import { runCli } from "./run-cli.js";
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
-import { filterAgentsByWorkflow, loadAgentTemplates, loadAgentsTemplate } from "./agents-template.js";
+import {
+  filterAgentsByWorkflow,
+  loadAgentTemplates,
+  loadAgentsTemplate,
+} from "./agents-template.js";
 import * as taskBackend from "./task-backend.js";
 import {
   captureStdIO,
@@ -3894,9 +3889,7 @@ describe("runCli", () => {
     );
   });
 
-  it(
-    "start commit-from-comment fails when allow prefixes do not match changes",
-    async () => {
+  it("start commit-from-comment fails when allow prefixes do not match changes", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
@@ -3947,9 +3940,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-    },
-    15000,
-  );
+  }, 15_000);
 
   it("block updates status and appends comment", async () => {
     const root = await mkGitRepoRoot();
@@ -8641,5 +8632,4 @@ describe("runCli", () => {
       io.restore();
     }
   });
-
 });

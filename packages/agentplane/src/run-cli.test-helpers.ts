@@ -1,13 +1,6 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import {
-  access,
-  mkdir,
-  mkdtemp,
-  readFile,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -19,6 +12,10 @@ const execFileAsync = promisify(execFile);
 
 let agentplaneHome: string | null = null;
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
+const recipeArchiveCache = new Map<
+  string,
+  { archivePath: string; manifest: Record<string, unknown> }
+>();
 
 export function registerAgentplaneHome(): void {
   beforeAll(async () => {
@@ -117,6 +114,20 @@ export async function createRecipeArchive(opts?: {
   format?: "tar" | "zip";
   wrapDir?: boolean;
 }): Promise<{ archivePath: string; manifest: Record<string, unknown> }> {
+  const normalizedTags = opts?.tags ? [...opts.tags].toSorted() : undefined;
+  const cacheKey = JSON.stringify({
+    id: opts?.id ?? "viewer",
+    version: opts?.version ?? "1.2.3",
+    name: opts?.name ?? "Viewer",
+    summary: opts?.summary ?? "Preview task artifacts",
+    description: opts?.description ?? "Provides a local viewer for task artifacts.",
+    tags: normalizedTags,
+    format: opts?.format ?? "tar",
+    wrapDir: opts?.wrapDir ?? false,
+  });
+  const cached = recipeArchiveCache.get(cacheKey);
+  if (cached) return cached;
+
   const baseDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
   const recipeDir = path.join(baseDir, opts?.wrapDir ? "bundle" : "recipe");
   await mkdir(recipeDir, { recursive: true });
@@ -133,8 +144,8 @@ export async function createRecipeArchive(opts?: {
     ],
     scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
   };
-  if (opts?.tags) {
-    manifest.tags = opts.tags;
+  if (normalizedTags) {
+    manifest.tags = normalizedTags;
   }
   await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
   const agentsDir = path.join(recipeDir, "agents");
@@ -194,7 +205,9 @@ export async function createRecipeArchive(opts?: {
       ? execFileAsync("tar", ["-czf", archivePath, "-C", baseDir, path.basename(recipeDir)])
       : execFileAsync("tar", ["-czf", archivePath, "-C", recipeDir, "."]));
   }
-  return { archivePath, manifest };
+  const payload = { archivePath, manifest };
+  recipeArchiveCache.set(cacheKey, payload);
+  return payload;
 }
 
 export async function createRecipeArchiveWithManifest(opts: {
@@ -243,7 +256,9 @@ export async function createUpgradeBundle(files: Record<string, string>): Promis
   }
   const bundlePath = path.join(baseDir, "agentplane-upgrade.tar.gz");
   await execFileAsync("tar", ["-czf", bundlePath, "-C", bundleDir, "."]);
-  const checksum = createHash("sha256").update(await readFile(bundlePath)).digest("hex");
+  const checksum = createHash("sha256")
+    .update(await readFile(bundlePath))
+    .digest("hex");
   const checksumPath = `${bundlePath}.sha256`;
   await writeFile(checksumPath, `${checksum}  agentplane-upgrade.tar.gz\n`, "utf8");
   return { bundlePath, checksumPath };
