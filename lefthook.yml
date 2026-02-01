@@ -4,7 +4,9 @@ pre-commit:
       run: bun run format:check
     lint:
       run: bun run lint
+    test-fast:
+      run: bun run test:fast
 pre-push:
   commands:
-    ci:
-      run: bun run ci
+    test-full:
+      run: bun run test:full
