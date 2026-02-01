@@ -1579,8 +1579,9 @@ async function cmdInit(opts: {
   args: string[];
 }): Promise<number> {
   const flags = parseInitFlags(opts.args);
+  type InitIde = NonNullable<InitFlags["ide"]>;
   const defaults: {
-    ide: InitFlags["ide"];
+    ide: InitIde;
     workflow: WorkflowMode;
     hooks: boolean;
     recipes: string[];
@@ -1594,7 +1595,7 @@ async function cmdInit(opts: {
     requirePlanApproval: true,
     requireNetworkApproval: true,
   };
-  let ide = flags.ide ?? defaults.ide;
+  let ide: InitIde = flags.ide ?? defaults.ide;
   let workflow: WorkflowMode = flags.workflow ?? defaults.workflow;
   let hooks = flags.hooks ?? defaults.hooks;
   let recipes = flags.recipes ?? defaults.recipes;
@@ -1620,7 +1621,15 @@ async function cmdInit(opts: {
 
   if (process.stdin.isTTY && !flags.yes) {
     if (!flags.ide) {
-      ide = await promptChoice("Select IDE", ["none", "cursor", "windsurf", "both"], ide);
+      const choice = await promptChoice("Select IDE", ["none", "cursor", "windsurf", "both"], ide);
+      ide =
+        choice === "cursor"
+          ? "cursor"
+          : choice === "windsurf"
+            ? "windsurf"
+            : choice === "both"
+              ? "both"
+              : "none";
     }
     if (!flags.workflow) {
       const choice = await promptChoice("Select workflow mode", ["direct", "branch_pr"], workflow);
