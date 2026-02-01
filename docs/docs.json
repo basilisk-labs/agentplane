@@ -20,41 +20,63 @@
   "navigation": {
     "groups": [
       {
-        "group": "Getting Started",
-        "pages": ["index", "overview", "prerequisites", "setup", "breaking-changes"]
-      },
-      {
-        "group": "Concepts",
+        "group": "User Guide",
         "pages": [
-          "design-principles",
-          "architecture",
-          "project-layout",
-          "workflow",
-          "agents",
-          "tasks-and-backends",
-          "backends",
-          "branching-and-pr-artifacts",
-          "configuration"
+          "index",
+          {
+            "group": "Getting Started",
+            "pages": ["user/overview", "user/prerequisites", "user/setup", "user/breaking-changes"]
+          },
+          {
+            "group": "Workflow",
+            "pages": [
+              "user/workflow",
+              "user/task-lifecycle",
+              "user/agents",
+              "user/branching-and-pr-artifacts"
+            ]
+          },
+          {
+            "group": "Tasks & Backends",
+            "pages": ["user/tasks-and-backends", "user/backends", "user/redmine"]
+          },
+          {
+            "group": "Configuration",
+            "pages": ["user/configuration", "user/commands"]
+          }
         ]
       },
       {
         "group": "Developer Guide",
         "pages": [
-          "commands",
-          "cli-contract",
-          "recipes-spec",
-          "recipes-how-it-works",
-          "recipes-development",
-          "recipes-safety",
-          "testing-and-quality",
-          "release-and-publishing",
-          "code-quality",
-          "contributing"
+          "developer/design-principles",
+          "developer/architecture",
+          "developer/project-layout",
+          "developer/cli-contract",
+          {
+            "group": "Audits",
+            "pages": ["audits/nodejs-parity-matrix"]
+          },
+          {
+            "group": "Recipes",
+            "pages": [
+              "developer/recipes-spec",
+              "developer/recipes-how-it-works",
+              "developer/recipes-development",
+              "developer/recipes-safety"
+            ]
+          },
+          {
+            "group": "Quality",
+            "pages": ["developer/testing-and-quality", "developer/code-quality"]
+          },
+          "developer/release-and-publishing",
+          "developer/contributing"
         ]
       },
       {
         "group": "Help",
-        "pages": ["troubleshooting-by-symptom", "troubleshooting", "glossary", "redmine"]
+        "pages": ["help/troubleshooting-by-symptom", "help/troubleshooting", "help/glossary"]
       }
     ]
   }

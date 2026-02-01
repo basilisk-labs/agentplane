@@ -1,0 +1,146 @@
+---
+title: "Task lifecycle"
+description: "How tasks move from idea to closure in direct and branch_pr workflow modes."
+---
+
+## Overview
+
+A task moves through the same core stages in both modes:
+
+1. **Intake**: a need is identified and recorded.
+2. **Plan**: ORCHESTRATOR drafts a plan and requests approval.
+3. **Create**: PLANNER creates the task, assigns ownership, and sets dependencies.
+4. **Start**: the executor marks the task DOING with a structured comment.
+5. **Implement**: code, docs, and artifacts are produced.
+6. **Verify**: required checks run and logs are stored.
+7. **Commit**: changes are committed with the task ID suffix.
+8. **Finish**: the task is closed with a Verified note and commit metadata.
+9. **Export**: task snapshots are updated for integrations.
+
+The differences between modes are about **where** work happens and **who** performs closure.
+
+## Lifecycle flow (all modes)
+
+```mermaid
+flowchart TD
+  A[Intake: need discovered] --> B[Plan: ORCHESTRATOR drafts plan]
+  B --> C{Approval granted?}
+  C -- No --> B
+  C -- Yes --> D[Create task: PLANNER assigns owner + deps]
+  D --> E[Start: executor sets DOING + Start comment]
+  E --> F[Implement changes + docs]
+  F --> G[Verify checks + logs]
+  G --> H[Commit with task suffix]
+  H --> I[Finish: Verified comment + commit metadata]
+  I --> J[Export snapshot + update docs]
+```
+
+## direct mode (single checkout)
+
+**Where work happens:** in the current checkout.
+
+**Who closes the task:** the executor (often CODER/DOCS/TESTER) after the implementation commit.
+
+**Key artifacts:**
+
+- Task README and status updates are written directly in the repo.
+- Verify logs live under the task artifact directory.
+- Optional PR artifacts are allowed but not required.
+
+### Sequence diagram (direct)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant U as User
+  participant O as ORCHESTRATOR
+  participant P as PLANNER
+  participant E as Executor (CODER/DOCS/TESTER)
+  participant CLI as agentplane CLI
+  participant B as Backend
+  participant G as Git
+
+  U->>O: Request change
+  O->>U: Plan + approval request
+  U-->>O: Approve
+  O->>P: Decompose tasks
+  P->>CLI: task new / update
+  CLI->>B: Write task + deps
+  E->>CLI: start <task-id>
+  CLI->>B: Update task status + comment
+  E->>G: Implement changes
+  E->>CLI: verify <task-id>
+  CLI->>B: Append verify log
+  E->>CLI: guard commit / commit
+  CLI->>G: Create commit
+  E->>CLI: finish <task-id>
+  CLI->>B: Close task + store commit metadata
+  CLI->>B: Update snapshot export
+```
+
+## branch_pr mode (task branches + worktrees)
+
+**Where work happens:** in a per-task branch/worktree.
+
+**Who closes the task:** INTEGRATOR on the base branch after merge.
+
+**Key artifacts:**
+
+- PR artifacts are required under `.agentplane/tasks/<task-id>/pr/`.
+- Canonical task writes happen on the base branch only.
+- Handoff notes are appended during review and carried into closure.
+
+### Sequence diagram (branch_pr)
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant U as User
+  participant O as ORCHESTRATOR
+  participant P as PLANNER
+  participant E as Executor (CODER/DOCS/TESTER)
+  participant I as INTEGRATOR
+  participant CLI as agentplane CLI
+  participant B as Backend
+  participant G as Git
+
+  U->>O: Request change
+  O->>U: Plan + approval request
+  U-->>O: Approve
+  O->>P: Decompose tasks
+  P->>CLI: task new / update
+  CLI->>B: Write task + deps
+  E->>CLI: work start <task-id>
+  CLI->>G: Create branch + worktree
+  E->>CLI: pr open / update
+  CLI->>B: Write PR artifacts
+  E->>CLI: start <task-id>
+  CLI->>B: Update task status + comment
+  E->>G: Implement changes
+  E->>CLI: verify <task-id>
+  CLI->>B: Append verify log
+  E->>G: Commit changes
+  E->>CLI: pr update / note
+  CLI->>B: Update PR artifacts + handoff notes
+  I->>CLI: pr check / integrate
+  CLI->>G: Merge to base (squash)
+  CLI->>B: Refresh diffstat + README summary
+  I->>CLI: finish <task-id>
+  CLI->>B: Close task + store commit metadata
+  CLI->>B: Update snapshot export
+```
+
+## Lifecycle notes and guardrails
+
+- **Approvals**: plan and network approvals are enforced via config (`agents.approvals.*`).
+- **Status comments**: start/block/finish require structured text (Start/Blocked/Verified).
+- **Commit policy**: commit subjects must include the task ID suffix.
+- **Docs updates**: task README sections are updated via `agentplane task doc set`.
+- **Exports**: task snapshots are updated only via `agentplane` commands.
+
+## Related docs
+
+- [Workflow](workflow)
+- [Branching and PR artifacts](branching-and-pr-artifacts)
+- [Tasks and backends](tasks-and-backends)
+- [Configuration](configuration)
