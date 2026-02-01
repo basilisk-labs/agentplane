@@ -1,11 +1,14 @@
 ---
 id: "202601301916-RCP1A2"
 title: "Describe Node CLI recipes"
-status: "TODO"
+status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: ["none"]
 tags: ["nodejs", "recipes", "docs", "analysis"]
+commit: { hash: "288bfc1d0793b4b65ac77a20134d9221a4da03b5", message: "✨ VYSD18 0K6CMD BEQYED PAR1TY RDMP01 RCP1A2 RJHP2H quickstart guide, recipes explain, parity docs, roadmap" }
+comments:
+  - { author: "ORCHESTRATOR", body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)." }
 doc_version: 2
 doc_updated_at: "2026-02-01T13:05:05+00:00"
 doc_updated_by: "agentctl"

@@ -1,13 +1,15 @@
 ---
 id: "202601301643-BEQYED"
 title: "Ensure agents load config and CLI instructions silently on start"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["agents", "cli", "config", "workflow"]
+commit: { hash: "288bfc1d0793b4b65ac77a20134d9221a4da03b5", message: "✨ VYSD18 0K6CMD BEQYED PAR1TY RDMP01 RCP1A2 RJHP2H quickstart guide, recipes explain, parity docs, roadmap" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: Updating agent policy to load config and CLI instructions quietly before work begins." }
+  - { author: "ORCHESTRATOR", body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)." }
 doc_version: 2
 doc_updated_at: "2026-02-01T13:03:21+00:00"
 doc_updated_by: "agentctl"
