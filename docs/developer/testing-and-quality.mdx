@@ -12,14 +12,26 @@ bun install
 bun run format:check
 bun run lint
 bun run typecheck
-bun run test
+bun run test:fast
+```
+
+For a full run (including slower CLI integration tests):
+
+```bash
+bun run test:full
+```
+
+To run only the CLI integration tests:
+
+```bash
+bun run test:cli
 ```
 
 ## Package-specific checks
 
 ```bash
 bun run --filter=agentplane build
-bun run --filter=agentplane test
+bun run test:fast
 ```
 
 ## CI scoping (internal)
@@ -42,6 +54,8 @@ Optional hooks enforce formatting and commit hygiene:
 agentplane hooks install
 agentplane hooks uninstall
 ```
+
+By default, hooks run fast tests on pre-commit and full tests on pre-push.
 
 ## Coverage and parity tests
 
