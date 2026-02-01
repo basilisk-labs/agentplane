@@ -1,11 +1,15 @@
 ---
 id: "202602011650-ADEJXV"
 title: "Init renders AGENTS.md by workflow mode"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["nodejs", "init", "agents", "docs"]
+commit: { hash: "aa36724ad922b30a31ba0ee5e7093f57fff38eba", message: "✨ ADEJXV bundle AGENTS template; filter AGENTS by workflow on init; add tests" }
+comments:
+  - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
+  - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
 doc_version: 2
 doc_updated_at: "2026-02-01T17:12:58+00:00"
 doc_updated_by: "agentctl"
