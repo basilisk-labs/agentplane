@@ -18,20 +18,16 @@ See:
 - Core task workflow, branch/PR workflow, guard/commit, and sync: **parity appears complete** at the command level.
 - Several **Python support scripts** do not have a Node CLI equivalent.
 - Node CLI includes **new features** (init, recipes, scenario tooling) not in Python.
+- `agentplane quickstart` now ships a built-in command guide (no agentctl.md dependency).
 
 ## Gaps to reach 1:1 parity
 
 ### 1) Missing Node equivalents for Python support scripts
 
-- `.agent-plane/recipes.py` (inventory + bundle tooling).
-- `scripts/ci-scope.mjs` is standalone (not wired into CLI).
+- `.agent-plane/recipes.py` bundle/compile tooling remains Python-only; Node relies on `recipes.json` plus `recipes list --full` and `recipes explain`.
+- `scripts/ci-scope.mjs` is standalone (CI helper; not intended for CLI parity).
 
-### 2) Missing Node command: `quickstart`
-
-- Python has `agentctl quickstart` (prints `.agent-plane/agentctl.md`).
-- Node has no `agentplane quickstart` equivalent.
-
-### 3) Hook runner parity (minor)
+### 2) Hook runner parity (minor)
 
 - Python has a suppressed `hooks run` path (internal).
 - Node only exposes install/uninstall.
@@ -45,24 +41,23 @@ See:
 
 ### P0 (blockers to 1:1 parity)
 
-1. Add `agentplane quickstart` that prints `.agent-plane/agentctl.md` (match Python behavior).
-2. Decide on support-script parity:
-   - Either port `.agent-plane/recipes.py` into Node CLI commands,
-   - or explicitly declare it as a supported external script.
+1. Recipes parity:
+   - Core recipe management is now handled in Node (centralized catalog, `recipes.json`, list/install/remove/tag filters, explain).
+   - Remaining `recipes.py` bundle/compile tooling still needs a Node equivalent or an explicit external-script policy.
 
 ### P1 (parity hardening)
 
-3. Port `recipes.py` functionality into Node (scan/show/bundle/refresh), or document a stable Python dependency.
-4. Clarify GitHub sync: rely on the recipe-based workflow + documented flow.
+2. Port `recipes.py` bundle/compile into Node, or document a stable Python dependency.
+3. Clarify GitHub sync: rely on the recipe-based workflow + documented flow.
 
 ### P2 (behavioral verification)
 
-6. Create a parity test matrix (CLI I/O, errors, files touched, exit codes) for key flows:
+4. Create a parity test matrix (CLI I/O, errors, files touched, exit codes) for key flows:
    - task lifecycle: new/update/doc/comment/start/block/finish
    - guard/commit hooks
    - branch/pr/integrate flows
    - backend sync
-7. Ensure `dist/` build is updated in CI whenever `src/` changes (to avoid drift).
+5. Ensure `dist/` build is updated in CI whenever `src/` changes (to avoid drift).
 
 ## Notes
 

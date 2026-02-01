@@ -9,12 +9,12 @@ This document defines:
 
 - Recipe archive layout (what gets installed)
 - `manifest.json` contract (fields, semantics)
-- `agentplane recipe …` CLI surface (minimum v1)
+- `agentplane recipes …` CLI surface (minimum v1)
 
 ## 1) Terminology
 
 - **Recipe**: a versioned bundle of agents, tools, scenarios, and assets.
-- **Installed recipe**: cached under `~/.agentplane/recipes-cache/<id>/<version>/` (and optionally linked/copied into `.agentplane/recipes/<id>/<version>/`).
+- **Installed recipe**: stored under `~/.agentplane/recipes/<id>/<version>/` and tracked in `~/.agentplane/recipes.json`.
 - **Official catalog**: a remote `index.json` (v1: GitHub Releases-based) fetched only by explicit commands.
 
 ## 2) Built-in recipes and catalogs
@@ -24,7 +24,7 @@ Recipes are opt-in. The CLI does not auto-install anything.
 - **Bundled catalog**: compiled into the CLI at `packages/agentplane/src/bundled-recipes.ts`.
   - In this repo it is empty (as of **January 30, 2026**), so there are no built-in recipes.
 - **Official catalog**: lives in the `agentplane-recipes` repository (`index.json`).
-  - Use `agentplane recipe list-remote` and `agentplane recipe install <id>` to discover/install.
+  - Use `agentplane recipes list-remote` and `agentplane recipes install --name <id>` to discover/install.
   - The catalog can change over time; always check the remote index for the current list.
 
 Current official recipes (January 30, 2026):
@@ -91,8 +91,9 @@ High-level rules:
 
 - `id` is stable and lowercase (recommended: `viewer`, `redmine`, `qa-pack`).
 - `version` is SemVer.
-- `summary` is short (used in “list” output and `.agentplane/RECIPES.md` index).
-- `description` can be longer and is shown by `agentplane recipe info <id>`.
+- `summary` is short (used in `recipes list` output and `~/.agentplane/recipes.json`).
+- `description` can be longer and is shown by `agentplane recipes explain <id>`.
+- `tags` is an optional list of strings used by `recipes list --tag`.
 
 ### 4.1 `schema_version`
 
@@ -108,6 +109,7 @@ v1 uses `schema_version: "1"` for the recipe manifest.
   "name": "Task Viewer",
   "summary": "Static viewer for task artifacts.",
   "description": "Provides a local HTML viewer for exported task artifacts.",
+  "tags": ["viewer", "ui"],
   "tools": [
     {
       "id": "serve-viewer",
@@ -129,33 +131,35 @@ v1 uses `schema_version: "1"` for the recipe manifest.
 }
 ```
 
-## 5) Install and lockfile
+## 5) Install and metadata file
 
 Installing a recipe creates/updates:
 
-- `.agentplane/recipes/<id>/<version>/...` (project layer: symlink or copy of cached content)
-- `~/.agentplane/recipes-cache/<id>/<version>/...` (global cache of extracted content; overridable via `AGENTPLANE_HOME`)
-- `.agentplane/recipes.lock.json` (installed set, pinned versions, checksums)
-- `.agentplane/RECIPES.md` (a context-minimized index: `id` + `summary` + “what it solves”)
+- `~/.agentplane/recipes/<id>/<version>/...` (global recipe contents; overridable via `AGENTPLANE_HOME`)
+- `~/.agentplane/recipes.json` (installed recipes list with full metadata)
+- `~/.agentplane/recipes-index.json` (cached remote catalog for `recipes list-remote` and `recipes install --name`)
 
-Recommended `recipes.lock.json` fields (v1):
-
-- `schema_version: 1`
-- `recipes[]`: `{ id, version, sha256, source, storage }`
-  - `storage`: `link` | `copy` | `global`
-
-Example lockfile:
+Example `recipes.json`:
 
 ```json
 {
   "schema_version": 1,
+  "updated_at": "2026-01-30T12:00:00.000Z",
   "recipes": [
     {
       "id": "viewer",
       "version": "0.1.0",
-      "sha256": "9c2f...f1d",
-      "source": "https://github.com/basilisk-labs/agentplane-recipes/releases/download/v0.1.0/viewer-0.1.0.tar.gz",
-      "storage": "link"
+      "source": "viewer@0.1.0",
+      "installed_at": "2026-01-30T12:00:00.000Z",
+      "tags": ["viewer", "ui"],
+      "manifest": {
+        "schema_version": "1",
+        "id": "viewer",
+        "version": "0.1.0",
+        "name": "Task Viewer",
+        "summary": "Static viewer for task artifacts.",
+        "description": "Provides a local HTML viewer for exported task artifacts."
+      }
     }
   ]
 }
@@ -163,43 +167,38 @@ Example lockfile:
 
 ## 6) CLI surface (minimum v1)
 
-Commands are namespaced under `agentplane recipe`:
+Commands are namespaced under `agentplane recipes`:
 
-- `agentplane recipe list` — list locally installed recipes (id, version, summary).
-- `agentplane recipe info <id>` — show detailed information from the manifest.
-- `agentplane recipe install <url|id|path> [--storage <link|copy|global>]` — install from:
-  - local path (offline)
-  - URL (explicit-network)
+- `agentplane recipes list [--full] [--tag <tag>]` — list installed recipes (short or full metadata).
+- `agentplane recipes explain <id>` — show detailed information from the installed metadata.
+- `agentplane recipes install --name <id> [--index <path|url>] [--refresh]` — install from:
   - catalog id (explicit-network)
-  - `--on-conflict <fail|rename|overwrite>` controls how agent ID collisions are handled
+- `agentplane recipes install --path <path>` — install from local path (offline).
+- `agentplane recipes install --url <url>` — install from URL (explicit-network).
+- `--on-conflict <fail|rename|overwrite>` controls how agent ID collisions are handled (when installing agents into the project).
 - Agents installed from recipes are namespaced as `<recipe-id>__<agent-id>` in `.agentplane/agents`.
-- `agentplane recipe remove <id>` — uninstall.
-- `agentplane recipe list-remote` — list recipes from the remote catalog cache (explicit-network; cached).
-- `agentplane recipe cache prune [--dry-run] [--all]` — remove cached recipes not referenced by the current project (or wipe the cache).
-
-Optional but recommended in v1:
-
-- `agentplane recipe pin <id>@<version>` (or lockfile-only “pin” semantics)
-- `agentplane recipe refresh` (refresh remote catalog cache)
+- `agentplane recipes remove <id>` — uninstall.
+- `agentplane recipes list-remote [--refresh] [--index <path|url>]` — list recipes from the remote catalog cache (explicit-network; cached).
+- `agentplane recipes cache prune [--dry-run] [--all]` — remove installed directories not referenced by `recipes.json` (or wipe the cache).
 
 ## 7) How recipes run (execution model)
 
 At a high level:
 
-1. **Install**: `agentplane recipe install <path|url|id>` extracts the archive into the global
-   cache (`~/.agentplane/recipes-cache/<id>/<version>/`), optionally links/copies it into the
-   project, writes `recipes.lock.json`, and rebuilds the local recipes index.
-   - The default storage mode can be set via `recipes.storage_default` in `config.json`.
+1. **Install**: `agentplane recipes install ...` extracts the archive into the global
+   recipes directory (`~/.agentplane/recipes/<id>/<version>/`) and updates `~/.agentplane/recipes.json`.
 2. **Inspect**: `agentplane scenario list` and `agentplane scenario info <recipe:scenario>`
    enumerate the installed scenarios and tools.
 3. **Run**: `agentplane scenario run <recipe:scenario>` executes the scenario steps in order.
    Each run writes artifacts to `.agentplane/recipes/<recipe-id>/runs/<timestamp>-<scenario>/`.
+   Recipes may also write cached external data to `.agentplane/recipes-cache/`.
 
 Environment handling (v1):
 
 - Tools inherit the current process environment.
 - The CLI auto-loads `.env` from the repo root when a command resolves a project. Recipe tools
   inherit that environment (and `.env` never overrides already-set variables).
+- The CLI sets `AGENTPLANE_RECIPES_CACHE_DIR` to `.agentplane/recipes-cache/` for runtime data.
 - If you run scenarios outside a repo or need different values, export variables first (e.g.,
   `set -a; source .env; set +a`) before running a scenario.
 
@@ -225,10 +224,10 @@ Source-of-truth for official recipes lives in the `agentplane-recipes` repositor
 3. **Validate locally**
    - Build a local archive:
      - `tar -czf /tmp/<id>-<version>.tar.gz -C recipes <id>`
-   - Install and run from a test repo:
-     - `agentplane recipe install /tmp/<id>-<version>.tar.gz`
-     - `agentplane scenario list`
-     - `agentplane scenario run <id>:<scenario>`
+  - Install and run from a test repo:
+    - `agentplane recipes install --path /tmp/<id>-<version>.tar.gz`
+    - `agentplane scenario list`
+    - `agentplane scenario run <id>:<scenario>`
 4. **Build release artifacts**
    - From `agentplane-recipes` root:
      - `bun scripts/build-release.ts --tag vX.Y.Z`
@@ -238,4 +237,4 @@ Source-of-truth for official recipes lives in the `agentplane-recipes` repositor
    - Upload the `dist/*.tar.gz` and `dist/index.json` assets.
 6. **Consume**
    - In `agentplane`, update the submodule pointer if you track recipes as a submodule.
-   - Refresh the remote index in projects: `agentplane recipe list-remote --refresh`.
+  - Refresh the remote index in projects: `agentplane recipes list-remote --refresh`.

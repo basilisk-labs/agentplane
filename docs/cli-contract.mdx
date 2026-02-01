@@ -61,7 +61,7 @@ Reserved namespaces (v1):
 
 - `task`, `work`, `pr`, `branch`, `guard`, `hooks`, `commit`
 - `mode`, `config`, `verify`, `ready`, `integrate`, `cleanup`, `finish`, `start`, `block`
-- `ide`, `backend`, `recipe`, `scenario`, `upgrade`
+- `ide`, `backend`, `recipes`, `scenario`, `upgrade`
 
 Collision resolution:
 
@@ -78,6 +78,8 @@ This table lists commands and required minimum flags. Implementation may add add
 | Command                                | Purpose                                   | Notes                                                                       |
 | -------------------------------------- | ----------------------------------------- | --------------------------------------------------------------------------- | ----------------------- |
 | `agentplane init`                      | Initialize `.agentplane/` in a repo       | Interactive by default; supports non‑TTY flags incl. plan/network approvals |
+| `agentplane quickstart`                | Print a built-in command guide            | Helps onboard new users without external docs                               |
+| `agentplane role <role>`               | Print role-specific guidance              | Uses the same built-in guide source                                         |
 | `agentplane config show`               | Print effective project config            | JSON output                                                                 |
 | `agentplane config set <key> <value>`  | Update project config                     | Dotted keys; `--json` for structured values                                 |
 | `agentplane mode get`                  | Print workflow mode                       | `direct` \| `branch_pr`                                                     |
@@ -95,15 +97,19 @@ This table lists commands and required minimum flags. Implementation may add add
 | `agentplane scenario list`             | List installed scenarios                  | Uses recipes registry                                                       |
 | `agentplane scenario info <recipe:id>` | Show scenario details                     | `<recipe-id>:<scenario-id>`                                                 |
 | `agentplane scenario run <recipe:id>`  | Run scenario tools                        | Logs to `.agentplane/recipes/<id>/runs/...`                                 |
-| `agentplane recipe cache prune`        | Prune global recipe cache                 | Removes cached recipes not referenced by the current project                |
+| `agentplane recipes list`             | List installed recipes                    | `--full` for metadata, `--tag <tag>` for tag filter                          |
+| `agentplane recipes info <id>`        | Show recipe metadata                       | Basic manifest fields                                                       |
+| `agentplane recipes explain <id>`     | Show detailed recipe info                  | Includes scenario details when available                                    |
+| `agentplane recipes cache prune`       | Prune global recipe cache                 | Removes installed recipes not referenced by `recipes.json`                  |
 
 ### 5.2 Explicit-network commands
 
 | Command                                              | Purpose                                         | Network      |
 | ---------------------------------------------------- | ----------------------------------------------- | ------------ | -------------------------------------- | --- |
 | `agentplane upgrade`                                 | Update embedded templates/bundles from upstream | Yes          |
-| `agentplane recipe list-remote`                      | List recipes from remote index                  | Yes          |
-| `agentplane recipe install <id> [--on-conflict <fail | rename                                          | overwrite>] [--storage <link | copy | global>]` | Install recipe by id from remote index | Yes |
+| `agentplane recipes list-remote`                     | List recipes from remote index                  | Yes          |
+| `agentplane recipes install --name <id>`             | Install recipe by id from remote index          | Yes          |
+| `agentplane recipes install --url <url>`             | Install recipe from URL                          | Yes          |
 
 ### 5.3 `task` namespace
 

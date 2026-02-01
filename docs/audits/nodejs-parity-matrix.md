@@ -8,8 +8,8 @@ Status legend: FULL = implemented with matching intent, PARTIAL = implemented bu
 
 | Python agentctl | Node.js CLI                                   | Status  | Notes                                                                                                        |
 | --------------- | --------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
-| quickstart      | (none)                                        | MISSING | Python prints `.agent-plane/agentctl.md` quick reference. Node has no `quickstart` command.                  |
-| role            | `agentplane role <role>`                      | FULL    | Implemented by parsing `.agent-plane/agentctl.md`.                                                           |
+| quickstart      | `agentplane quickstart`                       | FULL    | Node prints a built-in quickstart guide (no `agentctl.md` dependency).                                       |
+| role            | `agentplane role <role>`                      | FULL    | Implemented via the built-in command guide (no `agentctl.md` dependency).                                    |
 | agents          | `agentplane agents`                           | FULL    | Lists `.agent-plane/agents/*.json`.                                                                          |
 | config          | `agentplane config show/set`                  | FULL    | Same intent; Node uses JSON config keys.                                                                     |
 | ready           | `agentplane ready <task-id>`                  | FULL    | Matches readiness check.                                                                                     |
@@ -54,13 +54,13 @@ Status legend: FULL = implemented with matching intent, PARTIAL = implemented bu
 
 | Python/script                   | Node.js equivalent         | Status  | Notes                                                                                                        |
 | ------------------------------- | -------------------------- | ------- | ------------------------------------------------------------------------------------------------------------ |
-| `.agent-plane/recipes.py`       | (script retained)          | PARTIAL | Node has `agentplane recipe` runtime commands, but recipe bundle/inventory tooling remains in Python script. |
-| `scripts/ci-scope.mjs`          | (none)                     | MISSING | CI scoping script is standalone.                                                                             |
+| `.agent-plane/recipes.py`       | `agentplane recipes` CLI   | PARTIAL | Node CLI supports centralized recipes (`recipes.json`, list/list --full/--tag, list-remote, install/remove, explain); bundle/compile remain Python-only but the registry file is updated on install. |
+| `scripts/ci-scope.mjs`          | (none)                     | MISSING | CI scoping script is standalone (not intended for CLI parity).                                               |
 
 ## Node-only functionality (no Python agentctl analog)
 
 - `agentplane init` (interactive project bootstrap)
 - `agentplane mode get/set`
 - `agentplane ide sync`
-- `agentplane recipe list/list-remote/install/remove/info`
+- `agentplane recipes list/list-remote/install/remove/info`
 - `agentplane scenario list/info/run`

@@ -12,7 +12,6 @@ import {
   realpath,
   rename,
   rm,
-  symlink,
   writeFile,
 } from "node:fs/promises";
 import os from "node:os";
@@ -41,6 +40,7 @@ import {
 
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
 import { renderHelp } from "./help.js";
+import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
 import { formatCommentBodyForCommit } from "./comment-format.js";
 import { loadDotEnv } from "./env.js";
 import { CliError, formatJsonError } from "./errors.js";
@@ -162,6 +162,13 @@ function mapCoreError(err: unknown, context: Record<string, unknown>): CliError 
   return new CliError({ exitCode: 4, code: "E_IO", message, context });
 }
 
+function isNotGitRepoError(err: unknown): boolean {
+  if (err instanceof Error) {
+    return err.message.startsWith("Not a git repository");
+  }
+  return false;
+}
+
 async function maybeLoadDotEnv(opts: { cwd: string; rootOverride?: string }): Promise<void> {
   try {
     const resolved = await resolveProject({
@@ -172,6 +179,24 @@ async function maybeLoadDotEnv(opts: { cwd: string; rootOverride?: string }): Pr
   } catch (err) {
     if (err instanceof Error && err.message.startsWith("Not a git repository")) {
       return;
+    }
+    throw err;
+  }
+}
+
+async function maybeResolveProject(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<{ gitRoot: string; agentplaneDir: string } | null> {
+  try {
+    return await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+  } catch (err) {
+    if (isNotGitRepoError(err)) {
+      if (opts.rootOverride) throw err;
+      return null;
     }
     throw err;
   }
@@ -355,6 +380,17 @@ type ScenarioDefinition = {
   steps: unknown[];
 };
 
+type RecipeScenarioDetail = {
+  id: string;
+  summary?: string;
+  description?: string;
+  goal?: string;
+  inputs?: unknown;
+  outputs?: unknown;
+  steps?: unknown[];
+  source: "definition" | "index" | "manifest";
+};
+
 type RecipesIndex = {
   schema_version: 1;
   recipes: {
@@ -377,8 +413,9 @@ const RECIPES_SCENARIOS_DIR_NAME = "scenarios";
 const RECIPES_SCENARIOS_INDEX_NAME = "scenarios.json";
 const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";
 const RECIPE_USAGE =
-  "Usage: agentplane recipes <list|info|install|remove|list-remote|cache> [args]";
+  "Usage: agentplane recipes <list|info|explain|install|remove|list-remote|cache> [args]";
 const RECIPE_INFO_USAGE = "Usage: agentplane recipes info <id>";
+const RECIPE_EXPLAIN_USAGE = "Usage: agentplane recipes explain <id>";
 const RECIPE_INSTALL_USAGE =
   "Usage: agentplane recipes install --name <id> [--index <path|url>] [--refresh] | --path <path> | --url <url>";
 const RECIPE_REMOVE_USAGE = "Usage: agentplane recipes remove <id>";
@@ -814,6 +851,67 @@ async function readScenarioIndex(filePath: string): Promise<{
   return { schema_version: 1, scenarios };
 }
 
+function formatJsonBlock(value: unknown, indent: string): string {
+  const payload = JSON.stringify(value, null, 2);
+  if (!payload) return "";
+  return payload
+    .split("\n")
+    .map((line) => `${indent}${line}`)
+    .join("\n");
+}
+
+async function collectRecipeScenarioDetails(
+  recipeDir: string,
+  manifest: RecipeManifest,
+): Promise<RecipeScenarioDetail[]> {
+  const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
+  if ((await getPathKind(scenariosDir)) === "dir") {
+    const files = await readdir(scenariosDir);
+    const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
+    const details: RecipeScenarioDetail[] = [];
+    for (const file of jsonFiles) {
+      const scenario = await readScenarioDefinition(path.join(scenariosDir, file));
+      details.push({
+        id: scenario.id,
+        summary: scenario.summary,
+        description: scenario.description,
+        goal: scenario.goal,
+        inputs: scenario.inputs,
+        outputs: scenario.outputs,
+        steps: scenario.steps,
+        source: "definition",
+      });
+    }
+    return details.toSorted((a, b) => a.id.localeCompare(b.id));
+  }
+
+  const scenariosIndexPath = path.join(recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
+  if (await fileExists(scenariosIndexPath)) {
+    const index = await readScenarioIndex(scenariosIndexPath);
+    return index.scenarios
+      .map((scenario) => ({
+        id: scenario.id,
+        summary: scenario.summary,
+        source: "index",
+      }))
+      .toSorted((a, b) => a.id.localeCompare(b.id));
+  }
+
+  const manifestScenarios = manifest.scenarios ?? [];
+  if (manifestScenarios.length > 0) {
+    return manifestScenarios
+      .map((scenario) => ({
+        id: scenario?.id ?? "",
+        summary: scenario?.summary,
+        source: "manifest",
+      }))
+      .filter((scenario) => scenario.id)
+      .toSorted((a, b) => a.id.localeCompare(b.id));
+  }
+
+  return [];
+}
+
 function normalizeScenarioToolStep(
   raw: unknown,
   sourcePath: string,
@@ -863,6 +961,7 @@ async function writeInstalledRecipesFile(
     ...file,
     updated_at: new Date().toISOString(),
   });
+  await mkdir(path.dirname(filePath), { recursive: true });
   await writeFile(filePath, `${JSON.stringify(sorted, null, 2)}\n`, "utf8");
 }
 
@@ -967,23 +1066,69 @@ async function downloadToFile(url: string, destPath: string): Promise<void> {
   await writeFile(destPath, buffer);
 }
 
+type RecipeInstallSource =
+  | { type: "name"; value: string }
+  | { type: "path"; value: string }
+  | { type: "url"; value: string }
+  | { type: "auto"; value: string };
+
 function parseRecipeInstallArgs(args: string[]): {
-  source: string;
+  source: RecipeInstallSource;
+  index?: string;
+  refresh: boolean;
   onConflict: RecipeConflictMode;
-  storage?: RecipeStorageMode;
 } {
-  let source: string | null = null;
   let onConflict: RecipeConflictMode = "fail";
-  let storage: RecipeStorageMode | undefined;
+  let name: string | null = null;
+  let localPath: string | null = null;
+  let url: string | null = null;
+  let index: string | undefined;
+  let refresh = false;
+  const positional: string[] = [];
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (!arg) continue;
+    if (arg === "--name") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+      name = next;
+      i++;
+      continue;
+    }
+    if (arg === "--path") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+      localPath = next;
+      i++;
+      continue;
+    }
+    if (arg === "--url") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+      url = next;
+      i++;
+      continue;
+    }
+    if (arg === "--index") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+      index = next;
+      i++;
+      continue;
+    }
+    if (arg === "--refresh") {
+      refresh = true;
+      continue;
+    }
     if (arg === "--on-conflict") {
       const next = args[i + 1];
-      if (!next) {
+      if (!next)
         throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
-      }
       if (!RECIPE_CONFLICT_MODES.includes(next as RecipeConflictMode)) {
         throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
       }
@@ -991,38 +1136,69 @@ function parseRecipeInstallArgs(args: string[]): {
       i++;
       continue;
     }
-    if (arg === "--storage") {
-      const next = args[i + 1];
-      if (!next) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
-      }
-      if (!RECIPE_STORAGE_MODES.includes(next as RecipeStorageMode)) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
-      }
-      storage = next as RecipeStorageMode;
-      i++;
-      continue;
-    }
     if (arg.startsWith("--")) {
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
     }
-    if (source) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
-    }
-    source = arg;
+    positional.push(arg);
   }
 
-  if (!source) {
+  const explicitFlags = [name, localPath, url].filter(Boolean).length;
+  if (explicitFlags > 1) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+  }
+  if (positional.length > 1) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+  }
+  if (positional.length > 0 && explicitFlags > 0) {
     throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
   }
 
-  return { source, onConflict, storage };
+  if (name) return { source: { type: "name", value: name }, index, refresh, onConflict };
+  if (localPath) return { source: { type: "path", value: localPath }, index, refresh, onConflict };
+  if (url) return { source: { type: "url", value: url }, index, refresh, onConflict };
+  if (positional.length === 1) {
+    return { source: { type: "auto", value: positional[0] }, index, refresh, onConflict };
+  }
+
+  throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
 }
 
 type RecipeCachePruneFlags = {
   dryRun: boolean;
   all: boolean;
 };
+
+type RecipeListFlags = {
+  full: boolean;
+  tag?: string;
+};
+
+function parseRecipeListArgs(args: string[]): RecipeListFlags {
+  const flags: RecipeListFlags = { full: false };
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (arg === "--full") {
+      flags.full = true;
+      continue;
+    }
+    if (arg === "--tag") {
+      const next = args[i + 1];
+      if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+      flags.tag = next.trim();
+      i++;
+      continue;
+    }
+    if (arg.startsWith("--")) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+    }
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+  }
+  if (flags.tag !== undefined && !flags.tag) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+  }
+  return flags;
+}
 
 function parseRecipeCachePruneArgs(args: string[]): RecipeCachePruneFlags {
   const flags: RecipeCachePruneFlags = { dryRun: false, all: false };
@@ -1325,18 +1501,6 @@ function isAllowedUpgradePath(relPath: string): boolean {
   return relPath.startsWith(".agentplane/");
 }
 
-function renderRecipesIndex(recipes: { id: string; version: string; summary: string }[]): string {
-  const lines = ["# RECIPES", ""];
-  if (recipes.length === 0) {
-    lines.push("No recipes installed.");
-    return `${lines.join("\n")}\n`;
-  }
-  for (const recipe of recipes) {
-    lines.push(`- ${recipe.id}@${recipe.version}: ${recipe.summary || "No summary provided."}`);
-  }
-  return `${lines.join("\n")}\n`;
-}
-
 function listBundledRecipes(): { id: string; summary: string; version: string }[] {
   return BUNDLED_RECIPES_CATALOG.recipes.map((recipe) => ({
     id: recipe.id,
@@ -1368,34 +1532,6 @@ function validateBundledRecipesSelection(recipes: string[]): void {
       message: `Unknown recipes: ${missing.join(", ")}. ${renderBundledRecipesHint()}`,
     });
   }
-}
-
-async function loadRecipesIndexEntries(
-  resolved: { agentplaneDir: string },
-  lock: RecipesLock,
-): Promise<{ id: string; version: string; summary: string }[]> {
-  const entries = [];
-  for (const recipe of lock.recipes) {
-    const recipeDir = await resolveRecipeContentDir({ resolved, entry: recipe });
-    const manifestPath = path.join(recipeDir, "manifest.json");
-    let summary = "";
-    try {
-      const manifest = await readRecipeManifest(manifestPath);
-      summary = manifest.summary;
-    } catch {
-      summary = "Manifest missing or invalid.";
-    }
-    entries.push({ id: recipe.id, version: recipe.version, summary });
-  }
-  return entries;
-}
-
-async function writeRecipesIndex(
-  resolved: { agentplaneDir: string },
-  entries: { id: string; version: string; summary: string }[],
-): Promise<void> {
-  const indexPath = path.join(resolved.agentplaneDir, RECIPES_INDEX_NAME);
-  await writeFileIfChanged(indexPath, renderRecipesIndex(entries));
 }
 
 async function promptChoice(
@@ -1836,17 +1972,23 @@ async function cmdIdeSync(opts: { cwd: string; rootOverride?: string }): Promise
   }
 }
 
-async function cmdRole(opts: {
+function cmdRole(opts: {
   cwd: string;
   rootOverride?: string;
   role: string;
-}): Promise<number> {
+}): number {
   try {
     const roleRaw = opts.role.trim();
     if (!roleRaw) {
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: ROLE_USAGE });
     }
-    process.stdout.write(`${renderHelp()}\n`);
+    const guide = renderRole(roleRaw);
+    if (!guide) {
+      const roles = listRoles();
+      const available = roles.length > 0 ? `\nAvailable roles: ${roles.join(", ")}` : "";
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `${ROLE_USAGE}${available}` });
+    }
+    process.stdout.write(`${guide}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -1854,13 +1996,9 @@ async function cmdRole(opts: {
   }
 }
 
-async function cmdQuickstart(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+function cmdQuickstart(opts: { cwd: string; rootOverride?: string }): number {
   try {
-    await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    process.stdout.write(`${renderHelp()}\n`);
+    process.stdout.write(`${renderQuickstart()}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -1932,29 +2070,50 @@ async function cmdAgents(opts: { cwd: string; rootOverride?: string }): Promise<
   }
 }
 
-async function cmdRecipeList(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+async function cmdRecipeList(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
-    const lock = await readRecipesLock(lockPath);
-    if (lock.recipes.length === 0) {
-      await writeRecipesIndex(resolved, []);
+    const flags = parseRecipeListArgs(opts.args);
+    const filePath = resolveInstalledRecipesPath();
+    const installed = await readInstalledRecipesFile(filePath);
+
+    let recipes = installed.recipes;
+    if (flags.tag) {
+      const needle = flags.tag.toLowerCase();
+      recipes = recipes.filter((entry) => entry.tags.some((tag) => tag.toLowerCase() === needle));
+    }
+
+    if (recipes.length === 0) {
+      if (flags.tag) {
+        process.stdout.write(`No recipes matched tag: ${flags.tag}\n`);
+        return 0;
+      }
       process.stdout.write("No recipes installed.\n");
       return 0;
     }
 
-    const entries = await loadRecipesIndexEntries(resolved, lock);
-    await writeRecipesIndex(resolved, entries);
+    if (flags.full) {
+      const payload: InstalledRecipesFile = {
+        schema_version: 1,
+        updated_at: installed.updated_at,
+        recipes,
+      };
+      process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+      return 0;
+    }
 
-    for (const entry of entries) {
-      process.stdout.write(`${entry.id}@${entry.version} - ${entry.summary}\n`);
+    for (const entry of recipes) {
+      process.stdout.write(
+        `${entry.id}@${entry.version} - ${entry.manifest.summary || "No summary provided."}\n`,
+      );
     }
     return 0;
   } catch (err) {
-    throw mapCoreError(err, { command: "recipe list", root: opts.rootOverride ?? null });
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes list", root: opts.rootOverride ?? null });
   }
 }
 
@@ -1965,12 +2124,7 @@ async function cmdRecipeListRemote(opts: {
 }): Promise<number> {
   const flags = parseRecipeListRemoteFlags(opts.args);
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
     const index = await loadRecipesRemoteIndex({
-      resolved,
       cwd: opts.cwd,
       source: flags.index,
       refresh: flags.refresh,
@@ -1985,22 +2139,17 @@ async function cmdRecipeListRemote(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "recipe list-remote", root: opts.rootOverride ?? null });
+    throw mapCoreError(err, { command: "recipes list-remote", root: opts.rootOverride ?? null });
   }
 }
 
 async function cmdScenarioList(opts: { cwd: string; rootOverride?: string }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
-    const lock = await readRecipesLock(lockPath);
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const entries: { recipeId: string; scenarioId: string; summary?: string }[] = [];
 
-    for (const recipe of lock.recipes) {
-      const recipeDir = await resolveRecipeContentDir({ resolved, entry: recipe });
+    for (const recipe of installed.recipes) {
+      const recipeDir = resolveInstalledRecipeDir(recipe);
       const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
       if ((await getPathKind(scenariosDir)) === "dir") {
         const files = await readdir(scenariosDir);
@@ -2052,17 +2201,12 @@ async function cmdScenarioInfo(opts: {
   id: string;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
     const [recipeId, scenarioId] = opts.id.split(":");
     if (!recipeId || !scenarioId) {
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_INFO_USAGE });
     }
-    const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
-    const lock = await readRecipesLock(lockPath);
-    const entry = lock.recipes.find((recipe) => recipe.id === recipeId);
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
     if (!entry) {
       throw new CliError({
         exitCode: 5,
@@ -2070,7 +2214,7 @@ async function cmdScenarioInfo(opts: {
         message: `Recipe not installed: ${recipeId}`,
       });
     }
-    const recipeDir = await resolveRecipeContentDir({ resolved, entry });
+    const recipeDir = resolveInstalledRecipeDir(entry);
     const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
     let scenario: ScenarioDefinition | null = null;
     if ((await getPathKind(scenariosDir)) === "dir") {
@@ -2174,9 +2318,8 @@ async function cmdScenarioRun(opts: {
     if (!recipeId || !scenarioId) {
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_RUN_USAGE });
     }
-    const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
-    const lock = await readRecipesLock(lockPath);
-    const entry = lock.recipes.find((recipe) => recipe.id === recipeId);
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
     if (!entry) {
       throw new CliError({
         exitCode: 5,
@@ -2184,7 +2327,7 @@ async function cmdScenarioRun(opts: {
         message: `Recipe not installed: ${recipeId}`,
       });
     }
-    const recipeDir = await resolveRecipeContentDir({ resolved, entry });
+    const recipeDir = resolveInstalledRecipeDir(entry);
     const manifestPath = path.join(recipeDir, "manifest.json");
     const manifest = await readRecipeManifest(manifestPath);
     const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
@@ -2215,6 +2358,8 @@ async function cmdScenarioRun(opts: {
 
     const runsRoot = path.join(resolved.agentplaneDir, RECIPES_DIR_NAME, recipeId, "runs");
     await mkdir(runsRoot, { recursive: true });
+    const recipesCacheDir = resolveProjectRecipesCacheDir(resolved);
+    await mkdir(recipesCacheDir, { recursive: true });
     const runId = `${new Date()
       .toISOString()
       .replaceAll(":", "-")
@@ -2275,6 +2420,7 @@ async function cmdScenarioRun(opts: {
         ...step.env,
         AGENTPLANE_RUN_DIR: runDir,
         AGENTPLANE_STEP_DIR: stepDir,
+        AGENTPLANE_RECIPES_CACHE_DIR: recipesCacheDir,
         AGENTPLANE_RECIPE_ID: recipeId,
         AGENTPLANE_SCENARIO_ID: scenarioId,
         AGENTPLANE_TOOL_ID: step.tool,
@@ -2351,13 +2497,8 @@ async function cmdRecipeInfo(opts: {
   id: string;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
-    const lock = await readRecipesLock(lockPath);
-    const entry = lock.recipes.find((recipe) => recipe.id === opts.id);
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
         exitCode: 5,
@@ -2365,14 +2506,15 @@ async function cmdRecipeInfo(opts: {
         message: `Recipe not installed: ${opts.id}`,
       });
     }
-    const recipeDir = await resolveRecipeContentDir({ resolved, entry });
-    const manifestPath = path.join(recipeDir, "manifest.json");
-    const manifest = await readRecipeManifest(manifestPath);
+    const manifest = entry.manifest;
 
     process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
     process.stdout.write(`Name: ${manifest.name}\n`);
     process.stdout.write(`Summary: ${manifest.summary}\n`);
     process.stdout.write(`Description: ${manifest.description}\n`);
+    if (manifest.tags && manifest.tags.length > 0) {
+      process.stdout.write(`Tags: ${manifest.tags.join(", ")}\n`);
+    }
 
     const agents = manifest.agents ?? [];
     const tools = manifest.tools ?? [];
@@ -2405,196 +2547,284 @@ async function cmdRecipeInfo(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "recipe info", root: opts.rootOverride ?? null });
+    throw mapCoreError(err, { command: "recipes info", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdRecipeExplain(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
+  try {
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
+    if (!entry) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Recipe not installed: ${opts.id}`,
+      });
+    }
+
+    const manifest = entry.manifest;
+    const recipeDir = resolveInstalledRecipeDir(entry);
+    const scenarioDetails = await collectRecipeScenarioDetails(recipeDir, manifest);
+
+    process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
+    process.stdout.write(`Name: ${manifest.name}\n`);
+    process.stdout.write(`Summary: ${manifest.summary}\n`);
+    process.stdout.write(`Description: ${manifest.description}\n`);
+    if (manifest.tags && manifest.tags.length > 0) {
+      process.stdout.write(`Tags: ${manifest.tags.join(", ")}\n`);
+    }
+
+    const agents = manifest.agents ?? [];
+    const tools = manifest.tools ?? [];
+
+    if (agents.length > 0) {
+      process.stdout.write("Agents:\n");
+      for (const agent of agents) {
+        const label = agent?.id ?? "unknown";
+        const summary = agent?.summary ? ` - ${agent.summary}` : "";
+        process.stdout.write(`  - ${label}${summary}\n`);
+      }
+    }
+    if (tools.length > 0) {
+      process.stdout.write("Tools:\n");
+      for (const tool of tools) {
+        const label = tool?.id ?? "unknown";
+        const summary = tool?.summary ? ` - ${tool.summary}` : "";
+        process.stdout.write(`  - ${label}${summary}\n`);
+      }
+    }
+    if (scenarioDetails.length > 0) {
+      process.stdout.write("Scenarios:\n");
+      for (const scenario of scenarioDetails) {
+        const summary = scenario.summary ? ` - ${scenario.summary}` : "";
+        process.stdout.write(`  - ${scenario.id}${summary}\n`);
+        if (scenario.description) {
+          process.stdout.write(`    Description: ${scenario.description}\n`);
+        }
+        if (scenario.goal) {
+          process.stdout.write(`    Goal: ${scenario.goal}\n`);
+        }
+        if (scenario.inputs !== undefined) {
+          const payload = formatJsonBlock(scenario.inputs, "      ");
+          if (payload) process.stdout.write(`    Inputs:\n${payload}\n`);
+        }
+        if (scenario.outputs !== undefined) {
+          const payload = formatJsonBlock(scenario.outputs, "      ");
+          if (payload) process.stdout.write(`    Outputs:\n${payload}\n`);
+        }
+        if (scenario.steps && scenario.steps.length > 0) {
+          process.stdout.write("    Steps:\n");
+          let stepIndex = 1;
+          for (const step of scenario.steps) {
+            process.stdout.write(`      ${stepIndex}. ${JSON.stringify(step)}\n`);
+            stepIndex += 1;
+          }
+          continue;
+        }
+        if (scenario.source !== "definition") {
+          process.stdout.write("    Details: Scenario definition not found in recipe.\n");
+        }
+      }
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes explain", root: opts.rootOverride ?? null });
   }
 }
 
 async function cmdRecipeInstall(opts: {
   cwd: string;
   rootOverride?: string;
-  source: string;
+  source: RecipeInstallSource;
+  index?: string;
+  refresh: boolean;
   onConflict: RecipeConflictMode;
-  storage?: RecipeStorageMode;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-
-    const loadedConfig = await loadConfig(resolved.agentplaneDir);
-    const configuredStorage =
-      loadedConfig.config.recipes?.storage_default ?? DEFAULT_RECIPE_STORAGE;
-    const desiredStorage = opts.storage ?? configuredStorage;
-    let actualStorage: RecipeStorageMode = desiredStorage;
     const tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
     try {
       let sourcePath = "";
-      let sourceLabel = opts.source;
+      let sourceLabel = "";
       let expectedSha = "";
+      let indexTags: string[] = [];
 
-      if (isHttpUrl(opts.source)) {
-        const url = new URL(opts.source);
-        const filename = path.basename(url.pathname) || "recipe.tar.gz";
-        sourcePath = path.join(tempRoot, filename);
-        await downloadToFile(opts.source, sourcePath);
-      } else {
-        const candidate = await resolvePathFallback(opts.source);
-        if (await fileExists(candidate)) {
-          sourcePath = candidate;
-        } else {
-          const index = await loadRecipesRemoteIndex({
-            resolved,
-            cwd: opts.cwd,
-            refresh: false,
+      const resolveFromIndex = async (recipeId: string): Promise<string> => {
+        const index = await loadRecipesRemoteIndex({
+          cwd: opts.cwd,
+          source: opts.index,
+          refresh: opts.refresh,
+        });
+        const entry = index.recipes.find((recipe) => recipe.id === recipeId);
+        if (!entry) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_IO",
+            message: `Recipe not found in remote index: ${recipeId}`,
           });
-          const entry = index.recipes.find((recipe) => recipe.id === opts.source);
-          if (!entry) {
+        }
+        const latest = [...entry.versions]
+          .toSorted((a, b) => a.version.localeCompare(b.version))
+          .at(-1);
+        if (!latest) {
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message: `Recipe ${entry.id} has no versions in the remote index`,
+          });
+        }
+        expectedSha = latest.sha256;
+        sourceLabel = `${entry.id}@${latest.version}`;
+        indexTags = normalizeRecipeTags(latest.tags ?? []);
+
+        if (isHttpUrl(latest.url)) {
+          const url = new URL(latest.url);
+          const filename = path.basename(url.pathname) || "recipe.tar.gz";
+          const target = path.join(tempRoot, filename);
+          await downloadToFile(latest.url, target);
+          return target;
+        }
+        const resolved = path.resolve(opts.cwd, latest.url);
+        if (!(await fileExists(resolved))) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_IO",
+            message: `Recipe archive not found: ${latest.url}`,
+          });
+        }
+        return resolved;
+      };
+
+      const resolveSourcePath = async (source: RecipeInstallSource): Promise<string> => {
+        if (source.type === "name") return await resolveFromIndex(source.value);
+        if (source.type === "url") {
+          const url = new URL(source.value);
+          const filename = path.basename(url.pathname) || "recipe.tar.gz";
+          const target = path.join(tempRoot, filename);
+          sourceLabel = source.value;
+          await downloadToFile(source.value, target);
+          return target;
+        }
+        if (source.type === "path") {
+          const candidate = await resolvePathFallback(source.value);
+          if (!(await fileExists(candidate))) {
             throw new CliError({
               exitCode: 5,
               code: "E_IO",
-              message: `Recipe not found in remote index: ${opts.source}`,
+              message: `Recipe archive not found: ${source.value}`,
             });
           }
-          const latest = [...entry.versions]
-            .toSorted((a, b) => a.version.localeCompare(b.version))
-            .at(-1);
-          if (!latest) {
-            throw new CliError({
-              exitCode: 3,
-              code: "E_VALIDATION",
-              message: `Recipe ${entry.id} has no versions in the remote index`,
-            });
-          }
-          expectedSha = latest.sha256;
-          sourceLabel = `${entry.id}@${latest.version}`;
-
-          if (isHttpUrl(latest.url)) {
-            const url = new URL(latest.url);
-            const filename = path.basename(url.pathname) || "recipe.tar.gz";
-            sourcePath = path.join(tempRoot, filename);
-            await downloadToFile(latest.url, sourcePath);
-          } else {
-            sourcePath = path.resolve(opts.cwd, latest.url);
-            if (!(await fileExists(sourcePath))) {
-              throw new CliError({
-                exitCode: 5,
-                code: "E_IO",
-                message: `Recipe archive not found: ${latest.url}`,
-              });
-            }
-          }
-
-          const actualSha = await sha256File(sourcePath);
-          if (expectedSha && actualSha !== expectedSha) {
-            throw new CliError({
-              exitCode: 3,
-              code: "E_VALIDATION",
-              message: `Recipe checksum mismatch for ${sourceLabel}`,
-            });
-          }
+          sourceLabel = candidate;
+          return candidate;
         }
-      }
+        if (isHttpUrl(source.value)) {
+          return await resolveSourcePath({ type: "url", value: source.value });
+        }
+        const candidate = await resolvePathFallback(source.value);
+        if (await fileExists(candidate)) {
+          return await resolveSourcePath({ type: "path", value: source.value });
+        }
+        return await resolveSourcePath({ type: "name", value: source.value });
+      };
 
-      if (!sourcePath) {
+      sourcePath = await resolveSourcePath(opts.source);
+      if (!sourceLabel) sourceLabel = opts.source.value;
+
+      const actualSha = expectedSha ? await sha256File(sourcePath) : "";
+      if (expectedSha && actualSha !== expectedSha) {
         throw new CliError({
-          exitCode: 5,
-          code: "E_IO",
-          message: `Recipe archive not found: ${opts.source}`,
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Recipe checksum mismatch for ${sourceLabel}`,
         });
       }
 
       await extractArchive(sourcePath, tempRoot);
       const recipeRoot = await resolveRecipeRoot(tempRoot);
       const manifest = await readRecipeManifest(path.join(recipeRoot, "manifest.json"));
+      const resolvedTags =
+        manifest.tags && manifest.tags.length > 0 ? manifest.tags : normalizeRecipeTags(indexTags);
+      const manifestWithTags =
+        resolvedTags.length > 0 ? { ...manifest, tags: resolvedTags } : manifest;
 
-      const cacheDir = resolveRecipeCacheDir(manifest);
-      const cacheKind = await getPathKind(cacheDir);
-      if (cacheKind && cacheKind !== "dir") {
+      const installDir = resolveInstalledRecipeDir(manifestWithTags);
+      const installKind = await getPathKind(installDir);
+      if (installKind && installKind !== "dir") {
         throw new CliError({
           exitCode: 5,
           code: "E_IO",
-          message: `Recipe cache path is not a directory: ${cacheDir}`,
+          message: `Recipe install path is not a directory: ${installDir}`,
         });
       }
 
-      if (!cacheKind) {
-        await mkdir(path.dirname(cacheDir), { recursive: true });
-        await mkdir(resolveGlobalRecipesDir(), { recursive: true });
-        await rename(recipeRoot, cacheDir);
-      } else if (!(await fileExists(path.join(cacheDir, "manifest.json")))) {
-        await rm(cacheDir, { recursive: true, force: true });
-        await mkdir(path.dirname(cacheDir), { recursive: true });
-        await mkdir(resolveGlobalRecipesDir(), { recursive: true });
-        await rename(recipeRoot, cacheDir);
+      const hadExisting = Boolean(installKind);
+      if (installKind) {
+        await rm(installDir, { recursive: true, force: true });
+      }
+      await mkdir(path.dirname(installDir), { recursive: true });
+      await mkdir(resolveGlobalRecipesDir(), { recursive: true });
+      try {
+        await rename(recipeRoot, installDir);
+      } catch (err) {
+        const code = (err as { code?: string } | null)?.code;
+        if (code === "EXDEV") {
+          await cp(recipeRoot, installDir, { recursive: true });
+        } else {
+          throw err;
+        }
       }
 
       try {
-        await applyRecipeAgents({
-          manifest,
-          recipeDir: cacheDir,
-          agentplaneDir: resolved.agentplaneDir,
-          onConflict: opts.onConflict,
+        const project = await maybeResolveProject({
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride ?? null,
         });
-        await applyRecipeScenarios({ manifest, recipeDir: cacheDir });
+        if (project) {
+          await applyRecipeAgents({
+            manifest: manifestWithTags,
+            recipeDir: installDir,
+            agentplaneDir: project.agentplaneDir,
+            onConflict: opts.onConflict,
+          });
+        }
+        await applyRecipeScenarios({ manifest: manifestWithTags, recipeDir: installDir });
       } catch (err) {
-        if (!cacheKind) {
-          await rm(cacheDir, { recursive: true, force: true });
+        if (!hadExisting) {
+          await rm(installDir, { recursive: true, force: true });
         }
         throw err;
       }
 
-      const recipesDir = path.join(resolved.agentplaneDir, RECIPES_DIR_NAME);
-      const destDir = path.join(recipesDir, manifest.id, manifest.version);
-      if (desiredStorage !== "global") {
-        if (await fileExists(destDir)) {
-          throw new CliError({
-            exitCode: 5,
-            code: "E_IO",
-            message: `Recipe already installed: ${manifest.id}@${manifest.version}`,
-          });
-        }
-        await mkdir(path.dirname(destDir), { recursive: true });
-        await mkdir(recipesDir, { recursive: true });
-        if (desiredStorage === "link") {
-          try {
-            await symlink(cacheDir, destDir, "junction");
-          } catch {
-            actualStorage = "copy";
-            await cp(cacheDir, destDir, { recursive: true, force: false, errorOnExist: true });
-            process.stdout.write(
-              `Warning: symlink failed; copied recipe ${manifest.id}@${manifest.version} instead.\n`,
-            );
-          }
-        } else {
-          await cp(cacheDir, destDir, { recursive: true, force: false, errorOnExist: true });
-        }
-      }
-
-      const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
-      const lock = await readRecipesLock(lockPath);
-      const sha256 = await sha256File(sourcePath);
-      const updated = lock.recipes.filter((entry) => entry.id !== manifest.id);
+      const recipesPath = resolveInstalledRecipesPath();
+      const installed = await readInstalledRecipesFile(recipesPath);
+      const updated = installed.recipes.filter((entry) => entry.id !== manifestWithTags.id);
       updated.push({
-        id: manifest.id,
-        version: manifest.version,
-        sha256,
+        id: manifestWithTags.id,
+        version: manifestWithTags.version,
         source: sourceLabel,
-        storage: actualStorage,
+        installed_at: new Date().toISOString(),
+        tags: resolvedTags,
+        manifest: manifestWithTags,
       });
-      const updatedLock = sortRecipesLock({ schema_version: 1, recipes: updated });
-      await writeRecipesLock(lockPath, updatedLock);
-      const indexEntries = await loadRecipesIndexEntries(resolved, updatedLock);
-      await writeRecipesIndex(resolved, indexEntries);
+      await writeInstalledRecipesFile(recipesPath, {
+        schema_version: 1,
+        updated_at: installed.updated_at,
+        recipes: updated,
+      });
 
-      process.stdout.write(`Installed recipe ${manifest.id}@${manifest.version}\n`);
+      process.stdout.write(`Installed recipe ${manifestWithTags.id}@${manifestWithTags.version}\n`);
       return 0;
     } finally {
       await rm(tempRoot, { recursive: true, force: true });
     }
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "recipe install", root: opts.rootOverride ?? null });
+    throw mapCoreError(err, { command: "recipes install", root: opts.rootOverride ?? null });
   }
 }
 
@@ -2604,13 +2834,9 @@ async function cmdRecipeRemove(opts: {
   id: string;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
-    const lock = await readRecipesLock(lockPath);
-    const entry = lock.recipes.find((recipe) => recipe.id === opts.id);
+    const recipesPath = resolveInstalledRecipesPath();
+    const installed = await readInstalledRecipesFile(recipesPath);
+    const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
         exitCode: 5,
@@ -2618,22 +2844,21 @@ async function cmdRecipeRemove(opts: {
         message: `Recipe not installed: ${opts.id}`,
       });
     }
-    if (entry.storage !== "global") {
-      const recipeDir = resolveProjectRecipeDir(resolved, entry);
-      await rm(recipeDir, { recursive: true, force: true });
-    }
+    const recipeDir = resolveInstalledRecipeDir(entry);
+    await rm(recipeDir, { recursive: true, force: true });
 
-    const updated = lock.recipes.filter((recipe) => recipe.id !== opts.id);
-    const updatedLock = sortRecipesLock({ schema_version: 1, recipes: updated });
-    await writeRecipesLock(lockPath, updatedLock);
-    const indexEntries = await loadRecipesIndexEntries(resolved, updatedLock);
-    await writeRecipesIndex(resolved, indexEntries);
+    const updated = installed.recipes.filter((recipe) => recipe.id !== opts.id);
+    await writeInstalledRecipesFile(recipesPath, {
+      schema_version: 1,
+      updated_at: installed.updated_at,
+      recipes: updated,
+    });
 
     process.stdout.write(`Removed recipe ${entry.id}@${entry.version}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "recipe remove", root: opts.rootOverride ?? null });
+    throw mapCoreError(err, { command: "recipes remove", root: opts.rootOverride ?? null });
   }
 }
 
@@ -2671,13 +2896,9 @@ async function cmdRecipeCachePrune(opts: {
 }): Promise<number> {
   const flags = parseRecipeCachePruneArgs(opts.args);
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
     const cacheDir = resolveGlobalRecipesDir();
     if (!(await fileExists(cacheDir))) {
-      process.stdout.write("No recipe cache found.\n");
+      process.stdout.write("No recipes directory found.\n");
       return 0;
     }
 
@@ -2696,13 +2917,17 @@ async function cmdRecipeCachePrune(opts: {
         return 0;
       }
       await rm(cacheDir, { recursive: true, force: true });
+      await writeInstalledRecipesFile(resolveInstalledRecipesPath(), {
+        schema_version: 1,
+        updated_at: "",
+        recipes: [],
+      });
       process.stdout.write(`Removed ${cacheEntries.length} cached recipes.\n`);
       return 0;
     }
 
-    const lockPath = path.join(resolved.agentplaneDir, RECIPES_LOCK_NAME);
-    const lock = await readRecipesLock(lockPath);
-    const keep = new Set(lock.recipes.map((entry) => `${entry.id}@${entry.version}`));
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const keep = new Set(installed.recipes.map((entry) => `${entry.id}@${entry.version}`));
     const prune = cacheEntries.filter((entry) => !keep.has(`${entry.id}@${entry.version}`));
 
     if (prune.length === 0) {
@@ -2734,7 +2959,7 @@ async function cmdRecipeCachePrune(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "recipe cache prune", root: opts.rootOverride ?? null });
+    throw mapCoreError(err, { command: "recipes cache prune", root: opts.rootOverride ?? null });
   }
 }
 
@@ -9080,16 +9305,17 @@ export async function runCli(argv: string[]): Promise<number> {
       throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_USAGE });
     }
 
-    if (namespace === "recipe") {
+    if (namespace === "recipe" || namespace === "recipes") {
       const subcommand = command;
       if (!subcommand) {
         throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
       }
       if (subcommand === "list") {
-        if (args.length > 0) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
-        }
-        return await cmdRecipeList({ cwd: process.cwd(), rootOverride: globals.root });
+        return await cmdRecipeList({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          args,
+        });
       }
       if (subcommand === "list-remote") {
         return await cmdRecipeListRemote({
@@ -9108,14 +9334,25 @@ export async function runCli(argv: string[]): Promise<number> {
           id: args[0],
         });
       }
+      if (subcommand === "explain") {
+        if (args.length !== 1) {
+          throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_EXPLAIN_USAGE });
+        }
+        return await cmdRecipeExplain({
+          cwd: process.cwd(),
+          rootOverride: globals.root,
+          id: args[0],
+        });
+      }
       if (subcommand === "install") {
         const parsed = parseRecipeInstallArgs(args);
         return await cmdRecipeInstall({
           cwd: process.cwd(),
           rootOverride: globals.root,
           source: parsed.source,
+          index: parsed.index,
+          refresh: parsed.refresh,
           onConflict: parsed.onConflict,
-          storage: parsed.storage,
         });
       }
       if (subcommand === "remove") {

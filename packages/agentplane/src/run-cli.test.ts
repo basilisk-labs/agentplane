@@ -103,12 +103,20 @@ async function writeConfig(root: string, config: ReturnType<typeof defaultConfig
   await writeFile(configPath, JSON.stringify(config, null, 2), "utf8");
 }
 
+async function resetAgentplaneHomeRecipes(): Promise<void> {
+  if (!agentplaneHome) return;
+  await rm(path.join(agentplaneHome, "recipes"), { recursive: true, force: true });
+  await rm(path.join(agentplaneHome, "recipes.json"), { force: true });
+  await rm(path.join(agentplaneHome, "recipes-index.json"), { force: true });
+}
+
 async function createRecipeArchive(opts?: {
   id?: string;
   version?: string;
   name?: string;
   summary?: string;
   description?: string;
+  tags?: string[];
   format?: "tar" | "zip";
   wrapDir?: boolean;
 }): Promise<{ archivePath: string; manifest: Record<string, unknown> }> {
@@ -116,7 +124,7 @@ async function createRecipeArchive(opts?: {
   const baseDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
   const recipeDir = path.join(baseDir, opts?.wrapDir ? "bundle" : "recipe");
   await mkdir(recipeDir, { recursive: true });
-  const manifest = {
+  const manifest: Record<string, unknown> = {
     schema_version: "1",
     id: opts?.id ?? "viewer",
     version: opts?.version ?? "1.2.3",
@@ -129,6 +137,9 @@ async function createRecipeArchive(opts?: {
     ],
     scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
   };
+  if (opts?.tags) {
+    manifest.tags = opts.tags;
+  }
   await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
   const agentsDir = path.join(recipeDir, "agents");
   await mkdir(agentsDir, { recursive: true });
@@ -1703,22 +1714,22 @@ describe("runCli", () => {
     try {
       const code = await runCli(["quickstart", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("agentplane (v1 prototype)");
-      expect(io.stdout).toContain("Usage:");
+      expect(io.stdout).toContain("agentplane quickstart");
+      expect(io.stdout).toContain("agentplane init");
     } finally {
       io.restore();
     }
   });
 
-  it("role prints CLI help output", async () => {
+  it("role prints role guidance", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const io = captureStdIO();
     try {
       const code = await runCli(["role", "CODER", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("agentplane (v1 prototype)");
-      expect(io.stdout).toContain("Usage:");
+      expect(io.stdout).toContain("### CODER");
+      expect(io.stdout).toContain("agentplane start");
     } finally {
       io.restore();
     }
@@ -7598,14 +7609,14 @@ describe("runCli", () => {
     expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
   });
 
-  it("recipe install/list/info/remove manages local recipes", async () => {
+  it("recipes install/list/info/remove manages installed recipes", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
+    const { archivePath, manifest } = await createRecipeArchive({ tags: ["viewer", "ui"] });
 
     const ioInstall = captureStdIO();
     try {
-      const code = await runCli(["recipe", "install", archivePath, "--root", root]);
+      const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
       expect(code).toBe(0);
       expect(ioInstall.stdout).toContain("Installed recipe");
     } finally {
@@ -7615,8 +7626,7 @@ describe("runCli", () => {
     const manifestId = String(manifest.id);
     const manifestVersion = String(manifest.version);
     const installedManifestPath = path.join(
-      root,
-      ".agentplane",
+      agentplaneHome ?? "",
       "recipes",
       manifestId,
       manifestVersion,
@@ -7633,8 +7643,7 @@ describe("runCli", () => {
     const installedAgentText = await readFile(installedAgentPath, "utf8");
     expect(installedAgentText).toContain(`"id": "${manifestId}__RECIPE_AGENT"`);
     const scenariosPath = path.join(
-      root,
-      ".agentplane",
+      agentplaneHome ?? "",
       "recipes",
       manifestId,
       manifestVersion,
@@ -7642,30 +7651,41 @@ describe("runCli", () => {
     );
     expect(await pathExists(scenariosPath)).toBe(true);
 
-    const lockPath = path.join(root, ".agentplane", "recipes.lock.json");
-    const lockText = await readFile(lockPath, "utf8");
-    expect(lockText).toContain(manifestId);
-    expect(lockText).toContain(manifestVersion);
-
-    const indexPath = path.join(root, ".agentplane", "RECIPES.md");
-    const indexText = await readFile(indexPath, "utf8");
-    expect(indexText).toContain(String(manifest.summary));
+    const recipesPath = path.join(agentplaneHome ?? "", "recipes.json");
+    const recipesText = await readFile(recipesPath, "utf8");
+    const recipesData = JSON.parse(recipesText) as {
+      recipes: { id: string; version: string; tags?: string[] }[];
+    };
+    const installedEntry = recipesData.recipes.find((entry) => entry.id === manifestId);
+    expect(installedEntry?.version).toBe(manifestVersion);
+    expect(installedEntry?.tags).toContain("viewer");
 
     const ioList = captureStdIO();
     try {
-      const code = await runCli(["recipe", "list", "--root", root]);
+      const code = await runCli(["recipes", "list"]);
       expect(code).toBe(0);
       expect(ioList.stdout).toContain(`${manifestId}@${manifestVersion}`);
     } finally {
       ioList.restore();
     }
 
+    const ioListFull = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "list", "--full"]);
+      expect(code).toBe(0);
+      expect(ioListFull.stdout).toContain(`"${manifestId}"`);
+      expect(ioListFull.stdout).toContain(`"${manifestVersion}"`);
+    } finally {
+      ioListFull.restore();
+    }
+
     const ioInfo = captureStdIO();
     try {
-      const code = await runCli(["recipe", "info", manifestId, "--root", root]);
+      const code = await runCli(["recipes", "info", manifestId]);
       expect(code).toBe(0);
       expect(ioInfo.stdout).toContain(`Recipe: ${manifestId}@${manifestVersion}`);
       expect(ioInfo.stdout).toContain(String(manifest.description));
+      expect(ioInfo.stdout).toContain("Tags:");
       expect(ioInfo.stdout).toContain("Agents:");
       expect(ioInfo.stdout).toContain("Tools:");
       expect(ioInfo.stdout).toContain("Scenarios:");
@@ -7673,9 +7693,20 @@ describe("runCli", () => {
       ioInfo.restore();
     }
 
+    const ioExplain = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "explain", manifestId]);
+      expect(code).toBe(0);
+      expect(ioExplain.stdout).toContain(`Recipe: ${manifestId}@${manifestVersion}`);
+      expect(ioExplain.stdout).toContain("Scenarios:");
+      expect(ioExplain.stdout).toContain("Goal:");
+    } finally {
+      ioExplain.restore();
+    }
+
     const ioRemove = captureStdIO();
     try {
-      const code = await runCli(["recipe", "remove", manifestId, "--root", root]);
+      const code = await runCli(["recipes", "remove", manifestId]);
       expect(code).toBe(0);
       expect(ioRemove.stdout).toContain("Removed recipe");
     } finally {
@@ -7683,168 +7714,65 @@ describe("runCli", () => {
     }
 
     expect(
-      await pathExists(path.join(root, ".agentplane", "recipes", manifestId, manifestVersion)),
+      await pathExists(path.join(agentplaneHome ?? "", "recipes", manifestId, manifestVersion)),
     ).toBe(false);
   });
 
-  it("recipe install supports global-only storage", async () => {
+  it("recipes list filters by tag", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive();
+    const { archivePath: alphaArchive } = await createRecipeArchive({
+      id: "alpha",
+      tags: ["infra", "viewer"],
+    });
+    const { archivePath: betaArchive } = await createRecipeArchive({
+      id: "beta",
+      tags: ["analysis"],
+    });
+
+    await runCli(["recipes", "install", "--path", alphaArchive, "--root", root]);
+    await runCli(["recipes", "install", "--path", betaArchive, "--root", root]);
 
     const io = captureStdIO();
     try {
-      const code = await runCli([
-        "recipe",
-        "install",
-        archivePath,
-        "--storage",
-        "global",
-        "--root",
-        root,
-      ]);
+      const code = await runCli(["recipes", "list", "--tag", "viewer"]);
       expect(code).toBe(0);
+      expect(io.stdout).toContain("alpha@");
+      expect(io.stdout).not.toContain("beta@");
     } finally {
       io.restore();
     }
-
-    const manifestId = String(manifest.id);
-    const manifestVersion = String(manifest.version);
-    const projectManifestPath = path.join(
-      root,
-      ".agentplane",
-      "recipes",
-      manifestId,
-      manifestVersion,
-      "manifest.json",
-    );
-    expect(await pathExists(projectManifestPath)).toBe(false);
-
-    const cacheManifestPath = path.join(
-      agentplaneHome ?? "",
-      "recipes-cache",
-      manifestId,
-      manifestVersion,
-      "manifest.json",
-    );
-    expect(await pathExists(cacheManifestPath)).toBe(true);
   });
 
-  it("recipe install uses config storage default when flag omitted", async () => {
-    const root = await mkGitRepoRoot();
-    const config = defaultConfig();
-    config.recipes = { storage_default: "global" };
-    await writeConfig(root, config);
-    const { archivePath, manifest } = await createRecipeArchive({ id: "config-default" });
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["recipe", "install", archivePath, "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-
-    const manifestId = String(manifest.id);
-    const manifestVersion = String(manifest.version);
-    const projectManifestPath = path.join(
-      root,
-      ".agentplane",
-      "recipes",
-      manifestId,
-      manifestVersion,
-      "manifest.json",
-    );
-    expect(await pathExists(projectManifestPath)).toBe(false);
-
-    const cacheManifestPath = path.join(
-      agentplaneHome ?? "",
-      "recipes-cache",
-      manifestId,
-      manifestVersion,
-      "manifest.json",
-    );
-    expect(await pathExists(cacheManifestPath)).toBe(true);
-  });
-
-  it("recipe cache prune removes unreferenced cached recipes", async () => {
+  it("recipes cache prune removes unreferenced installed directories", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const { archivePath: alphaArchive, manifest: alphaManifest } = await createRecipeArchive({
       id: "cache-alpha",
     });
-    const { archivePath: betaArchive, manifest: betaManifest } = await createRecipeArchive({
-      id: "cache-beta",
-      version: "9.9.9",
-    });
 
-    await runCli(["recipe", "install", alphaArchive, "--root", root]);
-    await runCli(["recipe", "install", betaArchive, "--storage", "global", "--root", root]);
-    await runCli(["recipe", "remove", String(betaManifest.id), "--root", root]);
-
-    const betaCacheManifestPath = path.join(
-      agentplaneHome ?? "",
-      "recipes-cache",
-      String(betaManifest.id),
-      String(betaManifest.version),
-      "manifest.json",
-    );
-    expect(await pathExists(betaCacheManifestPath)).toBe(true);
+    await runCli(["recipes", "install", "--path", alphaArchive, "--root", root]);
+    const strayDir = path.join(agentplaneHome ?? "", "recipes", "cache-beta", "9.9.9");
+    await mkdir(strayDir, { recursive: true });
+    expect(await pathExists(strayDir)).toBe(true);
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "cache", "prune", "--root", root]);
+      const code = await runCli(["recipes", "cache", "prune"]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("Removed");
     } finally {
       io.restore();
     }
 
-    expect(await pathExists(betaCacheManifestPath)).toBe(false);
-    const alphaCacheManifestPath = path.join(
+    expect(await pathExists(strayDir)).toBe(false);
+    const alphaInstallPath = path.join(
       agentplaneHome ?? "",
-      "recipes-cache",
+      "recipes",
       String(alphaManifest.id),
       String(alphaManifest.version),
-      "manifest.json",
     );
-    expect(await pathExists(alphaCacheManifestPath)).toBe(true);
-  });
-
-  it("recipe list syncs RECIPES.md with manifest summaries", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const { archivePath, manifest } = await createRecipeArchive({ summary: "Original summary" });
-
-    await runCli(["recipe", "install", archivePath, "--root", root]);
-
-    const manifestId = String(manifest.id);
-    const manifestVersion = String(manifest.version);
-    const manifestPath = path.join(
-      root,
-      ".agentplane",
-      "recipes",
-      manifestId,
-      manifestVersion,
-      "manifest.json",
-    );
-    const updatedManifest = {
-      ...manifest,
-      summary: "Updated summary",
-    };
-    await writeFile(manifestPath, JSON.stringify(updatedManifest, null, 2), "utf8");
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["recipe", "list", "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("Updated summary");
-    } finally {
-      io.restore();
-    }
-
-    const indexText = await readFile(path.join(root, ".agentplane", "RECIPES.md"), "utf8");
-    expect(indexText).toContain("Updated summary");
+    expect(await pathExists(alphaInstallPath)).toBe(true);
   });
 
   it("scenario list and info read installed recipe scenarios", async () => {
@@ -7853,7 +7781,7 @@ describe("runCli", () => {
     const { archivePath, manifest } = await createRecipeArchive();
     const manifestId = String(manifest.id);
 
-    await runCli(["recipe", "install", archivePath, "--root", root]);
+    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
 
     const ioList = captureStdIO();
     try {
@@ -7889,7 +7817,7 @@ describe("runCli", () => {
     const { archivePath, manifest } = await createRecipeArchive();
     const manifestId = String(manifest.id);
 
-    await runCli(["recipe", "install", archivePath, "--root", root]);
+    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -8058,7 +7986,7 @@ describe("runCli", () => {
     }
   });
 
-  it("recipe install renames agents on conflict when requested", async () => {
+  it("recipes install renames agents on conflict when requested", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const agentsDir = path.join(root, ".agentplane", "agents");
@@ -8073,8 +8001,9 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const code = await runCli([
-        "recipe",
+        "recipes",
         "install",
+        "--path",
         archivePath,
         "--on-conflict",
         "rename",
@@ -8092,7 +8021,7 @@ describe("runCli", () => {
     expect(renamedText).toContain(`"id": "viewer__RECIPE_AGENT__1"`);
   });
 
-  it("recipe install accepts zip archives with a top-level folder", async () => {
+  it("recipes install accepts zip archives with a top-level folder", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const { archivePath, manifest } = await createRecipeArchive({
@@ -8104,15 +8033,14 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "install", archivePath, "--root", root]);
+      const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
       expect(code).toBe(0);
     } finally {
       io.restore();
     }
 
     const manifestPath = path.join(
-      root,
-      ".agentplane",
+      agentplaneHome ?? "",
       "recipes",
       String(manifest.id),
       String(manifest.version),
@@ -8121,12 +8049,13 @@ describe("runCli", () => {
     expect(await pathExists(manifestPath)).toBe(true);
   });
 
-  it("recipe list reports when no recipes are installed", async () => {
+  it("recipes list reports when no recipes are installed", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
+    await resetAgentplaneHomeRecipes();
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "list", "--root", root]);
+      const code = await runCli(["recipes", "list"]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("No recipes installed.");
     } finally {
@@ -8134,12 +8063,10 @@ describe("runCli", () => {
     }
   });
 
-  it("recipe list-remote reads cached index", async () => {
+  it("recipes list-remote reads cached index", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const cacheDir = path.join(root, ".agentplane", "cache");
-    await mkdir(cacheDir, { recursive: true });
-    const indexPath = path.join(cacheDir, "recipes-index.json");
+    const indexPath = path.join(agentplaneHome ?? "", "recipes-index.json");
     const index = {
       schema_version: 1,
       recipes: [
@@ -8160,7 +8087,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "list-remote", "--root", root]);
+      const code = await runCli(["recipes", "list-remote"]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("viewer@1.2.3 - Viewer recipe");
     } finally {
@@ -8168,7 +8095,7 @@ describe("runCli", () => {
     }
   });
 
-  it("recipe list-remote refreshes cache from local index", async () => {
+  it("recipes list-remote refreshes cache from local index", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-index-"));
@@ -8193,29 +8120,18 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli([
-        "recipe",
-        "list-remote",
-        "--refresh",
-        "--index",
-        localIndexPath,
-        "--root",
-        root,
-      ]);
+      const code = await runCli(["recipes", "list-remote", "--refresh", "--index", localIndexPath]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("redmine@2.0.0 - Redmine sync");
     } finally {
       io.restore();
     }
 
-    const cacheText = await readFile(
-      path.join(root, ".agentplane", "cache", "recipes-index.json"),
-      "utf8",
-    );
+    const cacheText = await readFile(path.join(agentplaneHome ?? "", "recipes-index.json"), "utf8");
     expect(cacheText).toContain('"redmine"');
   });
 
-  it("recipe install supports id from cached index", async () => {
+  it("recipes install supports id from indexed catalog", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const { archivePath, manifest } = await createRecipeArchive({
@@ -8226,9 +8142,6 @@ describe("runCli", () => {
     const sha256 = createHash("sha256")
       .update(await readFile(archivePath))
       .digest("hex");
-    const cacheDir = path.join(root, ".agentplane", "cache");
-    await mkdir(cacheDir, { recursive: true });
-    const indexPath = path.join(cacheDir, "recipes-index.json");
     const index = {
       schema_version: 1,
       recipes: [
@@ -8245,28 +8158,38 @@ describe("runCli", () => {
         },
       ],
     };
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-index-"));
+    const indexPath = path.join(tempDir, "index.json");
     await writeFile(indexPath, JSON.stringify(index, null, 2), "utf8");
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "install", "viewer", "--root", root]);
+      const code = await runCli([
+        "recipes",
+        "install",
+        "--name",
+        "viewer",
+        "--index",
+        indexPath,
+        "--refresh",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(0);
     } finally {
       io.restore();
     }
 
     const manifestPath = path.join(
-      root,
-      ".agentplane",
       "recipes",
       String(manifest.id),
       String(manifest.version),
       "manifest.json",
     );
-    expect(await pathExists(manifestPath)).toBe(true);
+    expect(await pathExists(path.join(agentplaneHome ?? "", manifestPath))).toBe(true);
   });
 
-  it("recipe install rejects unsupported archives", async () => {
+  it("recipes install rejects unsupported archives", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const filePath = path.join(root, "recipe.txt");
@@ -8274,79 +8197,98 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "install", filePath, "--root", root]);
+      const code = await runCli(["recipes", "install", "--path", filePath, "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipe install");
+      expect(io.stderr).toContain("Usage: agentplane recipes install");
     } finally {
       io.restore();
     }
   });
 
-  it("recipe list rejects extra args", async () => {
+  it("recipes list rejects extra args", async () => {
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "list", "extra"]);
+      const code = await runCli(["recipes", "list", "extra"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipe");
+      expect(io.stderr).toContain("Usage: agentplane recipes");
     } finally {
       io.restore();
     }
   });
 
-  it("recipe info rejects missing id", async () => {
+  it("recipes info rejects missing id", async () => {
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "info"]);
+      const code = await runCli(["recipes", "info"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipe info");
+      expect(io.stderr).toContain("Usage: agentplane recipes info");
     } finally {
       io.restore();
     }
   });
 
-  it("recipe rejects missing subcommand", async () => {
+  it("recipes explain rejects missing id", async () => {
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe"]);
+      const code = await runCli(["recipes", "explain"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipe");
+      expect(io.stderr).toContain("Usage: agentplane recipes explain");
     } finally {
       io.restore();
     }
   });
 
-  it("recipe rejects unknown subcommand", async () => {
+  it("recipes rejects missing subcommand", async () => {
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "noop"]);
+      const code = await runCli(["recipes"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipe");
+      expect(io.stderr).toContain("Usage: agentplane recipes");
     } finally {
       io.restore();
     }
   });
 
-  it("recipe install rejects extra args", async () => {
+  it("recipes rejects unknown subcommand", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "noop"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane recipes");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes install rejects extra args", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "install", "a.tar.gz", "extra", "--root", root]);
+      const code = await runCli([
+        "recipes",
+        "install",
+        "--path",
+        "a.tar.gz",
+        "extra",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipe install");
+      expect(io.stderr).toContain("Usage: agentplane recipes install");
     } finally {
       io.restore();
     }
   });
 
-  it("recipe remove rejects extra args", async () => {
+  it("recipes remove rejects extra args", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipe", "remove", "id", "extra", "--root", root]);
+      const code = await runCli(["recipes", "remove", "id", "extra", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipe remove");
+      expect(io.stderr).toContain("Usage: agentplane recipes remove");
     } finally {
       io.restore();
     }

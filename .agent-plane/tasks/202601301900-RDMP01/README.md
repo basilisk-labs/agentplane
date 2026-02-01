@@ -7,27 +7,27 @@ owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["docs", "roadmap", "cleanup"]
 doc_version: 2
-doc_updated_at: "2026-01-30T16:32:33+00:00"
+doc_updated_at: "2026-02-01T13:03:42+00:00"
 doc_updated_by: "agentctl"
 description: "Read ROADMAP.md, verify implemented items against current code/docs, and remove completed entries from roadmap."
 ---
 ## Summary
 
-Removed implemented roadmap items from ROADMAP.md after comparing with current repository state.
+Added a minimal ROADMAP.md that points to current audits/docs and clarifies that milestones are tracked via tasks.
 
 ## Scope
 
-ROADMAP.md only: removed completed AP-001..AP-044 plan section and milestones, renumbered Risks section to 5).
+ROADMAP.md (new minimal roadmap overview and references).
 
 ## Risks
 
-Risk: roadmap now lacks a remaining-tasks list; if any AP items are still incomplete, they would need to be re-added.
+Roadmap is now high-level; future milestones must be added explicitly to keep the file useful.
 
 ## Verify Steps
 
-Not run (doc-only change).
+Review ROADMAP.md for accuracy and references.
 
 ## Rollback Plan
 
-Restore ROADMAP.md from git to re-add removed sections.
+Remove ROADMAP.md or revert the commit to restore prior state.
 

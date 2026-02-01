@@ -9,44 +9,27 @@ tags: ["nodejs", "cli", "help", "packaging"]
 comments:
   - { author: "ORCHESTRATOR", body: "Start: aligning help/quickstart source with CLI manifest and hardening npm publish flow." }
 doc_version: 2
-doc_updated_at: "2026-01-30T15:17:30+00:00"
+doc_updated_at: "2026-02-01T13:03:00+00:00"
 doc_updated_by: "agentctl"
 description: "Move help/quickstart source into CLI manifest, remove agentctl.md dependency, and harden npm publish with prepack/prepare."
 ---
 ## Summary
 
-- Add a built-in command guide for agentplane quickstart/role output.
-- Remove the Node CLI dependency on agentctl.md and update agent instructions.
-- Add npm prepare/prepack build steps and relax config schema for agentctl_docs_path.
+Quickstart/role now use the built-in command guide, quickstart includes core CLI workflows, and help output lists recipe explain.
 
 ## Scope
 
-- packages/agentplane/src/command-guide.ts
-- packages/agentplane/src/run-cli.ts
-- packages/agentplane/src/run-cli.test.ts
-- packages/agentplane/package.json
-- packages/core/src/config.ts
-- packages/core/src/base-branch.test.ts
-- packages/spec/schemas/config.schema.json
-- packages/spec/examples/config.json
-- AGENTS.md
-- .agent-plane/agents/*.json
-- clean.sh
-- clean.ps1
+packages/agentplane/src/command-guide.ts; packages/agentplane/src/run-cli.ts; packages/agentplane/src/help.ts; packages/agentplane/src/run-cli.test.ts; docs/commands.mdx; docs/cli-contract.mdx; docs/audits/nodejs-parity-matrix.md; docs/audits/parity-report.md.
 
 ## Risks
 
-- Command guide text can drift from actual CLI flags/behavior if not kept in sync.
-- Switching the guidance source from agentctl.md may confuse users who rely on that file.
-- prepare runs `npm run build` for git installs, which requires dev dependencies.
+Command guide text can drift from actual CLI behavior; quickstart/role output changes may surprise existing users.
 
 ## Verify Steps
 
-- bun run build
+bun test packages/agentplane/src/run-cli.test.ts
 
 ## Rollback Plan
 
-- Revert the command-guide module and restore agentctl.md-based quickstart/role behavior.
-- Restore config schema defaults for agentctl_docs_path and update tests/examples accordingly.
-- Remove prepare/prepack script changes if publish behavior regresses.
+Revert the command-guide and CLI quickstart/role changes; restore prior help text if needed.
 
