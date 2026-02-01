@@ -93,7 +93,7 @@ This table lists commands and required minimum flags. Implementation may add add
 | `agentplane guard <subcommand>`        | Staging/commit guardrails                 | See 5.4                                                                     |
 | `agentplane commit <task-id>`          | Guarded `git commit` wrapper              | Enforces commit policy                                                      |
 | `agentplane hooks install              | uninstall`                                | Optional git hooks                                                          | Must be safe/idempotent |
-| `agentplane ide sync`                  | Generate IDE entrypoints from `AGENTS.md` | Cursor + Windsurf                                                           |
+| `agentplane ide sync`                  | Generate IDE entrypoints from the agent policy document | Cursor + Windsurf                                                           |
 | `agentplane scenario list`             | List installed scenarios                  | Uses recipes registry                                                       |
 | `agentplane scenario info <recipe:id>` | Show scenario details                     | `<recipe-id>:<scenario-id>`                                                 |
 | `agentplane scenario run <recipe:id>`  | Run scenario tools                        | Logs to `.agentplane/recipes/<id>/runs/...`                                 |
