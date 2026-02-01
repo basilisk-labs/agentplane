@@ -46,6 +46,7 @@ import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
   loadAgentsTemplate,
+  type WorkflowMode,
 } from "./agents-template.js";
 import { loadDotEnv } from "./env.js";
 import { CliError, formatJsonError } from "./errors.js";
@@ -1578,16 +1579,23 @@ async function cmdInit(opts: {
   args: string[];
 }): Promise<number> {
   const flags = parseInitFlags(opts.args);
-  const defaults = {
+  const defaults: {
+    ide: InitFlags["ide"];
+    workflow: WorkflowMode;
+    hooks: boolean;
+    recipes: string[];
+    requirePlanApproval: boolean;
+    requireNetworkApproval: boolean;
+  } = {
     ide: "none",
     workflow: "direct",
     hooks: false,
-    recipes: [] as string[],
+    recipes: [],
     requirePlanApproval: true,
     requireNetworkApproval: true,
   };
   let ide = flags.ide ?? defaults.ide;
-  let workflow = flags.workflow ?? defaults.workflow;
+  let workflow: WorkflowMode = flags.workflow ?? defaults.workflow;
   let hooks = flags.hooks ?? defaults.hooks;
   let recipes = flags.recipes ?? defaults.recipes;
   let requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
@@ -1615,7 +1623,8 @@ async function cmdInit(opts: {
       ide = await promptChoice("Select IDE", ["none", "cursor", "windsurf", "both"], ide);
     }
     if (!flags.workflow) {
-      workflow = await promptChoice("Select workflow mode", ["direct", "branch_pr"], workflow);
+      const choice = await promptChoice("Select workflow mode", ["direct", "branch_pr"], workflow);
+      workflow = choice === "branch_pr" ? "branch_pr" : "direct";
     }
     if (flags.hooks === undefined) {
       hooks = await promptYesNo("Install git hooks?", hooks);
