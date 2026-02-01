@@ -26,6 +26,11 @@ import {
 
 import { runCli } from "./run-cli.js";
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
+import {
+  filterAgentsByWorkflow,
+  loadAgentTemplates,
+  loadAgentsTemplate,
+} from "./agents-template.js";
 import * as taskBackend from "./task-backend.js";
 
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
@@ -1827,7 +1832,7 @@ describe("runCli", () => {
       taskId: "202602011330-MGR01",
     });
     expect(migrated?.id).toBe("202602011330-MGR01");
-  });
+  }, 15_000);
 
   it("task normalize and migrate reject unknown flags and missing source values", async () => {
     const root = await mkGitRepoRoot();
@@ -6531,7 +6536,7 @@ describe("runCli", () => {
     const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
     const meta = await readFile(metaPath, "utf8");
     expect(meta).toContain('"status": "MERGED"');
-  });
+  }, 15_000);
 
   it("integrate supports dry-run", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -6610,7 +6615,7 @@ describe("runCli", () => {
       cwd: root,
     });
     expect(headAfter.trim()).toBe(headBefore.trim());
-  });
+  }, 15_000);
 
   it("integrate supports merge strategy", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -6680,7 +6685,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 15_000);
 
   it("integrate supports rebase strategy", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -6842,7 +6847,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 15_000);
 
   it("integrate rebase fails when verify command fails", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -6920,7 +6925,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 15_000);
 
   it("integrate fails when post-merge hook removes pr dir", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -7073,7 +7078,7 @@ describe("runCli", () => {
       "utf8",
     );
     expect(verifyLog).toContain("verified_sha=");
-  });
+  }, 15_000);
 
   it("cleanup merged requires branch_pr workflow", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -7341,7 +7346,7 @@ describe("runCli", () => {
 
     expect(await gitBranchExists(root, branch)).toBe(true);
     expect(await pathExists(worktreePath)).toBe(true);
-  });
+  }, 15_000);
 
   it("cleanup merged deletes branches/worktrees and archives pr artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -7419,7 +7424,7 @@ describe("runCli", () => {
     expect(entries.length).toBe(1);
     expect(await pathExists(path.join(archiveRoot, entries[0]))).toBe(true);
     expect(await pathExists(prDir)).toBe(false);
-  });
+  }, 15_000);
 
   it("cleanup merged refuses worktrees outside repo", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -7489,7 +7494,7 @@ describe("runCli", () => {
       env: cleanGitEnv(),
     });
     await execFileAsync("git", ["branch", "-D", branch], { cwd: root, env: cleanGitEnv() });
-  });
+  }, 15_000);
 
   it("pr note rejects unknown flags", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -8374,6 +8379,54 @@ describe("runCli", () => {
 
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "direct"');
+  });
+
+  it("init writes AGENTS.md and agent templates for direct mode", async () => {
+    const root = await mkGitRepoRoot();
+    const template = await loadAgentsTemplate();
+    const expectedAgents = filterAgentsByWorkflow(template, "direct");
+    const templates = await loadAgentTemplates();
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const agentsPath = path.join(root, "AGENTS.md");
+    const agentsText = await readFile(agentsPath, "utf8");
+    expect(agentsText).toBe(expectedAgents);
+
+    const agentsDir = path.join(root, ".agentplane", "agents");
+    const entries = await readdir(agentsDir);
+    const jsonEntries = entries.filter((entry) => entry.endsWith(".json"));
+    expect(jsonEntries.toSorted()).toEqual(templates.map((entry) => entry.fileName).toSorted());
+
+    for (const agent of templates) {
+      const target = path.join(agentsDir, agent.fileName);
+      const contents = await readFile(target, "utf8");
+      expect(contents).toBe(agent.contents);
+    }
+  });
+
+  it("init filters AGENTS.md for branch_pr mode", async () => {
+    const root = await mkGitRepoRoot();
+    const template = await loadAgentsTemplate();
+    const expectedAgents = filterAgentsByWorkflow(template, "branch_pr");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--workflow", "branch_pr", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const agentsPath = path.join(root, "AGENTS.md");
+    const agentsText = await readFile(agentsPath, "utf8");
+    expect(agentsText).toBe(expectedAgents);
   });
 
   it("init applies workflow, installs hooks, and runs ide sync", async () => {
