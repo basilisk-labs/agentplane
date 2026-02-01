@@ -164,9 +164,7 @@ function renderCheatSheet(rows: CheatSheetRow[]): string[] {
 function renderRoleSection(): string[] {
   const lines: string[] = [];
   for (const guide of ROLE_GUIDES) {
-    lines.push(`### ${guide.role}`);
-    lines.push(...guide.lines);
-    lines.push("");
+    lines.push(`### ${guide.role}`, ...guide.lines, "");
   }
   if (lines.at(-1) === "") lines.pop();
   return lines;
@@ -192,7 +190,38 @@ export function renderQuickstart(): string {
     "agentplane CLI is the source of truth for task, PR, verify, and commit commands.",
     "Do not edit `.agentplane/tasks.json` by hand.",
     "",
-    "Use `agentplane quickstart` and `agentplane role <ROLE>` to see command guidance.",
+    "## Project setup",
+    "",
+    "- `agentplane init` (bootstrap `.agentplane/`)",
+    "- `agentplane config show` / `agentplane config set <key> <value>`",
+    "- `agentplane mode get` / `agentplane mode set <direct|branch_pr>`",
+    "- `agentplane ide sync` (regenerate IDE entrypoints)",
+    "",
+    "## Daily task workflow",
+    "",
+    "- `agentplane task list` / `agentplane task show <task-id>`",
+    '- `agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag>`',
+    '- `agentplane start <task-id> --author <ROLE> --body "Start: ..."`',
+    "- `agentplane verify <task-id>`",
+    '- `agentplane finish <task-id> --author <ROLE> --body "Verified: ..."`',
+    "",
+    "## Branch workflow (branch_pr)",
+    "",
+    "- `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
+    "- `agentplane pr open <task-id>` / `agentplane pr update <task-id>` / `agentplane pr check <task-id>`",
+    "- `agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify`",
+    "",
+    "## Recipes and scenarios",
+    "",
+    "- `agentplane recipes list`",
+    "- `agentplane recipes list --tag <tag>`",
+    "- `agentplane recipes explain <id>`",
+    "- `agentplane scenario list`",
+    "- `agentplane scenario run <recipe:scenario>`",
+    "",
+    "## More guidance",
+    "",
+    "- `agentplane quickstart` and `agentplane role <ROLE>` show command guidance.",
     "",
     "## Agent cheat sheet",
     "",
