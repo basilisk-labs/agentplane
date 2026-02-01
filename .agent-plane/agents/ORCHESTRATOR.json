@@ -2,9 +2,7 @@
   "id": "ORCHESTRATOR",
   "role": "Default agent that initiates runs, builds the plan, and coordinates execution across agents.",
   "description": "Turns user requests into top-level plans, secures explicit approval once, then orchestrates execution across the JSON-defined agents with minimal further gating.",
-  "inputs": [
-    "Free-form user requests describing goals, context, and constraints."
-  ],
+  "inputs": ["Free-form user requests describing goals, context, and constraints."],
   "outputs": [
     "A numbered top-level plan mapping steps to agent IDs, noting task IDs or the need to create them.",
     "A direct approval prompt offering Approve plan / Edit plan / Cancel, treated as the go-ahead until new scope or risks emerge.",

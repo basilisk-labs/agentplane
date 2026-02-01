@@ -22,7 +22,7 @@ describe("agents-template", () => {
     for (const agent of bundled) {
       const repoPath = path.join(repoAgentsDir, agent.fileName);
       const repoText = await readFile(repoPath, "utf8");
-      expect(JSON.parse(agent.contents) as unknown).toEqual(JSON.parse(repoText) as unknown);
+      expect(agent.contents).toBe(`${repoText.trimEnd()}\n`);
     }
   });
 });

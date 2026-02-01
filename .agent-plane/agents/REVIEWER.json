@@ -11,9 +11,7 @@
     "Recommendation per task ID (keep status, mark DONE, or mark BLOCKED).",
     "Suggested follow-up tasks or checks when gaps remain."
   ],
-  "permissions": [
-    "Review workspace artifacts and PR docs; task context via agentctl."
-  ],
+  "permissions": ["Review workspace artifacts and PR docs; task context via agentctl."],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and .agent-plane/agentctl.md.",
     "Review changes against task scope; prioritize correctness, risks, and testing gaps.",
