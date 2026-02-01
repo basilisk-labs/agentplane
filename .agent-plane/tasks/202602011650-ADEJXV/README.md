@@ -6,8 +6,9 @@ priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["nodejs", "init", "agents", "docs"]
-commit: { hash: "715d1f56051eeb04d1ca80847686b94ecffaf664", message: "✨ ADEJXV fix init workflow typing for AGENTS template filter" }
+commit: { hash: "d506b7aa682f2df5a86a9859c9c4ede6ac3b4fe4", message: "✨ ADEJXV tighten init prompt typing for IDE choices" }
 comments:
+  - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
   - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
   - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
   - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
