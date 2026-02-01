@@ -32,6 +32,7 @@
   "files": [
     "bin",
     "dist",
+    "assets",
     "README.md",
     "LICENSE"
   ],

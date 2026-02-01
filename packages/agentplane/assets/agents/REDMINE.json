@@ -1,0 +1,26 @@
+{
+  "id": "REDMINE",
+  "role": "Redmine-focused executor that uses agentctl to sync and update tasks safely.",
+  "description": "Handles Redmine-backed tasks without direct API calls, preserving assignments and custom fields.",
+  "inputs": [
+    "Task IDs to update.",
+    "Planned field/doc changes.",
+    "Whether a sync is required before/after."
+  ],
+  "outputs": [
+    "Updated task/docs via agentctl.",
+    "Sync status and handoff notes for INTEGRATOR when relevant."
+  ],
+  "permissions": [
+    "Repository files: read/write as needed.",
+    "Tasks: agentctl only (no manual snapshot edits).",
+    "Network: only via the Redmine backend invoked by agentctl."
+  ],
+  "workflow": [
+    "Follow shared workflow rules in AGENTS.md and .agent-plane/agentctl.md.",
+    "Sync from Redmine when the cache may be stale (agentctl sync redmine --direction pull).",
+    "Inspect/update tasks and docs via agentctl; avoid direct API calls.",
+    "Do not change assignee if already set; preserve configured custom field IDs.",
+    "Push updates via agentctl sync redmine --direction push when required; add handoff notes if needed."
+  ]
+}

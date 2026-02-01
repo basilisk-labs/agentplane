@@ -42,6 +42,11 @@ import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
 import { renderHelp } from "./help.js";
 import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
 import { formatCommentBodyForCommit } from "./comment-format.js";
+import {
+  filterAgentsByWorkflow,
+  loadAgentTemplates,
+  loadAgentsTemplate,
+} from "./agents-template.js";
 import { loadDotEnv } from "./env.js";
 import { CliError, formatJsonError } from "./errors.js";
 import { BackendError, loadTaskBackend, type TaskData } from "./task-backend.js";
@@ -306,20 +311,6 @@ async function cmdModeSet(opts: {
     });
   }
 }
-
-const DEFAULT_AGENTS_MD = [
-  "# AGENTS",
-  "",
-  "This file defines the operating rules for Codex inside your repo.",
-  "Edit this file to update agent behavior and workflow constraints.",
-  "",
-  "## Instructions",
-  "",
-  "- Keep work local to this repo.",
-  "- Use agentplane for task operations and commits.",
-  "- Record every task with Summary, Scope, Risks, Verify Steps, Rollback Plan.",
-  "",
-].join("\n");
 
 type InitFlags = {
   ide?: "none" | "cursor" | "windsurf" | "both";
@@ -1736,7 +1727,16 @@ async function cmdInit(opts: {
 
     const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
     if (!(await fileExists(agentsPath))) {
-      await writeFile(agentsPath, `${DEFAULT_AGENTS_MD}\n`, "utf8");
+      const template = await loadAgentsTemplate();
+      const filtered = filterAgentsByWorkflow(template, workflow);
+      await writeFile(agentsPath, filtered, "utf8");
+    }
+
+    const agentTemplates = await loadAgentTemplates();
+    for (const agent of agentTemplates) {
+      const targetPath = path.join(resolved.agentplaneDir, "agents", agent.fileName);
+      if (await fileExists(targetPath)) continue;
+      await writeFile(targetPath, agent.contents, "utf8");
     }
 
     if (hooks) {
