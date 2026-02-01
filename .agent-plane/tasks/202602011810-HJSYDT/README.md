@@ -1,11 +1,15 @@
 ---
 id: "202602011810-HJSYDT"
 title: "Remove external file references from docs"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs"]
+commit: { hash: "05f17e8b944fc2b8c9cf77a03c5e7af4650bb742", message: "📝 HJSYDT docs cleanup: remove external file references; keep docs self-contained" }
+comments:
+  - { author: "DOCS", body: "verified: removed external file references from docs | details: replaced with self-contained wording and internal links; no functional changes." }
+  - { author: "DOCS", body: "verified: removed external file references from docs | details: replaced with self-contained wording and internal links; no functional changes." }
 doc_version: 2
 doc_updated_at: "2026-02-01T18:12:30+00:00"
 doc_updated_by: "agentctl"

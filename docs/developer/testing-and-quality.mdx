@@ -27,6 +27,14 @@ To run only the CLI integration tests:
 bun run test:cli
 ```
 
+To run specific CLI suites:
+
+```bash
+bun run test:cli:core
+bun run test:cli:recipes
+bun run test:cli:scenario
+```
+
 ## Package-specific checks
 
 ```bash
@@ -59,6 +67,6 @@ By default, hooks run fast tests on pre-commit and full tests on pre-push.
 
 ## Coverage and parity tests
 
-- CLI tests live in `packages/agentplane/src/run-cli.test.ts`.
+- CLI tests live in `packages/agentplane/src/run-cli.core.test.ts`, `packages/agentplane/src/run-cli.recipes.test.ts`, and `packages/agentplane/src/run-cli.scenario.test.ts`.
 - Backend tests live in `packages/agentplane/src/task-backend.test.ts`.
 - Parity audits are documented under `docs/audits/`.
