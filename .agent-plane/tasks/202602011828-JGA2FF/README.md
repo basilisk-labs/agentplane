@@ -1,11 +1,14 @@
 ---
 id: "202602011828-JGA2FF"
 title: "Align agentplane init AGENTS.md generation with templates and workflow mode"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["init", "agents", "docs"]
+commit: { hash: "27817e8a50742b36ce3f2b77ad48fc1dd3f7c70f", message: "📝 JGA2FF align init templates: sync agent text and assert exact match" }
+comments:
+  - { author: "ORCHESTRATOR", body: "verified: ran bun run test:cli:core and bun run test:cli:scenario | details: synced agent template text with repo agents and asserted exact matches." }
 doc_version: 2
 doc_updated_at: "2026-02-01T18:29:21+00:00"
 doc_updated_by: "agentctl"
