@@ -47,6 +47,17 @@ describe("commit-policy", () => {
     expect(result.errors.join("\n")).toContain("commit subject is too generic");
   });
 
+  it("rejects empty subject and task ids without suffix", () => {
+    const result = validateCommitSubject({
+      subject: "   ",
+      taskId: "NO-DASH",
+      genericTokens: ["update", "tasks"],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors.join("\n")).toContain("commit subject must be non-empty");
+    expect(result.errors.join("\n")).toContain("commit subject must include task id or suffix");
+  });
+
   it("integrates with git commit message", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "file.txt"), "hello", "utf8");

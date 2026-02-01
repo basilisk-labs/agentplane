@@ -889,7 +889,7 @@ async function collectRecipeScenarioDetails(
   if (await fileExists(scenariosIndexPath)) {
     const index = await readScenarioIndex(scenariosIndexPath);
     return index.scenarios
-      .map((scenario) => ({
+      .map<RecipeScenarioDetail>((scenario) => ({
         id: scenario.id,
         summary: scenario.summary,
         source: "index",
@@ -900,7 +900,7 @@ async function collectRecipeScenarioDetails(
   const manifestScenarios = manifest.scenarios ?? [];
   if (manifestScenarios.length > 0) {
     return manifestScenarios
-      .map((scenario) => ({
+      .map<RecipeScenarioDetail>((scenario) => ({
         id: scenario?.id ?? "",
         summary: scenario?.summary,
         source: "manifest",
@@ -1972,11 +1972,7 @@ async function cmdIdeSync(opts: { cwd: string; rootOverride?: string }): Promise
   }
 }
 
-function cmdRole(opts: {
-  cwd: string;
-  rootOverride?: string;
-  role: string;
-}): number {
+function cmdRole(opts: { cwd: string; rootOverride?: string; role: string }): number {
   try {
     const roleRaw = opts.role.trim();
     if (!roleRaw) {
@@ -2782,7 +2778,7 @@ async function cmdRecipeInstall(opts: {
       try {
         const project = await maybeResolveProject({
           cwd: opts.cwd,
-          rootOverride: opts.rootOverride ?? null,
+          rootOverride: opts.rootOverride,
         });
         if (project) {
           await applyRecipeAgents({
@@ -7888,14 +7884,14 @@ export async function runCli(argv: string[]): Promise<number> {
           message: "Usage: agentplane quickstart",
         });
       }
-      return await cmdQuickstart({ cwd: process.cwd(), rootOverride: globals.root });
+      return cmdQuickstart({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "role") {
       if (!command || command.startsWith("--") || args.length > 0) {
         throw new CliError({ exitCode: 2, code: "E_USAGE", message: ROLE_USAGE });
       }
-      return await cmdRole({ cwd: process.cwd(), rootOverride: globals.root, role: command });
+      return cmdRole({ cwd: process.cwd(), rootOverride: globals.root, role: command });
     }
 
     if (namespace === "agents") {

@@ -108,4 +108,44 @@ describe("tasks-export", () => {
     expect(malformed?.commit).toEqual({ hash: "abc1234", message: "done" });
     expect(malformed?.comments).toEqual([{ author: "owner", body: "ok" }]);
   });
+
+  it("buildTasksExportSnapshot drops invalid commit and comments", async () => {
+    const root = await mkGitRepoRoot();
+
+    const taskId = "202601010101-ABCDE";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      [
+        "---",
+        `id: "${taskId}"`,
+        "title: 123",
+        "status: TODO",
+        "priority: med",
+        "owner: CODER",
+        "depends_on: []",
+        'tags: ["ok", 1]',
+        'verify: ["run", 2]',
+        'commit: { hash: "", message: "" }',
+        "comments: nope",
+        "doc_version: 2",
+        `doc_updated_at: "${new Date().toISOString()}"`,
+        "doc_updated_by: tester",
+        "description: 999",
+        "---",
+        "## Summary",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const exported = snapshot.tasks.find((t) => t.id === taskId);
+    expect(exported?.commit).toBeNull();
+    expect(exported?.comments).toEqual([]);
+    expect(exported?.tags).toEqual(["ok"]);
+    expect(exported?.verify).toEqual(["run"]);
+    expect(exported?.title).toBe("");
+    expect(exported?.description).toBe("");
+  });
 });
