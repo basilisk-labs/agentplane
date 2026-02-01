@@ -515,7 +515,9 @@ describe("runCli recipes", () => {
       version: "1.0.0",
       summary: "Viewer recipe",
     });
-    const sha256 = createHash("sha256").update(await readFile(archivePath)).digest("hex");
+    const sha256 = createHash("sha256")
+      .update(await readFile(archivePath))
+      .digest("hex");
     const index = {
       schema_version: 1,
       recipes: [

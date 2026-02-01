@@ -1611,10 +1611,20 @@ describe("RedmineBackend (mocked)", () => {
 describe("loadTaskBackend", () => {
   let tempDir = "";
   let originalEnv: NodeJS.ProcessEnv = {};
+  const redmineEnvKeys = [
+    "CODEXSWARM_REDMINE_URL",
+    "CODEXSWARM_REDMINE_API_KEY",
+    "CODEXSWARM_REDMINE_PROJECT_ID",
+    "CODEXSWARM_REDMINE_OWNER",
+    "CODEXSWARM_REDMINE_EXTRA",
+  ] as const;
 
   beforeEach(async () => {
     tempDir = await makeTempDir();
     originalEnv = { ...process.env };
+    for (const key of redmineEnvKeys) {
+      delete process.env[key];
+    }
     await mkdir(path.join(tempDir, ".git"), { recursive: true });
   });
 

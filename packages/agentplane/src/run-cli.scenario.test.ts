@@ -200,7 +200,7 @@ describe("runCli scenario", () => {
     const runDir = path.join(runsRoot, runs[0]);
     const artifactPath = path.join(runDir, "artifact.txt");
     expect(await pathExists(artifactPath)).toBe(true);
-  }, 15000);
+  }, 15_000);
 
   it("scenario rejects unknown subcommands", async () => {
     const root = await mkGitRepoRoot();

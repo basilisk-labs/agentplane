@@ -7,7 +7,7 @@ owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["testing"]
 doc_version: 2
-doc_updated_at: "2026-02-01T18:05:22+00:00"
+doc_updated_at: "2026-02-01T18:21:50+00:00"
 doc_updated_by: "agentctl"
 description: "Speed up slow/flaky tests, split heavy suites, and refine fast/full test entrypoints."
 ---
@@ -29,8 +29,8 @@ Speed up and stabilize tests by splitting slow suites, refining fast/full entryp
 
 ## Verify Steps
 
-- bun run test:fast
-- bun run test:full (or targeted suites if configured)
+- bun run test:cli:scenario
+- bun run test:cli:recipes
 
 ## Rollback Plan
 
