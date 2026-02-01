@@ -19,6 +19,10 @@
     "name": { "type": "string", "minLength": 1 },
     "summary": { "type": "string", "minLength": 1, "maxLength": 200 },
     "description": { "type": "string", "minLength": 1 },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
     "agents": {
       "type": "array",
       "items": { "$ref": "#/$defs/agent" }
