@@ -14,6 +14,8 @@ jobs:
   publish:
     environment: npm
     runs-on: ubuntu-latest
+    env:
+      NPM_CONFIG_PROVENANCE: "true"
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
@@ -26,7 +28,7 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run --filter=@agentplaneorg/core build
       - run: bun run --filter=agentplane build
-      - run: npm publish --access public
+      - run: npm publish --provenance --access public
         working-directory: packages/core
-      - run: npm publish --access public
+      - run: npm publish --provenance --access public
         working-directory: packages/agentplane
