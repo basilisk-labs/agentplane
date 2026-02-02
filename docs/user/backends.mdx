@@ -9,8 +9,8 @@ A backend defines where tasks are stored and how synchronization happens. The CL
 
 ## Local backend (default)
 
-- Stores tasks under `.agent-plane/tasks/` as structured READMEs.
-- Exports snapshots to `.agent-plane/tasks.json` for integrations.
+- Stores tasks under `.agentplane/tasks/` as structured READMEs.
+- Exports snapshots to `.agentplane/tasks.json` for integrations.
 - Supports task docs, comments, and metadata enforcement.
 
 ## Remote backends
@@ -48,7 +48,7 @@ Example:
 ```json
 {
   "tasks_backend": {
-    "config_path": ".agent-plane/backends/local/backend.json"
+    "config_path": ".agentplane/backends/local/backend.json"
   }
 }
 ```
@@ -56,5 +56,5 @@ Example:
 ## Adding a backend
 
 - Implement the backend interface in the CLI.
-- Provide a config template under `.agent-plane/backends/<id>/`.
+- Provide a config template under `.agentplane/backends/<id>/`.
 - Document required fields and safety caveats.

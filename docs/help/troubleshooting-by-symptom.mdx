@@ -47,7 +47,7 @@ description: "Common problems and how to fix them quickly."
 
 - Ensure `workflow_mode` is `branch_pr`.
 - Use `agentplane work start <task-id> ... --worktree` to create a valid worktree.
-- Check that worktrees live under `.agent-plane/worktrees`.
+- Check that worktrees live under `.agentplane/worktrees`.
 
 ## Recipe fails due to missing inputs
 
@@ -73,6 +73,6 @@ description: "Common problems and how to fix them quickly."
 
 **Fix:**
 
-- Confirm backend settings in `.agent-plane/backends/<id>/backend.json`.
+- Confirm backend settings in `.agentplane/backends/<id>/backend.json`.
 - Retry with `--direction pull` to refresh local cache.
 - Check custom field mappings if using Redmine.

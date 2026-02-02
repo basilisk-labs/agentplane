@@ -5,7 +5,7 @@ description: "How tasks are stored and how backends are configured."
 
 ## Task storage
 
-Tasks are stored under `.agent-plane/tasks/` as README files with frontmatter. Each task includes:
+Tasks are stored under `.agentplane/tasks/` as README files with frontmatter. Each task includes:
 
 - Status, owner, priority, tags.
 - Structured doc sections (Summary, Scope, Risks, Verify Steps, Rollback Plan).
@@ -14,7 +14,7 @@ See [Task lifecycle](task-lifecycle) for how these files are created and finaliz
 
 ## Task export
 
-A snapshot export is written to `.agent-plane/tasks.json` for integrations.
+A snapshot export is written to `.agentplane/tasks.json` for integrations.
 
 ```bash
 agentplane task export
@@ -27,7 +27,7 @@ The active backend is configured in `.agentplane/config.json`:
 ```json
 {
   "tasks_backend": {
-    "config_path": ".agent-plane/backends/local/backend.json"
+    "config_path": ".agentplane/backends/local/backend.json"
   }
 }
 ```
@@ -46,5 +46,5 @@ Conflict strategies: `diff`, `prefer-local`, `prefer-remote`, `fail`.
 
 ## Notes
 
-- Treat `.agent-plane/tasks.json` as a derived snapshot.
+- Treat `.agentplane/tasks.json` as a derived snapshot.
 - Prefer `agentplane task doc set` for README updates.

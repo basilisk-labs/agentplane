@@ -15,13 +15,14 @@ Agent Plane is a monorepo. The CLI is published as `agentplane`, and supporting 
 - Spec package — JSON schemas + examples for file formats.
 - `packages/testkit/` — internal test helpers.
 - `docs/` — developer documentation (Mintlify).
+- `.agentplane/` — project state directory for the Node.js CLI.
 - `.agent-plane/` — legacy Python toolchain (deprecated). Keep for migration parity only.
 
 ## Generated artifacts
 
 - `packages/**/dist/` — TypeScript build output (published in npm packages).
-- `.agent-plane/tasks/` — task READMEs (source of truth for tasks).
-- `.agent-plane/.runs/` — recipe run artifacts.
+- `.agentplane/tasks/` — task READMEs (source of truth for tasks).
+- `.agentplane/.runs/` — recipe run artifacts.
 
 ## Where to start
 

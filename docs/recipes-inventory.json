@@ -52,7 +52,7 @@
           }
         },
         "cli": {
-          "command": "node .agent-plane/recipes/feature-spec-to-tasks/tools/run-feature.js",
+          "command": "node .agentplane/recipes/feature-spec-to-tasks/tools/run-feature.js",
           "args_contract": "json-file"
         }
       },
@@ -69,11 +69,11 @@
             },
             {
               "id": "plan",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
             },
             {
               "id": "tasks_draft",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
             }
           ],
           "required_agents": ["ORCHESTRATOR", "PLANNER", "CODER", "REVIEWER"]
@@ -90,11 +90,11 @@
             },
             {
               "id": "plan",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
             },
             {
               "id": "tasks_draft",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
             }
           ],
           "required_agents": ["ORCHESTRATOR", "PLANNER", "CODER", "REVIEWER"]
@@ -111,15 +111,15 @@
             },
             {
               "id": "plan",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<roadmap_slug>.plan.json"
             },
             {
               "id": "tasks_draft",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<roadmap_slug>.tasks.draft.md"
             },
             {
               "id": "migration",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<roadmap_slug>.migration.md"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<roadmap_slug>.migration.md"
             }
           ],
           "required_agents": ["ORCHESTRATOR", "PLANNER", "CODER", "REVIEWER"]
@@ -130,9 +130,9 @@
           "id": "runner",
           "type": "node",
           "command": "node tools/run-feature.js",
-          "cwd": ".agent-plane/recipes/feature-spec-to-tasks",
-          "reads": [".agent-plane/.runs/"],
-          "writes": ["docs/roadmaps/", ".agent-plane/.runs/"],
+          "cwd": ".agentplane/recipes/feature-spec-to-tasks",
+          "reads": [".agentplane/.runs/"],
+          "writes": ["docs/roadmaps/", ".agentplane/.runs/"],
           "network": "deny",
           "env": ["RECIPE_INPUTS_PATH", "RECIPE_SCENARIO_ID", "RECIPE_RUN_ID"]
         }
@@ -166,7 +166,7 @@
           "outputs": [
             {
               "id": "qa_plan",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<release_slug>.qa.md"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<release_slug>.qa.md"
             }
           ],
           "required_agents": ["ORCHESTRATOR", "TESTER", "REVIEWER"]
@@ -202,7 +202,7 @@
           "outputs": [
             {
               "id": "release_checklist",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<release_slug>.release.md"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<release_slug>.release.md"
             }
           ],
           "required_agents": ["ORCHESTRATOR", "CODER", "REVIEWER"]
@@ -229,7 +229,7 @@
           }
         },
         "cli": {
-          "command": "node .agent-plane/recipes/spec-to-tasks/tools/run-spec.js",
+          "command": "node .agentplane/recipes/spec-to-tasks/tools/run-spec.js",
           "args_contract": "json-file"
         }
       },
@@ -242,11 +242,11 @@
           "outputs": [
             {
               "id": "plan",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<spec_slug>.plan.json"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<spec_slug>.plan.json"
             },
             {
               "id": "tasks_draft",
-              "path_template": ".agent-plane/.runs/<run_id>/artifacts/<spec_slug>.tasks.draft.md"
+              "path_template": ".agentplane/.runs/<run_id>/artifacts/<spec_slug>.tasks.draft.md"
             }
           ],
           "required_agents": ["ORCHESTRATOR", "PLANNER", "CODER", "REVIEWER"]
@@ -257,9 +257,9 @@
           "id": "runner",
           "type": "node",
           "command": "node tools/run-spec.js",
-          "cwd": ".agent-plane/recipes/spec-to-tasks",
-          "reads": [".agent-plane/.runs/"],
-          "writes": [".agent-plane/.runs/"],
+          "cwd": ".agentplane/recipes/spec-to-tasks",
+          "reads": [".agentplane/.runs/"],
+          "writes": [".agentplane/.runs/"],
           "network": "deny",
           "env": ["RECIPE_INPUTS_PATH", "RECIPE_SCENARIO_ID", "RECIPE_RUN_ID"]
         }
