@@ -1,13 +1,15 @@
 ---
 id: "202602020659-C4VGPZ"
 title: "Init IDE selection: only chosen IDE installs rules"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["init"]
+commit: { hash: "86d665eb390b8b3b70fc912275f06b942ce2f4d8", message: "🐛 C4VGPZ fix init ide selection; scope ide sync to chosen target; update tests and docs" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: restrict init IDE prompt to Codex CLI default and ensure only selected IDE rules are installed (no cursor/windsurf leakage)." }
+  - { author: "ORCHESTRATOR", body: "verified: bun run test:cli:core | details: pre-commit hooks ran format/lint/test-fast; all passing." }
 doc_version: 2
 doc_updated_at: "2026-02-02T07:05:07+00:00"
 doc_updated_by: "agentctl"
