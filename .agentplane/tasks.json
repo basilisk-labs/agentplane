@@ -11597,12 +11597,46 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nBump agentplane and @agentplaneorg/core to 0.1.1 and align CLI version output/tests for release.\n\n## Scope\n\nUpdate package versions, CLI version constant, and version assertions in tests.\n\n## Risks\n\nMismatch between published package versions and CLI-reported version if any file is missed.\n\n## Verify Steps\n\n1) bun run --filter=agentplane test:cli:core\\n2) bun run --filter=agentplane test:cli:smoke\n\n## Rollback Plan\n\nRevert the version bumps and restore previous test expectations."
+    },
+    {
+      "id": "202602021544-1TWSK3",
+      "title": "Fix publish workflow failures",
+      "description": "Update @agentplane/core imports to @agentplaneorg/core and fix TS7006 in run-cli.ts so GitHub publish workflow passes.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "release",
+        "ci"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "a8c85b65b4d353469c9f8d9a0a944ff370c4be93",
+        "message": "🛠️ 1TWSK3 fix publish imports and workflow"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: fix package import scope mismatches and TS typing error to unblock publish workflow."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: bun run --filter=@agentplaneorg/core build and bun run --filter=agentplane build."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-02T15:48:01.434Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nFix publish workflow by switching imports to @agentplaneorg/core and typing staged entry filter.\n\n## Risks\n\nMissed import updates could still break the workflow build.\n\n## Scope\n\nUpdate agentplane sources/tests and core README package name; add explicit type for staged filter in run-cli.\n\n## Rollback Plan\n\nRevert import scope changes and typing update.\n\n## Verify Steps\n\n1) bun run --filter=agentplane build\\n2) bun run --filter=core build\n\n## Verify Steps\n\n1) bun run --filter=@agentplaneorg/core build\\n2) bun run --filter=agentplane build"
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "edb957d298b5d6a48f1d7e410ccb6d1de24e44d8e4dc02e5e80a081fe93b4e23"
+    "checksum": "4916c4b7cb5d26ff225fbd4e553157ec4fc50df256ccac25aa2c21da98917fd9"
   }
 }
