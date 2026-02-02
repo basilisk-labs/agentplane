@@ -21,7 +21,7 @@ For a full run (including slower CLI integration tests):
 bun run test:full
 ```
 
-To run only the CLI integration tests:
+To run only the CLI integration tests (without the slower smoke test):
 
 ```bash
 bun run test:cli
@@ -33,6 +33,21 @@ To run specific CLI suites:
 bun run test:cli:core
 bun run test:cli:recipes
 bun run test:cli:scenario
+```
+
+To run the CLI smoke test (slowest end-to-end path):
+
+```bash
+bun run test:cli:smoke
+```
+
+To run package-scoped unit tests:
+
+```bash
+bun run test:agentplane
+bun run test:core
+bun run test:recipes
+bun run test:testkit
 ```
 
 ## Package-specific checks
