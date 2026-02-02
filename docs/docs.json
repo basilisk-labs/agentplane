@@ -54,10 +54,6 @@
           "developer/project-layout",
           "developer/cli-contract",
           {
-            "group": "Audits",
-            "pages": ["audits/nodejs-parity-matrix"]
-          },
-          {
             "group": "Recipes",
             "pages": [
               "developer/recipes-spec",

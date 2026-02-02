@@ -8652,7 +8652,7 @@ export async function runCli(argv: string[]): Promise<number> {
         }
 
         if (allowDirty) {
-          // Deprecated no-op for parity with agentctl.
+          // Deprecated no-op retained for compatibility.
         }
 
         return await cmdGuardCommit({

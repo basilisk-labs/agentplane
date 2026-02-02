@@ -1,16 +1,16 @@
 ---
 title: "Breaking Changes (Node.js 1.0)"
-description: "What changed in the Node-first 1.0 release and how to migrate from legacy Python workflows."
+description: "What changed in the Node-first 1.0 release and how to upgrade your workflow."
 ---
 
 ## Summary
 
-Agent Plane 1.0 is Node-first. The CLI is now `agentplane`, and the legacy Python helper is no longer required for day-to-day use.
+Agent Plane 1.0 is Node-first. The CLI is `agentplane`, and the project state now lives under `.agentplane/`.
 
 ## Key changes
 
-- **Project state directory**: 1.0 uses `.agentplane/` (no dash). The legacy `.agent-plane/` layout is not supported by the Node CLI.
-- **Primary CLI**: use `agentplane` (Node.js). The Python `agentctl.py` is legacy and kept only for framework maintenance.
+- **Project state directory**: 1.0 uses `.agentplane/` (no dash).
+- **Primary CLI**: use `agentplane` (Node.js).
 - **Init/upgrade flow**: initialize with `agentplane init` and update with `agentplane upgrade`.
 - **Recipes**: optional features (e.g., `redmine`, `viewer`) are installed as recipes.
 
@@ -21,9 +21,7 @@ Agent Plane 1.0 is Node-first. The CLI is now `agentplane`, and the legacy Pytho
 3. Reinstall optional recipes as needed:
    - `agentplane recipes install --name redmine`
    - `agentplane recipes install --name viewer`
-4. If you used the legacy Python workflow, archive or remove `.agent-plane/` after migrating data.
 
 ## Notes
 
-- The CLI does **not** auto-migrate legacy `.agent-plane/` data.
 - `tasks.json` is managed by the Node CLI and includes a checksum; manual edits are discouraged.

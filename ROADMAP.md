@@ -1,6 +1,6 @@
 # Roadmap
 
-Agent Plane roadmap items are now tracked as tasks in `.agent-plane/tasks.json`.
+Agent Plane roadmap items are now tracked as tasks in `.agentplane/tasks.json`.
 
 Current status references:
 

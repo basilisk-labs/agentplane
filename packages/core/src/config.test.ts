@@ -168,11 +168,6 @@ describe("config", () => {
         /paths\.agents_dir/,
       ],
       [
-        "paths.agentctl_docs_path",
-        (raw) => ((raw.paths as Record<string, unknown>).agentctl_docs_path = ""),
-        /agentctl_docs_path/,
-      ],
-      [
         "branch.task_prefix",
         (raw) => ((raw.branch as Record<string, unknown>).task_prefix = ""),
         /branch\.task_prefix/,

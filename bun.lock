@@ -26,17 +26,17 @@
     },
     "packages/agentplane": {
       "name": "agentplane",
-      "version": "0.0.0",
+      "version": "0.1.0",
       "bin": {
-        "agentplane": "dist/cli.js",
+        "agentplane": "bin/agentplane.js",
       },
       "dependencies": {
-        "@agentplane/core": "workspace:*",
+        "@agentplaneorg/core": "0.1.0",
       },
     },
     "packages/core": {
-      "name": "@agentplane/core",
-      "version": "0.0.0",
+      "name": "@agentplaneorg/core",
+      "version": "0.1.0",
       "dependencies": {
         "yaml": "^2.8.2",
       },
@@ -55,13 +55,13 @@
     },
   },
   "packages": {
-    "@agentplane/core": ["@agentplane/core@workspace:packages/core"],
-
     "@agentplane/recipes": ["@agentplane/recipes@workspace:packages/recipes"],
 
     "@agentplane/spec": ["@agentplane/spec@workspace:packages/spec"],
 
     "@agentplane/testkit": ["@agentplane/testkit@workspace:packages/testkit"],
+
+    "@agentplaneorg/core": ["@agentplaneorg/core@workspace:packages/core"],
 
     "@babel/helper-string-parser": ["@babel/helper-string-parser@7.27.1", "", {}, "sha512-qMlSxKbpRlAridDExk92nSobyDdpPijUq2DW6oDnUqd0iOGxmQjyqhMIihI9+zv4LPyZdRje2cavWPbCbWm3eA=="],
 

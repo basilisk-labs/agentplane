@@ -14,10 +14,5 @@ dist
 coverage
 *.tsbuildinfo
 .agentplane
-.agent-plane/worktrees
 .agentplane/worktrees
-.agent-plane/tasks.json
-.agent-plane/.runs
-.agent-plane/cache
-.agent-plane/recipes/bundle.json
 # Keep the external recipes repo out of the main repo index.

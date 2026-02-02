@@ -41,7 +41,6 @@
       "required": ["agents_dir", "tasks_path", "workflow_dir", "worktrees_dir"],
       "properties": {
         "agents_dir": { "type": "string", "minLength": 1 },
-        "agentctl_docs_path": { "type": "string", "minLength": 1 },
         "tasks_path": { "type": "string", "minLength": 1 },
         "workflow_dir": { "type": "string", "minLength": 1 },
         "worktrees_dir": { "type": "string", "minLength": 1 }

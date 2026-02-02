@@ -126,8 +126,8 @@ license and provenance.
 
 Some changes (especially documentation and workflow automation) are managed inside the repo via the framework itself:
 
-- The task export is the canonical backlog for local tooling and must be updated only via `python .agent-plane/agentctl.py` (manual edits break the checksum).
-- Per-task documentation artifacts live under `.agent-plane/tasks/`.
+- The task export is the canonical backlog for local tooling and must be updated only via `node packages/agentplane/bin/agentplane.js task export` (manual edits break the checksum).
+- Per-task documentation artifacts live under `.agentplane/tasks/`.
 - When a contribution touches task tooling or task data, maintainers may ask you to:
-  - run `python .agent-plane/agentctl.py task lint`
+  - run `node packages/agentplane/bin/agentplane.js task lint`
   - keep commits scoped and traceable (task IDs + short messages)
