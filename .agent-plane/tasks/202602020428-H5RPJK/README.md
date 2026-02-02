@@ -1,11 +1,14 @@
 ---
 id: "202602020428-H5RPJK"
 title: "Refactor Node CLI for modularity and maintainability"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["refactor", "nodejs", "cli"]
+commit: { hash: "a4c01b7ba474d06c44b21d1073dc41238daffb18", message: "♻️ H5RPJK refactor cli helpers: extract fs/prompts/bundled recipes" }
+comments:
+  - { author: "ORCHESTRATOR", body: "verified: ran bun run test:cli:core, bun run test:cli:recipes, and bun run test:cli:scenario." }
 doc_version: 2
 doc_updated_at: "2026-02-02T04:28:55+00:00"
 doc_updated_by: "agentctl"
