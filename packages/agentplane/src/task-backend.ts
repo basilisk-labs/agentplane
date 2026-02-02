@@ -12,7 +12,7 @@ import {
   type AgentplaneConfig,
   type ResolvedProject,
   type TaskRecord,
-} from "@agentplane/core";
+} from "@agentplaneorg/core";
 
 import { loadDotEnv } from "./env.js";
 

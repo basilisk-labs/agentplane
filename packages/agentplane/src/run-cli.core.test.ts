@@ -11,7 +11,7 @@ import {
   readTask,
   renderTaskReadme,
   type ResolvedProject,
-} from "@agentplane/core";
+} from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
 import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";

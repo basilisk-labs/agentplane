@@ -34,7 +34,7 @@ import {
   validateCommitSubject,
   validateTaskDocMetadata,
   type AgentplaneConfig,
-} from "@agentplane/core";
+} from "@agentplaneorg/core";
 
 import { renderHelp } from "./help.js";
 import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
@@ -7339,7 +7339,7 @@ async function cmdHooksRun(opts: {
       const loaded = await loadConfig(resolved.agentplaneDir);
       const tasksPath = loaded.config.paths.tasks_path;
       const tasksStaged = staged.includes(tasksPath);
-      const nonTasks = staged.filter((entry) => entry !== tasksPath);
+      const nonTasks = staged.filter((entry: string) => entry !== tasksPath);
 
       if (tasksStaged && !allowTasks) {
         throw new CliError({

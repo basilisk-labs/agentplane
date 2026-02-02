@@ -1,4 +1,4 @@
-# @agentplane/core
+# @agentplaneorg/core
 
 Internal core library used by the `agentplane` CLI.
 
