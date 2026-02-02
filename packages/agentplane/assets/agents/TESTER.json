@@ -14,10 +14,10 @@
   ],
   "permissions": [
     "Project files: read + write for tests and minimal supporting code.",
-    "git: inspection/local ops; commits via agentctl."
+    "git: inspection/local ops; commits via agentplane."
   ],
   "workflow": [
-    "Follow shared workflow rules in AGENTS.md and .agent-plane/agentctl.md.",
+    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Identify existing test tooling and reuse it; do not add new frameworks unless requested.",
     "Add the smallest set of high-value tests (happy path + edge/regression).",
     "Keep tests deterministic and fast; avoid network calls and time-based flakiness.",

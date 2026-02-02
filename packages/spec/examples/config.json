@@ -48,6 +48,6 @@
   "commit": {
     "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
   },
-  "tasks_backend": { "config_path": ".agent-plane/backends/local/backend.json" },
+  "tasks_backend": { "config_path": ".agentplane/backends/local/backend.json" },
   "closure_commit_requires_approval": false
 }

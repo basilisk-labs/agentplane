@@ -1,6 +1,6 @@
 ---
-title: "Recipes Specification (v1)"
-description: "The v1 contract for installable recipes: layout, manifest fields, and CLI behavior."
+title: "Recipes Specification (1.0)"
+description: "The 1.0 contract for installable recipes: layout, manifest fields, and CLI behavior."
 ---
 
 Recipes are **optional, content-first extensions** for `agentplane` projects. The core engine must work with zero installed recipes.
@@ -9,13 +9,13 @@ This document defines:
 
 - Recipe archive layout (what gets installed)
 - `manifest.json` contract (fields, semantics)
-- `agentplane recipes …` CLI surface (minimum v1)
+- `agentplane recipes …` CLI surface (minimum 1.0)
 
 ## 1) Terminology
 
 - **Recipe**: a versioned bundle of agents, tools, scenarios, and assets.
 - **Installed recipe**: stored under `~/.agentplane/recipes/<id>/<version>/` and tracked in `~/.agentplane/recipes.json`.
-- **Official catalog**: a remote `index.json` (v1: GitHub Releases-based) fetched only by explicit commands.
+- **Official catalog**: a remote `index.json` (GitHub Releases-based) fetched only by explicit commands.
 
 ## 2) Built-in recipes and catalogs
 
@@ -42,13 +42,13 @@ At minimum, an archive contains `manifest.json` at the root. Optional folders:
 ```
 manifest.json
 agents/        # optional: agent JSON profiles
-tools/         # optional: executable tools (node or bash in v1)
+tools/         # optional: executable tools (node or bash in 1.0)
 scenarios/     # optional: scenario definitions
 assets/        # optional: static files (html/templates/etc.)
 README.md      # optional: human docs
 ```
 
-### 3.1 Scenario definitions (v1)
+### 3.1 Scenario definitions (1.0)
 
 Scenario files live under `scenarios/*.json` and are validated on install. Minimal fields:
 
@@ -78,12 +78,12 @@ Example scenario file:
 }
 ```
 
-Execution (v1):
+Execution (1.0):
 
 - `agentplane scenario run <recipe-id>:<scenario-id>` executes tools in order.
 - Logs and artifacts are written under `.agentplane/recipes/<recipe-id>/runs/...`.
 
-## 4) `manifest.json` schema (v1)
+## 4) `manifest.json` schema (1.0)
 
 The `manifest.json` file must validate against `schemas/recipe-manifest.schema.json`.
 
@@ -97,9 +97,9 @@ High-level rules:
 
 ### 4.1 `schema_version`
 
-v1 uses `schema_version: "1"` for the recipe manifest.
+The 1.0 manifest uses `schema_version: "1"`.
 
-### 4.2 Example manifest (v1)
+### 4.2 Example manifest (1.0)
 
 ```json
 {
@@ -117,7 +117,7 @@ v1 uses `schema_version: "1"` for the recipe manifest.
       "runtime": "node",
       "entrypoint": "tools/serve-viewer.mjs",
       "permissions": {
-        "filesystem": ["read:.agent-plane/tasks"],
+        "filesystem": ["read:.agentplane/tasks"],
         "network": true
       }
     }
@@ -165,7 +165,7 @@ Example `recipes.json`:
 }
 ```
 
-## 6) CLI surface (minimum v1)
+## 6) CLI surface (minimum 1.0)
 
 Commands are namespaced under `agentplane recipes`:
 
@@ -193,7 +193,7 @@ At a high level:
    Each run writes artifacts to `.agentplane/recipes/<recipe-id>/runs/<timestamp>-<scenario>/`.
    Recipes may also write cached external data to `.agentplane/recipes-cache/`.
 
-Environment handling (v1):
+Environment handling (1.0):
 
 - Tools inherit the current process environment.
 - The CLI auto-loads `.env` from the repo root when a command resolves a project. Recipe tools
@@ -202,14 +202,14 @@ Environment handling (v1):
 - If you run scenarios outside a repo or need different values, export variables first (e.g.,
   `set -a; source .env; set +a`) before running a scenario.
 
-## 8) Permissions (v1)
+## 8) Permissions (1.0)
 
-v1 does not sandbox recipe tools. Instead:
+1.0 does not sandbox recipe tools. Instead:
 
 - tool permissions MUST be declared in the manifest (informational)
 - the CLI MUST warn before executing a tool that declares network or filesystem write access
 
-Sandboxing is deferred to v2.
+Sandboxing is deferred to a later release.
 
 ## 9) Developer guide: adding new recipes
 
@@ -219,7 +219,7 @@ Source-of-truth for official recipes lives in the `agentplane-recipes` repositor
    - `agentplane-recipes/recipes/<id>/manifest.json`
    - Optional: `tools/`, `scenarios/`, `assets/`, `agents/`, `README.md`
 2. **Define tools and scenarios**
-   - Tools should be executable scripts (v1: `node` or `bash`).
+   - Tools should be executable scripts (1.0: `node` or `bash`).
    - Each scenario is a JSON file in `scenarios/` referencing tools by `id`.
 3. **Validate locally**
    - Build a local archive:

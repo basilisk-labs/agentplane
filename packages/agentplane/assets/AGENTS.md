@@ -1,6 +1,6 @@
 <!--
 AGENTS_POLICY: prod-v1.0
-repo_namespace: .agent-plane
+repo_namespace: .agentplane
 default_initiator: ORCHESTRATOR
 -->
 
@@ -18,9 +18,9 @@ This policy is designed to be the single, authoritative instruction set the agen
 ## Sources of truth (priority order)
 
 1. `AGENTS.md` (this file)
-2. `@.agent-plane/agentctl.md`
-3. `.agent-plane/config.json`
-4. `.agent-plane/agents/*.json`
+2. `agentplane quickstart` / `agentplane role <ROLE>` output
+3. `.agentplane/config.json`
+4. `.agentplane/agents/*.json`
 
 If two sources conflict, prefer the higher-priority source.
 
@@ -40,9 +40,9 @@ No other role may assume another role’s authority.
 
 ## Truthfulness & safety
 
-- Never invent facts about repo state. Prefer inspection (`agentctl`, `git status`, `git diff`, `ripgrep`) over guessing.
-- Never modify `.agent-plane/tasks.json` manually. It is **agentctl-owned state**.
-- Task status transitions, task docs, and commits must follow **agentctl** flows where available.
+- Never invent facts about repo state. Prefer inspection (`agentplane`, `git status`, `git diff`, `ripgrep`) over guessing.
+- Never modify `.agentplane/tasks.json` manually. It is **agentplane-managed state**.
+- Task status transitions, task docs, and commits must follow **agentplane** flows where available.
 
 ## Cleanliness & untracked files
 
@@ -53,7 +53,7 @@ No other role may assume another role’s authority.
 
 ## Network & outside-repo approvals
 
-When `.agent-plane/config.json` sets `agents.approvals.require_network=true`:
+When `.agentplane/config.json` sets `agents.approvals.require_network=true`:
 
 ### Network use (requires approval)
 
@@ -95,9 +95,9 @@ No step may be skipped unless the user explicitly authorizes skipping it.
 
 Before any planning or execution, ORCHESTRATOR must run:
 
-1. `python .agent-plane/agentctl.py config show`
-2. Read `.agent-plane/agentctl.md` (CLI instructions)
-3. `python .agent-plane/agentctl.py task list`
+1. `agentplane config show`
+2. `agentplane quickstart` (CLI instructions)
+3. `agentplane task list`
 4. `git status --short --untracked-files=no`
 
 Then report (in the response) only that the data was loaded:
@@ -132,7 +132,7 @@ ORCHESTRATOR:
 
 ## 2) After approval (tracking task is mandatory)
 
-- ORCHESTRATOR creates exactly **one** top-level tracking task via agentctl.
+- ORCHESTRATOR creates exactly **one** top-level tracking task via agentplane.
 - PLANNER creates any additional tasks from the approved decomposition.
 - Task IDs are referenced in comments/notes for traceability.
 
@@ -163,8 +163,8 @@ Every task must have these sections in its README or task doc:
 
 ## Updating task docs
 
-- Task README updates must be done via `python .agent-plane/agentctl.py task doc set ...`
-- Manual edits to `.agent-plane/tasks/<task-id>/README.md` are prohibited.
+- Task README updates must be done via `agentplane task doc set ...`
+- Manual edits to `.agentplane/tasks/<task-id>/README.md` are prohibited.
 
 ---
 
@@ -176,52 +176,52 @@ There are two supported modes:
 
 ### Mode 1: Explicit commit message (manual message, still policy-governed)
 
-Use agentctl commit flows with a message that conforms to `@.agent-plane/agentctl.md`, e.g.:
+Use agentplane commit flows with a message that conforms to the built-in command guide, e.g.:
 
-`python .agent-plane/agentctl.py guard commit <task-id> -m "✨ <suffix> <detailed changelog ...>" ...`
+`agentplane guard commit <task-id> -m "✨ <suffix> <detailed changelog ...>" ...`
 
 In this mode:
 
-- `-m` is the **commit message** (subject/body as supported by agentctl).
+- `-m` is the **commit message** (subject/body as supported by agentplane).
 - Do not invent alternative formats.
 
-### Mode 2: Comment-driven commit (agentctl builds subject)
+### Mode 2: Comment-driven commit (agentplane builds subject)
 
-Use comment-driven flags (where supported by agentctl), e.g.:
+Use comment-driven flags (where supported by agentplane), e.g.:
 
 - `--commit-from-comment`
 - `--status-commit` (only when explicitly intended)
 
 In this mode:
 
-- agentctl builds the commit subject as `<emoji> <suffix> <formatted comment>` from the status/finish body.
+- agentplane builds the commit subject as `<emoji> <suffix> <formatted comment>` from the status/finish body.
 
 Agents must not reinterpret `-m` as “body-only” or “comment-only”. `-m` is a commit message.
 
 ## Allowlist staging (guardrails)
 
 - Prefer a tight allowlist for staging/commit (path prefixes).
-- If agentctl provides a suggestion command (e.g., `guard suggest-allow`), use it.
+- If agentplane provides a suggestion command (e.g., `guard suggest-allow`), use it.
 
 ---
 
 # MODE-DEPENDENT WORKFLOWS
 
-Always follow `workflow_mode` from `.agent-plane/config.json`.
+Always follow `workflow_mode` from `.agentplane/config.json`.
 
 ## A) direct mode (single checkout)
 
 Rules:
 
 - Do all work in the current checkout.
-- Do not create task branches/worktrees (agentctl should reject them).
+- Do not create task branches/worktrees (agentplane should reject them).
 
 Recommended cadence:
 
 1. `start` task (status comment; no commit by default)
 2. Implement changes
-3. Run verify commands / `agentctl verify`
-4. Commit via agentctl with tight allowlist
+3. Run verify commands / `agentplane verify`
+4. Commit via agentplane with tight allowlist
 5. `finish` with `--commit <git-rev>` and a Verified body
 6. `task export` (if required)
 
@@ -253,7 +253,7 @@ Exports:
 
 # SHARED STATE & EXPORTS
 
-- Task export is a read-only snapshot managed by agentctl.
+- Task export is a read-only snapshot managed by agentplane.
 - Never edit exported snapshots by hand (checksum will break).
 - Exports must reflect finished tasks and verified state.
 
@@ -261,7 +261,7 @@ Exports:
 
 # RECOMMENDED CONFIG PATCH (optional but strongly advised)
 
-To minimize accidental status-commits and keep commits intentional, apply this JSON Merge Patch to `.agent-plane/config.json`:
+To minimize accidental status-commits and keep commits intentional, apply this JSON Merge Patch to `.agentplane/config.json`:
 
 {
 "status_commit_policy": "confirm",
