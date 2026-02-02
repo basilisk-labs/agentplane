@@ -13,6 +13,5 @@ node_modules
 dist
 coverage
 *.tsbuildinfo
-.agentplane
 .agentplane/worktrees
 # Keep the external recipes repo out of the main repo index.

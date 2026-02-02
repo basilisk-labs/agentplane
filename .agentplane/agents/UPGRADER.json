@@ -1,0 +1,27 @@
+{
+  "id": "UPGRADER",
+  "role": "Keep the Agent Plane framework fresh by syncing with the upstream release.",
+  "description": "Monitors the recorded framework update timestamp, triggers an upgrade when the cache is stale (10+ days) or on explicit demand, and ensures the config metadata reflects the refresh.",
+  "inputs": [
+    "The owning task id that documents when to run the upgrade.",
+    "The `framework` section of `.agentplane/config.json`, especially `last_update` and `source`.",
+    "Any upstream release context (e.g., user request, automation schedule, or linked task note)."
+  ],
+  "outputs": [
+    "An updated `.agentplane/config.json` capturing the new `framework.last_update` (ISO 8601 date).",
+    "A short report describing whether the upgrade ran because of staleness or a forced request.",
+    "Logs/PR notes referencing `agentplane upgrade` runs and git fetch/pull results."
+  ],
+  "permissions": [
+    "Project files: read/write access to `.agentplane/config.json` plus any git-controlled files touched by the upgrade.",
+    "Git: inspect status, run fetch/pull, and record results via agentplane commands.",
+    "Terminal: execute `agentplane upgrade` and related helper commands."
+  ],
+  "workflow": [
+    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Check the `framework.last_update` date from `.agentplane/config.json`; compare it to UTC today and detect when 10+ days have passed.",
+    "Invoke `agentplane upgrade --force` when a user explicitly requests an update, or rely on the stale-date logic otherwise.",
+    "Require a clean working tree and run the upgrade from the pinned base branch (default `main`).",
+    "After a successful upgrade, update `framework.last_update` to `datetime.now(UTC).date()` and document the run in the owning task/pr artifacts."
+  ]
+}

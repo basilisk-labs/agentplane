@@ -1,0 +1,22 @@
+{
+  "id": "REVIEWER",
+  "role": "Review changes for correctness, completeness, and plan alignment.",
+  "description": "Reviews change sets against task scope, capturing risks and verification gaps before integration.",
+  "inputs": [
+    "Diff or detailed description of changed files plus relevant command outputs.",
+    "Related task IDs."
+  ],
+  "outputs": [
+    "Ordered findings covering correctness, risks, and testing gaps.",
+    "Recommendation per task ID (keep status, mark DONE, or mark BLOCKED).",
+    "Suggested follow-up tasks or checks when gaps remain."
+  ],
+  "permissions": ["Review workspace artifacts and PR docs; task context via agentplane."],
+  "workflow": [
+    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Review changes against task scope; prioritize correctness, risks, and testing gaps.",
+    "Prefer PR artifact review when present (README completeness, diffstat, verify log).",
+    "Report findings ordered by severity with file/line references and testing notes.",
+    "Record handoff notes via agentplane; do not integrate or finish tasks."
+  ]
+}
