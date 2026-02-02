@@ -7798,10 +7798,36 @@ async function cmdTaskDocSet(opts: {
         message: `Unknown doc section: ${flags.section}`,
       });
     }
+    const normalizedAllowed = new Set(allowed.map((section) => normalizeDocSectionName(section)));
+    const targetKey = normalizeDocSectionName(flags.section);
+    const headingKeys = new Set<string>();
+    for (const line of text.replaceAll("\r\n", "\n").split("\n")) {
+      const match = /^##\s+(.*)$/.exec(line.trim());
+      if (!match) continue;
+      const key = normalizeDocSectionName(match[1] ?? "");
+      if (key && normalizedAllowed.has(key)) headingKeys.add(key);
+    }
     const existing = await backend.getTaskDoc(opts.taskId);
     const baseDoc = ensureDocSections(existing ?? "", config.tasks.doc.required_sections);
-    const nextDoc = setMarkdownSection(baseDoc, flags.section, text);
-    await backend.setTaskDoc(opts.taskId, nextDoc, updatedBy);
+    if (headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))) {
+      const fullDoc = ensureDocSections(text, config.tasks.doc.required_sections);
+      await backend.setTaskDoc(opts.taskId, fullDoc, updatedBy);
+    } else {
+      let nextText = text;
+      if (headingKeys.size > 0 && headingKeys.has(targetKey)) {
+        const lines = nextText.replaceAll("\r\n", "\n").split("\n");
+        let firstContent = 0;
+        while (firstContent < lines.length && lines[firstContent]?.trim() === "") firstContent++;
+        const headingRe = new RegExp(String.raw`^##\s+${escapeRegExp(flags.section)}\s*$`);
+        if (headingRe.test(lines[firstContent]?.trim() ?? "")) {
+          lines.splice(firstContent, 1);
+          if (lines[firstContent]?.trim() === "") lines.splice(firstContent, 1);
+          nextText = lines.join("\n");
+        }
+      }
+      const nextDoc = setMarkdownSection(baseDoc, flags.section, nextText);
+      await backend.setTaskDoc(opts.taskId, nextDoc, updatedBy);
+    }
     const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
     process.stdout.write(`${path.join(tasksDir, opts.taskId, "README.md")}\n`);
     return 0;
