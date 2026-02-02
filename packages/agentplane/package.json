@@ -54,6 +54,6 @@
     "prepublishOnly": "npm run prepack"
   },
   "dependencies": {
-    "@agentplane/core": "0.1.0"
+    "@agentplaneorg/core": "0.1.0"
   }
 }

@@ -5,7 +5,7 @@ description: "How to version and publish the CLI and core packages."
 
 ## Versioning
 
-Use semantic versioning. The CLI depends on `@agentplane/core`, so bump versions together when APIs change.
+Use semantic versioning. The CLI depends on `@agentplaneorg/core`, so bump versions together when APIs change.
 
 ## Build and pack
 
@@ -37,7 +37,7 @@ it in the npm “Trusted Publishers” settings for each package (`@agentplane/c
 Use GitHub-hosted runners and allow the workflow to request an OIDC token (`id-token: write`).
 The workflow should publish from `packages/core` first, then `packages/agentplane`.
 
-If you publish under the `@agentplane` scope, make sure the `agentplane` npm organization exists
+If you publish under the `@agentplaneorg` scope, make sure the `agentplaneorg` npm organization exists
 and you have owner rights before publishing.
 
 ## Global install check
