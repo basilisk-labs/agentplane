@@ -28,6 +28,18 @@ cd ../agentplane
 npm publish --access public
 ```
 
+## Trusted publishing (GitHub Actions)
+
+To enable npm trusted publishing, configure the npm package to trust the GitHub Actions workflow
+in this repository. Create a workflow named `publish.yml` under `.github/workflows/` and register
+it in the npm “Trusted Publishers” settings for each package (`@agentplane/core` and `agentplane`).
+
+Use GitHub-hosted runners and allow the workflow to request an OIDC token (`id-token: write`).
+The workflow should publish from `packages/core` first, then `packages/agentplane`.
+
+If you publish under the `@agentplane` scope, make sure the `agentplane` npm organization exists
+and you have owner rights before publishing.
+
 ## Global install check
 
 ```bash
