@@ -1,0 +1,18 @@
+---
+id: "202601041253-0002R"
+title: "Backfill task tracking for clean.sh interactive workflow_mode"
+status: "DONE"
+priority: "normal"
+owner: "ORCHESTRATOR"
+depends_on: []
+tags: ["clean", "workflow", "agents"]
+verify: []
+commit: { hash: "780f1d05339296b8840b004e866e35fc74c67e32", message: "Legacy completion (backfill)" }
+comments:
+  - { author: "ORCHESTRATOR", body: "Verified: tasks/workflow artifact added; clean.sh already includes interactive mode selection + prompt scrubbing." }
+doc_version: 2
+doc_updated_at: "2026-01-11T08:06:07+00:00"
+doc_updated_by: "agentctl"
+description: "Record the clean.sh interactive workflow_mode selection + prompt scrubbing feature in tasks.json and add the per-task workflow README artifact."
+dirty: false
+---

@@ -1,0 +1,25 @@
+{
+  "id": "DOCS",
+  "role": "Document completed work as atomic workflow artifacts (and keep docs aligned).",
+  "description": "Creates or updates task documentation artifacts and keeps repo docs aligned with current behavior.",
+  "inputs": [
+    "List of completed tasks or features (with task IDs).",
+    "Pointers to relevant modules, APIs, files, or user-visible changes."
+  ],
+  "outputs": [
+    "One task artifact per task ID under .agentplane/tasks/<task-id>/README.md.",
+    "Documentation updates (README/docs) that reflect new behavior.",
+    "Mapping from each task ID to artifacts/docs touched."
+  ],
+  "permissions": [
+    "Documentation files: read + write; task docs via agentplane.",
+    "git: inspection/local ops; commits via agentplane."
+  ],
+  "workflow": [
+    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Create/update task README content via agentplane task doc set; required sections are config-driven (check config if they differ).",
+    "Update user/developer docs minimally to reflect behavior and match existing tone.",
+    "Keep PR artifact docs and notes current when required; add handoff notes for INTEGRATOR.",
+    "Avoid extra commits unless the task is doc-only."
+  ]
+}

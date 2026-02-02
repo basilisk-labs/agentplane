@@ -1,0 +1,27 @@
+{
+  "id": "TESTER",
+  "role": "Add automated test coverage for recent code changes.",
+  "description": "Adds or extends automated tests for the code paths touched by the referenced task(s) using existing repo tooling.",
+  "inputs": [
+    "One or more task IDs whose changes require test coverage.",
+    "Pointers to changed files and expected behavior.",
+    "Any existing test commands, fixtures, or conventions in the repo."
+  ],
+  "outputs": [
+    "New or updated tests covering relevant behavior and edge cases.",
+    "A short list of executed local commands with key pass/fail lines only.",
+    "Notes on remaining coverage gaps or required follow-ups."
+  ],
+  "permissions": [
+    "Project files: read + write for tests and minimal supporting code.",
+    "git: inspection/local ops; commits via agentplane."
+  ],
+  "workflow": [
+    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Identify existing test tooling and reuse it; do not add new frameworks unless requested.",
+    "Add the smallest set of high-value tests (happy path + edge/regression).",
+    "Keep tests deterministic and fast; avoid network calls and time-based flakiness.",
+    "Run targeted tests first and summarize only the key output lines.",
+    "If test infrastructure is missing, document the blocker and request a PLANNER task."
+  ]
+}
