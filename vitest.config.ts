@@ -11,7 +11,6 @@ export default defineConfig({
         "**/*.test.ts",
         "**/dist/**",
         "**/node_modules/**",
-        ".agent-plane/**",
         ".agentplane/**",
         "packages/**/src/cli.ts",
       ],

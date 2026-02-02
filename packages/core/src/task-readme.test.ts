@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
@@ -19,7 +17,7 @@ comments:
   - { author: "CODER", body: "verified: bun run ci passed." }
 doc_version: 2
 doc_updated_at: "2026-01-27T09:05:55+00:00"
-doc_updated_by: "agentctl"
+doc_updated_by: "agentplane"
 description: "Document and enforce code quality criteria (lint/format/typecheck/tests/coverage) and standardize on bun for installs and scripts."
 flag: true
 mixed: ["x", { y: "z" }]
@@ -35,16 +33,6 @@ Hello world.
     const parsed = parseTaskReadme(sample);
     const rendered = renderTaskReadme(parsed.frontmatter, parsed.body);
     expect(rendered).toBe(sample);
-  });
-
-  it("roundtrips the agentctl README fixture", async () => {
-    const raw = await readFile(
-      path.join(process.cwd(), "packages", "core", "testdata", "agentctl", "task-readme.md"),
-      "utf8",
-    );
-    const parsed = parseTaskReadme(raw);
-    const rendered = renderTaskReadme(parsed.frontmatter, parsed.body);
-    expect(rendered).toBe(raw);
   });
 
   it("renders updates deterministically", () => {

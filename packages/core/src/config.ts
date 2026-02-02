@@ -24,7 +24,6 @@ export type AgentplaneConfig = {
     tasks_path: string;
     workflow_dir: string;
     worktrees_dir: string;
-    agentctl_docs_path?: string;
   };
   branch: { task_prefix: string };
   framework: { source: string; last_update: string | null };
@@ -149,12 +148,6 @@ export function validateConfig(raw: unknown): AgentplaneConfig {
     const v = raw.paths[key];
     if (typeof v !== "string" || v.length === 0)
       throw new Error(`config.paths.${key} must be string`);
-  }
-  if (raw.paths.agentctl_docs_path !== undefined) {
-    const v = raw.paths.agentctl_docs_path;
-    if (typeof v !== "string" || v.length === 0) {
-      throw new Error("config.paths.agentctl_docs_path must be string");
-    }
   }
   if (typeof raw.branch.task_prefix !== "string" || raw.branch.task_prefix.length === 0) {
     throw new Error("config.branch.task_prefix must be string");

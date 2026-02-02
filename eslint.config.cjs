@@ -20,7 +20,6 @@ module.exports = [
       "**/dist/**",
       "**/coverage/**",
       ".agentplane/**",
-      ".agent-plane/**",
       "agentplane-recipes/**",
       "**/*.d.ts",
     ],

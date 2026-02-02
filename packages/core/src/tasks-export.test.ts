@@ -28,21 +28,6 @@ describe("tasks-export", () => {
     expect(checksum).toBe("6e37f07cf2b1a6b2295946722fa1a29362a28c564d0bc2ba48f48d324f9d6670");
   });
 
-  it("validates the agentctl tasks.json fixture checksum", async () => {
-    const raw = await readFile(
-      path.join(process.cwd(), "packages", "core", "testdata", "agentctl", "tasks.json"),
-      "utf8",
-    );
-    const parsed = JSON.parse(raw) as {
-      tasks: TasksExportTask[];
-      meta: { checksum: string; managed_by: string };
-    };
-
-    expect(parsed.meta.managed_by).toBe("agentctl");
-    const checksum = computeTasksChecksum(parsed.tasks);
-    expect(checksum).toBe(parsed.meta.checksum);
-  });
-
   it("writeTasksExport writes .agentplane/tasks.json with matching checksum", async () => {
     const root = await mkGitRepoRoot();
 

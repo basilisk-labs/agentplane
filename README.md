@@ -89,7 +89,7 @@ agentplane config set tasks.verify.required_tags '["code","backend"]'
 - `packages/core/`: core libraries (project resolution, config, task models)
 - `packages/spec/`: schemas + examples
 - `docs/`: user documentation
-- `.agent-plane/`: legacy Python toolchain (deprecated)
+- `.agentplane/`: project state directory for the Node.js CLI
 
 ## Documentation
 

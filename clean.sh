@@ -23,7 +23,7 @@ export MODE
 # It removes leftover assets, metadata, and git state that would tie the copy to the original repo.
 # It also removes framework-development artifacts (including docs/) that aren't needed for a reusable export.
 #
-# Note: .codex-swarm/agentctl.md and .codex-swarm/tasks stay as part of the framework export.
+# Note: .codex-swarm/tasks stay as part of the framework export.
 
 rm -rf \
   .DS_Store \
@@ -73,7 +73,7 @@ data = {
     "tasks": tasks,
     "meta": {
         "schema_version": 1,
-        "managed_by": "agentctl",
+        "managed_by": "agentplane",
         "checksum_algo": "sha256",
         "checksum": checksum,
     },
@@ -233,14 +233,13 @@ agents_dir = ROOT / ".codex-swarm" / "agents"
 for agent_path in sorted(agents_dir.glob("*.json")):
     scrub_json_file(agent_path)
 
-# 3) Scrub the two human-facing prompt docs
+# 3) Scrub the human-facing prompt docs
 scrub_workflow_mode_docs(ROOT / "AGENTS.md")
-scrub_workflow_mode_docs(ROOT / ".codex-swarm" / "agentctl.md")
 PY
 
 # Initialize a fresh repository after the cleanup so the folder can be reused independently.
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  # If we're already in a git repo, pin the current branch as the base branch for agentctl.
+  # If we're already in a git repo, pin the current branch as the base branch for agentplane.
   current_branch="$(git symbolic-ref --short -q HEAD || true)"
   if [[ -n "${current_branch}" && "${current_branch}" != "HEAD" ]]; then
     git config --local codexswarm.baseBranch "${current_branch}"
@@ -274,7 +273,7 @@ if [[ -t 0 ]]; then
   read -r -p "Install codex-swarm git hooks? [y/N]: " INSTALL_HOOKS || true
   case "${INSTALL_HOOKS}" in
     y|Y|yes|YES)
-      python3 .codex-swarm/agentctl.py hooks install
+      agentplane hooks install
       ;;
   esac
 fi
