@@ -30,6 +30,7 @@ import {
   gitBranchExists,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
+  mkTempDir,
   pathExists,
   registerAgentplaneHome,
   stageGitignoreIfPresent,
@@ -8077,6 +8078,7 @@ describe("runCli", () => {
 
   it("init --yes creates baseline project files", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--yes", "--root", root]);
@@ -8096,8 +8098,77 @@ describe("runCli", () => {
     expect(configText).toContain('"workflow_mode": "direct"');
   });
 
+  it("init bootstraps git repo and commits install when git is missing", async () => {
+    const root = await mkTempDir();
+    const originalEnv = {
+      GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME,
+      GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL,
+      GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME,
+      GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL,
+    };
+    process.env.GIT_AUTHOR_NAME = "Test User";
+    process.env.GIT_AUTHOR_EMAIL = "test@example.com";
+    process.env.GIT_COMMITTER_NAME = "Test User";
+    process.env.GIT_COMMITTER_EMAIL = "test@example.com";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      process.env.GIT_AUTHOR_NAME = originalEnv.GIT_AUTHOR_NAME;
+      process.env.GIT_AUTHOR_EMAIL = originalEnv.GIT_AUTHOR_EMAIL;
+      process.env.GIT_COMMITTER_NAME = originalEnv.GIT_COMMITTER_NAME;
+      process.env.GIT_COMMITTER_EMAIL = originalEnv.GIT_COMMITTER_EMAIL;
+    }
+
+    const gitDir = path.join(root, ".git");
+    expect(await pathExists(gitDir)).toBe(true);
+
+    const execFileAsync = promisify(execFile);
+    const { stdout: subject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    expect(subject.trim()).toContain("agentplane 0.0.0");
+
+    const { stdout: baseBranch } = await execFileAsync(
+      "git",
+      ["config", "--local", "--get", "agentplane.baseBranch"],
+      { cwd: root, env: cleanGitEnv() },
+    );
+    expect(baseBranch.trim()).toBe("main");
+  });
+
+  it("init pins base branch to current branch in existing repo", async () => {
+    const root = await mkGitRepoRootWithBranch("trunk");
+    await configureGitUser(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"base_branch": "trunk"');
+
+    const execFileAsync = promisify(execFile);
+    const { stdout: baseBranch } = await execFileAsync(
+      "git",
+      ["config", "--local", "--get", "agentplane.baseBranch"],
+      { cwd: root, env: cleanGitEnv() },
+    );
+    expect(baseBranch.trim()).toBe("trunk");
+  });
+
   it("init writes AGENTS.md and agent templates for direct mode", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
     const template = await loadAgentsTemplate();
     const expectedAgents = filterAgentsByWorkflow(template, "direct");
     const templates = await loadAgentTemplates();
@@ -8128,6 +8199,7 @@ describe("runCli", () => {
 
   it("init filters AGENTS.md for branch_pr mode", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
     const template = await loadAgentsTemplate();
     const expectedAgents = filterAgentsByWorkflow(template, "branch_pr");
 
@@ -8146,6 +8218,20 @@ describe("runCli", () => {
 
   it("init applies workflow, installs hooks, and runs ide sync", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const stubPath = path.join(root, "agentplane");
+    const stubBody = [
+      "#!/usr/bin/env sh",
+      'if [ "$1" = "hooks" ]; then',
+      "  exit 0",
+      "fi",
+      "exit 0",
+      "",
+    ].join("\n");
+    await writeFile(stubPath, stubBody, "utf8");
+    await chmod(stubPath, 0o755);
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${root}${path.delimiter}${originalPath ?? ""}`;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -8165,6 +8251,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
     } finally {
+      process.env.PATH = originalPath;
       io.restore();
     }
 
@@ -8257,6 +8344,7 @@ describe("runCli", () => {
 
   it("init refuses to overwrite existing config", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
     await runCli(["init", "--yes", "--root", root]);
     const io = captureStdIO();
     try {
@@ -8271,6 +8359,7 @@ describe("runCli", () => {
 
   it("init validates recipes against bundled catalog", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
     const original = [...BUNDLED_RECIPES_CATALOG.recipes];
     BUNDLED_RECIPES_CATALOG.recipes.length = 0;
     BUNDLED_RECIPES_CATALOG.recipes.push({
@@ -8292,6 +8381,7 @@ describe("runCli", () => {
 
   it("init lists conflicts for existing files by default", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
     const agentplaneDir = path.join(root, ".agentplane");
     const configPath = path.join(agentplaneDir, "config.json");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
@@ -8315,6 +8405,7 @@ describe("runCli", () => {
 
   it("init --force overwrites conflicting files", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
     const agentplaneDir = path.join(root, ".agentplane");
     const configPath = path.join(agentplaneDir, "config.json");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
@@ -8336,6 +8427,7 @@ describe("runCli", () => {
 
   it("init --backup preserves conflicting files with timestamped backups", async () => {
     const root = await mkGitRepoRoot();
+    await configureGitUser(root);
     const agentplaneDir = path.join(root, ".agentplane");
     const configPath = path.join(agentplaneDir, "config.json");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");

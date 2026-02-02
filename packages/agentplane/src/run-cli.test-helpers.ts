@@ -80,6 +80,10 @@ export async function mkGitRepoRoot(): Promise<string> {
   return root;
 }
 
+export async function mkTempDir(): Promise<string> {
+  return await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+}
+
 export async function writeDefaultConfig(root: string): Promise<void> {
   const agentplaneDir = path.join(root, ".agentplane");
   await mkdir(agentplaneDir, { recursive: true });

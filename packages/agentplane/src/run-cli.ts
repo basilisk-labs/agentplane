@@ -19,6 +19,7 @@ import { promisify } from "node:util";
 import {
   defaultConfig,
   extractTaskSuffix,
+  findGitRoot,
   getBaseBranch,
   getStagedFiles,
   getUnstagedFiles,
@@ -1596,10 +1597,19 @@ async function cmdInit(opts: {
   validateBundledRecipesSelection(recipes);
 
   try {
+    const initRoot = path.resolve(opts.rootOverride ?? opts.cwd);
+    let gitRoot = await findGitRoot(initRoot);
+    const baseBranchFallback = defaultConfig().base_branch;
+    if (!gitRoot) {
+      await gitInitRepo(initRoot, baseBranchFallback);
+      gitRoot = initRoot;
+    }
+
     const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
+      cwd: gitRoot,
+      rootOverride: gitRoot,
     });
+    const initBaseBranch = await resolveInitBaseBranch(resolved.gitRoot, baseBranchFallback);
     const configPath = path.join(resolved.agentplaneDir, "config.json");
     const backendPath = path.join(resolved.agentplaneDir, "backends", "local", "backend.json");
     const initDirs = [
@@ -1651,6 +1661,7 @@ async function cmdInit(opts: {
     await mkdir(path.join(resolved.agentplaneDir, "backends", "local"), { recursive: true });
 
     const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
+    setByDottedKey(rawConfig, "base_branch", initBaseBranch);
     setByDottedKey(rawConfig, "workflow_mode", workflow);
     setByDottedKey(rawConfig, "agents.approvals.require_plan", String(requirePlanApproval));
     setByDottedKey(rawConfig, "agents.approvals.require_network", String(requireNetworkApproval));
@@ -1666,10 +1677,19 @@ async function cmdInit(opts: {
     await writeFile(backendPath, `${JSON.stringify(backendPayload, null, 2)}\n`, "utf8");
 
     const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
+    const installPaths: string[] = [
+      path.relative(resolved.gitRoot, configPath),
+      path.relative(resolved.gitRoot, backendPath),
+    ];
+    let wroteAgents = false;
     if (!(await fileExists(agentsPath))) {
       const template = await loadAgentsTemplate();
       const filtered = filterAgentsByWorkflow(template, workflow);
       await writeFile(agentsPath, filtered, "utf8");
+      wroteAgents = true;
+    }
+    if (wroteAgents) {
+      installPaths.push(path.relative(resolved.gitRoot, agentsPath));
     }
 
     const agentTemplates = await loadAgentTemplates();
@@ -1677,6 +1697,7 @@ async function cmdInit(opts: {
       const targetPath = path.join(resolved.agentplaneDir, "agents", agent.fileName);
       if (await fileExists(targetPath)) continue;
       await writeFile(targetPath, agent.contents, "utf8");
+      installPaths.push(path.relative(resolved.gitRoot, targetPath));
     }
 
     if (hooks) {
@@ -1685,6 +1706,14 @@ async function cmdInit(opts: {
 
     if (ide !== "none") {
       await cmdIdeSync({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+      const cursorPath = path.join(resolved.gitRoot, ".cursor", "rules", "agentplane.mdc");
+      const windsurfPath = path.join(resolved.gitRoot, ".windsurf", "rules", "agentplane.md");
+      if (await fileExists(cursorPath)) {
+        installPaths.push(path.relative(resolved.gitRoot, cursorPath));
+      }
+      if (await fileExists(windsurfPath)) {
+        installPaths.push(path.relative(resolved.gitRoot, windsurfPath));
+      }
     }
 
     if (recipes.length > 0) {
@@ -1694,6 +1723,13 @@ async function cmdInit(opts: {
         process.stdout.write("Recipes install is not implemented yet; skipping.\n");
       }
     }
+
+    await ensureInitCommit({
+      gitRoot: resolved.gitRoot,
+      baseBranch: initBaseBranch,
+      installPaths,
+      version: getVersion(),
+    });
 
     process.stdout.write(`${path.relative(resolved.gitRoot, resolved.agentplaneDir)}\n`);
     return 0;
@@ -4664,13 +4700,41 @@ async function gitRevParse(cwd: string, args: string[]): Promise<string> {
   return trimmed;
 }
 
+async function gitInitRepo(cwd: string, branch: string): Promise<void> {
+  try {
+    await execFileAsync("git", ["init", "-q", "-b", branch], { cwd, env: gitEnv() });
+    return;
+  } catch {
+    await execFileAsync("git", ["init", "-q"], { cwd, env: gitEnv() });
+  }
+
+  try {
+    const current = await gitCurrentBranch(cwd);
+    if (current !== branch) {
+      await execFileAsync("git", ["checkout", "-q", "-b", branch], { cwd, env: gitEnv() });
+    }
+  } catch {
+    await execFileAsync("git", ["checkout", "-q", "-b", branch], { cwd, env: gitEnv() });
+  }
+}
+
 async function gitCurrentBranch(cwd: string): Promise<string> {
-  const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {
+  try {
+    const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], {
+      cwd,
+      env: gitEnv(),
+    });
+    const trimmed = stdout.trim();
+    if (trimmed) return trimmed;
+  } catch {
+    // fall through
+  }
+  const { stdout } = await execFileAsync("git", ["rev-parse", "--abbrev-ref", "HEAD"], {
     cwd,
     env: gitEnv(),
   });
   const trimmed = stdout.trim();
-  if (!trimmed) throw new Error("Failed to resolve git branch");
+  if (!trimmed || trimmed === "HEAD") throw new Error("Failed to resolve git branch");
   return trimmed;
 }
 
@@ -4688,6 +4752,84 @@ async function gitBranchExists(cwd: string, branch: string): Promise<boolean> {
   }
 }
 
+async function gitListBranches(cwd: string): Promise<string[]> {
+  const { stdout } = await execFileAsync("git", ["branch", "--format=%(refname:short)"], {
+    cwd,
+    env: gitEnv(),
+  });
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+async function gitStagedPaths(cwd: string): Promise<string[]> {
+  const { stdout } = await execFileAsync("git", ["diff", "--cached", "--name-only"], {
+    cwd,
+    env: gitEnv(),
+  });
+  return stdout
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
+async function gitAddPaths(cwd: string, paths: string[]): Promise<void> {
+  if (paths.length === 0) return;
+  await execFileAsync("git", ["add", "--", ...paths], { cwd, env: gitEnv() });
+}
+
+async function gitCommit(cwd: string, message: string): Promise<void> {
+  await execFileAsync("git", ["commit", "-m", message], { cwd, env: gitEnv() });
+}
+
+async function resolveInitBaseBranch(gitRoot: string, fallback: string): Promise<string> {
+  let current: string | null = null;
+  try {
+    current = await gitCurrentBranch(gitRoot);
+  } catch {
+    current = null;
+  }
+  const branches = await gitListBranches(gitRoot);
+  if (current) return current;
+  if (branches.includes(fallback)) return fallback;
+  if (branches.length > 0) {
+    const first = branches[0];
+    if (first) return first;
+  }
+  return fallback;
+}
+
+async function ensureInitCommit(opts: {
+  gitRoot: string;
+  baseBranch: string;
+  installPaths: string[];
+  version: string;
+}): Promise<void> {
+  const stagedBefore = await gitStagedPaths(opts.gitRoot);
+  if (stagedBefore.length > 0) {
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message:
+        "Git index has staged changes; commit or unstage them before running agentplane init.",
+    });
+  }
+
+  await setPinnedBaseBranch({
+    cwd: opts.gitRoot,
+    rootOverride: opts.gitRoot,
+    value: opts.baseBranch,
+  });
+
+  const dedupedPaths = [...new Set(opts.installPaths)].filter((entry) => entry.length > 0);
+  await gitAddPaths(opts.gitRoot, dedupedPaths);
+  const staged = await gitStagedPaths(opts.gitRoot);
+  if (staged.length === 0) return;
+
+  const message = `chore: install agentplane ${opts.version}`;
+  await gitCommit(opts.gitRoot, message);
+}
 function toGitPath(filePath: string): string {
   return filePath.split(path.sep).join("/");
 }
@@ -4838,12 +4980,11 @@ function hookScriptText(hook: (typeof HOOK_NAMES)[number]): string {
     "#!/usr/bin/env sh",
     `# ${HOOK_MARKER} (do not edit)`,
     "set -e",
-    'ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"',
-    'if [ -z "$ROOT" ]; then',
-    '  echo "agentplane hooks: unable to resolve repo root" >&2',
+    "if ! command -v agentplane >/dev/null 2>&1; then",
+    '  echo "agentplane hooks: agentplane not found in PATH" >&2',
     "  exit 1",
     "fi",
-    'exec "$ROOT/.agentplane/bin/agentplane" hooks run ' + hook + ' "$@"',
+    "exec agentplane hooks run " + hook + ' "$@"',
     "",
   ].join("\n");
 }
@@ -4853,21 +4994,11 @@ function shimScriptText(): string {
     "#!/usr/bin/env sh",
     `# ${SHIM_MARKER} (do not edit)`,
     "set -e",
-    'ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"',
-    'if [ -z "$ROOT" ]; then',
-    '  echo "agentplane shim: unable to resolve repo root" >&2',
+    "if ! command -v agentplane >/dev/null 2>&1; then",
+    '  echo "agentplane shim: agentplane not found in PATH" >&2',
     "  exit 1",
     "fi",
-    'if [ -f "$ROOT/packages/agentplane/dist/cli.js" ]; then',
-    "  if command -v node >/dev/null 2>&1; then",
-    '    exec node "$ROOT/packages/agentplane/bin/agentplane.js" "$@"',
-    "  fi",
-    "fi",
-    "if command -v bun >/dev/null 2>&1; then",
-    '  exec bun "$ROOT/packages/agentplane/src/cli.ts" "$@"',
-    "fi",
-    'echo "agentplane shim: bun or built dist required" >&2',
-    "exit 1",
+    'exec agentplane "$@"',
     "",
   ].join("\n");
 }
