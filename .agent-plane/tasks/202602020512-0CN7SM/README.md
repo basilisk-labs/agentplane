@@ -1,13 +1,15 @@
 ---
 id: "202602020512-0CN7SM"
 title: "Init: git bootstrap + install commit"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["init"]
+commit: { hash: "296d43fa2eecc20229fd66a0ed58b7b176da3358", message: "✨ 0CN7SM init git bootstrap and install commit; pin base branch; update hooks to system agentplane; add tests/docs" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: update agentplane init to bootstrap git when missing, set base branch when present, and commit install with version." }
+  - { author: "ORCHESTRATOR", body: "verified: bun run test:full | details: pre-commit ran format:check, lint, and test-fast; init bootstrap and hook changes validated." }
 doc_version: 2
 doc_updated_at: "2026-02-02T05:29:51+00:00"
 doc_updated_by: "agentctl"
