@@ -25,6 +25,7 @@ agentplane init
 This creates `.agentplane/` (config, agents, tasks, caches). 1.0 is offline-first; network is used only by explicit commands.
 If the folder is not a git repository, init will create one, pin the base branch, and commit the install.
 If the folder is already a git repository, init pins the base branch to the current branch and commits the install artifacts.
+IDE integration currently targets Codex CLI only; other IDEs will be added later.
 
 During init, you choose minor approval toggles (plan approval and network access). The default agent remains ORCHESTRATOR and is not configured via init. Paths are backend-defined and not user-configurable during init.
 
