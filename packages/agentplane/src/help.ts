@@ -17,7 +17,7 @@ export function renderHelp(): string {
     "  agentplane quickstart",
     "",
     "Init commands:",
-    "  agentplane init [--workflow <direct|branch_pr>] [--hooks <yes|no>] [--require-plan-approval <yes|no>] [--require-network-approval <yes|no>] [--ide <codex>] [--recipes <list>] [--yes] [--force|--backup]",
+    "  agentplane init [--ide <none|cursor|windsurf|both>] [--workflow <direct|branch_pr>] [--hooks <yes|no>] [--require-plan-approval <yes|no>] [--require-network-approval <yes|no>] [--recipes <list>] [--yes] [--force|--backup]",
     "",
     "Upgrade commands:",
     "  agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]",
