@@ -101,7 +101,7 @@ describe("agentplane CLI smoke", () => {
         "init",
         "--yes",
         "--ide",
-        "codex",
+        "none",
         "--workflow",
         "direct",
         "--hooks",

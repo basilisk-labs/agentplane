@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
-import { access, cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -16,30 +16,6 @@ const recipeArchiveCache = new Map<
   string,
   { archivePath: string; manifest: Record<string, unknown> }
 >();
-let gitTemplateRoot: string | null = null;
-let gitTemplatePromise: Promise<string> | null = null;
-
-async function ensureGitTemplateRoot(): Promise<string> {
-  if (gitTemplateRoot) return gitTemplateRoot;
-  if (!gitTemplatePromise) {
-    gitTemplatePromise = (async () => {
-      const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-template-"));
-      await execFileAsync("git", ["init", "-q"], { cwd: root });
-      return root;
-    })();
-  }
-  gitTemplateRoot = await gitTemplatePromise;
-  return gitTemplateRoot;
-}
-
-async function copyDirContents(src: string, dest: string): Promise<void> {
-  const entries = await readdir(src, { withFileTypes: true });
-  await Promise.all(
-    entries.map((entry) =>
-      cp(path.join(src, entry.name), path.join(dest, entry.name), { recursive: true }),
-    ),
-  );
-}
 
 export function registerAgentplaneHome(): void {
   beforeAll(async () => {
@@ -98,9 +74,9 @@ export function captureStdIO() {
 }
 
 export async function mkGitRepoRoot(): Promise<string> {
-  const template = await ensureGitTemplateRoot();
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
-  await copyDirContents(template, root);
+  await mkdir(path.join(root, ".git"), { recursive: true });
+  await execFileAsync("git", ["init", "-q"], { cwd: root });
   return root;
 }
 
@@ -293,7 +269,8 @@ export async function createUpgradeBundle(files: Record<string, string>): Promis
 }
 
 export async function mkGitRepoRootWithBranch(branch: string): Promise<string> {
-  const root = await mkGitRepoRoot();
+  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+  await execFileAsync("git", ["init", "-q"], { cwd: root });
   await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
   return root;
 }

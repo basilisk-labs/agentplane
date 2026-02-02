@@ -195,7 +195,7 @@ export function renderQuickstart(): string {
     "- `agentplane init` (bootstrap `.agentplane/`)",
     "- `agentplane config show` / `agentplane config set <key> <value>`",
     "- `agentplane mode get` / `agentplane mode set <direct|branch_pr>`",
-    "- `agentplane ide sync` (no-op for Codex CLI; other IDEs coming later)",
+    "- `agentplane ide sync` (regenerate IDE entrypoints)",
     "",
     "## Daily task workflow",
     "",
