@@ -1,9 +1,9 @@
 ---
-title: "CLI Contract (v1)"
-description: "The stable agentplane v1 CLI surface: commands, flags, exit codes, and JSON errors."
+title: "CLI Contract (Node.js 1.0)"
+description: "The stable agentplane 1.0 CLI surface: commands, flags, exit codes, and JSON errors."
 ---
 
-This document freezes the public command surface for the Node.js CLI `agentplane` v1.
+This document freezes the public command surface for the Node.js CLI `agentplane` 1.0.
 
 Scope: command namespaces, subcommands, global flags, exit codes, and `--json` error output.
 
@@ -57,7 +57,7 @@ Rules:
 
 ## 4) Namespaces and collision rules
 
-Reserved namespaces (v1):
+Reserved namespaces (1.0):
 
 - `task`, `work`, `pr`, `branch`, `guard`, `hooks`, `commit`
 - `mode`, `config`, `verify`, `ready`, `integrate`, `cleanup`, `finish`, `start`, `block`
@@ -69,7 +69,7 @@ Collision resolution:
   - IDE entrypoints: `agentplane ide sync`
   - Backends: `agentplane backend sync <id>`
 
-## 5) Command surface (v1)
+## 5) Command surface (1.0)
 
 This table lists commands and required minimum flags. Implementation may add additional non-breaking flags.
 
@@ -113,7 +113,7 @@ This table lists commands and required minimum flags. Implementation may add add
 
 ### 5.3 `task` namespace
 
-Minimum subcommands (v1):
+Minimum subcommands (1.0):
 
 | Command                                         | Purpose                               |
 | ----------------------------------------------- | ------------------------------------- | -------------------------------------- |
@@ -130,7 +130,7 @@ Minimum subcommands (v1):
 
 ### 5.4 `guard` namespace
 
-Minimum subcommands (v1):
+Minimum subcommands (1.0):
 
 | Command                                      | Purpose                                             |
 | -------------------------------------------- | --------------------------------------------------- |
@@ -140,5 +140,5 @@ Minimum subcommands (v1):
 
 ## 6) Compatibility notes
 
-- v1 uses `.agentplane/` as the project directory name; `.agent-plane/` is not supported or auto-detected.
+- Node.js 1.0 uses `.agentplane/` as the project directory name; `.agent-plane/` is not supported or auto-detected.
 - The command surface is designed to be a functional replacement of the legacy Python `agentctl`, but output text is not guaranteed to match verbatim (except where schemas/specs require byte stability).
