@@ -1,13 +1,15 @@
 ---
 id: "202602011805-EFYV0M"
 title: "Optimize test runtime and modularity"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["testing"]
+commit: { hash: "c1a49b8e91e5ef3b457216762e480c26b1f7c910", message: "⚡ EFYV0M speed up cli tests: reuse git template; add cli unit/slow scripts; update docs" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: optimize test runtime by modularizing CLI suites and reducing per-test git setup; update scripts/docs accordingly while keeping coverage." }
+  - { author: "ORCHESTRATOR", body: "verified: bun run test:fast | details: bun run test:cli:unit; bun run test:cli:slow; pre-commit hooks (format/lint/test-fast) passed." }
 doc_version: 2
 doc_updated_at: "2026-02-02T06:06:33+00:00"
 doc_updated_by: "agentctl"
