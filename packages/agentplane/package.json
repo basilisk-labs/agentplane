@@ -13,7 +13,13 @@
     "orchestration"
   ],
   "license": "MIT",
-  "author": "Basilisk Labs",
+  "author": "basilisk-labs",
+  "maintainers": [
+    "basilisk-labs"
+  ],
+  "contributors": [
+    "basilisk-labs"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/basilisk-labs/agentplane.git"
