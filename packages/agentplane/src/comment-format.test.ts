@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { defaultConfig } from "@agentplane/core";
+import { defaultConfig } from "@agentplaneorg/core";
 
 import {
   formatCommentBodyForCommit,

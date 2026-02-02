@@ -24,7 +24,7 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
       - run: bun install --frozen-lockfile
-      - run: bun run --filter=core build
+      - run: bun run --filter=@agentplaneorg/core build
       - run: bun run --filter=agentplane build
       - run: npm publish --access public
         working-directory: packages/core

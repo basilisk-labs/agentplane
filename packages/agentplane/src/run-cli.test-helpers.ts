@@ -6,7 +6,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { afterAll, beforeAll } from "vitest";
 
-import { defaultConfig } from "@agentplane/core";
+import { defaultConfig } from "@agentplaneorg/core";
 
 const execFileAsync = promisify(execFile);
 
