@@ -1,13 +1,15 @@
 ---
 id: "202602020726-3N2KNX"
 title: "Prepare npm publish metadata + checklist"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["npm"]
+commit: { hash: "ac77e3ec777c21300af9a27984fc2493d6a1c70d", message: "🔧 3N2KNX set basilisk-labs package metadata for npm publish" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: prepare npm publish checklist, update package metadata for basilisk-labs ownership, and document publish steps in Russian without running networked commands." }
+  - { author: "ORCHESTRATOR", body: "verified: not run (metadata-only change) | details: pre-commit hooks ran format/lint/test-fast as part of commit." }
 doc_version: 2
 doc_updated_at: "2026-02-02T07:27:19+00:00"
 doc_updated_by: "agentctl"
