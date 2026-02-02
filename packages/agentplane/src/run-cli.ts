@@ -1,10 +1,8 @@
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
-  access,
   chmod,
   cp,
-  lstat,
   mkdir,
   mkdtemp,
   readdir,
@@ -16,7 +14,6 @@ import {
 } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { createInterface } from "node:readline/promises";
 import { promisify } from "node:util";
 
 import {
@@ -38,7 +35,6 @@ import {
   type AgentplaneConfig,
 } from "@agentplane/core";
 
-import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
 import { renderHelp } from "./help.js";
 import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
 import { formatCommentBodyForCommit } from "./comment-format.js";
@@ -48,6 +44,13 @@ import {
   loadAgentsTemplate,
   type WorkflowMode,
 } from "./agents-template.js";
+import { backupPath, fileExists, getPathKind } from "./cli/fs-utils.js";
+import { promptChoice, promptInput, promptYesNo } from "./cli/prompts.js";
+import {
+  listBundledRecipes,
+  renderBundledRecipesHint,
+  validateBundledRecipesSelection,
+} from "./cli/recipes-bundled.js";
 import { loadDotEnv } from "./env.js";
 import { CliError, formatJsonError } from "./errors.js";
 import { BackendError, loadTaskBackend, type TaskData } from "./task-backend.js";
@@ -1493,85 +1496,7 @@ function isAllowedUpgradePath(relPath: string): boolean {
   return relPath.startsWith(".agentplane/");
 }
 
-function listBundledRecipes(): { id: string; summary: string; version: string }[] {
-  return BUNDLED_RECIPES_CATALOG.recipes.map((recipe) => ({
-    id: recipe.id,
-    summary: recipe.summary,
-    version: recipe.versions.at(-1)?.version ?? "unknown",
-  }));
-}
-
-function renderBundledRecipesHint(): string {
-  const entries = listBundledRecipes();
-  if (entries.length === 0) {
-    return "Available bundled recipes: none";
-  }
-  return `Available bundled recipes: ${entries.map((entry) => entry.id).join(", ")}`;
-}
-
-function validateBundledRecipesSelection(recipes: string[]): void {
-  if (recipes.length === 0) return;
-  const available = listBundledRecipes().map((entry) => entry.id);
-  if (available.length === 0) {
-    process.stdout.write(`${renderBundledRecipesHint()}\n`);
-    return;
-  }
-  const missing = recipes.filter((recipe) => !available.includes(recipe));
-  if (missing.length > 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: `Unknown recipes: ${missing.join(", ")}. ${renderBundledRecipesHint()}`,
-    });
-  }
-}
-
-async function promptChoice(
-  prompt: string,
-  choices: string[],
-  defaultValue: string,
-): Promise<string> {
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  const question = `${prompt} [${choices.join("/")}] (default ${defaultValue}): `;
-  const answer = await rl.question(question);
-  rl.close();
-  const trimmed = answer.trim();
-  if (!trimmed) return defaultValue;
-  if (!choices.includes(trimmed)) {
-    process.stdout.write(`Invalid choice, using default ${defaultValue}\n`);
-    return defaultValue;
-  }
-  return trimmed;
-}
-
-async function promptYesNo(prompt: string, defaultValue: boolean): Promise<boolean> {
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  const question = `${prompt} [${defaultValue ? "Y/n" : "y/N"}]: `;
-  const answer = await rl.question(question);
-  rl.close();
-  const trimmed = answer.trim().toLowerCase();
-  if (!trimmed) return defaultValue;
-  return ["y", "yes", "true", "1", "on"].includes(trimmed);
-}
-
-async function getPathKind(filePath: string): Promise<"file" | "dir" | null> {
-  try {
-    const stats = await lstat(filePath);
-    return stats.isDirectory() ? "dir" : "file";
-  } catch {
-    return null;
-  }
-}
-
-async function backupPath(filePath: string): Promise<string> {
-  const stamp = new Date().toISOString().replaceAll(/[:.]/g, "");
-  let dest = `${filePath}.bak-${stamp}`;
-  if (await fileExists(dest)) {
-    dest = `${filePath}.bak-${stamp}-${Math.random().toString(36).slice(2, 8)}`;
-  }
-  await rename(filePath, dest);
-  return dest;
-}
+// moved to cli/recipes-bundled.ts, cli/prompts.ts, and cli/fs-utils.ts
 
 async function cmdInit(opts: {
   cwd: string;
@@ -1648,13 +1573,10 @@ async function cmdInit(opts: {
       );
     }
     if (!flags.recipes) {
-      const rl = createInterface({ input: process.stdin, output: process.stdout });
       process.stdout.write(`${renderBundledRecipesHint()}\n`);
-      const answer = await rl.question("Install optional recipes (comma separated, or none): ");
-      rl.close();
-      const trimmed = answer.trim();
-      recipes = trimmed
-        ? trimmed
+      const answer = await promptInput("Install optional recipes (comma separated, or none): ");
+      recipes = answer
+        ? answer
             .split(",")
             .map((item) => item.trim())
             .filter(Boolean)
@@ -4707,15 +4629,6 @@ function suggestAllowPrefixes(paths: string[]): string[] {
 const HOOK_MARKER = "agentplane-hook";
 const SHIM_MARKER = "agentplane-hook-shim";
 const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push"] as const;
-
-async function fileExists(filePath: string): Promise<boolean> {
-  try {
-    await access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 async function archivePrArtifacts(taskDir: string): Promise<string | null> {
   const prDir = path.join(taskDir, "pr");
