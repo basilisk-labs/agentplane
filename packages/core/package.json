@@ -14,7 +14,7 @@
   "author": "Basilisk Labs",
   "repository": {
     "type": "git",
-    "url": "https://github.com/basilisk-labs/agentplane.git"
+    "url": "git+https://github.com/basilisk-labs/agentplane.git"
   },
   "homepage": "https://github.com/basilisk-labs/agentplane",
   "bugs": {
