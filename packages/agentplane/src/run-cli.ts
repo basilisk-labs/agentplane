@@ -318,7 +318,7 @@ async function cmdModeSet(opts: {
 }
 
 type InitFlags = {
-  ide?: "none" | "cursor" | "windsurf" | "both";
+  ide?: "codex" | "cursor" | "windsurf";
   workflow?: "direct" | "branch_pr";
   hooks?: boolean;
   requirePlanApproval?: boolean;
@@ -482,16 +482,11 @@ function parseInitFlags(args: string[]): InitFlags {
     switch (arg) {
       case "--ide": {
         const normalized = next.trim().toLowerCase();
-        if (
-          normalized !== "none" &&
-          normalized !== "cursor" &&
-          normalized !== "windsurf" &&
-          normalized !== "both"
-        ) {
+        if (normalized !== "codex" && normalized !== "cursor" && normalized !== "windsurf") {
           throw new CliError({
             exitCode: 2,
             code: "E_USAGE",
-            message: "Usage: --ide <none|cursor|windsurf|both>",
+            message: "Usage: --ide <codex|cursor|windsurf>",
           });
         }
         out.ide = normalized as InitFlags["ide"];
@@ -1514,7 +1509,7 @@ async function cmdInit(opts: {
     requirePlanApproval: boolean;
     requireNetworkApproval: boolean;
   } = {
-    ide: "none",
+    ide: "codex",
     workflow: "direct",
     hooks: false,
     recipes: [],
@@ -1531,8 +1526,7 @@ async function cmdInit(opts: {
   if (
     !process.stdin.isTTY &&
     !flags.yes &&
-    (!flags.ide ||
-      !flags.workflow ||
+    (!flags.workflow ||
       flags.hooks === undefined ||
       flags.requirePlanApproval === undefined ||
       flags.requireNetworkApproval === undefined)
@@ -1546,17 +1540,7 @@ async function cmdInit(opts: {
   }
 
   if (process.stdin.isTTY && !flags.yes) {
-    if (!flags.ide) {
-      const choice = await promptChoice("Select IDE", ["none", "cursor", "windsurf", "both"], ide);
-      ide =
-        choice === "cursor"
-          ? "cursor"
-          : choice === "windsurf"
-            ? "windsurf"
-            : choice === "both"
-              ? "both"
-              : "none";
-    }
+    ide = flags.ide ?? defaults.ide;
     if (!flags.workflow) {
       const choice = await promptChoice("Select workflow mode", ["direct", "branch_pr"], workflow);
       workflow = choice === "branch_pr" ? "branch_pr" : "direct";
@@ -1704,14 +1688,14 @@ async function cmdInit(opts: {
       await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
     }
 
-    if (ide !== "none") {
-      await cmdIdeSync({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    if (ide !== "codex") {
+      await cmdIdeSync({ cwd: opts.cwd, rootOverride: opts.rootOverride, ide });
       const cursorPath = path.join(resolved.gitRoot, ".cursor", "rules", "agentplane.mdc");
       const windsurfPath = path.join(resolved.gitRoot, ".windsurf", "rules", "agentplane.md");
-      if (await fileExists(cursorPath)) {
+      if (ide === "cursor" && (await fileExists(cursorPath))) {
         installPaths.push(path.relative(resolved.gitRoot, cursorPath));
       }
-      if (await fileExists(windsurfPath)) {
+      if (ide === "windsurf" && (await fileExists(windsurfPath))) {
         installPaths.push(path.relative(resolved.gitRoot, windsurfPath));
       }
     }
@@ -1911,7 +1895,11 @@ async function cmdUpgrade(opts: {
   }
 }
 
-async function cmdIdeSync(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+async function cmdIdeSync(opts: {
+  cwd: string;
+  rootOverride?: string;
+  ide?: "cursor" | "windsurf";
+}): Promise<number> {
   try {
     const resolved = await resolveProject({
       cwd: opts.cwd,
@@ -1930,18 +1918,28 @@ async function cmdIdeSync(opts: { cwd: string; rootOverride?: string }): Promise
     ].join("\n");
     const content = `${header}${agentsText.trimEnd()}\n`;
 
-    const cursorDir = path.join(resolved.gitRoot, ".cursor", "rules");
-    const windsurfDir = path.join(resolved.gitRoot, ".windsurf", "rules");
-    await mkdir(cursorDir, { recursive: true });
-    await mkdir(windsurfDir, { recursive: true });
+    const targets =
+      opts.ide === "cursor"
+        ? ["cursor"]
+        : opts.ide === "windsurf"
+          ? ["windsurf"]
+          : ["cursor", "windsurf"];
 
-    const cursorPath = path.join(cursorDir, "agentplane.mdc");
-    const windsurfPath = path.join(windsurfDir, "agentplane.md");
-    await writeFileIfChanged(cursorPath, content);
-    await writeFileIfChanged(windsurfPath, content);
+    if (targets.includes("cursor")) {
+      const cursorDir = path.join(resolved.gitRoot, ".cursor", "rules");
+      await mkdir(cursorDir, { recursive: true });
+      const cursorPath = path.join(cursorDir, "agentplane.mdc");
+      await writeFileIfChanged(cursorPath, content);
+      process.stdout.write(`${path.relative(resolved.gitRoot, cursorPath)}\n`);
+    }
 
-    process.stdout.write(`${path.relative(resolved.gitRoot, cursorPath)}\n`);
-    process.stdout.write(`${path.relative(resolved.gitRoot, windsurfPath)}\n`);
+    if (targets.includes("windsurf")) {
+      const windsurfDir = path.join(resolved.gitRoot, ".windsurf", "rules");
+      await mkdir(windsurfDir, { recursive: true });
+      const windsurfPath = path.join(windsurfDir, "agentplane.md");
+      await writeFileIfChanged(windsurfPath, content);
+      process.stdout.write(`${path.relative(resolved.gitRoot, windsurfPath)}\n`);
+    }
     return 0;
   } catch (err) {
     throw mapCoreError(err, { command: "ide sync", root: opts.rootOverride ?? null });

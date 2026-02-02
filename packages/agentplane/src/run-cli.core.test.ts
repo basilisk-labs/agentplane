@@ -8262,7 +8262,9 @@ describe("runCli", () => {
     expect(configText).toContain('"require_network": false');
 
     const cursorPath = path.join(root, ".cursor", "rules", "agentplane.mdc");
+    const windsurfPath = path.join(root, ".windsurf", "rules", "agentplane.md");
     expect(await pathExists(cursorPath)).toBe(true);
+    expect(await pathExists(windsurfPath)).toBe(false);
 
     const hooksDir = path.join(root, ".git", "hooks");
     const commitMsgPath = path.join(hooksDir, "commit-msg");
@@ -8312,7 +8314,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--ide", "vscode", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: --ide <none|cursor|windsurf|both>");
+      expect(io.stderr).toContain("Usage: --ide <codex|cursor|windsurf>");
     } finally {
       io.restore();
     }

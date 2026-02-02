@@ -26,7 +26,7 @@ This creates `.agentplane/` (config, agents, tasks, caches). 1.0 is offline-firs
 If the folder is not a git repository, init will create one, pin the base branch, and commit the install.
 If the folder is already a git repository, init pins the base branch to the current branch and commits the install artifacts.
 
-During init, you choose minor approval toggles (plan approval and network access). The default agent remains ORCHESTRATOR and is not configured via init. Paths are backend-defined and not user-configurable during init.
+During init, you choose minor approval toggles (plan approval and network access). The default IDE mode is Codex CLI; pass `--ide cursor` or `--ide windsurf` to install only that IDE’s rules file. The default agent remains ORCHESTRATOR and is not configured via init. Paths are backend-defined and not user-configurable during init.
 
 ## Upgrade a workspace
 
