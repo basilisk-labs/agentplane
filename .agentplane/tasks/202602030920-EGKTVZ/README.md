@@ -12,41 +12,52 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: fix npm publish auth in workflow, ensure OIDC trusted publishing, add local dry-run check." }
   - { author: "ORCHESTRATOR", body: "Verified: ran bun run release:check; workflow updated to clear npm auth token before publish." }
 doc_version: 2
-doc_updated_at: "2026-02-03T11:02:14.321Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-02-03T11:52:32.875Z"
+doc_updated_by: "agentplane"
 description: "Ensure publish workflow uses trusted publishing (OIDC) without stale tokens; add local publish dry-run check."
 id_source: "generated"
 ---
 ## Summary
 
-## Scope
-
-## Risks
-
-## Verify Steps
-
-## Rollback Plan
-
-## Summary
 
 Removed npm auth token usage in publish workflow and added a local release dry-run script.
 
+
+
+Normalized task doc sections (dedupe).
+
+
+
+
+
 ## Scope
+
 
 Workflow auth cleanup and local publish dry-run validation.
 
+
+
+
+
 ## Risks
+
 
 Low; publish now relies on GitHub OIDC only.
 
-## Rollback Plan
 
-Revert workflow/script changes and re-run publish with corrected auth.
+
+
 
 ## Verify Steps
 
+
 1) bun run release:check\n2) GitHub Actions publish workflow runs on tag push
 
-## Summary
 
-Normalized task doc sections (dedupe).
+
+
+
+## Rollback Plan
+
+
+Revert workflow/script changes and re-run publish with corrected auth.
