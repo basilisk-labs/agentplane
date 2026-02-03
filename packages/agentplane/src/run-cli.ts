@@ -73,6 +73,7 @@ function gitEnv(): NodeJS.ProcessEnv {
 type ParsedArgs = {
   help: boolean;
   version: boolean;
+  noUpdateCheck: boolean;
   root?: string;
   jsonErrors: boolean;
 };
@@ -80,6 +81,7 @@ type ParsedArgs = {
 function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] } {
   let help = false;
   let version = false;
+  let noUpdateCheck = false;
   let jsonErrors = false;
   let root: string | undefined;
 
@@ -93,6 +95,10 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
     }
     if (arg === "--version" || arg === "-v") {
       version = true;
+      continue;
+    }
+    if (arg === "--no-update-check") {
+      noUpdateCheck = true;
       continue;
     }
     if (arg === "--json") {
@@ -113,7 +119,7 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
     }
     rest.push(arg);
   }
-  return { globals: { help, version, root, jsonErrors }, rest };
+  return { globals: { help, version, noUpdateCheck, root, jsonErrors }, rest };
 }
 
 function writeError(err: CliError, jsonErrors: boolean): void {
@@ -220,6 +226,77 @@ function usageMessage(usage: string, example?: string): string {
 
 function backendNotSupportedMessage(feature: string): string {
   return `Backend does not support ${feature}`;
+}
+
+const UPDATE_CHECK_PACKAGE = "agentplane";
+const UPDATE_CHECK_URL = `https://registry.npmjs.org/${UPDATE_CHECK_PACKAGE}/latest`;
+const UPDATE_CHECK_TIMEOUT_MS = 1500;
+
+function parseVersionParts(version: string): { main: number[]; prerelease: string | null } {
+  const cleaned = version.trim().replace(/^v/i, "").split("+")[0] ?? "";
+  const [mainRaw, prereleaseRaw] = cleaned.split("-", 2);
+  const main = (mainRaw ?? "")
+    .split(".")
+    .filter((part) => part.length > 0)
+    .map((part) => {
+      const parsed = Number.parseInt(part, 10);
+      return Number.isFinite(parsed) ? parsed : 0;
+    });
+  return { main, prerelease: prereleaseRaw ? prereleaseRaw.trim() : null };
+}
+
+function compareVersions(left: string, right: string): number {
+  const a = parseVersionParts(left);
+  const b = parseVersionParts(right);
+  const length = Math.max(a.main.length, b.main.length);
+  for (let i = 0; i < length; i++) {
+    const partA = a.main[i] ?? 0;
+    const partB = b.main[i] ?? 0;
+    if (partA !== partB) return partA > partB ? 1 : -1;
+  }
+  if (a.prerelease === b.prerelease) return 0;
+  if (a.prerelease === null) return 1;
+  if (b.prerelease === null) return -1;
+  return a.prerelease.localeCompare(b.prerelease);
+}
+
+function isTruthyEnv(value: string | undefined): boolean {
+  if (!value) return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized === "1" || normalized === "true" || normalized === "yes" || normalized === "on";
+}
+
+async function fetchLatestNpmVersion(): Promise<string | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), UPDATE_CHECK_TIMEOUT_MS);
+  try {
+    const res = await fetch(UPDATE_CHECK_URL, {
+      headers: { "User-Agent": "agentplane" },
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as Record<string, unknown>;
+    const version = typeof data.version === "string" ? data.version.trim() : "";
+    return version.length > 0 ? version : null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function maybeWarnOnUpdate(opts: {
+  currentVersion: string;
+  skip: boolean;
+  jsonErrors: boolean;
+}): Promise<void> {
+  if (opts.skip || opts.jsonErrors) return;
+  if (isTruthyEnv(process.env.AGENTPLANE_NO_UPDATE_CHECK)) return;
+  const latest = await fetchLatestNpmVersion();
+  if (!latest) return;
+  if (compareVersions(latest, opts.currentVersion) <= 0) return;
+  const message = `Update available: ${UPDATE_CHECK_PACKAGE} ${opts.currentVersion} → ${latest}. Run: npm i -g ${UPDATE_CHECK_PACKAGE}@latest`;
+  process.stderr.write(`${warnMessage(message)}\n`);
 }
 
 function workflowModeMessage(actual: string | undefined, expected: string): string {
@@ -8415,6 +8492,11 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     await maybeLoadDotEnv({ cwd: process.cwd(), rootOverride: globals.root });
+    await maybeWarnOnUpdate({
+      currentVersion: getVersion(),
+      skip: globals.noUpdateCheck,
+      jsonErrors: globals.jsonErrors,
+    });
 
     const [namespace, command, ...args] = rest;
 

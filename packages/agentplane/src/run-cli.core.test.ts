@@ -63,6 +63,49 @@ describe("runCli", () => {
     }
   });
 
+  it("prints update notice when npm has a newer version", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    const originalFetch = globalThis.fetch;
+    const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    globalThis.fetch = vi.fn(() => Response.json({ version: "9.9.9" })) as unknown as typeof fetch;
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).toContain("Update available");
+      expect(io.stderr).toContain("npm i -g agentplane@latest");
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalNoUpdateCheck === undefined) {
+        delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+      } else {
+        process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
+      }
+      io.restore();
+    }
+  });
+
+  it("skips update check when --no-update-check is set", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn(() => {
+      throw new Error("should not fetch");
+    }) as unknown as typeof fetch;
+    try {
+      const code = await runCli(["--no-update-check", "config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Update available");
+      expect(globalThis.fetch).not.toHaveBeenCalled();
+    } finally {
+      globalThis.fetch = originalFetch;
+      io.restore();
+    }
+  });
+
   it("prints json error when --json is set", async () => {
     const io = captureStdIO();
     try {
