@@ -33,6 +33,7 @@
     "ci:recipes": "node scripts/ci-scope.mjs --scope recipes",
     "ci:spec": "node scripts/ci-scope.mjs --scope spec",
     "ci:testkit": "node scripts/ci-scope.mjs --scope testkit",
+    "release:check": "bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && (cd packages/core && npm pack --dry-run) && (cd packages/agentplane && npm pack --dry-run)",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
