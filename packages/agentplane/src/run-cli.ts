@@ -615,7 +615,7 @@ const BRANCH_REMOVE_USAGE_EXAMPLE =
   "agentplane branch remove --branch task/20260203-F1Q8AB --worktree .agentplane/worktrees/task";
 const UPGRADE_USAGE =
   "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
-const UPGRADE_USAGE_EXAMPLE = "agentplane upgrade --tag v0.1.2 --dry-run";
+const UPGRADE_USAGE_EXAMPLE = "agentplane upgrade --tag v0.1.3 --dry-run";
 const INIT_USAGE =
   "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> --require-plan-approval <...> --require-network-approval <...> [--recipes <...>] [--yes] [--force|--backup]";
 const INIT_USAGE_EXAMPLE =
