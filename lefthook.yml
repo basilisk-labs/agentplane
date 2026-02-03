@@ -10,5 +10,6 @@ pre-push:
   commands:
     release-notes:
       run: node scripts/check-release-notes.mjs
+      use_stdin: true
     test-full:
       run: bun run test:full
