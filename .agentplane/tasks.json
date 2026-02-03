@@ -12068,9 +12068,7 @@
       "status": "DONE",
       "priority": "high",
       "owner": "ORCHESTRATOR",
-      "depends_on": [
-        "[]"
-      ],
+      "depends_on": [],
       "tags": [
         "release"
       ],
@@ -12095,12 +12093,45 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nBumped published package versions to 0.1.2 and tagged the release.\n\n## Scope\n\nRelease bump for agentplane and @agentplaneorg/core packages.\n\n## Risks\n\nLow; release tag will trigger GitHub Actions publishing.\n\n## Verify Steps\n\n1) bun run test:fast\\n2) git tag -l v0.1.2\\n3) git push --follow-tags\n\n## Rollback Plan\n\nDelete the tag and revert the version bump commit if publish fails."
+    },
+    {
+      "id": "202602030920-EGKTVZ",
+      "title": "Fix npm publish auth in GitHub Actions",
+      "description": "Ensure publish workflow uses trusted publishing (OIDC) without stale tokens; add local publish dry-run check.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "release"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "4b155224cb4deacab75c8377d86d2268bf90ca32",
+        "message": "🛠️ EGKTVZ fix publish auth + add release check"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: fix npm publish auth in workflow, ensure OIDC trusted publishing, add local dry-run check."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: ran bun run release:check; workflow updated to clear npm auth token before publish."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T09:22:26.299Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nRemoved npm auth token usage in publish workflow and added a local release dry-run script.\n\n## Scope\n\nWorkflow auth cleanup and local publish dry-run validation.\n\n## Risks\n\nLow; publish now relies on GitHub OIDC only.\n\n## Rollback Plan\n\nRevert workflow/script changes and re-run publish with corrected auth.\n\n## Verify Steps\n\n1) bun run release:check\\n2) GitHub Actions publish workflow runs on tag push"
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "ee014de5a4ccb5da198f3b4b19cb6e02ea87a94dc4b03a64f49809fe54c1a3e4"
+    "checksum": "f8f718e14e12776bfc9ed72f5265933a612860872f00fc9ae1715bd2f020e069"
   }
 }
