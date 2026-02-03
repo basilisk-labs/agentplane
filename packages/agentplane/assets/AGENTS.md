@@ -163,12 +163,15 @@ Every task must have these sections in its README or task doc:
 
 ## Updating task docs
 
+- Workflow/task artifacts (task READMEs, PR artifacts, task exports) must be updated via `agentplane` commands, not manual edits.
 - Task README updates must be done via `agentplane task doc set ...`
 - Manual edits to `.agentplane/tasks/<task-id>/README.md` are prohibited.
 
 ---
 
 # COMMIT WORKFLOW
+
+- Commits and pushes must go through `agentplane` commands (no direct `git commit`/`git push`). If a push is needed but no `agentplane` command exists, ask for guidance.
 
 ## Commit message semantics (canonical)
 

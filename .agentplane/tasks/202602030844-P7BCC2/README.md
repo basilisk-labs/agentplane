@@ -11,8 +11,8 @@ commit: { hash: "45c5f8bf291f7cfc07cad4e2e16206ed554effc5", message: "✨ P7BCC2
 comments:
   - { author: "INTEGRATOR", body: "Verified: bun run test:core; frontmatter scan on task READMEs" }
 doc_version: 2
-doc_updated_at: "2026-02-03T08:49:12.080Z"
-doc_updated_by: "agentplane"
+doc_updated_at: "2026-02-03T11:02:14.071Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Strip leading duplicate frontmatter blocks from task README bodies and normalize doc merges to avoid repeated headers."
 id_source: "generated"
 ---
@@ -45,3 +45,7 @@ Run relevant tests (task-readme, task-backend) and re-scan task READMEs for dupl
 ## Rollback Plan
 
 Revert parsing changes; regenerate task READMEs via previous commits if needed.
+
+## Summary
+
+Normalized task doc sections (dedupe).

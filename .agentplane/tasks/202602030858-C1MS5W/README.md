@@ -13,8 +13,8 @@ comments:
   - { author: "ORCHESTRATOR", body: "Verified: ran bun run test:fast and bun run test:full; pre-push hook re-ran full tests; git push succeeded." }
   - { author: "ORCHESTRATOR", body: "Verified: ran bun run test:fast and bun run test:full; pre-push hook re-ran full tests; git push succeeded." }
 doc_version: 2
-doc_updated_at: "2026-02-03T09:08:00.347Z"
-doc_updated_by: "agentplane"
+doc_updated_at: "2026-02-03T11:02:14.154Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Run test suites 1/2 (fast/full), fix failures if any, ensure clean status, and push to remote."
 id_source: "generated"
 ---
@@ -47,3 +47,7 @@ None; pre-push hook re-ran the full test suite.
 ## Rollback Plan
 
 No rollback required; no repository changes were made.
+
+## Summary
+
+Normalized task doc sections (dedupe).

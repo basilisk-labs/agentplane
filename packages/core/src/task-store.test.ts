@@ -202,6 +202,40 @@ describe("task-store", () => {
     }
   });
 
+  it("setTaskDocSection dedupes repeated section headings", async () => {
+    const root = await mkGitRepoRoot();
+
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "My task",
+      description: "Why it matters",
+      owner: "CODER",
+      priority: "med",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const original = await readFile(created.readmePath, "utf8");
+    const duplicated = `${original}\n## Summary\n\nOld summary\n\n## Scope\n\nOld scope\n`;
+    await writeFile(created.readmePath, duplicated, "utf8");
+
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: created.id,
+      section: "Summary",
+      text: "Updated summary",
+      updatedBy: "CODER",
+    });
+
+    const updated = await readFile(created.readmePath, "utf8");
+    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(1);
+    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(1);
+    expect(updated).toContain("Updated summary");
+  });
+
   it("setTaskDocSection appends a missing section and validates inputs", async () => {
     const root = await mkGitRepoRoot();
 
