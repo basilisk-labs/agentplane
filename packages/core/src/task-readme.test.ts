@@ -52,10 +52,7 @@ Hello world.
   });
 
   it("strips duplicate frontmatter blocks from the body", () => {
-    const duplicate = sample.replace(
-      "## Summary",
-      "---\nextra: true\n---\n## Summary",
-    );
+    const duplicate = sample.replace("## Summary", "---\nextra: true\n---\n## Summary");
     const parsed = parseTaskReadme(duplicate);
     expect(parsed.body.trimStart().startsWith("## Summary")).toBe(true);
     expect(parsed.body).not.toContain("extra: true");
