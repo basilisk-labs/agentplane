@@ -12233,12 +12233,45 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAdd startup update check against npm registry with opt-out flag, warning on newer versions.\n\n## Scope\n\nUpdate CLI global flags, help text, and command guide; add npm version check and tests.\n\n## Risks\n\nStartup warning could appear in stderr; npm registry fetch is best-effort but should not block CLI.\n\n## Verify Steps\n\nbun run test:cli:core\n\n## Rollback Plan\n\nRevert the update-check changes in run-cli.ts, help.ts, command-guide.ts, and related tests."
+    },
+    {
+      "id": "202602031018-V8A8XC",
+      "title": "Document hooks as mandatory quality gate",
+      "description": "State that git hooks are required quality gates and ensure repo passes hook checks; run quality commands and fix any failures.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "fc4bf8e8c8a497ccc58484eeca110831532434da",
+        "message": "📝 V8A8XC require hooks as quality gate"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: add explicit hook quality gate policy and ensure hook checks pass cleanly."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: bun run format:check, bun run lint, bun run test:fast (all passed)."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T10:20:52.419Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDeclare git hooks as mandatory quality gates and keep hook checks passing.\n\n## Scope\n\nUpdate developer docs to require hooks; run hook checks (format, lint, test-fast) and fix failures.\n\n## Risks\n\nFormatting/lint fixes may touch additional files if hooks surface unrelated issues.\n\n## Verify Steps\n\nbun run format:check\\nbun run lint\\nbun run test:fast\n\n## Rollback Plan\n\nRevert docs/developer/testing-and-quality.mdx and docs/developer/code-quality.mdx, then rerun hook checks."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "2c39c80aff5b1cfb7415ec74ee0e0450a3640ed840c4d50cea6cd7be2a138d4e"
+    "checksum": "f36f94fe75db4d2819ef5f78436c9e9c8292410bec4cc40cd212b73c4de4334d"
   }
 }
