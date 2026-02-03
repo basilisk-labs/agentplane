@@ -12060,12 +12060,47 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nRan test suites (fast/full) and pushed the latest commits to origin.\n\n## Scope\n\nValidation and push only; no code changes.\n\n## Risks\n\nNone; pre-push hook re-ran the full test suite.\n\n## Verify Steps\n\n1) bun run test:fast\\n2) bun run test:full\\n3) git push\n\n## Rollback Plan\n\nNo rollback required; no repository changes were made."
+    },
+    {
+      "id": "202602030911-K6D6MA",
+      "title": "Release 0.1.2 via GitHub Actions",
+      "description": "Bump to 0.1.2, tag release, push to trigger GitHub Actions trusted publishing.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [
+        "[]"
+      ],
+      "tags": [
+        "release"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "eb5903253b0f98cf919595d76001105ea0392f7b",
+        "message": "🚀 K6D6MA bump versions to 0.1.2"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: bump versions to 0.1.2, tag release, push to trigger GitHub Actions publish."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: version bump committed (0.1.2), tag v0.1.2 pushed to trigger GitHub Actions publish."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T09:15:50.248Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nBumped published package versions to 0.1.2 and tagged the release.\n\n## Scope\n\nRelease bump for agentplane and @agentplaneorg/core packages.\n\n## Risks\n\nLow; release tag will trigger GitHub Actions publishing.\n\n## Verify Steps\n\n1) bun run test:fast\\n2) git tag -l v0.1.2\\n3) git push --follow-tags\n\n## Rollback Plan\n\nDelete the tag and revert the version bump commit if publish fails."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "be1e8d4616f4261f0b908fcef77dd3c780ebe16d3941023a5ca045a01d3ae05e"
+    "checksum": "ee014de5a4ccb5da198f3b4b19cb6e02ea87a94dc4b03a64f49809fe54c1a3e4"
   }
 }
