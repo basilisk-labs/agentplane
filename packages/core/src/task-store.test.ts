@@ -177,7 +177,7 @@ describe("task-store", () => {
 
       const before = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
       expect(before.frontmatter.doc_updated_at).toBe("2026-01-01T00:00:00.000Z");
-      expect(before.frontmatter.doc_updated_by).toBe("agentplane");
+      expect(before.frontmatter.doc_updated_by).toBe("CODER");
 
       vi.setSystemTime(new Date("2026-01-01T00:00:01Z"));
 

@@ -3530,7 +3530,7 @@ async function cmdTaskNew(opts: {
       comments: [],
       doc_version: 2,
       doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
+      doc_updated_by: flags.owner,
       id_source: "generated",
     };
     if (
@@ -3687,6 +3687,7 @@ async function cmdTaskAdd(opts: {
     const tags = dedupeStrings(flags.tags);
     const dependsOn = dedupeStrings(flags.dependsOn);
     const verify = dedupeStrings(flags.verify);
+    const docUpdatedBy = (flags.commentAuthor ?? "").trim() || flags.owner;
     if (requiresVerify(tags, config.tasks.verify.required_tags) && verify.length === 0) {
       throw new CliError({
         exitCode: 2,
@@ -3711,7 +3712,7 @@ async function cmdTaskAdd(opts: {
           : [],
       doc_version: 2,
       doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
+      doc_updated_by: docUpdatedBy,
       id_source: "explicit",
     }));
     if (backend.writeTasks) {
@@ -4453,9 +4454,16 @@ async function cmdTaskScaffold(opts: {
         comments: [],
         doc_version: 2,
         doc_updated_at: nowIso(),
-        doc_updated_by: "agentplane",
+        doc_updated_by: "UNKNOWN",
       } satisfies TaskData);
     if (flags.title) baseTask.title = flags.title;
+    if (
+      typeof baseTask.doc_updated_by !== "string" ||
+      baseTask.doc_updated_by.trim().length === 0 ||
+      baseTask.doc_updated_by.trim().toLowerCase() === "agentplane"
+    ) {
+      baseTask.doc_updated_by = baseTask.owner?.trim() ? baseTask.owner : "UNKNOWN";
+    }
 
     const frontmatter = taskDataToFrontmatter(baseTask);
     const body = ensureDocSections("", config.tasks.doc.required_sections);
@@ -4612,7 +4620,7 @@ async function cmdTaskComment(opts: {
       comments: [...existing, { author: opts.author, body: opts.body }],
       doc_version: 2,
       doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
+      doc_updated_by: opts.author,
     };
     await backend.writeTask(next);
     process.stdout.write(`${successMessage("commented", opts.taskId)}\n`);
@@ -4744,7 +4752,7 @@ async function cmdTaskSetStatus(opts: {
       comments,
       doc_version: 2,
       doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
+      doc_updated_by: resolveDocUpdatedBy(task, opts.author),
     };
     if (opts.commit) {
       const commitInfo = await readCommitInfo(resolved.gitRoot, opts.commit);
@@ -6239,7 +6247,7 @@ async function cmdStart(opts: {
       comments: commentsValue,
       doc_version: 2,
       doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
+      doc_updated_by: opts.author,
     };
 
     await backend.writeTask(nextTask);
@@ -6341,7 +6349,7 @@ async function cmdBlock(opts: {
       comments: commentsValue,
       doc_version: 2,
       doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
+      doc_updated_by: opts.author,
     };
 
     await backend.writeTask(nextTask);
@@ -6475,7 +6483,7 @@ async function cmdFinish(opts: {
         comments: commentsValue,
         doc_version: 2,
         doc_updated_at: nowIso(),
-        doc_updated_by: "agentplane",
+        doc_updated_by: opts.author,
       };
       await backend.writeTask(nextTask);
     }
@@ -8215,6 +8223,23 @@ function setMarkdownSection(body: string, section: string, text: string): string
 
 function normalizeDocSectionName(section: string): string {
   return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
+}
+
+function normalizeDocUpdatedBy(value?: string): string {
+  const trimmed = value?.trim() ?? "";
+  if (!trimmed) return "";
+  if (trimmed.toLowerCase() === "agentplane") return "";
+  return trimmed;
+}
+
+function resolveDocUpdatedBy(task: TaskData, author?: string): string {
+  const fromAuthor = normalizeDocUpdatedBy(author);
+  if (fromAuthor) return fromAuthor;
+  const fromTask = normalizeDocUpdatedBy(
+    typeof task.doc_updated_by === "string" ? task.doc_updated_by : undefined,
+  );
+  if (fromTask) return fromTask;
+  return normalizeDocUpdatedBy(typeof task.owner === "string" ? task.owner : undefined);
 }
 
 function splitCombinedHeadingLines(doc: string): string[] {

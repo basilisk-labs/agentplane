@@ -195,6 +195,11 @@ function resolveDocUpdatedBy(
   const existing = frontmatter.doc_updated_by;
   if (typeof existing === "string") {
     const trimmed = existing.trim();
+    if (trimmed && trimmed.toLowerCase() !== "agentplane") return trimmed;
+  }
+  const owner = frontmatter.owner;
+  if (typeof owner === "string") {
+    const trimmed = owner.trim();
     if (trimmed) return trimmed;
   }
   return "agentplane";
@@ -342,7 +347,7 @@ export async function createTask(opts: {
       comments: [],
       doc_version: 2,
       doc_updated_at: nowIso(),
-      doc_updated_by: "agentplane",
+      doc_updated_by: opts.owner,
       description: opts.description,
     };
 
