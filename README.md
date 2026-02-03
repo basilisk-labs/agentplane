@@ -1,111 +1,155 @@
 ![Agent Plane Header](docs/assets/header.png)
 
-# Agent Plane (`agentplane`)
+# agent/plane
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/prerequisites.mdx)
-[![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/cli-contract.mdx)
+[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/user/prerequisites.mdx)
+[![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/developer/cli-contract.mdx)
 [![Roadmap](https://img.shields.io/badge/Roadmap-ROADMAP.md-6b7280.svg)](ROADMAP.md)
 
-Agent Plane is an offline-first workflow framework and CLI for running task-driven development with agent workflows. It provides task lifecycle management, guardrails, workflow modes, and recipe-driven automation in a single installable tool.
 
-## Why Agent Plane
+**Agents you can actually trust in a repository.**
 
-- **Reliable task lifecycle**: create, track, verify, and close work with explicit metadata.
-- **Workflow modes**: direct or branch_pr with PR artifacts and verify gates.
-- **Guardrails**: enforce clean commits and consistent task docs.
-- **Recipes**: optional automation packs for planning, sync, and operations.
+agent/plane (Agent Plane) is a policy-driven framework for running LLM agents inside real repositories. It turns "AI magic" into an engineering process: explicit approvals, role boundaries, and a reproducible execution pipeline. The goal is simple: make agents *boring, safe, and auditable*.
 
-## Install
+## 🚀 What is agent/plane?
 
-```bash
-npm i -g agentplane@latest
+Traditional AI coding agents may behave unpredictably, modify files without clear intent, or act outside expected boundaries. agent/plane changes that by introducing:
+
+- **Policy-first execution** - every run follows a defined pipeline.
+- **Approval & planning gates** - nothing runs without explicit consent.
+- **Role-based workflows** - ORCHESTRATOR, PLANNER, CREATOR, INTEGRATOR, etc.
+- **Safety guardrails by default** - actions outside the repo, network access, or unrestricted writes are disabled unless explicitly approved.
+- **Support for team workflows** - including `direct` and `branch_pr` modes.
+
+Agent behavior is not hidden: it's inspectable, reproducible, and constrained by policy.
+
+## 📌 Key Principles
+
+1. **Determinism over Magic**
+   Agents follow a reproducible path:
+   ```text
+   Preflight → Plan → Approval → Tasks → Verify → Finish → Export
+   ```
+
+2. **Guardrails by Default**
+
+   * Network and external actions require explicit approvals.
+   * Writes are scoped to allow-listed paths.
+   * Nothing can "just change files" without a plan and audit trail.
+
+3. **Team-first workflows**
+   `direct` mode is suitable for solo work;
+   `branch_pr` enforces structured worktrees, single-writer flow, and an integrator role.
+
+4. **Traceability**
+   Task states, artifacts, and agents are documented and versioned: no hidden side effects.
+
+## 🔧 Quickstart
+
+Install the CLI (or use `npx`):
+
+```sh
+npm install -g agentplane
 ```
 
-## Quickstart
+Initialize a repo:
 
-From a git repository:
-
-```bash
-agentplane init
-agentplane quickstart
+```sh
+npx agentplane init
 ```
 
-`agentplane init` creates `.agentplane/` (config, tasks, recipes, caches). `agentplane quickstart` prints the current CLI help output.
+See the CLI quickstart:
 
-## Core CLI workflows
-
-Common commands:
-
-```bash
-agentplane task list
-agentplane task show <task-id>
-agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag>
-agentplane start <task-id> --author CODER --body "Start: ..."
-agentplane verify <task-id>
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..."
+```sh
+npx agentplane quickstart
 ```
 
-Use `agentplane --help` for the full command reference.
+**Note:** Full setup details, configuration options, and advanced workflows are in the docs (links below).
 
-## Workflow modes
+## 💡 Workflow Modes
 
-- **direct**: work in a single checkout; no task branches required.
-- **branch_pr**: per-task branches and worktrees with PR artifacts and verify gates.
+### `direct` (default)
 
-Switch modes:
+* Single-checkout mode.
+* Agents and tasks run within the same working tree.
+* Good for experiments and rapid iteration.
 
-```bash
-agentplane mode get
-agentplane mode set <direct|branch_pr>
+### `branch_pr`
+
+* Structured team workflow.
+* Each task flows through its own worktree + tracked PR artifacts.
+* Only the *INTEGRATOR* role merges changes back into the main branch.
+
+Use:
+
+```sh
+npx agentplane config set workflow_mode branch_pr
 ```
 
-## Recipes
+## 🧠 Core Concepts
 
-Recipes are optional automation packs installed and run via CLI:
+### 🔹 AGENTS.md
 
-```bash
-agentplane recipe list
-agentplane scenario list
-agentplane scenario run <recipe:scenario>
+This repository contains a special policy file (`AGENTS.md`) that defines:
+
+* Global guardrails
+* Allowed actions
+* Agent roles and permissions
+* Workflow defaults
+
+It acts as the canonical policy layer (the "constitution") for agents.
+
+### 🔹 Roles
+
+Common roles include:
+
+* **ORCHESTRATOR:** Drives the session and interprets user goals.
+* **PLANNER:** Breaks goals into plan steps/tasks.
+* **CREATOR:** Implements code/config changes.
+* **INTEGRATOR:** Verifies and merges changes.
+* **Additional roles** (e.g., TESTER, DOCS) can be defined per project.
+
+## 📁 Project Structure
+
+Your project with agent/plane typically includes:
+
+```
+AGENTS.md              # Policy & guardrails
+.agentplane/           # Internal agent artifacts and config
+.agentplane/tasks/     # Per-task records
+.agentplane/config.json # agent/plane configuration
+docs/                  # Full reference docs (see docs/index.mdx)
 ```
 
-See `docs/recipes-spec.mdx` for the recipe format and safety rules.
+## 🛠 Safety and Security
 
-## Configuration
+agent/plane enforces:
 
-Configuration lives in `.agentplane/config.json` and can be updated via CLI:
+* No external execution without explicit approval.
+* No silent state changes.
+* No unreviewed commits by agents.
 
-```bash
-agentplane config show
-agentplane config set tasks.verify.required_tags '["code","backend"]'
-```
+This makes it suitable for **enterprise**, **team**, and **audit-sensitive** workflows.
 
-## Project layout (high level)
+## 📚 Documentation & Resources
 
-- `packages/agentplane/`: Node.js CLI entrypoint (TypeScript + ESM)
-- `packages/core/`: core libraries (project resolution, config, task models)
-- `packages/spec/`: schemas + examples
-- `docs/`: user documentation
-- `.agentplane/`: project state directory for the Node.js CLI
+The bulk of the guidance and API info lives in the docs:
 
-## Documentation
+* 🧭 **Full documentation:** `docs/index.mdx`
+* 📌 **Workflow reference:** `docs/user/workflow.mdx`
+* ⚙️ **CLI commands:** `docs/user/commands.mdx`
+* 🧱 **Project layout:** `docs/developer/project-layout.mdx`
+* 💡 **Examples & recipes:** `agentplane-recipes/README.md`
 
-- Start here: `docs/index.mdx`
-- Commands reference: `docs/commands.mdx`
-- CLI contract: `docs/cli-contract.mdx`
-- Recipes spec: `docs/recipes-spec.mdx`
+## 💬 Community & Contributing
 
-## Development
+Contributions are welcome. See `CONTRIBUTING.md` for guidelines and how to get involved.
 
-```bash
-bun install
-bun run --filter=agentplane build
-node packages/agentplane/bin/agentplane.js --help
-```
+## 📜 License
 
-## License
+agent/plane is released under the MIT License.
 
-MIT. See `LICENSE`.
+> agent/plane is not about replacing developers - it's about giving developers **predictable, auditable, and controlled agent workflows** that scale with team and project complexity.
