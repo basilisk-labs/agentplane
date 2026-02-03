@@ -57,7 +57,7 @@ jobs:
         with:
           node-version: "20"
       - run: npm i -g npm@11.5.1
-      - run: bun install --frozen-lockfile
+      - run: bun install --frozen-lockfile --ignore-scripts
       - run: bun run --filter=@agentplaneorg/core build
       - run: bun run --filter=agentplane build
       - run: printf "registry=https://registry.npmjs.org/\n" > "$NPM_CONFIG_USERCONFIG"
