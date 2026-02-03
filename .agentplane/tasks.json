@@ -12196,12 +12196,49 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDocument that npm trusted publishing in GitHub Actions requires npm >= 11.5.1.\n\n## Scope\n\nUpdate release/publishing docs to include the npm version requirement for trusted publishing.\n\n## Risks\n\nLow risk; documentation-only change.\n\n## Verify Steps\n\nOpen docs/developer/release-and-publishing.mdx and confirm the trusted publishing section mentions npm >= 11.5.1.\n\n## Rollback Plan\n\nRevert the documentation line if it causes confusion or becomes outdated."
+    },
+    {
+      "id": "202602031002-6WBJVK",
+      "title": "CLI update check on startup",
+      "description": "Add version check on CLI startup; compare installed version vs npm latest and suggest upgrade with opt-out flag.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "f881f51201a0ce8c6b608ca394433164a46578a3",
+        "message": "✨ 6WBJVK add update check on startup"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: plan approved; implementing CLI update check with opt-out flag."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: bun run test:cli:core; update-check tests added and passing."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: bun run test:cli:core; update-check tests added and passing."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T10:13:28.140Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAdd startup update check against npm registry with opt-out flag, warning on newer versions.\n\n## Scope\n\nUpdate CLI global flags, help text, and command guide; add npm version check and tests.\n\n## Risks\n\nStartup warning could appear in stderr; npm registry fetch is best-effort but should not block CLI.\n\n## Verify Steps\n\nbun run test:cli:core\n\n## Rollback Plan\n\nRevert the update-check changes in run-cli.ts, help.ts, command-guide.ts, and related tests."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "84bff876b508e7ca21be14454e98c7d92c4a5c9aa0f36ed78f35ba658153373d"
+    "checksum": "2c39c80aff5b1cfb7415ec74ee0e0450a3640ed840c4d50cea6cd7be2a138d4e"
   }
 }
