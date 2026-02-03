@@ -1,15 +1,17 @@
 ---
 id: "202602030831-SYW9JG"
 title: "Normalize task README sections"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["docs"]
 verify: []
-comments: []
+commit: { hash: "5a485148dcfd807d893199d5e6900001d9003008", message: "🧾 SYW9JG normalize task readme sections" }
+comments:
+  - { author: "INTEGRATOR", body: "Verified: duplicate section scan across .agentplane/tasks/*/README.md (no duplicates)" }
 doc_version: 2
-doc_updated_at: "2026-02-03T08:31:26.519Z"
+doc_updated_at: "2026-02-03T08:32:31.592Z"
 doc_updated_by: "agentplane"
 description: "Remove duplicated doc sections from task READMEs via agentplane task doc set"
 id_source: "generated"

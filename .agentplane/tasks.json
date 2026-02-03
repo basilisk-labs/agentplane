@@ -11510,11 +11510,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T08:26:07.938Z",
+      "doc_updated_at": "2026-02-03T08:30:34.756Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "explicit",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nMigrated legacy task data into .agentplane using the Node CLI and removed python-era artifacts, configs, tests, and docs.\n\n## Scope\n\nCreate .agentplane config/backend, migrate tasks.json into .agentplane/tasks, remove .agent-plane tree, delete agentctl fixtures/audits, and update docs/config/tests to be Node-only.\n\n## Risks\n\nRemoving legacy artifacts may impact any scripts still depending on .agent-plane; task data should be verified in .agentplane before deleting backups.\n\n## Verify Steps\n\nnode packages/agentplane/bin/agentplane.js task export\\nrg -n \"agentctl|\\.agent-plane\" -S .\n\n## Rollback Plan\n\nRestore .agent-plane and deleted audit/fixture files from version control; revert doc/config/test edits."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602021458-VJC5RD",
@@ -11575,11 +11575,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-02T15:22:20.343Z",
+      "doc_updated_at": "2026-02-03T08:30:39.832Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nCommit the migration to the new .agentplane layout, including removal of legacy .agent-plane artifacts and the publish workflow environment binding.\n\n## Scope\n\nInclude all current tracked migration changes, remove legacy .agent-plane files, and add environment: npm to the publish workflow.\n\n## Risks\n\nLarge migration commit could include unintended diffs; review git status groups and use a single revert if needed.\n\n## Verify Steps\n\npre-commit hooks during commit (format/lint/test-fast)\n\n## Rollback Plan\n\nRevert the migration commit to restore pre-migration layout.\n\n## Summary\n\nCommit the migration to the new .agentplane layout, including removal of legacy .agent-plane artifacts and the publish workflow environment binding.\n\n## Scope\n\nInclude all current tracked migration changes, remove legacy .agent-plane files, and add environment: npm to the publish workflow.\n\n## Risks\n\nLarge migration commit could include unintended diffs; review git status groups and use a single revert if needed.\n\n## Verify Steps\n\npre-commit hooks during commit (format/lint/test-fast)\n\n## Rollback Plan\n\nRevert the migration commit to restore pre-migration layout."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602021528-49A4G0",
@@ -11608,11 +11608,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-02T15:34:19.776Z",
+      "doc_updated_at": "2026-02-03T08:30:35.888Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nBump agentplane and @agentplaneorg/core to 0.1.1 and align CLI version output/tests for release.\n\n## Scope\n\nUpdate package versions, CLI version constant, and version assertions in tests.\n\n## Risks\n\nMismatch between published package versions and CLI-reported version if any file is missed.\n\n## Verify Steps\n\n1) bun run --filter=agentplane test:cli:core\\n2) bun run --filter=agentplane test:cli:smoke\n\n## Rollback Plan\n\nRevert the version bumps and restore previous test expectations."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602021544-1TWSK3",
@@ -11642,11 +11642,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-02T15:48:01.434Z",
+      "doc_updated_at": "2026-02-03T08:30:40.575Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nFix publish workflow by switching imports to @agentplaneorg/core and typing staged entry filter.\n\n## Risks\n\nMissed import updates could still break the workflow build.\n\n## Scope\n\nUpdate agentplane sources/tests and core README package name; add explicit type for staged filter in run-cli.\n\n## Rollback Plan\n\nRevert import scope changes and typing update.\n\n## Verify Steps\n\n1) bun run --filter=agentplane build\\n2) bun run --filter=core build\n\n## Verify Steps\n\n1) bun run --filter=@agentplaneorg/core build\\n2) bun run --filter=agentplane build"
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602021556-ASWWV2",
@@ -11676,11 +11676,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-02T15:57:55.292Z",
+      "doc_updated_at": "2026-02-03T08:30:33.696Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nEnable npm trusted publishing via OIDC provenance in GitHub Actions.\n\n## Scope\n\nUpdate publish workflow to set NPM_CONFIG_PROVENANCE and use npm publish --provenance.\n\n## Verify Steps\n\n1) GitHub Actions publish workflow succeeds for tag v0.1.1\n\n## Risks\n\nWorkflow may still fail if trusted publisher is misconfigured for the tag/branch.\n\n## Rollback Plan\n\nRevert workflow changes and publish manually if needed."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602021612-T4YZTM",
@@ -11705,11 +11705,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T06:05:31.310Z",
+      "doc_updated_at": "2026-02-03T08:30:38.074Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDetect multi-section input in task doc set; treat it as full doc to avoid duplicate headings.\n\n## Scope\n\nUpdate task doc set handling in run-cli and add coverage in run-cli.core.test.\n\n## Risks\n\nLow risk; logic only changes when section text includes doc headings.\n\n## Verify Steps\n\nNot run (not requested).\n\n## Rollback Plan\n\nRevert the changes in run-cli.ts and run-cli.core.test.ts.\n\n## Verify Steps\n\nAttempted: bun test packages/agentplane/src/run-cli.core.test.ts (timed out after 10s; output showed tests running and passing up to runCli > integrate supports merge strategy).\n\n## Verify Steps\n\nRan: bun test packages/agentplane/src/run-cli.core.test.ts (pass).\n\n## Verify Steps\n\nRan: bun test packages/agentplane/src/run-cli.core.test.ts (pass)."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602030608-F1Q8AB",
@@ -11774,11 +11774,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T08:03:52.611Z",
+      "doc_updated_at": "2026-02-03T08:30:39.072Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nStandardized empty-state output and terminology for recipes, scenarios, and cache.\n\n## Scope\n\nUpdated empty-state CLI output in packages/agentplane/src/run-cli.ts and bundled recipes wording in packages/agentplane/src/cli/recipes-bundled.ts.\n\n## Risks\n\nCLI output text changes may affect tests or tooling that parses stdout.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.recipes.test.ts\n\n## Rollback Plan\n\nRevert message changes in the updated files."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602030653-EEFK09",
@@ -11811,11 +11811,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T08:03:52.630Z",
+      "doc_updated_at": "2026-02-03T08:30:36.883Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAdded path-aware PR artifact errors and refined E_GIT/E_BACKEND hints.\n\n## Scope\n\nUpdated error hinting and PR artifact validation in packages/agentplane/src/run-cli.ts.\n\n## Risks\n\nError string changes may require test updates or downstream parser adjustments.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.core.test.ts\n\n## Rollback Plan\n\nRevert error hint and PR artifact message changes in run-cli.ts."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602030653-HT8JWS",
@@ -11848,11 +11848,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T08:03:52.635Z",
+      "doc_updated_at": "2026-02-03T08:30:36.422Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nUnified success/info output formatting for cache, scrub, and backend sync.\n\n## Scope\n\nUpdated output strings in packages/agentplane/src/run-cli.ts and packages/agentplane/src/task-backend.ts.\n\n## Risks\n\nOutput format changes may affect tooling that parses CLI stdout.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.core.test.ts\n\n## Rollback Plan\n\nRevert output format changes in run-cli.ts and task-backend.ts."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602030653-Q39M3X",
@@ -11885,11 +11885,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T08:03:52.643Z",
+      "doc_updated_at": "2026-02-03T08:30:34.232Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nStandardized E_USAGE guidance with usage examples across CLI subcommands.\n\n## Scope\n\nAdded usage example constants and wired usageMessage in packages/agentplane/src/run-cli.ts.\n\n## Risks\n\nUsage output strings changed; tests or tooling may need updates.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.core.test.ts\n\n## Rollback Plan\n\nRevert usage example constants and usageMessage wiring in run-cli.ts."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602030653-YZGRB2",
@@ -11922,11 +11922,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T08:03:52.649Z",
+      "doc_updated_at": "2026-02-03T08:30:37.502Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAligned missing/invalid value and unknown-id error messaging, plus workflow_mode validation.\n\n## Scope\n\nUpdated validation helpers and error strings in packages/agentplane/src/run-cli.ts.\n\n## Risks\n\nExact error wording changes may require test updates or downstream parser adjustments.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.core.test.ts\n\n## Rollback Plan\n\nRevert validation helper and error message edits in run-cli.ts."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
     },
     {
       "id": "202602030710-S24YE7",
@@ -11959,17 +11959,46 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T07:31:03.680Z",
+      "doc_updated_at": "2026-02-03T08:30:35.318Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAligned README with project positioning; corrected CLI usage, links, structure, and license.\n\n## Scope\n\nREADME.md only: positioning copy, badges/links, workflow/structure details, and cleanup.\n\n## Risks\n\nLow. Documentation-only change; risk is outdated or broken links.\n\n## Verify Steps\n\nNot run (docs-only).\n\n## Rollback Plan\n\nRevert README.md to the previous version."
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan"
+    },
+    {
+      "id": "202602030831-SYW9JG",
+      "title": "Normalize task README sections",
+      "description": "Remove duplicated doc sections from task READMEs via agentplane task doc set",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "5a485148dcfd807d893199d5e6900001d9003008",
+        "message": "🧾 SYW9JG normalize task readme sections"
+      },
+      "comments": [
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: duplicate section scan across .agentplane/tasks/*/README.md (no duplicates)"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T08:32:31.592Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDeduplicated standard sections in task READMEs via agentplane task doc set updates.\n\n## Scope\n\nNormalize duplicated Summary/Scope/Risks/Verify Steps/Rollback Plan sections across affected task READMEs.\n\n## Verify Steps\n\nRe-scan task READMEs for duplicate section headers.\n\n## Risks\n\nLow risk: documentation-only normalization; ensure no content loss.\n\n## Rollback Plan\n\nRestore prior task README versions from git history if needed."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "39768a992819f90eab901a6d3536219efa99d7d2f7ebb86be09b3b25ee1f6dc9"
+    "checksum": "f7292cb6c47b48cf62108e677fc07bae177300b28615eef0bc0ed9a02eb05867"
   }
 }
