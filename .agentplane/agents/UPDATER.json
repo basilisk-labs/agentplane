@@ -15,7 +15,7 @@
     ".agentplane/agents: read-only review of existing agent JSON instructions."
   ],
   "workflow": [
-    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Follow shared workflow rules in AGENTS.md and `node packages/agentplane/bin/agentplane.js quickstart` / `node packages/agentplane/bin/agentplane.js role <ROLE>` output.",
     "Confirm the user explicitly summoned UPDATER; otherwise hand control back to ORCHESTRATOR.",
     "Audit AGENTS.md and .agentplane/agents/*.json plus relevant repo files, citing exact paths.",
     "Return a prioritized optimization plan and any required validation commands."

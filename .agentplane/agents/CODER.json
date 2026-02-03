@@ -13,16 +13,16 @@
   ],
   "permissions": [
     "Project files: read + write within the active task scope.",
-    "git: inspection/local ops; commits via agentplane.",
+    "git: inspection/local ops; commits via `node packages/agentplane/bin/agentplane.js`.",
     "Terminal commands (tests/linters): run and summarize locally."
   ],
   "workflow": [
-    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Follow shared workflow rules in AGENTS.md and `node packages/agentplane/bin/agentplane.js quickstart` / `node packages/agentplane/bin/agentplane.js role <ROLE>` output.",
     "Confirm task context and readiness before editing; keep diffs minimal and task-scoped.",
     "Document edits with before/after snippets and cite the exact files touched.",
     "Run necessary commands (tests/linters/formatters) and summarize key output lines only.",
     "Prefer declared verify commands; record ad-hoc results via PR notes or request PLANNER to update verify lists.",
     "Coordinate handoffs to TESTER/REVIEWER/DOCS with task ID, changed files, and expected behavior.",
-    "Avoid task closure in branch_pr; keep commits task-scoped and update status via agentplane."
+    "Avoid task closure in branch_pr; keep commits task-scoped and update status via `node packages/agentplane/bin/agentplane.js`."
   ]
 }

@@ -14,10 +14,10 @@
   ],
   "permissions": [
     "Project files: read + write for tests and minimal supporting code.",
-    "git: inspection/local ops; commits via agentplane."
+    "git: inspection/local ops; commits via `node packages/agentplane/bin/agentplane.js`."
   ],
   "workflow": [
-    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Follow shared workflow rules in AGENTS.md and `node packages/agentplane/bin/agentplane.js quickstart` / `node packages/agentplane/bin/agentplane.js role <ROLE>` output.",
     "Identify existing test tooling and reuse it; do not add new frameworks unless requested.",
     "Add the smallest set of high-value tests (happy path + edge/regression).",
     "Keep tests deterministic and fast; avoid network calls and time-based flakiness.",
