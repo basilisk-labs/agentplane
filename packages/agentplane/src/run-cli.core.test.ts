@@ -1669,6 +1669,54 @@ describe("runCli", () => {
     expect(updated).toContain("## Risks");
   });
 
+  it("task doc set dedupes repeated section headings", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202601300002-ABCD";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+      "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n",
+    );
+    const duplicated = `${readme}\n## Summary\n\nOld summary\n\n## Scope\n\nOld scope\n`;
+    await writeFile(path.join(taskDir, "README.md"), duplicated, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Summary",
+        "--text",
+        "Updated summary",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const updated = await readFile(path.join(taskDir, "README.md"), "utf8");
+    expect((updated.match(/^## Summary$/gm) ?? []).length).toBe(1);
+    expect((updated.match(/^## Scope$/gm) ?? []).length).toBe(1);
+    expect(updated).toContain("Updated summary");
+  });
+
   it("task doc set treats multi-section text as a full doc update", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

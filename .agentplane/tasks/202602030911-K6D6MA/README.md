@@ -12,8 +12,8 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: bump versions to 0.1.2, tag release, push to trigger GitHub Actions publish." }
   - { author: "ORCHESTRATOR", body: "Verified: version bump committed (0.1.2), tag v0.1.2 pushed to trigger GitHub Actions publish." }
 doc_version: 2
-doc_updated_at: "2026-02-03T09:15:50.248Z"
-doc_updated_by: "agentplane"
+doc_updated_at: "2026-02-03T11:02:14.239Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Bump to 0.1.2, tag release, push to trigger GitHub Actions trusted publishing."
 id_source: "generated"
 ---
@@ -46,3 +46,7 @@ Low; release tag will trigger GitHub Actions publishing.
 ## Rollback Plan
 
 Delete the tag and revert the version bump commit if publish fails.
+
+## Summary
+
+Normalized task doc sections (dedupe).

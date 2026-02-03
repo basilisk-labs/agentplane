@@ -155,6 +155,80 @@ function setMarkdownSection(body: string, section: string, text: string): string
   return `${out.join("\n")}\n`;
 }
 
+function normalizeDocSectionName(section: string): string {
+  return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
+}
+
+function normalizeDocSections(doc: string, required: string[]): string {
+  const lines = doc.replaceAll("\r\n", "\n").split("\n");
+  const sections = new Map<string, { title: string; lines: string[] }>();
+  const order: string[] = [];
+  const pendingSeparator = new Set<string>();
+  let currentKey: string | null = null;
+
+  for (const line of lines) {
+    const match = /^##\s+(.*)$/.exec(line.trim());
+    if (match) {
+      const title = match[1]?.trim() ?? "";
+      const key = normalizeDocSectionName(title);
+      if (key) {
+        const existing = sections.get(key);
+        if (existing) {
+          if (existing.lines.some((entry) => entry.trim() !== "")) {
+            pendingSeparator.add(key);
+          }
+        } else {
+          sections.set(key, { title, lines: [] });
+          order.push(key);
+        }
+        currentKey = key;
+        continue;
+      }
+    }
+    if (currentKey) {
+      const entry = sections.get(currentKey);
+      if (!entry) continue;
+      if (pendingSeparator.has(currentKey) && line.trim() !== "") {
+        entry.lines.push("");
+        pendingSeparator.delete(currentKey);
+      }
+      entry.lines.push(line);
+    }
+  }
+
+  const out: string[] = [];
+  const seen = new Set(order);
+
+  for (const key of order) {
+    const section = sections.get(key);
+    if (!section) continue;
+    out.push(`## ${section.title}`);
+    if (section.lines.length > 0) {
+      out.push(...section.lines);
+    } else {
+      out.push("");
+    }
+    out.push("");
+  }
+
+  for (const requiredSection of required) {
+    const requiredKey = normalizeDocSectionName(requiredSection);
+    if (seen.has(requiredKey)) continue;
+    out.push(`## ${requiredSection}`, "", "");
+  }
+
+  return `${out.join("\n").trimEnd()}\n`;
+}
+
+function ensureDocSections(doc: string, required: string[]): string {
+  const trimmed = doc.trim();
+  if (!trimmed) {
+    const blocks = required.map((section) => `## ${section}\n`);
+    return `${blocks.join("\n").trimEnd()}\n`;
+  }
+  return normalizeDocSections(doc, required);
+}
+
 export async function createTask(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -237,7 +311,11 @@ export async function setTaskDocSection(opts: {
     doc_updated_by: updatedBy,
   };
 
-  const nextBody = setMarkdownSection(parsed.body, opts.section, opts.text);
+  const baseDoc = ensureDocSections(parsed.body, loaded.config.tasks.doc.required_sections);
+  const nextBody = ensureDocSections(
+    setMarkdownSection(baseDoc, opts.section, opts.text),
+    loaded.config.tasks.doc.required_sections,
+  );
   const nextText = renderTaskReadme(nextFrontmatter, nextBody);
   await writeFile(readmePath, nextText, "utf8");
   return { readmePath };
