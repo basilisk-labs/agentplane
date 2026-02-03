@@ -36,6 +36,10 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
 export function validateTaskDocMetadata(frontmatter: Record<string, unknown>): string[] {
   const errors: string[] = [];
 
@@ -157,6 +161,43 @@ function setMarkdownSection(body: string, section: string, text: string): string
 
 function normalizeDocSectionName(section: string): string {
   return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
+}
+
+function getLastCommentAuthor(frontmatter: Record<string, unknown>): string | null {
+  const comments = frontmatter.comments;
+  if (!Array.isArray(comments)) return null;
+  const entries: unknown[] = comments;
+  for (let i = entries.length - 1; i >= 0; i -= 1) {
+    const entry = entries[i];
+    if (!isRecord(entry)) continue;
+    const author = entry.author;
+    if (typeof author === "string") {
+      const trimmed = author.trim();
+      if (trimmed) return trimmed;
+    }
+  }
+  return null;
+}
+
+function resolveDocUpdatedBy(
+  frontmatter: Record<string, unknown>,
+  updatedBy?: string | null,
+): string {
+  if (updatedBy != null) {
+    const explicit = updatedBy.trim();
+    if (explicit.length === 0) {
+      throw new Error("doc_updated_by must be a non-empty string");
+    }
+    return explicit;
+  }
+  const lastAuthor = getLastCommentAuthor(frontmatter);
+  if (lastAuthor) return lastAuthor;
+  const existing = frontmatter.doc_updated_by;
+  if (typeof existing === "string") {
+    const trimmed = existing.trim();
+    if (trimmed) return trimmed;
+  }
+  return "agentplane";
 }
 
 function splitCombinedHeadingLines(doc: string): string[] {
@@ -336,8 +377,7 @@ export async function setTaskDocSection(opts: {
   const original = await readFile(readmePath, "utf8");
   const parsed = parseTaskReadme(original);
 
-  const updatedBy = (opts.updatedBy ?? "agentplane").trim();
-  if (updatedBy.length === 0) throw new Error("doc_updated_by must be a non-empty string");
+  const updatedBy = resolveDocUpdatedBy(parsed.frontmatter, opts.updatedBy);
 
   const nextFrontmatter: Record<string, unknown> = {
     ...parsed.frontmatter,

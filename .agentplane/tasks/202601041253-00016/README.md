@@ -11,8 +11,25 @@ commit: { hash: "bec7e7de9cbeaed166adefb51ff2c497e1ffa1fc", message: "Legacy com
 comments:
   - { author: "docs", body: "Extended README with code breakdown and local dev steps (download zip, run clean.sh)." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:17.135Z"
+doc_updated_by: "agentplane"
 description: "Ensure README describes the codebase and includes local development steps (download Zip, run clean.sh)."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

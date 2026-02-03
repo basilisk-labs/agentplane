@@ -13,17 +13,21 @@ comments:
   - { author: "INTEGRATOR", body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts" }
   - { author: "INTEGRATOR", body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint" }
 doc_version: 2
-doc_updated_at: "2026-02-03T08:30:36.422Z"
+doc_updated_at: "2026-02-03T12:09:48.016Z"
 doc_updated_by: "agentplane"
 description: "Normalize ✅/⚠️ output ordering and wording for action/target/details without extra noise."
 id_source: "generated"
 ---
 ## Summary
 
+
 ## Scope
+
 
 ## Risks
 
+
 ## Verify Steps
+
 
 ## Rollback Plan

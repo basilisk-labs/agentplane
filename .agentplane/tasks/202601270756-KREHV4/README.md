@@ -12,13 +12,14 @@ comments:
   - { author: "CODER", body: "Start: adding v1 JSON Schemas + examples for config, task frontmatter, tasks export, and PR artifacts." }
   - { author: "CODER", body: "verified: added packages/spec with v1 JSON Schemas + examples for config, task README frontmatter, tasks export, and PR meta." }
 doc_version: 2
-doc_updated_at: "2026-01-27T07:59:01+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:03.319Z"
+doc_updated_by: "agentplane"
 description: "Define v1 file formats for AGENTS.md, .agentplane/config.json, task README frontmatter+sections, tasks.json export schema+checksum canonicalization, and PR artifacts."
 ---
 ## Summary
 
 Freeze v1 file formats (tasks/config/PR meta) and ship JSON Schemas + examples for Node.js implementation.
+
 
 ## Scope
 
@@ -30,15 +31,18 @@ Freeze v1 file formats (tasks/config/PR meta) and ship JSON Schemas + examples f
   - PR artifacts (meta + verify log + diffstat + optional review notes).
 - Add schemas and examples under `packages/spec/`.
 
+
 ## Risks
 
 - Over-specifying early can slow down implementation; keep schemas focused on v1 invariants.
 - Canonicalization details (JSON ordering/whitespace) can cause parity drift later.
 
+
 ## Verify Steps
 
 - Validate example JSON files against the shipped schemas.
 - Confirm the spec matches the migration constraints (no `.agent-plane` compatibility).
+
 
 ## Rollback Plan
 

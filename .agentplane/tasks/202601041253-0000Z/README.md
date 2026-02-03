@@ -11,8 +11,25 @@ commit: { hash: "08a0c4b4451bafc5e8b75bf1b4a8f4c74594dc05", message: "Legacy com
 comments:
   - { author: "docs", body: "README now mentions the UPDATER optimization agent and lifecycle so the doc mirrors the current codebase." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:15.537Z"
+doc_updated_by: "agentplane"
 description: "Refresh README.md so it describes the existing agents (including UPDATER), workflow rules, and repository layout that reflect the latest codebase."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

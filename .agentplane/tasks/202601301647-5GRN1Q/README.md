@@ -12,29 +12,34 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: add recipes examples and troubleshooting-by-symptom doc." }
   - { author: "ORCHESTRATOR", body: "verified: expanded recipes docs with examples, added troubleshooting-by-symptom page, and updated docs navigation." }
 doc_version: 2
-doc_updated_at: "2026-01-30T16:51:00+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:34.214Z"
+doc_updated_by: "agentplane"
 description: "Expand recipes docs with examples and add troubleshooting-by-symptom page."
 ---
 ## Summary
 
 - Expand recipes docs with concrete examples.\n- Add troubleshooting-by-symptom page and link it in navigation.
 
+
 ## Scope
 
 - Extend docs/recipes-how-it-works.mdx and docs/recipes-spec.mdx with examples.\n- Create a troubleshooting-by-symptom doc and update docs.json/index.
+
 
 ## Risks
 
 - Examples may diverge from current CLI behavior if not kept updated.\n- Troubleshooting page could become too long without careful structure.
 
+
 ## Verify Steps
 
 - Review examples for accuracy.\n- Check docs/docs.json includes the new troubleshooting page.
 
+
 ## Rollback Plan
 
 - Revert docs changes and navigation updates.
+
 
 ## Notes
 

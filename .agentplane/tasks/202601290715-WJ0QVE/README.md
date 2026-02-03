@@ -12,26 +12,30 @@ comments:
   - { author: "REDMINE", body: "Start: implement backend sync redmine (push/pull/conflict modes) with contract tests and CLI wiring." }
   - { author: "REDMINE", body: "verified: ran bun run ci on 2026-01-30 | details: all checks passed (format, typecheck, lint, coverage)." }
 doc_version: 2
-doc_updated_at: "2026-01-30T07:40:19+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:21.134Z"
+doc_updated_by: "agentplane"
 description: "Implement backend sync redmine with push/pull directions, conflict strategies, and --yes flag; add mock-based contract tests."
 ---
 ## Summary
 
 Ensure backend sync redmine command routes direction/conflict/confirm flags into backend sync with contract coverage.
 
+
 ## Scope
 
 - Add a CLI test that backend sync forwards direction/conflict/confirm flags.
 - Keep existing Redmine sync implementation intact.
 
+
 ## Risks
 
 - Minimal behavior change; risk limited to test coverage and CLI flag parsing assumptions.
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 

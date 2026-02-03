@@ -12,8 +12,8 @@ comments:
   - { author: "CODER", body: "Polish tasks viewer UI (iOS palette, sticky header, order toggle, tooltip tags, metadata) and update clean scripts to remove dev files." }
   - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
 doc_version: 2
-doc_updated_at: "2026-01-30T12:22:03+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:41.540Z"
+doc_updated_by: "agentplane"
 description: "Remove dev-only files in clean scripts and refine tasks viewer UI (iOS palette, order toggle, sticky header, tooltip tags, metadata) and fix layout issues."
 dirty: false
 id_source: "custom"
@@ -22,17 +22,21 @@ id_source: "custom"
 
 - Task is no longer актуальна; closing without changes.
 
+
 ## Scope
 
 - No changes; task closed as obsolete.
+
 
 ## Risks
 
 - Some polish items might remain undocumented if needed later.
 
+
 ## Verify Steps
 
 - None (task closed as not актуальна).
+
 
 ## Rollback Plan
 

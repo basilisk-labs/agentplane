@@ -11,25 +11,29 @@ commit: { hash: "9f8eb3a1329f8bced6da9e19ce9bf7162082b1c7", message: "✅ VNFXH3
 comments:
   - { author: "ORCHESTRATOR", body: "verified: Phase 2 migration complete | details: no additional core cleanup changes required at this stage." }
 doc_version: 2
-doc_updated_at: "2026-01-30T12:11:09+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:59.636Z"
+doc_updated_by: "agentplane"
 description: "Trim the core framework to the minimum runtime after recipe migration; remove or demote remaining extension hooks."
 ---
 ## Summary
 
 - Confirmed core cleanup scope after Phase 2; no additional runtime removals required.\n- Kept migration follow-up tracked in recipes rather than core changes.
 
+
 ## Scope
 
 - Review remaining extension hooks after Phase 2 migration.\n- Only make core changes if redundant features remain.
+
 
 ## Risks
 
 - Future recipe additions might reintroduce core coupling if not reviewed.\n- Cleanup deferrals could leave unused hooks if new extensions land.
 
+
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task show 202601200657-VNFXH3
+
 
 ## Rollback Plan
 

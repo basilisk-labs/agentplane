@@ -373,6 +373,30 @@ describe("LocalBackend", () => {
     expect(raw.tasks).toHaveLength(1);
   });
 
+  it("defaults doc_updated_by to last comment author", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "agentplane" });
+    const task: TaskData = {
+      id: "202601300001-ABCD",
+      title: "Title",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: ["tag"],
+      verify: [],
+      comments: [{ author: "DOCS", body: "Note" }],
+      doc: "## Summary\n\nDoc body",
+    };
+    await backend.writeTask(task);
+    const loaded = await backend.getTask(task.id);
+    expect(loaded?.doc_updated_by).toBe("DOCS");
+
+    await backend.setTaskDoc(task.id, "## Summary\n\nUpdated");
+    const updated = await backend.getTask(task.id);
+    expect(updated?.doc_updated_by).toBe("DOCS");
+  });
+
   it("rejects duplicate task ids", async () => {
     const backend = new LocalBackend({ dir: tempDir });
     const readme = renderTaskReadme(

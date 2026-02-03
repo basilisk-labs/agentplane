@@ -13,25 +13,29 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: audit core vs recipes and plan simplification moves." }
   - { author: "ORCHESTRATOR", body: "verified: core minimum and migration plan tasks are complete | details: phase execution is tracked separately." }
 doc_version: 2
-doc_updated_at: "2026-01-30T12:01:46+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:58.064Z"
+doc_updated_by: "agentplane"
 description: "Define the minimal core agent/task workflow, allow recipe tool/agentctl usage with guardrails, and plan the migration of extension features into recipes."
 ---
 ## Summary
 
 - Defined core-vs-recipes boundaries and enforced core minimum in docs and agents.\n- Scoped migration into phases with separate tasks for execution and cleanup.
 
+
 ## Scope
 
 - Establish the minimal core workflow and permissions.\n- Plan migration of extension features into recipes and split execution into phased tasks.
+
 
 ## Risks
 
 - Subsequent phase tasks could diverge from the planned core boundary if not kept in sync.\n- If recipes change, core/recipe separation guidance may need refresh.
 
+
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task show 202601200656-J6NW39\n- python .agent-plane/agentctl.py task show 202601200657-E52CV8\n- python .agent-plane/agentctl.py task show 202601200657-W1Y6ND
+
 
 ## Rollback Plan
 

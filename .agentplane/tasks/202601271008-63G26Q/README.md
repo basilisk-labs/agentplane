@@ -13,13 +13,14 @@ comments:
   - { author: "CODER", body: "Start: implementing local tasks backend and CLI commands task new/show/list." }
   - { author: "CODER", body: "verified: bun run ci passed | details: task new/show/list implemented with file-based store." }
 doc_version: 2
-doc_updated_at: "2026-01-27T10:09:14+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:06.992Z"
+doc_updated_by: "agentplane"
 description: "Implement local tasks backend using .agentplane/tasks/<id>/README.md frontmatter and expose minimal task commands: task new, task show, task list."
 ---
 ## Summary
 
 Implement AP-009 (minimal): a local tasks backend stored as task README frontmatter files and expose task new/show/list commands in the Node.js CLI.
+
 
 ## Scope
 
@@ -28,15 +29,18 @@ Implement AP-009 (minimal): a local tasks backend stored as task README frontmat
 - Implement `agentplane task show <id>` and `agentplane task list`
 - Add tests covering CLI behavior
 
+
 ## Risks
 
 - ID generation must be stable and collision-safe.
 - File format must remain deterministic to avoid noisy diffs.
 
+
 ## Verify Steps
 
 - `bun run ci`
 - E2E-style test: create a temp git root, run task new, then show/list
+
 
 ## Rollback Plan
 

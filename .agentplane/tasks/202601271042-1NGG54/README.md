@@ -12,25 +12,29 @@ comments:
   - { author: "DOCS", body: "Start: Fix Mintlify docs/docs.json theme discriminator validation error." }
   - { author: "DOCS", body: "verified: Mintlify docs/docs.json uses a valid theme discriminator value | details: Mintlify schema validation should pass." }
 doc_version: 2
-doc_updated_at: "2026-01-27T10:45:06+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:08.653Z"
+doc_updated_by: "agentplane"
 description: "Set a valid docs/docs.json theme value so Mintlify schema validation passes."
 ---
 ## Summary
 
 Fix Mintlify docs/docs.json validation by setting a supported theme value.
 
+
 ## Scope
 
 - Update docs/docs.json to use a valid theme discriminator value
+
 
 ## Risks
 
 - None (docs-only configuration change).
 
+
 ## Verify Steps
 
 - Re-run Mintlify preview/build and confirm docs/docs.json no longer errors on #.theme discriminator
+
 
 ## Rollback Plan
 

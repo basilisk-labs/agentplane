@@ -12,29 +12,34 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: document feature-spec-to-tasks recipe usage and behavior." }
   - { author: "ORCHESTRATOR", body: "verified: task deferred per request | details: no tests required and no code changes made." }
 doc_version: 2
-doc_updated_at: "2026-01-30T09:53:12+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:56.423Z"
+doc_updated_by: "agentplane"
 description: "Summarize how the feature-spec-to-tasks recipe works, including inputs, steps, outputs, and usage guidance."
 ---
 ## Summary
 
 Deferred: recipe documentation postponed to focus on agentctl parity.
 
+
 ## Context
 
 User requested to pause new recipe work and prioritize agentctl parity work.
+
 
 ## Scope
 
 - No implementation; task closed as deferred per request.
 
+
 ## Risks
 
 - Documentation for feature-spec-to-tasks remains missing until rescheduled.
 
+
 ## Verify Steps
 
 No tests required (task deferred).
+
 
 ## Rollback Plan
 

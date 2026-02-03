@@ -11,8 +11,25 @@ commit: { hash: "eb7cf5363ce55ec602fb9cc078069bc8d262a130", message: "Legacy com
 comments:
   - { author: "REVIEWER", body: "Verified: Ran python scripts/agentctl.py verify T-064 (task lint, agents, quickstart, bash -n clean.sh); framework paths now live under .agent-plane." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:23.919Z"
+doc_updated_by: "agentplane"
 description: "Move all framework-specific artifacts under .agent-plane (agents + agentctl docs + config), update references/docs, and update clean.sh accordingly."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

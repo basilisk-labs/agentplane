@@ -12,25 +12,29 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: optimize test runtime and modularity; audit suites, split fast/full, reduce timeouts, update docs/CI guidance." }
   - { author: "ORCHESTRATOR", body: "verified: ran bun run test:fast | details: split CLI smoke into its own suite; added package-scoped test scripts; updated testing docs for new commands." }
 doc_version: 2
-doc_updated_at: "2026-02-02T04:37:47+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:40.730Z"
+doc_updated_by: "agentplane"
 description: "Speed up test runs, split suites for faster feedback, reduce timeouts/flakes, and update docs/CI as needed."
 ---
 ## Summary
 
 Optimize test runtime and modularity across CLI suites while keeping coverage and stability.
 
+
 ## Scope
 
 Audit current test scripts/suites, split into fast/targeted sets, optimize slow/flaky areas, and update docs/CI guidance.
+
 
 ## Risks
 
 Suite reorganization could miss coverage or change execution order; tighter timeouts may surface new failures.
 
+
 ## Verify Steps
 
 Run fast suite and targeted suites; run full suite if time allows; ensure docs updated.
+
 
 ## Rollback Plan
 

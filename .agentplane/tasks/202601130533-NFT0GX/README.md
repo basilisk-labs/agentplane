@@ -12,33 +12,39 @@ comments:
   - { author: "CODER", body: "Start: add status_commit_policy enforcement and unit tests for comment-driven commits." }
   - { author: "CODER", body: "Verified: status_commit_policy guardrails + confirm flag; docs/config updates; check: unittest run (temp test removed)." }
 doc_version: 2
-doc_updated_at: "2026-01-13T05:44:44+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:41.843Z"
+doc_updated_by: "agentplane"
 description: "Add status_commit_policy guardrails for comment-driven commits and cover enforcement with unit tests."
 ---
 ## Summary
 
 Add status_commit_policy guardrails for comment-driven commits and cover enforcement with unit tests.
 
+
 ## Context
 
 Clarify when status/comment-driven commits should be allowed so agents can update status without implicit commits.
+
 
 ## Scope
 
 - Add status_commit_policy config and enforcement for comment-driven commits.\n- Add unit tests for warn/confirm/invalid policy handling.\n- Update agentctl docs to describe the policy and confirmation flag.
 
+
 ## Risks
 
 Policy warnings may be overlooked in noisy output; confirm mode blocks without explicit ack.
+
 
 ## Verify Steps
 
 None (no automated tests shipped).
 
+
 ## Rollback Plan
 
 Revert the commit and remove status_commit_policy from config plus the enforcement hooks in agentctl.
+
 
 ## Notes
 

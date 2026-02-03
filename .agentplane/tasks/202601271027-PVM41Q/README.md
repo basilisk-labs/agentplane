@@ -11,25 +11,29 @@ commit: { hash: "d78c21e6561cda03a773366deece046326cc7320", message: "✨ PVM41Q
 comments:
   - { author: "CODER", body: "verified: bun run ci passed | details: added task lint core+CLI coverage and validation tests." }
 doc_version: 2
-doc_updated_at: "2026-01-27T11:36:04+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:08.303Z"
+doc_updated_by: "agentplane"
 description: "Implement task lint checks beyond schema: DONE must have commit hash+message, verify required for certain tags, owner exists, deps cycles, checksum matches export."
 ---
 ## Summary
 
 Add tasks.json linting (checksum/deps/verify-required/DONE commit) with CLI support and tests.
 
+
 ## Scope
 
 Core: add tasks-lint module + tests; CLI: add task lint command, help entry, and CLI tests.
+
 
 ## Risks
 
 Lint may flag manually edited tasks.json or missing verify commands; resolve by re-exporting or adding required verify steps.
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 

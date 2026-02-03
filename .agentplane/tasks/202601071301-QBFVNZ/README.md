@@ -11,8 +11,8 @@ commit: { hash: "e55fa3aa761e778f65518407a0ac13d4fa5a32c7", message: "🧷 QBFVN
 comments:
   - { author: "ORCHESTRATOR", body: "Verified: not run; doc/instruction edits only, no runtime impact." }
 doc_version: 2
-doc_updated_at: "2026-01-24T18:16:17+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:34.346Z"
+doc_updated_by: "agentplane"
 description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guard/commit and standardize handoff via pr note; simplify INTEGRATOR to a short checklist; add ORCHESTRATOR reminder to invoke UPDATER for agent-optimization requests."
 ---
 ## Summary
@@ -21,9 +21,11 @@ description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guar
 - Simplified INTEGRATOR workflow to a short checklist.
 - Added ORCHESTRATOR trigger to invoke UPDATER on explicit optimization requests.
 
+
 ## Goal
 
 - Tighten role-specific guardrails around commits and handoffs.
+
 
 ## Scope
 
@@ -33,13 +35,16 @@ description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guar
 - @.agent-plane/agents/INTEGRATOR.json
 - @.agent-plane/agents/ORCHESTRATOR.json
 
+
 ## Risks
 
 - Low: checklist wording may need adjustment if agentctl commands change.
 
+
 ## Verify Steps
 
 - None (doc/instruction changes only).
+
 
 ## Rollback Plan
 

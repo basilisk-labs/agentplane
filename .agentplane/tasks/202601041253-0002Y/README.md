@@ -11,8 +11,25 @@ commit: { hash: "9900d029d4f831d920a82e58869c7d7ec8b28623", message: "Legacy com
 comments:
   - { author: "INTEGRATOR", body: "Verified: docs-only changes; manual review only (no automated checks)." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:30.629Z"
+doc_updated_by: "agentplane"
 description: "Update docs/index.md with a document map, reading order, and links to the new docs set."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

@@ -13,17 +13,21 @@ comments:
   - { author: "INTEGRATOR", body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts" }
   - { author: "INTEGRATOR", body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint" }
 doc_version: 2
-doc_updated_at: "2026-02-03T08:30:39.072Z"
+doc_updated_at: "2026-02-03T12:09:46.887Z"
 doc_updated_by: "agentplane"
 description: "Unify CLI empty-state messages and consistent terminology for bundled/installed/cache states."
 id_source: "generated"
 ---
 ## Summary
 
+
 ## Scope
+
 
 ## Risks
 
+
 ## Verify Steps
+
 
 ## Rollback Plan

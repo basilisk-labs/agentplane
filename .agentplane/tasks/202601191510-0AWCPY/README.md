@@ -11,33 +11,39 @@ commit: { hash: "b5d407ce6f52d57fc1103f2be5f3e9ebde18fbc8", message: "✨ 0AWCPY
 comments:
   - { author: "CODER", body: "verified: ran python .agent-plane/recipes.py --help to confirm CLI wiring and subcommand registration." }
 doc_version: 2
-doc_updated_at: "2026-01-24T18:16:17+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:54.620Z"
+doc_updated_by: "agentplane"
 description: "Build .agent-plane/recipes.py with scan/show/compile/explain, manifest normalization, context assembly, and inventory generation per recipes PRD."
 ---
 ## Summary
 
 Implemented the recipes CLI with scan/show/compile/explain and bundle generation logic.
 
+
 ## Context
 
 Added .agent-plane/recipes.py per the recipes PRD and enforced local-only behavior with context policies.
+
 
 ## Scope
 
 CLI supports manifest normalization (v1 + legacy), inventory generation, bundle compilation with context hashing/inline policy, env/input validation, and bundle markdown output; added gitignore rules for run/cache artifacts.
 
+
 ## Risks
 
 Minimal JSON schema validation may diverge from full schema; large context globs could still be slow if include patterns are broad.
+
 
 ## Verify Steps
 
 python .agent-plane/recipes.py --help
 
+
 ## Rollback Plan
 
 Revert commit b5d407ce6f52 to remove the recipes CLI and related ignore rules.
+
 
 ## Notes
 

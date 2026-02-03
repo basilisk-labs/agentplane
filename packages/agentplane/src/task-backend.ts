@@ -71,6 +71,51 @@ function ensureDocMetadata(task: TaskDocMeta, updatedBy?: string): void {
   task.doc_updated_by = updatedBy ?? DEFAULT_DOC_UPDATED_BY;
 }
 
+function lastCommentAuthor(comments: unknown): string | null {
+  if (!Array.isArray(comments)) return null;
+  const entries: unknown[] = comments;
+  for (let i = entries.length - 1; i >= 0; i -= 1) {
+    const entry = entries[i];
+    if (!isRecord(entry)) continue;
+    const author = entry.author;
+    if (typeof author === "string") {
+      const trimmed = author.trim();
+      if (trimmed) return trimmed;
+    }
+  }
+  return null;
+}
+
+function resolveDocUpdatedByFromFrontmatter(
+  frontmatter: Record<string, unknown>,
+  updatedBy: string | undefined,
+  fallback: string,
+): string {
+  if (updatedBy !== undefined) {
+    const trimmed = updatedBy.trim();
+    return trimmed.length > 0 ? trimmed : fallback;
+  }
+  const author = lastCommentAuthor(frontmatter.comments);
+  if (author) return author;
+  const existing = frontmatter.doc_updated_by;
+  if (typeof existing === "string") {
+    const trimmed = existing.trim();
+    if (trimmed) return trimmed;
+  }
+  return fallback;
+}
+
+function resolveDocUpdatedByFromTask(task: TaskData, fallback: string): string {
+  const author = lastCommentAuthor(task.comments);
+  if (author) return author;
+  const existing = task.doc_updated_by;
+  if (typeof existing === "string") {
+    const trimmed = existing.trim();
+    if (trimmed) return trimmed;
+  }
+  return fallback;
+}
+
 function isDocSectionHeader(line: string): boolean {
   return DOC_SECTION_HEADER_RE.test(line.trim());
 }
@@ -475,7 +520,7 @@ export class LocalBackend implements TaskBackend {
       if (docChanged(existingDoc, docText)) {
         payload.doc_version = DOC_VERSION;
         payload.doc_updated_at = nowIso();
-        payload.doc_updated_by = this.updatedBy;
+        payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
       }
     }
 
@@ -504,7 +549,11 @@ export class LocalBackend implements TaskBackend {
     if (docChanged(extractTaskDoc(parsed.body), docText) || !frontmatter.doc_updated_at) {
       frontmatter.doc_version = DOC_VERSION;
       frontmatter.doc_updated_at = nowIso();
-      frontmatter.doc_updated_by = updatedBy ?? this.updatedBy;
+      frontmatter.doc_updated_by = resolveDocUpdatedByFromFrontmatter(
+        frontmatter,
+        updatedBy,
+        this.updatedBy,
+      );
     }
     if (frontmatter.doc_version !== DOC_VERSION) {
       frontmatter.doc_version = DOC_VERSION;
@@ -520,7 +569,11 @@ export class LocalBackend implements TaskBackend {
     const frontmatter = { ...parsed.frontmatter } as Record<string, unknown>;
     frontmatter.doc_version = DOC_VERSION;
     frontmatter.doc_updated_at = nowIso();
-    frontmatter.doc_updated_by = updatedBy ?? this.updatedBy;
+    frontmatter.doc_updated_by = resolveDocUpdatedByFromFrontmatter(
+      frontmatter,
+      updatedBy,
+      this.updatedBy,
+    );
     const next = renderTaskReadme(frontmatter, parsed.body || "");
     await writeFile(readme, next.endsWith("\n") ? next : `${next}\n`, "utf8");
   }

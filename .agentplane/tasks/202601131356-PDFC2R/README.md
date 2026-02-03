@@ -13,8 +13,8 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: ran Redmine sync validation steps (local export count 317, redmine pull count 4, sync push showed no dirty tasks) and restored local backend config." }
   - { author: "ORCHESTRATOR", body: "verified: ran Redmine sync validation steps (local export count 317, redmine pull count 4, sync push showed no dirty tasks) and restored local backend config." }
 doc_version: 2
-doc_updated_at: "2026-01-30T09:27:32+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:47.881Z"
+doc_updated_by: "agentplane"
 description: "Analyze backend state, switch to Redmine, test connector + sync, compare data volume with local truth, and assess whether local task storage can be safely disabled."
 ---
 # 202601131356-PDFC2R: Validate Redmine backend sync against local backend
@@ -23,9 +23,11 @@ description: "Analyze backend state, switch to Redmine, test connector + sync, c
 
 Validated Redmine backend connectivity and sync in sandbox: pull works, push reports no dirty tasks, and Redmine-backed export shows 4 tasks vs 317 local.
 
+
 ## Context
 
 Sandbox Redmine is reachable via VPN and .env credentials. Redmine backend uses cached tasks under .agent-plane/tasks and only includes issues with task_id custom field.
+
 
 ## Scope
 
@@ -35,10 +37,12 @@ Sandbox Redmine is reachable via VPN and .env credentials. Redmine backend uses 
 - Compare Redmine task count to local snapshot.
 - Restore local backend config and export.
 
+
 ## Risks
 
 - Redmine only surfaces issues with task_id custom field, so counts may differ from local backend.
 - Switching backend temporarily changes tasks.json; always restore local export after validation.
+
 
 ## Verify Steps
 
@@ -54,13 +58,22 @@ python - <<'PY'\nimport json\nprint(len(json.load(open('.agent-plane/tasks.json'
 python .agent-plane/agentctl.py config set tasks_backend.config_path .agent-plane/backends/local/backend.json
 python .agent-plane/agentctl.py task export
 
+
 ## Rollback Plan
 
 Revert the task README updates; local backend config and tasks.json already restored.
 
+
 ## Notes
 
 Observations:\n- Local backend export contains 317 tasks.\n- Redmine backend task list returned 4 tasks in sandbox.\n- sync pull: ✅ pulled 4 task(s).\n- sync push: ℹ️ no dirty tasks to push.\n\nAssessment: Redmine backend sync works, but data volume differs because only issues with task_id custom field are surfaced. Local task storage should remain enabled unless Redmine becomes the single canonical backend for all tasks.
+
+
+## Changes Summary (auto)
+
+<!-- BEGIN AUTO SUMMARY -->
+- (no file changes)
+<!-- END AUTO SUMMARY -->
 
 ## Changes Summary (auto)
 

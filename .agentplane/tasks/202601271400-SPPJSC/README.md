@@ -12,25 +12,29 @@ comments:
   - { author: "CODER", body: "Start: implement PR artifact commands (open/update/check/note) for branch_pr workflow." }
   - { author: "CODER", body: "verified: bun run ci (format/typecheck/lint/coverage) passed on 2026-01-27." }
 doc_version: 2
-doc_updated_at: "2026-01-27T15:12:53+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:12.577Z"
+doc_updated_by: "agentplane"
 description: "Implement pr open/update/check/note for branch_pr workflow artifacts."
 ---
 ## Summary
 
 Implemented PR artifact CLI commands (open/update/check/note) with diffstat + auto-summary updates and expanded CLI tests.
 
+
 ## Scope
 
 Updated agentplane CLI to generate/validate PR artifacts, added git env sanitization, and expanded CLI test coverage for PR and workflow error paths.
+
 
 ## Risks
 
 PR artifact logic depends on git state; misconfigured repos may surface E_GIT errors. Coverage thresholds remain sensitive to branch coverage.
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 

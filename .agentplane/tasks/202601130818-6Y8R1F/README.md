@@ -11,17 +11,19 @@ commit: { hash: "737b83169856fc0f118399f08b062bcf8fcd55fe", message: "✨ 6Y8R1F
 comments:
   - { author: "CODER", body: "Verified: manual review only; no automated tests run; hooks install/uninstall and enforcement changes reviewed." }
 doc_version: 2
-doc_updated_at: "2026-01-13T08:19:43+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:42.208Z"
+doc_updated_by: "agentplane"
 description: "Add opt-in git hooks via agentctl (install/uninstall) to enforce commit subject suffix and protected-path/branch_pr rules for direct git commits."
 ---
 ## Summary
 
 Add opt-in git hooks installer/uninstaller to enforce commit policy outside agentctl.
 
+
 ## Context
 
 Direct git commit can bypass agentctl guardrails; opt-in hooks close the gap without enforcing automatically.
+
 
 ## Scope
 
@@ -30,17 +32,21 @@ Direct git commit can bypass agentctl guardrails; opt-in hooks close the gap wit
 - Implement a `pre-commit` hook that enforces protected-path policy and branch_pr task rules.
 - Update docs to describe hook usage and opt-in behavior.
 
+
 ## Risks
 
 Hooks may block legitimate commits if policies are misconfigured; provide clear uninstall guidance.
+
 
 ## Verify Steps
 
 python -m pytest -q
 
+
 ## Rollback Plan
 
 Revert the agentctl hook commands and remove any installed git hooks via `agentctl hooks uninstall`.
+
 
 ## Notes
 

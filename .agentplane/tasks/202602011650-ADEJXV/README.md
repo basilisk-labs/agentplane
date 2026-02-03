@@ -14,13 +14,14 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
   - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
 doc_version: 2
-doc_updated_at: "2026-02-01T17:12:58+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:37.819Z"
+doc_updated_by: "agentplane"
 description: "Verify agentplane init generates AGENTS.md and .agentplane/agents content matching root AGENTS.md, and make AGENTS.md assembly depend on direct vs branch_pr sections only."
 ---
 ## Summary
 
 Bundle AGENTS.md and agent templates with agentplane and generate workflow-filtered AGENTS.md during init, with tests to verify parity.
+
 
 ## Scope
 
@@ -29,15 +30,18 @@ Bundle AGENTS.md and agent templates with agentplane and generate workflow-filte
 - Ensure init copies bundled agent templates
 - Add/adjust tests for bundled templates and init output
 
+
 ## Risks
 
 - Bundle/template drift if AGENTS.md changes without updating assets
 - Longer CLI test runtime when running full run-cli.test.ts
 
+
 ## Verify Steps
 
 - bun run test -- packages/agentplane/src/agents-template.test.ts
 - bun run test -- packages/agentplane/src/run-cli.test.ts
+
 
 ## Rollback Plan
 

@@ -13,17 +13,19 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed." }
   - { author: "ORCHESTRATOR", body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed." }
 doc_version: 2
-doc_updated_at: "2026-01-30T08:44:26+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:20.798Z"
+doc_updated_by: "agentplane"
 description: "Stabilize logs/help/--json, improve UX, and add E2E smoke in CI for init/task/recipes/mode/workflow."
 ---
 ## Summary
 
 Release hardening: standardize CLI error output (text + JSON) and add CI smoke coverage for init/task/recipes/mode/work-start flow.
 
+
 ## Context
 
 AP-044 is the final release-hardening step in the v1 roadmap after docs (AP-043). It requires stable CLI output, usable error UX/--json mode, and CI smoke coverage for critical flows.
+
 
 ## Scope
 
@@ -32,14 +34,17 @@ AP-044 is the final release-hardening step in the v1 roadmap after docs (AP-043)
 - Add CLI smoke test for init → task → start/finish → recipe install/list → mode switch → work start.
 - Update tests for JSON error shape.
 
+
 ## Risks
 
 - Error output format changes could affect tooling that scrapes stderr/stdout.
 - Smoke test depends on git and tar availability; may add CI flakiness if environment differs.
 
+
 ## Verify Steps
 
 bun run ci:agentplane
+
 
 ## Rollback Plan
 

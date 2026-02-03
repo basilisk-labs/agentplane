@@ -8512,9 +8512,17 @@ async function cmdTaskDocSet(opts: {
     });
   }
 
-  const updatedBy = (flags.updatedBy ?? "agentplane").trim();
-  if (updatedBy.length === 0) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "--updated-by must be non-empty" });
+  let updatedBy: string | undefined;
+  if (flags.updatedBy !== undefined) {
+    const trimmed = flags.updatedBy.trim();
+    if (trimmed.length === 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--updated-by must be non-empty",
+      });
+    }
+    updatedBy = trimmed;
   }
 
   let text = flags.text ?? "";

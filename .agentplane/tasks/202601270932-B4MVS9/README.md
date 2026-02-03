@@ -13,13 +13,14 @@ comments:
   - { author: "CODER", body: "Start: implementing lefthook pre-commit hook and GitHub Actions CI to enforce bun run ci." }
   - { author: "CODER", body: "verified: bun run ci passed | details: lefthook + GitHub Actions CI enforce quality gates." }
 doc_version: 2
-doc_updated_at: "2026-01-27T09:35:29+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:05.824Z"
+doc_updated_by: "agentplane"
 description: "Add local git hooks (pre-commit/pre-push) and a GitHub Actions workflow to enforce bun-based quality gates (format/lint/typecheck/tests/coverage) for all changes."
 ---
 ## Summary
 
 Enforce bun-based quality gates by adding local git hooks (lefthook) and CI (GitHub Actions) so formatting, linting, typecheck and coverage run automatically.
+
 
 ## Scope
 
@@ -27,10 +28,12 @@ Enforce bun-based quality gates by adding local git hooks (lefthook) and CI (Git
 - Add GitHub Actions workflow that runs `bun run ci` on PRs and pushes to `main`
 - Document how to install/restore hooks and how enforcement works
 
+
 ## Risks
 
 - Local hooks can be bypassed with `--no-verify`; CI still enforces for PRs, but branch protection must be enabled in GitHub settings to block direct pushes.
 - Running `bun run ci` on every commit may be slow for large changes; adjust hook scope only if it becomes a productivity issue.
+
 
 ## Verify Steps
 
@@ -38,6 +41,7 @@ Enforce bun-based quality gates by adding local git hooks (lefthook) and CI (Git
 - `git commit` runs `bun run ci` via lefthook
 - GitHub Actions workflow passes for a PR / push
 - `bun run ci` passes locally
+
 
 ## Rollback Plan
 

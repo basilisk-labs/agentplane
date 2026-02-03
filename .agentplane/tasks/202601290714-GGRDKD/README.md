@@ -12,25 +12,29 @@ comments:
   - { author: "CODER", body: "Start: implement local recipe manager (install/remove/list/info + lockfile)." }
   - { author: "CODER", body: "verified: GGRDKD close: bun run ci | details: document recipe manager implementation and tests." }
 doc_version: 2
-doc_updated_at: "2026-01-29T08:47:26+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:17.785Z"
+doc_updated_by: "agentplane"
 description: "Implement local recipe manager: install from archive, remove, list, and info, with recipes.lock.json tracking."
 ---
 ## Summary
 
 Implemented local recipe manager commands (install/remove/list/info), recipes lockfile/index handling, and expanded CLI tests to cover recipe and cleanup/integrate edge cases.
 
+
 ## Scope
 
 Add recipe CLI namespace with local archive install (tar/zip), list/info/remove, maintain recipes.lock.json and RECIPES.md, and add tests for recipe flows plus coverage-critical branches.
+
 
 ## Risks
 
 Relies on system tar/zip commands; failures surface as CLI errors. Recipe manifests must be well-formed JSON.
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 
