@@ -9,18 +9,31 @@ for project discovery, config handling, task readme parsing, and task export/lin
 
 If you are an end-user, install the CLI instead: https://www.npmjs.com/package/agentplane
 
-## Install
+## 5-minute start (CLI)
+
+```bash
+npm install -g agentplane
+agentplane init
+agentplane quickstart
+agentplane task new --title "First task" --description "Describe the change" --priority med --owner ORCHESTRATOR --tag docs
+agentplane verify <task-id>
+agentplane finish <task-id>
+```
+
+## For library usage
+
+### Install
 
 ```bash
 npm install @agentplaneorg/core
 ```
 
-## Requirements
+### Requirements
 
 - Node.js >= 20
 - ESM-only (`type: module`)
 
-## Usage
+### Usage
 
 ```ts
 import {
