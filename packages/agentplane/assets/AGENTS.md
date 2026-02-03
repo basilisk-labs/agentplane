@@ -18,17 +18,11 @@ This policy is designed to be the single, authoritative instruction set the agen
 ## Sources of truth (priority order)
 
 1. `AGENTS.md` (this file)
-2. `node packages/agentplane/bin/agentplane.js quickstart` / `node packages/agentplane/bin/agentplane.js role <ROLE>` output
+2. `agentplane quickstart` / `agentplane role <ROLE>` output
 3. `.agentplane/config.json`
 4. `.agentplane/agents/*.json`
 
 If two sources conflict, prefer the higher-priority source.
-
-## Local CLI invocation
-
-- All `agentplane ...` commands in this policy must run the repo-local CLI: `node packages/agentplane/bin/agentplane.js ...`.
-- Do not use a system-installed `agentplane` or `aagentplane` binary.
-- When this document says `agentplane <args>`, it is shorthand for `node packages/agentplane/bin/agentplane.js <args>`.
 
 ## Scope boundary
 
@@ -46,7 +40,7 @@ No other role may assume another role’s authority.
 
 ## Truthfulness & safety
 
-- Never invent facts about repo state. Prefer inspection (`node packages/agentplane/bin/agentplane.js`, `git status`, `git diff`, `ripgrep`) over guessing.
+- Never invent facts about repo state. Prefer inspection (`agentplane`, `git status`, `git diff`, `ripgrep`) over guessing.
 - Never modify `.agentplane/tasks.json` manually. It is **agentplane-managed state**.
 - Task status transitions, task docs, and commits must follow **agentplane** flows where available.
 
@@ -101,9 +95,9 @@ No step may be skipped unless the user explicitly authorizes skipping it.
 
 Before any planning or execution, ORCHESTRATOR must run:
 
-1. `node packages/agentplane/bin/agentplane.js config show`
-2. `node packages/agentplane/bin/agentplane.js quickstart` (CLI instructions)
-3. `node packages/agentplane/bin/agentplane.js task list`
+1. `agentplane config show`
+2. `agentplane quickstart` (CLI instructions)
+3. `agentplane task list`
 4. `git status --short --untracked-files=no`
 
 Then report (in the response) only that the data was loaded:
@@ -187,7 +181,7 @@ There are two supported modes:
 
 Use agentplane commit flows with a message that conforms to the built-in command guide, e.g.:
 
-`node packages/agentplane/bin/agentplane.js guard commit <task-id> -m "✨ <suffix> <detailed changelog ...>" ...`
+`agentplane guard commit <task-id> -m "✨ <suffix> <detailed changelog ...>" ...`
 
 In this mode:
 
@@ -229,7 +223,7 @@ Recommended cadence:
 
 1. `start` task (status comment; no commit by default)
 2. Implement changes
-3. Run verify commands / `node packages/agentplane/bin/agentplane.js verify`
+3. Run verify commands / `agentplane verify`
 4. Commit via agentplane with tight allowlist
 5. `finish` with `--commit <git-rev>` and a Verified body
 6. `task export` (if required)

@@ -4,24 +4,52 @@ import { describe, expect, it } from "vitest";
 
 import { loadAgentTemplates, loadAgentsTemplate } from "./agents-template.js";
 
+const LOCAL_CLI = "node packages/agentplane/bin/agentplane.js";
+
 describe("agents-template", () => {
-  it("bundled AGENTS.md matches repo AGENTS.md", async () => {
-    const repoText = await readFile(path.join(process.cwd(), "AGENTS.md"), "utf8");
+  it("bundled AGENTS.md matches framework assets AGENTS.md", async () => {
+    const assetsText = await readFile(
+      path.join(process.cwd(), "packages", "agentplane", "assets", "AGENTS.md"),
+      "utf8",
+    );
     const bundledText = await loadAgentsTemplate();
-    expect(bundledText).toBe(`${repoText.trimEnd()}\n`);
+    expect(bundledText).toBe(`${assetsText.trimEnd()}\n`);
   });
 
-  it("bundled agents match .agentplane/agents", async () => {
-    const repoAgentsDir = path.join(process.cwd(), ".agentplane", "agents");
-    const entries = await readdir(repoAgentsDir);
+  it("repo AGENTS.md uses repo-local CLI while assets use system CLI", async () => {
+    const repoText = await readFile(path.join(process.cwd(), "AGENTS.md"), "utf8");
+    const bundledText = await loadAgentsTemplate();
+    expect(repoText).toContain(LOCAL_CLI);
+    expect(bundledText).not.toContain(LOCAL_CLI);
+    expect(repoText.trimEnd()).not.toBe(bundledText.trimEnd());
+  });
+
+  it("bundled agents match framework assets/agents", async () => {
+    const assetsAgentsDir = path.join(process.cwd(), "packages", "agentplane", "assets", "agents");
+    const entries = await readdir(assetsAgentsDir);
     const jsonEntries = entries.filter((entry) => entry.endsWith(".json"));
     const bundled = await loadAgentTemplates();
 
     for (const agent of bundled) {
       expect(jsonEntries).toContain(agent.fileName);
-      const repoPath = path.join(repoAgentsDir, agent.fileName);
+      const assetPath = path.join(assetsAgentsDir, agent.fileName);
+      const assetText = await readFile(assetPath, "utf8");
+      expect(agent.contents).toBe(`${assetText.trimEnd()}\n`);
+      expect(agent.contents).not.toContain(LOCAL_CLI);
+    }
+  });
+
+  it("installed agents prefer repo-local CLI", async () => {
+    const repoAgentsDir = path.join(process.cwd(), ".agentplane", "agents");
+    const entries = await readdir(repoAgentsDir);
+    const jsonEntries = entries.filter((entry) => entry.endsWith(".json"));
+    const systemCommandRe = /`agentplane(?:\s|`)/;
+
+    for (const entry of jsonEntries) {
+      const repoPath = path.join(repoAgentsDir, entry);
       const repoText = await readFile(repoPath, "utf8");
-      expect(agent.contents).toBe(`${repoText.trimEnd()}\n`);
+      expect(repoText).toContain(LOCAL_CLI);
+      expect(repoText).not.toMatch(systemCommandRe);
     }
   });
 });
