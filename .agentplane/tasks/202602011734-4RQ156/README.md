@@ -1,17 +1,18 @@
 ---
 id: "202602011734-4RQ156"
 title: "Refactor docs for Mintlify + add task lifecycle section"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs"]
 verify: []
-commit: null
-comments: []
+commit: { hash: "35359daf1bcc5ede5838feed0e88a0c23e8f81ec", message: "🧪 4RQ156+JADQ0P align scenario test messages" }
+comments:
+  - { author: "INTEGRATOR", body: "Verified: bun run test:full; rg -n \"\\.agent-plane\" -S; rg -n \"agentctl\" docs README.md packages" }
 doc_version: 2
-doc_updated_at: "2026-02-01T17:45:33+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T08:26:07.924Z"
+doc_updated_by: "agentplane"
 description: "Restructure Mintlify docs into modular user/developer sections; align navigation/frontmatter; add task lifecycle documentation with Mermaid diagrams for direct and branch_pr modes."
 ---
 ## Summary
