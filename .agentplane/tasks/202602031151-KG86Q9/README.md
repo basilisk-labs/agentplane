@@ -1,17 +1,18 @@
 ---
 id: "202602031151-KG86Q9"
 title: "Deduplicate task README headings"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["tasks"]
 verify: []
-commit: null
+commit: { hash: "47e7e9c2e503d2ac7b90019802689cf55bd60a4a", message: "🧹 KG86Q9 dedupe task README headings" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: scanning task READMEs for duplicate section headings and normalizing docs via agentplane task doc set." }
+  - { author: "ORCHESTRATOR", body: "Verified: re-scanned task READMEs for duplicate headings; none remain." }
 doc_version: 2
-doc_updated_at: "2026-02-03T11:52:57.509Z"
+doc_updated_at: "2026-02-03T11:54:17.794Z"
 doc_updated_by: "agentplane"
 description: "Scan task READMEs for duplicated section headings and normalize them to a single set of sections."
 id_source: "generated"

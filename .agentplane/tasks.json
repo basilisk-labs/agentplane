@@ -11988,11 +11988,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:13.987Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:31.871Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDeduplicated standard sections in task READMEs via agentplane task doc set updates.\n\n## Scope\n\nNormalize duplicated Summary/Scope/Risks/Verify Steps/Rollback Plan sections across affected task READMEs.\n\n## Verify Steps\n\nRe-scan task READMEs for duplicate section headers.\n\n## Risks\n\nLow risk: documentation-only normalization; ensure no content loss.\n\n## Rollback Plan\n\nRestore prior task README versions from git history if needed.\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nDeduplicated standard sections in task READMEs via agentplane task doc set updates.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n\n\n## Scope\n\n\nNormalize duplicated Summary/Scope/Risks/Verify Steps/Rollback Plan sections across affected task READMEs.\n\n\n\n\n\n## Risks\n\n\nLow risk: documentation-only normalization; ensure no content loss.\n\n\n\n\n\n## Verify Steps\n\n\nRe-scan task READMEs for duplicate section headers.\n\n\n\n\n\n## Rollback Plan\n\n\nRestore prior task README versions from git history if needed."
     },
     {
       "id": "202602030844-P7BCC2",
@@ -12018,11 +12018,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:14.071Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:35.875Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nPrevent duplicate frontmatter in task READMEs and ensure doc merges normalize bodies.\n\n## Scope\n\nUpdate task README parsing/normalization, add tests, and re-run doc updates to clean existing duplicates.\n\n## Risks\n\nLow: parsing changes may affect unusual README bodies; validate with tests.\n\n## Verify Steps\n\nRun relevant tests (task-readme, task-backend) and re-scan task READMEs for duplicate frontmatter.\n\n## Rollback Plan\n\nRevert parsing changes; regenerate task READMEs via previous commits if needed.\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nPrevent duplicate frontmatter in task READMEs and ensure doc merges normalize bodies.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n\n\n## Scope\n\n\nUpdate task README parsing/normalization, add tests, and re-run doc updates to clean existing duplicates.\n\n\n\n\n\n## Risks\n\n\nLow: parsing changes may affect unusual README bodies; validate with tests.\n\n\n\n\n\n## Verify Steps\n\n\nRun relevant tests (task-readme, task-backend) and re-scan task READMEs for duplicate frontmatter.\n\n\n\n\n\n## Rollback Plan\n\n\nRevert parsing changes; regenerate task READMEs via previous commits if needed."
     },
     {
       "id": "202602030858-C1MS5W",
@@ -12055,11 +12055,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:14.154Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:38.807Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nRan test suites (fast/full) and pushed the latest commits to origin.\n\n## Scope\n\nValidation and push only; no code changes.\n\n## Risks\n\nNone; pre-push hook re-ran the full test suite.\n\n## Verify Steps\n\n1) bun run test:fast\\n2) bun run test:full\\n3) git push\n\n## Rollback Plan\n\nNo rollback required; no repository changes were made.\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nRan test suites (fast/full) and pushed the latest commits to origin.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n\n\n## Scope\n\n\nValidation and push only; no code changes.\n\n\n\n\n\n## Risks\n\n\nNone; pre-push hook re-ran the full test suite.\n\n\n\n\n\n## Verify Steps\n\n\n1) bun run test:fast\\n2) bun run test:full\\n3) git push\n\n\n\n\n\n## Rollback Plan\n\n\nNo rollback required; no repository changes were made."
     },
     {
       "id": "202602030911-K6D6MA",
@@ -12088,11 +12088,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:14.239Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:34.711Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nBumped published package versions to 0.1.2 and tagged the release.\n\n## Scope\n\nRelease bump for agentplane and @agentplaneorg/core packages.\n\n## Risks\n\nLow; release tag will trigger GitHub Actions publishing.\n\n## Verify Steps\n\n1) bun run test:fast\\n2) git tag -l v0.1.2\\n3) git push --follow-tags\n\n## Rollback Plan\n\nDelete the tag and revert the version bump commit if publish fails.\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nBumped published package versions to 0.1.2 and tagged the release.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n\n\n## Scope\n\n\nRelease bump for agentplane and @agentplaneorg/core packages.\n\n\n\n\n\n## Risks\n\n\nLow; release tag will trigger GitHub Actions publishing.\n\n\n\n\n\n## Verify Steps\n\n\n1) bun run test:fast\\n2) git tag -l v0.1.2\\n3) git push --follow-tags\n\n\n\n\n\n## Rollback Plan\n\n\nDelete the tag and revert the version bump commit if publish fails."
     },
     {
       "id": "202602030920-EGKTVZ",
@@ -12121,11 +12121,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:14.321Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:32.875Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nRemoved npm auth token usage in publish workflow and added a local release dry-run script.\n\n## Scope\n\nWorkflow auth cleanup and local publish dry-run validation.\n\n## Risks\n\nLow; publish now relies on GitHub OIDC only.\n\n## Rollback Plan\n\nRevert workflow/script changes and re-run publish with corrected auth.\n\n## Verify Steps\n\n1) bun run release:check\\n2) GitHub Actions publish workflow runs on tag push\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nRemoved npm auth token usage in publish workflow and added a local release dry-run script.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n\n\n## Scope\n\n\nWorkflow auth cleanup and local publish dry-run validation.\n\n\n\n\n\n## Risks\n\n\nLow; publish now relies on GitHub OIDC only.\n\n\n\n\n\n## Verify Steps\n\n\n1) bun run release:check\\n2) GitHub Actions publish workflow runs on tag push\n\n\n\n\n\n## Rollback Plan\n\n\nRevert workflow/script changes and re-run publish with corrected auth."
     },
     {
       "id": "202602030930-49FW1H",
@@ -12158,11 +12158,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:14.403Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:33.773Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nEnsure npm publish in GitHub Actions uses a clean npm config with no auth token so trusted publishing via OIDC can work.\n\n## Scope\n\nUpdate GitHub Actions publish workflow to clear auth env, use a clean npmrc, and rely on OIDC for publish.\n\n## Risks\n\nIf trusted publishing is not configured on npm for @agentplaneorg, publishes may still fail; workflow change alone will not fix registry-side configuration.\n\n## Verify Steps\n\nNot run locally (workflow-only change). Trigger GitHub Actions Publish workflow and confirm npm publish succeeds for @agentplaneorg/core and agentplane.\n\n## Rollback Plan\n\nRevert .github/workflows/publish.yml to the previous version and rerun publish if needed.\n\n## Notes\n\nTriggered Publish to npm workflow on main (runs 21624946114, 21625026006). After removing auth tokens, npm publish fails with ENEEDAUTH, indicating npm trusted publishing is not configured for @agentplaneorg.\n\n## Notes\n\nAdded npm@11.5.1 install to publish workflow. Workflow run 21625449544 completed successfully; publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with OIDC provenance.\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nEnsure npm publish in GitHub Actions uses a clean npm config with no auth token so trusted publishing via OIDC can work.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n\n\n## Scope\n\n\nUpdate GitHub Actions publish workflow to clear auth env, use a clean npmrc, and rely on OIDC for publish.\n\n\n\n\n\n## Risks\n\n\nIf trusted publishing is not configured on npm for @agentplaneorg, publishes may still fail; workflow change alone will not fix registry-side configuration.\n\n\n\n\n\n## Verify Steps\n\n\nNot run locally (workflow-only change). Trigger GitHub Actions Publish workflow and confirm npm publish succeeds for @agentplaneorg/core and agentplane.\n\n\n\n\n\n## Rollback Plan\n\n\nRevert .github/workflows/publish.yml to the previous version and rerun publish if needed.\n\n\n\n\n\n## Notes\n\nTriggered Publish to npm workflow on main (runs 21624946114, 21625026006). After removing auth tokens, npm publish fails with ENEEDAUTH, indicating npm trusted publishing is not configured for @agentplaneorg.\n\n\n\nAdded npm@11.5.1 install to publish workflow. Workflow run 21625449544 completed successfully; publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with OIDC provenance."
     },
     {
       "id": "202602030957-6B5C51",
@@ -12191,11 +12191,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:14.486Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:37.812Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDocument that npm trusted publishing in GitHub Actions requires npm >= 11.5.1.\n\n## Scope\n\nUpdate release/publishing docs to include the npm version requirement for trusted publishing.\n\n## Risks\n\nLow risk; documentation-only change.\n\n## Verify Steps\n\nOpen docs/developer/release-and-publishing.mdx and confirm the trusted publishing section mentions npm >= 11.5.1.\n\n## Rollback Plan\n\nRevert the documentation line if it causes confusion or becomes outdated.\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nDocument that npm trusted publishing in GitHub Actions requires npm >= 11.5.1.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n\n\n## Scope\n\n\nUpdate release/publishing docs to include the npm version requirement for trusted publishing.\n\n\n\n\n\n## Risks\n\n\nLow risk; documentation-only change.\n\n\n\n\n\n## Verify Steps\n\n\nOpen docs/developer/release-and-publishing.mdx and confirm the trusted publishing section mentions npm >= 11.5.1.\n\n\n\n\n\n## Rollback Plan\n\n\nRevert the documentation line if it causes confusion or becomes outdated."
     },
     {
       "id": "202602031002-6WBJVK",
@@ -12228,11 +12228,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:14.570Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:36.833Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAdd startup update check against npm registry with opt-out flag, warning on newer versions.\n\n## Scope\n\nUpdate CLI global flags, help text, and command guide; add npm version check and tests.\n\n## Risks\n\nStartup warning could appear in stderr; npm registry fetch is best-effort but should not block CLI.\n\n## Verify Steps\n\nbun run test:cli:core\n\n## Rollback Plan\n\nRevert the update-check changes in run-cli.ts, help.ts, command-guide.ts, and related tests.\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nAdd startup update check against npm registry with opt-out flag, warning on newer versions.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n\n\n## Scope\n\n\nUpdate CLI global flags, help text, and command guide; add npm version check and tests.\n\n\n\n\n\n## Risks\n\n\nStartup warning could appear in stderr; npm registry fetch is best-effort but should not block CLI.\n\n\n\n\n\n## Verify Steps\n\n\nbun run test:cli:core\n\n\n\n\n\n## Rollback Plan\n\n\nRevert the update-check changes in run-cli.ts, help.ts, command-guide.ts, and related tests."
     },
     {
       "id": "202602031018-V8A8XC",
@@ -12261,11 +12261,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:02:14.653Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-03T11:52:39.872Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDeclare git hooks as mandatory quality gates and keep hook checks passing.\n\n## Scope\n\nUpdate developer docs to require hooks; run hook checks (format, lint, test-fast) and fix failures.\n\n## Risks\n\nFormatting/lint fixes may touch additional files if hooks surface unrelated issues.\n\n## Verify Steps\n\nbun run format:check\\nbun run lint\\nbun run test:fast\n\n## Rollback Plan\n\nRevert docs/developer/testing-and-quality.mdx and docs/developer/code-quality.mdx, then rerun hook checks.\n\n## Summary\n\nNormalized task doc sections (dedupe)."
+      "doc": "## Summary\n\n\nDeclare git hooks as mandatory quality gates and keep hook checks passing.\n\n\n\nNormalized task doc sections (dedupe).\n\n\n\n## Scope\n\n\nUpdate developer docs to require hooks; run hook checks (format, lint, test-fast) and fix failures.\n\n\n\n## Risks\n\n\nFormatting/lint fixes may touch additional files if hooks surface unrelated issues.\n\n\n\n## Verify Steps\n\n\nbun run format:check\\nbun run lint\\nbun run test:fast\n\n\n\n## Rollback Plan\n\n\nRevert docs/developer/testing-and-quality.mdx and docs/developer/code-quality.mdx, then rerun hook checks."
     },
     {
       "id": "202602031025-4MVPM2",
@@ -12290,11 +12290,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:04:18.113Z",
+      "doc_updated_at": "2026-02-03T11:52:30.842Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nInvestigated task README generation and fixed duplicate section handling across CLI/core.\n\n## Scope\n\nUpdated task doc normalization in CLI and core, added tests, and clarified AGENTS guardrails for agentplane-only task docs and agentplane commit/push.\n\n## Risks\n\nLow risk: doc normalization may slightly reflow whitespace; verified via unit tests.\n\n## Verify Steps\n\n- bun run test:cli:core\\n- bun run test:core\n\n## Rollback Plan\n\nRevert changes in run-cli/task-store doc normalization and tests."
+      "doc": "## Summary\n\n\nInvestigated task README generation and fixed duplicate section handling across CLI/core.\n\n\n\n\n\n## Scope\n\n\nUpdated task doc normalization in CLI and core, added tests, and clarified AGENTS guardrails for agentplane-only task docs and agentplane commit/push.\n\n\n\n\n\n## Risks\n\n\nLow risk: doc normalization may slightly reflow whitespace; verified via unit tests.\n\n\n\n\n\n## Verify Steps\n\n\n- bun run test:cli:core\\n- bun run test:core\n\n\n\n\n\n## Rollback Plan\n\n\nRevert changes in run-cli/task-store doc normalization and tests."
     },
     {
       "id": "202602031030-J9GHW7",
@@ -12352,11 +12352,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:09:17.046Z",
+      "doc_updated_at": "2026-02-03T11:52:41.089Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nIntegrated npm package README updates and ran pre-commit checks.\n\n## Scope\n\nUpdated packages/agentplane/README.md and packages/core/README.md; ran format, lint, and test:fast.\n\n## Risks\n\nLow risk: README formatting changes only.\n\n## Verify Steps\n\n- bun run format:check\\n- bun run lint\\n- bun run test:fast\n\n## Rollback Plan\n\nRevert README updates and task doc changes."
+      "doc": "## Summary\n\n\nIntegrated npm package README updates and ran pre-commit checks.\n\n\n\n## Scope\n\n\nUpdated packages/agentplane/README.md and packages/core/README.md; ran format, lint, and test:fast.\n\n\n\n## Risks\n\n\nLow risk: README formatting changes only.\n\n\n\n## Verify Steps\n\n\n- bun run format:check\\n- bun run lint\\n- bun run test:fast\n\n\n\n## Rollback Plan\n\n\nRevert README updates and task doc changes."
     },
     {
       "id": "202602031117-YAQ677",
@@ -12450,12 +12450,45 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nAdd interactive base-branch selection for branch_pr init in existing repos; keep default main for empty dirs. Include non-interactive safeguards and tests.\n\n\n## Scope\n\nUpdate init flow to prompt for base branch in branch_pr when repo already exists; create branch when requested; keep empty-repo default main. Add CLI core tests for empty repo and existing repo defaults.\n\n\n## Risks\n\nPrompt path only triggers in interactive branch_pr init; non-interactive behavior must remain unchanged. Branch creation could fail if git rejects the name.\n\n\n## Verify Steps\n\nbun run test:cli:core -- -t \"init branch_pr\"\n\n\n## Rollback Plan\n\nRevert the promptInitBaseBranch changes and the new init tests; restore prior resolveInitBaseBranch-only behavior."
+    },
+    {
+      "id": "202602031151-KG86Q9",
+      "title": "Deduplicate task README headings",
+      "description": "Scan task READMEs for duplicated section headings and normalize them to a single set of sections.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "tasks"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "47e7e9c2e503d2ac7b90019802689cf55bd60a4a",
+        "message": "🧹 KG86Q9 dedupe task README headings"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: scanning task READMEs for duplicate section headings and normalizing docs via agentplane task doc set."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: re-scanned task READMEs for duplicate headings; none remain."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T11:54:17.794Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nScan task READMEs for duplicated section headings and normalize to a single set of sections.\n\n## Scope\n\nNormalize duplicated headings in task README docs and update metadata.\n\n## Risks\n\nDoc normalization might drop unusual formatting; mitigated by preserving section content order.\n\n## Verify Steps\n\n- Re-scan task READMEs for duplicate headings.\n\n## Rollback Plan\n\nRevert the task README updates."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "e4a0309227a144b0d93a071e8ce9c4825c7e97a79fa469866df8077c299a9ce8"
+    "checksum": "3c6726355bc54ee61e0a72d4318489609d99951a234b9a5f565e692772a84ffd"
   }
 }
