@@ -27,6 +27,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - run: npm i -g npm@11.5.1
       - run: bun install --frozen-lockfile
       - run: bun run --filter=@agentplaneorg/core build
       - run: bun run --filter=agentplane build
