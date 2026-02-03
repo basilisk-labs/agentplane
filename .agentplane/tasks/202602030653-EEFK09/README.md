@@ -13,17 +13,21 @@ comments:
   - { author: "INTEGRATOR", body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts" }
   - { author: "INTEGRATOR", body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint" }
 doc_version: 2
-doc_updated_at: "2026-02-03T08:30:36.883Z"
+doc_updated_at: "2026-02-03T12:09:47.262Z"
 doc_updated_by: "agentplane"
 description: "Add consistent path details and command hints for file/dir errors; refine E_GIT/E_BACKEND hints using context."
 id_source: "generated"
 ---
 ## Summary
 
+
 ## Scope
+
 
 ## Risks
 
+
 ## Verify Steps
+
 
 ## Rollback Plan

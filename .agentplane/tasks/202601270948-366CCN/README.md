@@ -13,13 +13,14 @@ comments:
   - { author: "CODER", body: "Start: implementing core frontmatter parsing and stable task README frontmatter renderer." }
   - { author: "CODER", body: "verified: bun run ci passed | details: task README frontmatter parse/render roundtrip is stable." }
 doc_version: 2
-doc_updated_at: "2026-01-27T09:49:09+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:06.399Z"
+doc_updated_by: "agentplane"
 description: "Implement YAML frontmatter parsing and stable rendering for task README files (v2 metadata), with golden/roundtrip tests."
 ---
 ## Summary
 
 Implement AP-008: parse YAML frontmatter from task README.md and render it back in a stable, agentctl-compatible format (byte-stable for roundtrips).
+
 
 ## Scope
 
@@ -27,15 +28,18 @@ Implement AP-008: parse YAML frontmatter from task README.md and render it back 
 - Add stable renderer for task frontmatter (agentctl v2 style: key order, quoting, flow sequences/maps)
 - Add roundtrip/golden tests using representative task README fixtures
 
+
 ## Risks
 
 - YAML formatting must match existing task README frontmatter to avoid noisy diffs.
 - Handling unknown/extra frontmatter keys requires deterministic ordering to stay stable.
 
+
 ## Verify Steps
 
 - `bun run ci`
 - Unit tests demonstrate parse->render roundtrip stability
+
 
 ## Rollback Plan
 

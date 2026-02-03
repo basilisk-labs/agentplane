@@ -11,8 +11,25 @@ commit: { hash: "4f93b993ecca14b9a7d9a464711cc9a75d5d5a2d", message: "Legacy com
 comments:
   - { author: "INTEGRATOR", body: "Verified: Base branch now pins to local git config (agentplane.baseBranch); integrate/guard/cleanup use it; no-op integrates fail fast." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:28.918Z"
+doc_updated_by: "agentplane"
 description: "When running Agent Plane in an existing git repo that is already on a branch, pin that branch into .agent-plane/swarm.config.json (base_branch) and use it as the base for creating task branches/worktrees and for integration; avoid touching main when base_branch is not main."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

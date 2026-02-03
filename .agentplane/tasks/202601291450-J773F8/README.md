@@ -12,25 +12,29 @@ comments:
   - { author: "CODER", body: "Start: add agentplane-recipes submodule at repo root." }
   - { author: "CODER", body: "verified: submodule added at agentplane-recipes/ and lint ignores updated." }
 doc_version: 2
-doc_updated_at: "2026-01-29T14:50:35+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:24.057Z"
+doc_updated_by: "agentplane"
 description: "Track the recipes repository as a git submodule in the main repo root."
 ---
 ## Summary
 
 Add agentplane-recipes as a git submodule in the repo root.
 
+
 ## Scope
 
 - Add submodule at agentplane-recipes/ pointing to basilisk-labs/agentplane-recipes\n- Remove ignore rule that blocks submodule tracking
+
 
 ## Risks
 
 - Submodule requires network access for clones and updates
 
+
 ## Verify Steps
 
 - git submodule status
+
 
 ## Rollback Plan
 

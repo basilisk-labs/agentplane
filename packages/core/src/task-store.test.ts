@@ -271,6 +271,41 @@ describe("task-store", () => {
     expect(updated).toContain("Updated summary");
   });
 
+  it("setTaskDocSection defaults doc_updated_by to last comment author", async () => {
+    const root = await mkGitRepoRoot();
+
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "My task",
+      description: "Why it matters",
+      owner: "CODER",
+      priority: "med",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const original = await readFile(created.readmePath, "utf8");
+    const withComment = original.replace(
+      "comments: []",
+      `comments:
+  - { author: "DOCS", body: "Note" }`,
+    );
+    await writeFile(created.readmePath, withComment, "utf8");
+
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: created.id,
+      section: "Summary",
+      text: "Updated summary",
+    });
+
+    const updated = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+    expect(updated.frontmatter.doc_updated_by).toBe("DOCS");
+  });
+
   it("setTaskDocSection appends a missing section and validates inputs", async () => {
     const root = await mkGitRepoRoot();
 

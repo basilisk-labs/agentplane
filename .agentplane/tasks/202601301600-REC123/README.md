@@ -12,30 +12,35 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: Not run (documentation-only change) | details: lint/tests skipped by request. Notes: recipes behavior documented from current Node CLI implementation." }
   - { author: "ORCHESTRATOR", body: "verified: Not run (documentation-only change). Notes: lint/tests skipped | details: behavior documented from current Node CLI implementation." }
 doc_version: 2
-doc_updated_at: "2026-01-30T15:33:38+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:31.057Z"
+doc_updated_by: "agentplane"
 description: "Analyze recipes implementation and produce documentation describing how recipes work."
 ---
 ## Summary
 
 Documented how recipes work based on the current Node CLI implementation, including install flow, scenario execution, on-disk state, and edge cases.
 
+
 ## Scope
 
 - Added a new Mintlify doc page describing runtime behavior of recipes
 - Registered the page in navigation and docs index
 
+
 ## Risks
 
 - Behavior may drift as the CLI evolves; the doc is tied to current code paths in `packages/agentplane/src/run-cli.ts`.
+
 
 ## Verify Steps
 
 - Not run (documentation-only change).
 
+
 ## Rollback Plan
 
 - Remove `docs/recipes-how-it-works.mdx` and revert docs navigation edits.
+
 
 ## Notes
 

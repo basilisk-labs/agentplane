@@ -13,17 +13,19 @@ comments:
   - { author: "DOCS", body: "Verified: py_compile agentctl/redmine; lint clean. Enforced known-agent owners in task flows/docs." }
   - { author: "DOCS", body: "Verified: py_compile agentctl/redmine; task lint clean after verify backfill; added verify/doc gates and safer sync." }
 doc_version: 2
-doc_updated_at: "2026-01-24T18:16:17+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:38.093Z"
+doc_updated_by: "agentplane"
 description: "Change owner=AUTOMATION tasks to a real agent (CODER) and adjust README/docs to guide first-time users vs full docs."
 ---
 ## Summary
 
 Swap legacy owner=AUTOMATION to CODER across tasks and adjust README/docs to separate newcomer quickstart from full reference.
 
+
 ## Context
 
 Lint warnings came from owner=AUTOMATION; docs needed clearer split between newcomer quickstart (root README) and full docs (docs/README).
+
 
 ## Scope
 
@@ -32,15 +34,18 @@ Lint warnings came from owner=AUTOMATION; docs needed clearer split between newc
 - Refresh root README for first-time quickstart emphasis and point to docs/README.md for the full guide.
 - Update docs/README.md to clarify it is the full reference.
 
+
 ## Risks
 
 - Bulk owner changes touch many files; must avoid altering other metadata.
 - README simplification should not hide links to full docs.
 
+
 ## Verify Steps
 
 - python -m py_compile .agent-plane/backends/redmine/backend.py
 - python .agent-plane/agentctl.py task lint
+
 
 ## Rollback Plan
 

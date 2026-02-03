@@ -13,8 +13,8 @@ comments:
   - { author: "CODER", body: "Start: remove scripts/tasks.py; update README + other docs to new agentctl workflow; Constraints: no manual tasks.json edits; keep changes minimal and consistent." }
   - { author: "REVIEWER", body: "Verified: scripts/tasks.py removed; README.md and GUIDELINE.md updated to agentctl-based task lifecycle (ready/start/block/task/verify/guard/finish); agentctl task lint passes; Limitations: existing CODEX owner warnings remain." }
 doc_version: 2
-doc_updated_at: "2026-01-13T14:55:56+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:21.342Z"
+doc_updated_by: "agentplane"
 description: "Delete scripts/tasks.py and update README.md + any other docs/configs that mention the old tasks.py/status-board flow, replacing it with the agentctl CLI workflow (ready/start/block/task/verify/guard/finish)."
 dirty: false
 id_source: "custom"
@@ -22,20 +22,26 @@ id_source: "custom"
 ## Summary
 Test doc round-trip from Redmine.
 
+
 ## Context
 Validate custom field storage for task docs.
+
 
 ## Scope
 Ensure doc payload can be written and read via agentctl.
 
+
 ## Risks
 None.
+
 
 ## Verify Steps
 - n/a
 
+
 ## Rollback Plan
 Delete the test doc payload in Redmine.
+
 
 ## Notes
 Test-only content.

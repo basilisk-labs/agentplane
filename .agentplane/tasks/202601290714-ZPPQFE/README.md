@@ -12,25 +12,29 @@ comments:
   - { author: "CODER", body: "Start: implement recipe list-remote with cached index fetching." }
   - { author: "CODER", body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: list-remote with cached index and refresh flag." }
 doc_version: 2
-doc_updated_at: "2026-01-29T09:56:16+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:19.405Z"
+doc_updated_by: "agentplane"
 description: "Implement recipe list-remote with cached index.json, timestamps, and --refresh support."
 ---
 ## Summary
 
 Add recipe list-remote with cached index loading and optional refresh.
 
+
 ## Scope
 
 - Add list-remote subcommand with cache file under .agentplane/cache/recipes-index.json.\n- Validate remote index schema and print latest version per recipe.\n- Add tests for cached and refreshed index reading.
+
 
 ## Risks
 
 - Remote index schema drift could break parsing; validation errors surface clearly.\n- Cache can become stale until refreshed.
 
+
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
+
 
 ## Rollback Plan
 

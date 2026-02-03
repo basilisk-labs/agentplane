@@ -11,13 +11,14 @@ commit: { hash: "bdc536afb9202d2dcd3e2cfebeed47643ae06448", message: "✨ A6D5EF
 comments:
   - { author: "CODER", body: "verified: bun run ci passed | details: details: agentplane task export writes .agentplane/tasks.json with sha256 checksum (python-canonical parity) and stable ordering; tests added." }
 doc_version: 2
-doc_updated_at: "2026-01-27T11:20:39+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:07.656Z"
+doc_updated_by: "agentplane"
 description: "Implement generating .agentplane/tasks.json snapshot with stable canonical JSON ordering and sha256 checksum; add golden tests per spec."
 ---
 ## Summary
 
 Implement tasks.json export (.agentplane/tasks.json) with sha256 checksum canonicalization and add CLI command agentplane task export.
+
 
 ## Scope
 
@@ -26,13 +27,16 @@ Implement tasks.json export (.agentplane/tasks.json) with sha256 checksum canoni
 - Add golden/unit tests (spec example parity)
 - Add CLI command: agentplane task export
 
+
 ## Risks
 
 Checksum/canonicalization drift vs spec can break parity; mitigated by hardcoded parity test vs packages/spec/examples/tasks.json.
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 

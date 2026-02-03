@@ -12,33 +12,39 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit formatting/lint hooks; AGENTS.md formatted with Prettier." }
   - { author: "ORCHESTRATOR", body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit formatting/lint hooks; AGENTS.md formatted with Prettier." }
 doc_version: 2
-doc_updated_at: "2026-01-30T11:57:28+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:27.495Z"
+doc_updated_by: "agentplane"
 description: "Apply relevant recommended updates to AGENTS.md (policy, preflight, commit workflow, and approvals definitions)."
 ---
 ## Summary
 
 Update AGENTS.md with selected recommended policy refinements (preflight, approvals definitions, commit modes, config patch note).
 
+
 ## Context
 
 User requested applying relevant AGENTS.md recommendations to current policy file without changing unrelated files.
+
 
 ## Scope
 
 - Update AGENTS.md version header and add PURPOSE section.\n- Add MANDATORY PREFLIGHT runbook and network approval definitions.\n- Clarify orchestration, status transitions exception, and commit workflow modes.\n- Add CONFIG PATCH recommendation block.
 
+
 ## Risks
 
 - Minor wording shifts could conflict with existing agent behavior if misread.\n- Added config patch is advisory only; risk of confusion if interpreted as already applied.
+
 
 ## Verify Steps
 
 - N/A (documentation-only change).
 
+
 ## Rollback Plan
 
 - Revert AGENTS.md to previous revision.
+
 
 ## Notes
 

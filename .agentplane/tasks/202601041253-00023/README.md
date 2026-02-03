@@ -12,8 +12,25 @@ comments:
   - { author: "CODER", body: "Implemented branch_pr enforcement + new commands; please run `python -m compileall scripts/agentctl.py` and spot-check `integrate 202601041253-00001` output." }
   - { author: "INTEGRATOR", body: "Verified: merged commit 91b3760 on main; pr check and verify T-067 passed; handoff notes captured from PR review." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:24.908Z"
+doc_updated_by: "agentplane"
 description: "Implement the stricter branch_pr workflow spec: worktrees under .agent-plane/worktrees, branch naming task/T-###/<slug>, new branch status, stricter pr open/update/check, integrate dry-run + verify in branch worktree, workflow_mode config in .agent-plane/swarm.config.json, and stronger finish/guard/verify guardrails + standardized outputs."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

@@ -12,13 +12,14 @@ comments:
   - { author: "CODER", body: "Start: writing recipes v1 spec doc and JSON Schema for manifest.json to support offline/local installs and remote catalog." }
   - { author: "CODER", body: "verified: added docs/recipes-spec.md plus schemas/recipe-manifest.schema.json defining v1 recipe archive + manifest contract." }
 doc_version: 2
-doc_updated_at: "2026-01-27T07:59:24+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:02.775Z"
+doc_updated_by: "agentplane"
 description: "Define v1 recipe archive structure, manifest.json schema, optional lockfile, and public CLI commands for recipe management."
 ---
 ## Summary
 
 Define the v1 recipes spec (package format, manifest schema, and CLI surface) so recipes remain optional extensions.
+
 
 ## Scope
 
@@ -26,15 +27,18 @@ Define the v1 recipes spec (package format, manifest schema, and CLI surface) so
 - Ship `manifest.json` JSON Schema v1.
 - Specify CLI commands and required outputs (`recipe list|info|install|remove|list-remote`, etc.).
 
+
 ## Risks
 
 - Security model is v1-warning-only; make sure spec surfaces permissions explicitly.
 - Manifest schema must stay small enough for "context minimization" goals.
 
+
 ## Verify Steps
 
 - Validate a sample `manifest.json` against the schema.
 - Confirm the CLI spec is compatible with offline-first constraints.
+
 
 ## Rollback Plan
 

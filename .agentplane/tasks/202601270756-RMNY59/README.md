@@ -12,13 +12,14 @@ comments:
   - { author: "CODER", body: "Start: implementing git-root discovery + .agentplane path resolver with unit tests under packages/core." }
   - { author: "CODER", body: "verified: implemented findGitRoot/resolveProject in @agentplane/core with TS unit tests (run via npm after installing deps)." }
 doc_version: 2
-doc_updated_at: "2026-01-27T08:00:15+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:03.631Z"
+doc_updated_by: "agentplane"
 description: "Implement git-root discovery and .agentplane path resolution from any subdirectory, including --root override."
 ---
 ## Summary
 
 Implement project discovery (git root) and `.agentplane` path resolution from any working directory.
+
 
 ## Scope
 
@@ -28,15 +29,18 @@ Implement project discovery (git root) and `.agentplane` path resolution from an
   - supports `--root <path>` override.
 - Add unit tests covering subdir execution and failure modes.
 
+
 ## Risks
 
 - Git discovery edge cases (submodules, bare repos) can complicate root detection.
 - Path resolution must be deterministic to avoid writing outside the intended repo.
 
+
 ## Verify Steps
 
 - Run resolver tests (e.g. `npm -w @agentplane/core test`).
 - Manually run `agentplane --root <repo>` from a nested subdirectory and confirm it finds `.agentplane`.
+
 
 ## Rollback Plan
 

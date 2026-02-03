@@ -11,13 +11,14 @@ commit: { hash: "00c544bd0ab65b43f35c0af26d6dcd3268b5f97c", message: "✨ D5D5MB
 comments:
   - { author: "CODER", body: "verified: bun run ci passed | details: details: add agentplane task doc set + enforce doc metadata fields; update gitignore so coverage/index.html is visible in IDE." }
 doc_version: 2
-doc_updated_at: "2026-01-27T11:06:52+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:08.014Z"
+doc_updated_by: "agentplane"
 description: "Implement task doc metadata (doc_version/doc_updated_at/doc_updated_by), add \"agentplane task doc set\" that updates metadata automatically, and add lint/guard check to prevent README edits without metadata bump."
 ---
 ## Summary
 
 Implement 'agentplane task doc set' and enforce doc metadata fields (doc_version/doc_updated_at/doc_updated_by) for task READMEs.
+
 
 ## Scope
 
@@ -26,13 +27,16 @@ Implement 'agentplane task doc set' and enforce doc metadata fields (doc_version
 - Add unit tests to keep coverage thresholds passing
 - Make local coverage output discoverable in the IDE
 
+
 ## Risks
 
 - Stricter metadata validation can surface malformed task READMEs; mitigate by providing task doc set to update safely.
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 

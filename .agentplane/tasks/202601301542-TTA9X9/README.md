@@ -12,25 +12,29 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: switch quickstart/role to CLI-generated help output." }
   - { author: "ORCHESTRATOR", body: "verified: ran bun run test -- packages/agentplane/src/run-cli.test.ts | details: quickstart/role now use CLI help output." }
 doc_version: 2
-doc_updated_at: "2026-01-30T15:43:18+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:30.711Z"
+doc_updated_by: "agentplane"
 description: "Remove dependency on .agentplane/agentctl.md and generate quickstart/role guidance from current CLI help."
 ---
 ## Summary
 
 - Remove agentctl.md dependency in Node CLI.\n- Generate quickstart/role guidance from current CLI help.
 
+
 ## Scope
 
 - Update quickstart and role commands to use renderHelp output.\n- Remove role guide parsing from agentctl.md.\n- Adjust tests and help text as needed.
+
 
 ## Risks
 
 - Behavior change could break workflows relying on agentctl.md role guide.\n- Help output must stay accurate to avoid confusing guidance.
 
+
 ## Verify Steps
 
 - bun run test -- packages/agentplane/src/run-cli.test.ts
+
 
 ## Rollback Plan
 

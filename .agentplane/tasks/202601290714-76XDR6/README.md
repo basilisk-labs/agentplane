@@ -13,29 +13,34 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: manual review (2026-01-29). | details: Scope: scaffolded agentplane-recipes repo and release pipeline." }
   - { author: "ORCHESTRATOR", body: "verified: manual review (2026-01-29). | details: Scope: scaffolded agentplane-recipes repo and release pipeline." }
 doc_version: 2
-doc_updated_at: "2026-01-29T12:59:19+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:16.777Z"
+doc_updated_by: "agentplane"
 description: "Create agentplane-recipes repo skeleton with build script and GitHub Actions release publishing index.json and recipe archives."
 ---
 ## Summary
 
 Scaffold agentplane-recipes repo with schemas, manifests, index, and a release build script/workflow.
 
+
 ## Scope
 
 - Populate @agentplane-recipes/schemas with recipe manifest and index schemas.\n- Add starter manifests for viewer/redmine recipes.\n- Create build-release script and GitHub release workflow.\n- Initialize index.json and README.
+
 
 ## Risks
 
 - Release workflow assumes tag-based releases and GitHub assets; may need tweaks for actual release process.\n- Index entries are placeholders until real recipe bundles are published.
 
+
 ## Verify Steps
 
 - Manual review of @agentplane-recipes scripts/workflows and JSON schemas.
 
+
 ## Rollback Plan
 
 - Revert the recipe repo scaffold commit in agentplane-recipes.
+
 
 ## Notes
 

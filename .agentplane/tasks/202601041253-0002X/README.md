@@ -11,8 +11,25 @@ commit: { hash: "c1adda8fb29cda65889f32cc09bab6bf268fe315", message: "Legacy com
 comments:
   - { author: "INTEGRATOR", body: "Verified: docs-only changes; manual review only (no automated checks)." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:30.096Z"
+doc_updated_by: "agentplane"
 description: "Fill the new docs/*.md templates with full user-facing content derived from AGENTS.md and agent specs."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

@@ -12,27 +12,31 @@ comments:
   - { author: "TESTER", body: "Start: add parity integration tests (golden fixtures) and document fixtures location + expectations." }
   - { author: "TESTER", body: "verified: ran bun run ci on 2026-01-30 | details: all checks passed (format, typecheck, lint, coverage)." }
 doc_version: 2
-doc_updated_at: "2026-01-30T08:04:51+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:21.595Z"
+doc_updated_by: "agentplane"
 description: "Add golden fixture tests for README/tasks.json/PR artifacts to detect format drift vs Python repo."
 ---
 ## Summary
 
 Add agentctl-derived golden fixtures for README/frontmatter and tasks.json, with parity checksum and roundtrip tests.
 
+
 ## Scope
 
 - Generate agentctl-based fixtures for task README and tasks.json.
 - Add tests to roundtrip README and validate checksum parity.
+
 
 ## Risks
 
 - Fixtures may drift if agentctl changes; tests will flag required updates.
 - Limited to README/tasks.json parity; PR artifacts remain Node-specific.
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 

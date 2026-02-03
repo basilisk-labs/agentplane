@@ -11,25 +11,29 @@ commit: { hash: "288bfc1d0793b4b65ac77a20134d9221a4da03b5", message: "✨ VYSD18
 comments:
   - { author: "ORCHESTRATOR", body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)." }
 doc_version: 2
-doc_updated_at: "2026-02-01T13:05:32+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:37.115Z"
+doc_updated_by: "agentplane"
 description: "Audit open parity tasks, implement quickstart guide in CLI help, complete recipes explain/bundle logic, and close remaining open tasks."
 ---
 ## Summary
 
 Closed open Node CLI parity tasks by updating quickstart/role guidance, recipes explain output, parity audits, and ROADMAP.md.
 
+
 ## Scope
 
 packages/agentplane/src/command-guide.ts; packages/agentplane/src/run-cli.ts; packages/agentplane/src/help.ts; packages/agentplane/src/run-cli.test.ts; docs/commands.mdx; docs/cli-contract.mdx; docs/recipes-how-it-works.mdx; docs/recipes-spec.mdx; docs/audits/parity-report.md; docs/audits/nodejs-parity-matrix.md; ROADMAP.md.
+
 
 ## Risks
 
 Guide text can drift from CLI behavior; recipe explain output may be verbose for large scenarios.
 
+
 ## Verify Steps
 
 bun test packages/agentplane/src/run-cli.test.ts
+
 
 ## Rollback Plan
 

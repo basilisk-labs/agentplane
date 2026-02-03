@@ -13,7 +13,7 @@ comments:
   - { author: "ORCHESTRATOR", body: "Blocked: GitHub Actions publish now runs without auth and fails with ENEEDAUTH. This indicates npm trusted publishing is not configured for @agentplaneorg; enable trusted publishing in npm or provide an NPM_TOKEN secret." }
   - { author: "ORCHESTRATOR", body: "Verified: Updated publish workflow to install npm@11.5.1 so GitHub Actions trusted publishing works. Reran Publish to npm (run 21625449544); publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with provenance." }
 doc_version: 2
-doc_updated_at: "2026-02-03T11:52:33.773Z"
+doc_updated_at: "2026-02-03T12:09:51.294Z"
 doc_updated_by: "agentplane"
 description: "Investigate why GitHub Actions publish still uses auth token (ENEEDAUTH/E404). Remove any token/npmrc leakage and ensure OIDC trusted publishing works for @agentplaneorg packages; rerun publish."
 id_source: "generated"
@@ -31,10 +31,12 @@ Normalized task doc sections (dedupe).
 
 
 
+
 ## Scope
 
 
 Update GitHub Actions publish workflow to clear auth env, use a clean npmrc, and rely on OIDC for publish.
+
 
 
 
@@ -49,6 +51,7 @@ If trusted publishing is not configured on npm for @agentplaneorg, publishes may
 
 
 
+
 ## Verify Steps
 
 
@@ -58,10 +61,12 @@ Not run locally (workflow-only change). Trigger GitHub Actions Publish workflow 
 
 
 
+
 ## Rollback Plan
 
 
 Revert .github/workflows/publish.yml to the previous version and rerun publish if needed.
+
 
 
 

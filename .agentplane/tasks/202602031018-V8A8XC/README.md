@@ -12,7 +12,7 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: add explicit hook quality gate policy and ensure hook checks pass cleanly." }
   - { author: "ORCHESTRATOR", body: "Verified: bun run format:check, bun run lint, bun run test:fast (all passed)." }
 doc_version: 2
-doc_updated_at: "2026-02-03T11:52:39.872Z"
+doc_updated_at: "2026-02-03T12:09:52.216Z"
 doc_updated_by: "agentplane"
 description: "State that git hooks are required quality gates and ensure repo passes hook checks; run quality commands and fix any failures."
 id_source: "generated"
@@ -28,10 +28,12 @@ Normalized task doc sections (dedupe).
 
 
 
+
 ## Scope
 
 
 Update developer docs to require hooks; run hook checks (format, lint, test-fast) and fix failures.
+
 
 
 
@@ -42,10 +44,12 @@ Formatting/lint fixes may touch additional files if hooks surface unrelated issu
 
 
 
+
 ## Verify Steps
 
 
 bun run format:check\nbun run lint\nbun run test:fast
+
 
 
 

@@ -12,25 +12,29 @@ comments:
   - { author: "CODER", body: "Start: implement direct start/block/finish parity with comments, commit metadata, and export lint flow." }
   - { author: "CODER", body: "verified: bun run ci passed (format, typecheck, lint, coverage)." }
 doc_version: 2
-doc_updated_at: "2026-01-27T14:25:52+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:11.588Z"
+doc_updated_by: "agentplane"
 description: "Implement start/block/finish for direct mode with comments, commit metadata, and lint pass flow."
 ---
 ## Summary
 
 Added block/finish commands, enabled env task-id fallback, and expanded CLI coverage for direct workflow status updates.
 
+
 ## Scope
 
 - Implement block and finish CLI flows with comment validation and status updates.\n- Add env-based task id fallback for start/block/finish.\n- Expand CLI tests to meet coverage gates.
+
 
 ## Risks
 
 - Direct workflow status changes could regress lint/export flow; mitigated by CI coverage tests.
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 

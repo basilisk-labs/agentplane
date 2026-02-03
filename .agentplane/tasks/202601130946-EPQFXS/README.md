@@ -15,33 +15,39 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
   - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
 doc_version: 2
-doc_updated_at: "2026-01-30T12:22:38+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:42.878Z"
+doc_updated_by: "agentplane"
 description: "Trim shared guidance in .agent-plane/agents/*.json to role-specific content and point to AGENTS.md and agentctl.md; update docs to encourage batch task add/finish to reduce backend writes."
 ---
 ## Summary
 
 - Task is no longer актуальна; closing without changes.
 
+
 ## Context
 
 Agent JSON files repeated common workflow rules; centralizing shared guidance in AGENTS.md and agentctl.md reduces prompt duplication. Batch task operations encourage write_tasks usage to reduce repeated writes.
+
 
 ## Scope
 
 - No changes; task closed as obsolete.
 
+
 ## Risks
 
 - Guidance may need revisit if agent JSONs diverge later.
+
 
 ## Verify Steps
 
 - None (task closed as not актуальна).
 
+
 ## Rollback Plan
 
 - Reopen the task if shared guidance needs consolidation.
+
 
 ## Notes
 

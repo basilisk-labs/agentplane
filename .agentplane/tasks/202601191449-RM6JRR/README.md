@@ -11,34 +11,40 @@ commit: { hash: "8e1f29d9eff0ec9608ba8f7826ee08c14dfe1633", message: "✨ YN9FWW
 comments:
   - { author: "DOCS", body: "verified: status wording aligned and priorities standardized in docs." }
 doc_version: 2
-doc_updated_at: "2026-01-19T14:58:40+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:53.047Z"
+doc_updated_by: "agentplane"
 description: "Choose a single status indicator scheme and update all relevant docs/templates to match."
 ---
 ## Summary
 
 Standardized task priority labels to the core set and aligned status wording in docs.
 
+
 ## Context
 
 The repo had mixed priority labels (med/Нормальный) that needed normalization to the standard scheme.
+
 
 ## Scope
 
 - Normalize task priorities to low/normal/high across task docs and export.
 - Update docs wording to reference the standard status labels.
 
+
 ## Risks
 
 - Mislabeling priorities could affect reporting expectations if consumers assumed legacy labels.
+
 
 ## Verify Steps
 
 - N/A (doc-only normalization).
 
+
 ## Rollback Plan
 
 - Revert the commits linked in task metadata to restore prior labels.
+
 
 ## Notes
 

@@ -12,25 +12,29 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: restrict init IDE prompt to Codex CLI default and ensure only selected IDE rules are installed (no cursor/windsurf leakage)." }
   - { author: "ORCHESTRATOR", body: "verified: bun run test:cli:core | details: pre-commit hooks ran format/lint/test-fast; all passing." }
 doc_version: 2
-doc_updated_at: "2026-02-02T07:05:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:42.316Z"
+doc_updated_by: "agentplane"
 description: "Fix agentplane init prompt/options so default is Node (Codex CLI) and only the selected IDE entrypoints are installed."
 ---
 ## Summary
 
 Limit init IDE selection to Codex default and install only the selected IDE’s rules; update ide sync to support targeted output and adjust tests/docs.
 
+
 ## Scope
 
 Update init/IDE handling in run-cli.ts, refresh help usage, adjust CLI core tests, and add setup documentation note.
+
 
 ## Risks
 
 Init no longer prompts for IDE selection; anyone relying on both Cursor/Windsurf rules on init must run agentplane ide sync explicitly.
 
+
 ## Verify Steps
 
 bun run test:cli:core
+
 
 ## Rollback Plan
 

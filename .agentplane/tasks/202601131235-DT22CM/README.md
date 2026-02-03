@@ -11,33 +11,39 @@ commit: { hash: "bc30c58e49fae183e38567424944e97a2e8fe2ab", message: "✨ DT22CM
 comments:
   - { author: "ORCHESTRATOR", body: "Verified: Docs-only change; updated agentctl role/phase mapping and task artifact; no runtime impact." }
 doc_version: 2
-doc_updated_at: "2026-01-24T18:16:17+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:45.104Z"
+doc_updated_by: "agentplane"
 description: "Analyze agentctl docs and agent specs to map which agent can use which agentctl commands at each workflow stage, then update agentctl.md so agents can avoid extra help calls."
 ---
 ## Summary
 
 Added a role/phase command guide to agentctl.md so agents can map commands to workflow moments.
 
+
 ## Context
 
 Request was to map agentctl commands to agents and workflow phases based on agent specs and CLI docs.
+
 
 ## Scope
 
 Updated only .agent-plane/agentctl.md; no CLI behavior changes.
 
+
 ## Risks
 
 Low; docs could drift if commands change.
+
 
 ## Verify Steps
 
 None (docs-only).
 
+
 ## Rollback Plan
 
 Revert the doc change and task artifacts.
+
 
 ## Notes
 

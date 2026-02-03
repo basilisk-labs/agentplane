@@ -13,25 +13,29 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: not run (workflow/doc/metadata changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit." }
   - { author: "ORCHESTRATOR", body: "verified: not run (workflow/doc/metadata changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit." }
 doc_version: 2
-doc_updated_at: "2026-02-02T08:05:21+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:42.869Z"
+doc_updated_by: "agentplane"
 description: "Add npm trusted publisher workflow for GitHub Actions, update release docs, and clean package repository URLs for publish."
 ---
 ## Summary
 
 Add GitHub Actions trusted publishing workflow, normalize npm repository URLs, and document trusted publishing steps.
 
+
 ## Scope
 
 Add .github/workflows/publish.yml, update release-and-publishing doc, and normalize repository URLs in package metadata.
+
 
 ## Risks
 
 Trusted publishing requires correct npm org permissions and matching workflow filename; incorrect setup can block publishing.
 
+
 ## Verify Steps
 
 Not run (workflow/doc changes only).
+
 
 ## Rollback Plan
 

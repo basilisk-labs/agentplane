@@ -12,8 +12,25 @@ comments:
   - { author: "CODER", body: "Start: Implement agentctl verify --log + --skip-if-unchanged; update PR meta.json with last_verified_sha/at and refresh .agent-plane/agentctl.md. Plan: implement flags, add smoke steps, ensure branch_pr behavior. Risks: PR meta may be missing; keep safe fallbacks." }
   - { author: "INTEGRATOR", body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/prs/T-068." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:25.178Z"
+doc_updated_by: "agentplane"
 description: "Add flags to python scripts/agentctl.py verify to reduce manual PR bookkeeping and redundant runs. Acceptance: (1) verify T-### --log PATH appends a timestamped entry per verify command with combined stdout+stderr; (2) --skip-if-unchanged skips when current SHA (prefer PR meta.json head_sha when log path is under docs/workflow/prs/T-###, else git rev-parse HEAD in --cwd) matches last recorded verified SHA; (3) after success, record last_verified_sha and last_verified_at in PR meta.json when available; (4) document the new flow in .agent-plane/agentctl.md."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

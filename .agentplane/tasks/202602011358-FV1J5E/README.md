@@ -11,26 +11,30 @@ commit: { hash: "3181b63a185aa5b416cdf6c2d8bef1925cb5aa83", message: "🧪 FV1J5
 comments:
   - { author: "ORCHESTRATOR", body: "verified: bun run coverage (branches 72.11%) and bun run lint completed | details: added tests and timeouts to keep CI green." }
 doc_version: 2
-doc_updated_at: "2026-02-01T16:46:45+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:37.477Z"
+doc_updated_by: "agentplane"
 description: "Raise branch coverage (run-cli), keep CI gates green, and commit current changes."
 ---
 ## Summary
 
 Raised branch coverage over 72% by expanding CLI parsing tests and adding targeted timeouts to stabilize CI.
 
+
 ## Scope
 
 Updated test suites for run-cli, command-guide, cli-smoke, git-utils, and config/export validation to cover additional branches and satisfy lint.
+
 
 ## Risks
 
 Low risk: changes are limited to tests and documentation; minor risk of increased test runtime due to longer timeouts.
 
+
 ## Verify Steps
 
 1) bun run lint
 2) bun run coverage
+
 
 ## Rollback Plan
 

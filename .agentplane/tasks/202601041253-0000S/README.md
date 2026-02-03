@@ -11,8 +11,25 @@ commit: { hash: "8b9cb04780d1d21ba8016303cbb79754c5931b94", message: "Legacy com
 comments:
   - { author: "reviewer", body: "Updated AGENTS.md and README.md so commit messages start with meaningful emojis referencing the finished plan item." }
 doc_version: 2
-doc_updated_at: "2026-01-11T08:06:07+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:08:15.267Z"
+doc_updated_by: "agentplane"
 description: "Clarify how commits should start with emojis and summarize completed plan items."
 dirty: false
 ---
+## Summary
+
+
+
+
+
+
+## Scope
+
+
+## Risks
+
+
+## Verify Steps
+
+
+## Rollback Plan

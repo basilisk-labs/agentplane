@@ -13,25 +13,29 @@ comments:
   - { author: "ORCHESTRATOR", body: "verified: bun run test:full | details: pre-commit hooks (format/lint/test-fast) passed during commit; no additional changes." }
   - { author: "ORCHESTRATOR", body: "verified: bun run test:full | details: pre-commit hooks (format/lint/test-fast) passed during commit; no additional changes." }
 doc_version: 2
-doc_updated_at: "2026-02-02T08:21:44+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:44.068Z"
+doc_updated_by: "agentplane"
 description: "Update CLI smoke test to use supported --ide value so pre-push and full test suite pass."
 ---
 ## Summary
 
 Updated the CLI smoke test to use the supported codex IDE flag so init succeeds under current CLI options.
 
+
 ## Scope
 
 Change only the CLI smoke test flag value; no production code changes.
+
 
 ## Risks
 
 Low risk: test could still fail if CLI flags change again; in that case update the smoke test to match the CLI contract.
 
+
 ## Verify Steps
 
 bun run test:full
+
 
 ## Rollback Plan
 

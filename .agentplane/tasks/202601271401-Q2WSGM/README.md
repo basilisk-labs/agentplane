@@ -12,13 +12,14 @@ comments:
   - { author: "CODER", body: "Start: fixing integrate tests/coverage and validating CI for AP-023." }
   - { author: "CODER", body: "verified: bun run ci (2026-01-29). Notes: integrate tests + rebase worktree fix validated | details: branch_pr integrate parity complete." }
 doc_version: 2
-doc_updated_at: "2026-01-29T06:10:21+00:00"
-doc_updated_by: "agentctl"
+doc_updated_at: "2026-02-03T12:09:13.581Z"
+doc_updated_by: "agentplane"
 description: "Implement integrate flow for branch_pr with merge + closure commit safeguards."
 ---
 ## Summary
 
 Implement branch_pr integrate flow with merge strategies, PR artifact validation, verify gating, and closure metadata updates.
+
 
 ## Scope
 
@@ -26,14 +27,17 @@ Implement branch_pr integrate flow with merge strategies, PR artifact validation
 - Validate PR artifacts and verify metadata
 - Enforce branch_pr guardrails (tasks.json single-writer, base-branch commit protection)
 
+
 ## Risks
 
 - Git merge/reset operations can discard local changes; ensure clean status before integrate
 - Incorrect base branch detection could block or mis-merge; verify base branch config
 
+
 ## Verify Steps
 
 bun run ci
+
 
 ## Rollback Plan
 

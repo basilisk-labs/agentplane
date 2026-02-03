@@ -13,7 +13,7 @@ comments:
   - { author: "ORCHESTRATOR", body: "Verified: bun run test:cli:core; update-check tests added and passing." }
   - { author: "ORCHESTRATOR", body: "Verified: bun run test:cli:core; update-check tests added and passing." }
 doc_version: 2
-doc_updated_at: "2026-02-03T11:52:36.833Z"
+doc_updated_at: "2026-02-03T12:09:51.914Z"
 doc_updated_by: "agentplane"
 description: "Add version check on CLI startup; compare installed version vs npm latest and suggest upgrade with opt-out flag."
 id_source: "generated"
@@ -31,10 +31,12 @@ Normalized task doc sections (dedupe).
 
 
 
+
 ## Scope
 
 
 Update CLI global flags, help text, and command guide; add npm version check and tests.
+
 
 
 
@@ -49,10 +51,12 @@ Startup warning could appear in stderr; npm registry fetch is best-effort but sh
 
 
 
+
 ## Verify Steps
 
 
 bun run test:cli:core
+
 
 
 
