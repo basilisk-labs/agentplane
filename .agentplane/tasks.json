@@ -12126,12 +12126,49 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nRemoved npm auth token usage in publish workflow and added a local release dry-run script.\n\n## Scope\n\nWorkflow auth cleanup and local publish dry-run validation.\n\n## Risks\n\nLow; publish now relies on GitHub OIDC only.\n\n## Rollback Plan\n\nRevert workflow/script changes and re-run publish with corrected auth.\n\n## Verify Steps\n\n1) bun run release:check\\n2) GitHub Actions publish workflow runs on tag push"
+    },
+    {
+      "id": "202602030930-49FW1H",
+      "title": "Fix npm publish trusted publishing auth",
+      "description": "Investigate why GitHub Actions publish still uses auth token (ENEEDAUTH/E404). Remove any token/npmrc leakage and ensure OIDC trusted publishing works for @agentplaneorg packages; rerun publish.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "release"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "8954f5a6c0717366338cd31f34efbd9da40f82fa",
+        "message": "🛠️ 49FW1H bump npm for trusted publishing"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Investigate GitHub Actions publish auth/token sources, fix workflow/npmrc so trusted publishing uses OIDC only, and rerun publish."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Blocked: GitHub Actions publish now runs without auth and fails with ENEEDAUTH. This indicates npm trusted publishing is not configured for @agentplaneorg; enable trusted publishing in npm or provide an NPM_TOKEN secret."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Updated publish workflow to install npm@11.5.1 so GitHub Actions trusted publishing works. Reran Publish to npm (run 21625449544); publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with provenance."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T09:54:36.645Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nEnsure npm publish in GitHub Actions uses a clean npm config with no auth token so trusted publishing via OIDC can work.\n\n## Scope\n\nUpdate GitHub Actions publish workflow to clear auth env, use a clean npmrc, and rely on OIDC for publish.\n\n## Risks\n\nIf trusted publishing is not configured on npm for @agentplaneorg, publishes may still fail; workflow change alone will not fix registry-side configuration.\n\n## Verify Steps\n\nNot run locally (workflow-only change). Trigger GitHub Actions Publish workflow and confirm npm publish succeeds for @agentplaneorg/core and agentplane.\n\n## Rollback Plan\n\nRevert .github/workflows/publish.yml to the previous version and rerun publish if needed.\n\n## Notes\n\nTriggered Publish to npm workflow on main (runs 21624946114, 21625026006). After removing auth tokens, npm publish fails with ENEEDAUTH, indicating npm trusted publishing is not configured for @agentplaneorg.\n\n## Notes\n\nAdded npm@11.5.1 install to publish workflow. Workflow run 21625449544 completed successfully; publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with OIDC provenance."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "f8f718e14e12776bfc9ed72f5265933a612860872f00fc9ae1715bd2f020e069"
+    "checksum": "ebd9613c37729141b8e705269198ba18effdc84df08f4e1f6c251cccdd6340de"
   }
 }
