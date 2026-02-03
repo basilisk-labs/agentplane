@@ -57,7 +57,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["--version"]);
       expect(code).toBe(0);
-      expect(io.stdout.trim()).toBe("0.1.1");
+      expect(io.stdout.trim()).toBe("0.1.2");
     } finally {
       io.restore();
     }
@@ -8211,7 +8211,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    expect(subject.trim()).toContain("agentplane 0.1.1");
+    expect(subject.trim()).toContain("agentplane 0.1.2");
 
     const { stdout: baseBranch } = await execFileAsync(
       "git",
