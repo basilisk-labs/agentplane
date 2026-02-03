@@ -7,6 +7,16 @@ description: "How to version and publish the CLI and core packages."
 
 Use semantic versioning. The CLI depends on `@agentplaneorg/core`, so bump versions together when APIs change.
 
+## Release notes (required)
+
+Every release **must** include English, human‑readable notes in `docs/releases/vX.Y.Z.md`.
+
+- The file must exist in the commit **before** the tag is created.
+- Use `docs/releases/TEMPLATE.md` as the starting point.
+- Keep the bullets outcome‑focused and user‑readable (not just raw commit lists).
+
+The publish workflow fails if release notes are missing or empty.
+
 ## Build and pack
 
 ```bash
@@ -40,6 +50,15 @@ Trusted publishing requires npm 11.5.1 or newer in the workflow runtime.
 
 If you publish under the `@agentplaneorg` scope, make sure the `agentplaneorg` npm organization exists
 and you have owner rights before publishing.
+
+## Release trigger
+
+Publishing is triggered automatically for tags that match `v*`. Use annotated or lightweight tags — both
+are supported. The workflow also supports manual runs via `workflow_dispatch` if needed.
+
+## Local guardrail
+
+The `pre-push` hook checks that release notes exist when pushing a release tag.
 
 ## Global install check
 
