@@ -1871,6 +1871,7 @@ async function cmdInit(opts: {
   let recipes = flags.recipes ?? defaults.recipes;
   let requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
   let requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
+  const isInteractive = process.stdin.isTTY && !flags.yes;
 
   if (
     !process.stdin.isTTY &&
@@ -1887,7 +1888,7 @@ async function cmdInit(opts: {
     });
   }
 
-  if (process.stdin.isTTY && !flags.yes) {
+  if (isInteractive) {
     ide = flags.ide ?? defaults.ide;
     if (!flags.workflow) {
       const choice = await promptChoice("Select workflow mode", ["direct", "branch_pr"], workflow);
@@ -1930,7 +1931,9 @@ async function cmdInit(opts: {
 
   try {
     const initRoot = path.resolve(opts.rootOverride ?? opts.cwd);
-    let gitRoot = await findGitRoot(initRoot);
+    const existingGitRoot = await findGitRoot(initRoot);
+    const gitRootExisted = Boolean(existingGitRoot);
+    let gitRoot = existingGitRoot;
     const baseBranchFallback = defaultConfig().base_branch;
     if (!gitRoot) {
       await gitInitRepo(initRoot, baseBranchFallback);
@@ -1941,7 +1944,13 @@ async function cmdInit(opts: {
       cwd: gitRoot,
       rootOverride: gitRoot,
     });
-    const initBaseBranch = await resolveInitBaseBranch(resolved.gitRoot, baseBranchFallback);
+    let initBaseBranch = await resolveInitBaseBranch(resolved.gitRoot, baseBranchFallback);
+    if (isInteractive && workflow === "branch_pr" && gitRootExisted) {
+      initBaseBranch = await promptInitBaseBranch({
+        gitRoot: resolved.gitRoot,
+        fallback: initBaseBranch,
+      });
+    }
     const configPath = path.join(resolved.agentplaneDir, "config.json");
     const backendPath = path.join(resolved.agentplaneDir, "backends", "local", "backend.json");
     const initDirs = [
@@ -2063,6 +2072,7 @@ async function cmdInit(opts: {
       baseBranch: initBaseBranch,
       installPaths,
       version: getVersion(),
+      skipHooks: hooks,
     });
 
     process.stdout.write(`${path.relative(resolved.gitRoot, resolved.agentplaneDir)}\n`);
@@ -5252,8 +5262,15 @@ async function gitAddPaths(cwd: string, paths: string[]): Promise<void> {
   await execFileAsync("git", ["add", "--", ...paths], { cwd, env: gitEnv() });
 }
 
-async function gitCommit(cwd: string, message: string): Promise<void> {
-  await execFileAsync("git", ["commit", "-m", message], { cwd, env: gitEnv() });
+async function gitCommit(
+  cwd: string,
+  message: string,
+  opts?: { env?: NodeJS.ProcessEnv; skipHooks?: boolean },
+): Promise<void> {
+  const args = ["commit", "-m", message];
+  if (opts?.skipHooks) args.push("--no-verify");
+  const env = opts?.env ? { ...gitEnv(), ...opts.env } : gitEnv();
+  await execFileAsync("git", args, { cwd, env });
 }
 
 async function resolveInitBaseBranch(gitRoot: string, fallback: string): Promise<string> {
@@ -5273,11 +5290,71 @@ async function resolveInitBaseBranch(gitRoot: string, fallback: string): Promise
   return fallback;
 }
 
+async function promptInitBaseBranch(opts: {
+  gitRoot: string;
+  fallback: string;
+}): Promise<string> {
+  const branches = await gitListBranches(opts.gitRoot);
+  let current: string | null = null;
+  try {
+    current = await gitCurrentBranch(opts.gitRoot);
+  } catch {
+    current = null;
+  }
+
+  const promptNewBranch = async (hasBranches: boolean): Promise<string> => {
+    const raw = await promptInput(
+      `Enter new base branch name (default ${opts.fallback}): `,
+    );
+    const candidate = raw.trim() || opts.fallback;
+    if (!candidate) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Base branch name cannot be empty",
+      });
+    }
+    if (await gitBranchExists(opts.gitRoot, candidate)) return candidate;
+    try {
+      if (hasBranches) {
+        await execFileAsync("git", ["branch", candidate], { cwd: opts.gitRoot, env: gitEnv() });
+      } else {
+        await execFileAsync("git", ["checkout", "-q", "-b", candidate], {
+          cwd: opts.gitRoot,
+          env: gitEnv(),
+        });
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : `Failed to create branch ${candidate}`;
+      throw new CliError({ exitCode: 5, code: "E_GIT", message });
+    }
+    return candidate;
+  };
+
+  if (branches.length === 0) {
+    return await promptNewBranch(false);
+  }
+
+  const createLabel = "Create new branch";
+  const defaultChoice =
+    current && branches.includes(current) ? current : (branches[0] ?? opts.fallback);
+  const choice = await promptChoice(
+    "Select base branch",
+    [...branches, createLabel],
+    defaultChoice,
+  );
+  if (choice === createLabel) {
+    return await promptNewBranch(true);
+  }
+  return choice;
+}
+
 async function ensureInitCommit(opts: {
   gitRoot: string;
   baseBranch: string;
   installPaths: string[];
   version: string;
+  skipHooks: boolean;
 }): Promise<void> {
   const stagedBefore = await gitStagedPaths(opts.gitRoot);
   if (stagedBefore.length > 0) {
@@ -5301,7 +5378,7 @@ async function ensureInitCommit(opts: {
   if (staged.length === 0) return;
 
   const message = `chore: install agentplane ${opts.version}`;
-  await gitCommit(opts.gitRoot, message);
+  await gitCommit(opts.gitRoot, message, { skipHooks: opts.skipHooks });
 }
 function toGitPath(filePath: string): string {
   return filePath.split(path.sep).join("/");
