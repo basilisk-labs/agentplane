@@ -1,15 +1,17 @@
 ---
 id: "202602030844-P7BCC2"
 title: "Harden task README generation against duplicate frontmatter"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["tasks", "core"]
 verify: []
-comments: []
+commit: { hash: "45c5f8bf291f7cfc07cad4e2e16206ed554effc5", message: "✨ P7BCC2 strip duplicate frontmatter blocks" }
+comments:
+  - { author: "INTEGRATOR", body: "Verified: bun run test:core; frontmatter scan on task READMEs" }
 doc_version: 2
-doc_updated_at: "2026-02-03T08:44:37.635Z"
+doc_updated_at: "2026-02-03T08:49:12.080Z"
 doc_updated_by: "agentplane"
 description: "Strip leading duplicate frontmatter blocks from task README bodies and normalize doc merges to avoid repeated headers."
 id_source: "generated"

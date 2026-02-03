@@ -11993,12 +11993,42 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDeduplicated standard sections in task READMEs via agentplane task doc set updates.\n\n## Scope\n\nNormalize duplicated Summary/Scope/Risks/Verify Steps/Rollback Plan sections across affected task READMEs.\n\n## Verify Steps\n\nRe-scan task READMEs for duplicate section headers.\n\n## Risks\n\nLow risk: documentation-only normalization; ensure no content loss.\n\n## Rollback Plan\n\nRestore prior task README versions from git history if needed."
+    },
+    {
+      "id": "202602030844-P7BCC2",
+      "title": "Harden task README generation against duplicate frontmatter",
+      "description": "Strip leading duplicate frontmatter blocks from task README bodies and normalize doc merges to avoid repeated headers.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "tasks",
+        "core"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "45c5f8bf291f7cfc07cad4e2e16206ed554effc5",
+        "message": "✨ P7BCC2 strip duplicate frontmatter blocks"
+      },
+      "comments": [
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun run test:core; frontmatter scan on task READMEs"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T08:49:12.080Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nPrevent duplicate frontmatter in task READMEs and ensure doc merges normalize bodies.\n\n## Scope\n\nUpdate task README parsing/normalization, add tests, and re-run doc updates to clean existing duplicates.\n\n## Risks\n\nLow: parsing changes may affect unusual README bodies; validate with tests.\n\n## Verify Steps\n\nRun relevant tests (task-readme, task-backend) and re-scan task READMEs for duplicate frontmatter.\n\n## Rollback Plan\n\nRevert parsing changes; regenerate task READMEs via previous commits if needed."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "f7292cb6c47b48cf62108e677fc07bae177300b28615eef0bc0ed9a02eb05867"
+    "checksum": "18209823f32fdab7661da49fd55fbd090d1505b296b27d53811f254c9dbfabb7"
   }
 }
