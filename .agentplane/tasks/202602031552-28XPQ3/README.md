@@ -1,17 +1,18 @@
 ---
 id: "202602031552-28XPQ3"
 title: "Release 0.1.4"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["release"]
 verify: []
-commit: null
+commit: { hash: "0e363c0726a2b07b2bfa33b4b2475391f4028b58", message: "🛠 28XPQ3 avoid bun install scripts in publish workflow" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: prepare 0.1.4 release (notes, version bump, tag, publish via GitHub Actions)." }
+  - { author: "ORCHESTRATOR", body: "Verified: bun run test:full passed; publish workflow ran for v0.1.4 and completed successfully; npm shows agentplane@0.1.4 and @agentplaneorg/core@0.1.4." }
 doc_version: 2
-doc_updated_at: "2026-02-03T16:06:27.358Z"
+doc_updated_at: "2026-02-03T16:08:27.469Z"
 doc_updated_by: "agentplane"
 description: "Bump versions to 0.1.4, add English release notes, tag release, and publish via GitHub Actions."
 id_source: "generated"
