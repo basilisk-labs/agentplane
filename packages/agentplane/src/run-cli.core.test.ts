@@ -91,7 +91,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["config", "show", "--root"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Missing value for --root");
+      expect(io.stderr).toContain("Missing value after --root (expected repository path)");
     } finally {
       io.restore();
     }
@@ -798,7 +798,10 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     const cases: { args: string[]; msg: string }[] = [
       { args: ["task", "next", "--limit"], msg: "Missing value for --limit" },
-      { args: ["task", "next", "--limit", "nope"], msg: "Invalid --limit value" },
+      {
+        args: ["task", "next", "--limit", "nope"],
+        msg: "Invalid value for --limit: nope (expected integer)",
+      },
     ];
 
     for (const entry of cases) {
@@ -943,9 +946,12 @@ describe("runCli", () => {
   it("task search rejects empty queries and invalid limits", async () => {
     const root = await mkGitRepoRoot();
     const cases: { args: string[]; msg: string }[] = [
-      { args: ["task", "search", "  "], msg: "Query must be non-empty" },
+      { args: ["task", "search", "  "], msg: "Missing query (expected non-empty text)" },
       { args: ["task", "search", "query", "--limit"], msg: "Missing value for --limit" },
-      { args: ["task", "search", "query", "--limit", "nope"], msg: "Invalid --limit value" },
+      {
+        args: ["task", "search", "query", "--limit", "nope"],
+        msg: "Invalid value for --limit: nope (expected integer)",
+      },
     ];
 
     for (const entry of cases) {
@@ -1744,7 +1750,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Configured backend does not support task docs");
+      expect(io.stderr).toContain("Backend does not support task docs");
     } finally {
       io.restore();
       spy.mockRestore();
@@ -2295,7 +2301,7 @@ describe("runCli", () => {
       const code = await runCli(["ready", taskId, "--root", root]);
       expect(code).toBe(2);
       expect(io.stdout).toContain("missing deps");
-      expect(io.stdout).toContain("⛔ not ready");
+      expect(io.stdout).toContain("⚠️ not ready");
     } finally {
       io.restore();
     }
@@ -2447,7 +2453,7 @@ describe("runCli", () => {
       const code = await runCli(["sync", "redmine", "--direction", "push", "--root", root]);
       expect(code).toBe(6);
       expect(io.stderr).toContain("error [E_NETWORK]");
-      expect(io.stderr).toContain("Check network connectivity and credentials.");
+      expect(io.stderr).toContain("Check network access and credentials.");
     } finally {
       io.restore();
       spy.mockRestore();
@@ -4011,7 +4017,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("No changes matched the allowed prefixes");
+      expect(io.stderr).toContain("No changes matched allowed prefixes");
     } finally {
       io.restore();
     }
@@ -5212,7 +5218,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("workflow_mode=branch_pr");
+      expect(io.stderr).toContain("Invalid workflow_mode: direct (expected branch_pr)");
     } finally {
       io.restore();
     }
@@ -5530,7 +5536,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("workflow_mode=branch_pr");
+      expect(io.stderr).toContain("Invalid workflow_mode: direct (expected branch_pr)");
     } finally {
       io.restore();
     }
@@ -5927,7 +5933,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(3);
-      expect(io.stderr).toContain("Missing pr/review.md");
+      expect(io.stderr).toContain("Missing .agentplane/tasks");
     } finally {
       io.restore();
     }
@@ -6240,7 +6246,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["integrate", taskId, "--quiet", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("workflow_mode=branch_pr");
+      expect(io.stderr).toContain("Invalid workflow_mode: direct (expected branch_pr)");
     } finally {
       io.restore();
     }
@@ -6877,7 +6883,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["cleanup", "merged", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("workflow_mode=branch_pr");
+      expect(io.stderr).toContain("Invalid workflow_mode: direct (expected branch_pr)");
     } finally {
       io.restore();
     }
@@ -7459,7 +7465,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["hooks", "uninstall", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("No agentplane hooks found");
+      expect(io.stdout).toContain("no agentplane hooks found");
     } finally {
       io.restore();
     }
@@ -8388,7 +8394,9 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--ide", "vscode", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: --ide <codex|cursor|windsurf>");
+      expect(io.stderr).toContain(
+        "Invalid value for --ide: vscode (expected codex|cursor|windsurf)",
+      );
     } finally {
       io.restore();
     }
@@ -8400,7 +8408,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--workflow", "fast", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: --workflow <direct|branch_pr>");
+      expect(io.stderr).toContain("Invalid value for --workflow: fast (expected direct|branch_pr)");
     } finally {
       io.restore();
     }
@@ -8681,7 +8689,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["upgrade", "--dry-run", "--root", root]);
       expect(code).toBe(1);
-      expect(io.stderr).toContain("upgrade supports GitHub sources only");
+      expect(io.stderr).toContain("Invalid field config.framework.source: expected GitHub URL");
     } finally {
       io.restore();
     }
@@ -8715,7 +8723,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Configured backend does not support sync()");
+      expect(io.stderr).toContain("Backend does not support sync()");
     } finally {
       io.restore();
     }

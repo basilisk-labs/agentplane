@@ -102,7 +102,11 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
     if (arg === "--root") {
       const next = argv[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --root" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Missing value after --root (expected repository path)",
+        });
       root = next;
       i++;
       continue;
@@ -130,23 +134,96 @@ function writeError(err: CliError, jsonErrors: boolean): void {
 }
 
 function renderErrorHint(err: CliError): string | undefined {
+  const command = typeof err.context?.command === "string" ? err.context.command : undefined;
+  const usage = command ? `agentplane ${command} --help` : "agentplane --help";
   switch (err.code) {
     case "E_USAGE": {
-      return "Run `agentplane --help` for usage.";
+      return `See \`${usage}\` for usage.`;
     }
     case "E_GIT": {
-      return "Run inside a git repository or pass --root <path>.";
+      if (command?.startsWith("branch")) {
+        return "Check git repo/branch; run `git branch` or pass --root <path>.";
+      }
+      if (command === "guard commit" || command === "commit") {
+        return "Check git status/index; stage changes and retry.";
+      }
+      return "Check git repo context; pass --root <path> if needed.";
     }
     case "E_NETWORK": {
-      return "Check network connectivity and credentials.";
+      return "Check network access and credentials.";
     }
     case "E_BACKEND": {
-      return "Check backend configuration in .agentplane/backends.";
+      if (command?.includes("sync")) {
+        return "Check backend config under .agentplane/backends and retry.";
+      }
+      return "Check backend config under .agentplane/backends.";
     }
     default: {
       return undefined;
     }
   }
+}
+
+function missingValueMessage(flag: string): string {
+  return `Missing value for ${flag} (expected value after flag)`;
+}
+
+function invalidValueMessage(label: string, value: string, expected: string): string {
+  return `Invalid ${label}: ${value} (expected ${expected})`;
+}
+
+function invalidValueForFlag(flag: string, value: string, expected: string): string {
+  return invalidValueMessage(`value for ${flag}`, value, expected);
+}
+
+function unknownEntityMessage(entity: string, value: string): string {
+  return `Unknown ${entity}: ${value}`;
+}
+
+function emptyStateMessage(resource: string, hint?: string): string {
+  return `No ${resource} found.${hint ? ` ${hint}` : ""}`;
+}
+
+function requiredFieldMessage(field: string, source?: string): string {
+  return `Missing required field: ${field}${source ? ` (${source})` : ""}`;
+}
+
+function invalidFieldMessage(field: string, expected: string, source?: string): string {
+  return `Invalid field ${field}: expected ${expected}${source ? ` (${source})` : ""}`;
+}
+
+function invalidPathMessage(field: string, reason: string, source?: string): string {
+  return `Invalid ${field}: ${reason}${source ? ` (${source})` : ""}`;
+}
+
+function missingFileMessage(filename: string, rootHint?: string): string {
+  return `Missing ${filename}${rootHint ? ` at ${rootHint}` : ""}`;
+}
+
+function successMessage(action: string, target?: string, details?: string): string {
+  const base = target ? `${action} ${target}` : action;
+  const suffix = details ? ` (${details})` : "";
+  return `✅ ${base}${suffix}`;
+}
+
+function infoMessage(message: string): string {
+  return `ℹ️ ${message}`;
+}
+
+function warnMessage(message: string): string {
+  return `⚠️ ${message}`;
+}
+
+function usageMessage(usage: string, example?: string): string {
+  return example ? `${usage}\nExample: ${example}` : usage;
+}
+
+function backendNotSupportedMessage(feature: string): string {
+  return `Backend does not support ${feature}`;
+}
+
+function workflowModeMessage(actual: string | undefined, expected: string): string {
+  return `Invalid workflow_mode: ${actual ?? "unknown"} (expected ${expected})`;
 }
 
 function mapCoreError(err: unknown, context: Record<string, unknown>): CliError {
@@ -410,15 +487,23 @@ const RECIPES_SCENARIOS_INDEX_NAME = "scenarios.json";
 const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";
 const RECIPE_USAGE =
   "Usage: agentplane recipes <list|info|explain|install|remove|list-remote|cache> [args]";
+const RECIPE_USAGE_EXAMPLE = "agentplane recipes list";
 const RECIPE_INFO_USAGE = "Usage: agentplane recipes info <id>";
+const RECIPE_INFO_USAGE_EXAMPLE = "agentplane recipes info viewer";
 const RECIPE_EXPLAIN_USAGE = "Usage: agentplane recipes explain <id>";
+const RECIPE_EXPLAIN_USAGE_EXAMPLE = "agentplane recipes explain viewer";
 const RECIPE_INSTALL_USAGE =
   "Usage: agentplane recipes install --name <id> [--index <path|url>] [--refresh] | --path <path> | --url <url>";
+const RECIPE_INSTALL_USAGE_EXAMPLE = "agentplane recipes install --name viewer";
 const RECIPE_REMOVE_USAGE = "Usage: agentplane recipes remove <id>";
+const RECIPE_REMOVE_USAGE_EXAMPLE = "agentplane recipes remove viewer";
 const RECIPE_CACHE_USAGE = "Usage: agentplane recipes cache <prune> [args]";
+const RECIPE_CACHE_USAGE_EXAMPLE = "agentplane recipes cache prune --dry-run";
 const RECIPE_CACHE_PRUNE_USAGE = "Usage: agentplane recipes cache prune [--dry-run] [--all]";
+const RECIPE_CACHE_PRUNE_USAGE_EXAMPLE = "agentplane recipes cache prune --dry-run";
 const RECIPE_LIST_REMOTE_USAGE =
   "Usage: agentplane recipes list-remote [--refresh] [--index <path|url>]";
+const RECIPE_LIST_REMOTE_USAGE_EXAMPLE = "agentplane recipes list-remote --refresh";
 const DEFAULT_RECIPES_INDEX_URL =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
 const RECIPE_CONFLICT_MODES = ["fail", "rename", "overwrite"] as const;
@@ -426,21 +511,68 @@ const AGENTPLANE_HOME_ENV = "AGENTPLANE_HOME";
 const GLOBAL_RECIPES_DIR_NAME = "recipes";
 const PROJECT_RECIPES_CACHE_DIR_NAME = "recipes-cache";
 const SCENARIO_USAGE = "Usage: agentplane scenario <list|info|run> [args]";
+const SCENARIO_USAGE_EXAMPLE = "agentplane scenario list";
 const SCENARIO_INFO_USAGE = "Usage: agentplane scenario info <recipe:scenario>";
+const SCENARIO_INFO_USAGE_EXAMPLE = "agentplane scenario info viewer:demo";
 const SCENARIO_RUN_USAGE = "Usage: agentplane scenario run <recipe:scenario>";
+const SCENARIO_RUN_USAGE_EXAMPLE = "agentplane scenario run viewer:demo";
 const BACKEND_SYNC_USAGE =
   "Usage: agentplane backend sync <id> --direction <push|pull> [--conflict <diff|prefer-local|prefer-remote|fail>] [--yes] [--quiet]";
+const BACKEND_SYNC_USAGE_EXAMPLE = "agentplane backend sync local --direction pull";
 const SYNC_USAGE =
   "Usage: agentplane sync [<id>] [--direction <push|pull>] [--conflict <diff|prefer-local|prefer-remote|fail>] [--yes] [--quiet]";
+const SYNC_USAGE_EXAMPLE = "agentplane sync --direction push --yes";
 const READY_USAGE = "Usage: agentplane ready <task-id>";
+const READY_USAGE_EXAMPLE = "agentplane ready 202602030608-F1Q8AB";
 const ROLE_USAGE = "Usage: agentplane role <role>";
+const ROLE_USAGE_EXAMPLE = "agentplane role ORCHESTRATOR";
 const AGENTS_USAGE = "Usage: agentplane agents";
+const AGENTS_USAGE_EXAMPLE = "agentplane agents";
 const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
+const BRANCH_BASE_USAGE_EXAMPLE = "agentplane branch base set main";
 const BRANCH_STATUS_USAGE = "Usage: agentplane branch status [--branch <name>] [--base <name>]";
+const BRANCH_STATUS_USAGE_EXAMPLE = "agentplane branch status --base main";
 const BRANCH_REMOVE_USAGE =
   "Usage: agentplane branch remove [--branch <name>] [--worktree <path>] [--force] [--quiet]";
+const BRANCH_REMOVE_USAGE_EXAMPLE =
+  "agentplane branch remove --branch task/20260203-F1Q8AB --worktree .agentplane/worktrees/task";
 const UPGRADE_USAGE =
   "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
+const UPGRADE_USAGE_EXAMPLE = "agentplane upgrade --tag v0.1.1 --dry-run";
+const INIT_USAGE =
+  "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> --require-plan-approval <...> --require-network-approval <...> [--recipes <...>] [--yes] [--force|--backup]";
+const INIT_USAGE_EXAMPLE =
+  "agentplane init --ide codex --workflow direct --hooks false --require-plan-approval true --require-network-approval true --yes";
+const CONFIG_SET_USAGE = "Usage: agentplane config set <key> <value>";
+const CONFIG_SET_USAGE_EXAMPLE = "agentplane config set workflow_mode branch_pr";
+const MODE_SET_USAGE = "Usage: agentplane mode set <direct|branch_pr>";
+const MODE_SET_USAGE_EXAMPLE = "agentplane mode set direct";
+const QUICKSTART_USAGE = "Usage: agentplane quickstart";
+const QUICKSTART_USAGE_EXAMPLE = "agentplane quickstart";
+const TASK_UPDATE_USAGE = "Usage: agentplane task update <task-id> [flags]";
+const TASK_UPDATE_USAGE_EXAMPLE =
+  'agentplane task update 202602030608-F1Q8AB --title "..." --owner CODER';
+const TASK_SCAFFOLD_USAGE =
+  "Usage: agentplane task scaffold <task-id> [--title <text>] [--overwrite] [--force]";
+const TASK_SCAFFOLD_USAGE_EXAMPLE = "agentplane task scaffold 202602030608-F1Q8AB";
+const TASK_SHOW_USAGE = "Usage: agentplane task show <task-id>";
+const TASK_SHOW_USAGE_EXAMPLE = "agentplane task show 202602030608-F1Q8AB";
+const TASK_SEARCH_USAGE = "Usage: agentplane task search <query> [flags]";
+const TASK_SEARCH_USAGE_EXAMPLE = 'agentplane task search "cli"';
+const TASK_COMMENT_USAGE = "Usage: agentplane task comment <task-id>";
+const TASK_COMMENT_USAGE_EXAMPLE =
+  'agentplane task comment 202602030608-F1Q8AB --author CODER --body "..."';
+const TASK_SET_STATUS_USAGE = "Usage: agentplane task set-status <task-id> <status> [flags]";
+const TASK_SET_STATUS_USAGE_EXAMPLE = "agentplane task set-status 202602030608-F1Q8AB DONE";
+const PR_GROUP_USAGE = "Usage: agentplane pr open|update|check|note <task-id>";
+const PR_GROUP_USAGE_EXAMPLE = "agentplane pr open 202602030608-F1Q8AB --author CODER";
+const GUARD_USAGE = "Usage: agentplane guard <subcommand>";
+const GUARD_USAGE_EXAMPLE =
+  'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB update" --allow packages/agentplane';
+const HOOKS_RUN_USAGE = "Usage: agentplane hooks run <hook>";
+const HOOKS_RUN_USAGE_EXAMPLE = "agentplane hooks run pre-commit";
+const HOOKS_INSTALL_USAGE = "Usage: agentplane hooks install|uninstall";
+const HOOKS_INSTALL_USAGE_EXAMPLE = "agentplane hooks install";
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
 const DEFAULT_UPGRADE_CHECKSUM_ASSET = `${DEFAULT_UPGRADE_ASSET}.sha256`;
 
@@ -451,7 +583,7 @@ function parseBooleanFlag(value: string, flag: string): boolean {
   throw new CliError({
     exitCode: 2,
     code: "E_USAGE",
-    message: `Invalid value for ${flag}: ${value}`,
+    message: invalidValueForFlag(flag, value, "true|false"),
   });
 }
 
@@ -477,7 +609,7 @@ function parseInitFlags(args: string[]): InitFlags {
     }
     const next = args[i + 1];
     if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
     }
     switch (arg) {
       case "--ide": {
@@ -486,7 +618,7 @@ function parseInitFlags(args: string[]): InitFlags {
           throw new CliError({
             exitCode: 2,
             code: "E_USAGE",
-            message: "Usage: --ide <codex|cursor|windsurf>",
+            message: invalidValueForFlag("--ide", next, "codex|cursor|windsurf"),
           });
         }
         out.ide = normalized as InitFlags["ide"];
@@ -497,7 +629,7 @@ function parseInitFlags(args: string[]): InitFlags {
           throw new CliError({
             exitCode: 2,
             code: "E_USAGE",
-            message: "Usage: --workflow <direct|branch_pr>",
+            message: invalidValueForFlag("--workflow", next, "direct|branch_pr"),
           });
         }
         out.workflow = next;
@@ -559,7 +691,11 @@ function parseUpgradeFlags(args: string[]): UpgradeFlags {
     const arg = args[i];
     if (!arg) continue;
     if (!arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: UPGRADE_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(UPGRADE_USAGE, UPGRADE_USAGE_EXAMPLE),
+      });
     }
     if (arg === "--dry-run") {
       out.dryRun = true;
@@ -571,7 +707,7 @@ function parseUpgradeFlags(args: string[]): UpgradeFlags {
     }
     const next = args[i + 1];
     if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
     }
     switch (arg) {
       case "--source": {
@@ -599,13 +735,21 @@ function parseUpgradeFlags(args: string[]): UpgradeFlags {
         break;
       }
       default: {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: UPGRADE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(UPGRADE_USAGE, UPGRADE_USAGE_EXAMPLE),
+        });
       }
     }
     i++;
   }
   if ((out.bundle && !out.checksum) || (!out.bundle && out.checksum)) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: UPGRADE_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(UPGRADE_USAGE, UPGRADE_USAGE_EXAMPLE),
+    });
   }
   return out;
 }
@@ -621,7 +765,11 @@ function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
     const arg = args[i];
     if (!arg) continue;
     if (!arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_LIST_REMOTE_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_LIST_REMOTE_USAGE, RECIPE_LIST_REMOTE_USAGE_EXAMPLE),
+      });
     }
     if (arg === "--refresh") {
       out.refresh = true;
@@ -629,7 +777,7 @@ function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
     }
     const next = args[i + 1];
     if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
     }
     switch (arg) {
       case "--index": {
@@ -637,7 +785,11 @@ function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
         break;
       }
       default: {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_LIST_REMOTE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_LIST_REMOTE_USAGE, RECIPE_LIST_REMOTE_USAGE_EXAMPLE),
+        });
       }
     }
     i++;
@@ -647,62 +799,66 @@ function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
 
 function normalizeRecipeId(value: string): string {
   const trimmed = value.trim();
-  if (!trimmed) throw new Error("manifest.id must be non-empty");
+  if (!trimmed) throw new Error(requiredFieldMessage("manifest.id"));
   if (trimmed.includes("/") || trimmed.includes("\\")) {
-    throw new Error("manifest.id must not contain path separators");
+    throw new Error(invalidPathMessage("manifest.id", "must not contain path separators"));
   }
   if (trimmed === "." || trimmed === "..") {
-    throw new Error("manifest.id must not be '.' or '..'");
+    throw new Error(invalidPathMessage("manifest.id", "must not be '.' or '..'"));
   }
   return trimmed;
 }
 
 function normalizeAgentId(value: string): string {
   const trimmed = value.trim();
-  if (!trimmed) throw new Error("agent.id must be non-empty");
+  if (!trimmed) throw new Error(requiredFieldMessage("agent.id"));
   if (trimmed.includes("/") || trimmed.includes("\\")) {
-    throw new Error("agent.id must not contain path separators");
+    throw new Error(invalidPathMessage("agent.id", "must not contain path separators"));
   }
   if (trimmed === "." || trimmed === "..") {
-    throw new Error("agent.id must not be '.' or '..'");
+    throw new Error(invalidPathMessage("agent.id", "must not be '.' or '..'"));
   }
   return trimmed;
 }
 
 function normalizeScenarioId(value: string): string {
   const trimmed = value.trim();
-  if (!trimmed) throw new Error("scenario.id must be non-empty");
+  if (!trimmed) throw new Error(requiredFieldMessage("scenario.id"));
   if (trimmed.includes("/") || trimmed.includes("\\")) {
-    throw new Error("scenario.id must not contain path separators");
+    throw new Error(invalidPathMessage("scenario.id", "must not contain path separators"));
   }
   if (trimmed === "." || trimmed === "..") {
-    throw new Error("scenario.id must not be '.' or '..'");
+    throw new Error(invalidPathMessage("scenario.id", "must not be '.' or '..'"));
   }
   return trimmed;
 }
 
 function normalizeRecipeTags(value: unknown): string[] {
   if (value === undefined) return [];
-  if (!Array.isArray(value)) throw new Error("manifest.tags must be an array of strings");
+  if (!Array.isArray(value)) throw new Error(invalidFieldMessage("manifest.tags", "string[]"));
   const tags = value.map((tag) => {
-    if (typeof tag !== "string") throw new Error("manifest.tags must be an array of strings");
+    if (typeof tag !== "string") throw new Error(invalidFieldMessage("manifest.tags", "string[]"));
     return tag.trim();
   });
   return dedupeStrings(tags);
 }
 
 function validateRecipeManifest(raw: unknown): RecipeManifest {
-  if (!isRecord(raw)) throw new Error("manifest must be an object");
-  if (raw.schema_version !== "1") throw new Error("manifest.schema_version must be '1'");
-  if (typeof raw.id !== "string") throw new Error("manifest.id must be string");
-  if (typeof raw.version !== "string") throw new Error("manifest.version must be string");
-  if (typeof raw.name !== "string") throw new Error("manifest.name must be string");
-  if (typeof raw.summary !== "string") throw new Error("manifest.summary must be string");
-  if (typeof raw.description !== "string") throw new Error("manifest.description must be string");
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("manifest", "object"));
+  if (raw.schema_version !== "1")
+    throw new Error(invalidFieldMessage("manifest.schema_version", '"1"'));
+  if (typeof raw.id !== "string") throw new Error(invalidFieldMessage("manifest.id", "string"));
+  if (typeof raw.version !== "string")
+    throw new Error(invalidFieldMessage("manifest.version", "string"));
+  if (typeof raw.name !== "string") throw new Error(invalidFieldMessage("manifest.name", "string"));
+  if (typeof raw.summary !== "string")
+    throw new Error(invalidFieldMessage("manifest.summary", "string"));
+  if (typeof raw.description !== "string")
+    throw new Error(invalidFieldMessage("manifest.description", "string"));
 
   const id = normalizeRecipeId(raw.id);
   const version = raw.version.trim();
-  if (!version) throw new Error("manifest.version must be non-empty");
+  if (!version) throw new Error(requiredFieldMessage("manifest.version"));
   const tags = normalizeRecipeTags(raw.tags);
 
   return {
@@ -722,9 +878,11 @@ function validateRecipeManifest(raw: unknown): RecipeManifest {
 }
 
 function validateInstalledRecipesFile(raw: unknown): InstalledRecipesFile {
-  if (!isRecord(raw)) throw new Error("recipes.json must be an object");
-  if (raw.schema_version !== 1) throw new Error("recipes.json schema_version must be 1");
-  if (!Array.isArray(raw.recipes)) throw new Error("recipes.json recipes must be array");
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes.json", "object"));
+  if (raw.schema_version !== 1)
+    throw new Error(invalidFieldMessage("recipes.json.schema_version", "1"));
+  if (!Array.isArray(raw.recipes))
+    throw new Error(invalidFieldMessage("recipes.json.recipes", "array"));
   const updatedAt = typeof raw.updated_at === "string" ? raw.updated_at : "";
   const recipes = raw.recipes
     .filter((entry) => isRecord(entry))
@@ -735,10 +893,12 @@ function validateInstalledRecipesFile(raw: unknown): InstalledRecipesFile {
       const source = typeof entry.source === "string" ? entry.source.trim() : "";
       const installedAt = typeof entry.installed_at === "string" ? entry.installed_at.trim() : "";
       if (!id || !version || !source || !installedAt) {
-        throw new Error("recipes.json entries must include id, version, source, installed_at");
+        throw new Error(
+          invalidFieldMessage("recipes.json.recipes[]", "id, version, source, installed_at"),
+        );
       }
       if (id !== manifest.id || version !== manifest.version) {
-        throw new Error("recipes.json entry id/version must match manifest");
+        throw new Error(invalidFieldMessage("recipes.json.recipes[]", "id/version match manifest"));
       }
       const tags = normalizeRecipeTags(entry.tags ?? manifest.tags ?? []);
       return { id, version, source, installed_at: installedAt, tags, manifest };
@@ -752,9 +912,11 @@ function sortInstalledRecipes(file: InstalledRecipesFile): InstalledRecipesFile 
 }
 
 function validateRecipesIndex(raw: unknown): RecipesIndex {
-  if (!isRecord(raw)) throw new Error("recipes index must be an object");
-  if (raw.schema_version !== 1) throw new Error("recipes index schema_version must be 1");
-  if (!Array.isArray(raw.recipes)) throw new Error("recipes index recipes must be array");
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes index", "object"));
+  if (raw.schema_version !== 1)
+    throw new Error(invalidFieldMessage("recipes index.schema_version", "1"));
+  if (!Array.isArray(raw.recipes))
+    throw new Error(invalidFieldMessage("recipes index.recipes", "array"));
 
   const recipes = raw.recipes
     .filter((entry) => isRecord(entry))
@@ -764,7 +926,7 @@ function validateRecipesIndex(raw: unknown): RecipesIndex {
       const description = typeof entry.description === "string" ? entry.description : undefined;
       const versionsRaw = Array.isArray(entry.versions) ? entry.versions : [];
       if (!id || !summary || versionsRaw.length === 0) {
-        throw new Error("recipes index entries must include id, summary, and versions");
+        throw new Error(invalidFieldMessage("recipes index.recipes[]", "id, summary, versions"));
       }
       const versions = versionsRaw
         .filter((version) => isRecord(version))
@@ -773,7 +935,9 @@ function validateRecipesIndex(raw: unknown): RecipesIndex {
           const url = typeof version.url === "string" ? version.url : "";
           const sha256 = typeof version.sha256 === "string" ? version.sha256 : "";
           if (!versionId || !url || !sha256) {
-            throw new Error("recipes index versions must include version, url, sha256");
+            throw new Error(
+              invalidFieldMessage("recipes index.recipes[].versions[]", "version, url, sha256"),
+            );
           }
           return {
             version: versionId,
@@ -794,18 +958,18 @@ function validateRecipesIndex(raw: unknown): RecipesIndex {
 }
 
 function validateScenarioDefinition(raw: unknown, sourcePath: string): ScenarioDefinition {
-  if (!isRecord(raw)) throw new Error(`scenario must be an object (${sourcePath})`);
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("scenario", "object", sourcePath));
   if (raw.schema_version !== undefined && raw.schema_version !== "1") {
-    throw new Error(`scenario.schema_version must be "1" (${sourcePath})`);
+    throw new Error(invalidFieldMessage("scenario.schema_version", '"1"', sourcePath));
   }
   const rawId = typeof raw.id === "string" ? raw.id : "";
   const id = normalizeScenarioId(rawId);
   const goal = typeof raw.goal === "string" ? raw.goal.trim() : "";
-  if (!goal) throw new Error(`scenario.goal must be non-empty (${sourcePath})`);
-  if (!("inputs" in raw)) throw new Error(`scenario.inputs is required (${sourcePath})`);
-  if (!("outputs" in raw)) throw new Error(`scenario.outputs is required (${sourcePath})`);
+  if (!goal) throw new Error(requiredFieldMessage("scenario.goal", sourcePath));
+  if (!("inputs" in raw)) throw new Error(requiredFieldMessage("scenario.inputs", sourcePath));
+  if (!("outputs" in raw)) throw new Error(requiredFieldMessage("scenario.outputs", sourcePath));
   if (!Array.isArray(raw.steps)) {
-    throw new Error(`scenario.steps must be an array (${sourcePath})`);
+    throw new Error(invalidFieldMessage("scenario.steps", "array", sourcePath));
   }
   return {
     schema_version: "1",
@@ -829,9 +993,11 @@ async function readScenarioIndex(filePath: string): Promise<{
   scenarios: { id: string; summary?: string }[];
 }> {
   const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
-  if (!isRecord(raw)) throw new Error("scenarios index must be an object");
-  if (raw.schema_version !== 1) throw new Error("scenarios index schema_version must be 1");
-  if (!Array.isArray(raw.scenarios)) throw new Error("scenarios index scenarios must be array");
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("scenarios index", "object"));
+  if (raw.schema_version !== 1)
+    throw new Error(invalidFieldMessage("scenarios index.schema_version", "1"));
+  if (!Array.isArray(raw.scenarios))
+    throw new Error(invalidFieldMessage("scenarios index.scenarios", "array"));
   const scenarios = raw.scenarios
     .filter((entry) => isRecord(entry))
     .map((entry) => ({
@@ -908,24 +1074,24 @@ function normalizeScenarioToolStep(
   sourcePath: string,
 ): { tool: string; args: string[]; env: Record<string, string> } {
   if (!isRecord(raw)) {
-    throw new Error(`scenario step must be an object (${sourcePath})`);
+    throw new Error(invalidFieldMessage("scenario step", "object", sourcePath));
   }
   const tool = typeof raw.tool === "string" ? raw.tool.trim() : "";
   if (!tool) {
-    throw new Error(`scenario step is missing tool id (${sourcePath})`);
+    throw new Error(requiredFieldMessage("scenario step.tool", sourcePath));
   }
   const args = Array.isArray(raw.args) ? raw.args.filter((arg) => typeof arg === "string") : [];
   if (Array.isArray(raw.args) && args.length !== raw.args.length) {
-    throw new Error(`scenario step args must be strings (${sourcePath})`);
+    throw new Error(invalidFieldMessage("scenario step.args", "string[]", sourcePath));
   }
   const env: Record<string, string> = {};
   if (raw.env !== undefined) {
     if (!isRecord(raw.env)) {
-      throw new Error(`scenario step env must be an object (${sourcePath})`);
+      throw new Error(invalidFieldMessage("scenario step.env", "object", sourcePath));
     }
     for (const [key, value] of Object.entries(raw.env)) {
       if (typeof value !== "string") {
-        throw new Error(`scenario step env values must be strings (${sourcePath})`);
+        throw new Error(invalidFieldMessage("scenario step.env", "string map", sourcePath));
       }
       env[key] = value;
     }
@@ -967,11 +1133,11 @@ async function resolveRecipeRoot(extractedDir: string): Promise<string> {
   const entries = await readdir(extractedDir, { withFileTypes: true });
   const dirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
   if (dirs.length !== 1) {
-    throw new Error("manifest.json not found at archive root");
+    throw new Error(missingFileMessage("manifest.json", "archive root"));
   }
   const candidate = path.join(extractedDir, dirs[0]);
   if (!(await fileExists(path.join(candidate, "manifest.json")))) {
-    throw new Error("manifest.json not found at archive root");
+    throw new Error(missingFileMessage("manifest.json", "archive root"));
   }
   return candidate;
 }
@@ -1012,7 +1178,11 @@ function resolveProjectRecipesCacheDir(resolved: { agentplaneDir: string }): str
 async function extractArchive(archivePath: string, destDir: string): Promise<void> {
   const archiveType = detectArchiveType(archivePath);
   if (!archiveType) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+    });
   }
   if (archiveType === "tar") {
     await execFileAsync("tar", ["-xzf", archivePath, "-C", destDir]);
@@ -1083,7 +1253,11 @@ function parseRecipeInstallArgs(args: string[]): {
     if (arg === "--name") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
       name = next;
       i++;
       continue;
@@ -1091,7 +1265,11 @@ function parseRecipeInstallArgs(args: string[]): {
     if (arg === "--path") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
       localPath = next;
       i++;
       continue;
@@ -1099,7 +1277,11 @@ function parseRecipeInstallArgs(args: string[]): {
     if (arg === "--url") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
       url = next;
       i++;
       continue;
@@ -1107,7 +1289,11 @@ function parseRecipeInstallArgs(args: string[]): {
     if (arg === "--index") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
       index = next;
       i++;
       continue;
@@ -1119,29 +1305,53 @@ function parseRecipeInstallArgs(args: string[]): {
     if (arg === "--on-conflict") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
       if (!RECIPE_CONFLICT_MODES.includes(next as RecipeConflictMode)) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
       }
       onConflict = next as RecipeConflictMode;
       i++;
       continue;
     }
     if (arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+      });
     }
     positional.push(arg);
   }
 
   const explicitFlags = [name, localPath, url].filter(Boolean).length;
   if (explicitFlags > 1) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+    });
   }
   if (positional.length > 1) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+    });
   }
   if (positional.length > 0 && explicitFlags > 0) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+    });
   }
 
   if (name) return { source: { type: "name", value: name }, index, refresh, onConflict };
@@ -1151,7 +1361,11 @@ function parseRecipeInstallArgs(args: string[]): {
     return { source: { type: "auto", value: positional[0] }, index, refresh, onConflict };
   }
 
-  throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INSTALL_USAGE });
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+  });
 }
 
 type RecipeCachePruneFlags = {
@@ -1175,18 +1389,35 @@ function parseRecipeListArgs(args: string[]): RecipeListFlags {
     }
     if (arg === "--tag") {
       const next = args[i + 1];
-      if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+      if (!next)
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+        });
       flags.tag = next.trim();
       i++;
       continue;
     }
     if (arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+      });
     }
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+    });
   }
   if (flags.tag !== undefined && !flags.tag) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+    });
   }
   return flags;
 }
@@ -1203,7 +1434,11 @@ function parseRecipeCachePruneArgs(args: string[]): RecipeCachePruneFlags {
       flags.all = true;
       continue;
     }
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_CACHE_PRUNE_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_CACHE_PRUNE_USAGE, RECIPE_CACHE_PRUNE_USAGE_EXAMPLE),
+    });
   }
   return flags;
 }
@@ -1228,7 +1463,11 @@ function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
     if (!arg) continue;
     if (!arg.startsWith("--")) {
       if (backendId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(BACKEND_SYNC_USAGE, BACKEND_SYNC_USAGE_EXAMPLE),
+        });
       }
       backendId = arg;
       continue;
@@ -1237,7 +1476,11 @@ function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
     if (arg === "--direction") {
       const next = args[i + 1];
       if (!next || (next !== "push" && next !== "pull")) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(BACKEND_SYNC_USAGE, BACKEND_SYNC_USAGE_EXAMPLE),
+        });
       }
       direction = next;
       i++;
@@ -1246,7 +1489,11 @@ function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
     if (arg === "--conflict") {
       const next = args[i + 1];
       if (!next || !["diff", "prefer-local", "prefer-remote", "fail"].includes(next)) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(BACKEND_SYNC_USAGE, BACKEND_SYNC_USAGE_EXAMPLE),
+        });
       }
       conflict = next as BackendSyncFlags["conflict"];
       i++;
@@ -1260,11 +1507,19 @@ function parseBackendSyncArgs(args: string[]): BackendSyncFlags {
       quiet = true;
       continue;
     }
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(BACKEND_SYNC_USAGE, BACKEND_SYNC_USAGE_EXAMPLE),
+    });
   }
 
   if (!backendId || !direction) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(BACKEND_SYNC_USAGE, BACKEND_SYNC_USAGE_EXAMPLE),
+    });
   }
 
   return { backendId, direction, conflict, confirm, quiet };
@@ -1290,7 +1545,11 @@ function parseSyncArgs(args: string[]): SyncFlags {
     if (!arg) continue;
     if (!arg.startsWith("--")) {
       if (backendId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: SYNC_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(SYNC_USAGE, SYNC_USAGE_EXAMPLE),
+        });
       }
       backendId = arg;
       continue;
@@ -1299,7 +1558,11 @@ function parseSyncArgs(args: string[]): SyncFlags {
     if (arg === "--direction") {
       const next = args[i + 1];
       if (!next || (next !== "push" && next !== "pull")) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: SYNC_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(SYNC_USAGE, SYNC_USAGE_EXAMPLE),
+        });
       }
       direction = next;
       i++;
@@ -1308,7 +1571,11 @@ function parseSyncArgs(args: string[]): SyncFlags {
     if (arg === "--conflict") {
       const next = args[i + 1];
       if (!next || !["diff", "prefer-local", "prefer-remote", "fail"].includes(next)) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: SYNC_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(SYNC_USAGE, SYNC_USAGE_EXAMPLE),
+        });
       }
       conflict = next as SyncFlags["conflict"];
       i++;
@@ -1322,7 +1589,11 @@ function parseSyncArgs(args: string[]): SyncFlags {
       quiet = true;
       continue;
     }
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: SYNC_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(SYNC_USAGE, SYNC_USAGE_EXAMPLE),
+    });
   }
 
   return { backendId, direction, conflict, confirm, quiet };
@@ -1349,12 +1620,12 @@ async function applyRecipeAgents(opts: {
     const agentId = normalizeAgentId(rawId);
     const sourcePath = path.join(opts.recipeDir, rawFile);
     if (!(await fileExists(sourcePath))) {
-      throw new Error(`Recipe agent file not found: ${rawFile}`);
+      throw new Error(missingFileMessage("recipe agent file", rawFile));
     }
 
     const rawAgent = JSON.parse(await readFile(sourcePath, "utf8")) as unknown;
     if (!isRecord(rawAgent)) {
-      throw new Error(`Recipe agent file must be a JSON object: ${rawFile}`);
+      throw new Error(invalidFieldMessage("recipe agent file", "JSON object", rawFile));
     }
 
     const baseId = `${opts.manifest.id}__${agentId}`;
@@ -1449,17 +1720,18 @@ async function loadRecipesRemoteIndex(opts: {
 
 function parseGitHubRepo(source: string): { owner: string; repo: string } {
   const trimmed = source.trim();
-  if (!trimmed) throw new Error("config.framework.source must be non-empty");
+  if (!trimmed) throw new Error(requiredFieldMessage("config.framework.source"));
   if (!trimmed.includes("github.com")) {
-    throw new Error("upgrade supports GitHub sources only");
+    throw new Error(invalidFieldMessage("config.framework.source", "GitHub URL"));
   }
   try {
     const url = new URL(trimmed);
     const parts = url.pathname.replaceAll(".git", "").split("/").filter(Boolean);
-    if (parts.length < 2) throw new Error("Invalid GitHub repo URL");
+    if (parts.length < 2)
+      throw new Error(invalidValueMessage("GitHub repo URL", trimmed, "owner/repo"));
     return { owner: parts[0], repo: parts[1] };
   } catch {
-    throw new Error("Invalid GitHub repo URL");
+    throw new Error(invalidValueMessage("GitHub repo URL", trimmed, "owner/repo"));
   }
 }
 
@@ -1534,8 +1806,7 @@ async function cmdInit(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message:
-        "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> --require-plan-approval <...> --require-network-approval <...> [--recipes <...>] [--yes] [--force|--backup]",
+      message: usageMessage(INIT_USAGE, INIT_USAGE_EXAMPLE),
     });
   }
 
@@ -1702,9 +1973,11 @@ async function cmdInit(opts: {
 
     if (recipes.length > 0) {
       if (listBundledRecipes().length === 0) {
-        process.stdout.write("Bundled recipes catalog is empty; skipping install.\n");
+        process.stdout.write(`${infoMessage("bundled recipes are empty; nothing to install")}\n`);
       } else {
-        process.stdout.write("Recipes install is not implemented yet; skipping.\n");
+        process.stdout.write(
+          `${infoMessage("bundled recipe install is not implemented; skipping")}\n`,
+        );
       }
     }
 
@@ -1950,13 +2223,21 @@ function cmdRole(opts: { cwd: string; rootOverride?: string; role: string }): nu
   try {
     const roleRaw = opts.role.trim();
     if (!roleRaw) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: ROLE_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(ROLE_USAGE, ROLE_USAGE_EXAMPLE),
+      });
     }
     const guide = renderRole(roleRaw);
     if (!guide) {
       const roles = listRoles();
       const available = roles.length > 0 ? `\nAvailable roles: ${roles.join(", ")}` : "";
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `${ROLE_USAGE}${available}` });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(`${ROLE_USAGE}${available}`, ROLE_USAGE_EXAMPLE),
+      });
     }
     process.stdout.write(`${guide}\n`);
     return 0;
@@ -1987,7 +2268,7 @@ async function cmdAgents(opts: { cwd: string; rootOverride?: string }): Promise<
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `Missing directory: ${agentsDir}`,
+        message: `Agents directory not found: ${agentsDir} (run \`agentplane init\`)`,
       });
     }
     const entriesRaw = await readdir(agentsDir);
@@ -1996,7 +2277,7 @@ async function cmdAgents(opts: { cwd: string; rootOverride?: string }): Promise<
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `No agents found under ${agentsDir}`,
+        message: `No agent definitions found under ${agentsDir} (expected *.json)`,
       });
     }
 
@@ -2058,10 +2339,15 @@ async function cmdRecipeList(opts: {
 
     if (recipes.length === 0) {
       if (flags.tag) {
-        process.stdout.write(`No recipes matched tag: ${flags.tag}\n`);
+        process.stdout.write(`${emptyStateMessage(`installed recipes for tag ${flags.tag}`)}\n`);
         return 0;
       }
-      process.stdout.write("No recipes installed.\n");
+      process.stdout.write(
+        `${emptyStateMessage(
+          "installed recipes",
+          "Use `agentplane recipes list-remote` or `agentplane recipes install <id>`.",
+        )}\n`,
+      );
       return 0;
     }
 
@@ -2077,7 +2363,7 @@ async function cmdRecipeList(opts: {
 
     for (const entry of recipes) {
       process.stdout.write(
-        `${entry.id}@${entry.version} - ${entry.manifest.summary || "No summary provided."}\n`,
+        `${entry.id}@${entry.version} - ${entry.manifest.summary || "No summary"}\n`,
       );
     }
     return 0;
@@ -2144,7 +2430,9 @@ async function cmdScenarioList(opts: { cwd: string; rootOverride?: string }): Pr
     }
 
     if (entries.length === 0) {
-      process.stdout.write("No scenarios installed.\n");
+      process.stdout.write(
+        `${emptyStateMessage("scenarios", "Install a recipe to add scenarios.")}\n`,
+      );
       return 0;
     }
 
@@ -2155,7 +2443,7 @@ async function cmdScenarioList(opts: { cwd: string; rootOverride?: string }): Pr
     });
     for (const entry of sorted) {
       process.stdout.write(
-        `${entry.recipeId}:${entry.scenarioId} - ${entry.summary ?? "No summary provided."}\n`,
+        `${entry.recipeId}:${entry.scenarioId} - ${entry.summary ?? "No summary"}\n`,
       );
     }
     return 0;
@@ -2173,7 +2461,11 @@ async function cmdScenarioInfo(opts: {
   try {
     const [recipeId, scenarioId] = opts.id.split(":");
     if (!recipeId || !scenarioId) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_INFO_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(SCENARIO_INFO_USAGE, SCENARIO_INFO_USAGE_EXAMPLE),
+      });
     }
     const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
@@ -2286,7 +2578,11 @@ async function cmdScenarioRun(opts: {
     });
     const [recipeId, scenarioId] = opts.id.split(":");
     if (!recipeId || !scenarioId) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_RUN_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(SCENARIO_RUN_USAGE, SCENARIO_RUN_USAGE_EXAMPLE),
+      });
     }
     const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
@@ -2824,7 +3120,7 @@ async function cmdRecipeRemove(opts: {
       recipes: updated,
     });
 
-    process.stdout.write(`Removed recipe ${entry.id}@${entry.version}\n`);
+    process.stdout.write(`${successMessage("removed recipe", `${entry.id}@${entry.version}`)}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -2868,22 +3164,26 @@ async function cmdRecipeCachePrune(opts: {
   try {
     const cacheDir = resolveGlobalRecipesDir();
     if (!(await fileExists(cacheDir))) {
-      process.stdout.write("No recipes directory found.\n");
+      process.stdout.write(`${infoMessage(`recipe cache directory not found: ${cacheDir}`)}\n`);
       return 0;
     }
 
     const cacheEntries = await listRecipeCacheEntries(cacheDir);
     if (cacheEntries.length === 0) {
-      process.stdout.write("No cached recipes found.\n");
+      process.stdout.write(`${infoMessage("recipe cache is empty")}\n`);
       return 0;
     }
 
     if (flags.all) {
       if (flags.dryRun) {
         for (const entry of cacheEntries) {
-          process.stdout.write(`Would remove ${entry.id}@${entry.version}\n`);
+          process.stdout.write(
+            `${infoMessage(`dry-run: would remove ${entry.id}@${entry.version}`)}\n`,
+          );
         }
-        process.stdout.write(`Would remove ${cacheEntries.length} cached recipes.\n`);
+        process.stdout.write(
+          `${infoMessage(`dry-run: would remove ${cacheEntries.length} cached recipes`)}\n`,
+        );
         return 0;
       }
       await rm(cacheDir, { recursive: true, force: true });
@@ -2892,7 +3192,9 @@ async function cmdRecipeCachePrune(opts: {
         updated_at: "",
         recipes: [],
       });
-      process.stdout.write(`Removed ${cacheEntries.length} cached recipes.\n`);
+      process.stdout.write(
+        `${successMessage("removed cached recipes", undefined, `count=${cacheEntries.length}`)}\n`,
+      );
       return 0;
     }
 
@@ -2901,15 +3203,21 @@ async function cmdRecipeCachePrune(opts: {
     const prune = cacheEntries.filter((entry) => !keep.has(`${entry.id}@${entry.version}`));
 
     if (prune.length === 0) {
-      process.stdout.write("No cached recipes to prune.\n");
+      process.stdout.write(
+        `${infoMessage("recipe cache already clean (no uninstalled entries)")}\n`,
+      );
       return 0;
     }
 
     if (flags.dryRun) {
       for (const entry of prune) {
-        process.stdout.write(`Would remove ${entry.id}@${entry.version}\n`);
+        process.stdout.write(
+          `${infoMessage(`dry-run: would remove ${entry.id}@${entry.version}`)}\n`,
+        );
       }
-      process.stdout.write(`Would remove ${prune.length} cached recipes.\n`);
+      process.stdout.write(
+        `${infoMessage(`dry-run: would remove ${prune.length} cached recipes`)}\n`,
+      );
       return 0;
     }
 
@@ -2925,7 +3233,9 @@ async function cmdRecipeCachePrune(opts: {
       }
     }
 
-    process.stdout.write(`Removed ${prune.length} cached recipes.\n`);
+    process.stdout.write(
+      `${successMessage("removed cached recipes", undefined, `count=${prune.length}`)}\n`,
+    );
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -2955,7 +3265,7 @@ async function cmdBackendSync(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "Configured backend does not support sync()",
+        message: backendNotSupportedMessage("sync()"),
       });
     }
     await backend.sync({
@@ -2993,7 +3303,7 @@ async function cmdSync(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "Configured backend does not support sync()",
+        message: backendNotSupportedMessage("sync()"),
       });
     }
     await backend.sync({
@@ -3019,6 +3329,18 @@ type TaskNewFlags = {
   verify: string[];
 };
 
+const TASK_NEW_USAGE =
+  "Usage: agentplane task new --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]";
+const TASK_NEW_USAGE_EXAMPLE =
+  'agentplane task new --title "Refactor CLI" --description "Improve CLI output" --priority med --owner CODER --tag cli';
+const TASK_ADD_USAGE =
+  "Usage: agentplane task add <task-id> [<task-id> ...] --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]";
+const TASK_ADD_USAGE_EXAMPLE =
+  'agentplane task add 202602030608-F1Q8AB --title "..." --description "..." --priority med --owner CODER --tag cli';
+const TASK_SCRUB_USAGE = "Usage: agentplane task scrub --find <text> --replace <text> [flags]";
+const TASK_SCRUB_USAGE_EXAMPLE =
+  'agentplane task scrub --find "agentctl" --replace "agentplane" --dry-run';
+
 function parseTaskNewFlags(args: string[]): TaskNewFlags {
   const out: TaskNewFlags = { tags: [], dependsOn: [], verify: [] };
 
@@ -3035,7 +3357,7 @@ function parseTaskNewFlags(args: string[]): TaskNewFlags {
 
     const next = args[i + 1];
     if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
     }
 
     switch (arg) {
@@ -3090,8 +3412,7 @@ async function cmdTaskNew(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message:
-        "Usage: agentplane task new --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]",
+      message: usageMessage(TASK_NEW_USAGE, TASK_NEW_USAGE_EXAMPLE),
     });
   }
 
@@ -3105,7 +3426,7 @@ async function cmdTaskNew(opts: {
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: "Configured backend does not support generateTaskId()",
+        message: backendNotSupportedMessage("generateTaskId()"),
       });
     }
     const taskId = await backend.generateTaskId({ length: suffixLength, attempts: 1000 });
@@ -3132,7 +3453,7 @@ async function cmdTaskNew(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "verify commands are required for tasks with code/backend/frontend tags",
+        message: "Missing verify commands for tasks with code/backend/frontend tags (use --verify)",
       });
     }
     await backend.writeTask(task);
@@ -3178,10 +3499,14 @@ function parseTaskAddFlags(args: string[]): TaskAddFlags {
     }
     const next = args[i + 1];
     if (arg === "--replace-tags" || arg === "--replace-depends-on" || arg === "--replace-verify") {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Usage: agentplane task add" });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(TASK_ADD_USAGE, TASK_ADD_USAGE_EXAMPLE),
+      });
     }
     if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
     }
     switch (arg) {
       case "--title": {
@@ -3250,8 +3575,7 @@ async function cmdTaskAdd(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message:
-        "Usage: agentplane task add <task-id> [<task-id> ...] --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]",
+      message: usageMessage(TASK_ADD_USAGE, TASK_ADD_USAGE_EXAMPLE),
     });
   }
 
@@ -3339,7 +3663,7 @@ function parseTaskUpdateFlags(args: string[]): TaskUpdateFlags {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: "Usage: agentplane task update <task-id> [flags]",
+      message: usageMessage(TASK_UPDATE_USAGE, TASK_UPDATE_USAGE_EXAMPLE),
     });
   }
   const out: TaskUpdateFlags = {
@@ -3371,12 +3695,12 @@ function parseTaskUpdateFlags(args: string[]): TaskUpdateFlags {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "Usage: agentplane task update <task-id> [flags]",
+        message: usageMessage(TASK_UPDATE_USAGE, TASK_UPDATE_USAGE_EXAMPLE),
       });
     }
     const next = rest[i + 1];
     if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
     }
     switch (arg) {
       case "--title": {
@@ -3436,7 +3760,7 @@ async function cmdTaskUpdate(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `Unknown task id: ${flags.taskId}`,
+        message: unknownEntityMessage("task id", flags.taskId),
       });
     }
     const next: TaskData = { ...task };
@@ -3471,7 +3795,7 @@ async function cmdTaskUpdate(opts: {
     }
 
     await backend.writeTask(next);
-    process.stdout.write(`✅ updated ${flags.taskId}\n`);
+    process.stdout.write(`${successMessage("updated", flags.taskId)}\n`);
     return 0;
   } catch (err) {
     throw mapBackendError(err, { command: "task update", root: opts.rootOverride ?? null });
@@ -3504,11 +3828,15 @@ function parseTaskScrubFlags(args: string[]): TaskScrubFlags {
       continue;
     }
     if (!arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Usage: agentplane task scrub" });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(TASK_SCRUB_USAGE, TASK_SCRUB_USAGE_EXAMPLE),
+      });
     }
     const next = args[i + 1];
     if (!next)
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
     if (arg === "--find") {
       out.find = next;
     } else if (arg === "--replace") {
@@ -3545,7 +3873,7 @@ async function cmdTaskScrub(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: "Usage: agentplane task scrub --find",
+      message: usageMessage(TASK_SCRUB_USAGE, TASK_SCRUB_USAGE_EXAMPLE),
     });
   }
   try {
@@ -3570,7 +3898,9 @@ async function cmdTaskScrub(opts: {
     }
     if (flags.dryRun) {
       if (!flags.quiet) {
-        process.stdout.write(`Would update ${changedIds.size} task(s).\n`);
+        process.stdout.write(
+          `${infoMessage(`dry-run: would update ${changedIds.size} task(s)`)}` + "\n",
+        );
         for (const id of [...changedIds].toSorted()) {
           process.stdout.write(`${id}\n`);
         }
@@ -3585,7 +3915,9 @@ async function cmdTaskScrub(opts: {
       }
     }
     if (!flags.quiet) {
-      process.stdout.write(`Updated ${changedIds.size} task(s).\n`);
+      process.stdout.write(
+        `${successMessage("updated tasks", undefined, `count=${changedIds.size}`)}` + "\n",
+      );
     }
     return 0;
   } catch (err) {
@@ -3613,7 +3945,11 @@ function parseTaskListFilters(args: string[], opts?: { allowLimit?: boolean }): 
     if (arg === "--status") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --status" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: missingValueMessage("--status"),
+        });
       out.status.push(next);
       i++;
       continue;
@@ -3621,7 +3957,11 @@ function parseTaskListFilters(args: string[], opts?: { allowLimit?: boolean }): 
     if (arg === "--owner") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --owner" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: missingValueMessage("--owner"),
+        });
       out.owner.push(next);
       i++;
       continue;
@@ -3629,7 +3969,7 @@ function parseTaskListFilters(args: string[], opts?: { allowLimit?: boolean }): 
     if (arg === "--tag") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --tag" });
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage("--tag") });
       out.tag.push(next);
       i++;
       continue;
@@ -3637,10 +3977,18 @@ function parseTaskListFilters(args: string[], opts?: { allowLimit?: boolean }): 
     if (opts?.allowLimit && arg === "--limit") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --limit" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: missingValueMessage("--limit"),
+        });
       const parsed = Number.parseInt(next, 10);
       if (!Number.isFinite(parsed)) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Invalid --limit value" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: invalidValueForFlag("--limit", next, "integer"),
+        });
       }
       out.limit = parsed;
       i++;
@@ -3780,11 +4128,11 @@ async function cmdReady(opts: {
         warnings.push(`${task.id}: incomplete deps: ${incomplete.join(", ")}`);
       }
     } else {
-      warnings.push(`Unknown task id: ${opts.taskId}`);
+      warnings.push(unknownEntityMessage("task id", opts.taskId));
     }
 
     for (const warning of warnings) {
-      process.stdout.write(`⚠️ ${warning}\n`);
+      process.stdout.write(`${warnMessage(warning)}\n`);
     }
 
     if (task) {
@@ -3799,15 +4147,15 @@ async function cmdReady(opts: {
       const missing = dep?.missing ?? [];
       const incomplete = dep?.incomplete ?? [];
       if (missing.length > 0) {
-        process.stdout.write(`Missing deps: ${missing.join(", ")}\n`);
+        process.stdout.write(`${warnMessage(`missing deps: ${missing.join(", ")}`)}\n`);
       }
       if (incomplete.length > 0) {
-        process.stdout.write(`Incomplete deps: ${incomplete.join(", ")}\n`);
+        process.stdout.write(`${warnMessage(`incomplete deps: ${incomplete.join(", ")}`)}\n`);
       }
     }
 
     const ready = warnings.length === 0;
-    process.stdout.write(`${ready ? "✅ ready" : "⛔ not ready"}\n`);
+    process.stdout.write(`${ready ? successMessage("ready") : warnMessage("not ready")}` + "\n");
     return ready ? 0 : 2;
   } catch (err) {
     throw mapBackendError(err, { command: "ready", root: opts.rootOverride ?? null });
@@ -3841,7 +4189,11 @@ async function cmdTaskSearch(opts: {
 }): Promise<number> {
   const query = opts.query.trim();
   if (!query) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Query must be non-empty" });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Missing query (expected non-empty text)",
+    });
   }
   let regex = false;
   const restArgs = [...opts.args];
@@ -3880,7 +4232,11 @@ async function cmdTaskSearch(opts: {
         pattern = new RegExp(query, "i");
       } catch (err) {
         const message = err instanceof Error ? err.message : "Invalid regex";
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Invalid regex: ${message}` });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: invalidValueMessage("regex", message, "valid pattern"),
+        });
       }
       matches = filtered.filter((task) => pattern.test(taskTextBlob(task)));
     } else {
@@ -3915,7 +4271,7 @@ function parseTaskScaffoldFlags(args: string[]): TaskScaffoldFlags {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: "Usage: agentplane task scaffold <task-id> [--title <text>] [--overwrite] [--force]",
+      message: usageMessage(TASK_SCAFFOLD_USAGE, TASK_SCAFFOLD_USAGE_EXAMPLE),
     });
   }
   const out: TaskScaffoldFlags = { taskId, overwrite: false, force: false, quiet: false };
@@ -3937,7 +4293,11 @@ function parseTaskScaffoldFlags(args: string[]): TaskScaffoldFlags {
     if (arg === "--title") {
       const next = rest[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --title" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: missingValueMessage("--title"),
+        });
       out.title = next;
       i++;
       continue;
@@ -3967,7 +4327,7 @@ async function cmdTaskScaffold(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `Unknown task id: ${flags.taskId}`,
+        message: unknownEntityMessage("task id", flags.taskId),
       });
     }
     const readmePath = taskReadmePath(
@@ -4016,7 +4376,9 @@ async function cmdTaskScaffold(opts: {
     await mkdir(path.dirname(readmePath), { recursive: true });
     await writeFile(readmePath, text.endsWith("\n") ? text : `${text}\n`, "utf8");
     if (!flags.quiet) {
-      process.stdout.write(`✅ wrote ${path.relative(resolved.gitRoot, readmePath)}\n`);
+      process.stdout.write(
+        `${successMessage("wrote", path.relative(resolved.gitRoot, readmePath))}\n`,
+      );
     }
     return 0;
   } catch (err) {
@@ -4034,7 +4396,7 @@ function parseTaskNormalizeFlags(args: string[]): TaskNormalizeFlags {
     if (arg === "--quiet") out.quiet = true;
     else if (arg === "--force") out.force = true;
     else if (arg.startsWith("--"))
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Unknown flag" });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
   }
   return out;
 }
@@ -4060,7 +4422,9 @@ async function cmdTaskNormalize(opts: {
       for (const task of tasks) await backend.writeTask(task);
     }
     if (!flags.quiet) {
-      process.stdout.write(`✅ normalized ${tasks.length} task(s)\n`);
+      process.stdout.write(
+        `${successMessage("normalized tasks", undefined, `count=${tasks.length}`)}\n`,
+      );
     }
     return 0;
   } catch (err) {
@@ -4086,13 +4450,17 @@ function parseTaskMigrateFlags(args: string[]): TaskMigrateFlags {
     if (arg === "--source") {
       const next = args[i + 1];
       if (!next)
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing value for --source" });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: missingValueMessage("--source"),
+        });
       out.source = next;
       i++;
       continue;
     }
     if (arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Unknown flag" });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
     }
   }
   return out;
@@ -4123,7 +4491,9 @@ async function cmdTaskMigrate(opts: {
       for (const task of tasks) await backend.writeTask(task);
     }
     if (!flags.quiet) {
-      process.stdout.write(`✅ migrated ${tasks.length} task(s) into backend\n`);
+      process.stdout.write(
+        `${successMessage("migrated tasks into backend", undefined, `count=${tasks.length}`)}\n`,
+      );
     }
     return 0;
   } catch (err) {
@@ -4158,7 +4528,7 @@ async function cmdTaskComment(opts: {
       doc_updated_by: "agentplane",
     };
     await backend.writeTask(next);
-    process.stdout.write(`✅ commented ${opts.taskId}\n`);
+    process.stdout.write(`${successMessage("commented", opts.taskId)}\n`);
     return 0;
   } catch (err) {
     throw mapBackendError(err, { command: "task comment", root: opts.rootOverride ?? null });
@@ -4251,10 +4621,12 @@ async function cmdTaskSetStatus(opts: {
       if (dep && (dep.missing.length > 0 || dep.incomplete.length > 0)) {
         if (!opts.quiet) {
           if (dep.missing.length > 0) {
-            process.stderr.write(`⚠️ missing deps: ${dep.missing.join(", ")}\n`);
+            process.stderr.write(`${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`);
           }
           if (dep.incomplete.length > 0) {
-            process.stderr.write(`⚠️ incomplete deps: ${dep.incomplete.join(", ")}\n`);
+            process.stderr.write(
+              `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
+            );
           }
         }
         throw new CliError({
@@ -4323,7 +4695,7 @@ async function cmdTaskSetStatus(opts: {
     }
 
     if (!opts.quiet) {
-      process.stdout.write(`✅ status ${opts.taskId} -> ${nextStatus}\n`);
+      process.stdout.write(`${successMessage("status", opts.taskId, `next=${nextStatus}`)}\n`);
     }
     return 0;
   } catch (err) {
@@ -4385,7 +4757,7 @@ async function cmdTaskExport(opts: { cwd: string; rootOverride?: string }): Prom
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: "Configured backend does not support exportTasksJson()",
+        message: backendNotSupportedMessage("exportTasksJson()"),
       });
     }
     await backend.exportTasksJson(outPath);
@@ -4415,25 +4787,45 @@ async function cmdTaskLint(opts: { cwd: string; rootOverride?: string }): Promis
 }
 
 const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
+const IDE_SYNC_USAGE_EXAMPLE = "agentplane ide sync";
 const GUARD_COMMIT_USAGE =
   "Usage: agentplane guard commit <task-id> -m <message> --allow <path> [--allow <path>...] [--auto-allow] [--allow-tasks] [--require-clean] [--quiet]";
+const GUARD_COMMIT_USAGE_EXAMPLE =
+  'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB update" --allow packages/agentplane';
 const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
+const COMMIT_USAGE_EXAMPLE = 'agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB update"';
 const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text> [flags]";
+const START_USAGE_EXAMPLE =
+  'agentplane start 202602030608-F1Q8AB --author CODER --body "Start: ..."';
 const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <text> [flags]";
+const BLOCK_USAGE_EXAMPLE =
+  'agentplane block 202602030608-F1Q8AB --author CODER --body "Blocked: ..."';
 const FINISH_USAGE =
   "Usage: agentplane finish <task-id> [<task-id>...] --author <id> --body <text> [flags]";
+const FINISH_USAGE_EXAMPLE =
+  'agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: ..."';
 const VERIFY_USAGE =
   "Usage: agentplane verify <task-id> [--cwd <path>] [--log <path>] [--skip-if-unchanged] [--quiet] [--require]";
+const VERIFY_USAGE_EXAMPLE = "agentplane verify 202602030608-F1Q8AB";
 const WORK_START_USAGE =
   "Usage: agentplane work start <task-id> --agent <id> --slug <slug> --worktree";
+const WORK_START_USAGE_EXAMPLE =
+  "agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli --worktree";
 const PR_OPEN_USAGE = "Usage: agentplane pr open <task-id> --author <id> [--branch <name>]";
+const PR_OPEN_USAGE_EXAMPLE = "agentplane pr open 202602030608-F1Q8AB --author CODER";
 const PR_UPDATE_USAGE = "Usage: agentplane pr update <task-id>";
+const PR_UPDATE_USAGE_EXAMPLE = "agentplane pr update 202602030608-F1Q8AB";
 const PR_CHECK_USAGE = "Usage: agentplane pr check <task-id>";
+const PR_CHECK_USAGE_EXAMPLE = "agentplane pr check 202602030608-F1Q8AB";
 const PR_NOTE_USAGE = "Usage: agentplane pr note <task-id> --author <id> --body <text>";
+const PR_NOTE_USAGE_EXAMPLE =
+  'agentplane pr note 202602030608-F1Q8AB --author REVIEWER --body "..."';
 const INTEGRATE_USAGE =
   "Usage: agentplane integrate <task-id> [--branch <name>] [--base <name>] [--merge-strategy squash|merge|rebase] [--run-verify] [--dry-run] [--quiet]";
+const INTEGRATE_USAGE_EXAMPLE = "agentplane integrate 202602030608-F1Q8AB --run-verify";
 const CLEANUP_MERGED_USAGE =
   "Usage: agentplane cleanup merged [--base <name>] [--yes] [--archive] [--quiet]";
+const CLEANUP_MERGED_USAGE_EXAMPLE = "agentplane cleanup merged --yes";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
   if (prefix === "." || prefix === "") return true;
@@ -4463,7 +4855,11 @@ function normalizeTaskStatus(value: string): string {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: `Invalid status: ${value} (allowed: ${[...ALLOWED_TASK_STATUSES].join(", ")})`,
+      message: invalidValueMessage(
+        "status",
+        value,
+        `one of ${[...ALLOWED_TASK_STATUSES].join(", ")}`,
+      ),
     });
   }
   return normalized;
@@ -4617,7 +5013,7 @@ function deriveCommitMessageFromComment(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: `Invalid task id: ${opts.taskId}`,
+      message: invalidValueMessage("task id", opts.taskId, "valid task id"),
     });
   }
   return `${prefix} ${suffix} ${summary}`;
@@ -4633,7 +5029,9 @@ function enforceStatusCommitPolicy(opts: {
   if (opts.policy === "warn") {
     if (!opts.quiet && !opts.confirmed) {
       process.stderr.write(
-        `⚠️ ${opts.action}: status/comment-driven commit requested; policy=warn (pass --confirm-status-commit to acknowledge)\n`,
+        `${warnMessage(
+          `${opts.action}: status/comment-driven commit requested; policy=warn (pass --confirm-status-commit to acknowledge)`,
+        )}\n`,
       );
     }
     return;
@@ -5004,7 +5402,11 @@ function shimScriptText(): string {
 function validateWorkSlug(slug: string): void {
   const trimmed = slug.trim();
   if (!trimmed) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+    });
   }
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(trimmed)) {
     throw new CliError({
@@ -5018,7 +5420,11 @@ function validateWorkSlug(slug: string): void {
 function validateWorkAgent(agent: string): void {
   const trimmed = agent.trim();
   if (!trimmed) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+    });
   }
   if (!/^[A-Z0-9_]+$/.test(trimmed)) {
     throw new CliError({
@@ -5231,7 +5637,7 @@ async function cmdGuardClean(opts: {
       });
     }
     if (!opts.quiet) {
-      process.stdout.write("✅ index clean (no staged files)\n");
+      process.stdout.write(`${successMessage("index clean", undefined, "no staged files")}\n`);
     }
     return 0;
   } catch (err) {
@@ -5248,7 +5654,11 @@ async function cmdGuardSuggestAllow(opts: {
   try {
     const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
     if (staged.length === 0) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "No staged files" });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "No staged files (git index empty)",
+      });
     }
     const prefixes = suggestAllowPrefixes(staged);
     if (opts.format === "args") {
@@ -5291,7 +5701,11 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
 
   const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
   if (staged.length === 0) {
-    throw new CliError({ exitCode: 5, code: "E_GIT", message: "No staged files" });
+    throw new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: "No staged files (git index empty)",
+    });
   }
   if (opts.allow.length === 0) {
     throw new CliError({
@@ -5386,7 +5800,11 @@ async function stageAllowlist(opts: {
   });
   const changed = await gitStatusChangedPaths({ cwd: opts.cwd, rootOverride: opts.rootOverride });
   if (changed.length === 0) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "No changes to stage" });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "No changes to stage (working tree clean)",
+    });
   }
 
   const allow = opts.allow.map((prefix) =>
@@ -5409,7 +5827,7 @@ async function stageAllowlist(opts: {
       exitCode: 2,
       code: "E_USAGE",
       message:
-        "No changes matched the allowed prefixes (use --commit-auto-allow or broaden --commit-allow)",
+        "No changes matched allowed prefixes (use --commit-auto-allow or update --commit-allow)",
     });
   }
 
@@ -5489,7 +5907,11 @@ async function commitFromComment(opts: {
   const [hash, subject] = trimmed.split(":", 2);
   if (!opts.quiet) {
     process.stdout.write(
-      `✅ committed ${hash?.slice(0, 12) ?? ""} ${subject ?? ""} (staged: ${staged.join(", ")})\n`,
+      `${successMessage(
+        "committed",
+        `${hash?.slice(0, 12) ?? ""} ${subject ?? ""}`.trim(),
+        `staged=${staged.join(", ")}`,
+      )}\n`,
     );
   }
   return { hash: hash ?? "", message: subject ?? "", staged };
@@ -5527,7 +5949,11 @@ async function cmdCommit(opts: {
       });
       const prefixes = suggestAllowPrefixes(staged);
       if (prefixes.length === 0) {
-        throw new CliError({ exitCode: 5, code: "E_GIT", message: "No staged files" });
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: "No staged files (git index empty)",
+        });
       }
       allow = prefixes;
     }
@@ -5561,7 +5987,9 @@ async function cmdCommit(opts: {
       });
       const trimmed = stdout.trim();
       const [hash, subject] = trimmed.split(":", 2);
-      process.stdout.write(`✅ committed ${hash?.slice(0, 12) ?? ""} ${subject ?? ""}\n`);
+      process.stdout.write(
+        `${successMessage("committed", `${hash?.slice(0, 12) ?? ""} ${subject ?? ""}`.trim())}\n`,
+      );
     }
     return 0;
   } catch (err) {
@@ -5627,10 +6055,12 @@ async function cmdStart(opts: {
       if (dep && (dep.missing.length > 0 || dep.incomplete.length > 0)) {
         if (!opts.quiet) {
           if (dep.missing.length > 0) {
-            process.stderr.write(`⚠️ missing deps: ${dep.missing.join(", ")}\n`);
+            process.stderr.write(`${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`);
           }
           if (dep.incomplete.length > 0) {
-            process.stderr.write(`⚠️ incomplete deps: ${dep.incomplete.join(", ")}\n`);
+            process.stderr.write(
+              `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
+            );
           }
         }
         throw new CliError({
@@ -5688,7 +6118,7 @@ async function cmdStart(opts: {
 
     if (!opts.quiet) {
       const suffix = commitInfo ? ` (commit=${commitInfo.hash.slice(0, 12)})` : "";
-      process.stdout.write(`✅ started ${opts.taskId}${suffix}\n`);
+      process.stdout.write(`${successMessage("started", `${opts.taskId}${suffix}`)}\n`);
     }
     return 0;
   } catch (err) {
@@ -5790,7 +6220,7 @@ async function cmdBlock(opts: {
 
     if (!opts.quiet) {
       const suffix = commitInfo ? ` (commit=${commitInfo.hash.slice(0, 12)})` : "";
-      process.stdout.write(`✅ blocked ${opts.taskId}${suffix}\n`);
+      process.stdout.write(`${successMessage("blocked", `${opts.taskId}${suffix}`)}\n`);
     }
     return 0;
   } catch (err) {
@@ -5912,7 +6342,7 @@ async function cmdFinish(opts: {
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: "Configured backend does not support exportTasksJson()",
+        message: backendNotSupportedMessage("exportTasksJson()"),
       });
     }
     const outPath = path.join(resolved.gitRoot, config.paths.tasks_path);
@@ -5964,7 +6394,7 @@ async function cmdFinish(opts: {
     }
 
     if (!opts.quiet) {
-      process.stdout.write("✅ finished\n");
+      process.stdout.write(`${successMessage("finished")}\n`);
     }
     return 0;
   } catch (err) {
@@ -6014,7 +6444,7 @@ async function cmdVerify(opts: {
         });
       }
       if (!opts.quiet) {
-        process.stdout.write(`ℹ️ ${task.id}: no verify commands configured\n`);
+        process.stdout.write(`${infoMessage(`${task.id}: no verify commands configured`)}\n`);
       }
       return 0;
     }
@@ -6069,7 +6499,7 @@ async function cmdVerify(opts: {
       if (changed.length > 0) {
         if (!opts.quiet) {
           process.stdout.write(
-            `⚠️ ${task.id}: working tree is dirty; ignoring --skip-if-unchanged\n`,
+            `${warnMessage(`${task.id}: working tree is dirty; ignoring --skip-if-unchanged`)}\n`,
           );
         }
       } else {
@@ -6085,7 +6515,9 @@ async function cmdVerify(opts: {
           }
           if (!opts.quiet) {
             process.stdout.write(
-              `ℹ️ ${task.id}: verify skipped (unchanged sha ${currentSha.slice(0, 12)})\n`,
+              `${infoMessage(
+                `${task.id}: verify skipped (unchanged sha ${currentSha.slice(0, 12)})`,
+              )}\n`,
             );
           }
           if (meta) {
@@ -6129,7 +6561,7 @@ async function cmdVerify(opts: {
       }
     }
     if (!opts.quiet) {
-      process.stdout.write(`✅ verify passed for ${task.id}\n`);
+      process.stdout.write(`${successMessage("verify passed", task.id)}\n`);
     }
 
     if (meta) {
@@ -6172,11 +6604,15 @@ async function cmdWorkStart(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "work start is only supported when workflow_mode=branch_pr",
+        message: workflowModeMessage(loaded.config.workflow_mode, "branch_pr"),
       });
     }
     if (!opts.worktree) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+      });
     }
 
     await loadBackendTask({
@@ -6225,7 +6661,11 @@ async function cmdWorkStart(opts: {
     await execFileAsync("git", worktreeArgs, { cwd: resolved.gitRoot, env: gitEnv() });
 
     process.stdout.write(
-      `✅ work start ${branchName} (worktree=${path.relative(resolved.gitRoot, worktreePath)})\n`,
+      `${successMessage(
+        "work start",
+        branchName,
+        `worktree=${path.relative(resolved.gitRoot, worktreePath)}`,
+      )}\n`,
     );
     return 0;
   } catch (err) {
@@ -6274,7 +6714,12 @@ async function cmdPrOpen(opts: {
 }): Promise<number> {
   try {
     const author = opts.author.trim();
-    if (!author) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+    if (!author)
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
+      });
 
     const { task } = await loadBackendTask({
       cwd: opts.cwd,
@@ -6288,12 +6733,17 @@ async function cmdPrOpen(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "pr commands require workflow_mode=branch_pr",
+        message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
     }
 
     const branch = (opts.branch ?? (await gitCurrentBranch(resolved.gitRoot))).trim();
-    if (!branch) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+    if (!branch)
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
+      });
 
     await mkdir(prDir, { recursive: true });
 
@@ -6323,7 +6773,7 @@ async function cmdPrOpen(opts: {
       await writeFile(reviewPath, review, "utf8");
     }
 
-    process.stdout.write(`✅ pr open ${path.relative(resolved.gitRoot, prDir)}\n`);
+    process.stdout.write(`${successMessage("pr open", path.relative(resolved.gitRoot, prDir))}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -6349,15 +6799,19 @@ async function cmdPrUpdate(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "pr commands require workflow_mode=branch_pr",
+        message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
     }
 
     if (!(await fileExists(metaPath)) || !(await fileExists(reviewPath))) {
+      const missing: string[] = [];
+      if (!(await fileExists(metaPath))) missing.push(path.relative(resolved.gitRoot, metaPath));
+      if (!(await fileExists(reviewPath)))
+        missing.push(path.relative(resolved.gitRoot, reviewPath));
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: "PR artifacts missing: run `agentplane pr open` first",
+        message: `PR artifacts missing: ${missing.join(", ")} (run \`agentplane pr open\`)`,
       });
     }
 
@@ -6403,7 +6857,9 @@ async function cmdPrUpdate(opts: {
     };
     await writeFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
 
-    process.stdout.write(`✅ pr update ${path.relative(resolved.gitRoot, prDir)}\n`);
+    process.stdout.write(
+      `${successMessage("pr update", path.relative(resolved.gitRoot, prDir))}\n`,
+    );
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -6429,16 +6885,21 @@ async function cmdPrCheck(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "pr commands require workflow_mode=branch_pr",
+        message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
     }
 
     const errors: string[] = [];
-    if (!(await fileExists(prDir))) errors.push("Missing PR directory");
-    if (!(await fileExists(metaPath))) errors.push("Missing pr/meta.json");
-    if (!(await fileExists(diffstatPath))) errors.push("Missing pr/diffstat.txt");
-    if (!(await fileExists(verifyLogPath))) errors.push("Missing pr/verify.log");
-    if (!(await fileExists(reviewPath))) errors.push("Missing pr/review.md");
+    const relPrDir = path.relative(resolved.gitRoot, prDir);
+    const relMetaPath = path.relative(resolved.gitRoot, metaPath);
+    const relDiffstatPath = path.relative(resolved.gitRoot, diffstatPath);
+    const relVerifyLogPath = path.relative(resolved.gitRoot, verifyLogPath);
+    const relReviewPath = path.relative(resolved.gitRoot, reviewPath);
+    if (!(await fileExists(prDir))) errors.push(`Missing PR directory: ${relPrDir}`);
+    if (!(await fileExists(metaPath))) errors.push(`Missing ${relMetaPath}`);
+    if (!(await fileExists(diffstatPath))) errors.push(`Missing ${relDiffstatPath}`);
+    if (!(await fileExists(verifyLogPath))) errors.push(`Missing ${relVerifyLogPath}`);
+    if (!(await fileExists(reviewPath))) errors.push(`Missing ${relReviewPath}`);
 
     let meta: PrMeta | null = null;
     if (await fileExists(metaPath)) {
@@ -6477,7 +6938,7 @@ async function cmdPrCheck(opts: {
       throw new CliError({ exitCode: 3, code: "E_VALIDATION", message: errors.join("\n") });
     }
 
-    process.stdout.write(`✅ pr check ${path.relative(resolved.gitRoot, prDir)}\n`);
+    process.stdout.write(`${successMessage("pr check", path.relative(resolved.gitRoot, prDir))}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -6496,23 +6957,28 @@ async function cmdPrNote(opts: {
     const author = opts.author.trim();
     const body = opts.body.trim();
     if (!author || !body) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
+      });
     }
 
-    const { config, reviewPath } = await resolvePrPaths(opts);
+    const { config, reviewPath, resolved } = await resolvePrPaths(opts);
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "pr commands require workflow_mode=branch_pr",
+        message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
     }
 
     if (!(await fileExists(reviewPath))) {
+      const relReviewPath = path.relative(resolved.gitRoot, reviewPath);
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: "Missing pr/review.md (run `agentplane pr open`)",
+        message: `Missing ${relReviewPath} (run \`agentplane pr open\`)`,
       });
     }
 
@@ -6520,7 +6986,7 @@ async function cmdPrNote(opts: {
     const updated = appendHandoffNote(review, `${author}: ${body}`);
     await writeFile(reviewPath, updated, "utf8");
 
-    process.stdout.write("✅ pr note\n");
+    process.stdout.write(`${successMessage("pr note", opts.taskId)}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -6587,7 +7053,7 @@ async function cmdIntegrate(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "integrate is only supported when workflow_mode=branch_pr",
+        message: workflowModeMessage(loaded.config.workflow_mode, "branch_pr"),
       });
     }
 
@@ -6618,13 +7084,17 @@ async function cmdIntegrate(opts: {
       if (!branch) branch = (meta.branch ?? "").trim();
     }
     if (!branch) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
+      });
     }
     if (!(await gitBranchExists(resolved.gitRoot, branch))) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `Unknown branch: ${branch}`,
+        message: unknownEntityMessage("branch", branch),
       });
     }
 
@@ -6646,27 +7116,30 @@ async function cmdIntegrate(opts: {
         : baseBranch;
 
     const errors: string[] = [];
+    const relDiffstat = path.relative(resolved.gitRoot, path.join(prDir, "diffstat.txt"));
+    const relVerifyLog = path.relative(resolved.gitRoot, path.join(prDir, "verify.log"));
+    const relReview = path.relative(resolved.gitRoot, path.join(prDir, "review.md"));
     const diffstatText = await readPrArtifact({
       resolved,
       prDir,
       fileName: "diffstat.txt",
       branch,
     });
-    if (diffstatText === null) errors.push("Missing pr/diffstat.txt");
+    if (diffstatText === null) errors.push(`Missing ${relDiffstat}`);
     const verifyLogText = await readPrArtifact({
       resolved,
       prDir,
       fileName: "verify.log",
       branch,
     });
-    if (verifyLogText === null) errors.push("Missing pr/verify.log");
+    if (verifyLogText === null) errors.push(`Missing ${relVerifyLog}`);
     const reviewText = await readPrArtifact({
       resolved,
       prDir,
       fileName: "review.md",
       branch,
     });
-    if (reviewText === null) errors.push("Missing pr/review.md");
+    if (reviewText === null) errors.push(`Missing ${relReview}`);
     if (reviewText) validateReviewContents(reviewText, errors);
     if (errors.length > 0) {
       throw new CliError({ exitCode: 3, code: "E_VALIDATION", message: errors.join("\n") });
@@ -6706,7 +7179,11 @@ async function cmdIntegrate(opts: {
     if (opts.dryRun) {
       if (!opts.quiet) {
         process.stdout.write(
-          `✅ integrate dry-run ${task.id} (base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"})\n`,
+          `${successMessage(
+            "integrate dry-run",
+            task.id,
+            `base=${base} branch=${branch} verify=${shouldRunVerify ? "yes" : "no"}`,
+          )}\n`,
         );
       }
       return 0;
@@ -6785,7 +7262,7 @@ async function cmdIntegrate(opts: {
         });
       }
       if (!opts.quiet) {
-        process.stdout.write(`✅ verify passed for ${task.id}\n`);
+        process.stdout.write(`${successMessage("verify passed", task.id)}\n`);
       }
     }
 
@@ -6932,7 +7409,7 @@ async function cmdIntegrate(opts: {
           });
         }
         if (!opts.quiet) {
-          process.stdout.write(`✅ verify passed for ${task.id}\n`);
+          process.stdout.write(`${successMessage("verify passed", task.id)}\n`);
         }
       }
       try {
@@ -6955,7 +7432,7 @@ async function cmdIntegrate(opts: {
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message: `Missing PR artifact dir after merge: ${prDir}`,
+        message: `Missing PR artifact dir after merge: ${path.relative(resolved.gitRoot, prDir)}`,
       });
     }
 
@@ -7029,7 +7506,9 @@ async function cmdIntegrate(opts: {
     });
 
     if (!opts.quiet) {
-      process.stdout.write(`✅ integrate ${task.id} (merge=${mergeHash.slice(0, 12)})\n`);
+      process.stdout.write(
+        `${successMessage("integrate", task.id, `merge=${mergeHash.slice(0, 12)}`)}\n`,
+      );
     }
     return 0;
   } catch (err) {
@@ -7067,7 +7546,7 @@ async function cmdCleanupMerged(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "cleanup merged is only supported when workflow_mode=branch_pr",
+        message: workflowModeMessage(loaded.config.workflow_mode, "branch_pr"),
       });
     }
 
@@ -7077,13 +7556,17 @@ async function cmdCleanupMerged(opts: {
       opts.base ?? (await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }))
     ).trim();
     if (!baseBranch) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
+      });
     }
     if (!(await gitBranchExists(resolved.gitRoot, baseBranch))) {
       throw new CliError({
         exitCode: 5,
         code: "E_GIT",
-        message: `Unknown base branch: ${baseBranch}`,
+        message: unknownEntityMessage("base branch", baseBranch),
       });
     }
 
@@ -7182,7 +7665,9 @@ async function cmdCleanupMerged(opts: {
     }
 
     if (!opts.quiet) {
-      process.stdout.write(`✅ cleanup merged deleted=${candidates.length}\n`);
+      process.stdout.write(
+        `${successMessage("cleanup merged", undefined, `deleted=${candidates.length}`)}\n`,
+      );
     }
     return 0;
   } catch (err) {
@@ -7253,7 +7738,11 @@ async function cmdHooksUninstall(opts: {
       removed++;
     }
     if (!opts.quiet) {
-      process.stdout.write(removed > 0 ? "OK\n" : "No agentplane hooks found\n");
+      process.stdout.write(
+        removed > 0
+          ? `${successMessage("removed hooks", undefined, `count=${removed}`)}\n`
+          : `${infoMessage("no agentplane hooks found")}\n`,
+      );
     }
     return 0;
   } catch (err) {
@@ -7275,7 +7764,7 @@ async function cmdHooksRun(opts: {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Missing commit message file",
+          message: "Missing commit message file path",
         });
       }
       const raw = await readFile(messagePath, "utf8");
@@ -7400,7 +7889,11 @@ async function cmdBranchBaseSet(opts: {
 }): Promise<number> {
   const trimmed = opts.value.trim();
   if (trimmed.length === 0) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
+    });
   }
   try {
     const value = await setPinnedBaseBranch({
@@ -7432,20 +7925,24 @@ async function cmdBranchStatus(opts: {
       opts.base ?? (await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }))
     ).trim();
     if (!branch || !base) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_STATUS_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(BRANCH_STATUS_USAGE, BRANCH_STATUS_USAGE_EXAMPLE),
+      });
     }
     if (!(await gitBranchExists(resolved.gitRoot, branch))) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `Unknown branch: ${branch}`,
+        message: unknownEntityMessage("branch", branch),
       });
     }
     if (!(await gitBranchExists(resolved.gitRoot, base))) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `Unknown base branch: ${base}`,
+        message: unknownEntityMessage("base branch", base),
       });
     }
 
@@ -7477,7 +7974,11 @@ async function cmdBranchRemove(opts: {
   const branch = (opts.branch ?? "").trim();
   const worktree = (opts.worktree ?? "").trim();
   if (!branch && !worktree) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_REMOVE_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(BRANCH_REMOVE_USAGE, BRANCH_REMOVE_USAGE_EXAMPLE),
+    });
   }
   try {
     const resolved = await resolveProject({
@@ -7504,7 +8005,7 @@ async function cmdBranchRemove(opts: {
         { cwd: resolved.gitRoot, env: gitEnv() },
       );
       if (!opts.quiet) {
-        process.stdout.write(`✅ removed worktree ${worktreePath}\n`);
+        process.stdout.write(`${successMessage("removed worktree", worktreePath)}\n`);
       }
     }
 
@@ -7513,7 +8014,7 @@ async function cmdBranchRemove(opts: {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: `Unknown branch: ${branch}`,
+          message: unknownEntityMessage("branch", branch),
         });
       }
       await execFileAsync("git", ["branch", opts.force ? "-D" : "-d", branch], {
@@ -7521,7 +8022,7 @@ async function cmdBranchRemove(opts: {
         env: gitEnv(),
       });
       if (!opts.quiet) {
-        process.stdout.write(`✅ removed branch ${branch}\n`);
+        process.stdout.write(`${successMessage("removed branch", branch)}\n`);
       }
     }
     return 0;
@@ -7665,8 +8166,12 @@ async function loadBackendTask(opts: {
 
 const TASK_DOC_SET_USAGE =
   "Usage: agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)";
+const TASK_DOC_SET_USAGE_EXAMPLE =
+  'agentplane task doc set 202602030608-F1Q8AB --section Summary --text "..."';
 const TASK_DOC_SHOW_USAGE =
   "Usage: agentplane task doc show <task-id> [--section <name>] [--quiet]";
+const TASK_DOC_SHOW_USAGE_EXAMPLE =
+  "agentplane task doc show 202602030608-F1Q8AB --section Summary";
 
 type TaskDocSetFlags = {
   section?: string;
@@ -7692,7 +8197,7 @@ function parseTaskDocShowFlags(args: string[]): TaskDocShowFlags {
     if (arg === "--section") {
       const next = args[i + 1];
       if (!next) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
       }
       out.section = next;
       i++;
@@ -7715,7 +8220,7 @@ function parseTaskDocSetFlags(args: string[]): TaskDocSetFlags {
 
     const next = args[i + 1];
     if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Missing value for ${arg}` });
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
     }
 
     switch (arg) {
@@ -7755,13 +8260,21 @@ async function cmdTaskDocSet(opts: {
   const flags = parseTaskDocSetFlags(opts.args);
 
   if (!flags.section) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: TASK_DOC_SET_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
+    });
   }
 
   const hasText = flags.text !== undefined;
   const hasFile = flags.file !== undefined;
   if (hasText === hasFile) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: TASK_DOC_SET_USAGE });
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
+    });
   }
 
   const updatedBy = (flags.updatedBy ?? "agentplane").trim();
@@ -7787,7 +8300,7 @@ async function cmdTaskDocSet(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "Configured backend does not support task docs",
+        message: backendNotSupportedMessage("task docs"),
       });
     }
     const allowed = config.tasks.doc.sections;
@@ -7795,7 +8308,7 @@ async function cmdTaskDocSet(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: `Unknown doc section: ${flags.section}`,
+        message: unknownEntityMessage("doc section", flags.section),
       });
     }
     const normalizedAllowed = new Set(allowed.map((section) => normalizeDocSectionName(section)));
@@ -7853,7 +8366,7 @@ async function cmdTaskDocShow(opts: {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "Configured backend does not support task docs",
+        message: backendNotSupportedMessage("task docs"),
       });
     }
     const doc = (await backend.getTaskDoc(opts.taskId)) ?? "";
@@ -7867,7 +8380,7 @@ async function cmdTaskDocShow(opts: {
         return 0;
       }
       if (!flags.quiet) {
-        process.stdout.write(`ℹ️ no content for section: ${flags.section}\n`);
+        process.stdout.write(`${infoMessage(`section has no content: ${flags.section}`)}\n`);
       }
       return 0;
     }
@@ -7876,7 +8389,7 @@ async function cmdTaskDocShow(opts: {
       return 0;
     }
     if (!flags.quiet) {
-      process.stdout.write("ℹ️ no task doc metadata\n");
+      process.stdout.write(`${infoMessage("task doc metadata missing")}\n`);
     }
     return 0;
   } catch (err) {
@@ -7911,8 +8424,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message:
-            "Usage: agentplane init [--ide <...>] [--workflow <...>] [--hooks <...>] [--require-plan-approval <...>] [--require-network-approval <...>] [--recipes <...>] [--yes] [--force|--backup]",
+          message: usageMessage(INIT_USAGE, INIT_USAGE_EXAMPLE),
         });
       }
       return await cmdInit({ cwd: process.cwd(), rootOverride: globals.root, args: initArgs });
@@ -7921,7 +8433,11 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "upgrade") {
       const upgradeArgs = command ? [command, ...args] : [];
       if (command && !command.startsWith("--")) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: UPGRADE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(UPGRADE_USAGE, UPGRADE_USAGE_EXAMPLE),
+        });
       }
       return await cmdUpgrade({
         cwd: process.cwd(),
@@ -7940,7 +8456,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Usage: agentplane config set <key> <value>",
+          message: usageMessage(CONFIG_SET_USAGE, CONFIG_SET_USAGE_EXAMPLE),
         });
       }
       return await cmdConfigSet({ cwd: process.cwd(), rootOverride: globals.root, key, value });
@@ -7956,7 +8472,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Usage: agentplane mode set <direct|branch_pr>",
+          message: usageMessage(MODE_SET_USAGE, MODE_SET_USAGE_EXAMPLE),
         });
       }
       return await cmdModeSet({ cwd: process.cwd(), rootOverride: globals.root, mode });
@@ -7967,7 +8483,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Usage: agentplane quickstart",
+          message: usageMessage(QUICKSTART_USAGE, QUICKSTART_USAGE_EXAMPLE),
         });
       }
       return cmdQuickstart({ cwd: process.cwd(), rootOverride: globals.root });
@@ -7975,28 +8491,44 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "role") {
       if (!command || command.startsWith("--") || args.length > 0) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: ROLE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(ROLE_USAGE, ROLE_USAGE_EXAMPLE),
+        });
       }
       return cmdRole({ cwd: process.cwd(), rootOverride: globals.root, role: command });
     }
 
     if (namespace === "agents") {
       if (command) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: AGENTS_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(AGENTS_USAGE, AGENTS_USAGE_EXAMPLE),
+        });
       }
       return await cmdAgents({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "ready") {
       if (!command || command.startsWith("--") || args.length > 0) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: READY_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(READY_USAGE, READY_USAGE_EXAMPLE),
+        });
       }
       return await cmdReady({ cwd: process.cwd(), rootOverride: globals.root, taskId: command });
     }
 
     if (namespace === "ide") {
       if (command !== "sync" || args.length > 0) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: IDE_SYNC_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(IDE_SYNC_USAGE, IDE_SYNC_USAGE_EXAMPLE),
+        });
       }
       return await cmdIdeSync({ cwd: process.cwd(), rootOverride: globals.root });
     }
@@ -8023,7 +8555,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Usage: agentplane task show <task-id>",
+          message: usageMessage(TASK_SHOW_USAGE, TASK_SHOW_USAGE_EXAMPLE),
         });
       }
       return await cmdTaskShow({ cwd: process.cwd(), rootOverride: globals.root, taskId });
@@ -8043,7 +8575,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Usage: agentplane task search <query> [flags]",
+          message: usageMessage(TASK_SEARCH_USAGE, TASK_SEARCH_USAGE_EXAMPLE),
         });
       }
       return await cmdTaskSearch({
@@ -8078,7 +8610,11 @@ export async function runCli(argv: string[]): Promise<number> {
       const [subcommand, taskId, ...restArgs] = args;
       if (subcommand === "show") {
         if (!taskId) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: TASK_DOC_SHOW_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(TASK_DOC_SHOW_USAGE, TASK_DOC_SHOW_USAGE_EXAMPLE),
+          });
         }
         return await cmdTaskDocShow({
           cwd: process.cwd(),
@@ -8089,7 +8625,11 @@ export async function runCli(argv: string[]): Promise<number> {
       }
       if (subcommand === "set") {
         if (!taskId) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: TASK_DOC_SET_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
+          });
         }
         return await cmdTaskDocSet({
           cwd: process.cwd(),
@@ -8098,7 +8638,11 @@ export async function runCli(argv: string[]): Promise<number> {
           args: restArgs,
         });
       }
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: TASK_DOC_SET_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
+      });
     }
 
     if (namespace === "task" && command === "comment") {
@@ -8107,7 +8651,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Usage: agentplane task comment <task-id>",
+          message: usageMessage(TASK_COMMENT_USAGE, TASK_COMMENT_USAGE_EXAMPLE),
         });
       }
       let author = "";
@@ -8121,7 +8665,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: "Missing value for --author",
+              message: missingValueMessage("--author"),
             });
           }
           author = next;
@@ -8134,7 +8678,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: "Missing value for --body",
+              message: missingValueMessage("--body"),
             });
           }
           body = next;
@@ -8145,7 +8689,7 @@ export async function runCli(argv: string[]): Promise<number> {
           throw new CliError({
             exitCode: 2,
             code: "E_USAGE",
-            message: "Usage: agentplane task comment <task-id>",
+            message: usageMessage(TASK_COMMENT_USAGE, TASK_COMMENT_USAGE_EXAMPLE),
           });
         }
       }
@@ -8153,7 +8697,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Usage: agentplane task comment <task-id>",
+          message: usageMessage(TASK_COMMENT_USAGE, TASK_COMMENT_USAGE_EXAMPLE),
         });
       }
       return await cmdTaskComment({
@@ -8171,7 +8715,7 @@ export async function runCli(argv: string[]): Promise<number> {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: "Usage: agentplane task set-status <task-id> <status> [flags]",
+          message: usageMessage(TASK_SET_STATUS_USAGE, TASK_SET_STATUS_USAGE_EXAMPLE),
         });
       }
       let author: string | undefined;
@@ -8195,7 +8739,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: "Missing value for --author",
+              message: missingValueMessage("--author"),
             });
           author = next;
           i++;
@@ -8207,7 +8751,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: "Missing value for --body",
+              message: missingValueMessage("--body"),
             });
           body = next;
           i++;
@@ -8219,7 +8763,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: "Missing value for --commit",
+              message: missingValueMessage("--commit"),
             });
           commit = next;
           i++;
@@ -8239,7 +8783,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: "Missing value for --commit-emoji",
+              message: missingValueMessage("--commit-emoji"),
             });
           commitEmoji = next;
           i++;
@@ -8251,7 +8795,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: "Missing value for --commit-allow",
+              message: missingValueMessage("--commit-allow"),
             });
           commitAllow.push(next);
           i++;
@@ -8281,7 +8825,7 @@ export async function runCli(argv: string[]): Promise<number> {
           throw new CliError({
             exitCode: 2,
             code: "E_USAGE",
-            message: "Usage: agentplane task set-status <task-id> <status> [flags]",
+            message: usageMessage(TASK_SET_STATUS_USAGE, TASK_SET_STATUS_USAGE_EXAMPLE),
           });
         }
       }
@@ -8313,7 +8857,11 @@ export async function runCli(argv: string[]): Promise<number> {
         }
         if (subcommand === "set") {
           if (!value) {
-            throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
+            });
           }
           return await cmdBranchBaseSet({
             cwd: process.cwd(),
@@ -8321,7 +8869,11 @@ export async function runCli(argv: string[]): Promise<number> {
             value,
           });
         }
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
+        });
       }
       if (command === "status") {
         let branch: string | undefined;
@@ -8335,7 +8887,7 @@ export async function runCli(argv: string[]): Promise<number> {
               throw new CliError({
                 exitCode: 2,
                 code: "E_USAGE",
-                message: BRANCH_STATUS_USAGE,
+                message: usageMessage(BRANCH_STATUS_USAGE, BRANCH_STATUS_USAGE_EXAMPLE),
               });
             branch = next;
             i++;
@@ -8347,7 +8899,7 @@ export async function runCli(argv: string[]): Promise<number> {
               throw new CliError({
                 exitCode: 2,
                 code: "E_USAGE",
-                message: BRANCH_STATUS_USAGE,
+                message: usageMessage(BRANCH_STATUS_USAGE, BRANCH_STATUS_USAGE_EXAMPLE),
               });
             base = next;
             i++;
@@ -8357,7 +8909,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: BRANCH_STATUS_USAGE,
+              message: usageMessage(BRANCH_STATUS_USAGE, BRANCH_STATUS_USAGE_EXAMPLE),
             });
           }
         }
@@ -8382,7 +8934,7 @@ export async function runCli(argv: string[]): Promise<number> {
               throw new CliError({
                 exitCode: 2,
                 code: "E_USAGE",
-                message: BRANCH_REMOVE_USAGE,
+                message: usageMessage(BRANCH_REMOVE_USAGE, BRANCH_REMOVE_USAGE_EXAMPLE),
               });
             branch = next;
             i++;
@@ -8394,7 +8946,7 @@ export async function runCli(argv: string[]): Promise<number> {
               throw new CliError({
                 exitCode: 2,
                 code: "E_USAGE",
-                message: BRANCH_REMOVE_USAGE,
+                message: usageMessage(BRANCH_REMOVE_USAGE, BRANCH_REMOVE_USAGE_EXAMPLE),
               });
             worktree = next;
             i++;
@@ -8412,7 +8964,7 @@ export async function runCli(argv: string[]): Promise<number> {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
-              message: BRANCH_REMOVE_USAGE,
+              message: usageMessage(BRANCH_REMOVE_USAGE, BRANCH_REMOVE_USAGE_EXAMPLE),
             });
           }
         }
@@ -8425,13 +8977,21 @@ export async function runCli(argv: string[]): Promise<number> {
           quiet,
         });
       }
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: BRANCH_BASE_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
+      });
     }
 
     if (namespace === "work" && command === "start") {
       const [taskId, ...restArgs] = args;
       if (!taskId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+        });
       }
       let agent = "";
       let slug = "";
@@ -8443,7 +9003,11 @@ export async function runCli(argv: string[]): Promise<number> {
         if (arg === "--agent") {
           const next = restArgs[i + 1];
           if (!next)
-            throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+            });
           agent = next;
           i++;
           continue;
@@ -8451,7 +9015,11 @@ export async function runCli(argv: string[]): Promise<number> {
         if (arg === "--slug") {
           const next = restArgs[i + 1];
           if (!next)
-            throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+            });
           slug = next;
           i++;
           continue;
@@ -8460,11 +9028,19 @@ export async function runCli(argv: string[]): Promise<number> {
           worktree = true;
           continue;
         }
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+        });
       }
 
       if (!agent || !slug || !worktree) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: WORK_START_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+        });
       }
 
       return await cmdWorkStart({
@@ -8480,7 +9056,11 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "pr") {
       const [taskId, ...restArgs] = args;
       if (!taskId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
+        });
       }
 
       if (command === "open") {
@@ -8491,22 +9071,40 @@ export async function runCli(argv: string[]): Promise<number> {
           if (!arg) continue;
           if (arg === "--author") {
             const next = restArgs[i + 1];
-            if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+            if (!next)
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
+              });
             author = next;
             i++;
             continue;
           }
           if (arg === "--branch") {
             const next = restArgs[i + 1];
-            if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+            if (!next)
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
+              });
             branch = next;
             i++;
             continue;
           }
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
+          });
         }
         if (!author) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_OPEN_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
+          });
         }
         return await cmdPrOpen({
           cwd: process.cwd(),
@@ -8519,7 +9117,11 @@ export async function runCli(argv: string[]): Promise<number> {
 
       if (command === "update") {
         if (restArgs.length > 0) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_UPDATE_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(PR_UPDATE_USAGE, PR_UPDATE_USAGE_EXAMPLE),
+          });
         }
         return await cmdPrUpdate({
           cwd: process.cwd(),
@@ -8530,7 +9132,11 @@ export async function runCli(argv: string[]): Promise<number> {
 
       if (command === "check") {
         if (restArgs.length > 0) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_CHECK_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(PR_CHECK_USAGE, PR_CHECK_USAGE_EXAMPLE),
+          });
         }
         return await cmdPrCheck({
           cwd: process.cwd(),
@@ -8547,22 +9153,40 @@ export async function runCli(argv: string[]): Promise<number> {
           if (!arg) continue;
           if (arg === "--author") {
             const next = restArgs[i + 1];
-            if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+            if (!next)
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
+              });
             author = next;
             i++;
             continue;
           }
           if (arg === "--body") {
             const next = restArgs[i + 1];
-            if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+            if (!next)
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
+              });
             body = next;
             i++;
             continue;
           }
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
+          });
         }
         if (!author || !body) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: PR_NOTE_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
+          });
         }
         return await cmdPrNote({
           cwd: process.cwd(),
@@ -8576,7 +9200,7 @@ export async function runCli(argv: string[]): Promise<number> {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "Usage: agentplane pr open|update|check|note <task-id>",
+        message: usageMessage(PR_GROUP_USAGE, PR_GROUP_USAGE_EXAMPLE),
       });
     }
 
@@ -8593,7 +9217,11 @@ export async function runCli(argv: string[]): Promise<number> {
         if (formatFlagIndex !== -1) {
           const next = restArgs[formatFlagIndex + 1];
           if (next !== "lines" && next !== "args") {
-            throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Invalid --format" });
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: invalidValueForFlag("--format", String(next), "lines|args"),
+            });
           }
           format = next;
         }
@@ -8606,7 +9234,11 @@ export async function runCli(argv: string[]): Promise<number> {
       if (subcommand === "commit") {
         const taskId = restArgs[0];
         if (!taskId) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
+          });
         }
 
         const allow: string[] = [];
@@ -8623,7 +9255,11 @@ export async function runCli(argv: string[]): Promise<number> {
           if (arg === "--allow") {
             const next = restArgs[i + 1];
             if (!next)
-              throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
+              });
             allow.push(next);
             i++;
             continue;
@@ -8631,7 +9267,11 @@ export async function runCli(argv: string[]): Promise<number> {
           if (arg === "-m" || arg === "--message") {
             const next = restArgs[i + 1];
             if (!next)
-              throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
+              });
             message = next;
             i++;
             continue;
@@ -8657,12 +9297,20 @@ export async function runCli(argv: string[]): Promise<number> {
             continue;
           }
           if (arg.startsWith("--")) {
-            throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
+            });
           }
         }
 
         if (!message) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: GUARD_COMMIT_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
+          });
         }
 
         if (autoAllow && allow.length === 0) {
@@ -8672,7 +9320,11 @@ export async function runCli(argv: string[]): Promise<number> {
           });
           const prefixes = suggestAllowPrefixes(staged);
           if (prefixes.length === 0) {
-            throw new CliError({ exitCode: 5, code: "E_GIT", message: "No staged files" });
+            throw new CliError({
+              exitCode: 5,
+              code: "E_GIT",
+              message: "No staged files (git index empty)",
+            });
           }
           allow.push(...prefixes);
         }
@@ -8695,14 +9347,18 @@ export async function runCli(argv: string[]): Promise<number> {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "Usage: agentplane guard <subcommand>",
+        message: usageMessage(GUARD_USAGE, GUARD_USAGE_EXAMPLE),
       });
     }
 
     if (namespace === "commit") {
       const taskId = command;
       if (!taskId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
+        });
       }
       const allow: string[] = [];
       let message = "";
@@ -8717,14 +9373,24 @@ export async function runCli(argv: string[]): Promise<number> {
         if (!arg) continue;
         if (arg === "--allow") {
           const next = args[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
+            });
           allow.push(next);
           i++;
           continue;
         }
         if (arg === "-m" || arg === "--message") {
           const next = args[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
+            });
           message = next;
           i++;
           continue;
@@ -8750,12 +9416,20 @@ export async function runCli(argv: string[]): Promise<number> {
           continue;
         }
         if (arg.startsWith("--")) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
+          });
         }
       }
 
       if (!message) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: COMMIT_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
+        });
       }
 
       return await cmdCommit({
@@ -8782,7 +9456,11 @@ export async function runCli(argv: string[]): Promise<number> {
         taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
       }
       if (!taskId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
+        });
       }
       let author = "";
       let body = "";
@@ -8801,14 +9479,24 @@ export async function runCli(argv: string[]): Promise<number> {
         if (!arg) continue;
         if (arg === "--author") {
           const next = startArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
+            });
           author = next;
           i++;
           continue;
         }
         if (arg === "--body") {
           const next = startArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
+            });
           body = next;
           i++;
           continue;
@@ -8819,14 +9507,24 @@ export async function runCli(argv: string[]): Promise<number> {
         }
         if (arg === "--commit-emoji") {
           const next = startArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
+            });
           commitEmoji = next;
           i++;
           continue;
         }
         if (arg === "--commit-allow") {
           const next = startArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
+            });
           commitAllow.push(next);
           i++;
           continue;
@@ -8856,12 +9554,20 @@ export async function runCli(argv: string[]): Promise<number> {
           continue;
         }
         if (arg.startsWith("--")) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
+          });
         }
       }
 
       if (!author || !body) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: START_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
+        });
       }
 
       return await cmdStart({
@@ -8892,7 +9598,11 @@ export async function runCli(argv: string[]): Promise<number> {
         taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
       }
       if (!taskId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
+        });
       }
 
       let author = "";
@@ -8911,14 +9621,24 @@ export async function runCli(argv: string[]): Promise<number> {
         if (!arg) continue;
         if (arg === "--author") {
           const next = blockArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
+            });
           author = next;
           i++;
           continue;
         }
         if (arg === "--body") {
           const next = blockArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
+            });
           body = next;
           i++;
           continue;
@@ -8929,14 +9649,24 @@ export async function runCli(argv: string[]): Promise<number> {
         }
         if (arg === "--commit-emoji") {
           const next = blockArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
+            });
           commitEmoji = next;
           i++;
           continue;
         }
         if (arg === "--commit-allow") {
           const next = blockArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
+            });
           commitAllow.push(next);
           i++;
           continue;
@@ -8966,12 +9696,20 @@ export async function runCli(argv: string[]): Promise<number> {
           continue;
         }
         if (arg.startsWith("--")) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
+          });
         }
       }
 
       if (!author || !body) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BLOCK_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
+        });
       }
 
       return await cmdBlock({
@@ -9013,7 +9751,11 @@ export async function runCli(argv: string[]): Promise<number> {
         if (envTaskId) taskIds.push(envTaskId);
       }
       if (taskIds.length === 0) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+        });
       }
 
       let author = "";
@@ -9040,21 +9782,36 @@ export async function runCli(argv: string[]): Promise<number> {
         if (!arg) continue;
         if (arg === "--author") {
           const next = flagArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+            });
           author = next;
           i++;
           continue;
         }
         if (arg === "--body") {
           const next = flagArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+            });
           body = next;
           i++;
           continue;
         }
         if (arg === "--commit") {
           const next = flagArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+            });
           commit = next;
           i++;
           continue;
@@ -9081,14 +9838,24 @@ export async function runCli(argv: string[]): Promise<number> {
         }
         if (arg === "--commit-emoji") {
           const next = flagArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+            });
           commitEmoji = next;
           i++;
           continue;
         }
         if (arg === "--commit-allow") {
           const next = flagArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+            });
           commitAllow.push(next);
           i++;
           continue;
@@ -9111,14 +9878,24 @@ export async function runCli(argv: string[]): Promise<number> {
         }
         if (arg === "--status-commit-emoji") {
           const next = flagArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+            });
           statusCommitEmoji = next;
           i++;
           continue;
         }
         if (arg === "--status-commit-allow") {
           const next = flagArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+            });
           statusCommitAllow.push(next);
           i++;
           continue;
@@ -9136,12 +9913,20 @@ export async function runCli(argv: string[]): Promise<number> {
           continue;
         }
         if (arg.startsWith("--")) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+          });
         }
       }
 
       if (!author || !body) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: FINISH_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
+        });
       }
 
       return await cmdFinish({
@@ -9180,7 +9965,11 @@ export async function runCli(argv: string[]): Promise<number> {
         taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
       }
       if (!taskId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: VERIFY_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
+        });
       }
 
       let cwdOverride: string | undefined;
@@ -9194,14 +9983,24 @@ export async function runCli(argv: string[]): Promise<number> {
         if (!arg) continue;
         if (arg === "--cwd") {
           const next = verifyArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: VERIFY_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
+            });
           cwdOverride = next;
           i++;
           continue;
         }
         if (arg === "--log") {
           const next = verifyArgs[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: VERIFY_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
+            });
           logPath = next;
           i++;
           continue;
@@ -9219,7 +10018,11 @@ export async function runCli(argv: string[]): Promise<number> {
           continue;
         }
         if (arg.startsWith("--")) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: VERIFY_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
+          });
         }
       }
 
@@ -9238,7 +10041,11 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "integrate") {
       const taskId = command;
       if (!taskId) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
+        });
       }
       let branch: string | undefined;
       let base: string | undefined;
@@ -9252,14 +10059,24 @@ export async function runCli(argv: string[]): Promise<number> {
         if (!arg) continue;
         if (arg === "--branch") {
           const next = args[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
+            });
           branch = next;
           i++;
           continue;
         }
         if (arg === "--base") {
           const next = args[i + 1];
-          if (!next) throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+          if (!next)
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
+            });
           base = next;
           i++;
           continue;
@@ -9267,7 +10084,11 @@ export async function runCli(argv: string[]): Promise<number> {
         if (arg === "--merge-strategy") {
           const next = args[i + 1];
           if (next !== "squash" && next !== "merge" && next !== "rebase") {
-            throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
+            });
           }
           mergeStrategy = next;
           i++;
@@ -9286,9 +10107,17 @@ export async function runCli(argv: string[]): Promise<number> {
           continue;
         }
         if (arg.startsWith("--")) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
+          });
         }
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: INTEGRATE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
+        });
       }
 
       return await cmdIntegrate({
@@ -9307,7 +10136,11 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "cleanup") {
       const subcommand = command;
       if (subcommand !== "merged") {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
+        });
       }
       let base: string | undefined;
       let yes = false;
@@ -9320,7 +10153,11 @@ export async function runCli(argv: string[]): Promise<number> {
         if (arg === "--base") {
           const next = args[i + 1];
           if (!next)
-            throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
+            });
           base = next;
           i++;
           continue;
@@ -9338,9 +10175,17 @@ export async function runCli(argv: string[]): Promise<number> {
           continue;
         }
         if (arg.startsWith("--")) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
+          });
         }
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: CLEANUP_MERGED_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
+        });
       }
 
       return await cmdCleanupMerged({
@@ -9356,17 +10201,29 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "scenario") {
       const subcommand = command;
       if (!subcommand) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
+        });
       }
       if (subcommand === "list") {
         if (args.length > 0) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
+          });
         }
         return await cmdScenarioList({ cwd: process.cwd(), rootOverride: globals.root });
       }
       if (subcommand === "info") {
         if (args.length !== 1) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_INFO_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(SCENARIO_INFO_USAGE, SCENARIO_INFO_USAGE_EXAMPLE),
+          });
         }
         return await cmdScenarioInfo({
           cwd: process.cwd(),
@@ -9376,7 +10233,11 @@ export async function runCli(argv: string[]): Promise<number> {
       }
       if (subcommand === "run") {
         if (args.length !== 1) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_RUN_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(SCENARIO_RUN_USAGE, SCENARIO_RUN_USAGE_EXAMPLE),
+          });
         }
         return await cmdScenarioRun({
           cwd: process.cwd(),
@@ -9384,13 +10245,21 @@ export async function runCli(argv: string[]): Promise<number> {
           id: args[0],
         });
       }
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: SCENARIO_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
+      });
     }
 
     if (namespace === "recipe" || namespace === "recipes") {
       const subcommand = command;
       if (!subcommand) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+        });
       }
       if (subcommand === "list") {
         return await cmdRecipeList({
@@ -9408,7 +10277,11 @@ export async function runCli(argv: string[]): Promise<number> {
       }
       if (subcommand === "info") {
         if (args.length !== 1) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_INFO_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(RECIPE_INFO_USAGE, RECIPE_INFO_USAGE_EXAMPLE),
+          });
         }
         return await cmdRecipeInfo({
           cwd: process.cwd(),
@@ -9418,7 +10291,11 @@ export async function runCli(argv: string[]): Promise<number> {
       }
       if (subcommand === "explain") {
         if (args.length !== 1) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_EXPLAIN_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(RECIPE_EXPLAIN_USAGE, RECIPE_EXPLAIN_USAGE_EXAMPLE),
+          });
         }
         return await cmdRecipeExplain({
           cwd: process.cwd(),
@@ -9439,7 +10316,11 @@ export async function runCli(argv: string[]): Promise<number> {
       }
       if (subcommand === "remove") {
         if (args.length !== 1) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_REMOVE_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(RECIPE_REMOVE_USAGE, RECIPE_REMOVE_USAGE_EXAMPLE),
+          });
         }
         return await cmdRecipeRemove({
           cwd: process.cwd(),
@@ -9451,7 +10332,11 @@ export async function runCli(argv: string[]): Promise<number> {
         const cacheSub = args[0];
         const cacheArgs = args.slice(1);
         if (!cacheSub) {
-          throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_CACHE_USAGE });
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: usageMessage(RECIPE_CACHE_USAGE, RECIPE_CACHE_USAGE_EXAMPLE),
+          });
         }
         if (cacheSub === "prune") {
           return await cmdRecipeCachePrune({
@@ -9460,15 +10345,27 @@ export async function runCli(argv: string[]): Promise<number> {
             args: cacheArgs,
           });
         }
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_CACHE_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_CACHE_USAGE, RECIPE_CACHE_USAGE_EXAMPLE),
+        });
       }
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: RECIPE_USAGE });
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+      });
     }
 
     if (namespace === "backend") {
       const subcommand = command;
       if (subcommand !== "sync") {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: BACKEND_SYNC_USAGE });
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(BACKEND_SYNC_USAGE, BACKEND_SYNC_USAGE_EXAMPLE),
+        });
       }
       return await cmdBackendSync({
         cwd: process.cwd(),
@@ -9507,7 +10404,7 @@ export async function runCli(argv: string[]): Promise<number> {
           throw new CliError({
             exitCode: 2,
             code: "E_USAGE",
-            message: "Usage: agentplane hooks run <hook>",
+            message: usageMessage(HOOKS_RUN_USAGE, HOOKS_RUN_USAGE_EXAMPLE),
           });
         }
         return await cmdHooksRun({
@@ -9520,7 +10417,7 @@ export async function runCli(argv: string[]): Promise<number> {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "Usage: agentplane hooks install|uninstall",
+        message: usageMessage(HOOKS_INSTALL_USAGE, HOOKS_INSTALL_USAGE_EXAMPLE),
       });
     }
 

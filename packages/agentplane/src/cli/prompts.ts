@@ -12,7 +12,7 @@ export async function promptChoice(
   const trimmed = answer.trim();
   if (!trimmed) return defaultValue;
   if (!choices.includes(trimmed)) {
-    process.stdout.write(`Invalid choice, using default ${defaultValue}\n`);
+    process.stdout.write(`Invalid choice; using default ${defaultValue}\n`);
     return defaultValue;
   }
   return trimmed;

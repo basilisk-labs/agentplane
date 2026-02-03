@@ -14,9 +14,9 @@ export function listBundledRecipes(): BundledRecipeInfo[] {
 export function renderBundledRecipesHint(): string {
   const entries = listBundledRecipes();
   if (entries.length === 0) {
-    return "Available bundled recipes: none";
+    return "Bundled recipes: none";
   }
-  return `Available bundled recipes: ${entries.map((entry) => entry.id).join(", ")}`;
+  return `Bundled recipes: ${entries.map((entry) => entry.id).join(", ")}`;
 }
 
 export function validateBundledRecipesSelection(recipes: string[]): void {
@@ -31,7 +31,7 @@ export function validateBundledRecipesSelection(recipes: string[]): void {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: `Unknown recipes: ${missing.join(", ")}. ${renderBundledRecipesHint()}`,
+      message: `Unknown recipe id(s): ${missing.join(", ")}. ${renderBundledRecipesHint()}`,
     });
   }
 }
