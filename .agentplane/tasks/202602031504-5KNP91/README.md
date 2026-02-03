@@ -12,21 +12,11 @@ comments:
   - { author: "ORCHESTRATOR", body: "Start: bump versions to 0.1.3 and publish via GitHub Actions trusted publishing." }
   - { author: "ORCHESTRATOR", body: "Verified: git push origin v0.1.3 triggered pre-push test-full (vitest) and completed successfully; release tag v0.1.3 created." }
 doc_version: 2
-doc_updated_at: "2026-02-03T15:07:07.250Z"
-doc_updated_by: "agentplane"
+doc_updated_at: "2026-02-03T15:40:38.617Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Bump versions to 0.1.3 and publish to npm via GitHub Actions."
 id_source: "generated"
 ---
-## Summary
-
-## Scope
-
-## Risks
-
-## Verify Steps
-
-## Rollback Plan
-
 ## Summary
 
 Release 0.1.3 by bumping package versions and updating CLI/test version strings.

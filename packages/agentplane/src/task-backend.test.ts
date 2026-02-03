@@ -69,6 +69,23 @@ describe("task-backend helpers", () => {
     expect(extractTaskDoc(body)).toBe("## Summary\n\nDoc line");
   });
 
+  it("extractTaskDoc dedupes repeated section blocks", () => {
+    const body = [
+      "## Summary",
+      "",
+      "## Scope",
+      "",
+      "## Risks",
+      "",
+      "## Summary",
+      "",
+      "Doc line",
+    ].join("\n");
+    const doc = extractTaskDoc(body);
+    expect((doc.match(/^## Summary$/gm) ?? []).length).toBe(1);
+    expect(doc).toContain("Doc line");
+  });
+
   it("extractTaskDoc normalizes concatenated summary heading", () => {
     const body = [
       "# Title",
@@ -184,7 +201,7 @@ describe("task-backend helpers", () => {
     expect(task.verify).toEqual([]);
     expect(task.comments).toEqual([{ author: "a", body: "b" }]);
     expect(task.doc_version).toBe(2);
-    expect(task.doc_updated_by).toBe("agentplane");
+    expect(task.doc_updated_by).toBe("a");
     expect(task.dirty).toBe(false);
     expect(task.id_source).toBe("generated");
   });

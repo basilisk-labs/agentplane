@@ -61,14 +61,169 @@ function normalizeDoc(text: string): string {
     .trim();
 }
 
+function normalizeDocSectionName(section: string): string {
+  return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
+}
+
+function normalizeSectionLines(lines: string[]): string[] {
+  const trimmedLines = [...lines];
+  while (trimmedLines.length > 0 && trimmedLines[0]?.trim() === "") trimmedLines.shift();
+  while (trimmedLines.length > 0 && trimmedLines.at(-1)?.trim() === "") trimmedLines.pop();
+
+  const out: string[] = [];
+  let inFence = false;
+  let pendingBlank = false;
+
+  for (const line of trimmedLines) {
+    const fenceCheck = line.trimStart();
+    if (fenceCheck.startsWith("```")) {
+      if (pendingBlank) {
+        out.push("");
+        pendingBlank = false;
+      }
+      out.push(line);
+      inFence = !inFence;
+      continue;
+    }
+
+    if (inFence) {
+      out.push(line);
+      continue;
+    }
+
+    if (line.trim() === "") {
+      pendingBlank = true;
+      continue;
+    }
+
+    if (pendingBlank) {
+      out.push("");
+      pendingBlank = false;
+    }
+    out.push(line);
+  }
+
+  return out;
+}
+
+function splitCombinedHeadingLines(doc: string): string[] {
+  const lines = doc.replaceAll("\r\n", "\n").split("\n");
+  const out: string[] = [];
+  let inFence = false;
+
+  for (const line of lines) {
+    const trimmed = line.trimStart();
+    if (trimmed.startsWith("```")) {
+      inFence = !inFence;
+      out.push(line);
+      continue;
+    }
+
+    if (!inFence && line.includes("## ")) {
+      const matches = [...line.matchAll(/##\s+/g)];
+      if (matches.length > 1 && matches[0]?.index === 0) {
+        let start = 0;
+        for (let i = 1; i < matches.length; i += 1) {
+          const idx = matches[i]?.index ?? 0;
+          const chunk = line.slice(start, idx).trimEnd();
+          if (chunk) out.push(chunk);
+          start = idx;
+        }
+        const last = line.slice(start).trimEnd();
+        if (last) out.push(last);
+        continue;
+      }
+    }
+
+    out.push(line);
+  }
+
+  return out;
+}
+
+function normalizeTaskDoc(doc: string): string {
+  const normalized = doc.replaceAll("\r\n", "\n");
+  const trimmed = normalized.replaceAll(/^\n+|\n+$/g, "");
+  if (!trimmed) return "";
+
+  const lines = splitCombinedHeadingLines(trimmed);
+  const sections = new Map<string, { title: string; lines: string[] }>();
+  const order: string[] = [];
+  const pendingSeparator = new Set<string>();
+  let currentKey: string | null = null;
+
+  for (const line of lines) {
+    const match = /^##\s+(.*)$/.exec(line.trim());
+    if (match) {
+      const title = match[1]?.trim() ?? "";
+      const key = normalizeDocSectionName(title);
+      if (key) {
+        const existing = sections.get(key);
+        if (existing) {
+          if (existing.lines.some((entry) => entry.trim() !== "")) {
+            pendingSeparator.add(key);
+          }
+        } else {
+          sections.set(key, { title, lines: [] });
+          order.push(key);
+        }
+        currentKey = key;
+        continue;
+      }
+    }
+    if (currentKey) {
+      const entry = sections.get(currentKey);
+      if (!entry) continue;
+      if (pendingSeparator.has(currentKey) && line.trim() !== "") {
+        entry.lines.push("");
+        pendingSeparator.delete(currentKey);
+      }
+      entry.lines.push(line);
+    }
+  }
+
+  if (order.length === 0) return trimmed;
+
+  const out: string[] = [];
+  for (const key of order) {
+    const section = sections.get(key);
+    if (!section) continue;
+    const normalizedLines = normalizeSectionLines(section.lines);
+    if (normalizedLines.length > 0) {
+      out.push(`## ${section.title}`, "", ...normalizedLines, "");
+    } else {
+      out.push(`## ${section.title}`, "", "");
+    }
+  }
+
+  return out.join("\n").trimEnd();
+}
+
 function docChanged(existing: string, updated: string): boolean {
   return normalizeDoc(existing) !== normalizeDoc(updated);
 }
 
-function ensureDocMetadata(task: TaskDocMeta, updatedBy?: string): void {
+function normalizeUpdatedBy(value: unknown): string {
+  if (typeof value !== "string") return "";
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (trimmed.toLowerCase() === DEFAULT_DOC_UPDATED_BY.toLowerCase()) return "";
+  return trimmed;
+}
+
+function ensureDocMetadata(
+  task: TaskDocMeta & Partial<Pick<TaskData, "comments" | "owner">>,
+  updatedBy?: string,
+): void {
   task.doc_version = DOC_VERSION;
   task.doc_updated_at = nowIso();
-  task.doc_updated_by = updatedBy ?? DEFAULT_DOC_UPDATED_BY;
+  const explicit = normalizeUpdatedBy(updatedBy);
+  if (updatedBy !== undefined) {
+    task.doc_updated_by =
+      explicit || resolveDocUpdatedByFromTask(task as TaskData, DEFAULT_DOC_UPDATED_BY);
+    return;
+  }
+  task.doc_updated_by = resolveDocUpdatedByFromTask(task as TaskData, DEFAULT_DOC_UPDATED_BY);
 }
 
 function lastCommentAuthor(comments: unknown): string | null {
@@ -92,28 +247,28 @@ function resolveDocUpdatedByFromFrontmatter(
   fallback: string,
 ): string {
   if (updatedBy !== undefined) {
-    const trimmed = updatedBy.trim();
-    return trimmed.length > 0 ? trimmed : fallback;
+    const explicit = normalizeUpdatedBy(updatedBy);
+    if (explicit) return explicit;
   }
   const author = lastCommentAuthor(frontmatter.comments);
   if (author) return author;
-  const existing = frontmatter.doc_updated_by;
-  if (typeof existing === "string") {
-    const trimmed = existing.trim();
-    if (trimmed) return trimmed;
-  }
-  return fallback;
+  const existing = normalizeUpdatedBy(frontmatter.doc_updated_by);
+  if (existing) return existing;
+  const owner = normalizeUpdatedBy(frontmatter.owner);
+  if (owner) return owner;
+  const fallbackValue = normalizeUpdatedBy(fallback);
+  return fallbackValue || fallback;
 }
 
 function resolveDocUpdatedByFromTask(task: TaskData, fallback: string): string {
   const author = lastCommentAuthor(task.comments);
   if (author) return author;
-  const existing = task.doc_updated_by;
-  if (typeof existing === "string") {
-    const trimmed = existing.trim();
-    if (trimmed) return trimmed;
-  }
-  return fallback;
+  const existing = normalizeUpdatedBy(task.doc_updated_by);
+  if (existing) return existing;
+  const owner = normalizeUpdatedBy(task.owner);
+  if (owner) return owner;
+  const fallbackValue = normalizeUpdatedBy(fallback);
+  return fallbackValue || fallback;
 }
 
 function isDocSectionHeader(line: string): boolean {
@@ -141,11 +296,12 @@ export function extractTaskDoc(body: string): string {
       break;
     }
   }
-  return lines.slice(startIdx, endIdx).join("\n").trimEnd();
+  const doc = lines.slice(startIdx, endIdx).join("\n").trimEnd();
+  return normalizeTaskDoc(doc);
 }
 
 export function mergeTaskDoc(body: string, doc: string): string {
-  const docText = String(doc ?? "").replaceAll(/^\n+|\n+$/g, "");
+  const docText = normalizeTaskDoc(String(doc ?? ""));
   if (docText) {
     const lines = body ? body.split("\n") : [];
     let prefixIdx: number | null = null;
@@ -340,7 +496,7 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
       : [],
     doc_version: task.doc_version ?? DOC_VERSION,
     doc_updated_at: task.doc_updated_at ?? "",
-    doc_updated_by: task.doc_updated_by ?? DEFAULT_DOC_UPDATED_BY,
+    doc_updated_by: resolveDocUpdatedByFromTask(task, DEFAULT_DOC_UPDATED_BY),
     dirty: Boolean(task.dirty),
     id_source: task.id_source ?? "generated",
   };
@@ -531,7 +687,7 @@ export class LocalBackend implements TaskBackend {
       payload.doc_updated_at = nowIso();
     }
     if (payload.doc_updated_by === undefined || payload.doc_updated_by === "") {
-      payload.doc_updated_by = this.updatedBy;
+      payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
     }
 
     await mkdir(path.dirname(readme), { recursive: true });
