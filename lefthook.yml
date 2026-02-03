@@ -8,5 +8,7 @@ pre-commit:
       run: bun run test:fast
 pre-push:
   commands:
+    release-notes:
+      run: node scripts/check-release-notes.mjs
     test-full:
       run: bun run test:full
