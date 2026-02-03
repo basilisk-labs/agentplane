@@ -12733,8 +12733,8 @@
       ],
       "verify": [],
       "commit": {
-        "hash": "7878c1909fb587ea4cb83209a95b1f53bc54c44c",
-        "message": "🧾 28XPQ3 record finish metadata"
+        "hash": "769b13d6c21a50546143ad0cdc8b127b21948da4",
+        "message": "📝 6M1YXR require repo-local agentplane.js usage"
       },
       "comments": [
         {
@@ -12744,10 +12744,14 @@
         {
           "author": "ORCHESTRATOR",
           "body": "Verified: Ran agentplane verify; it reported no verify commands configured for this documentation-only change."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Commit 769b13d6c21a captured AGENTS.md update; no additional verify commands configured."
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T16:34:55.874Z",
+      "doc_updated_at": "2026-02-03T16:38:47.252Z",
       "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
       "id_source": "generated",
@@ -12758,6 +12762,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "e8a1234c130fdef12f39a0a7ec63e1fe06e9897b256674e980f014a87f5e515b"
+    "checksum": "cf9bcfe3e1064e164e827a541b21beec06015834d3fb80c15ab7f71836e1c931"
   }
 }
