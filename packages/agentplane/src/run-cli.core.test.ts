@@ -8312,6 +8312,128 @@ describe("runCli", () => {
     expect(baseBranch.trim()).toBe("main");
   });
 
+  it("init branch_pr defaults base branch to main in empty repo", async () => {
+    const root = await mkTempDir();
+    const originalEnv = {
+      GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME,
+      GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL,
+      GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME,
+      GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL,
+    };
+    process.env.GIT_AUTHOR_NAME = "Test User";
+    process.env.GIT_AUTHOR_EMAIL = "test@example.com";
+    process.env.GIT_COMMITTER_NAME = "Test User";
+    process.env.GIT_COMMITTER_EMAIL = "test@example.com";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--workflow", "branch_pr", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      process.env.GIT_AUTHOR_NAME = originalEnv.GIT_AUTHOR_NAME;
+      process.env.GIT_AUTHOR_EMAIL = originalEnv.GIT_AUTHOR_EMAIL;
+      process.env.GIT_COMMITTER_NAME = originalEnv.GIT_COMMITTER_NAME;
+      process.env.GIT_COMMITTER_EMAIL = originalEnv.GIT_COMMITTER_EMAIL;
+    }
+
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"base_branch": "main"');
+
+    const execFileAsync = promisify(execFile);
+    const { stdout: baseBranch } = await execFileAsync(
+      "git",
+      ["config", "--local", "--get", "agentplane.baseBranch"],
+      { cwd: root, env: cleanGitEnv() },
+    );
+    expect(baseBranch.trim()).toBe("main");
+  });
+
+  it("init in branch_pr skips hook enforcement for install commit", async () => {
+    const root = await mkTempDir();
+    const originalEnv = {
+      GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME,
+      GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL,
+      GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME,
+      GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL,
+    };
+    process.env.GIT_AUTHOR_NAME = "Test User";
+    process.env.GIT_AUTHOR_EMAIL = "test@example.com";
+    process.env.GIT_COMMITTER_NAME = "Test User";
+    process.env.GIT_COMMITTER_EMAIL = "test@example.com";
+
+    const cliPath = path.resolve(process.cwd(), "packages", "agentplane", "bin", "agentplane.js");
+    const stubPath = path.join(root, "agentplane");
+    const stubBody = ["#!/usr/bin/env sh", `exec node "${cliPath}" "$@"`, ""].join("\n");
+    await writeFile(stubPath, stubBody, "utf8");
+    await chmod(stubPath, 0o755);
+
+    const originalPath = process.env.PATH;
+    process.env.PATH = `${root}${path.delimiter}${originalPath ?? ""}`;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--yes",
+        "--workflow",
+        "branch_pr",
+        "--hooks",
+        "yes",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      process.env.PATH = originalPath;
+      process.env.GIT_AUTHOR_NAME = originalEnv.GIT_AUTHOR_NAME;
+      process.env.GIT_AUTHOR_EMAIL = originalEnv.GIT_AUTHOR_EMAIL;
+      process.env.GIT_COMMITTER_NAME = originalEnv.GIT_COMMITTER_NAME;
+      process.env.GIT_COMMITTER_EMAIL = originalEnv.GIT_COMMITTER_EMAIL;
+    }
+
+    const execFileAsync = promisify(execFile);
+    const { stdout: subject } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    expect(subject.trim()).toContain("agentplane 0.1.2");
+
+    const { stdout: baseBranch } = await execFileAsync(
+      "git",
+      ["config", "--local", "--get", "agentplane.baseBranch"],
+      { cwd: root, env: cleanGitEnv() },
+    );
+    expect(baseBranch.trim()).toBe("main");
+  });
+
+  it("init branch_pr keeps current branch as base in existing repo when non-interactive", async () => {
+    const root = await mkGitRepoRootWithBranch("trunk");
+    await configureGitUser(root);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--workflow", "branch_pr", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"base_branch": "trunk"');
+
+    const execFileAsync = promisify(execFile);
+    const { stdout: baseBranch } = await execFileAsync(
+      "git",
+      ["config", "--local", "--get", "agentplane.baseBranch"],
+      { cwd: root, env: cleanGitEnv() },
+    );
+    expect(baseBranch.trim()).toBe("trunk");
+  });
+
   it("init pins base branch to current branch in existing repo", async () => {
     const root = await mkGitRepoRootWithBranch("trunk");
     await configureGitUser(root);
