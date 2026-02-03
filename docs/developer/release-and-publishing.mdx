@@ -36,6 +36,7 @@ it in the npm “Trusted Publishers” settings for each package (`@agentplane/c
 
 Use GitHub-hosted runners and allow the workflow to request an OIDC token (`id-token: write`).
 The workflow should publish from `packages/core` first, then `packages/agentplane`.
+Trusted publishing requires npm 11.5.1 or newer in the workflow runtime.
 
 If you publish under the `@agentplaneorg` scope, make sure the `agentplaneorg` npm organization exists
 and you have owner rights before publishing.
