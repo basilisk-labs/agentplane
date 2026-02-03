@@ -476,13 +476,13 @@ describe("LocalBackend", () => {
         tags: [],
         verify: [],
       }),
-    ).rejects.toThrow(/Task id is required/);
+    ).rejects.toThrow(/Missing task id \(expected non-empty value\)/);
   });
 
   it("generates task ids and enforces minimum length", async () => {
     const backend = new LocalBackend({ dir: tempDir });
     await expect(backend.generateTaskId({ length: 3, attempts: 1 })).rejects.toThrow(
-      /length must be >= 4/,
+      /Invalid length: 3 \(expected >= 4\)/,
     );
     const id = await backend.generateTaskId({ length: 4, attempts: 1 });
     expect(id).toMatch(/^\d{12}-[0-9A-Z]{4,}$/u);

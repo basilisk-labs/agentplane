@@ -93,7 +93,7 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "list"]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("No recipes installed.");
+      expect(io.stdout).toContain("No installed recipes found.");
     } finally {
       io.restore();
     }
@@ -177,7 +177,9 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "list"]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("recipes.json entries must include id, version, source");
+      expect(io.stderr).toContain(
+        "Invalid field recipes.json.recipes[]: expected id, version, source, installed_at",
+      );
     } finally {
       io.restore();
     }
@@ -203,7 +205,7 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("manifest.tags must be an array of strings");
+      expect(io.stderr).toContain("Invalid field manifest.tags: expected string[]");
     } finally {
       io.restore();
     }
@@ -228,7 +230,7 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("manifest.id must not contain path separators");
+      expect(io.stderr).toContain("Invalid manifest.id: must not contain path separators");
     } finally {
       io.restore();
     }
@@ -254,7 +256,7 @@ describe("runCli recipes", () => {
           agents: [{ id: "bad/id", summary: "Bad", file: "agents/bad.json" }],
         },
         files: { "agents/bad.json": '{"id":"X"}' },
-        pattern: /agent\.id must not contain path separators/,
+        pattern: /Invalid agent\.id: must not contain path separators/,
       },
       {
         manifest: {
@@ -266,7 +268,7 @@ describe("runCli recipes", () => {
           description: "Missing Agent",
           agents: [{ id: "AGENT", summary: "Agent", file: "agents/missing.json" }],
         },
-        pattern: /Recipe agent file not found/,
+        pattern: /Missing recipe agent file/,
       },
       {
         manifest: {
@@ -279,7 +281,7 @@ describe("runCli recipes", () => {
           agents: [{ id: "AGENT", summary: "Agent", file: "agents/bad.json" }],
         },
         files: { "agents/bad.json": "[]" },
-        pattern: /Recipe agent file must be a JSON object/,
+        pattern: /Invalid field recipe agent file: expected JSON object/,
       },
       {
         manifest: {
@@ -307,7 +309,7 @@ describe("runCli recipes", () => {
             2,
           ),
         },
-        pattern: /scenario\.id must not be/,
+        pattern: /Invalid scenario\.id: must not be '\.' or '\.\.'/,
       },
     ];
 
@@ -374,7 +376,9 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "list-remote"]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("recipes index entries must include id, summary, and versions");
+      expect(io.stderr).toContain(
+        "Invalid field recipes index.recipes[]: expected id, summary, versions",
+      );
     } finally {
       io.restore();
     }
@@ -411,8 +415,14 @@ describe("runCli recipes", () => {
         args: ["recipes", "cache", "prune", "--wat"],
         msg: "Usage: agentplane recipes cache prune",
       },
-      { args: ["recipes", "list-remote", "--index"], msg: "Missing value for --index" },
-      { args: ["recipes", "list-remote", "--wat"], msg: "Missing value for --wat" },
+      {
+        args: ["recipes", "list-remote", "--index"],
+        msg: "Missing value for --index (expected value after flag)",
+      },
+      {
+        args: ["recipes", "list-remote", "--wat"],
+        msg: "Missing value for --wat (expected value after flag)",
+      },
     ];
 
     for (const entry of cases) {
@@ -478,17 +488,15 @@ describe("runCli recipes", () => {
       ],
     };
 
-    vi.stubGlobal(
-      "fetch",
-      vi.fn(() =>
-        Promise.resolve({
-          ok: true,
-          status: 200,
-          statusText: "OK",
-          json: () => Promise.resolve(index),
-        }),
-      ),
-    );
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+        json: () => Promise.resolve(index),
+      }),
+    ) as typeof fetch;
 
     const io = captureStdIO();
     try {
@@ -503,7 +511,7 @@ describe("runCli recipes", () => {
       expect(io.stdout).toContain("remote-recipe@1.0.0");
     } finally {
       io.restore();
-      vi.unstubAllGlobals();
+      globalThis.fetch = originalFetch;
     }
   });
 

@@ -128,7 +128,27 @@ export function mergeTaskDoc(body: string, doc: string): string {
 
 function validateTaskId(taskId: string): void {
   if (TASK_ID_RE.test(taskId)) return;
-  throw new Error(`Invalid task id: ${taskId}`);
+  throw new Error(`Invalid task id: ${taskId} (expected YYYYMMDDHHMM-XXXX)`);
+}
+
+function missingTaskIdMessage(): string {
+  return "Missing task id (expected non-empty value)";
+}
+
+function unknownTaskIdMessage(taskId: string): string {
+  return `Unknown task id: ${taskId}`;
+}
+
+function invalidLengthMessage(value: number, min: number): string {
+  return `Invalid length: ${value} (expected >= ${min})`;
+}
+
+function redmineConfigMissingMessage(detail: string): string {
+  return `Missing required Redmine config: ${detail}`;
+}
+
+function redmineIssueIdMissingMessage(): string {
+  return "Missing Redmine issue id for task";
 }
 
 export type TaskData = {
@@ -313,7 +333,7 @@ export class LocalBackend implements TaskBackend {
 
   async generateTaskId(opts: { length: number; attempts: number }): Promise<string> {
     const length = opts.length;
-    if (length < 4) throw new Error("length must be >= 4");
+    if (length < 4) throw new Error(invalidLengthMessage(length, 4));
     const attempts = Math.max(1, opts.attempts);
     for (let i = 0; i < attempts; i++) {
       const now = new Date();
@@ -337,7 +357,7 @@ export class LocalBackend implements TaskBackend {
         throw err;
       }
     }
-    throw new Error("Failed to generate a unique task id");
+    throw new Error("Failed to generate a unique task id (exhausted attempts)");
   }
 
   async listTasks(): Promise<TaskData[]> {
@@ -409,7 +429,7 @@ export class LocalBackend implements TaskBackend {
 
   async writeTask(task: TaskData): Promise<void> {
     const taskId = task.id.trim();
-    if (!taskId) throw new Error("Task id is required");
+    if (!taskId) throw new Error(missingTaskIdMessage());
     validateTaskId(taskId);
 
     const readme = taskReadmePath(this.root, taskId);
@@ -558,11 +578,11 @@ export class RedmineBackend implements TaskBackend {
     this.cache = opts.cache ?? null;
 
     if (!this.baseUrl || !this.apiKey || !this.projectId) {
-      throw new BackendError("Redmine backend requires url, api_key, and project_id", "E_BACKEND");
+      throw new BackendError(redmineConfigMissingMessage("url, api_key, project_id"), "E_BACKEND");
     }
 
     if (!this.customFields?.task_id) {
-      throw new BackendError("Redmine backend requires custom_fields.task_id", "E_BACKEND");
+      throw new BackendError(redmineConfigMissingMessage("custom_fields.task_id"), "E_BACKEND");
     }
 
     for (const [key, value] of Object.entries(this.statusMap)) {
@@ -626,22 +646,19 @@ export class RedmineBackend implements TaskBackend {
 
   async getTaskDoc(taskId: string): Promise<string> {
     const task = await this.getTask(taskId);
-    if (!task) throw new Error(`Unknown task id: ${taskId}`);
+    if (!task) throw new Error(unknownTaskIdMessage(taskId));
     return toStringSafe(task.doc);
   }
 
   async setTaskDoc(taskId: string, doc: string, updatedBy?: string): Promise<void> {
     if (!this.customFields.doc) {
-      throw new BackendError(
-        "Redmine backend requires custom_fields.doc to set task docs",
-        "E_BACKEND",
-      );
+      throw new BackendError(redmineConfigMissingMessage("custom_fields.doc"), "E_BACKEND");
     }
     try {
       const issue = await this.findIssueByTaskId(taskId);
-      if (!issue) throw new Error(`Unknown task id: ${taskId}`);
+      if (!issue) throw new Error(unknownTaskIdMessage(taskId));
       const issueIdText = toStringSafe(issue.id);
-      if (!issueIdText) throw new Error("Missing Redmine issue id for task");
+      if (!issueIdText) throw new Error(redmineIssueIdMissingMessage());
       const taskDoc: TaskDocMeta = { doc: String(doc ?? "") };
       ensureDocMetadata(taskDoc, updatedBy);
       const customFields: Record<string, unknown>[] = [];
@@ -664,7 +681,7 @@ export class RedmineBackend implements TaskBackend {
       if (err instanceof RedmineUnavailable) {
         if (!this.cache) throw err;
         const cached = await this.cache.getTask(taskId);
-        if (!cached) throw new Error(`Unknown task id: ${taskId}`);
+        if (!cached) throw new Error(unknownTaskIdMessage(taskId));
         cached.doc = String(doc ?? "");
         ensureDocMetadata(cached, updatedBy);
         cached.dirty = true;
@@ -678,9 +695,9 @@ export class RedmineBackend implements TaskBackend {
   async touchTaskDocMetadata(taskId: string, updatedBy?: string): Promise<void> {
     try {
       const issue = await this.findIssueByTaskId(taskId);
-      if (!issue) throw new Error(`Unknown task id: ${taskId}`);
+      if (!issue) throw new Error(unknownTaskIdMessage(taskId));
       const issueIdText = toStringSafe(issue.id);
-      if (!issueIdText) throw new Error("Missing Redmine issue id for task");
+      if (!issueIdText) throw new Error(redmineIssueIdMissingMessage());
       const docValue = this.customFieldValue(issue, this.customFields.doc);
       const taskDoc: TaskDocMeta = { doc: docValue ?? "" };
       ensureDocMetadata(taskDoc, updatedBy);
@@ -704,7 +721,7 @@ export class RedmineBackend implements TaskBackend {
       if (err instanceof RedmineUnavailable) {
         if (!this.cache) throw err;
         const cached = await this.cache.getTask(taskId);
-        if (!cached) throw new Error(`Unknown task id: ${taskId}`);
+        if (!cached) throw new Error(unknownTaskIdMessage(taskId));
         ensureDocMetadata(cached, updatedBy);
         cached.dirty = true;
         await this.cache.writeTask(cached);
@@ -716,7 +733,7 @@ export class RedmineBackend implements TaskBackend {
 
   async writeTask(task: TaskData): Promise<void> {
     const taskId = toStringSafe(task.id).trim();
-    if (!taskId) throw new Error("task.id is required");
+    if (!taskId) throw new Error(missingTaskIdMessage());
     validateTaskId(taskId);
 
     try {
@@ -795,7 +812,7 @@ export class RedmineBackend implements TaskBackend {
       await this.syncPull(opts.conflict, opts.quiet);
       return;
     }
-    throw new BackendError("Unsupported direction", "E_BACKEND");
+    throw new BackendError("Invalid sync direction (expected push|pull)", "E_BACKEND");
   }
 
   private ensureDocMetadata(task: TaskDocMeta): void {
@@ -812,7 +829,7 @@ export class RedmineBackend implements TaskBackend {
     const tasks = await this.cache.listTasks();
     const dirty = tasks.filter((task) => task.dirty);
     if (dirty.length === 0) {
-      if (!quiet) process.stdout.write("ℹ️ no dirty tasks to push\n");
+      if (!quiet) process.stdout.write("ℹ️ no local task changes to push\n");
       return;
     }
     if (!confirm) {
@@ -822,7 +839,7 @@ export class RedmineBackend implements TaskBackend {
       throw new BackendError("Refusing to push without --yes (preview above)", "E_BACKEND");
     }
     await this.writeTasks(dirty);
-    if (!quiet) process.stdout.write(`✅ pushed ${dirty.length} dirty task(s)\n`);
+    if (!quiet) process.stdout.write(`✅ pushed ${dirty.length} task(s) (dirty)\n`);
   }
 
   private async syncPull(
@@ -858,7 +875,7 @@ export class RedmineBackend implements TaskBackend {
       }
       await this.cacheTask(remoteTask, false);
     }
-    if (!quiet) process.stdout.write(`✅ pulled ${remoteById.size} task(s)\n`);
+    if (!quiet) process.stdout.write(`✅ pulled ${remoteById.size} task(s) (remote)\n`);
   }
 
   private async handleConflict(
@@ -913,7 +930,7 @@ export class RedmineBackend implements TaskBackend {
   private taskIdFieldId(): unknown {
     const fieldId = this.customFields?.task_id;
     if (fieldId) return fieldId;
-    throw new BackendError("Redmine backend requires custom_fields.task_id", "E_BACKEND");
+    throw new BackendError(redmineConfigMissingMessage("custom_fields.task_id"), "E_BACKEND");
   }
 
   private setIssueCustomFieldValue(
@@ -1305,7 +1322,7 @@ export class RedmineBackend implements TaskBackend {
 }
 
 function generateTaskId(existingIds: Set<string>, length: number, attempts: number): string {
-  if (length < 4) throw new Error("length must be >= 4");
+  if (length < 4) throw new Error(invalidLengthMessage(length, 4));
   for (let i = 0; i < attempts; i++) {
     const now = new Date();
     const yyyy = String(now.getUTCFullYear()).padStart(4, "0");
@@ -1320,7 +1337,7 @@ function generateTaskId(existingIds: Set<string>, length: number, attempts: numb
     const candidate = `${yyyy}${mm}${dd}${hh}${min}-${suffix}`;
     if (!existingIds.has(candidate)) return candidate;
   }
-  throw new Error("Failed to generate a unique task id");
+  throw new Error("Failed to generate a unique task id (exhausted attempts)");
 }
 
 type BackendConfig = {
