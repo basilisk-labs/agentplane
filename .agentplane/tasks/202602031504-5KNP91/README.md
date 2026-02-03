@@ -1,17 +1,18 @@
 ---
 id: "202602031504-5KNP91"
 title: "Release 0.1.3"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["release"]
 verify: []
-commit: null
+commit: { hash: "574678b50ddcf26d1045fc22cff5fd20d82d6a66", message: "📦 5KNP91 release 0.1.3" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: bump versions to 0.1.3 and publish via GitHub Actions trusted publishing." }
+  - { author: "ORCHESTRATOR", body: "Verified: git push origin v0.1.3 triggered pre-push test-full (vitest) and completed successfully; release tag v0.1.3 created." }
 doc_version: 2
-doc_updated_at: "2026-02-03T15:05:41.797Z"
+doc_updated_at: "2026-02-03T15:07:07.250Z"
 doc_updated_by: "agentplane"
 description: "Bump versions to 0.1.3 and publish to npm via GitHub Actions."
 id_source: "generated"
