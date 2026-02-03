@@ -9,10 +9,23 @@ export type ParsedTaskReadme = {
   body: string;
 };
 
+function stripLeadingFrontmatterBlocks(body: string): string {
+  let next = body.replaceAll("\r\n", "\n");
+  while (true) {
+    const trimmed = next.replace(/^\n+/, "");
+    if (!trimmed.startsWith("---\n")) break;
+    const end = trimmed.indexOf("\n---\n", 4);
+    if (end === -1) break;
+    next = trimmed.slice(end + 5);
+  }
+  return next;
+}
+
 function splitFrontmatter(markdown: string): { frontmatterText: string | null; body: string } {
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(markdown);
   if (!match) return { frontmatterText: null, body: markdown };
-  return { frontmatterText: match[1] ?? null, body: markdown.slice(match[0].length) };
+  const body = stripLeadingFrontmatterBlocks(markdown.slice(match[0].length));
+  return { frontmatterText: match[1] ?? null, body };
 }
 
 export function parseTaskReadme(markdown: string): ParsedTaskReadme {

@@ -51,6 +51,16 @@ Hello world.
     expect(() => parseTaskReadme(bad)).toThrow(/frontmatter must be a YAML mapping/i);
   });
 
+  it("strips duplicate frontmatter blocks from the body", () => {
+    const duplicate = sample.replace(
+      "## Summary",
+      "---\nextra: true\n---\n## Summary",
+    );
+    const parsed = parseTaskReadme(duplicate);
+    expect(parsed.body.trimStart().startsWith("## Summary")).toBe(true);
+    expect(parsed.body).not.toContain("extra: true");
+  });
+
   it("rejects unsupported scalar values", () => {
     const parsed = parseTaskReadme(sample);
     const bad = { ...parsed.frontmatter, weird: Symbol("x") as unknown };
