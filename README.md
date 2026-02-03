@@ -9,10 +9,9 @@
 [![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/developer/cli-contract.mdx)
 [![Roadmap](https://img.shields.io/badge/Roadmap-ROADMAP.md-6b7280.svg)](ROADMAP.md)
 
-
 **Agents you can actually trust in a repository.**
 
-agent/plane (Agent Plane) is a policy-driven framework for running LLM agents inside real repositories. It turns "AI magic" into an engineering process: explicit approvals, role boundaries, and a reproducible execution pipeline. The goal is simple: make agents *boring, safe, and auditable*.
+agent/plane (Agent Plane) is a policy-driven framework for running LLM agents inside real repositories. It turns "AI magic" into an engineering process: explicit approvals, role boundaries, and a reproducible execution pipeline. The goal is simple: make agents _boring, safe, and auditable_.
 
 ## 🚀 What is agent/plane?
 
@@ -30,15 +29,15 @@ Agent behavior is not hidden: it's inspectable, reproducible, and constrained by
 
 1. **Determinism over Magic**
    Agents follow a reproducible path:
+
    ```text
    Preflight → Plan → Approval → Tasks → Verify → Finish → Export
    ```
 
 2. **Guardrails by Default**
-
-   * Network and external actions require explicit approvals.
-   * Writes are scoped to allow-listed paths.
-   * Nothing can "just change files" without a plan and audit trail.
+   - Network and external actions require explicit approvals.
+   - Writes are scoped to allow-listed paths.
+   - Nothing can "just change files" without a plan and audit trail.
 
 3. **Team-first workflows**
    `direct` mode is suitable for solo work;
@@ -73,15 +72,15 @@ npx agentplane quickstart
 
 ### `direct` (default)
 
-* Single-checkout mode.
-* Agents and tasks run within the same working tree.
-* Good for experiments and rapid iteration.
+- Single-checkout mode.
+- Agents and tasks run within the same working tree.
+- Good for experiments and rapid iteration.
 
 ### `branch_pr`
 
-* Structured team workflow.
-* Each task flows through its own worktree + tracked PR artifacts.
-* Only the *INTEGRATOR* role merges changes back into the main branch.
+- Structured team workflow.
+- Each task flows through its own worktree + tracked PR artifacts.
+- Only the _INTEGRATOR_ role merges changes back into the main branch.
 
 Use:
 
@@ -95,10 +94,10 @@ npx agentplane config set workflow_mode branch_pr
 
 This repository contains a special policy file (`AGENTS.md`) that defines:
 
-* Global guardrails
-* Allowed actions
-* Agent roles and permissions
-* Workflow defaults
+- Global guardrails
+- Allowed actions
+- Agent roles and permissions
+- Workflow defaults
 
 It acts as the canonical policy layer (the "constitution") for agents.
 
@@ -106,11 +105,11 @@ It acts as the canonical policy layer (the "constitution") for agents.
 
 Common roles include:
 
-* **ORCHESTRATOR:** Drives the session and interprets user goals.
-* **PLANNER:** Breaks goals into plan steps/tasks.
-* **CREATOR:** Implements code/config changes.
-* **INTEGRATOR:** Verifies and merges changes.
-* **Additional roles** (e.g., TESTER, DOCS) can be defined per project.
+- **ORCHESTRATOR:** Drives the session and interprets user goals.
+- **PLANNER:** Breaks goals into plan steps/tasks.
+- **CREATOR:** Implements code/config changes.
+- **INTEGRATOR:** Verifies and merges changes.
+- **Additional roles** (e.g., TESTER, DOCS) can be defined per project.
 
 ## 📁 Project Structure
 
@@ -128,9 +127,9 @@ docs/                  # Full reference docs (see docs/index.mdx)
 
 agent/plane enforces:
 
-* No external execution without explicit approval.
-* No silent state changes.
-* No unreviewed commits by agents.
+- No external execution without explicit approval.
+- No silent state changes.
+- No unreviewed commits by agents.
 
 This makes it suitable for **enterprise**, **team**, and **audit-sensitive** workflows.
 
@@ -138,11 +137,11 @@ This makes it suitable for **enterprise**, **team**, and **audit-sensitive** wor
 
 The bulk of the guidance and API info lives in the docs:
 
-* 🧭 **Full documentation:** `docs/index.mdx`
-* 📌 **Workflow reference:** `docs/user/workflow.mdx`
-* ⚙️ **CLI commands:** `docs/user/commands.mdx`
-* 🧱 **Project layout:** `docs/developer/project-layout.mdx`
-* 💡 **Examples & recipes:** `agentplane-recipes/README.md`
+- 🧭 **Full documentation:** `docs/index.mdx`
+- 📌 **Workflow reference:** `docs/user/workflow.mdx`
+- ⚙️ **CLI commands:** `docs/user/commands.mdx`
+- 🧱 **Project layout:** `docs/developer/project-layout.mdx`
+- 💡 **Examples & recipes:** `agentplane-recipes/README.md`
 
 ## 💬 Community & Contributing
 
