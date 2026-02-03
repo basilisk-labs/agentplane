@@ -11694,12 +11694,266 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDetect multi-section input in task doc set; treat it as full doc to avoid duplicate headings.\n\n## Scope\n\nUpdate task doc set handling in run-cli and add coverage in run-cli.core.test.\n\n## Risks\n\nLow risk; logic only changes when section text includes doc headings.\n\n## Verify Steps\n\nNot run (not requested).\n\n## Rollback Plan\n\nRevert the changes in run-cli.ts and run-cli.core.test.ts.\n\n## Verify Steps\n\nAttempted: bun test packages/agentplane/src/run-cli.core.test.ts (timed out after 10s; output showed tests running and passing up to runCli > integrate supports merge strategy).\n\n## Verify Steps\n\nRan: bun test packages/agentplane/src/run-cli.core.test.ts (pass).\n\n## Verify Steps\n\nRan: bun test packages/agentplane/src/run-cli.core.test.ts (pass)."
+    },
+    {
+      "id": "202602030608-F1Q8AB",
+      "title": "Refactor CLI messages for agent context",
+      "description": "Audit and tighten CLI info/error messages so agent-facing output preserves context, reduces noise, and guides next steps.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "28fc717789a0f4e32cecb73eff978da9458c94ad",
+        "message": "✨ CCHDAQ+EEFK09+HT8JWS+Q39M3X+YZGRB2+F1Q8AB refine cli messaging and tests"
+      },
+      "comments": [
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts"
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T08:03:52.655Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602030653-CCHDAQ",
+      "title": "Standardize no-data messages and terminology",
+      "description": "Unify CLI empty-state messages and consistent terminology for bundled/installed/cache states.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "cli,ux"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "28fc717789a0f4e32cecb73eff978da9458c94ad",
+        "message": "✨ CCHDAQ+EEFK09+HT8JWS+Q39M3X+YZGRB2+F1Q8AB refine cli messaging and tests"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: standardize empty-state output and terminology."
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts"
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T08:03:52.611Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nStandardized empty-state output and terminology for recipes, scenarios, and cache.\n\n## Scope\n\nUpdated empty-state CLI output in packages/agentplane/src/run-cli.ts and bundled recipes wording in packages/agentplane/src/cli/recipes-bundled.ts.\n\n## Risks\n\nCLI output text changes may affect tests or tooling that parses stdout.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.recipes.test.ts\n\n## Rollback Plan\n\nRevert message changes in the updated files."
+    },
+    {
+      "id": "202602030653-EEFK09",
+      "title": "Improve path errors and contextual hints",
+      "description": "Add consistent path details and command hints for file/dir errors; refine E_GIT/E_BACKEND hints using context.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "cli,errors"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "28fc717789a0f4e32cecb73eff978da9458c94ad",
+        "message": "✨ CCHDAQ+EEFK09+HT8JWS+Q39M3X+YZGRB2+F1Q8AB refine cli messaging and tests"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: improve path errors and contextual hints."
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts"
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T08:03:52.630Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAdded path-aware PR artifact errors and refined E_GIT/E_BACKEND hints.\n\n## Scope\n\nUpdated error hinting and PR artifact validation in packages/agentplane/src/run-cli.ts.\n\n## Risks\n\nError string changes may require test updates or downstream parser adjustments.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.core.test.ts\n\n## Rollback Plan\n\nRevert error hint and PR artifact message changes in run-cli.ts."
+    },
+    {
+      "id": "202602030653-HT8JWS",
+      "title": "Unify success/warn/error output style",
+      "description": "Normalize ✅/⚠️ output ordering and wording for action/target/details without extra noise.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "cli,ux"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "28fc717789a0f4e32cecb73eff978da9458c94ad",
+        "message": "✨ CCHDAQ+EEFK09+HT8JWS+Q39M3X+YZGRB2+F1Q8AB refine cli messaging and tests"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: unify success/warn output formatting across CLI."
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts"
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T08:03:52.635Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nUnified success/info output formatting for cache, scrub, and backend sync.\n\n## Scope\n\nUpdated output strings in packages/agentplane/src/run-cli.ts and packages/agentplane/src/task-backend.ts.\n\n## Risks\n\nOutput format changes may affect tooling that parses CLI stdout.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.core.test.ts\n\n## Rollback Plan\n\nRevert output format changes in run-cli.ts and task-backend.ts."
+    },
+    {
+      "id": "202602030653-Q39M3X",
+      "title": "Standardize E_USAGE subcommand guidance",
+      "description": "Unify usage errors for subcommands with compact usage + example where useful.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "cli,docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "28fc717789a0f4e32cecb73eff978da9458c94ad",
+        "message": "✨ CCHDAQ+EEFK09+HT8JWS+Q39M3X+YZGRB2+F1Q8AB refine cli messaging and tests"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: standardize E_USAGE guidance with examples."
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts"
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T08:03:52.643Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nStandardized E_USAGE guidance with usage examples across CLI subcommands.\n\n## Scope\n\nAdded usage example constants and wired usageMessage in packages/agentplane/src/run-cli.ts.\n\n## Risks\n\nUsage output strings changed; tests or tooling may need updates.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.core.test.ts\n\n## Rollback Plan\n\nRevert usage example constants and usageMessage wiring in run-cli.ts."
+    },
+    {
+      "id": "202602030653-YZGRB2",
+      "title": "Standardize invalid/missing identifiers and values",
+      "description": "Align messages for missing/unknown IDs and invalid values (regex/status/flags) with explicit expectations.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "cli,errors"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "28fc717789a0f4e32cecb73eff978da9458c94ad",
+        "message": "✨ CCHDAQ+EEFK09+HT8JWS+Q39M3X+YZGRB2+F1Q8AB refine cli messaging and tests"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: align invalid/missing identifier and value messages."
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts"
+        },
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T08:03:52.649Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAligned missing/invalid value and unknown-id error messaging, plus workflow_mode validation.\n\n## Scope\n\nUpdated validation helpers and error strings in packages/agentplane/src/run-cli.ts.\n\n## Risks\n\nExact error wording changes may require test updates or downstream parser adjustments.\n\n## Verify Steps\n\nbun test packages/agentplane/src/run-cli.core.test.ts\n\n## Rollback Plan\n\nRevert validation helper and error message edits in run-cli.ts."
+    },
+    {
+      "id": "202602030710-S24YE7",
+      "title": "Audit and polish README against positioning",
+      "description": "Review README.md for alignment with project positioning, fix inaccuracies/typos, update links/badges/anchors, and improve GitHub-quality presentation.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "93989b389cb3fbc00ea2e095db9d874ecd1f4186",
+        "message": "📝 S24YE7 polish README positioning and links"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Review README against positioning and fix links/structure with accurate, minimal edits."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Docs-only README update; no automated tests were run."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Docs-only README update; no automated tests were run."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T07:31:03.680Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAligned README with project positioning; corrected CLI usage, links, structure, and license.\n\n## Scope\n\nREADME.md only: positioning copy, badges/links, workflow/structure details, and cleanup.\n\n## Risks\n\nLow. Documentation-only change; risk is outdated or broken links.\n\n## Verify Steps\n\nNot run (docs-only).\n\n## Rollback Plan\n\nRevert README.md to the previous version."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "a804d126a3566128439613029884108aafb6c4c026450bfe769a2da978ff0f78"
+    "checksum": "a9e6f39b4bff22b67bd0b4f93184f8999d185ace0f9d01960d8648e46d0241f6"
   }
 }
