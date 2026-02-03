@@ -40,7 +40,7 @@ These run Prettier, ESLint, TypeScript, and tests only for the selected package.
 
 ### Local (git hooks)
 
-This repo installs `pre-commit` and `pre-push` hooks via `lefthook`:
+This repo installs `pre-commit` and `pre-push` hooks via `lefthook`. Hooks are a mandatory quality gate and must pass before commit or push:
 
 ```bash
 pre-commit:
@@ -57,7 +57,7 @@ Hooks are installed automatically on `bun install` (via the root `postinstall` s
 bun run hooks:install
 ```
 
-> You can bypass hooks with `git commit --no-verify`, but it is strongly discouraged.
+> Do not bypass hooks with `git commit --no-verify`. Fix the failures and rerun.
 
 ### CI (GitHub Actions)
 

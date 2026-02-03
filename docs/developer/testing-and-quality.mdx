@@ -83,14 +83,14 @@ This is intended for CI/local optimization; it is not part of the public CLI.
 
 ## Git hooks
 
-Optional hooks enforce formatting and commit hygiene:
+Git hooks are a required quality gate for this repo. Do not bypass them.
 
 ```bash
 agentplane hooks install
 agentplane hooks uninstall
 ```
 
-By default, hooks run fast tests on pre-commit and full tests on pre-push.
+By default, hooks run fast tests on pre-commit and full tests on pre-push. If a hook fails, fix the issue instead of skipping the hook.
 
 ## Coverage and parity tests
 
