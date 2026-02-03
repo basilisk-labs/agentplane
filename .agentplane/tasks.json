@@ -12163,12 +12163,45 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nEnsure npm publish in GitHub Actions uses a clean npm config with no auth token so trusted publishing via OIDC can work.\n\n## Scope\n\nUpdate GitHub Actions publish workflow to clear auth env, use a clean npmrc, and rely on OIDC for publish.\n\n## Risks\n\nIf trusted publishing is not configured on npm for @agentplaneorg, publishes may still fail; workflow change alone will not fix registry-side configuration.\n\n## Verify Steps\n\nNot run locally (workflow-only change). Trigger GitHub Actions Publish workflow and confirm npm publish succeeds for @agentplaneorg/core and agentplane.\n\n## Rollback Plan\n\nRevert .github/workflows/publish.yml to the previous version and rerun publish if needed.\n\n## Notes\n\nTriggered Publish to npm workflow on main (runs 21624946114, 21625026006). After removing auth tokens, npm publish fails with ENEEDAUTH, indicating npm trusted publishing is not configured for @agentplaneorg.\n\n## Notes\n\nAdded npm@11.5.1 install to publish workflow. Workflow run 21625449544 completed successfully; publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with OIDC provenance."
+    },
+    {
+      "id": "202602030957-6B5C51",
+      "title": "Document npm version requirement for trusted publishing",
+      "description": "Add documentation note that npm trusted publishing in GitHub Actions requires npm >= 11.5.1, and reference publish workflow expectations.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "2d1b37ffd2efd68128f36f5a6d67d0efa34940bb",
+        "message": "📝 6B5C51 note npm version for trusted publishing"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Add documentation note that trusted publishing requires npm >= 11.5.1 and point to workflow context."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Added npm >= 11.5.1 requirement to trusted publishing docs in release-and-publishing.mdx."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T09:59:16.236Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nDocument that npm trusted publishing in GitHub Actions requires npm >= 11.5.1.\n\n## Scope\n\nUpdate release/publishing docs to include the npm version requirement for trusted publishing.\n\n## Risks\n\nLow risk; documentation-only change.\n\n## Verify Steps\n\nOpen docs/developer/release-and-publishing.mdx and confirm the trusted publishing section mentions npm >= 11.5.1.\n\n## Rollback Plan\n\nRevert the documentation line if it causes confusion or becomes outdated."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "ebd9613c37729141b8e705269198ba18effdc84df08f4e1f6c251cccdd6340de"
+    "checksum": "84bff876b508e7ca21be14454e98c7d92c4a5c9aa0f36ed78f35ba658153373d"
   }
 }
