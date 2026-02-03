@@ -18,7 +18,7 @@ jobs:
       NPM_CONFIG_PROVENANCE: "true"
       NODE_AUTH_TOKEN: ""
       NPM_TOKEN: ""
-      NPM_CONFIG_USERCONFIG: ${{ runner.temp }}/.npmrc
+      NPM_CONFIG_USERCONFIG: ${{ github.workspace }}/.npmrc
     steps:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
