@@ -107,7 +107,9 @@ describe("runCli scenario", () => {
         root,
       ]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("scenario step env must be an object");
+      expect(io.stderr).toContain(
+        "Invalid field scenario step.env: expected object (viewer:RECIPE_SCENARIO)",
+      );
     } finally {
       io.restore();
     }
@@ -165,7 +167,9 @@ describe("runCli scenario", () => {
         root,
       ]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("scenario step env values must be strings");
+      expect(io.stderr).toContain(
+        "Invalid field scenario step.env: expected string map (viewer:RECIPE_SCENARIO)",
+      );
     } finally {
       io.restore();
     }
