@@ -12756,12 +12756,45 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nUpdated AGENTS.md to require repo-local agentplane.js invocation and clarified shorthand usage.\n\n## Scope\n\nAGENTS.md only.\n\n## Risks\n\nLow risk. Documentation-only change; potential confusion if other docs still reference a system-installed agentplane.\n\n## Verify Steps\n\nNot run (documentation-only change).\n\n## Rollback Plan\n\nRevert AGENTS.md to the previous guidance."
+    },
+    {
+      "id": "202602031648-8RJP59",
+      "title": "Align agent CLI references in templates and installed agents",
+      "description": "Root AGENTS.md and .agentplane/agents use repo-local agentplane.js; templates in packages/agentplane/assets use system agentplane.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "9d7c87d5dde59d6c2c810fd6944cfbde473887f6",
+        "message": "📝 8RJP59 align agent CLI references"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Align agent CLI references: repo-local for root AGENTS.md and .agentplane/agents; system agentplane for packages/agentplane/assets templates."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: pre-commit hook ran prettier, eslint, and vitest (test-fast) during commit; agentplane verify reported no configured commands."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T16:56:09.825Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAligned CLI references: repo-local agentplane.js for root AGENTS.md and .agentplane/agents; system agentplane for framework assets; updated tests accordingly.\n\n## Scope\n\nAGENTS.md, .agentplane/agents/*.json, packages/agentplane/assets/AGENTS.md, packages/agentplane/src/agents-template.test.ts.\n\n## Risks\n\nLow risk. Documentation/test alignment change; mismatch between repo-local and asset templates could confuse if not kept consistent.\n\n## Verify Steps\n\nWill rely on pre-commit hooks (prettier/eslint/vitest) during commit.\n\n## Rollback Plan\n\nRevert the modified AGENTS templates, installed agents, and tests to the previous CLI reference scheme."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "cf9bcfe3e1064e164e827a541b21beec06015834d3fb80c15ab7f71836e1c931"
+    "checksum": "f758aa62fd243cb0267f7ae9f172353a98801e21501ac85bea30cf5b63ead68b"
   }
 }
