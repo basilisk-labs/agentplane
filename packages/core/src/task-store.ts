@@ -159,8 +159,43 @@ function normalizeDocSectionName(section: string): string {
   return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
 }
 
-function normalizeDocSections(doc: string, required: string[]): string {
+function splitCombinedHeadingLines(doc: string): string[] {
   const lines = doc.replaceAll("\r\n", "\n").split("\n");
+  const out: string[] = [];
+  let inFence = false;
+
+  for (const line of lines) {
+    const trimmed = line.trimStart();
+    if (trimmed.startsWith("```")) {
+      inFence = !inFence;
+      out.push(line);
+      continue;
+    }
+
+    if (!inFence && line.includes("## ")) {
+      const matches = [...line.matchAll(/##\s+/g)];
+      if (matches.length > 1 && matches[0]?.index === 0) {
+        let start = 0;
+        for (let i = 1; i < matches.length; i += 1) {
+          const idx = matches[i]?.index ?? 0;
+          const chunk = line.slice(start, idx).trimEnd();
+          if (chunk) out.push(chunk);
+          start = idx;
+        }
+        const last = line.slice(start).trimEnd();
+        if (last) out.push(last);
+        continue;
+      }
+    }
+
+    out.push(line);
+  }
+
+  return out;
+}
+
+function normalizeDocSections(doc: string, required: string[]): string {
+  const lines = splitCombinedHeadingLines(doc);
   const sections = new Map<string, { title: string; lines: string[] }>();
   const order: string[] = [];
   const pendingSeparator = new Set<string>();
