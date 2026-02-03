@@ -1,17 +1,18 @@
 ---
 id: "202602031203-AJEFAF"
 title: "Set doc_updated_by to last comment author"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["tasks"]
 verify: []
-commit: null
+commit: { hash: "3b886af3861460a389a7057aabef6536c085189a", message: "🧾 AJEFAF use last comment for doc_updated_by" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: update doc_updated_by to reflect last comment author and backfill task READMEs." }
+  - { author: "ORCHESTRATOR", body: "Verified: pre-commit hooks ran format, lint, and test-fast successfully." }
 doc_version: 2
-doc_updated_at: "2026-02-03T12:10:03.306Z"
+doc_updated_at: "2026-02-03T12:13:32.203Z"
 doc_updated_by: "agentplane"
 description: "Update task doc metadata so doc_updated_by reflects the last comment author (agent), not a generic value; backfill existing task READMEs."
 id_source: "generated"
