@@ -1,0 +1,47 @@
+---
+id: "202602030920-EGKTVZ"
+title: "Fix npm publish auth in GitHub Actions"
+status: "DOING"
+priority: "high"
+owner: "ORCHESTRATOR"
+depends_on: []
+tags: ["release"]
+verify: []
+commit: null
+comments:
+  - { author: "ORCHESTRATOR", body: "Start: fix npm publish auth in workflow, ensure OIDC trusted publishing, add local dry-run check." }
+doc_version: 2
+doc_updated_at: "2026-02-03T09:21:57.787Z"
+doc_updated_by: "agentplane"
+description: "Ensure publish workflow uses trusted publishing (OIDC) without stale tokens; add local publish dry-run check."
+id_source: "generated"
+---
+## Summary
+
+## Scope
+
+## Risks
+
+## Verify Steps
+
+## Rollback Plan
+
+## Summary
+
+Removed npm auth token usage in publish workflow and added a local release dry-run script.
+
+## Scope
+
+Workflow auth cleanup and local publish dry-run validation.
+
+## Risks
+
+Low; publish now relies on GitHub OIDC only.
+
+## Rollback Plan
+
+Revert workflow/script changes and re-run publish with corrected auth.
+
+## Verify Steps
+
+1) bun run release:check\n2) GitHub Actions publish workflow runs on tag push
