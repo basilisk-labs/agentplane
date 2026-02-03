@@ -12789,12 +12789,45 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nAligned CLI references: repo-local agentplane.js for root AGENTS.md and .agentplane/agents; system agentplane for framework assets; updated tests accordingly.\n\n## Scope\n\nAGENTS.md, .agentplane/agents/*.json, packages/agentplane/assets/AGENTS.md, packages/agentplane/src/agents-template.test.ts.\n\n## Risks\n\nLow risk. Documentation/test alignment change; mismatch between repo-local and asset templates could confuse if not kept consistent.\n\n## Verify Steps\n\nWill rely on pre-commit hooks (prettier/eslint/vitest) during commit.\n\n## Rollback Plan\n\nRevert the modified AGENTS templates, installed agents, and tests to the previous CLI reference scheme."
+    },
+    {
+      "id": "202602031713-J6KY73",
+      "title": "Track missing task READMEs",
+      "description": "Add untracked task README artifacts for existing tasks and commit them cleanly.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "tasks"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "406de3984c4f1cfe15f28e3ebaffc5c3f7586e22",
+        "message": "📝 J6KY73 add missing task READMEs"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: add and commit untracked task README artifacts for existing tasks."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: no verify commands configured; artifact-only commit recorded."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T17:15:37.452Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nCommitted previously untracked task README artifacts for existing tasks.\n\n## Scope\n\n.agentplane/tasks/202602031511-YJ99KE/README.md and .agentplane/tasks/202602031530-D57QBW/README.md.\n\n## Risks\n\nLow risk. Adds missing task artifacts only.\n\n## Verify Steps\n\nNot run (artifact-only change).\n\n## Rollback Plan\n\nRemove the added task README files from git."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "f758aa62fd243cb0267f7ae9f172353a98801e21501ac85bea30cf5b63ead68b"
+    "checksum": "f496b70a8120e14c1f6fec8ba6c57c2bfc3475d4264516012fcc3773f5c386c4"
   }
 }
