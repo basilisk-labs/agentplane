@@ -5290,10 +5290,7 @@ async function resolveInitBaseBranch(gitRoot: string, fallback: string): Promise
   return fallback;
 }
 
-async function promptInitBaseBranch(opts: {
-  gitRoot: string;
-  fallback: string;
-}): Promise<string> {
+async function promptInitBaseBranch(opts: { gitRoot: string; fallback: string }): Promise<string> {
   const branches = await gitListBranches(opts.gitRoot);
   let current: string | null = null;
   try {
@@ -5303,9 +5300,7 @@ async function promptInitBaseBranch(opts: {
   }
 
   const promptNewBranch = async (hasBranches: boolean): Promise<string> => {
-    const raw = await promptInput(
-      `Enter new base branch name (default ${opts.fallback}): `,
-    );
+    const raw = await promptInput(`Enter new base branch name (default ${opts.fallback}): `);
     const candidate = raw.trim() || opts.fallback;
     if (!candidate) {
       throw new CliError({
@@ -5316,14 +5311,11 @@ async function promptInitBaseBranch(opts: {
     }
     if (await gitBranchExists(opts.gitRoot, candidate)) return candidate;
     try {
-      if (hasBranches) {
-        await execFileAsync("git", ["branch", candidate], { cwd: opts.gitRoot, env: gitEnv() });
-      } else {
-        await execFileAsync("git", ["checkout", "-q", "-b", candidate], {
-          cwd: opts.gitRoot,
-          env: gitEnv(),
-        });
-      }
+      await execFileAsync(
+        "git",
+        hasBranches ? ["branch", candidate] : ["checkout", "-q", "-b", candidate],
+        { cwd: opts.gitRoot, env: gitEnv() },
+      );
     } catch (err) {
       const message = err instanceof Error ? err.message : `Failed to create branch ${candidate}`;
       throw new CliError({ exitCode: 5, code: "E_GIT", message });
@@ -8225,8 +8217,43 @@ function normalizeDocSectionName(section: string): string {
   return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
 }
 
-function normalizeDocSections(doc: string, required: string[]): string {
+function splitCombinedHeadingLines(doc: string): string[] {
   const lines = doc.replaceAll("\r\n", "\n").split("\n");
+  const out: string[] = [];
+  let inFence = false;
+
+  for (const line of lines) {
+    const trimmed = line.trimStart();
+    if (trimmed.startsWith("```")) {
+      inFence = !inFence;
+      out.push(line);
+      continue;
+    }
+
+    if (!inFence && line.includes("## ")) {
+      const matches = [...line.matchAll(/##\s+/g)];
+      if (matches.length > 1 && matches[0]?.index === 0) {
+        let start = 0;
+        for (let i = 1; i < matches.length; i += 1) {
+          const idx = matches[i]?.index ?? 0;
+          const chunk = line.slice(start, idx).trimEnd();
+          if (chunk) out.push(chunk);
+          start = idx;
+        }
+        const last = line.slice(start).trimEnd();
+        if (last) out.push(last);
+        continue;
+      }
+    }
+
+    out.push(line);
+  }
+
+  return out;
+}
+
+function normalizeDocSections(doc: string, required: string[]): string {
+  const lines = splitCombinedHeadingLines(doc);
   const sections = new Map<string, { title: string; lines: string[] }>();
   const order: string[] = [];
   const pendingSeparator = new Set<string>();
@@ -8299,7 +8326,7 @@ function parseDocSections(doc: string): {
   sections: Map<string, { title: string; lines: string[] }>;
   order: string[];
 } {
-  const lines = doc.replaceAll("\r\n", "\n").split("\n");
+  const lines = splitCombinedHeadingLines(doc);
   const sections = new Map<string, { title: string; lines: string[] }>();
   const order: string[] = [];
   let currentKey: string | null = null;

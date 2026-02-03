@@ -69,6 +69,20 @@ describe("task-backend helpers", () => {
     expect(extractTaskDoc(body)).toBe("## Summary\n\nDoc line");
   });
 
+  it("extractTaskDoc normalizes concatenated summary heading", () => {
+    const body = [
+      "# Title",
+      "",
+      "## Summary## Summary",
+      "",
+      "Doc line",
+      "",
+      "## Changes Summary (auto)",
+      "- item",
+    ].join("\n");
+    expect(extractTaskDoc(body)).toBe("## Summary\n\nDoc line");
+  });
+
   it("mergeTaskDoc keeps prefix and auto summary blocks", () => {
     const body = [
       "# Header",
@@ -93,6 +107,20 @@ describe("task-backend helpers", () => {
   it("mergeTaskDoc treats null doc as empty", () => {
     const body = "## Summary\n\nBody\n";
     expect(mergeTaskDoc(body, null as unknown as string)).toBe(body);
+  });
+
+  it("mergeTaskDoc replaces concatenated summary heading", () => {
+    const body = [
+      "## Summary## Summary",
+      "Old doc",
+      "",
+      "## Changes Summary (auto)",
+      "- auto",
+    ].join("\n");
+    const merged = mergeTaskDoc(body, "## Summary\n\nNew doc");
+    expect(merged).not.toContain("## Summary## Summary");
+    expect(merged).toContain("## Summary\n\nNew doc");
+    expect(merged).toContain("## Changes Summary (auto)");
   });
 
   it("mergeTaskDoc inserts doc when no prefix or auto summary exists", () => {

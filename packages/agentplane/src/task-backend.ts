@@ -19,6 +19,7 @@ import { loadDotEnv } from "./env.js";
 const ID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${ID_ALPHABET}]{4,}$`);
 const DOC_SECTION_HEADER = "## Summary";
+const DOC_SECTION_HEADER_RE = /^##\s+Summary(?:\s|$|#)/;
 const AUTO_SUMMARY_HEADER = "## Changes Summary (auto)";
 const DEFAULT_DOC_UPDATED_BY = "agentplane";
 const DOC_VERSION = 2;
@@ -70,17 +71,24 @@ function ensureDocMetadata(task: TaskDocMeta, updatedBy?: string): void {
   task.doc_updated_by = updatedBy ?? DEFAULT_DOC_UPDATED_BY;
 }
 
+function isDocSectionHeader(line: string): boolean {
+  return DOC_SECTION_HEADER_RE.test(line.trim());
+}
+
 export function extractTaskDoc(body: string): string {
   if (!body) return "";
   const lines = body.split("\n");
   let startIdx: number | null = null;
   for (const [idx, line] of lines.entries()) {
-    if (line.trim() === DOC_SECTION_HEADER) {
+    if (isDocSectionHeader(line)) {
       startIdx = idx;
       break;
     }
   }
   if (startIdx === null) return "";
+  if (lines[startIdx]?.trim() !== DOC_SECTION_HEADER) {
+    lines[startIdx] = DOC_SECTION_HEADER;
+  }
   let endIdx = lines.length;
   for (let idx = startIdx + 1; idx < lines.length; idx++) {
     if (lines[idx]?.trim() === AUTO_SUMMARY_HEADER) {
@@ -97,7 +105,7 @@ export function mergeTaskDoc(body: string, doc: string): string {
     const lines = body ? body.split("\n") : [];
     let prefixIdx: number | null = null;
     for (const [idx, line] of lines.entries()) {
-      if (line.trim() === DOC_SECTION_HEADER) {
+      if (isDocSectionHeader(line)) {
         prefixIdx = idx;
         break;
       }

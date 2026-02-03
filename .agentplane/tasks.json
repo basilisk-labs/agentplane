@@ -12323,11 +12323,11 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-03T11:01:44.734Z",
+      "doc_updated_at": "2026-02-03T11:32:58.680Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nRefreshed package READMEs to be npm-friendly with clear overview, install, quickstart, and links.\n\n## Scope\n\nUpdate packages/agentplane/README.md and packages/core/README.md only.\n\n## Risks\n\nDocs could drift from CLI behavior; mitigated by linking to canonical docs and keeping commands generic.\n\n## Verify Steps\n\nOpen both READMEs and confirm formatting, links, and referenced commands are valid for the CLI.\n\n## Rollback Plan\n\nRevert packages/agentplane/README.md and packages/core/README.md to the previous versions."
+      "doc": "## Summary\n\nRefreshed package READMEs to be npm-friendly with clear overview, install, quickstart, and links.\n\n\n\nRefreshed package READMEs to be npm-friendly with clear overview, install, quickstart, and links.\n\n\n\nRefreshed package READMEs to be npm-friendly with clear overview, install, quickstart, and links.\n\n\n\nRefreshed package READMEs to be npm-friendly with clear overview, install, quickstart, and links.\n\n\n\n\n\n\nRefreshed package READMEs to be npm-friendly with clear overview, install, quickstart, and links.\n\n\n\n## Scope\n\nUpdate packages/agentplane/README.md and packages/core/README.md only.\n\n\n\n\n\n## Risks\n\nDocs could drift from CLI behavior; mitigated by linking to canonical docs and keeping commands generic.\n\n\n\n\n\n## Verify Steps\n\nOpen both READMEs and confirm formatting, links, and referenced commands are valid for the CLI.\n\n\n\n\n\n## Rollback Plan\n\nRevert packages/agentplane/README.md and packages/core/README.md to the previous versions."
     },
     {
       "id": "202602031107-RK4QCY",
@@ -12357,12 +12357,91 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nIntegrated npm package README updates and ran pre-commit checks.\n\n## Scope\n\nUpdated packages/agentplane/README.md and packages/core/README.md; ran format, lint, and test:fast.\n\n## Risks\n\nLow risk: README formatting changes only.\n\n## Verify Steps\n\n- bun run format:check\\n- bun run lint\\n- bun run test:fast\n\n## Rollback Plan\n\nRevert README updates and task doc changes."
+    },
+    {
+      "id": "202602031117-YAQ677",
+      "title": "Fix init branch_pr commit guard in empty repo",
+      "description": "Fix agentplane init: when workflow_mode=branch_pr in an empty directory, bootstrap git repo and base branch before enforcing commit guard, so init can create its install commit on the initial branch. Add regression tests for empty repo branch_pr init and ensure guard still blocks commits on main for non-empty repos.",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "init",
+        "git",
+        "workflow",
+        "cli"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T11:17:14.357Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602031123-GNAF6S",
+      "title": "Fix duplicate task README sections",
+      "description": "Fix task doc update logic so edits merge into existing sections and avoid duplicate headings (e.g., 202602031030-J9GHW7/README.md).",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "tasks"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T11:23:46.627Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602031123-XWJDAB",
+      "title": "Init branch selection for branch_pr",
+      "description": "When init runs in branch_pr mode: if repository is empty, default base branch to main; if repo exists, prompt user to select existing branch or enter a new branch name to create. Add validation and tests for both cases.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "init",
+        "workflow",
+        "git",
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "365842eebfe3f0d00a75fe29ba29703927f3b58c",
+        "message": "✨ XWJDAB init branch_pr base selection"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: branch_pr init now prompts for base branch in existing repos, defaults to main in empty dirs; tests run (bun run test:cli:core)."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: branch_pr init now prompts for base branch in existing repos, defaults to main in empty dirs; tests run (bun run test:cli:core)."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T11:33:43.464Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nAdd interactive base-branch selection for branch_pr init in existing repos; keep default main for empty dirs. Include non-interactive safeguards and tests.\n\n## Scope\n\nUpdate init flow to prompt for base branch in branch_pr when repo already exists; create branch when requested; keep empty-repo default main. Add CLI core tests for empty repo and existing repo defaults.\n\n## Risks\n\nPrompt path only triggers in interactive branch_pr init; non-interactive behavior must remain unchanged. Branch creation could fail if git rejects the name.\n\n## Verify Steps\n\nbun run test:cli:core -- -t \"init branch_pr\"\n\n## Rollback Plan\n\nRevert the promptInitBaseBranch changes and the new init tests; restore prior resolveInitBaseBranch-only behavior."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "2dff504492ef7154cbb26d754f907949c5ce6fd6f316d5dae38b910d31c253ee"
+    "checksum": "43518ab21b2c5be3e50d85c2387a3156e8a49e63aef2732096c6026fdb524452"
   }
 }
