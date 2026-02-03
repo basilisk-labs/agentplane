@@ -12,6 +12,7 @@ const execFileAsync = promisify(execFile);
 
 let agentplaneHome: string | null = null;
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
+const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
 const recipeArchiveCache = new Map<
   string,
   { archivePath: string; manifest: Record<string, unknown> }
@@ -43,6 +44,7 @@ export function registerAgentplaneHome(): void {
   beforeAll(async () => {
     agentplaneHome = await mkdtemp(path.join(os.tmpdir(), "agentplane-home-"));
     process.env.AGENTPLANE_HOME = agentplaneHome;
+    process.env.AGENTPLANE_NO_UPDATE_CHECK = "1";
   });
 
   afterAll(async () => {
@@ -53,6 +55,11 @@ export function registerAgentplaneHome(): void {
       delete process.env.AGENTPLANE_HOME;
     } else {
       process.env.AGENTPLANE_HOME = originalAgentplaneHome;
+    }
+    if (originalNoUpdateCheck === undefined) {
+      delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    } else {
+      process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
     }
   });
 }

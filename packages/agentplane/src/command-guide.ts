@@ -245,6 +245,7 @@ export function renderQuickstart(): string {
     "- `--json`: emit JSON-formatted errors",
     "- `--help` / `-h`: show help",
     "- `--version`: show version",
+    "- `--no-update-check`: skip checking npm for a newer CLI version",
     "",
     "Notes:",
     "- `.env` at the repo root is loaded automatically (without overwriting existing environment variables).",
