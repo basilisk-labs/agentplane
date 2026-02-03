@@ -10887,7 +10887,7 @@
       "id": "202602011734-4RQ156",
       "title": "Refactor docs for Mintlify + add task lifecycle section",
       "description": "Restructure Mintlify docs into modular user/developer sections; align navigation/frontmatter; add task lifecycle documentation with Mermaid diagrams for direct and branch_pr modes.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "med",
       "owner": "DOCS",
       "depends_on": [],
@@ -10895,11 +10895,19 @@
         "docs"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "35359daf1bcc5ede5838feed0e88a0c23e8f81ec",
+        "message": "🧪 4RQ156+JADQ0P align scenario test messages"
+      },
+      "comments": [
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun run test:full; rg -n \"\\.agent-plane\" -S; rg -n \"agentctl\" docs README.md packages"
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-01T17:45:33+00:00",
-      "doc_updated_by": "agentctl",
+      "doc_updated_at": "2026-02-03T08:26:07.924Z",
+      "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nRefactored Mintlify docs into user/developer/help modules, updated navigation, and added task lifecycle documentation with Mermaid diagrams.\n\n## Scope\n\nMove existing docs into modular folders, align docs.json navigation and index, add task lifecycle page with flowchart and sequence diagrams, and update cross-links.\n\n## Risks\n\nNavigation paths could break if any links are missed; Mintlify page paths must match the new folder structure.\n\n## Verify Steps\n\nReview docs.json navigation for correct paths; check index.mdx links; open task lifecycle page to confirm Mermaid renders in Mintlify.\n\n## Rollback Plan\n\nRevert doc moves and restore original docs.json navigation and index.mdx ordering."
@@ -11483,7 +11491,7 @@
       "id": "202602021417-JADQ0P",
       "title": "Migrate legacy .agent-plane data to .agentplane and remove python artifacts",
       "description": "Move legacy task data from .agent-plane into .agentplane using Node CLI paths, remove python-era artifacts and references, and update configs/docs/tests accordingly.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "med",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -11491,10 +11499,18 @@
         "ops"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "35359daf1bcc5ede5838feed0e88a0c23e8f81ec",
+        "message": "🧪 4RQ156+JADQ0P align scenario test messages"
+      },
+      "comments": [
+        {
+          "author": "INTEGRATOR",
+          "body": "Verified: bun run test:full; rg -n \"\\.agent-plane\" -S; rg -n \"agentctl\" docs README.md packages"
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-02T14:24:23.188Z",
+      "doc_updated_at": "2026-02-03T08:26:07.938Z",
       "doc_updated_by": "agentplane",
       "dirty": false,
       "id_source": "explicit",
@@ -11954,6 +11970,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "a9e6f39b4bff22b67bd0b4f93184f8999d185ace0f9d01960d8648e46d0241f6"
+    "checksum": "39768a992819f90eab901a6d3536219efa99d7d2f7ebb86be09b3b25ee1f6dc9"
   }
 }
