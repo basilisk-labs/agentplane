@@ -12328,12 +12328,41 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nRefreshed package READMEs to be npm-friendly with clear overview, install, quickstart, and links.\n\n## Scope\n\nUpdate packages/agentplane/README.md and packages/core/README.md only.\n\n## Risks\n\nDocs could drift from CLI behavior; mitigated by linking to canonical docs and keeping commands generic.\n\n## Verify Steps\n\nOpen both READMEs and confirm formatting, links, and referenced commands are valid for the CLI.\n\n## Rollback Plan\n\nRevert packages/agentplane/README.md and packages/core/README.md to the previous versions."
+    },
+    {
+      "id": "202602031107-RK4QCY",
+      "title": "Integrate npm package README updates",
+      "description": "Integrate updated npmjs READMEs, run pre-commit hooks, and commit/push via agentplane.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "86ba27f256e959bf830bae00e1aa6a6aa3ef12b7",
+        "message": "📝 RK4QCY update npm package READMEs"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: bun run format:check; bun run lint; bun run test:fast."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-03T11:09:17.046Z",
+      "doc_updated_by": "agentplane",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n\n## Summary\n\nIntegrated npm package README updates and ran pre-commit checks.\n\n## Scope\n\nUpdated packages/agentplane/README.md and packages/core/README.md; ran format, lint, and test:fast.\n\n## Risks\n\nLow risk: README formatting changes only.\n\n## Verify Steps\n\n- bun run format:check\\n- bun run lint\\n- bun run test:fast\n\n## Rollback Plan\n\nRevert README updates and task doc changes."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "0e368ceae718c3e474932ea2fd279e582538717aeb871d63cac0ae07624ddd62"
+    "checksum": "2dff504492ef7154cbb26d754f907949c5ce6fd6f316d5dae38b910d31c253ee"
   }
 }
