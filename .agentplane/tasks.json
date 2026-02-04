@@ -12893,7 +12893,7 @@
       "id": "202602040547-Q5MHE6",
       "title": "Review and commit task 202602031824-Y1YVDB",
       "description": "Inspect task 202602031824-Y1YVDB artifacts, update required sections, finish the task, and commit task metadata.",
-      "status": "DOING",
+      "status": "DONE",
       "priority": "med",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -12901,24 +12901,32 @@
         "tasks"
       ],
       "verify": [],
-      "commit": null,
+      "commit": {
+        "hash": "035fe3006ba926ba630905fb979261fa0e98a5af",
+        "message": "📝 Q5MHE6 fill task README sections"
+      },
       "comments": [
         {
           "author": "ORCHESTRATOR",
           "body": "Start: inspect task 202602031824-Y1YVDB, update docs if needed, finish it, and commit metadata."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: task Y1YVDB is DONE, metadata committed, and README sections are complete."
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-04T05:48:04.563Z",
+      "doc_updated_at": "2026-02-04T06:09:23.749Z",
       "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nReviewed task 202602031824-Y1YVDB, filled required README sections, finished the task, and committed metadata.\n\n## Scope\n\nUpdated task documentation, executed `agentplane finish`, and committed updated task metadata.\n\n## Risks\n\nIf commit references were wrong, task metadata could be inconsistent; no product code changes were made.\n\n## Verify Steps\n\n1. Run `node packages/agentplane/bin/agentplane.js task show 202602031824-Y1YVDB` and confirm status DONE with commit set.\n2. Run `git log -1 --oneline` and confirm recent task metadata commit.\n\n## Rollback Plan\n\nRevert the commits that update `.agentplane/tasks.json` and task README files."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "0bf3e61555e09836be37323cf4e43cf2842443727a2481b531c29975fb4c2a08"
+    "checksum": "9675b234325124cf276e821ce1e0c5fb95c9286375a6717fae0ed4453d02e71d"
   }
 }
