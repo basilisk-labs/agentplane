@@ -12921,12 +12921,45 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nReviewed task 202602031824-Y1YVDB, filled required README sections, finished the task, and committed metadata.\n\n## Scope\n\nUpdated task documentation, executed `agentplane finish`, and committed updated task metadata.\n\n## Risks\n\nIf commit references were wrong, task metadata could be inconsistent; no product code changes were made.\n\n## Verify Steps\n\n1. Run `node packages/agentplane/bin/agentplane.js task show 202602031824-Y1YVDB` and confirm status DONE with commit set.\n2. Run `git log -1 --oneline` and confirm recent task metadata commit.\n\n## Rollback Plan\n\nRevert the commits that update `.agentplane/tasks.json` and task README files."
+    },
+    {
+      "id": "202602040624-1KE2BN",
+      "title": "Remove external Codex worktrees",
+      "description": "Identify and remove external Codex worktrees under ~/.codex/worktrees for agentplane; prune git worktree metadata.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "cleanup"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "7608b88f2f1c38d06c75ee62b76d221b822c9347",
+        "message": "📝 1KE2BN fill task README sections"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: audit external Codex worktrees for agentplane, remove them, and prune git worktree metadata."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: external Codex worktrees removed and git worktree metadata pruned."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-04T06:29:05.515Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nRemoved external Codex worktrees for agentplane under `~/.codex/worktrees` and pruned git worktree metadata.\n\n## Scope\n\nIdentified external worktrees, removed the directories, and ran `git worktree prune`.\n\n## Risks\n\nIf any external worktree was still needed, it was removed; no changes were made to repo contents.\n\n## Verify Steps\n\n1. Run `git worktree list` and confirm only the main repo remains.\n2. Confirm `~/.codex/worktrees` has no `agentplane` worktrees.\n\n## Rollback Plan\n\nRecreate the external worktree via `git worktree add` if required."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "9675b234325124cf276e821ce1e0c5fb95c9286375a6717fae0ed4453d02e71d"
+    "checksum": "eb384cebf3153841d1e4626fcd29e584c9c3900a75127571ac9e714173c55b79"
   }
 }
