@@ -15427,9 +15427,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T17:44:08.655Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nCreate tag v0.1.5 and push main and tag to origin.\n\n## Scope\n\nTag current HEAD as v0.1.5 and push main + tag.\n\n## Risks\n\nPushing wrong tag or missing release note commit.\n\n## Verify Steps\n\nConfirm HEAD includes release notes and version bumps; tag v0.1.5 points to the release commit; push main + tag to origin.\n\n## Verification\n\nConfirmed tag v0.1.5 points to commit b80aa9c1fd6b; push main and v0.1.5 succeeded with pre-push tests.\n\n## Rollback Plan\n\nDelete tag v0.1.5 locally/remotely and reset to prior state if needed."
+      "doc": "## Summary\n\nCreate tag v0.1.5 and push main and tag to origin.\n\n## Scope\n\nTag current HEAD as v0.1.5 and push main + tag.\n\n## Risks\n\nPushing wrong tag or missing release note commit.\n\n## Verify Steps\n\nConfirm HEAD includes release notes and version bumps; tag v0.1.5 points to the release commit; push main + tag to origin.\n\n## Verification\n\nConfirmed tag v0.1.5 points to commit b80aa9c1fd6b; push main and v0.1.5 succeeded with pre-push tests.\n\n## Rollback Plan\n\nDelete tag v0.1.5 locally/remotely and reset to prior state if needed.",
+      "dirty": false
     },
     {
       "id": "202602051736-PFN0KP",
@@ -15464,12 +15464,67 @@
       "id_source": "generated",
       "doc": "## Summary\n\nUpdate tests for new version and current verify/zip error behavior.\n\n## Scope\n\nAdjust failing run-cli tests for verify approvals, zip traversal exit codes, and version expectations.\n\n## Risks\n\nIncorrect expectations could mask regressions in verify or archive safety.\n\n## Verify Steps\n\nRun vitest run (full) or relevant run-cli tests; confirm pre-push passes.\n\n## Verification\n\nRan: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts; bunx vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts.\n\n## Rollback Plan\n\nRevert test expectation changes if they hide real regressions.",
       "dirty": false
+    },
+    {
+      "id": "202602051755-AX8DH0",
+      "title": "Document release flow",
+      "description": "Update release docs to describe tag-based publish + GitHub Release generation.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "release"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T17:55:44.536Z",
+      "doc_updated_by": "DOCS",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602051755-E50N3A",
+      "title": "Release workflow: version checks + GitHub Release",
+      "description": "Add version/tag validation and auto-create GitHub Release on tag publish.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "release",
+        "ci"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "d57f00d6203e3184099564f8a8b2bb61a43e59fc",
+        "message": "✨ E50N3A automate tagged releases"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: add version/tag validation and auto GitHub Release to publish workflow."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: publish workflow validates versions/notes and creates GitHub Release on tag."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T17:59:06.953Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd release version checks and GitHub Release creation to tag-based publish workflow.\n\n## Scope\n\nUpdate publish.yml to tag-only trigger with contents:write, add version/tag validation script, and create GitHub Release from docs/releases/vX.Y.Z.md.\n\n## Risks\n\nWrong version/tag detection could block releases or publish wrong versions.\n\n## Verify Steps\n\nInspect workflow and script changes; ensure publish.yml validates release notes and version alignment for vX.Y.Z.\n\n## Verification\n\nReviewed publish.yml changes, added version check script, and configured GitHub Release creation with body from docs/releases/vX.Y.Z.md.\n\n## Rollback Plan\n\nRevert publish workflow/script changes to restore prior behavior."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "f1c0488ad80d7e4fd056771ac2d6932ee5a13fe7bdb9caedbdcdb313d724830e"
+    "checksum": "0deaf59d5486d3cf03608d3a37ea92c469db9c1cd90ab06c62bab10954bff22c"
   }
 }
