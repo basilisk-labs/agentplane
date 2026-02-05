@@ -13982,7 +13982,7 @@
       "id": "202602051201-F8YMCF",
       "title": "Verify: parse Verify Steps and execute commands",
       "description": "Parse Verify Steps from task README (cmd vs human), execute commands, and collect results for verification.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [
@@ -13997,13 +13997,26 @@
       "verify": [
         "bun run test:fast"
       ],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "3df65582ac7ff8d577d1450769720a846f3d2379",
+        "message": "✨ F8YMCF verify from README steps"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: implement Verify Steps parsing (cmd vs human) and wire verify to execute commands from README."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run lint; bun run test:fast; agentplane verify 202602051201-F8YMCF."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T12:01:40.386Z",
+      "doc_updated_at": "2026-02-05T12:22:57.337Z",
       "doc_updated_by": "CODER",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdded Verify Steps parsing (cmd vs human) and wired verify to execute README commands with manual-step output.\n\n## Scope\n\nParse Verify Steps section, extract cmd: lines, display manual steps, and prefer README commands over task.verify; added workflow verify test coverage.\n\n## Risks\n\nVerify behavior now depends on README content; missing cmd: lines yields no commands unless task.verify is populated.\n\n## Verify Steps\n\nbun run lint\\nbun run test:fast\n\n## Rollback Plan\n\nRevert the verify parsing commit to restore task.verify-only behavior."
     },
     {
       "id": "202602051201-MNK3HD",
@@ -14037,6 +14050,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "4a1853bc758d9d5006fbb1dd1d3d0323f2c4068cc6aaaafe0b4a7eaeca58e9f1"
+    "checksum": "4089dbe09398dfff075f00d9d1202f8df39824f914d7cb61b798b49f03e14c9c"
   }
 }
