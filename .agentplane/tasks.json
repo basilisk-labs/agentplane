@@ -13928,7 +13928,7 @@
       "id": "202602051201-7KW7RP",
       "title": "Verify: write Verification section and fail-back workflow",
       "description": "Write Verification results to task README and return task to DOING with comments on failure.",
-      "status": "DOING",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [
@@ -13943,15 +13943,22 @@
       "verify": [
         "bun run test:fast"
       ],
-      "commit": null,
+      "commit": {
+        "hash": "1877155613c8dc83d3f900708a47b0337b0d2d70",
+        "message": "✨ 7KW7RP verify writes Verification and fail-back"
+      },
       "comments": [
         {
           "author": "CODER",
           "body": "Start: implement Verification section updates and fail-back workflow on verify failure."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify (Verification section updated)."
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T12:43:28.791Z",
+      "doc_updated_at": "2026-02-05T12:51:30.876Z",
       "doc_updated_by": "CODER",
       "dirty": false,
       "id_source": "generated",
@@ -14070,6 +14077,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "1540432800870843f851c3bda7bc4875147617bed5cd10a01f88c40a75baf626"
+    "checksum": "53ed1b197146ca9679585a4f4b88487a7893251377df4deef490e8151cba1d97"
   }
 }
