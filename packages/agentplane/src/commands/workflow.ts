@@ -22,7 +22,7 @@ import {
 import { formatCommentBodyForCommit } from "../shared/comment-format.js";
 import { mapBackendError, mapCoreError } from "../cli/error-map.js";
 import { fileExists } from "../cli/fs-utils.js";
-import { promptChoice, promptInput } from "../cli/prompts.js";
+import { promptChoice, promptInput, promptYesNo } from "../cli/prompts.js";
 import {
   backendNotSupportedMessage,
   infoMessage,
@@ -36,7 +36,7 @@ import {
   workflowModeMessage,
 } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
-import { loadTaskBackend, type TaskData } from "../backends/task-backend.js";
+import { loadTaskBackend, type TaskBackend, type TaskData } from "../backends/task-backend.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -1689,6 +1689,50 @@ function parseVerifyStepsFromDoc(doc: string): { commands: string[]; steps: stri
   return { commands, steps };
 }
 
+function renderVerificationSection(opts: {
+  status: "pass" | "fail";
+  verifiedAt: string;
+  verifiedSha?: string | null;
+  commands: string[];
+  steps: string[];
+  details?: string | null;
+}): string {
+  const lines = [
+    `Status: ${opts.status}`,
+    `Verified at: ${opts.verifiedAt}`,
+    ...(opts.verifiedSha ? [`Verified sha: ${opts.verifiedSha}`] : []),
+    ...(opts.commands.length > 0
+      ? ["", "Commands:", ...opts.commands.map((command) => `- ${command}`)]
+      : []),
+    ...(opts.steps.length > 0
+      ? ["", "Manual steps:", ...opts.steps.map((step) => `- ${step}`)]
+      : []),
+    ...(opts.details ? ["", `Details: ${opts.details}`] : []),
+  ];
+  return lines.join("\n");
+}
+
+async function writeVerificationSection(opts: {
+  backend: TaskBackend;
+  taskId: string;
+  config: AgentplaneConfig;
+  baseDoc: string;
+  content: string;
+  updatedBy: string;
+}): Promise<void> {
+  if (!opts.backend.getTaskDoc || !opts.backend.setTaskDoc) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: backendNotSupportedMessage("task docs"),
+    });
+  }
+  const baseDoc = ensureDocSections(opts.baseDoc ?? "", opts.config.tasks.doc.required_sections);
+  const nextDoc = setMarkdownSection(baseDoc, "Verification", opts.content);
+  const normalized = ensureDocSections(nextDoc, opts.config.tasks.doc.required_sections);
+  await opts.backend.setTaskDoc(opts.taskId, normalized, opts.updatedBy);
+}
+
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value
@@ -3287,7 +3331,7 @@ export async function cmdVerify(opts: {
   require: boolean;
 }): Promise<number> {
   try {
-    const { task } = await loadBackendTask({
+    const { task, backend, config, resolved } = await loadBackendTask({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
@@ -3311,6 +3355,7 @@ export async function cmdVerify(opts: {
           .filter(Boolean)
       : [];
     const commands = docCommands.length > 0 ? docCommands : taskCommands;
+    let baseDoc = typeof task.doc === "string" ? task.doc : "";
 
     if (docSteps.length > 0 && !opts.quiet) {
       process.stdout.write(`${infoMessage(`${task.id}: manual verify steps:`)}\n`);
@@ -3333,11 +3378,40 @@ export async function cmdVerify(opts: {
       return 0;
     }
 
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const loaded = await loadConfig(resolved.agentplaneDir);
+    const requireVerifyApproval = config.agents?.approvals?.require_verify === true;
+    if (requireVerifyApproval && !opts.quiet) {
+      if (!process.stdin.isTTY) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message:
+            "Verification requires explicit approval (run in interactive mode or set agents.approvals.require_verify=false).",
+        });
+      }
+      const approved = await promptYesNo(
+        "Require explicit approval for verification. Proceed?",
+        false,
+      );
+      if (!approved) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Verification cancelled by user.",
+        });
+      }
+    }
+
+    if (!backend.getTaskDoc || !backend.setTaskDoc) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: backendNotSupportedMessage("task docs"),
+      });
+    }
+    if (!baseDoc) {
+      const fetched = await backend.getTaskDoc(task.id);
+      if (typeof fetched === "string") baseDoc = fetched;
+    }
 
     const execCwd = opts.execCwd ? path.resolve(opts.cwd, opts.execCwd) : resolved.gitRoot;
     if (!isPathWithin(resolved.gitRoot, execCwd)) {
@@ -3348,7 +3422,7 @@ export async function cmdVerify(opts: {
       });
     }
 
-    const taskDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir, opts.taskId);
+    const taskDir = path.join(resolved.gitRoot, config.paths.workflow_dir, opts.taskId);
     const prDir = path.join(taskDir, "pr");
     const metaPath = path.join(prDir, "meta.json");
 
@@ -3418,24 +3492,82 @@ export async function cmdVerify(opts: {
       }
     }
 
+    let verifyError: Error | null = null;
+    let failedCommand: string | null = null;
     for (const command of commands) {
-      if (!opts.quiet) {
-        process.stdout.write(`$ ${command}\n`);
+      try {
+        if (!opts.quiet) {
+          process.stdout.write(`$ ${command}\n`);
+        }
+        const timestamp = nowIso();
+        const result = await runShellCommand(command, execCwd);
+        const shaPrefix = currentSha ? `sha=${currentSha} ` : "";
+        const header = `[${timestamp}] ${shaPrefix}$ ${command}`.trimEnd();
+        if (logPath) {
+          await appendVerifyLog(logPath, header, result.output);
+        }
+        if (result.code !== 0) {
+          throw new CliError({
+            exitCode: result.code || 1,
+            code: "E_IO",
+            message: `Verify command failed: ${command}`,
+          });
+        }
+      } catch (err) {
+        verifyError = err instanceof Error ? err : new Error(String(err));
+        failedCommand = command;
+        break;
       }
-      const timestamp = nowIso();
-      const result = await runShellCommand(command, execCwd);
-      const shaPrefix = currentSha ? `sha=${currentSha} ` : "";
-      const header = `[${timestamp}] ${shaPrefix}$ ${command}`.trimEnd();
-      if (logPath) {
-        await appendVerifyLog(logPath, header, result.output);
+    }
+
+    if (verifyError) {
+      const details = verifyError.message;
+      const failureAt = nowIso();
+      const content = renderVerificationSection({
+        status: "fail",
+        verifiedAt: failureAt,
+        verifiedSha: null,
+        commands,
+        steps: docSteps,
+        details: failedCommand ? `${details} (command: ${failedCommand})` : details,
+      });
+      await writeVerificationSection({
+        backend,
+        taskId: task.id,
+        config,
+        baseDoc,
+        content,
+        updatedBy: "VERIFY",
+      });
+      if (meta) {
+        const nextMeta: PrMeta = {
+          ...meta,
+          last_verified_at: failureAt,
+          verify: meta.verify
+            ? { ...meta.verify, status: "fail", command: commands.join(" && ") }
+            : { status: "fail", command: commands.join(" && ") },
+        };
+        await writeFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
       }
-      if (result.code !== 0) {
-        throw new CliError({
-          exitCode: result.code || 1,
-          code: "E_IO",
-          message: `Verify command failed: ${command}`,
-        });
-      }
+      const existingComments = Array.isArray(task.comments)
+        ? task.comments.filter(
+            (item): item is { author: string; body: string } =>
+              !!item && typeof item.author === "string" && typeof item.body === "string",
+          )
+        : [];
+      const failureBody = failedCommand
+        ? `Verify failed: ${details} (command: ${failedCommand})`
+        : `Verify failed: ${details}`;
+      const nextTask: TaskData = {
+        ...task,
+        status: "DOING",
+        comments: [...existingComments, { author: "VERIFY", body: failureBody }],
+        doc_version: 2,
+        doc_updated_at: failureAt,
+        doc_updated_by: "VERIFY",
+      };
+      await backend.writeTask(nextTask);
+      throw verifyError;
     }
 
     if (currentSha) {
@@ -3448,11 +3580,29 @@ export async function cmdVerify(opts: {
       process.stdout.write(`${successMessage("verify passed", task.id)}\n`);
     }
 
+    const successAt = nowIso();
+    const successContent = renderVerificationSection({
+      status: "pass",
+      verifiedAt: successAt,
+      verifiedSha: currentSha,
+      commands,
+      steps: docSteps,
+      details: null,
+    });
+    await writeVerificationSection({
+      backend,
+      taskId: task.id,
+      config,
+      baseDoc,
+      content: successContent,
+      updatedBy: "VERIFY",
+    });
+
     if (meta) {
       const nextMeta: PrMeta = {
         ...meta,
         last_verified_sha: currentSha,
-        last_verified_at: nowIso(),
+        last_verified_at: successAt,
         verify: meta.verify
           ? { ...meta.verify, status: "pass", command: commands.join(" && ") }
           : { status: "pass", command: commands.join(" && ") },
