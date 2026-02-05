@@ -8915,13 +8915,38 @@ describe("runCli", () => {
 
     const configPath = path.join(root, ".agentplane", "config.json");
     const backendPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
+    const redmineBackendPath = path.join(
+      root,
+      ".agentplane",
+      "backends",
+      "redmine",
+      "backend.json",
+    );
     const agentsPath = path.join(root, "AGENTS.md");
     expect(await pathExists(configPath)).toBe(true);
     expect(await pathExists(backendPath)).toBe(true);
+    expect(await pathExists(redmineBackendPath)).toBe(true);
     expect(await pathExists(agentsPath)).toBe(true);
 
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "direct"');
+    expect(configText).toContain('"config_path": ".agentplane/backends/local/backend.json"');
+  });
+
+  it("init --backend redmine sets backend config path", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--backend", "redmine", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"config_path": ".agentplane/backends/redmine/backend.json"');
   });
 
   it("init bootstraps git repo and commits install when git is missing", async () => {

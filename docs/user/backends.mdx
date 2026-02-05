@@ -5,7 +5,7 @@ description: "How task backends work, how they store data, and how sync behaves.
 
 ## Overview
 
-A backend defines where tasks are stored and how synchronization happens. The CLI loads the configured backend from `.agentplane/config.json` and routes all task commands through it.
+A backend defines where tasks are stored and how synchronization happens. Backends are first-class CLI features (not recipes). The CLI loads the configured backend from `.agentplane/config.json` and routes all task commands through it.
 
 ## Local backend (default)
 
@@ -15,7 +15,7 @@ A backend defines where tasks are stored and how synchronization happens. The CL
 
 ## Remote backends
 
-Remote backends (for example Redmine) are optional and should be installed and configured explicitly. They typically include:
+Remote backends (for example Redmine) are optional and should be configured explicitly. They typically include:
 
 - Connection settings (URL, API key, project).
 - Custom field mappings for task metadata.
@@ -41,7 +41,7 @@ The CLI may maintain a local cache and falls back to it when remote services are
 
 ## Backend configuration
 
-Backend config file path is stored in `.agentplane/config.json` under `tasks_backend.config_path`.
+Backend config file path is stored in `.agentplane/config.json` under `tasks_backend.config_path`. During init you can choose `--backend local|redmine`, and you can switch later by updating this path.
 
 Example:
 
