@@ -1,17 +1,18 @@
 ---
 id: "202602051349-P5RV01"
 title: "Update ROADMAP Epic F status"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs", "roadmap"]
 verify: []
-commit: null
+commit: { hash: "189dce339c86ff5a887ef32cc7febe332575f1f3", message: "📝 P5RV01 update roadmap Epic F status" }
 comments:
   - { author: "DOCS", body: "Start: update ROADMAP Epic F status and tasks completion notes." }
+  - { author: "DOCS", body: "Verified: ROADMAP.md updated with Epic F/AP-050/AP-051 DONE status lines." }
 doc_version: 2
-doc_updated_at: "2026-02-05T13:51:12.757Z"
+doc_updated_at: "2026-02-05T13:51:56.277Z"
 doc_updated_by: "DOCS"
 description: "Mark Epic F (AP-050/AP-051) as DONE in ROADMAP.md."
 id_source: "generated"
