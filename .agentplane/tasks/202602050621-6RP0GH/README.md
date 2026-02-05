@@ -1,17 +1,18 @@
 ---
 id: "202602050621-6RP0GH"
 title: "AP-030b: Extract recipes/upgrade commands"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["roadmap", "refactor", "cli"]
 verify: []
-commit: null
+commit: { hash: "47d800b000b6a881ebcee39e119fa61a90bc1b20", message: "✨ 6RP0GH extract recipes and upgrade modules" }
 comments:
   - { author: "CODER", body: "Start: extract recipes and upgrade commands into commands/ modules." }
+  - { author: "CODER", body: "Verified: bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit." }
 doc_version: 2
-doc_updated_at: "2026-02-05T06:56:43.916Z"
+doc_updated_at: "2026-02-05T07:00:11.876Z"
 doc_updated_by: "CODER"
 description: "Move recipes and upgrade command implementations into commands/ modules."
 id_source: "generated"
