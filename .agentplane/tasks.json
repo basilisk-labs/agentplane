@@ -14254,12 +14254,219 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nMark Epic F and its tasks as done in ROADMAP.md with dates and task IDs.\n\n## Scope\n\nUpdate Epic F and AP-050/AP-051 status lines in ROADMAP.md.\n\n## Risks\n\nLow risk; ensure statuses match actual completed tasks and dates.\n\n## Verify Steps\n\n- Open  and confirm Epic F, AP-050, and AP-051 are marked DONE with correct date/task IDs.\n\n## Verification\n\nVerified on 2026-02-05: ROADMAP.md shows Epic F/AP-050/AP-051 marked DONE with correct dates and task IDs.\n\n## Rollback Plan\n\nRevert ROADMAP.md status lines for Epic F/AP-050/AP-051."
+    },
+    {
+      "id": "202602051353-25ZWGT",
+      "title": "AP-060b: Integrate index into task list/search",
+      "description": "Use tasks index for task list/search to avoid full README scans; add fallback to rebuild.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "cache",
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "f687f21159036f23f88599cadb0029e6210f066a",
+        "message": "✨ 25ZWGT use task index in local listTasks"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: integrate task index into list/search with fallback rebuild."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: ran bun run lint, bun run test:fast, and pre-commit hooks; local listTasks now uses index cache."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:08:31.001Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nWire task index into task list/search flows to avoid full README scans.\n\n## Scope\n\nUse backend listTasks with index support for task list/search; ensure fallback to parse on cache miss.\n\n## Risks\n\nBehavioral regressions in list/search if cached fields are incomplete; ensure cached task data matches TaskData used by search.\n\n## Verify Steps\n\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Run node packages/agentplane/bin/agentplane.js hooks run pre-commit.\\n- Spot-check task list/search outputs match pre-index behavior.\n\n## Verification\n\nVerified on 2026-02-05: bun run lint; bun run test:fast; node packages/agentplane/bin/agentplane.js hooks run pre-commit; list/search outputs unchanged.\n\n## Rollback Plan\n\nDisable index usage and restore list/search to full README scans."
+    },
+    {
+      "id": "202602051353-J8QH3D",
+      "title": "Epic G: Task index cache",
+      "description": "Implement task index cache for list/search performance and close Epic G.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "epic",
+        "performance"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "394f1cdf40d4e9aa9eb33c4b74bd7927e381de3c",
+        "message": "📝 JD7PBE document task index cache"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: index cache implemented, list/search optimized, tests and docs updated."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:09:16.373Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nEpic G: implement a task index cache to speed up list/search and hooks.\n\n## Scope\n\nImplement tasks index storage, integrate list/search, add tests and docs, and close Epic G.\n\n## Risks\n\nIndex could go stale or diverge from README content; ensure mtime-based refresh and fallback rebuild.\n\n## Verify Steps\n\n- Run .\\n- Run \n\u001b[1m\u001b[46m RUN \u001b[49m\u001b[22m \u001b[36mv4.0.18 \u001b[39m\u001b[90m/Users/densmirnov/Github/agentplane\u001b[39m\n\n \u001b[32m✓\u001b[39m packages/core/src/commit/commit-policy.test.ts \u001b[2m(\u001b[22m\u001b[2m6 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 113\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/core/src/tasks/tasks-export.test.ts \u001b[2m(\u001b[22m\u001b[2m3 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 39\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/core/src/tasks/tasks-lint.test.ts \u001b[2m(\u001b[22m\u001b[2m5 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 50\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/core/src/tasks/task-store.test.ts \u001b[2m(\u001b[22m\u001b[2m13 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 103\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/agents/agents-template.test.ts \u001b[2m(\u001b[22m\u001b[2m7 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 22\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/core/src/tasks/task-readme.test.ts \u001b[2m(\u001b[22m\u001b[2m6 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 14\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/core/src/git/base-branch.test.ts \u001b[2m(\u001b[22m\u001b[2m6 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 296\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/core/src/config/config.test.ts \u001b[2m(\u001b[22m\u001b[2m12 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 22\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/shared/comment-format.test.ts \u001b[2m(\u001b[22m\u001b[2m16 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 4\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/core/src/project/project-root.test.ts \u001b[2m(\u001b[22m\u001b[2m5 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 24\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/fs-utils.test.ts \u001b[2m(\u001b[22m\u001b[2m2 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 10\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/http.test.ts \u001b[2m(\u001b[22m\u001b[2m6 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 17\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/update-check.test.ts \u001b[2m(\u001b[22m\u001b[2m9 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 17\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/backends/task-backend.test.ts \u001b[2m(\u001b[22m\u001b[2m62 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[33m 356\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/core/src/git/git-utils.test.ts \u001b[2m(\u001b[22m\u001b[2m6 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[33m 514\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/checksum.test.ts \u001b[2m(\u001b[22m\u001b[2m3 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 7\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/output.test.ts \u001b[2m(\u001b[22m\u001b[2m4 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 4\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/cli-contract.test.ts \u001b[2m(\u001b[22m\u001b[2m1 test\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 1\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/command-guide.test.ts \u001b[2m(\u001b[22m\u001b[2m4 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 5\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/commands/upgrade.test.ts \u001b[2m(\u001b[22m\u001b[2m5 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 17\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/prompts.test.ts \u001b[2m(\u001b[22m\u001b[2m6 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 5\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/commands/backend.test.ts \u001b[2m(\u001b[22m\u001b[2m2 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 2\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/recipes-bundled.test.ts \u001b[2m(\u001b[22m\u001b[2m7 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 6\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/archive.test.ts \u001b[2m(\u001b[22m\u001b[2m2 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 2\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/testkit/src/index.test.ts \u001b[2m(\u001b[22m\u001b[2m1 test\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 2\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/shared/errors.test.ts \u001b[2m(\u001b[22m\u001b[2m1 test\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 1\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/recipes/src/index.test.ts \u001b[2m(\u001b[22m\u001b[2m1 test\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 1\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/cli/error-map.test.ts \u001b[2m(\u001b[22m\u001b[2m4 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[32m 1\u001b[2mms\u001b[22m\u001b[39m\nInstalled recipe viewer@1.2.3\nInstalled recipe viewer@1.2.3\n \u001b[32m✓\u001b[39m packages/agentplane/src/commands/recipes.test.ts \u001b[2m(\u001b[22m\u001b[2m44 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[33m 822\u001b[2mms\u001b[22m\u001b[39m\n \u001b[32m✓\u001b[39m packages/agentplane/src/commands/workflow.test.ts \u001b[2m(\u001b[22m\u001b[2m44 tests\u001b[22m\u001b[2m)\u001b[22m\u001b[33m 1416\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[32m30 passed\u001b[39m\u001b[22m\u001b[90m (30)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[32m293 passed\u001b[39m\u001b[22m\u001b[90m (293)\u001b[39m\n\u001b[2m   Start at \u001b[22m 20:54:39\n\u001b[2m   Duration \u001b[22m 1.96s\u001b[2m (transform 1.26s, setup 0ms, import 3.67s, tests 3.90s, environment 7ms)\u001b[22m.\\n- Run .\\n- Validate task list/search performance using the index.\n\n## Verification\n\nVerified on 2026-02-05: tasks index implemented, list/search uses cache, tests and docs updated; lint/test/pre-commit hooks passed.\n\n## Rollback Plan\n\nRemove task index cache code and restore full README scans in list/search."
+    },
+    {
+      "id": "202602051353-KZ9ZRX",
+      "title": "AP-060a: Task index storage + updater",
+      "description": "Implement .agentplane/cache/tasks-index.v1.json with load/save and incremental update helpers.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "cache",
+        "performance"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "bacd2e6a7645a3a326772c374678fa8e9f8bd74f",
+        "message": "✨ KZ9ZRX add task index cache helpers"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: design and implement task index cache model and incremental updater."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: ran bun run lint, bun run test:fast, and pre-commit hooks; task index helpers added."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:08:23.360Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nImplement task index cache model and incremental update helpers for local backend.\n\n## Scope\n\nAdd task index module, load/save logic, and integrate incremental cache update in local backend listTasks.\n\n## Risks\n\nCache could drift from README content if mtime comparisons fail; ensure fallback to parse on changes.\n\n## Verify Steps\n\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Run node packages/agentplane/bin/agentplane.js hooks run pre-commit.\\n- Confirm tasks-index.v1.json created under cache.\n\n## Verification\n\nVerified on 2026-02-05: bun run lint; bun run test:fast; node packages/agentplane/bin/agentplane.js hooks run pre-commit; index file created in cache.\n\n## Rollback Plan\n\nRemove task index module and revert local backend listTasks to always parse README files."
+    },
+    {
+      "id": "202602051354-JD7PBE",
+      "title": "AP-060d: Task index docs",
+      "description": "Document task index cache behavior and file format in developer docs/README as needed.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "docs",
+        "cache"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "394f1cdf40d4e9aa9eb33c4b74bd7927e381de3c",
+        "message": "📝 JD7PBE document task index cache"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: document task index cache behavior and file format."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: project layout docs updated with task index cache entry."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:08:47.796Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nDocument task index cache location and purpose in developer docs.\n\n## Scope\n\nUpdate docs/developer/project-layout.mdx with task index cache details.\n\n## Risks\n\nDocs drift if cache location changes; keep entry concise.\n\n## Verify Steps\n\n- Open docs/developer/project-layout.mdx and confirm cache entry present.\n\n## Verification\n\nVerified on 2026-02-05: docs/developer/project-layout.mdx updated with cache entry.\n\n## Rollback Plan\n\nRemove cache entry from docs if index is reverted."
+    },
+    {
+      "id": "202602051354-XDB53D",
+      "title": "AP-060c: Task index tests",
+      "description": "Add unit tests for index load/update, mtime refresh, and list/search behavior.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "TESTER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "testing",
+        "cache"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "cccabcefc9572359364bcdf465ff066826b7a73c",
+        "message": "✨ XDB53D add task index cache tests"
+      },
+      "comments": [
+        {
+          "author": "TESTER",
+          "body": "Start: add tests for task index cache and list/search behavior."
+        },
+        {
+          "author": "TESTER",
+          "body": "Verified: bun run test:fast passes; task index cache test added."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:08:40.401Z",
+      "doc_updated_by": "TESTER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd tests covering task index cache creation and behavior.\n\n## Scope\n\nAdd unit tests in task-backend for index cache file and metadata.\n\n## Risks\n\nTests may be brittle if cache path or schema changes; keep expectations minimal.\n\n## Verify Steps\n\n- Run bun run test:fast.\\n- Confirm new task index tests pass.\n\n## Verification\n\nVerified on 2026-02-05: bun run test:fast passes; task index cache test green.\n\n## Rollback Plan\n\nRevert task index tests to prior state."
+    },
+    {
+      "id": "202602051409-NCKJNQ",
+      "title": "Update ROADMAP Epic G status",
+      "description": "Mark Epic G and AP-060 as DONE in ROADMAP.md.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "roadmap"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "b06d7d8693889e7cbf45e4459b91b9fed9e4369c",
+        "message": "📝 NCKJNQ update roadmap Epic G status"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: mark Epic G/AP-060 done in ROADMAP.md."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: ROADMAP.md updated with Epic G/AP-060 DONE lines and task IDs for 2026-02-05."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:10:56.334Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nUpdate ROADMAP.md to mark Epic G and AP-060 as DONE with dates and task IDs.\n\n## Scope\n\nEdit ROADMAP.md status lines for Epic G/AP-060.\n\n## Risks\n\nLow risk; ensure dates and task IDs match completed work.\n\n## Verify Steps\n\n- Open ROADMAP.md and confirm Epic G/AP-060 marked DONE with correct task IDs.\n\n## Verification\n\nVerified on 2026-02-05: ROADMAP.md updated with Epic G/AP-060 DONE status lines.\n\n## Rollback Plan\n\nRevert ROADMAP.md status lines for Epic G/AP-060."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "a4e336fa1b3b8e811b77e0f1bab76ed0a697ba16d7082359f5d3c8ee5b3f7755"
+    "checksum": "f5160bf4b87e202eee1976a9a76180f5f0d4834decbd8d7fd0b64bf563b27c30"
   }
 }
