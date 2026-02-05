@@ -13268,12 +13268,94 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nFormat ROADMAP.md to satisfy Prettier checks.\n\n## Scope\n\nApply Prettier formatting to ROADMAP.md only.\n\n## Risks\n\nLow risk; formatting-only change.\n\n## Verify Steps\n\nRun Prettier check to ensure ROADMAP.md passes.\n\n## Rollback Plan\n\nRevert the formatting commit to restore prior ROADMAP.md formatting."
+    },
+    {
+      "id": "202602050609-2SWFWB",
+      "title": "AP-020a: Safe archive validation",
+      "description": "Validate tar/zip entries to prevent path traversal and symlink abuse.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "security",
+        "archive",
+        "validation"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "fd87f5be500d8064905a5f3ec1e76f9af2f5534a",
+        "message": "🧩 2SWFWB add archive validation"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: implement archive entry validation for tar/zip safety."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: archive validation module added with tests; pre-commit hooks passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T06:16:25.292Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd archive entry validation to prevent zip-slip/path traversal and symlink abuse.\n\n## Scope\n\nImplement path validation for tar/zip entries, reject absolute paths, traversal, and symlinks with E_VALIDATION.\n\n## Risks\n\nRisk: false positives for edge-case archives; mitigate by clear error messages and tests.\n\n## Verify Steps\n\nRun archive validation tests for traversal and symlink cases; ensure E_VALIDATION exit code.\n\n## Rollback Plan\n\nRevert the archive validation commit to restore previous extraction behavior."
+    },
+    {
+      "id": "202602050609-MT8GF4",
+      "title": "AP-020b: Safe extract integration",
+      "description": "Integrate safe archive validation into CLI extraction paths and add tests.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "security",
+        "archive",
+        "integration"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T06:10:32.937Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nWire safe archive validation into CLI extraction paths and add integration tests.\n\n## Scope\n\nIntegrate safe validation into extractArchive; cover upgrade/recipes paths; add tests and fixtures.\n\n## Risks\n\nRisk: extraction fails for unusual archives; mitigate with explicit errors and tests.\n\n## Verify Steps\n\nRun CLI tests covering archive extraction failures for traversal/symlinks; ensure E_VALIDATION.\n\n## Rollback Plan\n\nRevert integration commit to restore original extractArchive behavior."
+    },
+    {
+      "id": "202602050609-PGC5S3",
+      "title": "Epic C: Safe archive extraction",
+      "description": "Top-level tracking for Epic C (AP-020).",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "epic",
+        "security"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T06:09:29.041Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated"
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "5318aec17a8d7ee17544b69d0c55b5a5cdf0a59ef3bf972157fdfb2a33fbee2d"
+    "checksum": "7b430d19417c95015cc932978e663a62e8c462502a7000ea5db914ef7cc7e3e8"
   }
 }
