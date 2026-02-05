@@ -54,6 +54,10 @@
     "prepublishOnly": "npm run prepack"
   },
   "dependencies": {
-    "@agentplaneorg/core": "0.1.4"
+    "@agentplaneorg/core": "0.1.4",
+    "yauzl": "^2.10.0"
+  },
+  "devDependencies": {
+    "@types/yauzl": "^2.10.0"
   }
 }
