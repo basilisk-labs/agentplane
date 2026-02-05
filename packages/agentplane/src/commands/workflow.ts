@@ -92,6 +92,12 @@ export const BRANCH_REMOVE_USAGE =
 export const BRANCH_REMOVE_USAGE_EXAMPLE =
   "agentplane branch remove --branch task/20260203-F1Q8AB --worktree .agentplane/worktrees/task";
 
+function normalizeDependsOnInput(value: string): string[] {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "[]") return [];
+  return [trimmed];
+}
+
 function parseTaskNewFlags(args: string[]): TaskNewFlags {
   const out: TaskNewFlags = { tags: [], dependsOn: [], verify: [] };
 
@@ -133,7 +139,7 @@ function parseTaskNewFlags(args: string[]): TaskNewFlags {
         break;
       }
       case "--depends-on": {
-        out.dependsOn.push(next);
+        out.dependsOn.push(...normalizeDependsOnInput(next));
         break;
       }
       case "--verify": {
@@ -285,7 +291,7 @@ function parseTaskAddFlags(args: string[]): TaskAddFlags {
         break;
       }
       case "--depends-on": {
-        out.dependsOn.push(next);
+        out.dependsOn.push(...normalizeDependsOnInput(next));
         break;
       }
       case "--verify": {
@@ -476,7 +482,7 @@ function parseTaskUpdateFlags(args: string[]): TaskUpdateFlags {
         break;
       }
       case "--depends-on": {
-        out.dependsOn.push(next);
+        out.dependsOn.push(...normalizeDependsOnInput(next));
         break;
       }
       case "--verify": {

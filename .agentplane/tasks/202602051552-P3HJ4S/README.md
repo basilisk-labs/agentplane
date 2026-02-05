@@ -4,7 +4,7 @@ title: "AP-091: Atomic writes for critical files"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-depends_on: ["[]"]
+depends_on: []
 tags: ["roadmap", "io", "safety"]
 verify: []
 commit: null

@@ -216,6 +216,14 @@ function toStringArray(value: unknown): string[] {
   return value.filter((v): v is string => typeof v === "string");
 }
 
+function normalizeDependsOn(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((v): v is string => typeof v === "string" && v.trim() !== "[]");
+  }
+  if (typeof value === "string" && value.trim() === "[]") return [];
+  return [];
+}
+
 function normalizePriority(value: unknown): string {
   const raw = toStringSafe(value).trim().toLowerCase();
   if (!raw) return "med";
@@ -253,7 +261,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     status: typeof fm.status === "string" ? fm.status : "TODO",
     priority: typeof fm.priority === "string" || typeof fm.priority === "number" ? fm.priority : "",
     owner: typeof fm.owner === "string" ? fm.owner : "",
-    depends_on: toStringArray(fm.depends_on),
+    depends_on: normalizeDependsOn(fm.depends_on),
     tags: toStringArray(fm.tags),
     verify: toStringArray(fm.verify),
     commit,
