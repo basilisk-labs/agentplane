@@ -1,0 +1,36 @@
+---
+title: "Local backend"
+description: "Default backend that stores tasks on disk."
+---
+
+## Overview
+
+The local backend stores tasks in the repository under `.agentplane/tasks/` and is the default backend after init.
+
+## Storage layout
+
+- Task data: `.agentplane/tasks/<task-id>/README.md`
+- Snapshot export: `.agentplane/tasks.json`
+
+The README file is the single source of truth for a task and includes metadata, comments, and doc sections.
+
+## Backend config
+
+Local backend config is stored under `.agentplane/backends/local/backend.json` and referenced by `.agentplane/config.json` in `tasks_backend.config_path`.
+
+Example:
+
+```json
+{
+  "id": "local",
+  "version": 1,
+  "settings": {
+    "dir": ".agentplane/tasks"
+  }
+}
+```
+
+## Notes
+
+- Local backend supports task docs, comments, and strict metadata enforcement.
+- Use `agentplane export` (or task export flows) to generate `.agentplane/tasks.json` for integrations.
