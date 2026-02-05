@@ -14113,12 +14113,48 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nAdd --yes flag for verify approval and document non-interactive usage.\n\n## Scope\n\nUpdate verify flag parsing/usage, enforce approval in non-interactive mode unless --yes, and extend tests/docs.\n\n## Risks\n\nNon-interactive verify now fails without --yes; docs/tools must be updated to avoid CI failures.\n\n## Verify Steps\n\ncmd: bun run lint\ncmd: bun run test:fast\ncmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Verification\n\nPending: execute verify after implementation.\n\nStatus: pass\nVerified at: 2026-02-05T13:04:16.532Z\nVerified sha: 588c216d9433b5629a4aaf9031417d7e92e6bb64\n\nCommands:\n- bun run lint\n- bun run test:fast\n- node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Rollback Plan\n\nRevert verify flag changes, restore previous approval flow, and drop docs updates."
+    },
+    {
+      "id": "202602051311-6RYAY0",
+      "title": "Audit Epic E: align config defaults and validate spec example",
+      "description": "Fix schema defaults for tasks.doc to include Verification and add runtime test for spec example config.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "epic-e",
+        "config",
+        "schema",
+        "tests"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "ffa7a7a5094a85afae04d91110d5c2c61b3d48f3",
+        "message": "✨ 6RYAY0 align schema defaults and validate example"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: align schema defaults for tasks.doc and add runtime test for spec example config."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify --yes --quiet."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T13:14:35.589Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAlign schema defaults for tasks.doc and add runtime test for spec example config.\n\n## Scope\n\nUpdate schema defaults in tasks.doc and add config.test.ts coverage for spec example validation.\n\n## Risks\n\nSchema default alignment could affect defaultConfig output; ensure tests cover expected sections.\n\n## Verify Steps\n\ncmd: bun run lint\ncmd: bun run test:fast\ncmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Verification\n\nPending: execute verify after implementation.\n\nStatus: pass\nVerified at: 2026-02-05T13:13:58.632Z\nVerified sha: 9c5607eb99abe7a6873e66cf7b2cd64c2b0bbd09\n\nCommands:\n- bun run lint\n- bun run test:fast\n- node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Rollback Plan\n\nRevert schema default and config test changes."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "68b31b80cd910a04395cfec187ab4705de8d4994ecdc025d60994945252af646"
+    "checksum": "152aec26cbd352b3c5f385142c83c0ab7717266eb7db8d0a113a024b6f2eb578"
   }
 }
