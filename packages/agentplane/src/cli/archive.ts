@@ -2,6 +2,8 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
 
+import yauzl from "yauzl";
+
 import { CliError } from "../shared/errors.js";
 import { exitCodeForError } from "./exit-codes.js";
 import { usageMessage } from "./output.js";
@@ -9,6 +11,11 @@ import { usageMessage } from "./output.js";
 const execFileAsync = promisify(execFile);
 
 type ArchiveType = "tar" | "zip";
+
+type ZipEntryInfo = {
+  name: string;
+  isSymlink: boolean;
+};
 
 export type ArchiveEntryIssue = {
   entry: string;
@@ -19,6 +26,12 @@ export async function validateArchive(
   archivePath: string,
   type: ArchiveType,
 ): Promise<ArchiveEntryIssue[]> {
+  if (type === "zip") {
+    const entries = await listZipEntries(archivePath);
+    const entryNames = entries.map((entry) => entry.name);
+    const symlinks = entries.filter((entry) => entry.isSymlink).map((entry) => entry.name);
+    return validateArchiveEntries(entryNames, symlinks);
+  }
   const entries = await listArchiveEntries(archivePath, type);
   const symlinks = await listArchiveSymlinks(archivePath, type);
   return validateArchiveEntries(entries, symlinks);
@@ -128,4 +141,42 @@ async function listArchiveSymlinks(archivePath: string, type: ArchiveType): Prom
     .filter((line) => /\bsymlink\b/i.test(line) || /\blrwx/.test(line))
     .map((line) => line.split(/\s+/).at(-1) ?? "")
     .filter((entry) => entry.length > 0);
+}
+
+function listZipEntries(archivePath: string): Promise<ZipEntryInfo[]> {
+  return new Promise((resolve, reject) => {
+    yauzl.open(
+      archivePath,
+      { lazyEntries: true },
+      (openErr: Error | null, zipfile?: yauzl.ZipFile) => {
+        if (openErr || !zipfile) {
+          reject(openErr ?? new Error("Failed to open zip archive"));
+          return;
+        }
+        const entries: ZipEntryInfo[] = [];
+        zipfile.readEntry();
+        zipfile.on("entry", (entry: yauzl.Entry) => {
+          entries.push({
+            name: entry.fileName,
+            isSymlink: isZipEntrySymlink(entry),
+          });
+          zipfile.readEntry();
+        });
+        zipfile.on("end", () => {
+          zipfile.close();
+          resolve(entries);
+        });
+        zipfile.on("error", (err: Error) => {
+          zipfile.close();
+          reject(err);
+        });
+      },
+    );
+  });
+}
+
+function isZipEntrySymlink(entry: yauzl.Entry): boolean {
+  const attrs = entry.externalFileAttributes >>> 16;
+  const fileType = attrs & 0xf0_00;
+  return fileType === 0xa0_00;
 }
