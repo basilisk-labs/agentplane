@@ -14601,12 +14601,46 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nUpdate ROADMAP.md to mark Epic H and AP-070 as DONE with task IDs.\n\n## Scope\n\nEdit ROADMAP.md status lines for Epic H/AP-070.\n\n## Risks\n\nLow risk; ensure dates and task IDs match completed work.\n\n## Verify Steps\n\n- Open ROADMAP.md and confirm Epic H/AP-070 marked DONE with correct task IDs.\n\n## Verification\n\nVerified on 2026-02-05: ROADMAP.md updated with Epic H/AP-070 DONE status lines.\n\n## Rollback Plan\n\nRevert ROADMAP.md status lines for Epic H/AP-070."
+    },
+    {
+      "id": "202602051431-6WW12G",
+      "title": "Clarify AP-071 backend module standardization",
+      "description": "Update ROADMAP AP-071 to describe standardization of system backend modules for future integrations.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "roadmap"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "4a65ab640ec4b8b15f2c306c676757f58ab8bc17",
+        "message": "📝 6WW12G refine AP-071 backend standardization"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: update AP-071 to describe backend module standardization for future integrations."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: AP-071 updated to backend module standardization wording in ROADMAP."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:33:14.659Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nRefine ROADMAP AP-071 to standardize system backend modules for future integration.\n\n## Scope\n\nUpdate AP-071 section text in ROADMAP.md to focus on standardizing system backend modules.\n\n## Risks\n\nLow risk; ensure AP-071 status and wording stay consistent with Epic H completion.\n\n## Verify Steps\n\n- Open ROADMAP.md and confirm AP-071 wording updated for backend module standardization.\n\n## Verification\n\nVerified on 2026-02-05: ROADMAP.md AP-071 updated to backend module standardization wording.\n\n## Rollback Plan\n\nRevert AP-071 wording in ROADMAP.md to prior text."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "b19626b64f40599612ed411ded4eae8a31d798545e97ed022930639a0f5ce331"
+    "checksum": "212edf7d8ae7ac5d196d309100fc8a9dfebdb2632bb90f16f801f7e3b55d1cf0"
   }
 }
