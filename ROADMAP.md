@@ -441,7 +441,11 @@ Implement a single generator in core:
 
 # Epic G: Performance and task metadata cache (P1)
 
+Status: DONE (2026-02-05, task 202602051353-J8QH3D)
+
 ## AP-060 — Task index in `.agentplane/cache` to speed up `list/search` and hooks
+
+Status: DONE (2026-02-05, tasks 202602051353-KZ9ZRX, 202602051353-25ZWGT, 202602051354-XDB53D, 202602051354-JD7PBE)
 
 **Problem**
 With hundreds of tasks, `list/search` and some hooks may read many README files. `.agentplane/cache/` exists but is not used systematically.
