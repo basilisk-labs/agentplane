@@ -1104,9 +1104,19 @@ describe("commands/workflow", () => {
 
     await cmdTaskExport({ cwd: root });
     await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
-    await expect(cmdHooksRun({ cwd: root, hook: "pre-commit", args: [] })).rejects.toMatchObject({
-      code: "E_GIT",
-    });
+    const prevAllowTasks = process.env.AGENT_PLANE_ALLOW_TASKS;
+    delete process.env.AGENT_PLANE_ALLOW_TASKS;
+    try {
+      await expect(cmdHooksRun({ cwd: root, hook: "pre-commit", args: [] })).rejects.toMatchObject({
+        code: "E_GIT",
+      });
+    } finally {
+      if (prevAllowTasks === undefined) {
+        delete process.env.AGENT_PLANE_ALLOW_TASKS;
+      } else {
+        process.env.AGENT_PLANE_ALLOW_TASKS = prevAllowTasks;
+      }
+    }
   });
 
   it("task doc show reports missing content and empty docs", async () => {
