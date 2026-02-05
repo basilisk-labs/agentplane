@@ -14078,12 +14078,47 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nEpic: add README-driven verify execution, write Verification sections on verify, and switch zip validation to yauzl with approval/config/init updates.\n\n## Scope\n\nDeliver AP-020c zip validation (yauzl), README-driven verify execution, Verification section updates, and require_verify config/init/docs changes.\n\n## Risks\n\nVerify now depends on task docs support and may prompt in interactive mode; zip symlink detection relies on externalFileAttributes.\n\n## Verify Steps\n\ncmd: bun run lint\ncmd: bun run test:fast\ncmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit\n- Confirm Verification sections populated for tasks 202602051201-695YXF and 202602051201-7KW7RP\n- Confirm zip validation uses yauzl in archive handling\n\n## Verification\n\nStatus: pass\nVerified at: 2026-02-05\nDetails: bun run lint; bun run test:fast; hooks pre-commit; verify tasks 695YXF and 7KW7RP.\n\n## Rollback Plan\n\nRevert task commits for verify workflow and yauzl integration; restore previous config sections and remove require_verify."
+    },
+    {
+      "id": "202602051259-60QJWK",
+      "title": "Add --yes for verify approval",
+      "description": "Allow non-interactive verify approval when agents.approvals.require_verify=true by adding --yes flag; update usage/help/tests.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "workflow",
+        "cli",
+        "verify"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "ba0d0169052e7badfff05d93d91c4caa92ba5255",
+        "message": "✨ 60QJWK add --yes to verify"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: add --yes for verify approval, update usage/help, and extend tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run lint; bun run test:fast; bun run build; hooks pre-commit; agentplane verify --yes --quiet."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T13:05:30.023Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd --yes flag for verify approval and document non-interactive usage.\n\n## Scope\n\nUpdate verify flag parsing/usage, enforce approval in non-interactive mode unless --yes, and extend tests/docs.\n\n## Risks\n\nNon-interactive verify now fails without --yes; docs/tools must be updated to avoid CI failures.\n\n## Verify Steps\n\ncmd: bun run lint\ncmd: bun run test:fast\ncmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Verification\n\nPending: execute verify after implementation.\n\nStatus: pass\nVerified at: 2026-02-05T13:04:16.532Z\nVerified sha: 588c216d9433b5629a4aaf9031417d7e92e6bb64\n\nCommands:\n- bun run lint\n- bun run test:fast\n- node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Rollback Plan\n\nRevert verify flag changes, restore previous approval flow, and drop docs updates."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "0a9258fdadf7336ba11df4935eee2d47a7ad6fff693c518c5677166775d42446"
+    "checksum": "68b31b80cd910a04395cfec187ab4705de8d4994ecdc025d60994945252af646"
   }
 }

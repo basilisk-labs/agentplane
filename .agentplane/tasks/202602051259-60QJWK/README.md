@@ -1,18 +1,19 @@
 ---
 id: "202602051259-60QJWK"
 title: "Add --yes for verify approval"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["workflow", "cli", "verify"]
 verify: []
-commit: null
+commit: { hash: "ba0d0169052e7badfff05d93d91c4caa92ba5255", message: "✨ 60QJWK add --yes to verify" }
 comments:
   - { author: "CODER", body: "Start: add --yes for verify approval, update usage/help, and extend tests." }
+  - { author: "CODER", body: "Verified: bun run lint; bun run test:fast; bun run build; hooks pre-commit; agentplane verify --yes --quiet." }
 doc_version: 2
-doc_updated_at: "2026-02-05T13:04:16.533Z"
-doc_updated_by: "VERIFY"
+doc_updated_at: "2026-02-05T13:05:30.023Z"
+doc_updated_by: "CODER"
 description: "Allow non-interactive verify approval when agents.approvals.require_verify=true by adding --yes flag; update usage/help/tests."
 id_source: "generated"
 ---
