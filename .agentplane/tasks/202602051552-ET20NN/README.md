@@ -11,7 +11,7 @@ commit: null
 comments:
   - { author: "CODER", body: "Start: Switch CLI version to package.json source, update tests/docs." }
 doc_version: 2
-doc_updated_at: "2026-02-05T15:58:11.131Z"
+doc_updated_at: "2026-02-05T16:18:16.074Z"
 doc_updated_by: "CODER"
 description: "Use package.json as source for CLI version; remove manual constant; update tests/docs."
 id_source: "generated"
@@ -34,14 +34,10 @@ Use package.json as the single source for CLI version and remove hardcoded versi
 
 ## Verify Steps
 
-- bun run test:fast.\n- Verify agentplane --version matches package.json.
-
 - bun run test:fast.
 - Verify agentplane --version matches package.json.
 
 ## Verification
-
-Pending.
 
 - ✅ bun run test:fast (pass).\n- ✅ --version matches packages/agentplane/package.json (via test).
 
