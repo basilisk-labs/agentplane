@@ -64,6 +64,16 @@ afterEach(() => {
   restoreStdIO = null;
 });
 
+function stubTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBackend.TaskBackend {
+  return {
+    id: "local",
+    listTasks: vi.fn().mockResolvedValue([]),
+    getTask: vi.fn().mockResolvedValue(null),
+    writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
+    ...overrides,
+  };
+}
+
 describe("runCli", () => {
   it("prints help on --help", async () => {
     const io = captureStdIO();
@@ -352,9 +362,9 @@ describe("runCli", () => {
 
   it("maps schema validation errors to E_VALIDATION", async () => {
     const root = await mkGitRepoRoot();
-    const config = defaultConfig();
-    (config as typeof config & { schema_version: number }).schema_version = 99;
-    await writeConfig(root, config);
+    const config = defaultConfig() as unknown as { schema_version: number };
+    config.schema_version = 99;
+    await writeConfig(root, config as ReturnType<typeof defaultConfig>);
 
     const io = captureStdIO();
     try {
@@ -2364,7 +2374,7 @@ describe("runCli", () => {
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const loadResult = {
-      backend: { id: "fake" } as taskBackend.TaskBackend,
+      backend: stubTaskBackend({ id: "fake" }),
       backendId: "fake",
       resolved,
       config: defaultConfig(),
@@ -3002,7 +3012,7 @@ describe("runCli", () => {
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const loadResult = {
-      backend: { id: "redmine", sync } as taskBackend.TaskBackend,
+      backend: stubTaskBackend({ id: "redmine", sync }),
       backendId: "redmine",
       resolved,
       config: defaultConfig(),
@@ -3039,13 +3049,13 @@ describe("runCli", () => {
   it("sync rejects backend id mismatches", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const sync = vi.fn().mockResolvedValue();
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
     const resolved: ResolvedProject = {
       gitRoot: root,
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const loadResult = {
-      backend: { id: "redmine", sync } as taskBackend.TaskBackend,
+      backend: stubTaskBackend({ id: "redmine", sync }),
       backendId: "redmine",
       resolved,
       config: defaultConfig(),
@@ -3072,12 +3082,12 @@ describe("runCli", () => {
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const loadResult = {
-      backend: {
+      backend: stubTaskBackend({
         id: "redmine",
         sync: vi.fn().mockImplementation(() => {
           throw new taskBackend.BackendError("Network down", "E_NETWORK");
         }),
-      } as taskBackend.TaskBackend,
+      }),
       backendId: "redmine",
       resolved,
       config: defaultConfig(),
@@ -3105,12 +3115,12 @@ describe("runCli", () => {
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const loadResult = {
-      backend: {
+      backend: stubTaskBackend({
         id: "redmine",
         sync: vi.fn().mockImplementation(() => {
           throw new taskBackend.BackendError("Missing config", "E_BACKEND");
         }),
-      } as taskBackend.TaskBackend,
+      }),
       backendId: "redmine",
       resolved,
       config: defaultConfig(),
@@ -3138,11 +3148,11 @@ describe("runCli", () => {
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
-      backend: {
+      backend: stubTaskBackend({
         listTasks: vi.fn().mockImplementation(() => {
           throw new taskBackend.BackendError("Backend failed", "E_BACKEND");
         }),
-      } as taskBackend.TaskBackend,
+      }),
       backendId: "redmine",
       resolved,
       config: defaultConfig(),
@@ -9645,7 +9655,7 @@ describe("runCli", () => {
       agentplaneDir: path.join(root, ".agentplane"),
     };
     const loadResult = {
-      backend: { id: "redmine", sync } as taskBackend.TaskBackend,
+      backend: stubTaskBackend({ id: "redmine", sync }),
       backendId: "redmine",
       resolved,
       config: defaultConfig(),
