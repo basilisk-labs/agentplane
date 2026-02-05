@@ -15563,9 +15563,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T18:14:44.733Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nRelease notes for v0.1.6 covering schema packaging fix and release workflow checks.\n\n## Scope\n\nAdd docs/releases/v0.1.6.md.\n\n## Risks\n\nLow: inaccurate release notes could mislead users.\n\n## Verify Steps\n\nHuman: review docs/releases/v0.1.6.md for accuracy vs shipped changes.\n\n## Verification\n\nReviewed docs/releases/v0.1.6.md for accuracy against packaged schema fix and release workflow updates.\n\n## Rollback Plan\n\nRemove docs/releases/v0.1.6.md."
+      "doc": "## Summary\n\nRelease notes for v0.1.6 covering schema packaging fix and release workflow checks.\n\n## Scope\n\nAdd docs/releases/v0.1.6.md.\n\n## Risks\n\nLow: inaccurate release notes could mislead users.\n\n## Verify Steps\n\nHuman: review docs/releases/v0.1.6.md for accuracy vs shipped changes.\n\n## Verification\n\nReviewed docs/releases/v0.1.6.md for accuracy against packaged schema fix and release workflow updates.\n\n## Rollback Plan\n\nRemove docs/releases/v0.1.6.md.",
+      "dirty": false
     },
     {
       "id": "202602051806-QSGBDX",
@@ -15605,7 +15605,7 @@
       "id": "202602051806-RT8H8E",
       "title": "Bump packages to 0.1.6",
       "description": "Update agentplane and core package versions to 0.1.6.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -15614,13 +15614,26 @@
         "versioning"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "4d98b10e1d37c274969266b10db2f4a61ad456b8",
+        "message": "🔖 RT8H8E bump packages to 0.1.6"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: bump package versions to 0.1.6 and align dependencies for release."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: package versions and core dependency aligned to 0.1.6 in both package.json files."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T18:06:27.626Z",
-      "doc_updated_by": "CODER",
+      "doc_updated_at": "2026-02-05T18:18:19.723Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
       "id_source": "generated",
-      "dirty": false
+      "doc": "## Summary\n\nBump agentplane and core packages to v0.1.6 for release.\n\n## Scope\n\nUpdate package.json versions and internal dependency versions to 0.1.6.\n\n## Risks\n\nLow: mismatched versions could break release checks or publish.\n\n## Verify Steps\n\nCommand: rg \"version\" packages/agentplane/package.json packages/core/package.json; ensure both are 0.1.6 and dependency aligns.\n\n## Verification\n\nChecked package.json versions and @agentplaneorg/core dependency set to 0.1.6.\n\n## Rollback Plan\n\nRestore previous version numbers in package.json files."
     },
     {
       "id": "202602051806-S76RDP",
@@ -15648,6 +15661,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "fdc30adf117169962408de15ade372ace1909e6d3087bc854c43431f97ee2892"
+    "checksum": "4fb6567cba08afbacddc05f8061c6368baca00ce0468fdc365c7d8de4f635191"
   }
 }
