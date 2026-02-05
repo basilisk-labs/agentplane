@@ -20,26 +20,21 @@ description: "Expand recipes docs with examples and add troubleshooting-by-sympt
 
 - Expand recipes docs with concrete examples.\n- Add troubleshooting-by-symptom page and link it in navigation.
 
-
 ## Scope
 
 - Extend docs/recipes-how-it-works.mdx and docs/recipes-spec.mdx with examples.\n- Create a troubleshooting-by-symptom doc and update docs.json/index.
-
 
 ## Risks
 
 - Examples may diverge from current CLI behavior if not kept updated.\n- Troubleshooting page could become too long without careful structure.
 
-
 ## Verify Steps
 
 - Review examples for accuracy.\n- Check docs/docs.json includes the new troubleshooting page.
 
-
 ## Rollback Plan
 
 - Revert docs changes and navigation updates.
-
 
 ## Notes
 

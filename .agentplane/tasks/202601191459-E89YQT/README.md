@@ -20,31 +20,25 @@ description: "Review completed tasks lacking tags and assign a minimal, navigabl
 
 Audit DONE tasks with missing tags and add minimal tags to improve navigation without inflating tag counts.
 
-
 ## Context
 
 Completed tasks had empty tags, which made filtering and browsing less useful.
-
 
 ## Scope
 
 - Export tasks snapshot from local backend.\n- Identify DONE tasks with empty/missing tags.\n- Add 1-2 minimal tags per task via agentctl task update.\n- Export tasks and document changes.
 
-
 ## Risks
 
 - Over-tagging could dilute signal; keep tags minimal and consistent.\n- Touching many tasks increases churn in tasks.json; batch updates carefully.
-
 
 ## Verify Steps
 
 python .agent-plane/agentctl.py task export
 
-
 ## Rollback Plan
 
 Revert the commit to restore previous tag state in tasks.json.
-
 
 ## Notes
 

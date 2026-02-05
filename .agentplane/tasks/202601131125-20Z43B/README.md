@@ -21,36 +21,29 @@ description: "Scan the repo for hard-coded workflow settings and propose which o
 
 - Closed as obsolete per user request; no repository analysis performed.
 
-
 ## Context
 
 - Original request superseded by a close-without-work decision.
-
 
 ## Scope
 
 - No code or config changes beyond task doc and roadmap housekeeping.
 
-
 ## Risks
 
 - None; no product changes were made.
-
 
 ## Verify Steps
 
 - Not run (task closed as obsolete).
 
-
 ## Rollback Plan
 
 - None (no changes shipped).
 
-
 ## Notes
 
 - Reopen with a new task if analysis becomes necessary.
-
 
 ## Changes Summary (auto)
 

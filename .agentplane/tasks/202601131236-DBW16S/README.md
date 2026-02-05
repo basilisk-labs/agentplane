@@ -20,11 +20,9 @@ description: "Review repo configs and agent guidance to propose settings that be
 
 Reviewed AGENTS.md + agent JSON + current config.json and proposed candidate agent settings to move into config.json with suggested agentctl toggles.
 
-
 ## Context
 
 AGENTS.md currently embeds default_agent/shared_state and runtime expectations (model, reasoning effort, approvals). config.json already handles workflow, tasks, commit, and paths. This task identifies which agent-facing knobs are best promoted into config.json and how agentctl should expose them.
-
 
 ## Scope
 
@@ -32,22 +30,18 @@ AGENTS.md currently embeds default_agent/shared_state and runtime expectations (
 - Recommend which belong in config.json vs remain in AGENTS.md.
 - Suggest agentctl config keys and example set commands for the approved candidates.
 
-
 ## Risks
 
 - Moving behavioral rules from AGENTS.md into config risks inconsistency between docs and runtime.
 - Settings that the CLI/agentctl cannot enforce may give a false sense of safety if exposed as config.
 
-
 ## Verify Steps
 
 Doc-only change: review task README for completeness and accuracy (no tests run).
 
-
 ## Rollback Plan
 
 Revert the task README updates; no code or runtime changes.
-
 
 ## Notes
 

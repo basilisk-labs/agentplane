@@ -20,21 +20,17 @@ description: "Implement recipe install <id> using remote index (resolve latest c
 
 Allow recipe install to resolve ids via the cached remote index.
 
-
 ## Scope
 
 - Extend recipe install to accept id and URL sources.\n- Resolve ids via the cached remote index and verify checksums.\n- Add tests for id-based installs using a cached index.
-
 
 ## Risks
 
 - Remote index URLs might not be reachable; install fails without a cached index.\n- Checksums in the index must match archives; mismatches will block installs.
 
-
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
-
 
 ## Rollback Plan
 

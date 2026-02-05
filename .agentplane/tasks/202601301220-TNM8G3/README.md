@@ -19,31 +19,25 @@ description: "Replace AGENTS.md content with the provided prod-v1.0 policy text.
 
 Replace AGENTS.md with the prod-v1.0 policy text provided by the user.
 
-
 ## Context
 
 User provided a full replacement policy block for AGENTS.md and requested a complete swap.
-
 
 ## Scope
 
 - Replace AGENTS.md content with the provided prod-v1.0 policy text.\n- Keep all formatting consistent with Prettier.
 
-
 ## Risks
 
 - Full replacement may remove previously documented local conventions; ensure new policy is authoritative.\n- Any downstream tooling relying on removed sections may need updates.
-
 
 ## Verify Steps
 
 - N/A (documentation-only change).
 
-
 ## Rollback Plan
 
 - Revert AGENTS.md to the previous revision.
-
 
 ## Notes
 

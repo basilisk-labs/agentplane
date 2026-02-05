@@ -19,26 +19,21 @@ description: "Align README diagrams and badges with 'task export' wording, ensur
 
 - Normalized diagram wording in README to refer to the task export/view consistently.
 
-
 ## Goal
 
 - Keep diagrams and badges aligned with export terminology without overusing tasks.json.
-
 
 ## Scope
 
 - @README.md
 
-
 ## Risks
 
 - Low: diagram text change only.
 
-
 ## Verify Steps
 
 - None (doc-only change).
-
 
 ## Rollback Plan
 

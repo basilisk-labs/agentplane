@@ -21,31 +21,25 @@ id_source: "custom"
 
 Added concise inline comments in agentctl.py to clarify backend capability checks, hook guardrails, config loading, and commit allowlist flow.
 
-
 ## Context
 
 Requested to add human-readable comments in agentctl.py to make non-obvious logic easier to follow.
-
 
 ## Scope
 
 Comment-only updates in .agent-plane/agentctl.py; no behavior changes.
 
-
 ## Risks
 
 Low risk: comments only. Potential risk is comments drifting if logic changes later.
-
 
 ## Verify Steps
 
 Not run (comment-only change).
 
-
 ## Rollback Plan
 
 Revert commit 8058e33 to remove the comment additions.
-
 
 ## Notes
 

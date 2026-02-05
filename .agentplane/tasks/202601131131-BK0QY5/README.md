@@ -20,26 +20,21 @@ description: "Revise ORCHESTRATOR/PLANNER specs and AGENTS.md to treat each requ
 
 Replace roadmap-specific orchestration with top-level plan and task proposal flow.
 
-
 ## Context
 
 User prefers a top-level plan per request and a prompt to create one or more tasks, rather than maintaining docs/ROADMAP.md.
-
 
 ## Scope
 
 Update AGENTS.md and ORCHESTRATOR/PLANNER JSON workflows to remove roadmap steps and require a post-plan task-creation prompt.
 
-
 ## Risks
 
 Low risk; aligns agent expectations but must stay consistent across AGENTS.md and agent JSON.
 
-
 ## Verify Steps
 
 No tests (spec changes only).
-
 
 ## Rollback Plan
 

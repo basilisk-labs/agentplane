@@ -19,32 +19,26 @@ description: "Choose a single status indicator scheme and update all relevant do
 
 Standardized task priority labels to the core set and aligned status wording in docs.
 
-
 ## Context
 
 The repo had mixed priority labels (med/Нормальный) that needed normalization to the standard scheme.
-
 
 ## Scope
 
 - Normalize task priorities to low/normal/high across task docs and export.
 - Update docs wording to reference the standard status labels.
 
-
 ## Risks
 
 - Mislabeling priorities could affect reporting expectations if consumers assumed legacy labels.
-
 
 ## Verify Steps
 
 - N/A (doc-only normalization).
 
-
 ## Rollback Plan
 
 - Revert the commits linked in task metadata to restore prior labels.
-
 
 ## Notes
 

@@ -21,21 +21,17 @@ description: "Add npm trusted publisher workflow for GitHub Actions, update rele
 
 Add GitHub Actions trusted publishing workflow, normalize npm repository URLs, and document trusted publishing steps.
 
-
 ## Scope
 
 Add .github/workflows/publish.yml, update release-and-publishing doc, and normalize repository URLs in package metadata.
-
 
 ## Risks
 
 Trusted publishing requires correct npm org permissions and matching workflow filename; incorrect setup can block publishing.
 
-
 ## Verify Steps
 
 Not run (workflow/doc changes only).
-
 
 ## Rollback Plan
 

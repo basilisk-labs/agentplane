@@ -21,10 +21,6 @@ dirty: false
 ## Summary
 
 
-
-
-
-
 ## Scope
 
 

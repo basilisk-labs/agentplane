@@ -20,31 +20,25 @@ description: "Apply relevant recommended updates to AGENTS.md (policy, preflight
 
 Update AGENTS.md with selected recommended policy refinements (preflight, approvals definitions, commit modes, config patch note).
 
-
 ## Context
 
 User requested applying relevant AGENTS.md recommendations to current policy file without changing unrelated files.
-
 
 ## Scope
 
 - Update AGENTS.md version header and add PURPOSE section.\n- Add MANDATORY PREFLIGHT runbook and network approval definitions.\n- Clarify orchestration, status transitions exception, and commit workflow modes.\n- Add CONFIG PATCH recommendation block.
 
-
 ## Risks
 
 - Minor wording shifts could conflict with existing agent behavior if misread.\n- Added config patch is advisory only; risk of confusion if interpreted as already applied.
-
 
 ## Verify Steps
 
 - N/A (documentation-only change).
 
-
 ## Rollback Plan
 
 - Revert AGENTS.md to previous revision.
-
 
 ## Notes
 

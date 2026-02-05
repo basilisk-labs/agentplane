@@ -20,21 +20,17 @@ description: "Adjust lefthook pre-commit to avoid running full ci on every commi
 
 Speed up local git hooks by moving full ci to pre-push and keeping pre-commit fast.
 
-
 ## Scope
 
 - Update lefthook pre-commit to run format + lint only.\n- Add pre-push hook to run full ci.\n- Update code-quality docs.
-
 
 ## Risks
 
 - Pre-commit no longer runs full tests; failures may surface at pre-push instead.\n- Developers can still bypass hooks with --no-verify (unchanged).
 
-
 ## Verify Steps
 
 git commit (runs pre-commit: format + lint); bun run ci runs on pre-push
-
 
 ## Rollback Plan
 

@@ -19,31 +19,25 @@ description: "Update agentctl docs and project docs to explain new config.json k
 
 Documented new config keys and CLI config show/set usage across agentctl docs and project docs.
 
-
 ## Context
 
 Agentctl gained config-driven behavior, so docs needed to explain keys, defaults, and the new config commands.
-
 
 ## Scope
 
 Updated .agent-plane/agentctl.md, docs/07-tasks-and-backends.md, docs/08-branching-and-pr-artifacts.md, docs/09-commands.md, and README.md.
 
-
 ## Risks
 
 Docs may drift if the config schema changes; no runtime impact.
-
 
 ## Verify Steps
 
 rg -n "config show|config set" .agent-plane/agentctl.md docs/09-commands.md; rg -n "branch\.task_prefix|paths\.worktrees_dir" docs/07-tasks-and-backends.md docs/08-branching-and-pr-artifacts.md
 
-
 ## Rollback Plan
 
 Revert doc changes in the listed files.
-
 
 ## Notes
 

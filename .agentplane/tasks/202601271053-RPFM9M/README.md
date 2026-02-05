@@ -20,7 +20,6 @@ description: "Fix Mintlify validation by adding required colors + valid navigati
 
 Make Mintlify docs/docs.json pass schema validation (colors + navigation schema) and add minimal branding assets.
 
-
 ## Scope
 
 - Update `docs/docs.json`:
@@ -29,17 +28,14 @@ Make Mintlify docs/docs.json pass schema validation (colors + navigation schema)
   - add minimal `logo` + `favicon` + `topbarLinks`
 - Add minimal SVG assets under `docs/assets/`
 
-
 ## Risks
 
 - Mintlify may require additional keys depending on project structure; adjust after preview if new schema errors appear.
-
 
 ## Verify Steps
 
 - Run Mintlify preview/build and confirm `docs/docs.json` no longer reports validation errors (colors/navigation).
 - Confirm logo + favicon render and navigation sidebar groups appear.
-
 
 ## Rollback Plan
 

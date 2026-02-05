@@ -19,31 +19,25 @@ description: "Update AGENTS.md and RECIPES.md to codify the minimal task workflo
 
 Defined the core minimum agent/task workflow and updated recipe rules to allow tools by default and permit agentctl usage under guardrails.
 
-
 ## Context
 
 Needed to formalize the minimal core behavior while shifting extensions into recipes and loosening tool/agentctl permissions for recipe scenarios.
-
 
 ## Scope
 
 Updated AGENTS.md to add a core-minimum section and recipe-driven agentctl allowance; updated RECIPES.md to allow tools by default and to permit agentctl usage with confirmation.
 
-
 ## Risks
 
 Allowing recipe-driven agentctl use increases risk of misuse; strict confirmation and guardrails must be enforced in scenarios.
-
 
 ## Verify Steps
 
 Reviewed AGENTS.md and RECIPES.md updates for consistency with guardrails and recipe policies.
 
-
 ## Rollback Plan
 
 Revert commit 6a935ba8cde9 to restore the previous core minimum and recipe permission rules.
-
 
 ## Notes
 

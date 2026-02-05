@@ -20,21 +20,17 @@ description: "Add scoped dev checks (lint/typecheck/tests) to run only for targe
 
 Added scoped CI scripts for per-package checks (format/lint/typecheck/tests) plus docs for faster dev loops while keeping full CI intact.
 
-
 ## Scope
 
 - Add @scripts/ci-scope.mjs to run scoped format/lint/typecheck/tests per package scope.\n- Add scoped scripts in @package.json (ci:agentplane, ci:core, ci:recipes, ci:spec, ci:testkit).\n- Document scoped checks in @docs/code-quality.mdx.
-
 
 ## Risks
 
 - Scoped runs could miss cross-package integration issues; full CI remains required before release.\n- If a scope has no tests, vitest run may fail without matching files; script guards and scope selection mitigate this.
 
-
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
-
 
 ## Rollback Plan
 

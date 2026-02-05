@@ -20,21 +20,17 @@ description: "Implement agentplane init with interactive prompts (IDE/workflow/h
 
 Implemented agentplane init with flags and non-TTY defaults, plus tests covering init/cleanup/integrate parsing and coverage.
 
-
 ## Scope
 
 Add init command (flags + non-TTY requirements), ensure ide sync/hook install options, and extend CLI tests to cover new parse branches.
-
 
 ## Risks
 
 Low risk. Main risk is incorrect init flag validation or non-TTY enforcement; covered by CLI tests.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

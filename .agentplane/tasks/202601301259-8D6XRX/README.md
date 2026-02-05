@@ -20,21 +20,17 @@ description: "Add agentplane quickstart to mirror agentctl quickstart output and
 
 - Add agentplane quickstart command mirroring agentctl quickstart output.\n- Update help output and tests.
 
-
 ## Scope
 
 - Implement quickstart command in run-cli.\n- Add help entry and a unit test.\n- Keep output compatible with agentctl quickstart.
-
 
 ## Risks
 
 - Output differences could confuse users comparing Python vs Node quickstart.\n- Help text must stay in sync with command behavior.
 
-
 ## Verify Steps
 
 - bun run test -- packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

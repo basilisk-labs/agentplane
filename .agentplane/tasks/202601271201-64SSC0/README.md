@@ -19,21 +19,17 @@ description: "Implement hooks install/uninstall with shim strategy and env flags
 
 Add hooks install/uninstall and hook runner with local shim.
 
-
 ## Scope
 
 Hook scripts for commit-msg/pre-commit/pre-push; local .agentplane/bin shim; CLI commands and tests; help updates.
-
 
 ## Risks
 
 Hooks can block commits if repository lacks bun or built CLI.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

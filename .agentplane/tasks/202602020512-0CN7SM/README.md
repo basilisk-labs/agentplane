@@ -20,21 +20,17 @@ description: "Update agentplane init to create git repo when missing, set base b
 
 Added git bootstrap + install commit to init, and switched hooks to call system agentplane.
 
-
 ## Scope
 
 Init now handles non-git roots, pins base branch, and creates an install commit; hooks invoke system agentplane; tests/docs updated for init behavior.
-
 
 ## Risks
 
 Hooks now rely on system agentplane in PATH; repos without it will fail hook execution until installed. Init refuses to proceed if staged changes exist.
 
-
 ## Verify Steps
 
 bun run test:full
-
 
 ## Rollback Plan
 

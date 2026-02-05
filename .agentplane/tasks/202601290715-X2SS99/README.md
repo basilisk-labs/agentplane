@@ -20,23 +20,19 @@ description: "Add golden fixture tests for README/tasks.json/PR artifacts to det
 
 Add agentctl-derived golden fixtures for README/frontmatter and tasks.json, with parity checksum and roundtrip tests.
 
-
 ## Scope
 
 - Generate agentctl-based fixtures for task README and tasks.json.
 - Add tests to roundtrip README and validate checksum parity.
-
 
 ## Risks
 
 - Fixtures may drift if agentctl changes; tests will flag required updates.
 - Limited to README/tasks.json parity; PR artifacts remain Node-specific.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

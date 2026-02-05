@@ -20,7 +20,6 @@ description: "Add maximal-quality lint/format/static-analysis tooling for the No
 
 Set up a best-practice JS/TS code quality toolchain (ESLint + TypeScript rules + Prettier) for the Node.js agentplane workspace.
 
-
 ## Scope
 
 - Add ESLint (TS-aware) with a workspace-wide config.
@@ -28,19 +27,16 @@ Set up a best-practice JS/TS code quality toolchain (ESLint + TypeScript rules +
 - Add npm scripts: lint, lint:fix, format, format:check.
 - Install commonly-used plugins for Node/TS projects.
 
-
 ## Risks
 
 - Latest versions may introduce breaking config changes; keep the setup minimal and compatible with Node 20+.
 - Overly strict rules can slow iteration; prefer safe, high-signal defaults.
-
 
 ## Verify Steps
 
 - `npm install` succeeds.
 - `npm run lint` passes.
 - `npm run format:check` passes.
-
 
 ## Rollback Plan
 

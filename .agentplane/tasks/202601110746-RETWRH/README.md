@@ -19,11 +19,9 @@ description: "Fix corrupted task README metadata and populate missing sections t
 
 Fix corrupted task README metadata and populate missing sections so task docs pass PR checks.
 
-
 ## Context
 
 Task 202601071438-C7W2GE frontmatter is malformed (`Яstatus`) and contains escaped newlines, so the backend reads it as TODO. Task 202601071526-GH5YSV lacks body sections entirely, causing future PR checks to fail. Both need cleanup via agentctl.
-
 
 ## Scope
 
@@ -31,22 +29,18 @@ Task 202601071438-C7W2GE frontmatter is malformed (`Яstatus`) and contains esca
 - Replace escaped `\n` bullets in C7W2GE with proper Markdown list items.
 - Populate GH5YSV task README sections (Summary/Context/Scope/Risks/Verify Steps/Rollback Plan/Notes).
 
-
 ## Risks
 
 - Manual doc updates could misrepresent task status if fields are missed.
 - PR checks may still fail if required sections remain empty.
 
-
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task lint
 
-
 ## Rollback Plan
 
 - Revert the README changes for C7W2GE and GH5YSV.
-
 
 ## Notes
 

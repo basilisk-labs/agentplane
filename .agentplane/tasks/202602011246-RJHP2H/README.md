@@ -19,21 +19,17 @@ description: "Audit open parity tasks, implement quickstart guide in CLI help, c
 
 Closed open Node CLI parity tasks by updating quickstart/role guidance, recipes explain output, parity audits, and ROADMAP.md.
 
-
 ## Scope
 
 packages/agentplane/src/command-guide.ts; packages/agentplane/src/run-cli.ts; packages/agentplane/src/help.ts; packages/agentplane/src/run-cli.test.ts; docs/commands.mdx; docs/cli-contract.mdx; docs/recipes-how-it-works.mdx; docs/recipes-spec.mdx; docs/audits/parity-report.md; docs/audits/nodejs-parity-matrix.md; ROADMAP.md.
-
 
 ## Risks
 
 Guide text can drift from CLI behavior; recipe explain output may be verbose for large scenarios.
 
-
 ## Verify Steps
 
 bun test packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

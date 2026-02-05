@@ -19,21 +19,17 @@ description: "Add config default for recipe storage and a recipe cache prune com
 
 Added config default for recipe storage and a recipe cache prune command; updated CLI, schemas/examples, docs, and tests.
 
-
 ## Scope
 
 Added recipes.storage_default to config + schema/example, defaulted recipe install storage to config, implemented recipe cache prune, and documented CLI changes; added tests for config default and prune.
-
 
 ## Risks
 
 Cache prune is project-scoped by default; running in the wrong repo could remove cached versions used elsewhere unless --all is used intentionally.
 
-
 ## Verify Steps
 
 bun test packages/agentplane/src/run-cli.test.ts -t "recipe cache prune|recipe install uses config storage default|recipe install supports global-only storage|recipe install/list/info/remove manages local recipes"
-
 
 ## Rollback Plan
 

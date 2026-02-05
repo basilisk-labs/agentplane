@@ -21,21 +21,17 @@ description: "Update CLI smoke test to use supported --ide value so pre-push and
 
 Updated the CLI smoke test to use the supported codex IDE flag so init succeeds under current CLI options.
 
-
 ## Scope
 
 Change only the CLI smoke test flag value; no production code changes.
-
 
 ## Risks
 
 Low risk: test could still fail if CLI flags change again; in that case update the smoke test to match the CLI contract.
 
-
 ## Verify Steps
 
 bun run test:full
-
 
 ## Rollback Plan
 

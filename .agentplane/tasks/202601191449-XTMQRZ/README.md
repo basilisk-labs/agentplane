@@ -19,32 +19,26 @@ description: "Identify retrospective tasks and set their priority consistently v
 
 Normalized priority values across tasks to the standard low/normal/high scheme.
 
-
 ## Context
 
 Priorities were mixed between med/Нормальный and needed a single scheme.
-
 
 ## Scope
 
 - Update all task frontmatter priority values to normal where med/Нормальный appeared.
 - Fix any priority mentions in task notes to match the standard labels.
 
-
 ## Risks
 
 - External systems expecting legacy labels may need a refresh.
-
 
 ## Verify Steps
 
 - N/A (data normalization).
 
-
 ## Rollback Plan
 
 - Revert the linked commits to restore legacy priority labels.
-
 
 ## Notes
 

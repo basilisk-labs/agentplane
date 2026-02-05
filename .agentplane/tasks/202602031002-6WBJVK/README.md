@@ -20,49 +20,22 @@ id_source: "generated"
 ---
 ## Summary
 
-
 Add startup update check against npm registry with opt-out flag, warning on newer versions.
-
-
 
 Normalized task doc sections (dedupe).
 
-
-
-
-
-
 ## Scope
-
 
 Update CLI global flags, help text, and command guide; add npm version check and tests.
 
-
-
-
-
-
 ## Risks
-
 
 Startup warning could appear in stderr; npm registry fetch is best-effort but should not block CLI.
 
-
-
-
-
-
 ## Verify Steps
-
 
 bun run test:cli:core
 
-
-
-
-
-
 ## Rollback Plan
-
 
 Revert the update-check changes in run-cli.ts, help.ts, command-guide.ts, and related tests.

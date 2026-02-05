@@ -18,49 +18,22 @@ id_source: "generated"
 ---
 ## Summary
 
-
 Prevent duplicate frontmatter in task READMEs and ensure doc merges normalize bodies.
-
-
 
 Normalized task doc sections (dedupe).
 
-
-
-
-
-
 ## Scope
-
 
 Update task README parsing/normalization, add tests, and re-run doc updates to clean existing duplicates.
 
-
-
-
-
-
 ## Risks
-
 
 Low: parsing changes may affect unusual README bodies; validate with tests.
 
-
-
-
-
-
 ## Verify Steps
-
 
 Run relevant tests (task-readme, task-backend) and re-scan task READMEs for duplicate frontmatter.
 
-
-
-
-
-
 ## Rollback Plan
-
 
 Revert parsing changes; regenerate task READMEs via previous commits if needed.

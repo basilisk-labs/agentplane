@@ -20,21 +20,17 @@ description: "Remove dependency on .agentplane/agentctl.md and generate quicksta
 
 - Remove agentctl.md dependency in Node CLI.\n- Generate quickstart/role guidance from current CLI help.
 
-
 ## Scope
 
 - Update quickstart and role commands to use renderHelp output.\n- Remove role guide parsing from agentctl.md.\n- Adjust tests and help text as needed.
-
 
 ## Risks
 
 - Behavior change could break workflows relying on agentctl.md role guide.\n- Help output must stay accurate to avoid confusing guidance.
 
-
 ## Verify Steps
 
 - bun run test -- packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

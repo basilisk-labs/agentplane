@@ -20,21 +20,17 @@ description: "Implement pr open/update/check/note for branch_pr workflow artifac
 
 Implemented PR artifact CLI commands (open/update/check/note) with diffstat + auto-summary updates and expanded CLI tests.
 
-
 ## Scope
 
 Updated agentplane CLI to generate/validate PR artifacts, added git env sanitization, and expanded CLI test coverage for PR and workflow error paths.
-
 
 ## Risks
 
 PR artifact logic depends on git state; misconfigured repos may surface E_GIT errors. Coverage thresholds remain sensitive to branch coverage.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

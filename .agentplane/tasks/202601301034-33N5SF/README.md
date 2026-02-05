@@ -19,32 +19,26 @@ description: "Apply minimal wording fixes in AGENTS.md to clarify sources of tru
 
 Apply minimal AGENTS.md wording fixes (sources of truth, model wording, clean status, commit subject/body, startup rule, README update rule).
 
-
 ## Context
 
 User requested precise, minimal replacements to remove contradictions in AGENTS.md.
-
 
 ## Scope
 
 - Update AGENTS.md per the requested patch proposals.
 - Keep changes documentation-only.
 
-
 ## Risks
 
 Low; documentation-only edits may slightly change interpretation.
-
 
 ## Verify Steps
 
 - Not required (docs-only).
 
-
 ## Rollback Plan
 
 Revert the AGENTS.md commit for this task.
-
 
 ## Notes
 

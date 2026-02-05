@@ -20,26 +20,21 @@ description: "Add a config option to auto-run finish status commits, update agen
 
 Add a config-controlled auto status commit for finish and document the behavior.
 
-
 ## Context
 
 User wants finish to commit task updates automatically when configured.
-
 
 ## Scope
 
 Add a config flag, wire it into agentctl finish, update docs, and enable it in .agent-plane/config.json.
 
-
 ## Risks
 
 Low risk; incorrect config parsing could block finish or trigger unexpected commits.
 
-
 ## Verify Steps
 
 No tests (behavior verified by inspection).
-
 
 ## Rollback Plan
 

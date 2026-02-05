@@ -22,11 +22,9 @@ description: "Remove umbrella task mentions and rephrase instructions so the orc
 - Remove umbrella wording from orchestration and task rules.
 - Clarify that the orchestrator forms a top-level plan before decomposition.
 
-
 ## Context
 
 - User requested removing "umbrella" mentions and rephrasing instructions to emphasize top-level planning.
-
 
 ## Scope
 
@@ -34,26 +32,21 @@ description: "Remove umbrella task mentions and rephrase instructions so the orc
 - Update @.agent-plane/agents/ORCHESTRATOR.json outputs and workflow text.
 - Update @.agent-plane/agents/PLANNER.json outputs and workflow text.
 
-
 ## Risks
 
 - Low risk: documentation-only changes.
-
 
 ## Verify Steps
 
 - No tests required (doc-only change).
 
-
 ## Rollback Plan
 
 - Revert the commit that updates the agent specs and AGENTS.md.
 
-
 ## Notes
 
 - None.
-
 
 ## Changes Summary (auto)
 

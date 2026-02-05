@@ -20,26 +20,21 @@ description: "Summarize how the feature-spec-to-tasks recipe works, including in
 
 Deferred: recipe documentation postponed to focus on agentctl parity.
 
-
 ## Context
 
 User requested to pause new recipe work and prioritize agentctl parity work.
-
 
 ## Scope
 
 - No implementation; task closed as deferred per request.
 
-
 ## Risks
 
 - Documentation for feature-spec-to-tasks remains missing until rescheduled.
 
-
 ## Verify Steps
 
 No tests required (task deferred).
-
 
 ## Rollback Plan
 

@@ -20,21 +20,17 @@ description: "Add init conflict handling: default no-overwrite, --force overwrit
 
 Add conflict-safe init handling: detect conflicts, list them, and support --force/--backup overwrite behavior.
 
-
 ## Scope
 
 - Extend init flags with --force and --backup and update usage/help text.\n- Detect init file/dir conflicts and list them before writing.\n- Implement overwrite (force) and timestamped backups (backup) with tests.
-
 
 ## Risks
 
 - Force mode can overwrite user files if invoked in a dirty workspace.\n- Backup naming collisions could hide earlier backups; suffixing with a random token mitigates this.
 
-
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
-
 
 ## Rollback Plan
 

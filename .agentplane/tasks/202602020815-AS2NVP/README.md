@@ -20,21 +20,17 @@ description: "Rename core package to @agentplaneorg/core, update agentplane depe
 
 Rename core package to @agentplaneorg/core, update agentplane dependency and release docs, then push.
 
-
 ## Scope
 
 Update packages/core/package.json, packages/agentplane/package.json, and release docs for @agentplaneorg scope.
-
 
 ## Risks
 
 Scope change requires republishing core and agentplane; consumers must install from the new @agentplaneorg scope.
 
-
 ## Verify Steps
 
 Not run (metadata/docs changes only).
-
 
 ## Rollback Plan
 

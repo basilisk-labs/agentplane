@@ -19,16 +19,6 @@ id_source: "generated"
 ---
 ## Summary
 
-## Scope
-
-## Risks
-
-## Verify Steps
-
-## Rollback Plan
-
-## Summary
-
 Require English release notes for publishes, add pre-push guard, and make publish workflow auto-trigger for tag events regardless of tag type.
 
 ## Scope

@@ -19,31 +19,25 @@ description: "Run UPDATER audit and apply the recommended optimizations to AGENT
 
 Optimized AGENTS.md and agent JSONs to reference config-driven settings and CLI config show/set.
 
-
 ## Context
 
 New config keys required agent guidance to point to config management and parametrize branch/worktree paths.
-
 
 ## Scope
 
 Updated AGENTS.md, .agent-plane/agents/ORCHESTRATOR.json, .agent-plane/agents/DOCS.json, and .agent-plane/agents/INTEGRATOR.json.
 
-
 ## Risks
 
 Instruction-only changes; risk is outdated guidance if config keys change.
-
 
 ## Verify Steps
 
 rg -n "config show|config set|branch\.task_prefix|paths\.worktrees_dir" AGENTS.md .agent-plane/agents/ORCHESTRATOR.json .agent-plane/agents/DOCS.json .agent-plane/agents/INTEGRATOR.json
 
-
 ## Rollback Plan
 
 Revert changes in AGENTS.md and the updated agent JSON files.
-
 
 ## Notes
 

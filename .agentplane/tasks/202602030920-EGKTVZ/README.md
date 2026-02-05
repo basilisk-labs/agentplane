@@ -19,49 +19,22 @@ id_source: "generated"
 ---
 ## Summary
 
-
 Removed npm auth token usage in publish workflow and added a local release dry-run script.
-
-
 
 Normalized task doc sections (dedupe).
 
-
-
-
-
-
 ## Scope
-
 
 Workflow auth cleanup and local publish dry-run validation.
 
-
-
-
-
-
 ## Risks
-
 
 Low; publish now relies on GitHub OIDC only.
 
-
-
-
-
-
 ## Verify Steps
-
 
 1) bun run release:check\n2) GitHub Actions publish workflow runs on tag push
 
-
-
-
-
-
 ## Rollback Plan
-
 
 Revert workflow/script changes and re-run publish with corrected auth.

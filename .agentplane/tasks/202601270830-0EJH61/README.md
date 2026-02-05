@@ -20,22 +20,18 @@ description: "Commit the corrected ROADMAP.md version and keep it as the canonic
 
 Commit the corrected ROADMAP.md and keep it as the canonical Node.js migration plan for this repository.
 
-
 ## Scope
 
 - Stage and commit ROADMAP.md corrections.
 - Ensure the roadmap remains consistent with the Node.js v1 constraints (offline-first, .agentplane, explicit network commands).
 
-
 ## Risks
 
 - ROADMAP churn: frequent rewrites can desync docs and implementation tasks.
 
-
 ## Verify Steps
 
 - Review ROADMAP.md for alignment with v1 constraints and milestone ordering.
-
 
 ## Rollback Plan
 

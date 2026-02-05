@@ -19,21 +19,17 @@ description: "Review AGENTS.md and agent JSON instruction files to remove redund
 
 Eliminated repetitive gating so plan approval becomes the main consent point and agents move forward autonomously thereafter.
 
-
 ## Scope
 
 Adjusted AGENTS.md and ORCHESTRATOR.json wording so plan approval acts as the default authorization, and agents only re-check when scope or risk changes.
-
 
 ## Risks
 
 Risk: agents may skip necessary confirmations if an unexpected scope/risk shift occurs, so we explicitly note when to re-check.
 
-
 ## Verify Steps
 
 None (documentation-only change).
-
 
 ## Rollback Plan
 

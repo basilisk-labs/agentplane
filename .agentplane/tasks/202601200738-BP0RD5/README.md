@@ -19,31 +19,25 @@ description: "Document the core vs recipes backend strategy (local backend stays
 
 Documented the recipe mini-CLI contract and clarified the core/local backend strategy in the docs.
 
-
 ## Context
 
 Needed to codify the minimal core (local backend) and require recipe tools to expose a formal mini-CLI interface.
-
 
 ## Scope
 
 Updated AGENTS.md with the local-backend core rule; added a recipe mini-CLI contract and structured output format in RECIPES.md; noted backend strategy in docs/07-tasks-and-backends.md.
 
-
 ## Risks
 
 Documentation changes may need alignment as recipe tooling evolves; enforce the mini-CLI contract in future recipe implementations.
-
 
 ## Verify Steps
 
 Reviewed the updated documentation sections for consistency with core and recipe guardrails.
 
-
 ## Rollback Plan
 
 Revert commit c9a7cc449afd to remove the documentation updates.
-
 
 ## Notes
 

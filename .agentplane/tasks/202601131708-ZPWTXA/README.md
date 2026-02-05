@@ -21,26 +21,21 @@ id_source: "custom"
 
 Add closure_commit_requires_approval config flag and wire agent guidance to honor it.
 
-
 ## Scope
 
 AGENTS.md; .agent-plane/agents/ORCHESTRATOR.json; .agent-plane/agents/INTEGRATOR.json; .agent-plane/config.json; docs/01-overview.md.
-
 
 ## Risks
 
 Low: config/documentation-only update; risk is misconfigured default behavior.
 
-
 ## Verify Steps
 
 None (config/docs change only).
 
-
 ## Rollback Plan
 
 Revert commit b2932bb9d997.
-
 
 ## Notes
 

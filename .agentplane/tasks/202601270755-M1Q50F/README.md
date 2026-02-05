@@ -20,25 +20,21 @@ description: "Define and document the public agentplane CLI contract v1: command
 
 Define the stable public CLI contract for `agentplane` v1 (commands, flags, aliases, exit codes, and structured errors).
 
-
 ## Scope
 
 - Create `docs/cli-contract.md` with a command table for v1.
 - Specify `--json` output contract for errors.
 - Reserve namespaces (e.g. `recipe`, `mode`, `ide`, `backend`) and resolve any ambiguous command names.
 
-
 ## Risks
 
 - Premature stability: freezing the contract too early can cause churn in later milestones.
 - Collisions: command naming (e.g. `sync`) must stay unambiguous across namespaces.
 
-
 ## Verify Steps
 
 - Open `docs/cli-contract.md` and confirm it covers all planned v1 namespaces.
 - Spot-check examples for consistent flag naming and exit codes.
-
 
 ## Rollback Plan
 

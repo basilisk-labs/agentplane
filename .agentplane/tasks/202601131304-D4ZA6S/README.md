@@ -19,31 +19,25 @@ description: "Extend .agent-plane/config.json with new settings and update agent
 
 Add config-driven settings for tasks/branch/commit and a config show/set CLI in agentctl.
 
-
 ## Context
 
 User requested configurable settings in config.json plus CLI support for toggling them.
-
 
 ## Scope
 
 Updated .agent-plane/config.json with new keys and adjusted .agent-plane/agentctl.py to read them, enforce branch/worktree prefix config, and add config show/set commands.
 
-
 ## Risks
 
 Misconfigured config.json values could cause agentctl validation errors; new defaults should be verified in the repo.
-
 
 ## Verify Steps
 
 python .agent-plane/agentctl.py --help
 
-
 ## Rollback Plan
 
 Revert .agent-plane/config.json and .agent-plane/agentctl.py to the previous commit.
-
 
 ## Notes
 

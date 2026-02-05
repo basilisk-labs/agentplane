@@ -21,11 +21,9 @@ description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guar
 - Simplified INTEGRATOR workflow to a short checklist.
 - Added ORCHESTRATOR trigger to invoke UPDATER on explicit optimization requests.
 
-
 ## Goal
 
 - Tighten role-specific guardrails around commits and handoffs.
-
 
 ## Scope
 
@@ -35,16 +33,13 @@ description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guar
 - @.agent-plane/agents/INTEGRATOR.json
 - @.agent-plane/agents/ORCHESTRATOR.json
 
-
 ## Risks
 
 - Low: checklist wording may need adjustment if agentctl commands change.
 
-
 ## Verify Steps
 
 - None (doc/instruction changes only).
-
 
 ## Rollback Plan
 

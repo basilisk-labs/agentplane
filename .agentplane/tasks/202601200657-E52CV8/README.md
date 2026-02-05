@@ -19,31 +19,25 @@ description: "Produce a phased migration plan with dependencies for moving non-c
 
 Defined a phased migration plan to move extension features into recipes while keeping the core minimal.
 
-
 ## Context
 
 The framework should keep only agent runtime and guardrails; all higher-level workflows must be implemented as recipes.
-
 
 ## Scope
 
 Phase 1 (202601200657-W1Y6ND): move planning/analysis helpers into recipes (roadmap/spec/decomposition).\nPhase 2 (202601200657-VNFXH3): move QA/test planning, release checklists, docs scaffolding into recipes.\nPhase 3 (202601200657-Y0P8RY): prune core to agent runtime + agentctl guardrails; update docs and inventory.
 
-
 ## Risks
 
 Risk of breaking existing workflows if recipe replacements are incomplete; maintain core fallbacks until recipes are validated.
-
 
 ## Verify Steps
 
 Review the phase plan with stakeholders; confirm dependency order in task list.
 
-
 ## Rollback Plan
 
 Do not remove core behaviors until recipe replacements are validated; revert any migration commit that removes core functionality prematurely.
-
 
 ## Notes
 

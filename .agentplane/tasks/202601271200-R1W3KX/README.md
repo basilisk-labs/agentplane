@@ -19,21 +19,17 @@ description: "Implement base branch pinning via git config agentplane.baseBranch
 
 Add base branch pinning via git config and expose branch base get|set in CLI with tests.
 
-
 ## Scope
 
 Core: base-branch helpers + tests. CLI: branch base get|set command and help/tests.
-
 
 ## Risks
 
 Requires git in PATH; command errors if git is missing. Tests now rely on git init in temp repos.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

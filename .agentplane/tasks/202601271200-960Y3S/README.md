@@ -19,21 +19,17 @@ description: "Enforce commit subject matching task suffix/id and block generic c
 
 Add commit subject policy validation (suffix/id match + generic-token guard) with unit and git integration tests.
 
-
 ## Scope
 
 Core commit policy helpers + tests; no CLI wiring yet.
-
 
 ## Risks
 
 May reject legitimate short subjects if they match generic tokens; tune config.commit.generic_tokens if needed.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

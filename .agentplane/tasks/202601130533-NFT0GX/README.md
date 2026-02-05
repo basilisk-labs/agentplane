@@ -20,31 +20,25 @@ description: "Add status_commit_policy guardrails for comment-driven commits and
 
 Add status_commit_policy guardrails for comment-driven commits and cover enforcement with unit tests.
 
-
 ## Context
 
 Clarify when status/comment-driven commits should be allowed so agents can update status without implicit commits.
-
 
 ## Scope
 
 - Add status_commit_policy config and enforcement for comment-driven commits.\n- Add unit tests for warn/confirm/invalid policy handling.\n- Update agentctl docs to describe the policy and confirmation flag.
 
-
 ## Risks
 
 Policy warnings may be overlooked in noisy output; confirm mode blocks without explicit ack.
-
 
 ## Verify Steps
 
 None (no automated tests shipped).
 
-
 ## Rollback Plan
 
 Revert the commit and remove status_commit_policy from config plus the enforcement hooks in agentctl.
-
 
 ## Notes
 

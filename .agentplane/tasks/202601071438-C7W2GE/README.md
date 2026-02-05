@@ -19,38 +19,31 @@ description: "Update Redmine backend config and docs to use sequential custom fi
 
 Update Redmine custom field ID mapping to use sequential IDs 1-8 for task metadata.
 
-
 ## Context
 
 User requested sequential Redmine custom field IDs; admin API access was unavailable, so we aligned docs and config to IDs 1-8.
-
 
 ## Scope
 
 - Update Redmine docs/examples to use sequential custom field IDs 1..8.
 - Keep backend config aligned with the same mapping.
 
-
 ## Risks
 
 - If Redmine custom field IDs differ, sync will fail until corrected.
-
 
 ## Verify Steps
 
 - (Optional) Confirm custom field IDs in Redmine admin.
 - Run `python .agent-plane/agentctl.py sync redmine` after configuration.
 
-
 ## Rollback Plan
 
 Revert the Redmine backend config and docs to the previous custom field IDs.
 
-
 ## Notes
 
 Backend config already uses IDs 1-8; only docs needed updates.
-
 
 ## Changes Summary
 

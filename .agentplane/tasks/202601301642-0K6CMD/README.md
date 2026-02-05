@@ -20,21 +20,17 @@ description: "Implement Node CLI support for Python recipes.py features: list-re
 
 Recipes CLI now uses the installed registry for list/tag, adds recipes explain with scenario details, and updates recipe docs accordingly.
 
-
 ## Scope
 
 packages/agentplane/src/run-cli.ts; packages/agentplane/src/help.ts; packages/agentplane/src/run-cli.test.ts; docs/recipes-how-it-works.mdx; docs/recipes-spec.mdx; docs/commands.mdx; docs/cli-contract.mdx.
-
 
 ## Risks
 
 Explain output can be verbose; scenario details depend on definition files being present in installed recipes.
 
-
 ## Verify Steps
 
 bun test packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

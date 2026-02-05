@@ -23,12 +23,10 @@ description: "Refine task README.md format for human/agent readability and enfor
 - Add agentctl doc section updates + metadata guard for README changes.
 - Update local backend to stamp doc metadata.
 
-
 ## Context
 
 - Agents should not edit task READMEs by hand; agentctl must own updates.
 - README structure should balance required metadata with readable guidance.
-
 
 ## Scope
 
@@ -39,22 +37,18 @@ description: "Refine task README.md format for human/agent readability and enfor
 - Mirror new Redmine comments into issue journals as notes.
 - Document Redmine custom fields and notes behavior (separate doc).
 
-
 ## Risks
 
 - Guard may block commits that touch legacy task READMEs missing doc metadata until updated via agentctl.
 - Section parsing is heading-based; unusual heading formats may be ignored.
 
-
 ## Verify Steps
 
 - python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/local/backend.py .agent-plane/backends/redmine/backend.py
 
-
 ## Rollback Plan
 
 - Revert the commit and re-run agentctl if needed.
-
 
 ## Notes
 
@@ -62,7 +56,6 @@ description: "Refine task README.md format for human/agent readability and enfor
 - Redmine needs custom fields for comments/doc metadata to keep parity with local.
 - Journal notes are appended only when comment list grows in order.
 - README metadata guard now enforces agentctl frontmatter even when the active backend is not local (cache + Redmine workflows).
-
 
 ## Changes Summary (auto)
 

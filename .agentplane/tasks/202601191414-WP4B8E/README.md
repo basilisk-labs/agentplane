@@ -19,33 +19,27 @@ description: "Smoke-test new dashboards and document verify steps."
 
 Smoke-test the dashboard flows and record verification notes.
 
-
 ## Context
 
 Dashboards add new filters and UI affordances; a quick manual check ensures counts and interactions match expectations.
-
 
 ## Scope
 
 - Verify dashboard rendering and preset interactions.
 - Record quick sanity checks for counts and filters.
 
-
 ## Risks
 
 Risk: missing data could appear as blank cards; validate empty states.
-
 
 ## Verify Steps
 
 - Launch the viewer and click KPI cards/presets to confirm filter behavior.
 - Confirm owner/priority/tag bars update filters as expected.
 
-
 ## Rollback Plan
 
 Revert dashboard changes if critical failures are observed.
-
 
 ## Notes
 

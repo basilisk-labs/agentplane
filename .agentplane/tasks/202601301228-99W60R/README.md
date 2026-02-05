@@ -19,26 +19,21 @@ description: "Align .agent-plane/config.json formatting with the canonical forma
 
 Align .agent-plane/config.json formatting and key ordering with the canonical example in code.
 
-
 ## Context
 
 User requested syncing config format with code; use packages/spec/examples/config.json as canonical layout.
-
 
 ## Scope
 
 - Reformat .agent-plane/config.json to match canonical ordering/structure.\n- Preserve existing values.
 
-
 ## Risks
 
 - Reordering keys might obscure diffs for active branches.\n- Accidental value change would alter behavior; verify values stay the same.
 
-
 ## Verify Steps
 
 - N/A (formatting-only change).
-
 
 ## Rollback Plan
 

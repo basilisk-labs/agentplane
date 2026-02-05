@@ -21,13 +21,11 @@ id_source: "custom"
 
 Add batch-friendly Redmine sync/migration with pauses to avoid API timeouts, then switch back to local backend.
 
-
 ## Context
 
 - Full migration to Redmine timed out; need batching and pauses for write-heavy ops (migrate/sync push).
 - Agents should keep using agentctl without backend-specific knowledge; rate limiting should be transparent.
 - After testing, switch config back to the local backend.
-
 
 ## Scope
 
@@ -36,19 +34,16 @@ Add batch-friendly Redmine sync/migration with pauses to avoid API timeouts, the
 - Keep defaults conservative so existing users aren’t surprised.
 - Restore .agent-plane/config.json to the local backend after testing.
 
-
 ## Risks
 
 - Overly aggressive pauses slow sync; overly small batches may still time out on slow Redmine deployments.
 - Using backend.write_tasks could mask per-task failures if Redmine responds inconsistently.
-
 
 ## Verify Steps
 
 - python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py
 - python .agent-plane/agentctl.py task migrate --source .agent-plane/tasks-export-small.json --quiet (optional smoke)
 - python .agent-plane/agentctl.py sync redmine --direction push --yes --quiet (optional when Redmine reachable)
-
 
 ## Rollback Plan
 

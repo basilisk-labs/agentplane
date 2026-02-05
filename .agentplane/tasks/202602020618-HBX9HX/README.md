@@ -20,21 +20,17 @@ description: "Ensure agentplane --version reports 0.1.0 and align publish metada
 
 Update agentplane --version to 0.1.0 and align npm publish metadata for the CLI package.
 
-
 ## Scope
 
 Set CLI version to 0.1.0, update version-dependent tests, and ensure publishConfig metadata for packages/agentplane.
-
 
 ## Risks
 
 If version is hardcoded, future bumps require manual update; tests cover CLI output to catch mismatches.
 
-
 ## Verify Steps
 
 bun run --filter=agentplane build\nnode packages/agentplane/bin/agentplane.js --version
-
 
 ## Rollback Plan
 

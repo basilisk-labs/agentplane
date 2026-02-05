@@ -19,7 +19,6 @@ description: "Implement generating .agentplane/tasks.json snapshot with stable c
 
 Implement tasks.json export (.agentplane/tasks.json) with sha256 checksum canonicalization and add CLI command agentplane task export.
 
-
 ## Scope
 
 - Add core tasks export snapshot writer (schema v1 + meta)
@@ -27,16 +26,13 @@ Implement tasks.json export (.agentplane/tasks.json) with sha256 checksum canoni
 - Add golden/unit tests (spec example parity)
 - Add CLI command: agentplane task export
 
-
 ## Risks
 
 Checksum/canonicalization drift vs spec can break parity; mitigated by hardcoded parity test vs packages/spec/examples/tasks.json.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

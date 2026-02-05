@@ -21,7 +21,6 @@ description: "Implement local tasks backend using .agentplane/tasks/<id>/README.
 
 Implement AP-009 (minimal): a local tasks backend stored as task README frontmatter files and expose task new/show/list commands in the Node.js CLI.
 
-
 ## Scope
 
 - Add core task storage helpers (create/read/list) using `.agentplane/tasks/<id>/README.md`
@@ -29,18 +28,15 @@ Implement AP-009 (minimal): a local tasks backend stored as task README frontmat
 - Implement `agentplane task show <id>` and `agentplane task list`
 - Add tests covering CLI behavior
 
-
 ## Risks
 
 - ID generation must be stable and collision-safe.
 - File format must remain deterministic to avoid noisy diffs.
 
-
 ## Verify Steps
 
 - `bun run ci`
 - E2E-style test: create a temp git root, run task new, then show/list
-
 
 ## Rollback Plan
 

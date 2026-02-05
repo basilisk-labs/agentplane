@@ -21,21 +21,17 @@ id_source: "custom"
 
 - Confirmed agent registry lives under .agent-plane/agents as JSON.\n- Closed the legacy backfill task to match current state.
 
-
 ## Scope
 
 - Verify agent registry uses JSON files under .agent-plane/agents.\n- Close the legacy task with updated documentation.
-
 
 ## Risks
 
 - If agent definitions are moved again, this task may need re-opening.\n- Closing a legacy task could mask future regressions if owners change.
 
-
 ## Verify Steps
 
 - ls .agent-plane/agents
-
 
 ## Rollback Plan
 

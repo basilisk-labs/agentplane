@@ -21,21 +21,17 @@ description: "Update installed AGENTS.md and agent JSON templates to reference s
 
 Switch installed agent templates to use the system agentplane CLI and .agentplane paths; align docs/tests.
 
-
 ## Scope
 
 Update packages/agentplane/assets/AGENTS.md and agents/*.json to reference agentplane CLI and .agentplane folder; refresh related docs/tests.
-
 
 ## Risks
 
 Template changes may break tests that assert exact text; docs may already have pending edits.
 
-
 ## Verify Steps
 
 Run bun run test:cli:core (and any template-related tests that fail).
-
 
 ## Rollback Plan
 

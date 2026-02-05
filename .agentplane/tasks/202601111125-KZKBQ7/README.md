@@ -19,12 +19,10 @@ description: "Ensure Redmine-backed tasks use a configured agent owner (REDMINE)
 
 Ensure Redmine tasks map owner to configured agent (default REDMINE) and clean existing tasks.
 
-
 ## Context
 
 - Some tasks imported from Redmine were assigned to the assignee name (Via Mentis Assistant) instead of an agent id.
 - We want owner fields to always be agent ids; the Redmine executor is effectively the API key owner.
-
 
 ## Scope
 
@@ -32,18 +30,15 @@ Ensure Redmine tasks map owner to configured agent (default REDMINE) and clean e
 - Map owner from Redmine issues to the configured agent when listing.
 - Update existing local task READMEs that used the assignee name to use REDMINE.
 
-
 ## Risks
 
 - Changing owner mapping could surprise consumers expecting assignee names.
 - Legacy exports may still contain old owners until refreshed.
 
-
 ## Verify Steps
 
 - python -m py_compile .agent-plane/backends/redmine/backend.py
 - python .agent-plane/agentctl.py task list --owner REDMINE
-
 
 ## Rollback Plan
 

@@ -19,31 +19,25 @@ description: "Remove docs/ROADMAP.md and clean up any references so the repo doe
 
 Remove docs/ROADMAP.md and confirm no references remain.
 
-
 ## Context
 
 User requested removing the ROADMAP document from the repo.
-
 
 ## Scope
 
 Delete docs/ROADMAP.md and scan the repo for lingering references.
 
-
 ## Risks
 
 Low risk; only documentation removal. Residual risk is an unseen reference outside the repo search.
-
 
 ## Verify Steps
 
 rg -n "ROADMAP" .
 
-
 ## Rollback Plan
 
 Restore docs/ROADMAP.md from git history if needed.
-
 
 ## Notes
 

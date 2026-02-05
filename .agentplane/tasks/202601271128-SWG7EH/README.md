@@ -19,21 +19,17 @@ description: "Complete AP-012 task lint invariants and finish remaining M1 steps
 
 Completed AP-012 task lint and marked M1 as finished with commits and push.
 
-
 ## Scope
 
 Track M1 completion; ensure AP-012 code, verification, and push were completed.
-
 
 ## Risks
 
 Low risk; only status tracking. If needed, revert AP-012 commits.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

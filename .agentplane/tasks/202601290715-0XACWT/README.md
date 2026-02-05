@@ -20,24 +20,20 @@ description: "Write Node-first docs for install/init/modes/recipes/upgrade/redmi
 
 Document v1 Node-first usage, add breaking changes page, and update setup/commands for install, upgrade, recipes, and backend sync.
 
-
 ## Scope
 
 - Add breaking changes page (v1 Node-first).
 - Update docs index, setup, and commands for v1 install/upgrade/recipes/backend sync.
 - Keep references aligned with ROADMAP v1.
 
-
 ## Risks
 
 - Breaking changes might conflict with existing internal workflows; keep migration steps explicit.
 - Docs should remain consistent with CLI contract and ROADMAP.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

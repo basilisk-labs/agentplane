@@ -19,49 +19,22 @@ id_source: "generated"
 ---
 ## Summary
 
-
 Document that npm trusted publishing in GitHub Actions requires npm >= 11.5.1.
-
-
 
 Normalized task doc sections (dedupe).
 
-
-
-
-
-
 ## Scope
-
 
 Update release/publishing docs to include the npm version requirement for trusted publishing.
 
-
-
-
-
-
 ## Risks
-
 
 Low risk; documentation-only change.
 
-
-
-
-
-
 ## Verify Steps
-
 
 Open docs/developer/release-and-publishing.mdx and confirm the trusted publishing section mentions npm >= 11.5.1.
 
-
-
-
-
-
 ## Rollback Plan
-
 
 Revert the documentation line if it causes confusion or becomes outdated.

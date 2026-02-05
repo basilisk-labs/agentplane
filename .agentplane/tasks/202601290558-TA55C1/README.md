@@ -22,21 +22,17 @@ description: "Track and sequence closure of remaining AP-* roadmap tasks; execut
 
 - Confirmed remaining Node.js roadmap tasks are closed and documented.\n- Closed the meta tracker for roadmap completion.
 
-
 ## Scope
 
 - Review remaining AP-* roadmap tasks and confirm DONE state.\n- Close this tracking task once dependencies are satisfied.
-
 
 ## Risks
 
 - If new roadmap tasks are added later, this tracker may need reopening.\n- Status drift if a dependent task is re-opened without updating this task.
 
-
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task list --status TODO\n- python .agent-plane/agentctl.py task show 202601290715-K6G7A0
-
 
 ## Rollback Plan
 

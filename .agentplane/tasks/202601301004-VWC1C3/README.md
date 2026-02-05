@@ -20,21 +20,17 @@ description: "Bring start/block/finish in Node CLI to agentctl parity (commit-fr
 
 Extend start/block/finish parity, add readiness checks, and align integrate->finish invocation.
 
-
 ## Scope
 
 Update run-cli start/block/finish flag parsing and behaviors, allow multi-task finish, enforce dependency readiness, update integrate finish call, refresh help text, and add/adjust run-cli tests.
-
 
 ## Risks
 
 Potential behavior change if DONE tasks are re-finished without --force or if status commit policy is misapplied; finish now exports/lints tasks.json on every call.
 
-
 ## Verify Steps
 
 bun run test -- packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

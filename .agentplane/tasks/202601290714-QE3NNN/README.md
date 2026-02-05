@@ -20,21 +20,17 @@ description: "Apply installed recipes to project: copy agents, register scenario
 
 Apply recipe agents/scenarios during install, with deterministic conflict handling and docs/tests updates.
 
-
 ## Scope
 
 - Apply recipe agents into .agentplane/agents with namespacing\n- Add --on-conflict handling for install (fail/rename/overwrite)\n- Register recipe scenarios metadata\n- Update CLI help/docs and tests
-
 
 ## Risks
 
 - Existing recipes without valid agent files will now fail install\n- Scenario registry format may need adjustments in AP-036
 
-
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

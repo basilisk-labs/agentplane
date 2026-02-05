@@ -20,31 +20,25 @@ description: "Update the recipe catalog and docs, standardize recipe file format
 
 Delivered the roadmap recipe overhaul, including English docs, standardized inputs/outputs, a working runner, and refreshed recipe inventory.
 
-
 ## Context
 
 Required to formalize recipe formats and ensure the roadmap recipe truly generates detailed roadmap artifacts with standard env vars.
-
 
 ## Scope
 
 Coordinated doc/schema updates, manifest and runner implementation, and recipe catalog refresh across the roadmap recipe.
 
-
 ## Risks
 
 Recipe documentation can drift as formats evolve; inventory must be regenerated after manifest changes.
-
 
 ## Verify Steps
 
 Reviewed subtask outputs; ran recipes scan and the roadmap runner with sample inputs to validate artifact creation.
 
-
 ## Rollback Plan
 
 Revert commits f91c90b84720 and cdb841383165 to undo the docs and runner changes; regenerate the inventory as needed.
-
 
 ## Notes
 

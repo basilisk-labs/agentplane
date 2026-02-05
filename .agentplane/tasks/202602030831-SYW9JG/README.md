@@ -18,49 +18,22 @@ id_source: "generated"
 ---
 ## Summary
 
-
 Deduplicated standard sections in task READMEs via agentplane task doc set updates.
-
-
 
 Normalized task doc sections (dedupe).
 
-
-
-
-
-
 ## Scope
-
 
 Normalize duplicated Summary/Scope/Risks/Verify Steps/Rollback Plan sections across affected task READMEs.
 
-
-
-
-
-
 ## Risks
-
 
 Low risk: documentation-only normalization; ensure no content loss.
 
-
-
-
-
-
 ## Verify Steps
-
 
 Re-scan task READMEs for duplicate section headers.
 
-
-
-
-
-
 ## Rollback Plan
-
 
 Restore prior task README versions from git history if needed.

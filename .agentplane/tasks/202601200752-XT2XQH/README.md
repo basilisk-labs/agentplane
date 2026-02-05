@@ -19,32 +19,26 @@ description: "Update docs for backend routing (local base + optional Redmine via
 
 Clarify backend routing and ensure recipes bundle refresh is part of orchestrator startup.
 
-
 ## Context
 
 User wants local backend to remain the base store, with Redmine and other remotes as optional add-ons, plus an orchestrator workflow that refreshes recipe bundles at run start.
-
 
 ## Scope
 
 - Update docs/07 and docs/12 to describe routing and Redmine enable/disable behavior.
 - Update ORCHESTRATOR workflow to refresh recipes inventory and bundle.json before execution (with confirmation).
 
-
 ## Risks
 
 Ambiguous wording could lead to tool execution without explicit confirmation.
-
 
 ## Verify Steps
 
 Review docs/07, docs/12, and ORCHESTRATOR.json for accuracy and consistency.
 
-
 ## Rollback Plan
 
 Revert the documentation and workflow changes.
-
 
 ## Notes
 

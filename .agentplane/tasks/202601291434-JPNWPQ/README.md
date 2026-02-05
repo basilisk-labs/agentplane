@@ -20,21 +20,17 @@ description: "Align test with current JSON parse error message format."
 
 Update the failing pr check test to accept the current JSON parse error message.
 
-
 ## Scope
 
 - Relax the test assertion to match the stable JSON parse error prefix
-
 
 ## Risks
 
 - Overly broad match could hide real regressions
 
-
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

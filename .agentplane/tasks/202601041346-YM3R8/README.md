@@ -28,11 +28,9 @@ dirty: false
 - Make linting lazy and opt-in for read-only commands.
 - Add global logging flags for consistent verbosity.
 
-
 ## Goal
 
 - Improve agentctl performance and automation ergonomics without changing core behavior.
-
 
 ## Scope
 
@@ -40,22 +38,18 @@ dirty: false
 - `.agent-plane/backends/local/backend.py`: `write_tasks()` implementation.
 - `.agent-plane/agentctl.md`: document new flags and behaviors.
 
-
 ## Risks
 
 - Logging and linting behavior changes may surprise existing automation.
-
 
 ## Verify Steps
 
 - `python3 .agent-plane/agentctl.py task normalize`
 - `python3 .agent-plane/agentctl.py task export --out .agent-plane/tasks.json`
 
-
 ## Rollback Plan
 
 - Restore `.agent-plane/agentctl.py` and backend files from git history.
-
 
 ## Changes Summary (auto)
 

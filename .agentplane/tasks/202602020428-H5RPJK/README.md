@@ -19,7 +19,6 @@ description: "Audit Node.js CLI codebase and refactor into clearer modules with 
 
 Refactor the Node.js CLI code into clearer modules while preserving CLI behavior and npm packaging requirements.
 
-
 ## Scope
 
 - Audit current CLI entrypoints and shared utilities.
@@ -28,19 +27,16 @@ Refactor the Node.js CLI code into clearer modules while preserving CLI behavior
 - Keep CLI public surface stable for npm global install.
 - Re-verify init AGENTS/agents generation stays aligned.
 
-
 ## Risks
 
 - Large refactor could introduce behavior drift in CLI edge cases.
 - Potential increase in test runtime during transition.
-
 
 ## Verify Steps
 
 - bun run test:cli:core
 - bun run test:cli:recipes
 - bun run test:cli:scenario
-
 
 ## Rollback Plan
 

@@ -19,21 +19,17 @@ description: "Apply updated documentation asset placement (move header image to 
 
 Move docs header image under docs/assets and update README reference.
 
-
 ## Scope
 
 Update README asset path; relocate header image to docs/assets.
-
 
 ## Risks
 
 Low risk; ensure README still renders header image.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

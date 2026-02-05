@@ -20,26 +20,21 @@ description: "Update ORCHESTRATOR and PLANNER agent specs to enforce top-level t
 
 Align ORCHESTRATOR and PLANNER agent specs with the roadmap-first workflow and top-level task handling.
 
-
 ## Context
 
 User requested that ORCHESTRATOR always treats the first message as a top-level task, decomposes into atomic tasks or CREATOR, requires approval, and maintains a roadmap with epic completion notes.
-
 
 ## Scope
 
 Update AGENTS.md orchestration rules and sync ORCHESTRATOR/PLANNER JSON workflows; no runtime code changes.
 
-
 ## Risks
 
 Low risk; spec changes could misalign expectations if not mirrored in agent JSON.
 
-
 ## Verify Steps
 
 No tests (spec changes only).
-
 
 ## Rollback Plan
 

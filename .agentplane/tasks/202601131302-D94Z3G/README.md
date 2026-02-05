@@ -19,31 +19,25 @@ description: "Add a CLI command (agentctl role <ROLE>) that prints the role-spec
 
 Implemented agentctl role <ROLE> to print a single role block from agentctl.md and updated headings for parsing.
 
-
 ## Context
 
 Agents need a quick way to see only their command guidance without scanning the full agentctl.md.
-
 
 ## Scope
 
 Update agentctl.py to add the role command and update agentctl.md headings/usage.
 
-
 ## Risks
 
 Low; parsing errors could hide guidance or print the wrong section.
-
 
 ## Verify Steps
 
 Run: python .agent-plane/agentctl.py role CODER
 
-
 ## Rollback Plan
 
 Revert the command and doc heading changes.
-
 
 ## Notes
 

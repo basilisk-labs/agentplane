@@ -20,27 +20,22 @@ description: "Analyze recipes implementation and produce documentation describin
 
 Documented how recipes work based on the current Node CLI implementation, including install flow, scenario execution, on-disk state, and edge cases.
 
-
 ## Scope
 
 - Added a new Mintlify doc page describing runtime behavior of recipes
 - Registered the page in navigation and docs index
 
-
 ## Risks
 
 - Behavior may drift as the CLI evolves; the doc is tied to current code paths in `packages/agentplane/src/run-cli.ts`.
-
 
 ## Verify Steps
 
 - Not run (documentation-only change).
 
-
 ## Rollback Plan
 
 - Remove `docs/recipes-how-it-works.mdx` and revert docs navigation edits.
-
 
 ## Notes
 

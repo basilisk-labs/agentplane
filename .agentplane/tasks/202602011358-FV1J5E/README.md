@@ -19,22 +19,18 @@ description: "Raise branch coverage (run-cli), keep CI gates green, and commit c
 
 Raised branch coverage over 72% by expanding CLI parsing tests and adding targeted timeouts to stabilize CI.
 
-
 ## Scope
 
 Updated test suites for run-cli, command-guide, cli-smoke, git-utils, and config/export validation to cover additional branches and satisfy lint.
-
 
 ## Risks
 
 Low risk: changes are limited to tests and documentation; minor risk of increased test runtime due to longer timeouts.
 
-
 ## Verify Steps
 
 1) bun run lint
 2) bun run coverage
-
 
 ## Rollback Plan
 

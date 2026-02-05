@@ -19,31 +19,25 @@ description: "Restore the tasks backend setting to use the local backend config 
 
 Set tasks_backend.config_path to the local backend config so agentctl uses local task storage.
 
-
 ## Context
 
 Requested to switch the task backend settings back to local.
-
 
 ## Scope
 
 Updated tasks_backend.config_path in .agent-plane/config.json to point at .agent-plane/backends/local/backend.json.
 
-
 ## Risks
 
 Low risk: only the backend selection changed. Risk is that workflows expecting the Redmine backend will now read/write local tasks instead.
-
 
 ## Verify Steps
 
 python .agent-plane/agentctl.py config show
 
-
 ## Rollback Plan
 
 Run: python .agent-plane/agentctl.py config set tasks_backend.config_path .agent-plane/backends/redmine/backend.json
-
 
 ## Notes
 

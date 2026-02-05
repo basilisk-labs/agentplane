@@ -20,10 +20,6 @@ id_source: "generated"
 ## Summary
 
 
-
-
-
-
 ## Scope
 
 

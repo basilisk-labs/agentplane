@@ -19,26 +19,21 @@ description: "Make config examples use the same .agent-plane namespace format as
 
 Align config example paths with the .agent-plane namespace used in the repo.
 
-
 ## Context
 
 User requested a single unified configuration format across the repo; align spec example paths to match .agent-plane.
-
 
 ## Scope
 
 - Update packages/spec/examples/config.json path values to use .agent-plane namespace.\n- Keep ordering/format consistent with existing config files.
 
-
 ## Risks
 
 - Example paths may be used externally; ensure .agent-plane is intended in this repo.\n- No behavior change; documentation/example only.
 
-
 ## Verify Steps
 
 - N/A (example/formatting change).
-
 
 ## Rollback Plan
 

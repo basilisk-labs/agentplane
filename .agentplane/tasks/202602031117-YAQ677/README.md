@@ -19,21 +19,17 @@ id_source: "generated"
 
 Fix branch_pr init so empty repos bootstrap git/base branch before commit guard, allowing the install commit to land on the initial branch.
 
-
 ## Scope
 
 Update init flow to initialize git and base branch before enforcing commit guard in empty directories; add regression tests for empty-repo branch_pr init and ensure non-empty repos still enforce main-branch guard.
-
 
 ## Risks
 
 Init could allow commits on an unintended branch or skip guard checks if bootstrap order is wrong.
 
-
 ## Verify Steps
 
 bun run test:cli:core -- -t "init branch_pr"
-
 
 ## Rollback Plan
 

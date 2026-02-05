@@ -20,21 +20,17 @@ description: "Align agentplane commit/guard flags with agentctl (allow-tasks, re
 
 Align guard/commit flags with agentctl (auto-allow, allow-dirty, quiet), add guard clean output, and update help/tests.
 
-
 ## Scope
 
 Add guard clean --quiet, guard commit --auto-allow/--allow-dirty, guard suggest-allow empty check, update help text and run-cli tests.
-
 
 ## Risks
 
 Guard flags now accept extra options; output changes for guard clean could affect scripts relying on empty stdout.
 
-
 ## Verify Steps
 
 bun run test -- packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

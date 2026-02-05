@@ -20,21 +20,17 @@ description: "Implement verify command with skip-if-unchanged and PR verify logs
 
 Implemented agentplane verify command with skip-if-unchanged, log handling, and PR meta updates; expanded CLI help and tests.
 
-
 ## Scope
 
 Added verify execution logic in run-cli, extended CLI help, and added extensive run-cli tests for verify/pr/hook edge cases.
-
 
 ## Risks
 
 Verify executes shell commands; misconfigured commands may fail. Skip-if-unchanged relies on git status and ignores files per gitignore.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

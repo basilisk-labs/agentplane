@@ -20,28 +20,29 @@ dirty: false
 id_source: "custom"
 ---
 ## Summary
+
 Test doc round-trip from Redmine.
 
-
 ## Context
+
 Validate custom field storage for task docs.
 
-
 ## Scope
+
 Ensure doc payload can be written and read via agentctl.
 
-
 ## Risks
+
 None.
 
-
 ## Verify Steps
+
 - n/a
 
-
 ## Rollback Plan
+
 Delete the test doc payload in Redmine.
 
-
 ## Notes
+
 Test-only content.
