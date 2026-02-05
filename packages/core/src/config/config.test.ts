@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import os from "node:os";
 import path from "node:path";
 import { mkdtemp, readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 import { defaultConfig, loadConfig, saveConfig, setByDottedKey, validateConfig } from "../index.js";
 
@@ -13,6 +14,13 @@ const schemaPath = (pathValue: string): RegExp =>
 describe("config", () => {
   it("defaultConfig validates", () => {
     expect(() => validateConfig(defaultConfig())).not.toThrow();
+  });
+
+  it("spec example config validates at runtime", async () => {
+    const exampleUrl = new URL("../../../spec/examples/config.json", import.meta.url);
+    const text = await readFile(fileURLToPath(exampleUrl), "utf8");
+    const parsed = JSON.parse(text) as unknown;
+    expect(() => validateConfig(parsed)).not.toThrow();
   });
 
   it("validateConfig allows missing agents approvals", () => {
