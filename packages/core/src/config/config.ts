@@ -57,7 +57,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-const CONFIG_SCHEMA_URL = new URL("../../../spec/schemas/config.schema.json", import.meta.url);
+const CONFIG_SCHEMA_URL = new URL("../../schemas/config.schema.json", import.meta.url);
 const CONFIG_SCHEMA = JSON.parse(readFileSync(fileURLToPath(CONFIG_SCHEMA_URL), "utf8")) as Record<
   string,
   unknown
