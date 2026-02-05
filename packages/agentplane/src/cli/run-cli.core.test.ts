@@ -9194,6 +9194,8 @@ describe("runCli", () => {
         "yes",
         "--require-network-approval",
         "no",
+        "--require-verify-approval",
+        "yes",
         "--root",
         root,
       ]);
@@ -9208,6 +9210,7 @@ describe("runCli", () => {
     expect(configText).toContain('"workflow_mode": "branch_pr"');
     expect(configText).toContain('"require_plan": true');
     expect(configText).toContain('"require_network": false');
+    expect(configText).toContain('"require_verify": true');
 
     const cursorPath = path.join(root, ".cursor", "rules", "agentplane.mdc");
     const windsurfPath = path.join(root, ".windsurf", "rules", "agentplane.md");

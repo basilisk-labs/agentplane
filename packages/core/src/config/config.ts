@@ -20,6 +20,7 @@ export type AgentplaneConfig = {
     approvals: {
       require_plan: boolean;
       require_network: boolean;
+      require_verify: boolean;
     };
   };
   recipes?: {

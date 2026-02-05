@@ -460,6 +460,7 @@ type InitFlags = {
   hooks?: boolean;
   requirePlanApproval?: boolean;
   requireNetworkApproval?: boolean;
+  requireVerifyApproval?: boolean;
   recipes?: string[];
   force?: boolean;
   backup?: boolean;
@@ -473,9 +474,9 @@ const ROLE_USAGE_EXAMPLE = "agentplane role ORCHESTRATOR";
 const AGENTS_USAGE = "Usage: agentplane agents";
 const AGENTS_USAGE_EXAMPLE = "agentplane agents";
 const INIT_USAGE =
-  "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> --require-plan-approval <...> --require-network-approval <...> [--recipes <...>] [--yes] [--force|--backup]";
+  "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> --require-plan-approval <...> --require-network-approval <...> --require-verify-approval <...> [--recipes <...>] [--yes] [--force|--backup]";
 const INIT_USAGE_EXAMPLE =
-  "agentplane init --ide codex --workflow direct --hooks false --require-plan-approval true --require-network-approval true --yes";
+  "agentplane init --ide codex --workflow direct --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes";
 const CONFIG_SET_USAGE = "Usage: agentplane config set <key> <value>";
 const CONFIG_SET_USAGE_EXAMPLE = "agentplane config set workflow_mode branch_pr";
 const MODE_SET_USAGE = "Usage: agentplane mode set <direct|branch_pr>";
@@ -574,6 +575,10 @@ function parseInitFlags(args: string[]): InitFlags {
         out.requireNetworkApproval = parseBooleanFlag(next, "--require-network-approval");
         break;
       }
+      case "--require-verify-approval": {
+        out.requireVerifyApproval = parseBooleanFlag(next, "--require-verify-approval");
+        break;
+      }
       case "--recipes": {
         const normalized = next.trim().toLowerCase();
         out.recipes =
@@ -615,6 +620,7 @@ async function cmdInit(opts: {
     recipes: string[];
     requirePlanApproval: boolean;
     requireNetworkApproval: boolean;
+    requireVerifyApproval: boolean;
   } = {
     ide: "codex",
     workflow: "direct",
@@ -622,6 +628,7 @@ async function cmdInit(opts: {
     recipes: [],
     requirePlanApproval: true,
     requireNetworkApproval: true,
+    requireVerifyApproval: true,
   };
   let ide: InitIde = flags.ide ?? defaults.ide;
   let workflow: WorkflowMode = flags.workflow ?? defaults.workflow;
@@ -629,6 +636,7 @@ async function cmdInit(opts: {
   let recipes = flags.recipes ?? defaults.recipes;
   let requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
   let requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
+  let requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
   const isInteractive = process.stdin.isTTY && !flags.yes;
 
   if (
@@ -637,7 +645,8 @@ async function cmdInit(opts: {
     (!flags.workflow ||
       flags.hooks === undefined ||
       flags.requirePlanApproval === undefined ||
-      flags.requireNetworkApproval === undefined)
+      flags.requireNetworkApproval === undefined ||
+      flags.requireVerifyApproval === undefined)
   ) {
     throw new CliError({
       exitCode: 2,
@@ -664,6 +673,12 @@ async function cmdInit(opts: {
         requireNetworkApproval,
       );
     }
+    if (flags.requireVerifyApproval === undefined) {
+      requireVerifyApproval = await promptYesNo(
+        "Require explicit approval for verification?",
+        requireVerifyApproval,
+      );
+    }
     if (!flags.recipes) {
       process.stdout.write(`${renderBundledRecipesHint()}\n`);
       const answer = await promptInput("Install optional recipes (comma separated, or none): ");
@@ -683,6 +698,7 @@ async function cmdInit(opts: {
     recipes = flags.recipes ?? defaults.recipes;
     requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
     requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
+    requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
   }
 
   validateBundledRecipesSelection(recipes);
@@ -764,6 +780,7 @@ async function cmdInit(opts: {
     setByDottedKey(rawConfig, "workflow_mode", workflow);
     setByDottedKey(rawConfig, "agents.approvals.require_plan", String(requirePlanApproval));
     setByDottedKey(rawConfig, "agents.approvals.require_network", String(requireNetworkApproval));
+    setByDottedKey(rawConfig, "agents.approvals.require_verify", String(requireVerifyApproval));
     await saveConfig(resolved.agentplaneDir, rawConfig);
 
     const backendPayload = {
