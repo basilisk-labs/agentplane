@@ -4,6 +4,7 @@ import path from "node:path";
 import { loadConfig } from "../config/config.js";
 import { resolveProject } from "../project/project-root.js";
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
+import { ensureDocSections, setMarkdownSection } from "./task-doc.js";
 
 export type TaskStatus = "TODO" | "DOING" | "DONE" | "BLOCKED";
 export type TaskPriority = "low" | "normal" | "med" | "high";
@@ -127,45 +128,6 @@ function defaultTaskBody(): string {
   ].join("\n");
 }
 
-function escapeRegExp(text: string): string {
-  return text.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\\$&`);
-}
-
-function setMarkdownSection(body: string, section: string, text: string): string {
-  const lines = body.replaceAll("\r\n", "\n").split("\n");
-  const headingRe = new RegExp(String.raw`^##\s+${escapeRegExp(section)}\s*$`);
-
-  let start = -1;
-  let nextHeading = lines.length;
-
-  for (const [i, line] of lines.entries()) {
-    if (!line.startsWith("## ")) continue;
-    if (start === -1) {
-      if (headingRe.test(line)) start = i;
-      continue;
-    }
-    nextHeading = i;
-    break;
-  }
-
-  const newTextLines = text.replaceAll("\r\n", "\n").split("\n");
-  const replacement = ["", ...newTextLines, ""];
-
-  if (start === -1) {
-    const out = [...lines];
-    if (out.length > 0 && out.at(-1)?.trim() !== "") out.push("");
-    out.push(`## ${section}`, ...replacement);
-    return `${out.join("\n")}\n`;
-  }
-
-  const out = [...lines.slice(0, start + 1), ...replacement, ...lines.slice(nextHeading)];
-  return `${out.join("\n")}\n`;
-}
-
-function normalizeDocSectionName(section: string): string {
-  return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
-}
-
 function getLastCommentAuthor(frontmatter: Record<string, unknown>): string | null {
   const comments = frontmatter.comments;
   if (!Array.isArray(comments)) return null;
@@ -206,111 +168,6 @@ function resolveDocUpdatedBy(
     if (trimmed) return trimmed;
   }
   return "agentplane";
-}
-
-function splitCombinedHeadingLines(doc: string): string[] {
-  const lines = doc.replaceAll("\r\n", "\n").split("\n");
-  const out: string[] = [];
-  let inFence = false;
-
-  for (const line of lines) {
-    const trimmed = line.trimStart();
-    if (trimmed.startsWith("```")) {
-      inFence = !inFence;
-      out.push(line);
-      continue;
-    }
-
-    if (!inFence && line.includes("## ")) {
-      const matches = [...line.matchAll(/##\s+/g)];
-      if (matches.length > 1 && matches[0]?.index === 0) {
-        let start = 0;
-        for (let i = 1; i < matches.length; i += 1) {
-          const idx = matches[i]?.index ?? 0;
-          const chunk = line.slice(start, idx).trimEnd();
-          if (chunk) out.push(chunk);
-          start = idx;
-        }
-        const last = line.slice(start).trimEnd();
-        if (last) out.push(last);
-        continue;
-      }
-    }
-
-    out.push(line);
-  }
-
-  return out;
-}
-
-function normalizeDocSections(doc: string, required: string[]): string {
-  const lines = splitCombinedHeadingLines(doc);
-  const sections = new Map<string, { title: string; lines: string[] }>();
-  const order: string[] = [];
-  const pendingSeparator = new Set<string>();
-  let currentKey: string | null = null;
-
-  for (const line of lines) {
-    const match = /^##\s+(.*)$/.exec(line.trim());
-    if (match) {
-      const title = match[1]?.trim() ?? "";
-      const key = normalizeDocSectionName(title);
-      if (key) {
-        const existing = sections.get(key);
-        if (existing) {
-          if (existing.lines.some((entry) => entry.trim() !== "")) {
-            pendingSeparator.add(key);
-          }
-        } else {
-          sections.set(key, { title, lines: [] });
-          order.push(key);
-        }
-        currentKey = key;
-        continue;
-      }
-    }
-    if (currentKey) {
-      const entry = sections.get(currentKey);
-      if (!entry) continue;
-      if (pendingSeparator.has(currentKey) && line.trim() !== "") {
-        entry.lines.push("");
-        pendingSeparator.delete(currentKey);
-      }
-      entry.lines.push(line);
-    }
-  }
-
-  const out: string[] = [];
-  const seen = new Set(order);
-
-  for (const key of order) {
-    const section = sections.get(key);
-    if (!section) continue;
-    out.push(`## ${section.title}`);
-    if (section.lines.length > 0) {
-      out.push(...section.lines);
-    } else {
-      out.push("");
-    }
-    out.push("");
-  }
-
-  for (const requiredSection of required) {
-    const requiredKey = normalizeDocSectionName(requiredSection);
-    if (seen.has(requiredKey)) continue;
-    out.push(`## ${requiredSection}`, "", "");
-  }
-
-  return `${out.join("\n").trimEnd()}\n`;
-}
-
-function ensureDocSections(doc: string, required: string[]): string {
-  const trimmed = doc.trim();
-  if (!trimmed) {
-    const blocks = required.map((section) => `## ${section}\n`);
-    return `${blocks.join("\n").trimEnd()}\n`;
-  }
-  return normalizeDocSections(doc, required);
 }
 
 export async function createTask(opts: {
