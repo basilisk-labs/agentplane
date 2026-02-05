@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { CliError } from "../errors.js";
+import { CliError } from "../shared/errors.js";
 import { downloadToFile, fetchJson } from "./http.js";
 
 describe("cli/http", () => {

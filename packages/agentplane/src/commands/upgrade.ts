@@ -16,7 +16,7 @@ import {
   usageMessage,
 } from "../cli/output.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
-import { CliError } from "../errors.js";
+import { CliError } from "../shared/errors.js";
 
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
 const DEFAULT_UPGRADE_CHECKSUM_ASSET = "agentplane-upgrade.tar.gz.sha256";

@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { mkdtemp, readFile } from "node:fs/promises";
 
-import { defaultConfig, loadConfig, saveConfig, setByDottedKey, validateConfig } from "./index.js";
+import { defaultConfig, loadConfig, saveConfig, setByDottedKey, validateConfig } from "../index.js";
 
 const makeConfigRecord = (): Record<string, unknown> =>
   structuredClone(defaultConfig()) as Record<string, unknown>;

@@ -32,7 +32,7 @@ import {
   successMessage,
   usageMessage,
 } from "../cli/output.js";
-import { CliError } from "../errors.js";
+import { CliError } from "../shared/errors.js";
 
 const execFileAsync = promisify(execFile);
 

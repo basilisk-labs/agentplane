@@ -8,7 +8,7 @@ import {
   createTask,
   type TasksExportTask,
   writeTasksExport,
-} from "./index.js";
+} from "../index.js";
 
 async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-tasks-export-test-"));

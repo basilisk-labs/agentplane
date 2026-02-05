@@ -1,7 +1,7 @@
 import { backendNotSupportedMessage, usageMessage } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
-import { CliError } from "../errors.js";
-import { loadTaskBackend } from "../task-backend.js";
+import { CliError } from "../shared/errors.js";
+import { loadTaskBackend } from "../backends/task-backend.js";
 
 export const BACKEND_SYNC_USAGE =
   "Usage: agentplane backend sync <id> --direction <push|pull> [--conflict <diff|prefer-local|prefer-remote|fail>] [--yes] [--quiet]";

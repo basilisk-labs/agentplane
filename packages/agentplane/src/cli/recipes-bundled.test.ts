@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { BUNDLED_RECIPES_CATALOG } from "../bundled-recipes.js";
-import { CliError } from "../errors.js";
-import { captureStdIO } from "../run-cli.test-helpers.js";
+import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
+import { CliError } from "../shared/errors.js";
+import { captureStdIO } from "./run-cli.test-helpers.js";
 import {
   listBundledRecipes,
   renderBundledRecipesHint,

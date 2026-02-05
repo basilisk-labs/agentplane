@@ -1,8 +1,8 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { loadConfig } from "./config.js";
-import { resolveProject } from "./project-root.js";
+import { loadConfig } from "../config/config.js";
+import { resolveProject } from "../project/project-root.js";
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
 
 export type TaskStatus = "TODO" | "DOING" | "DONE" | "BLOCKED";

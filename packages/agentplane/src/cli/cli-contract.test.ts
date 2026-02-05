@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { exitCodeForError } from "./cli/exit-codes.js";
+import { exitCodeForError } from "./exit-codes.js";
 
 describe("cli contract exit codes", () => {
   it("maps error codes to documented exit codes", () => {

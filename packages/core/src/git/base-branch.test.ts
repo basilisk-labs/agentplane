@@ -5,7 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { getBaseBranch, getPinnedBaseBranch, saveConfig, setPinnedBaseBranch } from "./index.js";
+import { getBaseBranch, getPinnedBaseBranch, saveConfig, setPinnedBaseBranch } from "../index.js";
 
 const execFileAsync = promisify(execFile);
 

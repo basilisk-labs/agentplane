@@ -14,7 +14,7 @@ import {
   type TaskRecord,
 } from "@agentplaneorg/core";
 
-import { loadDotEnv } from "./env.js";
+import { loadDotEnv } from "../shared/env.js";
 
 const ID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${ID_ALPHABET}]{4,}$`);

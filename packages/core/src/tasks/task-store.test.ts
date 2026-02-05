@@ -9,7 +9,7 @@ import {
   readTask,
   setTaskDocSection,
   validateTaskDocMetadata,
-} from "./index.js";
+} from "../index.js";
 
 async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-task-store-test-"));

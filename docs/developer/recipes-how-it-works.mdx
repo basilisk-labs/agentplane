@@ -3,7 +3,7 @@ title: "How Recipes Work"
 description: "Implementation notes for recipe install, scenario execution, and on-disk state in the Node.js CLI."
 ---
 
-This document describes **how recipes work in the Node.js CLI** (`packages/agentplane/src/run-cli.ts`).
+This document describes **how recipes work in the Node.js CLI** (`packages/agentplane/src/cli/run-cli.ts`).
 It complements the formal contract in [`recipes-spec`](recipes-spec) with implementation details.
 
 ## 1) What a recipe is (in code)
@@ -231,7 +231,7 @@ environment plus any per-step `env` defined in the scenario JSON.
 ## 8) Bundled recipes and init
 
 `agentplane init` accepts `--recipes` and validates selections against the
-bundled catalog (`packages/agentplane/src/bundled-recipes.ts`).
+bundled catalog (`packages/agentplane/src/recipes/bundled-recipes.ts`).
 
 Current behavior:
 

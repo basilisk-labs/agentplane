@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { captureStdIO } from "../run-cli.test-helpers.js";
+import { captureStdIO } from "./run-cli.test-helpers.js";
 import { promptChoice, promptInput, promptYesNo } from "./prompts.js";
 
 const mocks = vi.hoisted(() => {

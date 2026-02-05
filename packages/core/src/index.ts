@@ -5,7 +5,7 @@ export {
   resolveProject,
   type ResolvedProject,
   type ResolveProjectOptions,
-} from "./project-root.js";
+} from "./project/project-root.js";
 
 export {
   defaultConfig,
@@ -17,14 +17,14 @@ export {
   type LoadedConfig,
   type StatusCommitPolicy,
   type WorkflowMode,
-} from "./config.js";
+} from "./config/config.js";
 
 export {
   parseTaskReadme,
   renderTaskFrontmatter,
   renderTaskReadme,
   type ParsedTaskReadme,
-} from "./task-readme.js";
+} from "./tasks/task-readme.js";
 
 export {
   createTask,
@@ -38,7 +38,7 @@ export {
   type TaskPriority,
   type TaskRecord,
   type TaskStatus,
-} from "./task-store.js";
+} from "./tasks/task-store.js";
 
 export {
   buildTasksExportSnapshot,
@@ -49,22 +49,22 @@ export {
   type TasksExportMeta,
   type TasksExportSnapshot,
   type TasksExportTask,
-} from "./tasks-export.js";
+} from "./tasks/tasks-export.js";
 
 export {
   lintTasksFile,
   lintTasksSnapshot,
   readTasksExport,
   type TasksLintResult,
-} from "./tasks-lint.js";
+} from "./tasks/tasks-lint.js";
 
-export { getBaseBranch, getPinnedBaseBranch, setPinnedBaseBranch } from "./base-branch.js";
+export { getBaseBranch, getPinnedBaseBranch, setPinnedBaseBranch } from "./git/base-branch.js";
 
 export {
   extractTaskSuffix,
   isGenericSubject,
   validateCommitSubject,
   type CommitPolicyResult,
-} from "./commit-policy.js";
+} from "./commit/commit-policy.js";
 
-export { getStagedFiles, getUnstagedFiles } from "./git-utils.js";
+export { getStagedFiles, getUnstagedFiles } from "./git/git-utils.js";

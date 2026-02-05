@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { findGitRoot, resolveProject } from "./index.js";
+import { findGitRoot, resolveProject } from "../index.js";
 
 async function mkTmpDir(): Promise<string> {
   return mkdtemp(path.join(os.tmpdir(), "agentplane-test-"));

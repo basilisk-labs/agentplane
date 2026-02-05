@@ -1,5 +1,5 @@
-import { BUNDLED_RECIPES_CATALOG } from "../bundled-recipes.js";
-import { CliError } from "../errors.js";
+import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
+import { CliError } from "../shared/errors.js";
 
 export type BundledRecipeInfo = { id: string; summary: string; version: string };
 

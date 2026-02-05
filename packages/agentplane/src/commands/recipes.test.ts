@@ -4,14 +4,14 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { cmdRecipes, cmdScenario } from "./recipes.js";
-import { CliError } from "../errors.js";
+import { CliError } from "../shared/errors.js";
 import {
   captureStdIO,
   createRecipeArchive,
   createRecipeArchiveWithManifest,
   mkGitRepoRoot,
   writeDefaultConfig,
-} from "../run-cli.test-helpers.js";
+} from "../cli/run-cli.test-helpers.js";
 
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
 let tempHome: string | null = null;

@@ -1,9 +1,9 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import type { AgentplaneConfig } from "./config.js";
-import { loadConfig } from "./config.js";
-import { resolveProject } from "./project-root.js";
+import type { AgentplaneConfig } from "../config/config.js";
+import { loadConfig } from "../config/config.js";
+import { resolveProject } from "../project/project-root.js";
 import {
   computeTasksChecksum,
   type TasksExportSnapshot,

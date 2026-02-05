@@ -1,4 +1,4 @@
-import type { ErrorCode } from "../errors.js";
+import type { ErrorCode } from "../shared/errors.js";
 
 const EXIT_CODE_BY_ERROR: Record<ErrorCode, number> = {
   E_USAGE: 2,

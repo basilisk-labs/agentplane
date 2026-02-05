@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { mapBackendError, mapCoreError } from "./error-map.js";
-import { CliError } from "../errors.js";
-import { BackendError } from "../task-backend.js";
+import { CliError } from "../shared/errors.js";
+import { BackendError } from "../backends/task-backend.js";
 
 describe("core error mapping", () => {
   it("maps git repository errors to E_GIT", () => {
