@@ -1,17 +1,18 @@
 ---
 id: "202602051050-W39G86"
 title: "Epic E: schema as source of truth (Ajv + defaults)"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["epic-e", "schema", "validation"]
 verify: []
-commit: null
+commit: { hash: "b33cf73f8ff6426b3a3ee1633377d9716be15447", message: "✨ W39G86 schema-driven config validation" }
 comments:
   - { author: "CODER", body: "Start: Epic E schema as source of truth (Ajv defaults)." }
+  - { author: "CODER", body: "Verified: Ran tsc (tsconfig.eslint), bun run lint, bun run test:fast, and lefthook pre-commit. Updated schema defaults and Ajv validation; docs aligned." }
 doc_version: 2
-doc_updated_at: "2026-02-05T11:40:12.353Z"
+doc_updated_at: "2026-02-05T11:43:14.028Z"
 doc_updated_by: "CODER"
 description: "Implement Epic E: schema drives runtime validation with Ajv and defaults; update tests and docs."
 id_source: "generated"
