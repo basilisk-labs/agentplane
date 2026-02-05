@@ -2591,7 +2591,7 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["sync", "redmine", "--direction", "push", "--root", root]);
-      expect(code).toBe(6);
+      expect(code).toBe(7);
       expect(io.stderr).toContain("error [E_NETWORK]");
       expect(io.stderr).toContain("Check network access and credentials.");
     } finally {

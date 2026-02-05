@@ -52,6 +52,7 @@ import {
   renderBundledRecipesHint,
   validateBundledRecipesSelection,
 } from "./cli/recipes-bundled.js";
+import { exitCodeForError } from "./cli/exit-codes.js";
 import { loadDotEnv } from "./env.js";
 import { CliError, formatJsonError } from "./errors.js";
 import { BackendError, loadTaskBackend, type TaskData } from "./task-backend.js";
@@ -307,12 +308,17 @@ function mapCoreError(err: unknown, context: Record<string, unknown>): CliError 
   const message = err instanceof Error ? err.message : String(err);
 
   if (message.startsWith("Not a git repository")) {
-    return new CliError({ exitCode: 5, code: "E_GIT", message, context });
+    return new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message,
+      context,
+    });
   }
 
   if (err instanceof SyntaxError) {
     return new CliError({
-      exitCode: 3,
+      exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message: `Invalid JSON: ${message}`,
       context,
@@ -320,10 +326,15 @@ function mapCoreError(err: unknown, context: Record<string, unknown>): CliError 
   }
 
   if (message.includes("schema_version") || message.startsWith("config.")) {
-    return new CliError({ exitCode: 3, code: "E_VALIDATION", message, context });
+    return new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message,
+      context,
+    });
   }
 
-  return new CliError({ exitCode: 4, code: "E_IO", message, context });
+  return new CliError({ exitCode: exitCodeForError("E_IO"), code: "E_IO", message, context });
 }
 
 function isNotGitRepoError(err: unknown): boolean {
@@ -369,7 +380,7 @@ async function maybeResolveProject(opts: {
 function mapBackendError(err: unknown, context: Record<string, unknown>): CliError {
   if (err instanceof BackendError) {
     return new CliError({
-      exitCode: 6,
+      exitCode: exitCodeForError(err.code),
       code: err.code,
       message: err.message,
       context,
@@ -1283,7 +1294,7 @@ async function fetchJson(url: string): Promise<unknown> {
   const res = await fetch(url, { headers: { "User-Agent": "agentplane" } });
   if (!res.ok) {
     throw new CliError({
-      exitCode: 6,
+      exitCode: exitCodeForError("E_NETWORK"),
       code: "E_NETWORK",
       message: `Failed to fetch ${url} (${res.status} ${res.statusText})`,
     });
@@ -1295,7 +1306,7 @@ async function downloadToFile(url: string, destPath: string): Promise<void> {
   const res = await fetch(url, { headers: { "User-Agent": "agentplane" } });
   if (!res.ok) {
     throw new CliError({
-      exitCode: 6,
+      exitCode: exitCodeForError("E_NETWORK"),
       code: "E_NETWORK",
       message: `Failed to download ${url} (${res.status} ${res.statusText})`,
     });
@@ -2135,7 +2146,7 @@ async function cmdUpgrade(opts: {
       const checksumAsset = assets.find((entry) => entry.name === checksumName);
       if (!asset?.browser_download_url || !checksumAsset?.browser_download_url) {
         throw new CliError({
-          exitCode: 6,
+          exitCode: exitCodeForError("E_NETWORK"),
           code: "E_NETWORK",
           message: `Upgrade assets not found in ${owner}/${repo} release`,
         });
