@@ -46,6 +46,7 @@ import {
   type WorkflowMode,
 } from "./agents-template.js";
 import { backupPath, fileExists, getPathKind } from "./cli/fs-utils.js";
+import { downloadToFile, fetchJson } from "./cli/http.js";
 import { promptChoice, promptInput, promptYesNo } from "./cli/prompts.js";
 import {
   listBundledRecipes,
@@ -54,6 +55,23 @@ import {
 } from "./cli/recipes-bundled.js";
 import { exitCodeForError } from "./cli/exit-codes.js";
 import { validateArchive } from "./cli/archive.js";
+import {
+  backendNotSupportedMessage,
+  emptyStateMessage,
+  infoMessage,
+  invalidFieldMessage,
+  invalidPathMessage,
+  invalidValueForFlag,
+  invalidValueMessage,
+  missingFileMessage,
+  missingValueMessage,
+  requiredFieldMessage,
+  successMessage,
+  unknownEntityMessage,
+  usageMessage,
+  warnMessage,
+  workflowModeMessage,
+} from "./cli/output.js";
 import {
   fetchLatestNpmVersion,
   readUpdateCheckCache,
@@ -183,64 +201,6 @@ function renderErrorHint(err: CliError): string | undefined {
   }
 }
 
-function missingValueMessage(flag: string): string {
-  return `Missing value for ${flag} (expected value after flag)`;
-}
-
-function invalidValueMessage(label: string, value: string, expected: string): string {
-  return `Invalid ${label}: ${value} (expected ${expected})`;
-}
-
-function invalidValueForFlag(flag: string, value: string, expected: string): string {
-  return invalidValueMessage(`value for ${flag}`, value, expected);
-}
-
-function unknownEntityMessage(entity: string, value: string): string {
-  return `Unknown ${entity}: ${value}`;
-}
-
-function emptyStateMessage(resource: string, hint?: string): string {
-  return `No ${resource} found.${hint ? ` ${hint}` : ""}`;
-}
-
-function requiredFieldMessage(field: string, source?: string): string {
-  return `Missing required field: ${field}${source ? ` (${source})` : ""}`;
-}
-
-function invalidFieldMessage(field: string, expected: string, source?: string): string {
-  return `Invalid field ${field}: expected ${expected}${source ? ` (${source})` : ""}`;
-}
-
-function invalidPathMessage(field: string, reason: string, source?: string): string {
-  return `Invalid ${field}: ${reason}${source ? ` (${source})` : ""}`;
-}
-
-function missingFileMessage(filename: string, rootHint?: string): string {
-  return `Missing ${filename}${rootHint ? ` at ${rootHint}` : ""}`;
-}
-
-function successMessage(action: string, target?: string, details?: string): string {
-  const base = target ? `${action} ${target}` : action;
-  const suffix = details ? ` (${details})` : "";
-  return `✅ ${base}${suffix}`;
-}
-
-function infoMessage(message: string): string {
-  return `ℹ️ ${message}`;
-}
-
-function warnMessage(message: string): string {
-  return `⚠️ ${message}`;
-}
-
-function usageMessage(usage: string, example?: string): string {
-  return example ? `${usage}\nExample: ${example}` : usage;
-}
-
-function backendNotSupportedMessage(feature: string): string {
-  return `Backend does not support ${feature}`;
-}
-
 const UPDATE_CHECK_PACKAGE = "agentplane";
 const UPDATE_CHECK_URL = `https://registry.npmjs.org/${UPDATE_CHECK_PACKAGE}/latest`;
 
@@ -334,10 +294,6 @@ async function maybeWarnOnUpdate(opts: {
   if (compareVersions(latest, opts.currentVersion) <= 0) return;
   const message = `Update available: ${UPDATE_CHECK_PACKAGE} ${opts.currentVersion} → ${latest}. Run: npm i -g ${UPDATE_CHECK_PACKAGE}@latest`;
   process.stderr.write(`${warnMessage(message)}\n`);
-}
-
-function workflowModeMessage(actual: string | undefined, expected: string): string {
-  return `Invalid workflow_mode: ${actual ?? "unknown"} (expected ${expected})`;
 }
 
 function mapCoreError(err: unknown, context: Record<string, unknown>): CliError {
@@ -1334,31 +1290,6 @@ function parseSha256Text(text: string): string {
   const trimmed = text.trim();
   if (!trimmed) return "";
   return trimmed.split(/\s+/)[0];
-}
-
-async function fetchJson(url: string): Promise<unknown> {
-  const res = await fetch(url, { headers: { "User-Agent": "agentplane" } });
-  if (!res.ok) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_NETWORK"),
-      code: "E_NETWORK",
-      message: `Failed to fetch ${url} (${res.status} ${res.statusText})`,
-    });
-  }
-  return await res.json();
-}
-
-async function downloadToFile(url: string, destPath: string): Promise<void> {
-  const res = await fetch(url, { headers: { "User-Agent": "agentplane" } });
-  if (!res.ok) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_NETWORK"),
-      code: "E_NETWORK",
-      message: `Failed to download ${url} (${res.status} ${res.statusText})`,
-    });
-  }
-  const buffer = Buffer.from(await res.arrayBuffer());
-  await writeFile(destPath, buffer);
 }
 
 type RecipeInstallSource =
