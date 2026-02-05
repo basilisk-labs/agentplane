@@ -43,6 +43,22 @@ The CLI may maintain a local cache and falls back to it when remote services are
 
 Backend config file path is stored in `.agentplane/config.json` under `tasks_backend.config_path`. During init you can choose `--backend local|redmine`, and you can switch later by updating this path.
 
+### Backend config format (standardized)
+
+Each backend config is a JSON file with a stable shape:
+
+```json
+{
+  "id": "local",
+  "version": 1,
+  "settings": {
+    "dir": ".agentplane/tasks"
+  }
+}
+```
+
+Legacy fields like `module`/`class` are ignored by the loader.
+
 Example:
 
 ```json

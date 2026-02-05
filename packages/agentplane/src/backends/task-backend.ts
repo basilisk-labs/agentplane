@@ -1392,6 +1392,20 @@ function resolveMaybeRelative(root: string, input: unknown): string | null {
   return path.isAbsolute(raw) ? raw : path.join(root, raw);
 }
 
+function normalizeBackendConfig(raw: unknown): {
+  id: string;
+  version: number;
+  settings: Record<string, unknown>;
+} {
+  if (!isRecord(raw)) {
+    return { id: "local", version: 1, settings: {} };
+  }
+  const id = toStringSafe(raw.id).trim() || "local";
+  const version = typeof raw.version === "number" ? raw.version : 1;
+  const settings = isRecord(raw.settings) ? raw.settings : {};
+  return { id, version, settings };
+}
+
 export async function loadTaskBackend(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -1406,9 +1420,9 @@ export async function loadTaskBackend(opts: {
   const loaded = await loadConfig(resolved.agentplaneDir);
   const backendConfigPath = path.join(resolved.gitRoot, loaded.config.tasks_backend.config_path);
   const backendConfig = await loadBackendConfig(backendConfigPath);
-  const backendIdRaw = toStringSafe(backendConfig?.id).trim();
-  const backendId = backendIdRaw.length > 0 ? backendIdRaw : "local";
-  const settings = isRecord(backendConfig?.settings) ? backendConfig?.settings : {};
+  const normalized = normalizeBackendConfig(backendConfig);
+  const backendId = normalized.id;
+  const settings = normalized.settings;
 
   if (backendId === "redmine") {
     await loadDotEnv(resolved.gitRoot);
