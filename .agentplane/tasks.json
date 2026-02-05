@@ -13748,7 +13748,7 @@
       "id": "202602051050-M8MECE",
       "title": "Coverage, warnings, restructure, Epic E",
       "description": "Run coverage (>=75%), close remaining coverage task, fix warnings, restructure packages, and implement Epic E schema-as-source-of-truth.",
-      "status": "DOING",
+      "status": "DONE",
       "priority": "high",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -13759,18 +13759,26 @@
         "warnings"
       ],
       "verify": [],
-      "commit": null,
+      "commit": {
+        "hash": "b33cf73f8ff6426b3a3ee1633377d9716be15447",
+        "message": "✨ W39G86 schema-driven config validation"
+      },
       "comments": [
         {
           "author": "ORCHESTRATOR",
           "body": "Start: coverage check, warnings cleanup, package restructure, Epic E implementation."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Ran tsc (tsconfig.eslint), bun run lint, bun run test:fast, and lefthook pre-commit. Epic E schema/validation changes and docs are complete."
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T10:50:24.916Z",
+      "doc_updated_at": "2026-02-05T11:43:52.060Z",
       "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nClosed Epic E with schema-based config validation/defaults, adjusted tests and docs, and kept coverage/warnings work tracked under this umbrella.\n\n## Scope\n\nEpic E implementation (schema defaults + Ajv validation + docs/test updates) plus tracking for coverage/warnings/structure tasks already completed under this umbrella.\n\n## Risks\n\nConfig validation behavior now applies defaults during validation; downstream tooling relying on missing fields may see populated values.\n\n## Verify Steps\n\n./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit\\nbun run lint\\nbun run test:fast\\n./node_modules/.bin/lefthook run pre-commit\n\n## Rollback Plan\n\nRevert the Epic E commit(s) to restore previous config validation and schema draft."
     },
     {
       "id": "202602051050-QN9ARJ",
@@ -13810,7 +13818,7 @@
       "id": "202602051050-W39G86",
       "title": "Epic E: schema as source of truth (Ajv + defaults)",
       "description": "Implement Epic E: schema drives runtime validation with Ajv and defaults; update tests and docs.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -13820,13 +13828,26 @@
         "validation"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "b33cf73f8ff6426b3a3ee1633377d9716be15447",
+        "message": "✨ W39G86 schema-driven config validation"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Epic E schema as source of truth (Ajv defaults)."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Ran tsc (tsconfig.eslint), bun run lint, bun run test:fast, and lefthook pre-commit. Updated schema defaults and Ajv validation; docs aligned."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T10:50:43.719Z",
+      "doc_updated_at": "2026-02-05T11:43:14.028Z",
       "doc_updated_by": "CODER",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nMade config schema the source of truth with Ajv validation + defaults, updated tests and docs, and aligned schema draft to 07 for Ajv core.\n\n## Scope\n\nUpdated config schema defaults, switched schema draft to 07, wired Ajv validation/defaults in core config loader, adjusted config tests for new error shapes/defaults, and documented schema-based validation.\n\n## Risks\n\nDefaults are now applied during validation; callers relying on missing fields may see filled values. Ajv error wording changed, which could affect tests expecting exact messages.\n\n## Verify Steps\n\n./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit\\nbun run lint\\nbun run test:fast\\n./node_modules/.bin/lefthook run pre-commit\n\n## Rollback Plan\n\nRevert the Epic E commit to restore prior config validation behavior and schema draft."
     },
     {
       "id": "202602051050-WWYE65",
@@ -13867,6 +13888,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "adfd24fb1f4646ca3d0ed0567d0ac1dd7e9e417f7f7aa8f753fd11c7093ee129"
+    "checksum": "bc411b92ae2b7e196578519f7288fe8d10434c94b3104eb73a33b153971dbda7"
   }
 }
