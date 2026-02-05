@@ -7,12 +7,13 @@ owner: "DOCS"
 depends_on: []
 tags: ["release", "docs"]
 verify: []
-commit: { hash: "e74b31d75263a51dc1e68fc785c93beeea35faad", message: "📝 TF7WD8 task metadata update" }
+commit: { hash: "43a5d12584849db84f6fc89f52ae2693305eaa7b", message: "📝 6WCWQ0 add v0.1.5 release notes" }
 comments:
   - { author: "DOCS", body: "Start: drafting release notes for v0.1.5 from v0.1.4..HEAD and capturing user-facing changes." }
   - { author: "DOCS", body: "Verified: release notes created and reviewed against v0.1.4..HEAD log." }
+  - { author: "DOCS", body: "Verified: release notes created and reviewed against v0.1.4..HEAD log." }
 doc_version: 2
-doc_updated_at: "2026-02-05T17:26:22.484Z"
+doc_updated_at: "2026-02-05T17:33:36.631Z"
 doc_updated_by: "DOCS"
 description: "Draft release notes for v0.1.5 from v0.1.4..HEAD."
 id_source: "generated"
