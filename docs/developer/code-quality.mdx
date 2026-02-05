@@ -74,6 +74,11 @@ GitHub Actions runs `bun run ci` on every pull request and on pushes to `main`.
 - Coverage is enforced via `vitest` with minimum thresholds in `vitest.config.ts`.
 - New code SHOULD increase or maintain overall coverage.
 
+## Critical file writes
+
+Critical task artifacts (for example `.agentplane/tasks/**` and `tasks.json`) must be written atomically.
+Use the `atomicWriteFile` helper from `@agentplaneorg/core` to avoid partial writes.
+
 ## Linting and formatting
 
 - ESLint is required and enforced via `eslint.config.cjs`.

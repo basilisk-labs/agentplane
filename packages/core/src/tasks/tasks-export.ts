@@ -1,8 +1,9 @@
 import { createHash } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
 import { loadConfig } from "../config/config.js";
+import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
 import { listTasks } from "./task-store.js";
 
@@ -148,7 +149,7 @@ export async function writeTasksExport(opts: {
   const snapshot = await buildTasksExportSnapshot(opts);
 
   await mkdir(path.dirname(outPath), { recursive: true });
-  await writeFile(outPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+  await atomicWriteFile(outPath, `${JSON.stringify(snapshot, null, 2)}\n`);
 
   return { path: outPath, snapshot };
 }
