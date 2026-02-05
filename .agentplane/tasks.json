@@ -13832,7 +13832,7 @@
       "id": "202602051050-WWYE65",
       "title": "Restructure package directories",
       "description": "Refactor packages/* folder structure for clarity and navigation with minimal regressions.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -13841,19 +13841,32 @@
         "structure"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "7d1a2099737cbfd0030a5c33a2adde43d3e9c6b1",
+        "message": "♻️ WWYE65 refactor"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: restructure packages/* for clearer navigation and maintainability."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: ./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit; bun run format:check; bun run lint; bun run test:fast. Commit: 7d1a2099737c."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T10:50:39.744Z",
+      "doc_updated_at": "2026-02-05T11:21:07.778Z",
       "doc_updated_by": "CODER",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nReorganized packages/agentplane and packages/core source trees into domain folders (cli/agents/backends/shared, config/git/tasks, etc.) and updated imports, scripts, and docs.\n\n## Scope\n\nMoved files under packages/agentplane/src and packages/core/src, adjusted imports, test paths, and updated docs/ROADMAP references.\n\n## Risks\n\nMedium risk: large file moves may break paths if any import was missed; mitigated by lint and test runs.\n\n## Verify Steps\n\n./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit\nbun run format:check\nbun run lint\nbun run test:fast\n\n## Rollback Plan\n\nRevert commit 7d1a2099737c to restore original structure."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "2ca5147648cbac11a68b5ddf686ed2228b29ff758846fcfa7b2e8d1665f427f3"
+    "checksum": "adfd24fb1f4646ca3d0ed0567d0ac1dd7e9e417f7f7aa8f753fd11c7093ee129"
   }
 }
