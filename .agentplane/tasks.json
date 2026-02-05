@@ -15222,15 +15222,48 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T16:58:07.453Z",
       "doc_updated_by": "DOCS",
+      "id_source": "generated",
+      "doc": "## Summary\n\nDocument recommended Redmine env values in .env.example and align local .env owner alias.\n\n## Scope\n\n- Update .env.example with recommended Redmine env defaults and custom field placeholders.\\n- Set AGENTPLANE_REDMINE_OWNER_AGENT in .env to match owner (local only).\n\n## Risks\n\n- Minimal risk; only docs/example updates.\\n- Local .env edit should not be committed.\n\n## Verify Steps\n\n- bun run format:check.\\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\n\n## Rollback Plan\n\n- Revert .env.example changes if undesired.",
+      "dirty": false
+    },
+    {
+      "id": "202602051703-WFTS3K",
+      "title": "Fix ESLint unsafe-type warnings",
+      "description": "Resolve IDE ESLint no-unsafe-* warnings by ensuring typed exports in task backend; verify lint/test.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "testing"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "f50b22b9557ddf437bf99baa07cd9c8a1d5127f4",
+        "message": "✨ WFTS3K type-safe task backend exports"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: fix ESLint no-unsafe-* warnings in task backend/tests by making typed exports and validating lint/test."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: lint and test:fast passed; typed task backend exports to silence no-unsafe warnings."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T17:06:04.271Z",
+      "doc_updated_by": "CODER",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nDocument recommended Redmine env values in .env.example and align local .env owner alias.\n\n## Scope\n\n- Update .env.example with recommended Redmine env defaults and custom field placeholders.\\n- Set AGENTPLANE_REDMINE_OWNER_AGENT in .env to match owner (local only).\n\n## Risks\n\n- Minimal risk; only docs/example updates.\\n- Local .env edit should not be committed.\n\n## Verify Steps\n\n- bun run format:check.\\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\n\n## Rollback Plan\n\n- Revert .env.example changes if undesired."
+      "doc": "## Summary\n\nRemove ESLint no-unsafe-* warnings in task backend/tests by ensuring typed exports.\n\n## Scope\n\n- Ensure extractTaskDoc/mergeTaskDoc/atomicWriteFile/generateTaskId have explicit types in task backend.\\n- Verify lint/test:fast.\\n- Leave ignored-file ESLint warning for agentplane-recipes as non-issue.\n\n## Risks\n\n- Low risk; type-only changes could mask real type mismatches if mis-specified.\n\n## Verify Steps\n\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\n\n## Rollback Plan\n\n- Revert typed aliases if they cause mismatches."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "74533ff4a5684dec89763746ae986636fc3e04cd1034eed484f7694f346b7e16"
+    "checksum": "264c71f33c4217bb9e907c11ea6c40adc14aa019979fbbfcf18eeb8e52b224da"
   }
 }
