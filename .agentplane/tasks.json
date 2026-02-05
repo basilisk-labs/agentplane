@@ -13095,12 +13095,145 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nTranslate ROADMAP.md into English and commit as a standalone docs task.\n\n## Scope\n\nTranslate all sections and bullets in ROADMAP.md without changing structure or intent.\n\n## Risks\n\nRisk: meaning drift in translation; mitigate by keeping technical terms and structure intact.\n\n## Verify Steps\n\nReview ROADMAP.md for completeness and consistent terminology; no code tests required.\n\n## Rollback Plan\n\nRevert the translation commit to restore prior language."
+    },
+    {
+      "id": "202602050554-49X946",
+      "title": "AP-010c: Integrate update-check with CLI",
+      "description": "Wire cached update-check into CLI with offline-first behavior and tests.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "cli",
+        "update-check",
+        "integration"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T05:56:10.072Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nWire cached update-check into CLI with offline-first behavior and tests.\n\n## Scope\n\nIntegrate update-check cache into CLI startup; respect --json and AGENTPLANE_NO_UPDATE_CHECK; add integration tests.\n\n## Risks\n\nRisk: update-check runs network too often or skips warnings; mitigate with integration tests covering TTL and skip flags.\n\n## Verify Steps\n\nRun update-check integration tests; ensure no network for fresh cache and proper skip behavior.\n\n## Rollback Plan\n\nRevert the CLI integration commit to restore previous update-check behavior."
+    },
+    {
+      "id": "202602050554-8DBHJY",
+      "title": "AP-010a: Update-check cache model",
+      "description": "Implement update-check cache read/write, TTL, and atomic writes.",
+      "status": "DOING",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "cli",
+        "update-check",
+        "cache"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: implement update-check cache model and persistence utilities."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T05:56:14.902Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd update-check cache format, TTL handling, and atomic persistence.\n\n## Scope\n\nIntroduce update-check cache read/write utilities, TTL logic, and atomic write for cache file.\n\n## Risks\n\nRisk: cache path or schema mismatch; mitigate with tests and explicit schema versioning.\n\n## Verify Steps\n\nRun unit tests for update-check cache utilities; ensure TTL logic and atomic writes behave.\n\n## Rollback Plan\n\nRevert the cache utility commit to restore prior update-check behavior."
+    },
+    {
+      "id": "202602050554-PW3TCT",
+      "title": "Epic B: Offline-first update-check",
+      "description": "Top-level tracking for Epic B (AP-010).",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "epic",
+        "cli"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T05:54:35.850Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602050554-Q59FCK",
+      "title": "AP-010b: Update-check fetch + ETag",
+      "description": "Add conditional fetch logic and cache updates for update-check.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "cli",
+        "update-check",
+        "network"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T05:55:38.217Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nImplement conditional update-check fetch (ETag) and cache update rules.\n\n## Scope\n\nAdd ETag-aware fetch to npm registry, handle 200/304/error, and update cache accordingly.\n\n## Risks\n\nRisk: registry responses or ETag parsing errors; mitigate with defensive parsing and tests.\n\n## Verify Steps\n\nRun update-check fetch tests covering 200/304/error paths and ETag handling.\n\n## Rollback Plan\n\nRevert the fetch/ETag commit and retain prior update-check network behavior."
+    },
+    {
+      "id": "202602050558-QYTQJN",
+      "title": "Format ROADMAP.md for Prettier",
+      "description": "Apply Prettier formatting to ROADMAP.md so pre-commit checks pass.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "formatting"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "0b2cd79f9c942e8e11bdbfefd0304c02a74ab1af",
+        "message": "🧩 QYTQJN format ROADMAP.md"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: apply Prettier formatting to ROADMAP.md."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: ROADMAP.md formatted with Prettier and pre-commit format:check passes."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T06:00:06.249Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nFormat ROADMAP.md to satisfy Prettier checks.\n\n## Scope\n\nApply Prettier formatting to ROADMAP.md only.\n\n## Risks\n\nLow risk; formatting-only change.\n\n## Verify Steps\n\nRun Prettier check to ensure ROADMAP.md passes.\n\n## Rollback Plan\n\nRevert the formatting commit to restore prior ROADMAP.md formatting."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "3e1a84bf4d3e8098aecee35c2dbd3e9a0d255eb39738d71fb4e0fd8da9047763"
+    "checksum": "929385a699cfce565316e5c0b7e1e6da3f8fcfd4367e12d2344fb5ab99e1f75c"
   }
 }
