@@ -13345,7 +13345,7 @@
       "id": "202602050609-PGC5S3",
       "title": "Epic C: Safe archive extraction",
       "description": "Top-level tracking for Epic C (AP-020).",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -13355,10 +13355,18 @@
         "security"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "d0678cc2f5e37eb84841e5e01697bf96e7687c54",
+        "message": "🧾 MT8GF4 record finish metadata"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Epic C completed via AP-020a/020b; safe archive validation and integration done."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T06:09:29.041Z",
+      "doc_updated_at": "2026-02-05T06:17:57.000Z",
       "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
       "id_source": "generated"
@@ -13368,6 +13376,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "5f7d03f9942f87616484f5d73ce8b43d31d110b4e8c3be1195bb81a1ea8ab71a"
+    "checksum": "3c3b426c60eee3ca8d65c282ce97aeb940f4e3d8c11059c90825a76063274b6b"
   }
 }
