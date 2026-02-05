@@ -1,17 +1,18 @@
 ---
 id: "202602051316-J8K6A5"
 title: "AP-051: Unify task id generation"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["roadmap", "tasks", "core"]
 verify: []
-commit: null
+commit: { hash: "22592cf39afbfd4e1fdb0e6ee6d23dbe2f96553e", message: "✨ J8K6A5 unify task id generation" }
 comments:
   - { author: "CODER", body: "Start: implement core generateTaskId with crypto.randomInt and replace existing generators." }
+  - { author: "CODER", body: "Verified: ran bun run lint, bun run test:fast, and agentplane hooks run pre-commit; task ids now generated via core crypto helper." }
 doc_version: 2
-doc_updated_at: "2026-02-05T13:35:59.347Z"
+doc_updated_at: "2026-02-05T13:45:49.396Z"
 doc_updated_by: "CODER"
 description: "Add crypto-based generateTaskId in core and replace Math.random/crypto.randomInt variants across codebase; add tests."
 id_source: "generated"
