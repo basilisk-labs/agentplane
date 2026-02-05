@@ -4,7 +4,7 @@ title: "Epic J: Versioning, env normalization, atomic writes"
 status: "TODO"
 priority: "high"
 owner: "ORCHESTRATOR"
-depends_on: ["[]"]
+depends_on: []
 tags: ["roadmap", "epic"]
 verify: []
 commit: null

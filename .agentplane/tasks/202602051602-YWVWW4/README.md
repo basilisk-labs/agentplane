@@ -1,17 +1,18 @@
 ---
 id: "202602051602-YWVWW4"
 title: "Normalize task README spacing"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
-depends_on: ["[]"]
+depends_on: []
 tags: ["docs", "tasks", "formatting"]
 verify: []
-commit: null
+commit: { hash: "c628670d76e3b9790bcb45955850ea6a55ba64ed", message: "📝 YWVWW4 normalize task README spacing" }
 comments:
   - { author: "DOCS", body: "Start: Accept normalized spacing in historical task README docs." }
+  - { author: "DOCS", body: "Verified: Normalized task README spacing; formatted BRANCH.md to satisfy Prettier hook." }
 doc_version: 2
-doc_updated_at: "2026-02-05T16:03:18.166Z"
+doc_updated_at: "2026-02-05T16:03:46.822Z"
 doc_updated_by: "DOCS"
 description: "Accept consistent spacing changes in historical task READMEs after doc updates."
 id_source: "generated"

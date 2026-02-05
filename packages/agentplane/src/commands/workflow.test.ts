@@ -204,6 +204,35 @@ describe("commands/workflow", () => {
     }
   });
 
+  it("task add ignores depends-on [] literal", async () => {
+    const root = await makeRepo();
+    await cmdTaskAdd({
+      cwd: root,
+      args: [
+        "202602051630-A1B5",
+        "--title",
+        "Needs deps",
+        "--description",
+        "Desc",
+        "--owner",
+        "CODER",
+        "--priority",
+        "high",
+        "--tag",
+        "urgent",
+        "--depends-on",
+        "[]",
+      ],
+    });
+
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", "202602051630-A1B5", "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain("depends_on: []");
+    expect(readme).not.toContain('depends_on: ["[]"]');
+  });
+
   it("rejects task next with invalid limit flags", async () => {
     await expect(
       cmdTaskNext({

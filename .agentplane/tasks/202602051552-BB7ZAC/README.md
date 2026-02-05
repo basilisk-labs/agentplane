@@ -4,7 +4,7 @@ title: "AP-092: Normalize env variables with compatibility"
 status: "TODO"
 priority: "high"
 owner: "CODER"
-depends_on: ["[]"]
+depends_on: []
 tags: ["roadmap", "env", "compatibility"]
 verify: []
 commit: null

@@ -4,7 +4,7 @@ title: "AP-090: CLI version from package.json"
 status: "DOING"
 priority: "high"
 owner: "CODER"
-depends_on: ["[]"]
+depends_on: []
 tags: ["roadmap", "versioning", "cli"]
 verify: []
 commit: null

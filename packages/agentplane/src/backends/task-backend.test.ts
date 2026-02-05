@@ -185,6 +185,26 @@ describe("task-backend helpers", () => {
     expect(data.priority).toBe("");
   });
 
+  it("taskRecordToData treats depends_on ['[]'] as empty", () => {
+    const record = {
+      id: "202601300000-ABCD",
+      frontmatter: {
+        id: "202601300000-ABCD",
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        depends_on: ["[]"],
+        tags: [],
+        verify: [],
+      },
+      body: "## Summary\n\nDoc text\n",
+    } as unknown as TaskRecord;
+    const data = taskRecordToData(record);
+    expect(data.depends_on).toEqual([]);
+  });
+
   it("buildTasksExportSnapshotFromTasks normalizes task fields", () => {
     const snapshot = buildTasksExportSnapshotFromTasks([
       {
