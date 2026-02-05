@@ -1,6 +1,6 @@
 import { exitCodeForError } from "./exit-codes.js";
-import { CliError } from "../errors.js";
-import { BackendError } from "../task-backend.js";
+import { CliError } from "../shared/errors.js";
+import { BackendError } from "../backends/task-backend.js";
 
 export function mapCoreError(err: unknown, context: Record<string, unknown>): CliError {
   const message = err instanceof Error ? err.message : String(err);

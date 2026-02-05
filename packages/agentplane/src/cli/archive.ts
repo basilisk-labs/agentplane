@@ -2,7 +2,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
 
-import { CliError } from "../errors.js";
+import { CliError } from "../shared/errors.js";
 import { exitCodeForError } from "./exit-codes.js";
 import { usageMessage } from "./output.js";
 

@@ -19,22 +19,22 @@ import {
   loadAgentTemplates,
   loadAgentsTemplate,
   type WorkflowMode,
-} from "./agents-template.js";
-import { backupPath, fileExists, getPathKind } from "./cli/fs-utils.js";
-import { promptChoice, promptInput, promptYesNo } from "./cli/prompts.js";
+} from "../agents/agents-template.js";
+import { backupPath, fileExists, getPathKind } from "./fs-utils.js";
+import { promptChoice, promptInput, promptYesNo } from "./prompts.js";
 import {
   listBundledRecipes,
   renderBundledRecipesHint,
   validateBundledRecipesSelection,
-} from "./cli/recipes-bundled.js";
-import { mapCoreError } from "./cli/error-map.js";
+} from "./recipes-bundled.js";
+import { mapCoreError } from "./error-map.js";
 import {
   infoMessage,
   invalidValueForFlag,
   missingValueMessage,
   usageMessage,
   warnMessage,
-} from "./cli/output.js";
+} from "./output.js";
 import {
   fetchLatestNpmVersion,
   readUpdateCheckCache,
@@ -45,18 +45,18 @@ import {
   UPDATE_CHECK_TTL_MS,
   writeUpdateCheckCache,
   type UpdateCheckCache,
-} from "./cli/update-check.js";
-import { loadDotEnv } from "./env.js";
-import { CliError, formatJsonError } from "./errors.js";
-import { getVersion } from "./version.js";
-import { cmdUpgrade } from "./commands/upgrade.js";
+} from "./update-check.js";
+import { loadDotEnv } from "../shared/env.js";
+import { CliError, formatJsonError } from "../shared/errors.js";
+import { getVersion } from "../meta/version.js";
+import { cmdUpgrade } from "../commands/upgrade.js";
 import {
   BACKEND_SYNC_USAGE,
   BACKEND_SYNC_USAGE_EXAMPLE,
   cmdBackendSync,
   cmdSync,
-} from "./commands/backend.js";
-import { cmdRecipes, cmdScenario } from "./commands/recipes.js";
+} from "../commands/backend.js";
+import { cmdRecipes, cmdScenario } from "../commands/recipes.js";
 import {
   BLOCK_USAGE,
   BLOCK_USAGE_EXAMPLE,
@@ -141,7 +141,7 @@ import {
   promptInitBaseBranch,
   resolveInitBaseBranch,
   suggestAllowPrefixes,
-} from "./commands/workflow.js";
+} from "../commands/workflow.js";
 
 type ParsedArgs = {
   help: boolean;

@@ -23,13 +23,13 @@ import {
 } from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
-import { BUNDLED_RECIPES_CATALOG } from "./bundled-recipes.js";
+import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
   loadAgentsTemplate,
-} from "./agents-template.js";
-import * as taskBackend from "./task-backend.js";
+} from "../agents/agents-template.js";
+import * as taskBackend from "../backends/task-backend.js";
 import {
   captureStdIO,
   cleanGitEnv,
@@ -49,8 +49,8 @@ import {
   writeConfig,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
-import { resolveUpdateCheckCachePath } from "./cli/update-check.js";
-import * as prompts from "./cli/prompts.js";
+import { resolveUpdateCheckCachePath } from "./update-check.js";
+import * as prompts from "./prompts.js";
 
 registerAgentplaneHome();
 let restoreStdIO: (() => void) | null = null;

@@ -19,7 +19,7 @@ import {
   type AgentplaneConfig,
 } from "@agentplaneorg/core";
 
-import { formatCommentBodyForCommit } from "../comment-format.js";
+import { formatCommentBodyForCommit } from "../shared/comment-format.js";
 import { mapBackendError, mapCoreError } from "../cli/error-map.js";
 import { fileExists } from "../cli/fs-utils.js";
 import { promptChoice, promptInput } from "../cli/prompts.js";
@@ -35,8 +35,8 @@ import {
   warnMessage,
   workflowModeMessage,
 } from "../cli/output.js";
-import { CliError } from "../errors.js";
-import { loadTaskBackend, type TaskData } from "../task-backend.js";
+import { CliError } from "../shared/errors.js";
+import { loadTaskBackend, type TaskData } from "../backends/task-backend.js";
 
 const execFileAsync = promisify(execFile);
 

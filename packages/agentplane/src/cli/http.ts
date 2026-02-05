@@ -1,7 +1,7 @@
 import { writeFile } from "node:fs/promises";
 
 import { exitCodeForError } from "./exit-codes.js";
-import { CliError } from "../errors.js";
+import { CliError } from "../shared/errors.js";
 
 const DEFAULT_TIMEOUT_MS = 1500;
 

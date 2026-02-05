@@ -95,8 +95,8 @@ Single mapping `ErrorCode → exitCode`, strictly per contract:
 
 **Where**
 
-- `packages/agentplane/src/run-cli.ts` (network utilities, `mapBackendError`)
-- `packages/agentplane/src/task-backend.ts` (error types if needed)
+- `packages/agentplane/src/cli/run-cli.ts` (network utilities, `mapBackendError`)
+- `packages/agentplane/src/backends/task-backend.ts` (error types if needed)
 - Tests: `run-cli.*.test.ts`, add a separate `cli-contract.test.ts`
 
 ---
@@ -126,7 +126,7 @@ Choose one strategy (recommended #2):
 
 **Where**
 
-- `packages/agentplane/src/errors.ts`
+- `packages/agentplane/src/shared/errors.ts`
 - `docs/developer/cli-contract.mdx`
 - `packages/agentplane/src/errors.test.ts`
 
@@ -198,7 +198,7 @@ Implement update-check:
 
 **Where**
 
-- `packages/agentplane/src/run-cli.ts` (keep the call, move implementation out)
+- `packages/agentplane/src/cli/run-cli.ts` (keep the call, move implementation out)
 - New file `packages/agentplane/src/cli/update-check.ts`
 - Tests: new `update-check.test.ts`
 
@@ -258,7 +258,7 @@ Move to JS tar/zip libraries so each entry can be filtered before disk write.
 
 **Where**
 
-- `packages/agentplane/src/run-cli.ts` (replace `extractArchive`)
+- `packages/agentplane/src/cli/run-cli.ts` (replace `extractArchive`)
 - New module `packages/agentplane/src/cli/archive.ts`
 - Tests: `run-cli.recipes.test.ts`, `run-cli.core.test.ts` + new fixtures
 
@@ -332,7 +332,7 @@ Introduce a modular structure:
 
 **Where**
 
-- `packages/agentplane/src/run-cli.ts` + new files
+- `packages/agentplane/src/cli/run-cli.ts` + new files
 - Tests already exist: `cli-smoke.test.ts`, `run-cli.*.test.ts`
 
 ---
@@ -342,7 +342,7 @@ Introduce a modular structure:
 ## AP-040 — Make a single source of truth for configuration (schema or runtime)
 
 **Problem**
-There is `packages/spec/schemas/config.schema.json`, but `packages/core/src/config.ts` validates manually and is sometimes stricter/different. Result: “valid per schema, fails at runtime” and vice versa.
+There is `packages/spec/schemas/config.schema.json`, but `packages/core/src/config/config.ts` validates manually and is sometimes stricter/different. Result: “valid per schema, fails at runtime” and vice versa.
 
 **Solution**
 Choose and enforce a strategy:
@@ -370,9 +370,9 @@ Choose and enforce a strategy:
 
 **Where**
 
-- `packages/core/src/config.ts`
+- `packages/core/src/config/config.ts`
 - `packages/spec/schemas/config.schema.json`
-- Tests: `packages/core/src/config.test.ts`
+- Tests: `packages/core/src/config/config.test.ts`
 
 ---
 
@@ -383,9 +383,9 @@ Choose and enforce a strategy:
 **Problem**
 Identical functions (markdown section normalization, combined heading split, set section, ensure metadata) are duplicated in:
 
-- `packages/core/src/task-store.ts`
-- `packages/agentplane/src/task-backend.ts`
-- partly in `packages/agentplane/src/run-cli.ts`
+- `packages/core/src/tasks/task-store.ts`
+- `packages/agentplane/src/backends/task-backend.ts`
+- partly in `packages/agentplane/src/cli/run-cli.ts`
   This causes behavioral drift.
 
 **Solution**
@@ -615,7 +615,7 @@ A recipe is a plugin with tools/agents/scenarios; even with moderation we need a
 ## AP-090 — CLI version from package.json (remove manual constant)
 
 **Problem**
-`packages/agentplane/src/version.ts` contains a manual string version — risk of “forgot to update”.
+`packages/agentplane/src/meta/version.ts` contains a manual string version — risk of “forgot to update”.
 
 **Solution**
 

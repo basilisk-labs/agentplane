@@ -18,7 +18,7 @@ import {
   writeTasksExportFromTasks,
   type TaskData,
 } from "./task-backend.js";
-import { silenceStdIO } from "./run-cli.test-helpers.js";
+import { silenceStdIO } from "../cli/run-cli.test-helpers.js";
 
 const TMP_PREFIX = "agentplane-task-backend-";
 let restoreStdIO: (() => void) | null = null;
@@ -775,10 +775,16 @@ describe("RedmineBackend (mocked)", () => {
     });
 
     expect(issues).toHaveLength(1);
-    expect(createdPayload?.custom_fields).toBeDefined();
-    expect(createdPayload?.assigned_to_id).toBe(7);
-    expect(createdPayload?.done_ratio).toBe(100);
-    expect(createdPayload?.start_date).toBe("2026-01-30");
+    const created = createdPayload as {
+      custom_fields?: unknown;
+      assigned_to_id?: number;
+      done_ratio?: number;
+      start_date?: string;
+    } | null;
+    expect(created?.custom_fields).toBeDefined();
+    expect(created?.assigned_to_id).toBe(7);
+    expect(created?.done_ratio).toBe(100);
+    expect(created?.start_date).toBe("2026-01-30");
   });
 
   it("builds payloads with existing assignees and status mapping", () => {

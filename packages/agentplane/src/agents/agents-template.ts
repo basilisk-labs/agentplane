@@ -2,8 +2,8 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const AGENTS_TEMPLATE_URL = new URL("../assets/AGENTS.md", import.meta.url);
-const AGENTS_DIR_URL = new URL("../assets/agents/", import.meta.url);
+const AGENTS_TEMPLATE_URL = new URL("../../assets/AGENTS.md", import.meta.url);
+const AGENTS_DIR_URL = new URL("../../assets/agents/", import.meta.url);
 
 const HEADING_RE = /^(#+)\s+(.*)$/;
 

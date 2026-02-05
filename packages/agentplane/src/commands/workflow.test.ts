@@ -35,8 +35,8 @@ import {
   suggestAllowPrefixes,
 } from "./workflow.js";
 import { defaultConfig } from "@agentplaneorg/core";
-import * as taskBackend from "../task-backend.js";
-import type { TaskData } from "../task-backend.js";
+import * as taskBackend from "../backends/task-backend.js";
+import type { TaskData } from "../backends/task-backend.js";
 import * as prompts from "../cli/prompts.js";
 import {
   captureStdIO,
@@ -44,7 +44,7 @@ import {
   mkTempDir,
   silenceStdIO,
   writeDefaultConfig,
-} from "../run-cli.test-helpers.js";
+} from "../cli/run-cli.test-helpers.js";
 
 const execFileAsync = promisify(execFile);
 
