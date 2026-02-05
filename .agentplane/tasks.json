@@ -15072,15 +15072,15 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T16:19:12.687Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nUse package.json as the single source for CLI version and remove hardcoded version constants.\n\n## Scope\n\n- Locate current CLI version source.\\n- Read version from package.json.\\n- Update tests/docs.\n\n- Locate current CLI version source.\n- Read version from package.json.\n- Update tests/docs.\n\n## Risks\n\n- Version resolution could break when running outside repo (packaged CLI).\n\n## Verify Steps\n\n- bun run test:fast.\n- Verify agentplane --version matches package.json.\n\n## Verification\n\n- ✅ bun run test:fast (pass).\\n- ✅ --version matches packages/agentplane/package.json (via test).\n\n## Rollback Plan\n\n- Revert to prior version constant behavior."
+      "doc": "## Summary\n\nUse package.json as the single source for CLI version and remove hardcoded version constants.\n\n## Scope\n\n- Locate current CLI version source.\\n- Read version from package.json.\\n- Update tests/docs.\n\n- Locate current CLI version source.\n- Read version from package.json.\n- Update tests/docs.\n\n## Risks\n\n- Version resolution could break when running outside repo (packaged CLI).\n\n## Verify Steps\n\n- bun run test:fast.\n- Verify agentplane --version matches package.json.\n\n## Verification\n\n- ✅ bun run test:fast (pass).\\n- ✅ --version matches packages/agentplane/package.json (via test).\n\n## Rollback Plan\n\n- Revert to prior version constant behavior.",
+      "dirty": false
     },
     {
       "id": "202602051552-P3HJ4S",
       "title": "AP-091: Atomic writes for critical files",
       "description": "Add atomic write helper for critical files and use it across task/docs/cache writes; update tests/docs.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -15090,14 +15090,26 @@
         "safety"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "6be1bdeba4542081f0ef13ea4f82694ea74b8f85",
+        "message": "✨ P3HJ4S atomic writes for critical files"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Implement atomic writes for critical files and update tests/docs."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: format:check, lint, test:fast passed; atomic writes cover tasks export and task docs; documentation updated."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T15:52:49.758Z",
+      "doc_updated_at": "2026-02-05T16:38:20.461Z",
       "doc_updated_by": "CODER",
+      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nEnsure critical files are written atomically to avoid partial writes.\n\n## Scope\n\n- Identify critical files.\\n- Add atomic write helper.\\n- Replace direct writes.\\n- Update tests/docs.\n\n## Risks\n\n- Atomic rename semantics differ across filesystems.\\n- Permissions/ownership could change if not preserved.\n\n## Verify Steps\n\n- bun run test:fast.\\n- Spot-check writes to tasks/docs/cache use atomic helper.\n\n## Verification\n\nPending.\n\n## Rollback Plan\n\n- Revert atomic write helper and restore direct writes.",
-      "dirty": false
+      "doc": "## Summary\n\nEnsure critical files are written atomically to avoid partial writes.\n\n## Scope\n\n- Identify critical files.\n- Add atomic write helper.\n- Replace direct writes.\n- Update tests/docs.\n\n## Risks\n\n- Atomic rename semantics differ across filesystems.\\n- Permissions/ownership could change if not preserved.\n\n## Verify Steps\n\n- bun run test:fast.\n- Spot-check task/docs writes use atomic helper.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\\n- ✅ Manual spot-check: task/docs writes use atomic helper.\n\n## Rollback Plan\n\n- Revert atomic write helper and restore direct writes."
     },
     {
       "id": "202602051602-YWVWW4",
@@ -15174,6 +15186,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "e5d19f8d09246eaf6497bc129e37c89feb0a8a27a2aeb8ac0c2cdf386ed3df41"
+    "checksum": "5fdb04af93afedc46a3349a018506e88acfbd743b77265b3facbd8672fe0a27e"
   }
 }
