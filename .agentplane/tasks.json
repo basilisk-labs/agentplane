@@ -15469,7 +15469,7 @@
       "id": "202602051755-AX8DH0",
       "title": "Document release flow",
       "description": "Update release docs to describe tag-based publish + GitHub Release generation.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "DOCS",
       "depends_on": [],
@@ -15478,13 +15478,26 @@
         "release"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "d069a68477b45045738e7609b28a86c26ddb372d",
+        "message": "📝 AX8DH0 document tag-based releases"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: document tag-based release flow and GitHub Release automation."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: release docs describe tag-based publish checks and GitHub Release creation."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T17:55:44.536Z",
+      "doc_updated_at": "2026-02-05T18:01:52.017Z",
       "doc_updated_by": "DOCS",
+      "dirty": false,
       "id_source": "generated",
-      "dirty": false
+      "doc": "## Summary\n\nDocument the tag-triggered release flow and GitHub Release automation.\n\n## Scope\n\nUpdate developer release documentation to describe tagging, checks, npm publish, and GitHub Release creation.\n\n## Risks\n\nDocs may diverge from actual workflow behavior if not updated.\n\n## Verify Steps\n\nReview docs/developer/release-and-publishing.mdx to ensure it matches the tag-based release workflow.\n\n## Verification\n\nUpdated release-and-publishing docs to reflect tag-based publish checks and GitHub Release creation.\n\n## Rollback Plan\n\nRevert documentation edits if inaccurate."
     },
     {
       "id": "202602051755-E50N3A",
@@ -15516,15 +15529,15 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T17:59:06.953Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nAdd release version checks and GitHub Release creation to tag-based publish workflow.\n\n## Scope\n\nUpdate publish.yml to tag-only trigger with contents:write, add version/tag validation script, and create GitHub Release from docs/releases/vX.Y.Z.md.\n\n## Risks\n\nWrong version/tag detection could block releases or publish wrong versions.\n\n## Verify Steps\n\nInspect workflow and script changes; ensure publish.yml validates release notes and version alignment for vX.Y.Z.\n\n## Verification\n\nReviewed publish.yml changes, added version check script, and configured GitHub Release creation with body from docs/releases/vX.Y.Z.md.\n\n## Rollback Plan\n\nRevert publish workflow/script changes to restore prior behavior."
+      "doc": "## Summary\n\nAdd release version checks and GitHub Release creation to tag-based publish workflow.\n\n## Scope\n\nUpdate publish.yml to tag-only trigger with contents:write, add version/tag validation script, and create GitHub Release from docs/releases/vX.Y.Z.md.\n\n## Risks\n\nWrong version/tag detection could block releases or publish wrong versions.\n\n## Verify Steps\n\nInspect workflow and script changes; ensure publish.yml validates release notes and version alignment for vX.Y.Z.\n\n## Verification\n\nReviewed publish.yml changes, added version check script, and configured GitHub Release creation with body from docs/releases/vX.Y.Z.md.\n\n## Rollback Plan\n\nRevert publish workflow/script changes to restore prior behavior.",
+      "dirty": false
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "0deaf59d5486d3cf03608d3a37ea92c469db9c1cd90ab06c62bab10954bff22c"
+    "checksum": "2b7722198ac7192695ab9e84031cf7a623f269c480ac2e27f82989d24c77a827"
   }
 }
