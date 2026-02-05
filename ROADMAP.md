@@ -484,7 +484,11 @@ Introduce a task index (metadata + mtime):
 
 # Epic H: Backend architecture and Redmine first-class (P1)
 
+Status: DONE (2026-02-05, tasks 202602051415-SFC4Q6, 202602051415-V40XE1)
+
 ## AP-070 — Separate “recipes plugins” vs “backend integrations”
+
+Status: DONE (2026-02-05, tasks 202602051415-SFC4Q6, 202602051415-V40XE1)
 
 **Problem**
 Redmine backend is installed as a recipe, mixing:
@@ -527,6 +531,8 @@ Make backends first-class:
 ---
 
 ## AP-071 — (Optional) Support external backend modules via `module`/`export`
+
+Status: Deferred (not required for current backend model)
 
 **Problem**
 `backend.json` has `module/class`, but they are not used (and look like Python legacy).
