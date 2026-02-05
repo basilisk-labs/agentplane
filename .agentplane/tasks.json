@@ -14461,12 +14461,152 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nUpdate ROADMAP.md to mark Epic G and AP-060 as DONE with dates and task IDs.\n\n## Scope\n\nEdit ROADMAP.md status lines for Epic G/AP-060.\n\n## Risks\n\nLow risk; ensure dates and task IDs match completed work.\n\n## Verify Steps\n\n- Open ROADMAP.md and confirm Epic G/AP-060 marked DONE with correct task IDs.\n\n## Verification\n\nVerified on 2026-02-05: ROADMAP.md updated with Epic G/AP-060 DONE status lines.\n\n## Rollback Plan\n\nRevert ROADMAP.md status lines for Epic G/AP-060."
+    },
+    {
+      "id": "202602051415-7WY5CX",
+      "title": "Epic H: Backend architecture refresh",
+      "description": "Make backends first-class (local + redmine), decouple from recipes, and support selection at init.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "epic"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "f51118d0e7df71f0e94a0d1ee84149e17f7efa4b",
+        "message": "📝 V40XE1 update backend docs and init tests"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: backend selection at init and first-class backend docs/tests complete."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:21:38.479Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nEpic H: make backends first-class (local/redmine), decouple from recipes, and allow init-time backend choice.\n\n## Scope\n\nAdd init backend selection, write backend configs, update docs and tests, and close Epic H.\n\n## Risks\n\nInit flow changes may break non-interactive usage; add tests for --backend selection and defaults.\n\n## Verify Steps\n\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Run node packages/agentplane/bin/agentplane.js hooks run pre-commit.\\n- Confirm init selects backend and writes config.\n\n## Verification\n\nVerified on 2026-02-05: init backend selection implemented, docs/tests updated, lint/test/pre-commit hooks passed.\n\n## Rollback Plan\n\nRevert init/backend changes and restore previous backend config defaults."
+    },
+    {
+      "id": "202602051415-SFC4Q6",
+      "title": "AP-070a: Backend selection at init",
+      "description": "Add init flag/prompt to choose local vs redmine backend and write config for selected backend (create both configs).",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "backend",
+        "cli"
+      ],
+      "verify": [
+        "bun run lint",
+        "bun run test:fast"
+      ],
+      "commit": {
+        "hash": "cce2f88e5946ebeae4cf6fa898fc93278c1ae92f",
+        "message": "✨ SFC4Q6 add init backend selection"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: add init backend selection flag/prompt and write backend config templates."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run lint/test:fast and pre-commit hooks; init now supports backend selection."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:21:15.704Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd init backend choice and write config files for local/redmine backends.\n\n## Scope\n\nExtend init flags and prompts for backend selection, write backend config files, and update config to selected backend path.\n\n## Risks\n\nNon-interactive init may require new flag; ensure default remains local.\n\n## Verify Steps\n\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Run node packages/agentplane/bin/agentplane.js hooks run pre-commit.\\n- Validate init writes backend config path for local/redmine.\n\n## Verification\n\nVerified on 2026-02-05: bun run lint, bun run test:fast, hooks pre-commit; init now supports --backend selection and writes config paths.\n\n## Rollback Plan\n\nRevert init backend selection changes and restore single local backend config path."
+    },
+    {
+      "id": "202602051415-V40XE1",
+      "title": "AP-070b: Backend docs and tests",
+      "description": "Update docs to clarify backends are first-class (not recipes) and add init tests for backend selection.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "TESTER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "backend",
+        "docs"
+      ],
+      "verify": [
+        "bun run lint",
+        "bun run test:fast"
+      ],
+      "commit": {
+        "hash": "f51118d0e7df71f0e94a0d1ee84149e17f7efa4b",
+        "message": "📝 V40XE1 update backend docs and init tests"
+      },
+      "comments": [
+        {
+          "author": "TESTER",
+          "body": "Start: update backend docs and add init tests for backend selection."
+        },
+        {
+          "author": "TESTER",
+          "body": "Verified: bun run lint/test:fast; docs and init tests updated for backend selection."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:21:24.946Z",
+      "doc_updated_by": "TESTER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nUpdate backend docs and add init tests for backend selection.\n\n## Scope\n\nUpdate docs to state backends are first-class; add init tests for --backend flag and config paths.\n\n## Risks\n\nDocs/tests may drift if init defaults change; keep assertions minimal and resilient.\n\n## Verify Steps\n\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Confirm init backend tests pass and docs updated.\n\n## Verification\n\nVerified on 2026-02-05: bun run lint, bun run test:fast; init tests and backend docs updated.\n\n## Rollback Plan\n\nRevert docs and tests for backend selection changes."
+    },
+    {
+      "id": "202602051421-FGZMJT",
+      "title": "Update ROADMAP Epic H status",
+      "description": "Mark Epic H/AP-070 as DONE in ROADMAP.md.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "roadmap"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "12fc4bc6e5da39c36f9f12725e20fe3a4fda06b3",
+        "message": "📝 FGZMJT update roadmap Epic H status"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: update ROADMAP Epic H/AP-070 status."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: ROADMAP.md updated with Epic H/AP-070 DONE status lines."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:23:34.514Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nUpdate ROADMAP.md to mark Epic H and AP-070 as DONE with task IDs.\n\n## Scope\n\nEdit ROADMAP.md status lines for Epic H/AP-070.\n\n## Risks\n\nLow risk; ensure dates and task IDs match completed work.\n\n## Verify Steps\n\n- Open ROADMAP.md and confirm Epic H/AP-070 marked DONE with correct task IDs.\n\n## Verification\n\nVerified on 2026-02-05: ROADMAP.md updated with Epic H/AP-070 DONE status lines.\n\n## Rollback Plan\n\nRevert ROADMAP.md status lines for Epic H/AP-070."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "f5160bf4b87e202eee1976a9a76180f5f0d4834decbd8d7fd0b64bf563b27c30"
+    "checksum": "b19626b64f40599612ed411ded4eae8a31d798545e97ed022930639a0f5ce331"
   }
 }

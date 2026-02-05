@@ -1,17 +1,18 @@
 ---
 id: "202602051415-V40XE1"
 title: "AP-070b: Backend docs and tests"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on: []
 tags: ["roadmap", "backend", "docs"]
 verify: ["bun run lint", "bun run test:fast"]
-commit: null
+commit: { hash: "f51118d0e7df71f0e94a0d1ee84149e17f7efa4b", message: "📝 V40XE1 update backend docs and init tests" }
 comments:
   - { author: "TESTER", body: "Start: update backend docs and add init tests for backend selection." }
+  - { author: "TESTER", body: "Verified: bun run lint/test:fast; docs and init tests updated for backend selection." }
 doc_version: 2
-doc_updated_at: "2026-02-05T14:20:19.171Z"
+doc_updated_at: "2026-02-05T14:21:24.946Z"
 doc_updated_by: "TESTER"
 description: "Update docs to clarify backends are first-class (not recipes) and add init tests for backend selection."
 id_source: "generated"

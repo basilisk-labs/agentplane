@@ -1,17 +1,18 @@
 ---
 id: "202602051415-SFC4Q6"
 title: "AP-070a: Backend selection at init"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["roadmap", "backend", "cli"]
 verify: ["bun run lint", "bun run test:fast"]
-commit: null
+commit: { hash: "cce2f88e5946ebeae4cf6fa898fc93278c1ae92f", message: "✨ SFC4Q6 add init backend selection" }
 comments:
   - { author: "CODER", body: "Start: add init backend selection flag/prompt and write backend config templates." }
+  - { author: "CODER", body: "Verified: bun run lint/test:fast and pre-commit hooks; init now supports backend selection." }
 doc_version: 2
-doc_updated_at: "2026-02-05T14:20:11.264Z"
+doc_updated_at: "2026-02-05T14:21:15.704Z"
 doc_updated_by: "CODER"
 description: "Add init flag/prompt to choose local vs redmine backend and write config for selected backend (create both configs)."
 id_source: "generated"
