@@ -401,6 +401,31 @@ describe("LocalBackend", () => {
     expect(raw.tasks).toHaveLength(1);
   });
 
+  it("writes a task index cache for local tasks", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300002-ABCD",
+      title: "Index",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await backend.writeTask(task);
+    await backend.listTasks();
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v1.json");
+    const parsed = JSON.parse(await readFile(indexPath, "utf8")) as {
+      schema_version: number;
+      tasks: { task: TaskData }[];
+    };
+    expect(parsed.schema_version).toBe(1);
+    expect(parsed.tasks).toHaveLength(1);
+    expect(parsed.tasks[0]?.task.id).toBe(task.id);
+  });
+
   it("defaults doc_updated_by to last comment author", async () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "agentplane" });
     const task: TaskData = {
