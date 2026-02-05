@@ -5395,7 +5395,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--root", root]);
+      const code = await runCli(["verify", taskId, "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("no verify commands configured");
     } finally {
@@ -5432,7 +5432,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--require", "--root", root]);
+      const code = await runCli(["verify", taskId, "--require", "--yes", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("no verify commands configured");
     } finally {
@@ -5500,7 +5500,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--root", root]);
+      const code = await runCli(["verify", taskId, "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ verify passed");
     } finally {
@@ -5582,7 +5582,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--skip-if-unchanged", "--root", root]);
+      const code = await runCli(["verify", taskId, "--skip-if-unchanged", "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("verify skipped");
     } finally {
@@ -5624,7 +5624,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--nope", "--root", root]);
+      const code = await runCli(["verify", taskId, "--nope", "--yes", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage: agentplane verify");
     } finally {
@@ -5669,7 +5669,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--quiet", "--root", root]);
+      const code = await runCli(["verify", taskId, "--quiet", "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout.trim()).toBe("");
     } finally {
@@ -5709,7 +5709,7 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const outside = path.join(os.tmpdir(), "agentplane-verify-outside");
-      const code = await runCli(["verify", taskId, "--cwd", outside, "--root", root]);
+      const code = await runCli(["verify", taskId, "--cwd", outside, "--yes", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("--cwd must stay under repo root");
     } finally {
@@ -5749,7 +5749,7 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const outside = path.join(os.tmpdir(), "agentplane-verify.log");
-      const code = await runCli(["verify", taskId, "--log", outside, "--root", root]);
+      const code = await runCli(["verify", taskId, "--log", outside, "--yes", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("--log must stay under repo root");
     } finally {
@@ -5794,7 +5794,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--root", root]);
+      const code = await runCli(["verify", taskId, "--yes", "--root", root]);
       expect(code).toBe(3);
       expect(io.stderr).toContain("Verify command failed");
     } finally {
@@ -5841,7 +5841,7 @@ describe("runCli", () => {
     process.env.AGENTPLANE_TASK_ID = taskId;
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", "--quiet", "--root", root]);
+      const code = await runCli(["verify", "--quiet", "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout.trim()).toBe("");
     } finally {
@@ -8987,7 +8987,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    expect(subject.trim()).toContain("agentplane 0.1.4");
+    expect(subject.trim()).toContain("agentplane 0.1.5");
 
     const { stdout: baseBranch } = await execFileAsync(
       "git",
@@ -9084,7 +9084,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    expect(subject.trim()).toContain("agentplane 0.1.4");
+    expect(subject.trim()).toContain("agentplane 0.1.5");
 
     const { stdout: baseBranch } = await execFileAsync(
       "git",

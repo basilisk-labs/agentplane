@@ -151,8 +151,8 @@ describe("runCli recipes", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
-      expect(code).toBe(3);
-      expect(io.stderr).toContain("Unsafe archive entry");
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("invalid relative path");
     } finally {
       io.restore();
     }
