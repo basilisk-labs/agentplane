@@ -5,7 +5,7 @@ description: "How .agentplane/config.json works and how to change it safely."
 
 ## Overview
 
-Agent Plane reads configuration from `.agentplane/config.json`. Use the CLI to view and update settings to avoid invalid edits.
+Agent Plane reads configuration from `.agentplane/config.json`. Use the CLI to view and update settings to avoid invalid edits. The file is validated against the config schema and missing fields are filled with schema defaults.
 
 ```bash
 agentplane config show
