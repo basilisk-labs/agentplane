@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
@@ -20,6 +20,13 @@ import {
 } from "@agentplaneorg/core";
 
 import { loadDotEnv } from "../shared/env.js";
+import {
+  buildTaskIndexEntry,
+  loadTaskIndex,
+  resolveTaskIndexPath,
+  saveTaskIndex,
+  type TaskIndexEntry,
+} from "./task-index.js";
 
 const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${TASK_ID_ALPHABET}]{4,}$`);
 const DEFAULT_DOC_UPDATED_BY = "agentplane";
@@ -353,10 +360,40 @@ export class LocalBackend implements TaskBackend {
   async listTasks(): Promise<TaskData[]> {
     const tasks: TaskData[] = [];
     const entries = await readdir(this.root, { withFileTypes: true }).catch(() => []);
+    const indexPath = resolveTaskIndexPath(this.root);
+    const cachedIndex = await loadTaskIndex(indexPath);
+    const cachedByPath = new Map<string, TaskIndexEntry>();
+    if (cachedIndex) {
+      for (const entry of cachedIndex.tasks) {
+        cachedByPath.set(entry.readmePath, entry);
+      }
+    }
+    const nextIndex: TaskIndexEntry[] = [];
     const seen = new Set<string>();
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
       const readme = path.join(this.root, entry.name, "README.md");
+      let stats;
+      try {
+        stats = await stat(readme);
+      } catch {
+        continue;
+      }
+      if (!stats.isFile()) continue;
+      const cached = cachedByPath.get(readme);
+      if (cached?.mtimeMs === stats.mtimeMs) {
+        const taskId = cached.task.id.trim();
+        if (taskId) {
+          validateTaskId(taskId);
+          if (seen.has(taskId)) {
+            throw new Error(`Duplicate task id in local backend: ${taskId}`);
+          }
+          seen.add(taskId);
+        }
+        tasks.push(cached.task);
+        nextIndex.push(cached);
+        continue;
+      }
       let text = "";
       try {
         text = await readFile(readme, "utf8");
@@ -386,6 +423,12 @@ export class LocalBackend implements TaskBackend {
         readmePath: readme,
       });
       tasks.push(task);
+      nextIndex.push(buildTaskIndexEntry(task, readme, stats.mtimeMs));
+    }
+    try {
+      await saveTaskIndex(indexPath, { schema_version: 1, tasks: nextIndex });
+    } catch {
+      // Best-effort cache; ignore failures.
     }
     return tasks;
   }
