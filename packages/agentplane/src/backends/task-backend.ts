@@ -3,13 +3,13 @@ import { mkdir, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  atomicWriteFile,
+  atomicWriteFile as atomicWriteFileCore,
   canonicalizeJson,
   docChanged,
-  extractTaskDoc,
-  generateTaskId,
+  extractTaskDoc as extractTaskDocCore,
+  generateTaskId as generateTaskIdCore,
   loadConfig,
-  mergeTaskDoc,
+  mergeTaskDoc as mergeTaskDocCore,
   parseTaskReadme,
   renderTaskReadme,
   resolveProject,
@@ -32,6 +32,25 @@ import {
 const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${TASK_ID_ALPHABET}]{4,}$`);
 const DEFAULT_DOC_UPDATED_BY = "agentplane";
 const DOC_VERSION = 2;
+
+type AtomicWriteFile = (
+  filePath: string,
+  contents: string | Buffer,
+  encoding?: BufferEncoding,
+) => Promise<void>;
+type ExtractTaskDoc = (body: string) => string;
+type MergeTaskDoc = (body: string, doc: string) => string;
+type GenerateTaskId = (opts: {
+  length: number;
+  attempts: number;
+  isAvailable?: (taskId: string) => boolean | Promise<boolean>;
+  date?: Date;
+}) => Promise<string>;
+
+const atomicWriteFile: AtomicWriteFile = atomicWriteFileCore;
+const extractTaskDoc: ExtractTaskDoc = extractTaskDocCore;
+const mergeTaskDoc: MergeTaskDoc = mergeTaskDocCore;
+const generateTaskId: GenerateTaskId = generateTaskIdCore;
 
 function nowIso(): string {
   return new Date().toISOString();
@@ -130,7 +149,7 @@ function resolveDocUpdatedByFromTask(task: TaskData, fallback: string): string {
   return fallbackValue || fallback;
 }
 
-export { extractTaskDoc, mergeTaskDoc } from "@agentplaneorg/core";
+export { extractTaskDoc, mergeTaskDoc };
 
 function validateTaskId(taskId: string): void {
   if (TASK_ID_RE.test(taskId)) return;
