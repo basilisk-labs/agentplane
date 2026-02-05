@@ -14966,7 +14966,7 @@
       "id": "202602051525-P4N6RJ",
       "title": "AP-081: Scenario run audit report",
       "description": "Write report.json for recipe scenario runs with redacted args/env and git diff summary.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -14976,20 +14976,32 @@
         "audit"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "a7966005b50bf8cb886195df6a6e6c3801ecff7e",
+        "message": "✨ P4N6RJ add scenario audit report"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Add scenario run audit report with redaction, update tests/docs, and verify via test:fast."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Added scenario run audit report (report.json) with redacted args/env keys and git summary; bun run test:fast."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T15:26:08.710Z",
+      "doc_updated_at": "2026-02-05T15:49:18.637Z",
       "doc_updated_by": "CODER",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nAdd audit report for scenario runs with redaction and git diff summary.\n\n## Scope\n\n- Add report.json under run directory.\n- Include timestamps, recipe/scenario ids, steps with redacted args, env keys, and git diff summary.\n- Update tests and docs.\n\n## Risks\n\n- Redaction rules might miss secrets.\n- Git diff summary may include unrelated changes.\n\n## Verify Steps\n\n- Run bun run test:fast.\n- Run scenario tests and confirm report.json is written with redacted args and env keys only.\n\n## Verification\n\nPending.\n\n## Rollback Plan\n\n- Revert report.json generation and related test updates."
+      "doc": "## Summary\n\nAdd audit report for scenario runs with redaction and git diff summary.\n\n## Scope\n\n- Add report.json under run directory.\n- Include timestamps, recipe/scenario ids, steps with redacted args, env keys, and git diff summary.\n- Update tests and docs.\n\n## Risks\n\n- Redaction rules might miss secrets.\n- Git diff summary may include unrelated changes.\n\n## Verify Steps\n\n- Run bun run test:fast.\n- Run scenario tests and confirm report.json is written with redacted args and env keys only.\n\n## Verification\n\nPending.\n\n- ✅ bun run test:fast (pass).\\n- ✅ Scenario audit report assertions in recipes tests (redacted args/env keys, report.json on failure).\n\n## Rollback Plan\n\n- Revert report.json generation and related test updates."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "9f74062a331f3f9535e8dccfbe2d8b06e0d8e1d704de71784321721323129fe6"
+    "checksum": "fc7b06e6e3e9c2d5c639aeb914bd3f7a3d628ee2e99749dd485c8bb6eef94386"
   }
 }
