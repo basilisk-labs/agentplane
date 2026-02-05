@@ -1,8 +1,9 @@
 import { createHash } from "node:crypto";
-import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import {
+  atomicWriteFile,
   canonicalizeJson,
   docChanged,
   extractTaskDoc,
@@ -331,7 +332,7 @@ export async function writeTasksExportFromTasks(opts: {
 }): Promise<void> {
   const snapshot = buildTasksExportSnapshotFromTasks(opts.tasks);
   await mkdir(path.dirname(opts.outputPath), { recursive: true });
-  await writeFile(opts.outputPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
+  await atomicWriteFile(opts.outputPath, `${JSON.stringify(snapshot, null, 2)}\n`);
 }
 
 export class LocalBackend implements TaskBackend {
@@ -524,7 +525,7 @@ export class LocalBackend implements TaskBackend {
 
     await mkdir(path.dirname(readme), { recursive: true });
     const text = renderTaskReadme(payload, body || "");
-    await writeFile(readme, text.endsWith("\n") ? text : `${text}\n`, "utf8");
+    await atomicWriteFile(readme, text.endsWith("\n") ? text : `${text}\n`);
   }
 
   async setTaskDoc(taskId: string, doc: string, updatedBy?: string): Promise<void> {
@@ -547,7 +548,7 @@ export class LocalBackend implements TaskBackend {
       frontmatter.doc_version = DOC_VERSION;
     }
     const next = renderTaskReadme(frontmatter, body);
-    await writeFile(readme, next.endsWith("\n") ? next : `${next}\n`, "utf8");
+    await atomicWriteFile(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
 
   async touchTaskDocMetadata(taskId: string, updatedBy?: string): Promise<void> {
@@ -563,7 +564,7 @@ export class LocalBackend implements TaskBackend {
       this.updatedBy,
     );
     const next = renderTaskReadme(frontmatter, parsed.body || "");
-    await writeFile(readme, next.endsWith("\n") ? next : `${next}\n`, "utf8");
+    await atomicWriteFile(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
 
   async writeTasks(tasks: TaskData[]): Promise<void> {
