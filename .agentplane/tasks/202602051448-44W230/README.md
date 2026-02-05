@@ -1,15 +1,17 @@
 ---
 id: "202602051448-44W230"
 title: "Redmine smoke test (push/pull + field parity)"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["redmine", "testing"]
 verify: []
-comments: []
+commit: { hash: "869f46a7e953004bf3c7bfc248c30323b1a9cc45", message: "🧪 44W230 redmine smoke test" }
+comments:
+  - { author: "ORCHESTRATOR", body: "Verified: redmine pull/push ok; created task 202602051450-6Z591S. Title/description stored; tags empty; priority coerced to med; owner REDMINE. Local task shows full fields." }
 doc_version: 2
-doc_updated_at: "2026-02-05T14:53:20.966Z"
+doc_updated_at: "2026-02-05T14:53:54.662Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Test Redmine backend connection in both directions and compare stored fields vs local backend."
 id_source: "generated"

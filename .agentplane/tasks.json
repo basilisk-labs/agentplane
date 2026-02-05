@@ -12956,6 +12956,114 @@
       "doc": "## Summary\n\nRemoved external Codex worktrees for agentplane under `~/.codex/worktrees` and pruned git worktree metadata.\n\n## Scope\n\nIdentified external worktrees, removed the directories, and ran `git worktree prune`.\n\n## Risks\n\nIf any external worktree was still needed, it was removed; no changes were made to repo contents.\n\n## Verify Steps\n\n1. Run `git worktree list` and confirm only the main repo remains.\n2. Confirm `~/.codex/worktrees` has no `agentplane` worktrees.\n\n## Rollback Plan\n\nRecreate the external worktree via `git worktree add` if required."
     },
     {
+      "id": "202602040930-T8BZ9D",
+      "title": "Минимальная домашняя страница птицефабрики",
+      "description": "Сделать минимальную статическую домашнюю страницу для птицефабрики.",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "REDMINE",
+      "depends_on": [],
+      "tags": [],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-04T10:41:26Z",
+      "doc_updated_by": "REDMINE",
+      "dirty": false,
+      "id_source": "custom"
+    },
+    {
+      "id": "202602040938-8RCKGY",
+      "title": "Альтернативная версия сайта про гусей",
+      "description": "Сделать альтернативную минимальную статическую домашнюю страницу птицефабрики с фокусом на гусей.",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "REDMINE",
+      "depends_on": [],
+      "tags": [],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-04T10:41:27Z",
+      "doc_updated_by": "REDMINE",
+      "dirty": false,
+      "id_source": "custom"
+    },
+    {
+      "id": "202602040942-AJTXCE",
+      "title": "Переключить режим на branch_pr",
+      "description": "Зафиксировать смену workflow_mode на branch_pr.",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "REDMINE",
+      "depends_on": [],
+      "tags": [],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-04T10:41:28Z",
+      "doc_updated_by": "REDMINE",
+      "dirty": false,
+      "id_source": "custom"
+    },
+    {
+      "id": "202602040958-MJJ6EH",
+      "title": "Установить рецепт Redmine",
+      "description": "Установить рецепт Redmine через agentplane recipes и проверить доступность.",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "REDMINE",
+      "depends_on": [],
+      "tags": [],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-04T10:41:30Z",
+      "doc_updated_by": "REDMINE",
+      "dirty": false,
+      "id_source": "custom"
+    },
+    {
+      "id": "202602041001-PG9JH7",
+      "title": "Установить backend-конфиг Redmine",
+      "description": "Установить шаблон backend-конфига Redmine и зафиксировать артефакты рецепта.",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "REDMINE",
+      "depends_on": [],
+      "tags": [],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-04T10:41:33Z",
+      "doc_updated_by": "REDMINE",
+      "dirty": false,
+      "id_source": "custom"
+    },
+    {
+      "id": "202602041035-X3CJ1J",
+      "title": "Переключить backend на Redmine и push задач",
+      "description": "Переключить workflow_mode на direct, backend на Redmine и выполнить push текущих задач в Redmine.",
+      "status": "TODO",
+      "priority": "med",
+      "owner": "REDMINE",
+      "depends_on": [],
+      "tags": [],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-04T10:44:47Z",
+      "doc_updated_by": "REDMINE",
+      "dirty": false,
+      "id_source": "custom"
+    },
+    {
       "id": "202602050527-2VHF3R",
       "title": "AP-001: Align exit codes with CLI contract",
       "description": "Unify exit codes for E_NETWORK/E_BACKEND per cli-contract; add tests.",
@@ -14672,12 +14780,42 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nStandardize backend config shape (id/version/settings), treat module/class as legacy, and document the format.\n\n## Scope\n\nAdd backend config validation in loadTaskBackend, ignore module/class legacy fields, update docs/user/backends.mdx with standardized format, add tests.\n\n## Risks\n\nPotentially stricter config validation could reject existing configs; keep validation minimal and backward-tolerant.\n\n## Verify Steps\n\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Confirm loadTaskBackend accepts standardized config and ignores legacy module/class fields.\n\n## Verification\n\n- bun run lint\n- bun run test:fast\n- node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\nStatus: pass\nVerified at: 2026-02-05T14:43:05.971Z\nVerified sha: bed62fcdb343c1d09b00839a0206a7da84f383ac\n\nCommands:\n- bun run lint\n- bun run test:fast\n\nManual steps:\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Confirm loadTaskBackend accepts standardized config and ignores legacy module/class fields.\n\n## Rollback Plan\n\nRevert backend config validation and docs changes if compatibility issues appear."
+    },
+    {
+      "id": "202602051448-44W230",
+      "title": "Redmine smoke test (push/pull + field parity)",
+      "description": "Test Redmine backend connection in both directions and compare stored fields vs local backend.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "redmine",
+        "testing"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "869f46a7e953004bf3c7bfc248c30323b1a9cc45",
+        "message": "🧪 44W230 redmine smoke test"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: redmine pull/push ok; created task 202602051450-6Z591S. Title/description stored; tags empty; priority coerced to med; owner REDMINE. Local task shows full fields."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:53:54.662Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nSmoke-test Redmine backend connectivity (pull/push) and compare stored fields vs local backend.\n\n## Scope\n\n- Use Redmine backend credentials from .env.\n- Run sync pull and push.\n- Create and inspect a Redmine task to confirm field parity with local backend outputs.\n- Leave repo files unchanged after test.\n\n## Risks\n\n- Redmine sandbox data may be mutated (expected).\n- Local config may be temporarily changed and must be restored.\n\n## Verify Steps\n\n- Run agentplane sync redmine --direction pull --yes.\n- Run agentplane sync redmine --direction push --yes.\n- Switch tasks backend to Redmine temporarily, create a task with title/description/owner/tags/priority, then show it and confirm the same fields appear as when listing local tasks.\n- Restore tasks backend to local config.\n\n## Verification\n\nPending.\n\n- agentplane sync redmine --direction pull --yes (ok, pulled 6 tasks).\n- agentplane sync redmine --direction push --yes (ok, no local changes).\n- Created Redmine task 202602051450-6Z591S; task show returned title/description/status/doc metadata, but priority coerced to med, owner to REDMINE, tags empty (tag/priority/owner mismatch vs requested).\n- Local task 202602051439-H7JERJ shows tags/priority/owner/verify/commit/comments preserved.\n- Restored tasks_backend.config_path to local.\n\n## Rollback Plan\n\n- Reset tasks_backend.config_path to .agentplane/backends/local/backend.json.\n- Discard any local changes if accidentally created."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "9f361f097c716a7eaf06d0341ec4b481fd30ba50035ef5e60466f20efa585c6e"
+    "checksum": "abf024ee39b16272ee967768e358f7c001a1a0542cea05ef0d9900523d838018"
   }
 }
