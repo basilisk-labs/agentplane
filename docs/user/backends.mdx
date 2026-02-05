@@ -21,6 +21,70 @@ Remote backends (for example Redmine) are optional and should be configured expl
 - Custom field mappings for task metadata.
 - Sync direction and conflict policy.
 
+## Redmine setup (required fields and config)
+
+Redmine requires custom fields to preserve task metadata. Without them, tags/priority/owner may be lost and task docs cannot be stored.
+
+### 1) Redmine project prerequisites
+
+- Create a Redmine project and generate an API key for the service account.
+- Ensure the account can read/write issues in the target project.
+
+### 2) Required custom fields
+
+Create the following Redmine custom fields and note their numeric IDs:
+
+- `task_id` (required). Recommended type: Text.
+- `doc` (required if you want task docs). Recommended type: Text.
+- `doc_version` (required if you want task docs). Recommended type: Text or Integer.
+- `doc_updated_at` (required if you want task docs). Recommended type: Text.
+- `doc_updated_by` (required if you want task docs). Recommended type: Text.
+
+### 3) Environment variables
+
+Set these in `.env` (the CLI reads them on startup):
+
+- `CODEXSWARM_REDMINE_URL`
+- `CODEXSWARM_REDMINE_API_KEY`
+- `CODEXSWARM_REDMINE_PROJECT_ID`
+- `CODEXSWARM_REDMINE_ASSIGNEE_ID` (optional)
+- `CODEXSWARM_REDMINE_OWNER` or `CODEXSWARM_REDMINE_OWNER_AGENT` (optional)
+- `CODEXSWARM_REDMINE_CUSTOM_FIELDS_TASK_ID`
+- `CODEXSWARM_REDMINE_CUSTOM_FIELDS_DOC` (required for docs)
+- `CODEXSWARM_REDMINE_CUSTOM_FIELDS_DOC_VERSION` (required for docs)
+- `CODEXSWARM_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_AT` (required for docs)
+- `CODEXSWARM_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_BY` (required for docs)
+- `CODEXSWARM_REDMINE_BATCH_SIZE` (optional)
+- `CODEXSWARM_REDMINE_BATCH_PAUSE` (optional)
+
+### 4) Backend config example
+
+```json
+{
+  "id": "redmine",
+  "version": 1,
+  "settings": {
+    "url": "https://redmine.example",
+    "api_key": "replace-me",
+    "project_id": "replace-me",
+    "owner_agent": "REDMINE",
+    "custom_fields": {
+      "task_id": 1,
+      "doc": 2,
+      "doc_version": 3,
+      "doc_updated_at": 4,
+      "doc_updated_by": 5
+    },
+    "batch_size": 20,
+    "batch_pause": 0.5
+  }
+}
+```
+
+### 5) Parity caveat
+
+If you need tag/priority/owner parity with the local backend, you must map those fields to Redmine custom fields and update the backend implementation accordingly. By default, Redmine only guarantees `task_id` and task docs when the fields above are configured.
+
 ## Sync model
 
 Use explicit sync commands:
