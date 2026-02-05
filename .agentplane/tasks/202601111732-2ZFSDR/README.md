@@ -20,26 +20,22 @@ description: "Align GitHub task sync scripts with current backend/schema and kee
 
 Update GitHub task sync scripts/workflow to match current backend schema and keep viewer.sh during cleanup.
 
-
 ## Scope
 
 - Align .github/scripts/sync_tasks.py with current tasks export fields and backend behavior.
 - Adjust .github/workflows/sync-tasks.yml if needed for new args/envs.
 - Remove viewer.sh from clean scripts so it is preserved.
 
-
 ## Risks
 
 - GitHub API schema or project fields may differ from expected values.
 - Workflow token permissions could block updates.
-
 
 ## Verify Steps
 
 - .venv/bin/ruff format .
 - .venv/bin/ruff check .
 - .venv/bin/mypy
-
 
 ## Rollback Plan
 

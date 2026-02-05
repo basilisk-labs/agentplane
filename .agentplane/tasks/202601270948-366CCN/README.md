@@ -21,25 +21,21 @@ description: "Implement YAML frontmatter parsing and stable rendering for task R
 
 Implement AP-008: parse YAML frontmatter from task README.md and render it back in a stable, agentctl-compatible format (byte-stable for roundtrips).
 
-
 ## Scope
 
 - Add core parser for Markdown YAML frontmatter blocks
 - Add stable renderer for task frontmatter (agentctl v2 style: key order, quoting, flow sequences/maps)
 - Add roundtrip/golden tests using representative task README fixtures
 
-
 ## Risks
 
 - YAML formatting must match existing task README frontmatter to avoid noisy diffs.
 - Handling unknown/extra frontmatter keys requires deterministic ordering to stay stable.
 
-
 ## Verify Steps
 
 - `bun run ci`
 - Unit tests demonstrate parse->render roundtrip stability
-
 
 ## Rollback Plan
 

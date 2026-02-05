@@ -19,31 +19,25 @@ description: "Add .agent-plane/RECIPES.md with global prompt guidance, reference
 
 Documented recipe prompt rules and updated docs to reference the new recipes CLI.
 
-
 ## Context
 
 Updated .agent-plane/RECIPES.md and referenced it from AGENTS.md, README.md, docs/README.md, docs/09-commands.md, and .agent-plane/recipes/prd.md.
-
 
 ## Scope
 
 Added global recipe prompt guidance and refreshed documentation pointers to recipes.py and inventory/bundle usage.
 
-
 ## Risks
 
 Docs can drift if recipe CLI behavior changes; keep RECIPES.md aligned with recipes.py updates.
-
 
 ## Verify Steps
 
 Manual review of recipe docs for correct recipes.py references.
 
-
 ## Rollback Plan
 
 Revert the documentation commit for this task if the recipes guidance needs to be rolled back.
-
 
 ## Notes
 

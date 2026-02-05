@@ -21,11 +21,9 @@ description: "Make agentctl.md the single source of truth for commit format; upd
 - Replaced per-agent commit format instructions with a single agentctl reference.
 - Aligned AGENTS.md commit guidance to the agentctl format source of truth.
 
-
 ## Goal
 
 - Ensure commit formatting is defined in one place and referenced everywhere else.
-
 
 ## Scope
 
@@ -33,16 +31,13 @@ description: "Make agentctl.md the single source of truth for commit format; upd
 - @AGENTS.md
 - @.agent-plane/agents/*.json
 
-
 ## Risks
 
 - Low: format changes now require updates only in agentctl.
 
-
 ## Verify Steps
 
 - None (doc/instruction changes only).
-
 
 ## Rollback Plan
 

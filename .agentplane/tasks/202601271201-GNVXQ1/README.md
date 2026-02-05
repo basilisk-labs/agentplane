@@ -20,21 +20,17 @@ description: "Implement start/block/finish for direct mode with comments, commit
 
 Added block/finish commands, enabled env task-id fallback, and expanded CLI coverage for direct workflow status updates.
 
-
 ## Scope
 
 - Implement block and finish CLI flows with comment validation and status updates.\n- Add env-based task id fallback for start/block/finish.\n- Expand CLI tests to meet coverage gates.
-
 
 ## Risks
 
 - Direct workflow status changes could regress lint/export flow; mitigated by CI coverage tests.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

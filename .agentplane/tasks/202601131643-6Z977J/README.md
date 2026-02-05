@@ -21,26 +21,21 @@ id_source: "custom"
 
 Auto-create the top-level task after plan approval and remove the post-approval task prompt.
 
-
 ## Scope
 
 AGENTS.md; .agent-plane/agents/ORCHESTRATOR.json; .agent-plane/agentctl.md.
-
 
 ## Risks
 
 Low: documentation/instruction changes only; risk is confusing guidance if misread.
 
-
 ## Verify Steps
 
 None (doc-only change).
 
-
 ## Rollback Plan
 
 Revert commit e701172accef.
-
 
 ## Notes
 

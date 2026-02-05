@@ -19,21 +19,17 @@ description: "Implement guard for staged paths with allow/deny rules and suggest
 
 Add guard commands and git-status helpers for allowlisted staged commits.
 
-
 ## Scope
 
 CLI guard subcommands for clean/suggest/commit; core git status helpers; tests and help updates.
-
 
 ## Risks
 
 Guard may block commits if allowlist parsing mismatches git status output.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

@@ -20,21 +20,17 @@ description: "Speed up test runs, split suites for faster feedback, reduce timeo
 
 Optimize test runtime and modularity across CLI suites while keeping coverage and stability.
 
-
 ## Scope
 
 Audit current test scripts/suites, split into fast/targeted sets, optimize slow/flaky areas, and update docs/CI guidance.
-
 
 ## Risks
 
 Suite reorganization could miss coverage or change execution order; tighter timeouts may surface new failures.
 
-
 ## Verify Steps
 
 Run fast suite and targeted suites; run full suite if time allows; ensure docs updated.
-
 
 ## Rollback Plan
 

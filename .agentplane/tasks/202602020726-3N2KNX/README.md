@@ -20,21 +20,17 @@ description: "Set basilisk-labs ownership metadata, ensure publish fields are co
 
 Update npm package metadata to list basilisk-labs as author/maintainer/contributor and prepare a publish checklist.
 
-
 ## Scope
 
 Adjust packages/agentplane/package.json metadata and provide publish steps for npmjs.
-
 
 ## Risks
 
 Incorrect ownership metadata could mislead npm readers; publish steps require user credentials and should be followed carefully.
 
-
 ## Verify Steps
 
 Not run (metadata-only change).
-
 
 ## Rollback Plan
 

@@ -19,21 +19,17 @@ description: "Review Node.js CLI code to explain recipes, their capabilities/con
 
 Documented Node CLI recipes usage and explain command across recipe docs and command references.
 
-
 ## Scope
 
 docs/recipes-how-it-works.mdx; docs/recipes-spec.mdx; docs/commands.mdx; docs/cli-contract.mdx.
-
 
 ## Risks
 
 Documentation can drift if recipes behavior changes; keep references up to date.
 
-
 ## Verify Steps
 
 Manual review of recipe docs and command references.
-
 
 ## Rollback Plan
 

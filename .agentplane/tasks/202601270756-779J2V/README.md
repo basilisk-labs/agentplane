@@ -20,25 +20,21 @@ description: "Define v1 recipe archive structure, manifest.json schema, optional
 
 Define the v1 recipes spec (package format, manifest schema, and CLI surface) so recipes remain optional extensions.
 
-
 ## Scope
 
 - Document archive layout (`manifest.json`, optional `agents/`, `tools/`, `scenarios/`, `assets/`).
 - Ship `manifest.json` JSON Schema v1.
 - Specify CLI commands and required outputs (`recipe list|info|install|remove|list-remote`, etc.).
 
-
 ## Risks
 
 - Security model is v1-warning-only; make sure spec surfaces permissions explicitly.
 - Manifest schema must stay small enough for "context minimization" goals.
 
-
 ## Verify Steps
 
 - Validate a sample `manifest.json` against the schema.
 - Confirm the CLI spec is compatible with offline-first constraints.
-
 
 ## Rollback Plan
 

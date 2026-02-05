@@ -21,26 +21,18 @@ id_source: "generated"
 
 Fix task doc updates to merge into existing sections, split concatenated headings, and prevent duplicate section headers.
 
-
-
 ## Scope
 
 Update doc normalization/merge logic in core and CLI/task-backend; add tests; clean up affected task READMEs (J9GHW7, XWJDAB, YAQ677).
-
-
 
 ## Risks
 
 Doc normalization could over-collapse unusual headings; mitigated with targeted parsing of concatenated headings.
 
-
-
 ## Verify Steps
 
 - bun run --filter=agentplane build -- --force
 - bun run --filter=@agentplaneorg/core build
-
-
 
 ## Rollback Plan
 

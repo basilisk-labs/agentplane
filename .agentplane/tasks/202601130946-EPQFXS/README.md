@@ -23,31 +23,25 @@ description: "Trim shared guidance in .agent-plane/agents/*.json to role-specifi
 
 - Task is no longer актуальна; closing without changes.
 
-
 ## Context
 
 Agent JSON files repeated common workflow rules; centralizing shared guidance in AGENTS.md and agentctl.md reduces prompt duplication. Batch task operations encourage write_tasks usage to reduce repeated writes.
-
 
 ## Scope
 
 - No changes; task closed as obsolete.
 
-
 ## Risks
 
 - Guidance may need revisit if agent JSONs diverge later.
-
 
 ## Verify Steps
 
 - None (task closed as not актуальна).
 
-
 ## Rollback Plan
 
 - Reopen the task if shared guidance needs consolidation.
-
 
 ## Notes
 

@@ -20,21 +20,17 @@ description: "Audit current docs, design a more detailed structure, and rewrite 
 
 - Audit existing docs and design a more complete developer documentation structure.\n- Rewrite and expand docs in clear English.
 
-
 ## Scope
 
 - Review docs/*.mdx and docs/docs.json.\n- Propose and implement a new detailed docs structure.\n- Populate new pages with developer-focused guidance.
-
 
 ## Risks
 
 - Large doc changes could introduce inconsistencies or outdated guidance.\n- Overly detailed docs might drift from actual CLI behavior.
 
-
 ## Verify Steps
 
 - Check docs/docs.json navigation matches new structure.\n- Spot-check key pages for clarity and accuracy.
-
 
 ## Rollback Plan
 

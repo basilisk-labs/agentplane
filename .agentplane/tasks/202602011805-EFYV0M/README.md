@@ -20,21 +20,17 @@ description: "Speed up slow/flaky tests, split heavy suites, and refine fast/ful
 
 Speed up Node.js CLI tests by reusing a cached git repo template and add modular CLI test scripts (unit vs slow suites).
 
-
 ## Scope
 
 Update test helpers to reuse git repo templates, add CLI test scripts for unit/slow suites, and refresh testing docs accordingly.
-
 
 ## Risks
 
 Cached git templates could mask issues if tests rely on a freshly initialized repo; ensure template stays minimal and empty.
 
-
 ## Verify Steps
 
 bun run test:fast\nbun run test:cli:unit\nbun run test:cli:slow
-
 
 ## Rollback Plan
 

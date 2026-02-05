@@ -21,25 +21,17 @@ id_source: "generated"
 
 Refreshed package READMEs to be npm-friendly with clear overview, install, quickstart, and links.
 
-
-
 ## Scope
 
 Update packages/agentplane/README.md and packages/core/README.md only.
-
-
 
 ## Risks
 
 Docs could drift from CLI behavior; mitigated by linking to canonical docs and keeping commands generic.
 
-
-
 ## Verify Steps
 
 Open both READMEs and confirm formatting, links, and referenced commands are valid for the CLI.
-
-
 
 ## Rollback Plan
 

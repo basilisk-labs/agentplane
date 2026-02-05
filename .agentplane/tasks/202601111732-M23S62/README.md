@@ -21,7 +21,6 @@ description: "Refactor agentctl and backend modules to pass strict mypy without 
 
 Refactor agentctl/backends to satisfy strict mypy without exclusions while preserving CLI behavior.
 
-
 ## Scope
 
 - Audit mypy errors in agentctl/backends and map fixes.
@@ -29,12 +28,10 @@ Refactor agentctl/backends to satisfy strict mypy without exclusions while prese
 - Narrow dynamic imports and casts so mypy can validate module loading.
 - Remove mypy excludes for agentctl/backends in pyproject.toml.
 
-
 ## Risks
 
 - Type refactors may change CLI edge cases or backend error handling.
 - Large surface area could require incremental migration to avoid regressions.
-
 
 ## Verify Steps
 
@@ -42,11 +39,9 @@ Refactor agentctl/backends to satisfy strict mypy without exclusions while prese
 - .venv/bin/ruff check .
 - .venv/bin/mypy
 
-
 ## Rollback Plan
 
 Revert refactor commits and restore previous mypy excludes; rerun ruff/mypy to confirm prior behavior.
-
 
 ## Notes
 

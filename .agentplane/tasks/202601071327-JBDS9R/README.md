@@ -21,27 +21,22 @@ description: "Minimize repeated snapshot mentions across AGENTS.md and agent JSO
 - Removed snapshot wording from agent role specs, relying on agentctl guidance.
 - Simplified workflow wording to avoid repeated export references.
 
-
 ## Goal
 
 - Keep snapshot handling centralized with a single explicit rule and agentctl references.
-
 
 ## Scope
 
 - @AGENTS.md
 - @.agent-plane/agents/*.json
 
-
 ## Risks
 
 - Low: reduced wording may require cross-check if new docs add snapshot references.
 
-
 ## Verify Steps
 
 - None (doc/instruction changes only).
-
 
 ## Rollback Plan
 

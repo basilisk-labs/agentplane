@@ -19,31 +19,25 @@ description: "Move planning/analysis helpers (roadmaps, spec drafting, decomposi
 
 Added the spec-to-tasks recipe to move spec decomposition into recipes and refreshed the recipes inventory.
 
-
 ## Context
 
 Phase 1 migration aims to move planning/decomposition helpers into recipes rather than core logic.
-
 
 ## Scope
 
 Created the spec-to-tasks recipe (manifest, scenario, inputs, runner) and updated docs/recipes-inventory.json via recipes.py scan.
 
-
 ## Risks
 
 Runner uses heuristic parsing of spec sections; complex specs may require manual refinement of the task draft.
-
 
 ## Verify Steps
 
 Ran python .agent-plane/recipes.py scan --recipes-dir .agent-plane/recipes --output docs/recipes-inventory.json to refresh the catalog.
 
-
 ## Rollback Plan
 
 Revert commit ce9a0aff3c97 to remove the spec-to-tasks recipe and inventory update.
-
 
 ## Notes
 

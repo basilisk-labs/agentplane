@@ -20,7 +20,6 @@ description: "Rewrite project documentation to match the Node.js agentplane CLI 
 
 Update all user-facing docs to describe the Node.js `agentplane` CLI and `.agentplane` project layout (not the current Python `agentctl`).
 
-
 ## Scope
 
 - Rewrite docs in `docs/` and root `README.md` to be Node-first.
@@ -28,18 +27,15 @@ Update all user-facing docs to describe the Node.js `agentplane` CLI and `.agent
 - Replace `python .agent-plane/agentctl.py ...` examples with `agentplane ...`.
 - Ensure docs match the offline-first/network-only-on-explicit-commands model.
 
-
 ## Risks
 
 - Docs may get ahead of implementation; clearly mark prototype/"not implemented yet" areas.
 - Changing operational docs (current python workflow) can disrupt contributors if not scoped.
 
-
 ## Verify Steps
 
 - `rg -n "agentctl|\.agent-plane" docs README.md` shows no stale Python-first guidance (except explicitly marked legacy notes).
 - `docs/cli-contract.md` is referenced as the source of truth for commands.
-
 
 ## Rollback Plan
 

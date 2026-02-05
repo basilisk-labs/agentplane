@@ -19,21 +19,17 @@ description: "Remove .github workflows/scripts and drop the GitHub sync recipe a
 
 Removed .github workflows/scripts and deleted the github-sync recipe plus catalog entry; updated docs to drop GitHub sync references.
 
-
 ## Scope
 
 Deleted .github/workflows/* and .github/scripts/sync_tasks.py; removed agentplane-recipes/recipes/github-sync and index entry; updated audit docs and recipes-spec list.
-
 
 ## Risks
 
 Removing GitHub sync assets prevents any GitHub Issues/Projects automation until reintroduced via a new recipe or workflow.
 
-
 ## Verify Steps
 
 (Docs-only change)
-
 
 ## Rollback Plan
 

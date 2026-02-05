@@ -20,21 +20,17 @@ description: "Track the recipes repository as a git submodule in the main repo r
 
 Add agentplane-recipes as a git submodule in the repo root.
 
-
 ## Scope
 
 - Add submodule at agentplane-recipes/ pointing to basilisk-labs/agentplane-recipes\n- Remove ignore rule that blocks submodule tracking
-
 
 ## Risks
 
 - Submodule requires network access for clones and updates
 
-
 ## Verify Steps
 
 - git submodule status
-
 
 ## Rollback Plan
 

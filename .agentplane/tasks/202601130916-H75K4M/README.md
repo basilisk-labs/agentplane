@@ -19,11 +19,9 @@ description: "Update clean.sh and clean.ps1 to use a Agent Plane Initialized com
 
 Add an opt-in hooks install prompt to clean scripts and update the initial commit message.
 
-
 ## Context
 
 clean.sh and clean.ps1 initialize a fresh repo; add an explicit opt-in prompt to install agent-plane hooks and update the initial commit subject.
-
 
 ## Scope
 
@@ -31,21 +29,17 @@ clean.sh and clean.ps1 initialize a fresh repo; add an explicit opt-in prompt to
 - Add an interactive prompt after the initial commit to optionally install hooks via agentctl.
 - Keep the hooks opt-in (no silent install).
 
-
 ## Risks
 
 Prompt could be missed in non-interactive runs; default remains no install to preserve opt-in behavior.
-
 
 ## Verify Steps
 
 Manual: run clean.sh / clean.ps1 in a disposable repo and confirm the prompt appears after the initial commit.
 
-
 ## Rollback Plan
 
 Revert the clean script changes and restore the previous commit message and no-hook prompt.
-
 
 ## Notes
 

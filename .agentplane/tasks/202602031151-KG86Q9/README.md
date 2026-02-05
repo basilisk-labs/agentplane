@@ -21,21 +21,17 @@ id_source: "generated"
 
 Scan task READMEs for duplicated section headings and normalize to a single set of sections.
 
-
 ## Scope
 
 Normalize duplicated headings in task README docs and update metadata.
-
 
 ## Risks
 
 Doc normalization might drop unusual formatting; mitigated by preserving section content order.
 
-
 ## Verify Steps
 
 - Re-scan task READMEs for duplicate headings.
-
 
 ## Rollback Plan
 

@@ -20,21 +20,17 @@ description: "Remove stray Redmine-synced task README files that were accidental
 
 Removed unintended Redmine cached task artifacts committed during sync validation.
 
-
 ## Scope
 
 - Remove .agent-plane/tasks/202601291651-9D0NT9\n- Remove .agent-plane/tasks/202601291653-MZG75F\n- Remove .agent-plane/tasks/202601291654-5N5QR5\n- Remove .agent-plane/tasks/202601291655-EKSR2G
-
 
 ## Risks
 
 - Removing tracked task artifacts only; no impact to canonical local backend.
 
-
 ## Verify Steps
 
 git status --short (confirm deletions staged)
-
 
 ## Rollback Plan
 

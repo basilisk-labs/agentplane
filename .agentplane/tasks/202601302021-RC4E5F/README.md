@@ -19,21 +19,17 @@ description: "Remove root-level scripts/assets from Python agentctl era (clean s
 
 Removed legacy Python-era root scripts (clean.sh/clean.ps1/viewer.sh) and Python dev files; updated docs to remove references.
 
-
 ## Scope
 
 Deleted clean.sh, clean.ps1, viewer.sh, pyproject.toml, requirements-dev.txt from repo root; updated docs/setup and audit docs to remove references.
-
 
 ## Risks
 
 Removing legacy scripts may affect workflows that depended on clean.sh/viewer.sh; users should use Node CLI recipes and repo tools instead.
 
-
 ## Verify Steps
 
 (Docs-only change)
-
 
 ## Rollback Plan
 

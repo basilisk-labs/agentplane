@@ -19,7 +19,6 @@ description: "Ensure agentplane init writes AGENTS.md and agent files exactly ma
 
 Audit and fix agentplane init to render AGENTS.md and agent JSON files from current templates, filtering workflow-specific blocks for direct/branch_pr.
 
-
 ## Scope
 
 - Locate init/template sources for AGENTS.md and agent files.
@@ -27,18 +26,15 @@ Audit and fix agentplane init to render AGENTS.md and agent JSON files from curr
 - Filter AGENTS.md content by workflow mode (direct/branch_pr) at init.
 - Add/adjust tests for init output parity.
 
-
 ## Risks
 
 - Template drift between assets and runtime rendering could require updating multiple files.
 - Filtering may accidentally drop shared rules if sections are not clearly delimited.
 
-
 ## Verify Steps
 
 - bun run test:cli:core
 - bun run test:cli:scenario
-
 
 ## Rollback Plan
 

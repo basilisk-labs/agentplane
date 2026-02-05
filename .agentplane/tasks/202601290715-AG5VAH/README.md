@@ -21,24 +21,20 @@ description: "Implement .env autoloading with priority rules and no override, an
 
 Implement shared .env loader, autoload it for CLI commands, and document Redmine env key precedence.
 
-
 ## Scope
 
 - Add shared .env parser/loader and wire it into CLI startup and Redmine backend.
 - Update docs/.env.example to list required keys and precedence.
 - Add CLI test for autoload + no-override behavior.
 
-
 ## Risks
 
 - Autoloading .env may surprise tools that previously relied on manual export; docs updated accordingly.
 - Unreadable .env still throws for commands that resolve a repo.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

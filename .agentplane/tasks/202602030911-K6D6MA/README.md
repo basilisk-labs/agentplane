@@ -19,49 +19,22 @@ id_source: "generated"
 ---
 ## Summary
 
-
 Bumped published package versions to 0.1.2 and tagged the release.
-
-
 
 Normalized task doc sections (dedupe).
 
-
-
-
-
-
 ## Scope
-
 
 Release bump for agentplane and @agentplaneorg/core packages.
 
-
-
-
-
-
 ## Risks
-
 
 Low; release tag will trigger GitHub Actions publishing.
 
-
-
-
-
-
 ## Verify Steps
-
 
 1) bun run test:fast\n2) git tag -l v0.1.2\n3) git push --follow-tags
 
-
-
-
-
-
 ## Rollback Plan
-
 
 Delete the tag and revert the version bump commit if publish fails.

@@ -18,37 +18,20 @@ id_source: "generated"
 ---
 ## Summary
 
-
 Integrated npm package README updates and ran pre-commit checks.
-
-
-
 
 ## Scope
 
-
 Updated packages/agentplane/README.md and packages/core/README.md; ran format, lint, and test:fast.
-
-
-
 
 ## Risks
 
-
 Low risk: README formatting changes only.
-
-
-
 
 ## Verify Steps
 
-
 - bun run format:check\n- bun run lint\n- bun run test:fast
 
-
-
-
 ## Rollback Plan
-
 
 Revert README updates and task doc changes.

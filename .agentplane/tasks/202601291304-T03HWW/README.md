@@ -20,21 +20,17 @@ description: "Untrack the unintended gitlink entry for the nested recipes repo a
 
 Remove the accidental submodule tracking of agentplane-recipes in the main repo and ensure it stays ignored.
 
-
 ## Scope
 
 - Remove gitlink entry for agentplane-recipes from the main repo index\n- Add ignore rule to keep the nested repo out of version control
-
 
 ## Risks
 
 - If other workflows expect agentplane-recipes to be tracked in the main repo, they may need updates
 
-
 ## Verify Steps
 
 - git status --short
-
 
 ## Rollback Plan
 

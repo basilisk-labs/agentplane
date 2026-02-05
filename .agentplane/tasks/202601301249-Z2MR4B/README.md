@@ -20,21 +20,17 @@ description: "Audit Python agentctl + supporting scripts, compare against Node.j
 
 - Produce a full inventory of Python agentctl + framework scripts.\n- Compare Node.js CLI behavior against the inventory and document gaps.\n- Deliver a parity report with prioritized remediation plan.
 
-
 ## Scope
 
 - Audit Python agentctl CLI and supporting scripts; capture commands, flags, I/O, and side effects.\n- Audit Node.js CLI implementation and map each capability to the Python inventory.\n- Produce a parity report with gaps, risks, and a prioritized work plan.
-
 
 ## Risks
 
 - Missing hidden behaviors or edge cases could understate parity gaps.\n- Output formatting differences might be overlooked without fixtures.
 
-
 ## Verify Steps
 
 - Inventory file exists and covers agentctl subcommands + scripts.\n- Parity matrix references every inventory item with status.\n- Parity report summarizes gaps and priorities.
-
 
 ## Rollback Plan
 

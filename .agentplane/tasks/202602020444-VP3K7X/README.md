@@ -20,21 +20,17 @@ description: "Audit docs for references to the first version, treat Node.js as v
 
 Removed first-version wording across docs by aligning references to Node.js 1.0 and cleaned titles/descriptions.
 
-
 ## Scope
 
 Docs only: updated user/developer docs and docs index structure; no code changes.
-
 
 ## Risks
 
 Risk of missed phrasing in docs outside current set or unintended meaning change; mitigated by keyword scan.
 
-
 ## Verify Steps
 
 - rg -n "(?i)\b(v1|version\s+1|version\s+1\.0|first\s+version|первая\s+версия)\b" docs ROADMAP.md README.md
-
 
 ## Rollback Plan
 

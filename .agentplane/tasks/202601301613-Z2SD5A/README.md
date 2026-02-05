@@ -20,21 +20,17 @@ description: "Bump package versions to 0.1.0 and run npm pack check for agentpla
 
 - Set package versions to 0.1.0.\n- Run npm pack to verify publish contents.
 
-
 ## Scope
 
 - Update version fields to 0.1.0 (agentplane + core).\n- Run npm pack in packages/agentplane and inspect output.
-
 
 ## Risks
 
 - Version mismatch across packages could break dependency resolution.\n- npm pack output might include unintended files.
 
-
 ## Verify Steps
 
 - npm pack (from packages/agentplane)
-
 
 ## Rollback Plan
 

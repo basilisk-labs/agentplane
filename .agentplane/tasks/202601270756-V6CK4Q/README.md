@@ -20,7 +20,6 @@ description: "Implement .agentplane/config.json read/write with defaults and sch
 
 Implement `.agentplane/config.json` defaults + schema validation and expose `agentplane config show|set`.
 
-
 ## Scope
 
 - Define `config.json` schema in `packages/spec`.
@@ -32,19 +31,16 @@ Implement `.agentplane/config.json` defaults + schema validation and expose `age
   - `agentplane config show` (prints JSON)
   - `agentplane config set <path> <value>` (writes config)
 
-
 ## Risks
 
 - Schema/format mismatches can cascade into guardrails and workflow behavior.
 - `config set` must avoid clobbering unknown fields to keep forward-compat.
-
 
 ## Verify Steps
 
 - `agentplane config show` prints valid JSON and includes defaulted fields.
 - `agentplane config set workflow_mode direct` updates the file and still validates.
 - Unit tests cover invalid config rejection.
-
 
 ## Rollback Plan
 

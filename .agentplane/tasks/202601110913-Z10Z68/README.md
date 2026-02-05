@@ -21,11 +21,9 @@ description: "Change owner=AUTOMATION tasks to a real agent (CODER) and adjust R
 
 Swap legacy owner=AUTOMATION to CODER across tasks and adjust README/docs to separate newcomer quickstart from full reference.
 
-
 ## Context
 
 Lint warnings came from owner=AUTOMATION; docs needed clearer split between newcomer quickstart (root README) and full docs (docs/README).
-
 
 ## Scope
 
@@ -34,18 +32,15 @@ Lint warnings came from owner=AUTOMATION; docs needed clearer split between newc
 - Refresh root README for first-time quickstart emphasis and point to docs/README.md for the full guide.
 - Update docs/README.md to clarify it is the full reference.
 
-
 ## Risks
 
 - Bulk owner changes touch many files; must avoid altering other metadata.
 - README simplification should not hide links to full docs.
 
-
 ## Verify Steps
 
 - python -m py_compile .agent-plane/backends/redmine/backend.py
 - python .agent-plane/agentctl.py task lint
-
 
 ## Rollback Plan
 

@@ -19,21 +19,17 @@ description: "Ensure task creation enforces non-empty tags and update agent guid
 
 Enforce non-empty tags when creating tasks and document the requirement for agents.
 
-
 ## Scope
 
 Update agentctl task creation validation and adjust agentctl/AGENTS/agent guidance to mention required tags.
-
 
 ## Risks
 
 Task creation without tags will now error, which may break existing automation. Document the requirement and keep the error message clear.
 
-
 ## Verify Steps
 
 1) python .agent-plane/agentctl.py task new --title 'Tmp' --description 'Tmp' --priority low --owner ORCHESTRATOR --depends-on '[]' --tag smoke. 2) python .agent-plane/agentctl.py task new --title 'Tmp2' --description 'Tmp2' --priority low --owner ORCHESTRATOR --depends-on '[]' (expect error for missing tags).
-
 
 ## Rollback Plan
 

@@ -19,32 +19,26 @@ description: "Normalize status indicators across docs and set priority on retros
 
 Normalized task priority indicators and aligned status wording in docs.
 
-
 ## Context
 
 Priority indicators were inconsistent (med/Нормальный) and docs used mixed status labels.
-
 
 ## Scope
 
 - Standardize priorities to low/normal/high across tasks.
 - Update docs to reference TODO instead of Backlog in workflow wording.
 
-
 ## Risks
 
 - Consumers relying on legacy labels may need to update their expectations.
-
 
 ## Verify Steps
 
 - N/A (documentation and metadata normalization).
 
-
 ## Rollback Plan
 
 - Revert commits in task metadata to restore the previous labels.
-
 
 ## Notes
 

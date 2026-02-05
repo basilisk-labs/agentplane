@@ -19,21 +19,17 @@ description: "Implement task lint checks beyond schema: DONE must have commit ha
 
 Add tasks.json linting (checksum/deps/verify-required/DONE commit) with CLI support and tests.
 
-
 ## Scope
 
 Core: add tasks-lint module + tests; CLI: add task lint command, help entry, and CLI tests.
-
 
 ## Risks
 
 Lint may flag manually edited tasks.json or missing verify commands; resolve by re-exporting or adding required verify steps.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

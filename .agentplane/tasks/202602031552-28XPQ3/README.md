@@ -19,16 +19,6 @@ id_source: "generated"
 ---
 ## Summary
 
-## Scope
-
-## Risks
-
-## Verify Steps
-
-## Rollback Plan
-
-## Summary
-
 Release 0.1.4 by adding English release notes and bumping package versions.
 
 ## Scope

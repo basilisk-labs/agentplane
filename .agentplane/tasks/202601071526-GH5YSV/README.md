@@ -19,11 +19,9 @@ description: "Make Getting Started more newcomer-friendly; explain the ORCHESTRA
 
 Make README onboarding clearer for newcomers by explaining the ORCHESTRATOR prompt flow and mentioning clean.sh.
 
-
 ## Context
 
 New users struggle to understand how to start with the ORCHESTRATOR prompt and when to use clean.sh. The README getting-started section needs clearer guidance for the direct workflow.
-
 
 ## Scope
 
@@ -31,22 +29,18 @@ New users struggle to understand how to start with the ORCHESTRATOR prompt and w
 - Add newcomer-friendly steps to Getting Started.
 - Mention clean.sh as an optional reset tool and when to use it.
 
-
 ## Risks
 
 - Over-explaining could clutter the README and bury key steps.
 - Guidance must stay aligned with both direct and branch_pr workflows.
 
-
 ## Verify Steps
 
 - (Docs) Proofread updated README copy.
 
-
 ## Rollback Plan
 
 - Revert the README onboarding edits.
-
 
 ## Notes
 

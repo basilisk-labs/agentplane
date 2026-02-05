@@ -20,21 +20,17 @@ description: "Implement recipe list-remote with cached index.json, timestamps, a
 
 Add recipe list-remote with cached index loading and optional refresh.
 
-
 ## Scope
 
 - Add list-remote subcommand with cache file under .agentplane/cache/recipes-index.json.\n- Validate remote index schema and print latest version per recipe.\n- Add tests for cached and refreshed index reading.
-
 
 ## Risks
 
 - Remote index schema drift could break parsing; validation errors surface clearly.\n- Cache can become stale until refreshed.
 
-
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
-
 
 ## Rollback Plan
 

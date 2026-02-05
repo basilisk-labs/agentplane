@@ -20,22 +20,18 @@ description: "Implement backend sync redmine with push/pull directions, conflict
 
 Ensure backend sync redmine command routes direction/conflict/confirm flags into backend sync with contract coverage.
 
-
 ## Scope
 
 - Add a CLI test that backend sync forwards direction/conflict/confirm flags.
 - Keep existing Redmine sync implementation intact.
 
-
 ## Risks
 
 - Minimal behavior change; risk limited to test coverage and CLI flag parsing assumptions.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

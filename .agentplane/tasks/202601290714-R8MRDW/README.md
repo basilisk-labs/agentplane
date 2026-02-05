@@ -20,21 +20,17 @@ description: "Implement scenario schema parsing and CLI: scenario list and scena
 
 Add scenario schema parsing and scenario list/info CLI commands for installed recipes.
 
-
 ## Scope
 
 - Parse scenario definitions from recipes/scenarios/*.json\n- Generate and read scenarios index for list/info\n- Add scenario list/info commands and update docs/tests
-
 
 ## Risks
 
 - Strict scenario validation may break older recipes without required fields
 
-
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

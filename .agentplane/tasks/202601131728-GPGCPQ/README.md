@@ -22,31 +22,25 @@ id_source: "custom"
 
 Normalize comment bodies used for comment-driven commits and store the normalized text in task comments to keep lengths aligned with commit subjects.
 
-
 ## Context
 
 Comment-driven commit subjects are formatted from the raw comment body, which can diverge in length/content from the stored task comment; align them to avoid truncation or mismatch.
-
 
 ## Scope
 
 Update agentctl comment/commit handling so formatted comment text is reused for both storage and commit subjects; document the behavior in agentctl.md.
 
-
 ## Risks
 
 Normalizing comments may alter formatting for multi-line notes; keep the normalization consistent with commit subject formatting and document the change.
-
 
 ## Verify Steps
 
 Manual: run a comment-driven start/block/finish and confirm the stored task comment matches the commit subject body.
 
-
 ## Rollback Plan
 
 Revert the agentctl commit that normalizes stored comments to restore previous comment storage behavior.
-
 
 ## Notes
 

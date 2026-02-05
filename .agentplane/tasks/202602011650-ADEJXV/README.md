@@ -22,7 +22,6 @@ description: "Verify agentplane init generates AGENTS.md and .agentplane/agents 
 
 Bundle AGENTS.md and agent templates with agentplane and generate workflow-filtered AGENTS.md during init, with tests to verify parity.
 
-
 ## Scope
 
 - Add bundled AGENTS.md/agents assets
@@ -30,18 +29,15 @@ Bundle AGENTS.md and agent templates with agentplane and generate workflow-filte
 - Ensure init copies bundled agent templates
 - Add/adjust tests for bundled templates and init output
 
-
 ## Risks
 
 - Bundle/template drift if AGENTS.md changes without updating assets
 - Longer CLI test runtime when running full run-cli.test.ts
 
-
 ## Verify Steps
 
 - bun run test -- packages/agentplane/src/agents-template.test.ts
 - bun run test -- packages/agentplane/src/run-cli.test.ts
-
 
 ## Rollback Plan
 

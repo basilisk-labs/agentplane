@@ -19,26 +19,21 @@ description: "Remove .agent-plane/tasks/202601301231-MATZR4/README.md that was a
 
 Remove the unintended task artifact committed in the previous change.
 
-
 ## Context
 
 Prior commit 5338827 included .agent-plane/tasks/202601301231-MATZR4/README.md unintentionally; remove it to restore scope correctness.
-
 
 ## Scope
 
 - Remove .agent-plane/tasks/202601301231-MATZR4/README.md from the repo.\n- Record the cleanup in the task doc.
 
-
 ## Risks
 
 - Removing the file could conflict if it was expected by another workflow; confirmed it was unintended.
 
-
 ## Verify Steps
 
 - N/A (file removal).
-
 
 ## Rollback Plan
 

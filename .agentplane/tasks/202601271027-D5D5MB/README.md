@@ -19,7 +19,6 @@ description: "Implement task doc metadata (doc_version/doc_updated_at/doc_update
 
 Implement 'agentplane task doc set' and enforce doc metadata fields (doc_version/doc_updated_at/doc_updated_by) for task READMEs.
 
-
 ## Scope
 
 - Add core helpers to update task README sections and bump metadata
@@ -27,16 +26,13 @@ Implement 'agentplane task doc set' and enforce doc metadata fields (doc_version
 - Add unit tests to keep coverage thresholds passing
 - Make local coverage output discoverable in the IDE
 
-
 ## Risks
 
 - Stricter metadata validation can surface malformed task READMEs; mitigate by providing task doc set to update safely.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

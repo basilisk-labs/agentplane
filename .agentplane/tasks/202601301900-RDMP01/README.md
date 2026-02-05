@@ -19,21 +19,17 @@ description: "Read ROADMAP.md, verify implemented items against current code/doc
 
 Added a minimal ROADMAP.md that points to current audits/docs and clarifies that milestones are tracked via tasks.
 
-
 ## Scope
 
 ROADMAP.md (new minimal roadmap overview and references).
-
 
 ## Risks
 
 Roadmap is now high-level; future milestones must be added explicitly to keep the file useful.
 
-
 ## Verify Steps
 
 Review ROADMAP.md for accuracy and references.
-
 
 ## Rollback Plan
 

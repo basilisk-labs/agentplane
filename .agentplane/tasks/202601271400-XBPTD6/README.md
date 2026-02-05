@@ -20,21 +20,17 @@ description: "Implement branch_pr work start to create task branches and worktre
 
 Added branch_pr work start command that creates task branches and worktrees, with git env sanitization for hook safety.
 
-
 ## Scope
 
 CLI parsing for work start; git worktree creation; help/docs updates; tests for work start/guard edge cases; .gitignore worktrees path.
-
 
 ## Risks
 
 Work start depends on git worktree behavior and requires base branch; misconfigured worktrees_dir could block creation.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

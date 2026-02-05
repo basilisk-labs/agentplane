@@ -20,26 +20,21 @@ description: "Package tasks viewer as a recipe with assets, a viewer-server tool
 
 Add viewer recipe with tasks.html asset, viewer-server tool, and scenario.
 
-
 ## Scope
 
 - Add viewer recipe files (manifest, assets, tools, scenarios)\n- Ensure recipe install can run viewer tool via scenario run\n- Add minimal documentation/tests if needed
-
 
 ## Risks
 
 - Viewer tool may require node dependencies or ports; keep minimal and self-contained
 
-
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
 
-
 ## Rollback Plan
 
 - Remove viewer recipe files and revert commit
-
 
 ## Notes
 

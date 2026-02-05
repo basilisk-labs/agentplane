@@ -21,11 +21,9 @@ id_source: "custom"
 
 Improve the Redmine backend (safer lookups, retries, no silent mutations, avoid reassignment) and add a REDMINE agent with backend-aware policies using only agentctl.
 
-
 ## Context
 
 Redmine connector still does full scans per lookup, mutates missing task_id fields remotely, lacks retry/backoff, and forces an assignee even when one exists. We also lack an agent role to enforce Redmine-specific safety while using agentctl.
-
 
 ## Scope
 
@@ -35,23 +33,19 @@ Redmine connector still does full scans per lookup, mutates missing task_id fiel
 - Add simple retry/backoff for API calls with 429/5xx handling.
 - Introduce REDMINE agent JSON with policies (no reassignment if assigned, use agentctl/sync, respect config fields).
 
-
 ## Risks
 
 - API search by custom field may behave differently across Redmine deployments; fallback must still succeed.
 - Retry/backoff could mask persistent failures if not surfaced.
 - Skipping invalid task IDs may hide data inconsistencies.
 
-
 ## Verify Steps
 
 - python -m py_compile .agent-plane/backends/redmine/backend.py .agent-plane/agentctl.py
 
-
 ## Rollback Plan
 
 - Revert Redmine backend and REDMINE agent changes.
-
 
 ## Notes
 

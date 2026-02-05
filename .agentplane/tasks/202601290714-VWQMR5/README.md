@@ -20,21 +20,17 @@ description: "Bundle snapshot of official recipes into npm package and use it in
 
 Bundle an offline recipes catalog for init and validate selected recipes against it.
 
-
 ## Scope
 
 - Add bundled recipes catalog data in @packages/agentplane/src/bundled-recipes.ts.\n- Use catalog for init prompts/validation without network.\n- Add tests for init recipe validation.
-
 
 ## Risks
 
 - Bundled catalog can become stale if recipes evolve; requires periodic refresh.\n- Empty catalog means init cannot validate recipe ids.
 
-
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
-
 
 ## Rollback Plan
 

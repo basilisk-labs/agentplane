@@ -19,31 +19,25 @@ description: "Umbrella for adding configurable agentctl settings, updating confi
 
 Umbrella tracking config, CLI/docs, and agent guidance updates.
 
-
 ## Context
 
 Coordinates downstream tasks for config changes, documentation updates, and agent guidance alignment.
-
 
 ## Scope
 
 Tracks 202601131304-D4ZA6S (config+CLI), 202601131304-7JXJF7 (docs), and 202601131304-E1625C (agent guidance).
 
-
 ## Risks
 
 No direct changes; risks are covered by downstream tasks.
-
 
 ## Verify Steps
 
 See downstream task verify steps; no separate verification for umbrella.
 
-
 ## Rollback Plan
 
 Revert downstream commits for the config, docs, and agent guidance tasks.
-
 
 ## Notes
 

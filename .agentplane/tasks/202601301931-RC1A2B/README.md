@@ -20,21 +20,17 @@ description: "Add ~/.agentplane recipes cache with link/copy/global-only storage
 
 Added global recipe cache with project storage modes (link/copy/global), updated CLI flows and lockfile metadata, and aligned docs/tests with cache-backed recipes.
 
-
 ## Scope
 
 Updated recipe install/storage resolution, lockfile fields, scenario/recipe lookup paths, CLI help/usage, and recipe docs; added tests for global-only storage and default behavior.
-
 
 ## Risks
 
 Global cache now stores recipe content; incorrect storage mode or missing cache could break recipe resolution if project layer is absent. Symlink fallback copies content when links fail.
 
-
 ## Verify Steps
 
 bun test packages/agentplane/src/run-cli.test.ts -t "recipe"
-
 
 ## Rollback Plan
 

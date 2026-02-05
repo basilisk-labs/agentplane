@@ -24,11 +24,9 @@ dirty: false
 - Updated docs and prompts to use `<task-id>` placeholders instead of legacy numbering.
 - Rewrote task folders/IDs and exported the updated `.agent-plane/tasks.json` snapshot.
 
-
 ## Goal
 
 - Transition the repository to the new task ID scheme while keeping dependencies and ordering intact.
-
 
 ## Scope
 
@@ -36,22 +34,18 @@ dirty: false
 - `.agent-plane/tasks/`: rename task directories, update frontmatter and headings.
 - `.agent-plane/tasks.json`: export the new snapshot after migration.
 
-
 ## Risks
 
 - Task IDs change permanently; external references to legacy `T-###` IDs will be stale.
-
 
 ## Verify Steps
 
 - `python3 .agent-plane/agentctl.py task list --quiet`
 - `python3 .agent-plane/agentctl.py task show 202601041253-0003R`
 
-
 ## Rollback Plan
 
 - Restore `.agent-plane/tasks/` and `.agent-plane/tasks.json` from git history.
-
 
 ## Changes Summary (auto)
 

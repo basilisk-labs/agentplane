@@ -21,13 +21,11 @@ id_source: "custom"
 
 Switch backend to Redmine using env config and prove end-to-end sync from local source-of-truth tasks.
 
-
 ## Context
 
 - Local repo tasks are the source of truth; Redmine can be used as a sandbox and cleared if needed.
 - Need to verify agents can operate via the backend abstraction (list/new/update/doc/comments) without backend-specific assumptions.
 - Sync must store intermediate context (docs/comments) cleanly in Redmine custom fields and journals.
-
 
 ## Scope
 
@@ -36,13 +34,11 @@ Switch backend to Redmine using env config and prove end-to-end sync from local 
 - Exercise CRUD: list tasks, create a new task, update doc sections, append comments, and confirm they persist via pull.
 - Validate sync push/pull behavior with the cache and ensure CLI outputs remain usable for agents.
 
-
 ## Risks
 
 - Redmine project may contain legacy issues; mass migration could create clutter or conflicts.
 - Network/API failures could leave cache and remote out of sync.
 - Credentials are stored in .env; accidental logging of secrets must be avoided.
-
 
 ## Verify Steps
 
@@ -50,13 +46,11 @@ Switch backend to Redmine using env config and prove end-to-end sync from local 
 - python .agent-plane/agentctl.py task migrate --source .agent-plane/tasks.json --quiet
 - python .agent-plane/agentctl.py task list --quiet
 
-
 ## Rollback Plan
 
 - Revert .agent-plane/config.json to the local backend config.
 - Clear any test issues in Redmine (or reset the project) if the migration polluted the sandbox.
 - Re-run python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py to ensure clean state.
-
 
 ## Notes
 

@@ -19,21 +19,17 @@ description: "Inspect current test tooling/config, measure or infer slow suites/
 
 Identified slow CLI integration tests (cli-smoke/run-cli) and proposed a fast vs full split using vitest exclude/include flags.
 
-
 ## Scope
 
 Scope limited to test tooling/scripts and workflow guidance; no production code changes.
-
 
 ## Risks
 
 Fast suite skips CLI integration coverage; mitigate by requiring full suite before push/commit.
 
-
 ## Verify Steps
 
 bun run test:fast
-
 
 ## Rollback Plan
 

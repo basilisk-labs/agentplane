@@ -20,21 +20,17 @@ description: "Implement missing task operations in Node CLI to match agentctl (a
 
 Added Node CLI parity for task subcommands (add/update/scrub/next/search/scaffold/normalize/migrate/comment/set-status) and task doc show.
 
-
 ## Scope
 
 Updated task command handling and helpers in node CLI, extended help output, and added tests for new task operations.
-
 
 ## Risks
 
 Parity behaviors may still diverge in edge cases (status transitions or backend-specific nuances).
 
-
 ## Verify Steps
 
 Not run (not requested).
-
 
 ## Rollback Plan
 

@@ -20,31 +20,25 @@ description: "Audit the current Redmine backend and define a recipe-based replac
 
 Audited the Redmine backend and defined the recipe-based replacement plan with scenarios, inputs, and migration steps.
 
-
 ## Context
 
 Goal: move Redmine backend into a recipe so it is optional and user-enabled, while keeping local backend in core.
-
 
 ## Scope
 
 Reviewed current Redmine backend implementation (.agent-plane/backends/redmine/backend.py, backend.json) and agentctl sync behavior. Defined recipe specification (202601200743-6CQN5R) and migration steps (202601200743-NNSHSS).
 
-
 ## Risks
 
 Redmine backend migration requires careful handling of config and custom fields; recipe must enforce safe defaults and explicit confirmation for sync push.
-
 
 ## Verify Steps
 
 Reviewed redmine backend code and agentctl sync command behavior; confirmed recipe plan covers install/disable/sync/verify flows.
 
-
 ## Rollback Plan
 
 Leave core local backend untouched; migration can be abandoned by keeping local backend config and not installing the recipe payload.
-
 
 ## Notes
 

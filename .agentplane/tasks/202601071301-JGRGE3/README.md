@@ -21,11 +21,9 @@ description: "Reduce duplicated workflow_mode and handoff guidance across agent 
 - Standardized task-id placeholders to `<task-id>` across agents and docs.
 - Switched handoff instructions to `agentctl pr note` and removed repeated snapshot filename mentions.
 
-
 ## Goal
 
 - Reduce duplicated workflow rules and normalize terminology across agent instructions.
-
 
 ## Scope
 
@@ -33,16 +31,13 @@ description: "Reduce duplicated workflow_mode and handoff guidance across agent 
 - @.agent-plane/agentctl.md
 - @.agent-plane/agents/*.json
 
-
 ## Risks
 
 - Low: terminology updates could require follow-up if other docs expect old placeholders.
 
-
 ## Verify Steps
 
 - None (doc/instruction changes only).
-
 
 ## Rollback Plan
 

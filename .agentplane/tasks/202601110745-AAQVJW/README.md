@@ -19,11 +19,9 @@ description: "Accept timestamp task IDs in branch parsing/PR flows and update cl
 
 Accept timestamp task IDs in branch parsing/PR flows and keep clean.sh/docs hints off the legacy T-### format.
 
-
 ## Context
 
 Branch/PR helpers still parse only legacy task branches (`task/T-###/<slug>`), and clean.sh rewrites examples to T-123 even though the framework now uses timestamp-based task IDs. This blocks branch_pr mode and produces stale docs after cleanup.
-
 
 ## Scope
 
@@ -31,22 +29,18 @@ Branch/PR helpers still parse only legacy task branches (`task/T-###/<slug>`), a
 - Refresh CLI hints to reference `<task-id>` instead of `<T-###>`.
 - Modernize clean.sh scrub replacements so examples stay on timestamp IDs.
 
-
 ## Risks
 
 - Broader regex may allow unexpected branch names if patterns are too loose.
 - clean.sh scrub logic could still drop needed instructions if replacements are incorrect.
 
-
 ## Verify Steps
 
 - python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/local/backend.py .agent-plane/backends/redmine/backend.py
 
-
 ## Rollback Plan
 
 - Revert the branch parsing and clean.sh changes.
-
 
 ## Notes
 

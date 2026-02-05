@@ -22,21 +22,17 @@ id_source: "custom"
 
 - Task is no longer актуальна; closing without changes.
 
-
 ## Scope
 
 - No changes; task closed as obsolete.
-
 
 ## Risks
 
 - Some polish items might remain undocumented if needed later.
 
-
 ## Verify Steps
 
 - None (task closed as not актуальна).
-
 
 ## Rollback Plan
 

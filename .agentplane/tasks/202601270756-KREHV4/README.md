@@ -20,7 +20,6 @@ description: "Define v1 file formats for AGENTS.md, .agentplane/config.json, tas
 
 Freeze v1 file formats (tasks/config/PR meta) and ship JSON Schemas + examples for Node.js implementation.
 
-
 ## Scope
 
 - Specify the v1 schemas for:
@@ -31,18 +30,15 @@ Freeze v1 file formats (tasks/config/PR meta) and ship JSON Schemas + examples f
   - PR artifacts (meta + verify log + diffstat + optional review notes).
 - Add schemas and examples under `packages/spec/`.
 
-
 ## Risks
 
 - Over-specifying early can slow down implementation; keep schemas focused on v1 invariants.
 - Canonicalization details (JSON ordering/whitespace) can cause parity drift later.
 
-
 ## Verify Steps
 
 - Validate example JSON files against the shipped schemas.
 - Confirm the spec matches the migration constraints (no `.agent-plane` compatibility).
-
 
 ## Rollback Plan
 

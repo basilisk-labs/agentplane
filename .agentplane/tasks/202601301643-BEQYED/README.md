@@ -20,21 +20,17 @@ description: "Update agent startup to read config and CLI instructions before wo
 
 Verified the policy already requires loading config and CLI guidance silently (reporting only that they were loaded); no additional code changes needed.
 
-
 ## Scope
 
 Policy review only (AGENTS.md and agent JSON guidance); no runtime code changes.
-
 
 ## Risks
 
 If the policy is bypassed, agents could print config or guide contents; monitor preflight behavior.
 
-
 ## Verify Steps
 
 Manual review of AGENTS.md and agent role guidance to confirm only load status is reported.
-
 
 ## Rollback Plan
 

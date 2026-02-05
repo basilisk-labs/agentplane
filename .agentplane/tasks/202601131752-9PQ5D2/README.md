@@ -19,31 +19,25 @@ description: "Format .agent-plane/config.json for consistent multi-line JSON sty
 
 Reformatted .agent-plane/config.json into multi-line JSON for readability; no values changed.
 
-
 ## Context
 
 User requested a separate task/commit for the existing config.json formatting changes.
-
 
 ## Scope
 
 Formatting-only change in .agent-plane/config.json; no behavioral changes.
 
-
 ## Risks
 
 Low risk: formatting only. Possible merge conflicts if config.json is edited concurrently.
-
 
 ## Verify Steps
 
 Not run (formatting-only change).
 
-
 ## Rollback Plan
 
 Revert commit b9ae966 to restore previous formatting.
-
 
 ## Notes
 

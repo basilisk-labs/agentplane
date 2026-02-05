@@ -20,19 +20,16 @@ description: "Document and enforce code quality criteria (lint/format/typecheck/
 
 Define and enforce code quality gates (lint/format/typecheck/tests/coverage) and move the workspace to bun as the standard package manager.
 
-
 ## Scope
 
 - Add a documented quality gates policy (tests + coverage + lint + formatting + typecheck).
 - Standardize commands/docs on bun.
 - Add a test runner + coverage enforcement suitable for a TS monorepo.
 
-
 ## Risks
 
 - Coverage thresholds can block early iteration if set too high; choose a pragmatic baseline and raise later.
 - Switching package managers may break contributors' local flows; document migration clearly.
-
 
 ## Verify Steps
 
@@ -41,7 +38,6 @@ Define and enforce code quality gates (lint/format/typecheck/tests/coverage) and
 - `bun run lint` passes.
 - `bun run test` passes.
 - `bun run coverage` meets thresholds.
-
 
 ## Rollback Plan
 

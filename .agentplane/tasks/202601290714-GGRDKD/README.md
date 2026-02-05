@@ -20,21 +20,17 @@ description: "Implement local recipe manager: install from archive, remove, list
 
 Implemented local recipe manager commands (install/remove/list/info), recipes lockfile/index handling, and expanded CLI tests to cover recipe and cleanup/integrate edge cases.
 
-
 ## Scope
 
 Add recipe CLI namespace with local archive install (tar/zip), list/info/remove, maintain recipes.lock.json and RECIPES.md, and add tests for recipe flows plus coverage-critical branches.
-
 
 ## Risks
 
 Relies on system tar/zip commands; failures surface as CLI errors. Recipe manifests must be well-formed JSON.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

@@ -19,11 +19,9 @@ description: "Add opt-in git hooks via agentctl (install/uninstall) to enforce c
 
 Add opt-in git hooks installer/uninstaller to enforce commit policy outside agentctl.
 
-
 ## Context
 
 Direct git commit can bypass agentctl guardrails; opt-in hooks close the gap without enforcing automatically.
-
 
 ## Scope
 
@@ -32,21 +30,17 @@ Direct git commit can bypass agentctl guardrails; opt-in hooks close the gap wit
 - Implement a `pre-commit` hook that enforces protected-path policy and branch_pr task rules.
 - Update docs to describe hook usage and opt-in behavior.
 
-
 ## Risks
 
 Hooks may block legitimate commits if policies are misconfigured; provide clear uninstall guidance.
-
 
 ## Verify Steps
 
 python -m pytest -q
 
-
 ## Rollback Plan
 
 Revert the agentctl hook commands and remove any installed git hooks via `agentctl hooks uninstall`.
-
 
 ## Notes
 

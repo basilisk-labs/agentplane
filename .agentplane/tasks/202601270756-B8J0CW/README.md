@@ -20,7 +20,6 @@ description: "Bootstrap a Node.js 20+ ESM TypeScript monorepo with packages (age
 
 Bootstrap the Node.js 20+ ESM TypeScript monorepo and ship a runnable `agentplane --help` entrypoint.
 
-
 ## Scope
 
 - Add root workspace config (`package.json`, `tsconfig`, build/test scripts).
@@ -32,12 +31,10 @@ Bootstrap the Node.js 20+ ESM TypeScript monorepo and ship a runnable `agentplan
   - `packages/testkit` (fixtures/e2e helpers)
 - Ensure ESM output and Node 20 compatibility.
 
-
 ## Risks
 
 - Dependency choices (commander/tsx/tsup/vitest) affect future portability; keep initial stack minimal.
 - Packaging details (bin entrypoint, ESM/CJS interop) can be tricky; validate locally.
-
 
 ## Verify Steps
 
@@ -45,7 +42,6 @@ Bootstrap the Node.js 20+ ESM TypeScript monorepo and ship a runnable `agentplan
 - `npm install` (or `pnpm install`) completes.
 - `npm -w @agentplane/agentplane run build` succeeds.
 - `node packages/agentplane/dist/cli.mjs --help` prints help.
-
 
 ## Rollback Plan
 

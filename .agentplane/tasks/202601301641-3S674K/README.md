@@ -20,21 +20,17 @@ description: "Deepen core docs pages, add contributing/design principles, and ad
 
 - Expand existing core docs pages with deeper explanations.\n- Add contributing and design principles pages.\n- Add backends deep-dive and recipes safety guides.
 
-
 ## Scope
 
 - Expand architecture/workflow/tasks-and-backends/commands pages.\n- Add contributing and design-principles pages.\n- Add backends and recipes-safety pages and wire into docs navigation.
-
 
 ## Risks
 
 - Documentation may drift from implementation if not kept updated.\n- Large doc additions may overwhelm readers if not structured well.
 
-
 ## Verify Steps
 
 - Read updated docs pages to confirm clarity and consistency.\n- Check docs/docs.json includes new pages.
-
 
 ## Rollback Plan
 

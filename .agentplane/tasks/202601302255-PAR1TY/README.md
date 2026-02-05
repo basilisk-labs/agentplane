@@ -19,21 +19,17 @@ description: "Review parity audits and summarize remaining gaps for Node CLI vs 
 
 Updated parity audit docs to reflect quickstart and recipes explain, and clarified CI scope expectations.
 
-
 ## Scope
 
 docs/audits/parity-report.md; docs/audits/nodejs-parity-matrix.md.
-
 
 ## Risks
 
 Audit notes can drift as CLI behavior changes; keep docs aligned with releases.
 
-
 ## Verify Steps
 
 Manual review of parity-report.md and nodejs-parity-matrix.md for accuracy.
-
 
 ## Rollback Plan
 

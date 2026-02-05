@@ -21,25 +21,17 @@ id_source: "generated"
 
 Add interactive base-branch selection for branch_pr init in existing repos; keep default main for empty dirs. Include non-interactive safeguards and tests.
 
-
-
 ## Scope
 
 Update init flow to prompt for base branch in branch_pr when repo already exists; create branch when requested; keep empty-repo default main. Add CLI core tests for empty repo and existing repo defaults.
-
-
 
 ## Risks
 
 Prompt path only triggers in interactive branch_pr init; non-interactive behavior must remain unchanged. Branch creation could fail if git rejects the name.
 
-
-
 ## Verify Steps
 
 bun run test:cli:core -- -t "init branch_pr"
-
-
 
 ## Rollback Plan
 

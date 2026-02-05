@@ -20,31 +20,25 @@ description: "Agents must stop using git directly; agentctl should stage/commit 
 
 Route git staging/commits through agentctl so agents only change task status and agentctl builds <emoji> <task-suffix> <comment> subjects from their comments.
 
-
 ## Context
 
 User requested removing direct git usage by agents; commits must be issued by agentctl using agent comments while keeping the <emoji> <suffix> extended comment format.
-
 
 ## Scope
 
 Add comment-derived staging/commit helpers in agentctl for start/block/set-status/finish, document the flow in AGENTS.md + agentctl.md, and update CODER/TESTER/CREATOR agent specs to ban direct git usage.
 
-
 ## Risks
 
 Auto-allow staging can capture unintended files if the working tree is dirty; finish comment commits are restricted to one task; start/block now export tasks snapshots before committing (extra output).
-
 
 ## Verify Steps
 
 python -m py_compile .agent-plane/agentctl.py\npython .agent-plane/agentctl.py task lint
 
-
 ## Rollback Plan
 
 Restore .agent-plane/agentctl.py, AGENTS.md, and the updated agent JSON files to the previous revision, re-export tasks via agentctl, and rerun task lint.
-
 
 ## Notes
 

@@ -19,21 +19,17 @@ description: "Trim the core framework to the minimum runtime after recipe migrat
 
 - Confirmed core cleanup scope after Phase 2; no additional runtime removals required.\n- Kept migration follow-up tracked in recipes rather than core changes.
 
-
 ## Scope
 
 - Review remaining extension hooks after Phase 2 migration.\n- Only make core changes if redundant features remain.
-
 
 ## Risks
 
 - Future recipe additions might reintroduce core coupling if not reviewed.\n- Cleanup deferrals could leave unused hooks if new extensions land.
 
-
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task show 202601200657-VNFXH3
-
 
 ## Rollback Plan
 

@@ -19,31 +19,25 @@ description: "Analyze agentctl docs and agent specs to map which agent can use w
 
 Added a role/phase command guide to agentctl.md so agents can map commands to workflow moments.
 
-
 ## Context
 
 Request was to map agentctl commands to agents and workflow phases based on agent specs and CLI docs.
-
 
 ## Scope
 
 Updated only .agent-plane/agentctl.md; no CLI behavior changes.
 
-
 ## Risks
 
 Low; docs could drift if commands change.
-
 
 ## Verify Steps
 
 None (docs-only).
 
-
 ## Rollback Plan
 
 Revert the doc change and task artifacts.
-
 
 ## Notes
 

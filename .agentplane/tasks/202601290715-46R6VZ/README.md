@@ -20,7 +20,6 @@ description: "Implement Redmine backend in core and enable via recipe; align wit
 
 Implemented Node.js Redmine backend parity, backend sync routing, and Redmine recipe installer; validated full CLI flows (new/list/show/doc/start/block/verify/finish) plus push/pull sync against sandbox Redmine.
 
-
 ## Scope
 
 - Task backend abstraction (local + Redmine) with .env loading and tasks.json export
@@ -29,13 +28,11 @@ Implemented Node.js Redmine backend parity, backend sync routing, and Redmine re
 - Redmine recipe assets/tool/scenario + index entry
 - Fix Redmine sync params and normalize priority mapping
 
-
 ## Risks
 
 - Backend routing changes can affect local-only workflows if config or cache paths are wrong
 - Redmine field IDs or status mapping mismatches can drop metadata or mislabel status
 - Network issues require offline cache + explicit sync to avoid stale state
-
 
 ## Verify Steps
 
@@ -46,11 +43,9 @@ Implemented Node.js Redmine backend parity, backend sync routing, and Redmine re
 - backend sync redmine --direction pull
 - bun run ci (fails due to global coverage thresholds in repo)
 
-
 ## Rollback Plan
 
 - Revert the backend/CLI changes and the redmine recipe commit\n- Restore previous task command behavior and recipe index
-
 
 ## Notes
 

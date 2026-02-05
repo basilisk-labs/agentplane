@@ -20,11 +20,9 @@ description: "Update README, docs, and CONTRIBUTING to minimize repeated 'snapsh
 - Reduced snapshot wording in README, docs, CONTRIBUTING, and cleanup notes.
 - Kept tasks.json references only where needed for export/viewer guidance.
 
-
 ## Goal
 
 - Minimize repeated snapshot phrasing while preserving export rules and commands.
-
 
 ## Scope
 
@@ -38,16 +36,13 @@ description: "Update README, docs, and CONTRIBUTING to minimize repeated 'snapsh
 - @docs/09-commands.md
 - @docs/10-troubleshooting.md
 
-
 ## Risks
 
 - Low: wording changes could hide explicit snapshot terminology some users expect.
 
-
 ## Verify Steps
 
 - None (doc/instruction changes only).
-
 
 ## Rollback Plan
 

@@ -19,21 +19,17 @@ description: "Implement agentplane commit wrapper (guard + policy + confirm flag
 
 Add agentplane commit wrapper with guard checks and git commit execution.
 
-
 ## Scope
 
 CLI commit command, allowlist/auto-allow handling, hook env propagation, tests, and help updates.
-
 
 ## Risks
 
 Commit wrapper may fail if git user identity is missing or hooks block commits.
 
-
 ## Verify Steps
 
 bun run ci
-
 
 ## Rollback Plan
 

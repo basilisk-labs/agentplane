@@ -19,31 +19,25 @@ description: "Top-level tracking for recipes PRD implementation. Subtasks: 20260
 
 Delivered the recipes CLI, global prompt rules, and documentation wiring for Agent Plane recipes.
 
-
 ## Context
 
 Top-level tracking task covering analysis, CLI implementation, docs updates, and integration closure for recipes.
-
 
 ## Scope
 
 Subtasks completed: QN0W0P analysis, 0AWCPY CLI implementation, 6ZKD5S docs wiring, BZPKM2 integration.
 
-
 ## Risks
 
 Residual risk: recipe manifest validation is minimal and may need stricter schema checks later.
-
 
 ## Verify Steps
 
 CLI help command executed; documentation reviewed for recipe references.
 
-
 ## Rollback Plan
 
 Revert the recipes CLI and documentation commits if the feature set needs to be removed.
-
 
 ## Notes
 

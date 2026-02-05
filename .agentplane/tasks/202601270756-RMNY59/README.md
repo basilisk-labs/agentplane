@@ -20,7 +20,6 @@ description: "Implement git-root discovery and .agentplane path resolution from 
 
 Implement project discovery (git root) and `.agentplane` path resolution from any working directory.
 
-
 ## Scope
 
 - Implement a resolver that:
@@ -29,18 +28,15 @@ Implement project discovery (git root) and `.agentplane` path resolution from an
   - supports `--root <path>` override.
 - Add unit tests covering subdir execution and failure modes.
 
-
 ## Risks
 
 - Git discovery edge cases (submodules, bare repos) can complicate root detection.
 - Path resolution must be deterministic to avoid writing outside the intended repo.
 
-
 ## Verify Steps
 
 - Run resolver tests (e.g. `npm -w @agentplane/core test`).
 - Manually run `agentplane --root <repo>` from a nested subdirectory and confirm it finds `.agentplane`.
-
 
 ## Rollback Plan
 

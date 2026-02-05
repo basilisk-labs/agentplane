@@ -21,21 +21,17 @@ description: "Compare agentctl.py behavior to Node agentplane CLI, identify gaps
 
 Audited agentctl vs Node CLI command surface and created parity implementation tasks.
 
-
 ## Scope
 
 Compared agentctl help for core/task/workflow commands against Node CLI help; identified missing commands/flags; created follow-up tasks with priorities.
-
 
 ## Risks
 
 Parity list based on CLI help; implementation details may reveal additional gaps during coding.
 
-
 ## Verify Steps
 
 N/A (audit only).
-
 
 ## Rollback Plan
 

@@ -19,31 +19,25 @@ description: "Rewrite the feature-spec-to-tasks recipe docs (README/scenarios/in
 
 Rewrote the roadmap recipe documentation and input schemas in English, aligned them to roadmap outputs, and documented recipe layout and inventory usage.
 
-
 ## Context
 
 Standardized the feature-spec-to-tasks recipe to focus on roadmap generation and ensured documentation matches current recipe formats and policies.
-
 
 ## Scope
 
 Updated recipe README, scenarios, and input schemas; documented recipe layout and inventory generation in RECIPES.md; added commands note in docs/09-commands.md.
 
-
 ## Risks
 
 Documentation can drift if the runner or manifest changes; the inventory list must be regenerated after recipe updates.
-
 
 ## Verify Steps
 
 Reviewed updated recipe docs and schemas; confirmed the recipes scan command is documented for the inventory list.
 
-
 ## Rollback Plan
 
 Revert commit f91c90b84720 to restore the prior documentation and schemas.
-
 
 ## Notes
 
