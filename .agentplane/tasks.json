@@ -14868,12 +14868,41 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nSplit backend docs into local and Redmine sections with full-parity setup guidance.\n\n## Scope\n\n- Restructure docs/user/backends.mdx into separate Local and Redmine sections.\n- Add instructions for full-parity Redmine setup (custom fields + mapping).\n- Keep guidance concise and accurate to current code.\n\n## Risks\n\n- Doc may imply parity without code changes if wording is careless.\n- Redmine field IDs can drift from actual project settings.\n\n## Verify Steps\n\n- Review docs/user/backends.mdx for separate Local and Redmine sections.\n- Confirm Redmine parity requirements list custom fields and mapping notes.\n- Ensure wording does not claim parity without code support.\n\n## Verification\n\nPending.\n\n- docs/user/backends.mdx now has separate Local and Redmine sections.\n- Redmine parity requirements list extra custom fields and note code mapping requirement.\n\n## Rollback Plan\n\n- Revert changes in docs/user/backends.mdx.\n- Update Verification with rollback note if needed."
+    },
+    {
+      "id": "202602051510-4C4MKZ",
+      "title": "Split backend docs into per-backend files",
+      "description": "Move backend docs into separate Local and Redmine files and leave overview in backends.mdx.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "5b0f7460e0faace92f5becf9184d1ad8537e744e",
+        "message": "📝 4C4MKZ split backend docs"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Verified: backends overview links to per-backend docs; local and redmine docs added with parity guidance."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T15:11:55.648Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nSplit backend docs into per-backend files and keep backends.mdx as an overview.\n\n## Scope\n\n- Create docs/user/backends/local.mdx and docs/user/backends/redmine.mdx.\n- Move detailed content into per-backend files.\n- Keep docs/user/backends.mdx as overview with links.\n\n## Risks\n\n- Broken doc links if paths are wrong.\n- Redmine parity guidance may drift from code if not explicit.\n\n## Verify Steps\n\n- Open docs/user/backends.mdx to confirm it references per-backend docs.\n- Ensure docs/user/backends/local.mdx and docs/user/backends/redmine.mdx exist and render.\n- Confirm Redmine doc includes full-parity setup guidance and explicit mapping caveat.\n\n## Verification\n\nPending.\n\n- docs/user/backends.mdx now links to per-backend docs.\n- docs/user/backends/local.mdx and docs/user/backends/redmine.mdx created.\n- Redmine doc includes full-parity fields and mapping caveat.\n\n## Rollback Plan\n\n- Restore docs/user/backends.mdx from before the split.\n- Remove per-backend doc files if needed."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "5c22b9aaf42784f3098f7c18820774281c6a3507dc9472f45412b177cd9972b9"
+    "checksum": "93060fd3a4b7a80c0504b999847669fc6ae655b866d5cecda92e55c1f5ed345b"
   }
 }
