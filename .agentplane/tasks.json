@@ -15355,15 +15355,15 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T17:26:22.484Z",
       "doc_updated_by": "DOCS",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nDraft release notes for v0.1.5 based on v0.1.4..HEAD changes.\n\n## Scope\n\nCreate docs/releases/v0.1.5.md with concise user-facing highlights.\n\n## Risks\n\nRelease notes may omit important changes if commit scan misses user-facing impact.\n\n## Verify Steps\n\nReview docs/releases/v0.1.5.md for accuracy vs git log v0.1.4..HEAD.\n\n## Verification\n\nReviewed docs/releases/v0.1.5.md against git log v0.1.4..HEAD.\n\n## Rollback Plan\n\nRemove docs/releases/v0.1.5.md if notes are incorrect."
+      "doc": "## Summary\n\nDraft release notes for v0.1.5 based on v0.1.4..HEAD changes.\n\n## Scope\n\nCreate docs/releases/v0.1.5.md with concise user-facing highlights.\n\n## Risks\n\nRelease notes may omit important changes if commit scan misses user-facing impact.\n\n## Verify Steps\n\nReview docs/releases/v0.1.5.md for accuracy vs git log v0.1.4..HEAD.\n\n## Verification\n\nReviewed docs/releases/v0.1.5.md against git log v0.1.4..HEAD.\n\n## Rollback Plan\n\nRemove docs/releases/v0.1.5.md if notes are incorrect.",
+      "dirty": false
     },
     {
       "id": "202602051724-70VQRK",
       "title": "Bump packages to 0.1.5",
       "description": "Update package versions to 0.1.5 for agentplane and core.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -15372,13 +15372,26 @@
         "versioning"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "0c416213fa93d614569ab8c6c1fe1276bc3fce22",
+        "message": "✨ 70VQRK bump packages to 0.1.5"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: bump package versions for agentplane and core to 0.1.5."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: package versions updated to 0.1.5 in agentplane and core."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T17:24:14.385Z",
+      "doc_updated_at": "2026-02-05T17:32:09.461Z",
       "doc_updated_by": "CODER",
+      "dirty": false,
       "id_source": "generated",
-      "dirty": false
+      "doc": "## Summary\n\nBump package versions to 0.1.5 for agentplane and core.\n\n## Scope\n\nUpdate packages/agentplane/package.json and packages/core/package.json versions to 0.1.5.\n\n## Risks\n\nVersion mismatch if any package is missed.\n\n## Verify Steps\n\nCheck package.json versions are 0.1.5 in packages/agentplane and packages/core.\n\n## Verification\n\nConfirmed package versions updated to 0.1.5 in agentplane and core.\n\n## Rollback Plan\n\nRevert package.json version changes."
     },
     {
       "id": "202602051724-EPSZ0H",
@@ -15406,6 +15419,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "995688734555d9af29d22167b4a553fe31b83a0997def3c8ee3efb7f362db48e"
+    "checksum": "963b69407082a13072c6a3416231558d2ca13c5a265b553882308a5473f66e8c"
   }
 }
