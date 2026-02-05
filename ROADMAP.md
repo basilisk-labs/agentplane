@@ -53,7 +53,11 @@ Notation:
 
 # Epic A: CLI Contract and Error Stability (P0)
 
+Status: DONE (2026-02-05, task 202602050527-K3YMDY)
+
 ## AP-001 — Align exit codes for network/backend per CLI contract
+
+Status: DONE (2026-02-05, task 202602050527-2VHF3R)
 
 **Problem**
 `docs/developer/cli-contract.mdx` defines:
@@ -99,6 +103,8 @@ Single mapping `ErrorCode → exitCode`, strictly per contract:
 
 ## AP-002 — Fix stable JSON error format (`--json`) and update doc/code
 
+Status: DONE (2026-02-05, task 202602050527-T58547)
+
 **Problem**
 `formatJsonError()` currently adds `exit_code`, `hint`. The contract describes only `code/message/context`. If the contract is “frozen”, the mismatch must be removed (or document the extension as part of the contract).
 
@@ -128,7 +134,11 @@ Choose one strategy (recommended #2):
 
 # Epic B: Offline-first + daily update-check (P0)
 
+Status: DONE (2026-02-05, task 202602050554-PW3TCT)
+
 ## AP-010 — Update-check once per day with cache (no network on every run)
+
+Status: DONE (2026-02-05, tasks 202602050554-8DBHJY, 202602050554-Q59FCK, 202602050554-49X946)
 
 **Problem**
 `maybeWarnOnUpdate()` hits npm on almost every CLI run (unless disabled by env/flag). This violates offline-first and creates hidden network usage.
@@ -196,7 +206,11 @@ Implement update-check:
 
 # Epic C: Safe archive extraction (P0)
 
+Status: DONE (2026-02-05, task 202602050609-PGC5S3)
+
 ## AP-020 — Safe extract for tar/zip (close zip-slip/path traversal)
+
+Status: DONE (2026-02-05, tasks 202602050609-2SWFWB, 202602050609-MT8GF4)
 
 **Problem**
 `extractArchive()` uses system `tar/unzip` without validating archive paths. An archive can write `../...` outside `destDir`, create symlinks, etc. This is critical because the archive comes from:
@@ -252,7 +266,11 @@ Move to JS tar/zip libraries so each entry can be filtered before disk write.
 
 # Epic D: Decompose `run-cli.ts` (P0)
 
+Status: DONE (2026-02-05, task 202602050621-33SAVX)
+
 ## AP-030 — Split `run-cli.ts` into command modules and shared utilities
+
+Status: DONE (2026-02-05, tasks 202602050621-M6NF1X, 202602050621-6RP0GH, 202602050621-7AC9PB)
 
 **Problem**
 `run-cli.ts` is ~10.7k lines — high coupling and regression risk. Any change affects “everything”, testability and velocity suffer.
