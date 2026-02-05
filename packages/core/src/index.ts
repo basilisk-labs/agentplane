@@ -27,6 +27,18 @@ export {
 } from "./tasks/task-readme.js";
 
 export {
+  docChanged,
+  ensureDocSections,
+  extractTaskDoc,
+  mergeTaskDoc,
+  normalizeDocSectionName,
+  normalizeTaskDoc,
+  parseDocSections,
+  setMarkdownSection,
+  splitCombinedHeadingLines,
+} from "./tasks/task-doc.js";
+
+export {
   createTask,
   getTasksDir,
   listTasks,
