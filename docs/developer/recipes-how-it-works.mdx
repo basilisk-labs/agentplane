@@ -204,6 +204,7 @@ Artifacts:
 - Creates `.agentplane/recipes/<id>/runs/<timestamp>-<scenario>/`.
 - For each step, writes `stdout.log` and `stderr.log` under a `step-N-<tool>` folder.
 - Writes `meta.json` with recipe, scenario, run id, and per-step exit info.
+- Writes `report.json` with timestamps, step audit data (redacted args + env keys only), and git diff summary.
 - Exposes a per-project cache directory at `.agentplane/recipes-cache/` via `AGENTPLANE_RECIPES_CACHE_DIR`.
 
 Example artifacts layout:
@@ -211,6 +212,7 @@ Example artifacts layout:
 ```text
 .agentplane/recipes/dokploy/runs/2026-01-30T19-22-10Z-list-projects/
   meta.json
+  report.json
   step-1-list-projects/
     stdout.log
     stderr.log
@@ -220,6 +222,7 @@ Environment variables injected into tools:
 
 - `AGENTPLANE_RUN_DIR`
 - `AGENTPLANE_STEP_DIR`
+- `AGENTPLANE_RECIPES_CACHE_DIR`
 - `AGENTPLANE_RECIPE_ID`
 - `AGENTPLANE_SCENARIO_ID`
 - `AGENTPLANE_TOOL_ID`

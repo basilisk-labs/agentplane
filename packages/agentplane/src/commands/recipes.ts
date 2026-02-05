@@ -84,6 +84,35 @@ type ScenarioDefinition = {
   steps: unknown[];
 };
 
+type ScenarioRunGitSummary = {
+  diff_stat?: string;
+  staged_stat?: string;
+  status?: string[];
+};
+
+type ScenarioRunReportStep = {
+  step: number;
+  tool: string;
+  runtime: string;
+  entrypoint: string;
+  args: string[];
+  env_keys: string[];
+  exit_code: number;
+  duration_ms: number;
+};
+
+type ScenarioRunReport = {
+  schema_version: 1;
+  recipe: string;
+  scenario: string;
+  run_id: string;
+  started_at: string;
+  ended_at: string;
+  status: "success" | "failed";
+  steps: ScenarioRunReportStep[];
+  git?: ScenarioRunGitSummary;
+};
+
 type RecipeScenarioDetail = {
   id: string;
   summary?: string;
@@ -161,9 +190,43 @@ const SCENARIO_INFO_USAGE = "Usage: agentplane scenario info <recipe:scenario>";
 const SCENARIO_INFO_USAGE_EXAMPLE = "agentplane scenario info viewer:demo";
 const SCENARIO_RUN_USAGE = "Usage: agentplane scenario run <recipe:scenario>";
 const SCENARIO_RUN_USAGE_EXAMPLE = "agentplane scenario run viewer:demo";
+const SCENARIO_REPORT_NAME = "report.json";
+const SENSITIVE_ARG_FLAGS = new Set([
+  "--token",
+  "--secret",
+  "--password",
+  "--api-key",
+  "--apikey",
+  "--access-key",
+  "--client-secret",
+  "--auth",
+  "--authorization",
+  "--bearer",
+]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function redactArgs(args: string[]): string[] {
+  const out = [...args];
+  for (let i = 0; i < out.length; i++) {
+    const arg = out[i];
+    if (!arg) continue;
+    const eqIndex = arg.indexOf("=");
+    const flag = eqIndex === -1 ? arg : arg.slice(0, eqIndex);
+    if (!SENSITIVE_ARG_FLAGS.has(flag)) continue;
+    if (eqIndex !== -1) {
+      out[i] = `${flag}=<redacted>`;
+      continue;
+    }
+    out[i] = flag;
+    if (i + 1 < out.length && !out[i + 1]?.startsWith("-")) {
+      out[i + 1] = "<redacted>";
+      i += 1;
+    }
+  }
+  return out;
 }
 
 function dedupeStrings(items: string[]): string[] {
@@ -192,6 +255,71 @@ function isNotGitRepoError(err: unknown): boolean {
     return err.message.startsWith("Not a git repository");
   }
   return false;
+}
+
+async function getGitDiffSummary(cwd: string): Promise<ScenarioRunGitSummary | undefined> {
+  try {
+    const [diff, staged, status] = await Promise.all([
+      execFileAsync("git", ["diff", "--stat"], { cwd }),
+      execFileAsync("git", ["diff", "--stat", "--staged"], { cwd }),
+      execFileAsync("git", ["status", "--porcelain"], { cwd }),
+    ]);
+    const diffStat = diff.stdout.trim();
+    const stagedStat = staged.stdout.trim();
+    const statusLines = status.stdout.trim();
+    return {
+      diff_stat: diffStat || undefined,
+      staged_stat: stagedStat || undefined,
+      status: statusLines
+        ? statusLines
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean)
+        : [],
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+function collectScenarioEnvKeys(stepEnv: Record<string, string> | undefined): string[] {
+  return dedupeStrings([
+    ...Object.keys(stepEnv ?? {}),
+    "AGENTPLANE_RUN_DIR",
+    "AGENTPLANE_STEP_DIR",
+    "AGENTPLANE_RECIPES_CACHE_DIR",
+    "AGENTPLANE_RECIPE_ID",
+    "AGENTPLANE_SCENARIO_ID",
+    "AGENTPLANE_TOOL_ID",
+  ]);
+}
+
+async function writeScenarioReport(opts: {
+  runDir: string;
+  recipeId: string;
+  scenarioId: string;
+  runId: string;
+  startedAt: string;
+  status: "success" | "failed";
+  steps: ScenarioRunReportStep[];
+  gitSummary?: ScenarioRunGitSummary;
+}): Promise<void> {
+  const report: ScenarioRunReport = {
+    schema_version: 1,
+    recipe: opts.recipeId,
+    scenario: opts.scenarioId,
+    run_id: opts.runId,
+    started_at: opts.startedAt,
+    ended_at: new Date().toISOString(),
+    status: opts.status,
+    steps: opts.steps,
+    git: opts.gitSummary,
+  };
+  await writeFile(
+    path.join(opts.runDir, SCENARIO_REPORT_NAME),
+    `${JSON.stringify(report, null, 2)}\n`,
+    "utf8",
+  );
 }
 
 async function maybeResolveProject(opts: {
@@ -1338,6 +1466,7 @@ async function cmdScenarioRun(opts: {
     await mkdir(runsRoot, { recursive: true });
     const recipesCacheDir = resolveProjectRecipesCacheDir(resolved);
     await mkdir(recipesCacheDir, { recursive: true });
+    const runStartedAt = new Date().toISOString();
     const runId = `${new Date()
       .toISOString()
       .replaceAll(":", "-")
@@ -1352,6 +1481,7 @@ async function cmdScenarioRun(opts: {
       exitCode: number;
       duration_ms: number;
     }[] = [];
+    const stepsReport: ScenarioRunReportStep[] = [];
 
     for (let index = 0; index < scenario.steps.length; index++) {
       const step = normalizeScenarioToolStep(scenario.steps[index], `${recipeId}:${scenarioId}`);
@@ -1391,6 +1521,7 @@ async function cmdScenarioRun(opts: {
       const stepDir = path.join(runDir, `step-${index + 1}-${sanitizeRunId(step.tool)}`);
       await mkdir(stepDir, { recursive: true });
 
+      const stepEnvKeys = collectScenarioEnvKeys(step.env);
       const env = {
         ...process.env,
         ...step.env,
@@ -1420,8 +1551,29 @@ async function cmdScenarioRun(opts: {
         exitCode: result.exitCode,
         duration_ms: durationMs,
       });
+      stepsReport.push({
+        step: index + 1,
+        tool: step.tool,
+        runtime,
+        entrypoint,
+        args: redactArgs(step.args),
+        env_keys: stepEnvKeys,
+        exit_code: result.exitCode,
+        duration_ms: durationMs,
+      });
 
       if (result.exitCode !== 0) {
+        const gitSummary = await getGitDiffSummary(resolved.gitRoot);
+        await writeScenarioReport({
+          runDir,
+          recipeId,
+          scenarioId,
+          runId,
+          startedAt: runStartedAt,
+          status: "failed",
+          steps: stepsReport,
+          gitSummary,
+        });
         await writeFile(
           path.join(runDir, "meta.json"),
           `${JSON.stringify(
@@ -1444,6 +1596,17 @@ async function cmdScenarioRun(opts: {
       }
     }
 
+    const gitSummary = await getGitDiffSummary(resolved.gitRoot);
+    await writeScenarioReport({
+      runDir,
+      recipeId,
+      scenarioId,
+      runId,
+      startedAt: runStartedAt,
+      status: "success",
+      steps: stepsReport,
+      gitSummary,
+    });
     await writeFile(
       path.join(runDir, "meta.json"),
       `${JSON.stringify(
