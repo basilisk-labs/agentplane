@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, generateKeyPairSync, sign } from "node:crypto";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -23,15 +23,45 @@ import {
 registerAgentplaneHome();
 
 const agentplaneHomePath = () => getAgentplaneHome() ?? "";
+const originalRecipesKeys = process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS;
 let restoreStdIO: (() => void) | null = null;
+let testKeyId = "test-key";
+let testPrivateKey: ReturnType<typeof generateKeyPairSync>["privateKey"] | null = null;
+
+function signIndexPayload(indexText: string): {
+  schema_version: 1;
+  key_id: string;
+  signature: string;
+} {
+  if (!testPrivateKey) throw new Error("test private key not set");
+  const signature = sign(null, Buffer.from(indexText), testPrivateKey).toString("base64");
+  return { schema_version: 1, key_id: testKeyId, signature };
+}
+
+async function writeSignedIndex(indexPath: string, payload: unknown): Promise<void> {
+  const indexText = JSON.stringify(payload, null, 2);
+  await writeFile(indexPath, indexText, "utf8");
+  const signature = signIndexPayload(indexText);
+  await writeFile(`${indexPath}.sig`, JSON.stringify(signature, null, 2), "utf8");
+}
 
 beforeEach(() => {
   restoreStdIO = silenceStdIO();
+  const { publicKey, privateKey } = generateKeyPairSync("ed25519");
+  testPrivateKey = privateKey;
+  const publicPem = publicKey.export({ type: "spki", format: "pem" }).toString();
+  process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS = JSON.stringify({ [testKeyId]: publicPem });
 });
 
 afterEach(() => {
   restoreStdIO?.();
   restoreStdIO = null;
+  if (originalRecipesKeys === undefined) {
+    delete process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS;
+  } else {
+    process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS = originalRecipesKeys;
+  }
+  testPrivateKey = null;
 });
 
 describe("runCli recipes", () => {
@@ -393,7 +423,7 @@ describe("runCli recipes", () => {
         },
       ],
     };
-    await writeFile(indexPath, JSON.stringify(index, null, 2), "utf8");
+    await writeSignedIndex(indexPath, index);
 
     const io = captureStdIO();
     try {
@@ -413,7 +443,7 @@ describe("runCli recipes", () => {
       schema_version: 1,
       recipes: [{ id: "broken", summary: "Broken", versions: [] }],
     };
-    await writeFile(indexPath, JSON.stringify(index, null, 2), "utf8");
+    await writeSignedIndex(indexPath, index);
 
     const io = captureStdIO();
     try {
@@ -501,7 +531,7 @@ describe("runCli recipes", () => {
         },
       ],
     };
-    await writeFile(localIndexPath, JSON.stringify(index, null, 2), "utf8");
+    await writeSignedIndex(localIndexPath, index);
 
     const io = captureStdIO();
     try {
@@ -532,12 +562,24 @@ describe("runCli recipes", () => {
     };
 
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      statusText: "OK",
-      json: () => Promise.resolve(index),
-    } as unknown as Response) as unknown as typeof fetch;
+    const indexText = JSON.stringify(index, null, 2);
+    const signature = signIndexPayload(indexText);
+    globalThis.fetch = vi.fn((url: string) => {
+      if (url.endsWith(".sig")) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: "OK",
+          json: () => Promise.resolve(signature),
+        } as unknown as Response);
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+        text: () => Promise.resolve(indexText),
+      } as unknown as Response);
+    }) as unknown as typeof fetch;
 
     const io = captureStdIO();
     try {
@@ -585,7 +627,7 @@ describe("runCli recipes", () => {
     };
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-index-"));
     const indexPath = path.join(tempDir, "index.json");
-    await writeFile(indexPath, JSON.stringify(index, null, 2), "utf8");
+    await writeSignedIndex(indexPath, index);
 
     const io = captureStdIO();
     try {

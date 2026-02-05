@@ -33,6 +33,34 @@ export async function fetchJson(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Pr
   }
 }
 
+export async function fetchText(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<string> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, {
+      headers: { "User-Agent": "agentplane" },
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_NETWORK"),
+        code: "E_NETWORK",
+        message: `Failed to fetch ${url} (${res.status} ${res.statusText})`,
+      });
+    }
+    return await res.text();
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw new CliError({
+      exitCode: exitCodeForError("E_NETWORK"),
+      code: "E_NETWORK",
+      message: `Failed to fetch ${url}`,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export async function downloadToFile(
   url: string,
   destPath: string,
