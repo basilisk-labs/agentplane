@@ -1,18 +1,19 @@
 ---
 id: "202602050746-B15AVK"
 title: "Raise coverage and fix run-cli test warnings"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["testing"]
 verify: []
-commit: null
+commit: { hash: "8b5eef4bdb8c0ce08f7d85f9e52ba31f3d15ff63", message: "✅ B15AVK test coverage and quiet output" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: raising coverage for packages/agentplane and removing run-cli test warnings; will add tests for recent CLI modules, run coverage and pre-commit hooks, then document and close the task." }
+  - { author: "CODER", body: "Verified: bun run test:agentplane; bun run coverage; node packages/agentplane/bin/agentplane.js hooks run pre-commit" }
 doc_version: 2
-doc_updated_at: "2026-02-05T08:27:48.952Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-02-05T08:33:14.221Z"
+doc_updated_by: "CODER"
 description: "Increase test coverage for packages/agentplane (lines>=80, branches>=70), add tests for recent CLI modules, and fix warnings in run-cli tests."
 id_source: "generated"
 ---
