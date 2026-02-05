@@ -1,0 +1,2042 @@
+import { execFile } from "node:child_process";
+import {
+  cp,
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  realpath,
+  rename,
+  rm,
+  writeFile,
+} from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { promisify } from "node:util";
+
+import { resolveProject } from "@agentplaneorg/core";
+
+import { extractArchive } from "../cli/archive.js";
+import { sha256File } from "../cli/checksum.js";
+import { mapCoreError } from "../cli/error-map.js";
+import { fileExists, getPathKind } from "../cli/fs-utils.js";
+import { downloadToFile, fetchJson } from "../cli/http.js";
+import {
+  emptyStateMessage,
+  infoMessage,
+  invalidFieldMessage,
+  invalidPathMessage,
+  missingValueMessage,
+  missingFileMessage,
+  requiredFieldMessage,
+  successMessage,
+  usageMessage,
+} from "../cli/output.js";
+import { CliError } from "../errors.js";
+
+const execFileAsync = promisify(execFile);
+
+type RecipeManifest = {
+  schema_version: "1";
+  id: string;
+  version: string;
+  name: string;
+  summary: string;
+  description: string;
+  tags?: string[];
+  agents?: { id?: string; summary?: string; file?: string }[];
+  tools?: {
+    id?: string;
+    summary?: string;
+    runtime?: "node" | "bash";
+    entrypoint?: string;
+    permissions?: string[];
+  }[];
+  scenarios?: { id?: string; summary?: string }[];
+};
+
+type RecipeConflictMode = "fail" | "rename" | "overwrite";
+
+type InstalledRecipeEntry = {
+  id: string;
+  version: string;
+  source: string;
+  installed_at: string;
+  tags: string[];
+  manifest: RecipeManifest;
+};
+
+type InstalledRecipesFile = {
+  schema_version: 1;
+  updated_at: string;
+  recipes: InstalledRecipeEntry[];
+};
+
+type ScenarioDefinition = {
+  schema_version: "1";
+  id: string;
+  summary?: string;
+  description?: string;
+  goal: string;
+  inputs: unknown;
+  outputs: unknown;
+  steps: unknown[];
+};
+
+type RecipeScenarioDetail = {
+  id: string;
+  summary?: string;
+  description?: string;
+  goal?: string;
+  inputs?: unknown;
+  outputs?: unknown;
+  steps?: unknown[];
+  source: "definition" | "index" | "manifest";
+};
+
+type RecipesIndex = {
+  schema_version: 1;
+  recipes: {
+    id: string;
+    summary: string;
+    description?: string;
+    versions: {
+      version: string;
+      url: string;
+      sha256: string;
+      min_agentplane_version?: string;
+      tags?: string[];
+    }[];
+  }[];
+};
+
+const INSTALLED_RECIPES_NAME = "recipes.json";
+const RECIPES_DIR_NAME = "recipes";
+const RECIPES_SCENARIOS_DIR_NAME = "scenarios";
+const RECIPES_SCENARIOS_INDEX_NAME = "scenarios.json";
+const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";
+const RECIPE_USAGE =
+  "Usage: agentplane recipes <list|info|explain|install|remove|list-remote|cache> [args]";
+const RECIPE_USAGE_EXAMPLE = "agentplane recipes list";
+const RECIPE_INFO_USAGE = "Usage: agentplane recipes info <id>";
+const RECIPE_INFO_USAGE_EXAMPLE = "agentplane recipes info viewer";
+const RECIPE_EXPLAIN_USAGE = "Usage: agentplane recipes explain <id>";
+const RECIPE_EXPLAIN_USAGE_EXAMPLE = "agentplane recipes explain viewer";
+const RECIPE_INSTALL_USAGE =
+  "Usage: agentplane recipes install --name <id> [--index <path|url>] [--refresh] | --path <path> | --url <url>";
+const RECIPE_INSTALL_USAGE_EXAMPLE = "agentplane recipes install --name viewer";
+const RECIPE_REMOVE_USAGE = "Usage: agentplane recipes remove <id>";
+const RECIPE_REMOVE_USAGE_EXAMPLE = "agentplane recipes remove viewer";
+const RECIPE_CACHE_USAGE = "Usage: agentplane recipes cache <prune> [args]";
+const RECIPE_CACHE_USAGE_EXAMPLE = "agentplane recipes cache prune --dry-run";
+const RECIPE_CACHE_PRUNE_USAGE = "Usage: agentplane recipes cache prune [--dry-run] [--all]";
+const RECIPE_CACHE_PRUNE_USAGE_EXAMPLE = "agentplane recipes cache prune --dry-run";
+const RECIPE_LIST_REMOTE_USAGE =
+  "Usage: agentplane recipes list-remote [--refresh] [--index <path|url>]";
+const RECIPE_LIST_REMOTE_USAGE_EXAMPLE = "agentplane recipes list-remote --refresh";
+const DEFAULT_RECIPES_INDEX_URL =
+  "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
+const RECIPE_CONFLICT_MODES = ["fail", "rename", "overwrite"] as const;
+const AGENTPLANE_HOME_ENV = "AGENTPLANE_HOME";
+const GLOBAL_RECIPES_DIR_NAME = "recipes";
+const PROJECT_RECIPES_CACHE_DIR_NAME = "recipes-cache";
+const SCENARIO_USAGE = "Usage: agentplane scenario <list|info|run> [args]";
+const SCENARIO_USAGE_EXAMPLE = "agentplane scenario list";
+const SCENARIO_INFO_USAGE = "Usage: agentplane scenario info <recipe:scenario>";
+const SCENARIO_INFO_USAGE_EXAMPLE = "agentplane scenario info viewer:demo";
+const SCENARIO_RUN_USAGE = "Usage: agentplane scenario run <recipe:scenario>";
+const SCENARIO_RUN_USAGE_EXAMPLE = "agentplane scenario run viewer:demo";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function dedupeStrings(items: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of items) {
+    const trimmed = item.trim();
+    if (!trimmed) continue;
+    if (seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    out.push(trimmed);
+  }
+  return out;
+}
+
+async function resolvePathFallback(filePath: string): Promise<string> {
+  try {
+    return await realpath(filePath);
+  } catch {
+    return path.resolve(filePath);
+  }
+}
+
+function isNotGitRepoError(err: unknown): boolean {
+  if (err instanceof Error) {
+    return err.message.startsWith("Not a git repository");
+  }
+  return false;
+}
+
+async function maybeResolveProject(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<{ gitRoot: string; agentplaneDir: string } | null> {
+  try {
+    return await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+  } catch (err) {
+    if (isNotGitRepoError(err)) {
+      if (opts.rootOverride) throw err;
+      return null;
+    }
+    throw err;
+  }
+}
+
+type RecipeListRemoteFlags = {
+  refresh: boolean;
+  index?: string;
+};
+
+function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
+  const out: RecipeListRemoteFlags = { refresh: false };
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (!arg.startsWith("--")) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_LIST_REMOTE_USAGE, RECIPE_LIST_REMOTE_USAGE_EXAMPLE),
+      });
+    }
+    if (arg === "--refresh") {
+      out.refresh = true;
+      continue;
+    }
+    const next = args[i + 1];
+    if (!next) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
+    }
+    switch (arg) {
+      case "--index": {
+        out.index = next;
+        break;
+      }
+      default: {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_LIST_REMOTE_USAGE, RECIPE_LIST_REMOTE_USAGE_EXAMPLE),
+        });
+      }
+    }
+    i++;
+  }
+  return out;
+}
+
+function normalizeRecipeId(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) throw new Error(requiredFieldMessage("manifest.id"));
+  if (trimmed.includes("/") || trimmed.includes("\\")) {
+    throw new Error(invalidPathMessage("manifest.id", "must not contain path separators"));
+  }
+  if (trimmed === "." || trimmed === "..") {
+    throw new Error(invalidPathMessage("manifest.id", "must not be '.' or '..'"));
+  }
+  return trimmed;
+}
+
+function normalizeAgentId(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) throw new Error(requiredFieldMessage("agent.id"));
+  if (trimmed.includes("/") || trimmed.includes("\\")) {
+    throw new Error(invalidPathMessage("agent.id", "must not contain path separators"));
+  }
+  if (trimmed === "." || trimmed === "..") {
+    throw new Error(invalidPathMessage("agent.id", "must not be '.' or '..'"));
+  }
+  return trimmed;
+}
+
+function normalizeScenarioId(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) throw new Error(requiredFieldMessage("scenario.id"));
+  if (trimmed.includes("/") || trimmed.includes("\\")) {
+    throw new Error(invalidPathMessage("scenario.id", "must not contain path separators"));
+  }
+  if (trimmed === "." || trimmed === "..") {
+    throw new Error(invalidPathMessage("scenario.id", "must not be '.' or '..'"));
+  }
+  return trimmed;
+}
+
+function normalizeRecipeTags(value: unknown): string[] {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) throw new Error(invalidFieldMessage("manifest.tags", "string[]"));
+  const tags = value.map((tag) => {
+    if (typeof tag !== "string") throw new Error(invalidFieldMessage("manifest.tags", "string[]"));
+    return tag.trim();
+  });
+  return dedupeStrings(tags);
+}
+
+function validateRecipeManifest(raw: unknown): RecipeManifest {
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("manifest", "object"));
+  if (raw.schema_version !== "1")
+    throw new Error(invalidFieldMessage("manifest.schema_version", '"1"'));
+  if (typeof raw.id !== "string") throw new Error(invalidFieldMessage("manifest.id", "string"));
+  if (typeof raw.version !== "string")
+    throw new Error(invalidFieldMessage("manifest.version", "string"));
+  if (typeof raw.name !== "string") throw new Error(invalidFieldMessage("manifest.name", "string"));
+  if (typeof raw.summary !== "string")
+    throw new Error(invalidFieldMessage("manifest.summary", "string"));
+  if (typeof raw.description !== "string")
+    throw new Error(invalidFieldMessage("manifest.description", "string"));
+
+  const id = normalizeRecipeId(raw.id);
+  const version = raw.version.trim();
+  if (!version) throw new Error(requiredFieldMessage("manifest.version"));
+  const tags = normalizeRecipeTags(raw.tags);
+
+  return {
+    schema_version: "1",
+    id,
+    version,
+    name: raw.name.trim(),
+    summary: raw.summary.trim(),
+    description: raw.description.trim(),
+    tags: tags.length > 0 ? tags : undefined,
+    agents: Array.isArray(raw.agents) ? (raw.agents as RecipeManifest["agents"]) : undefined,
+    tools: Array.isArray(raw.tools) ? (raw.tools as RecipeManifest["tools"]) : undefined,
+    scenarios: Array.isArray(raw.scenarios)
+      ? (raw.scenarios as RecipeManifest["scenarios"])
+      : undefined,
+  };
+}
+
+function validateInstalledRecipesFile(raw: unknown): InstalledRecipesFile {
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes.json", "object"));
+  if (raw.schema_version !== 1)
+    throw new Error(invalidFieldMessage("recipes.json.schema_version", "1"));
+  if (!Array.isArray(raw.recipes))
+    throw new Error(invalidFieldMessage("recipes.json.recipes", "array"));
+  const updatedAt = typeof raw.updated_at === "string" ? raw.updated_at : "";
+  const recipes = raw.recipes
+    .filter((entry) => isRecord(entry))
+    .map((entry) => {
+      const manifest = validateRecipeManifest(entry.manifest);
+      const id = typeof entry.id === "string" ? entry.id.trim() : manifest.id;
+      const version = typeof entry.version === "string" ? entry.version.trim() : manifest.version;
+      const source = typeof entry.source === "string" ? entry.source.trim() : "";
+      const installedAt = typeof entry.installed_at === "string" ? entry.installed_at.trim() : "";
+      if (!id || !version || !source || !installedAt) {
+        throw new Error(
+          invalidFieldMessage("recipes.json.recipes[]", "id, version, source, installed_at"),
+        );
+      }
+      if (id !== manifest.id || version !== manifest.version) {
+        throw new Error(invalidFieldMessage("recipes.json.recipes[]", "id/version match manifest"));
+      }
+      const tags = normalizeRecipeTags(entry.tags ?? manifest.tags ?? []);
+      return { id, version, source, installed_at: installedAt, tags, manifest };
+    });
+  return { schema_version: 1, updated_at: updatedAt, recipes };
+}
+
+function sortInstalledRecipes(file: InstalledRecipesFile): InstalledRecipesFile {
+  const recipes = [...file.recipes].toSorted((a, b) => a.id.localeCompare(b.id));
+  return { schema_version: 1, updated_at: file.updated_at, recipes };
+}
+
+function validateRecipesIndex(raw: unknown): RecipesIndex {
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes index", "object"));
+  if (raw.schema_version !== 1)
+    throw new Error(invalidFieldMessage("recipes index.schema_version", "1"));
+  if (!Array.isArray(raw.recipes))
+    throw new Error(invalidFieldMessage("recipes index.recipes", "array"));
+
+  const recipes = raw.recipes
+    .filter((entry) => isRecord(entry))
+    .map((entry) => {
+      const id = typeof entry.id === "string" ? entry.id : "";
+      const summary = typeof entry.summary === "string" ? entry.summary : "";
+      const description = typeof entry.description === "string" ? entry.description : undefined;
+      const versionsRaw = Array.isArray(entry.versions) ? entry.versions : [];
+      if (!id || !summary || versionsRaw.length === 0) {
+        throw new Error(invalidFieldMessage("recipes index.recipes[]", "id, summary, versions"));
+      }
+      const versions = versionsRaw
+        .filter((version) => isRecord(version))
+        .map((version) => {
+          const versionId = typeof version.version === "string" ? version.version : "";
+          const url = typeof version.url === "string" ? version.url : "";
+          const sha256 = typeof version.sha256 === "string" ? version.sha256 : "";
+          if (!versionId || !url || !sha256) {
+            throw new Error(
+              invalidFieldMessage("recipes index.recipes[].versions[]", "version, url, sha256"),
+            );
+          }
+          return {
+            version: versionId,
+            url,
+            sha256,
+            min_agentplane_version:
+              typeof version.min_agentplane_version === "string"
+                ? version.min_agentplane_version
+                : undefined,
+            tags: Array.isArray(version.tags)
+              ? version.tags.filter((tag) => typeof tag === "string")
+              : undefined,
+          };
+        });
+      return { id, summary, description, versions };
+    });
+  return { schema_version: 1, recipes };
+}
+
+function validateScenarioDefinition(raw: unknown, sourcePath: string): ScenarioDefinition {
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("scenario", "object", sourcePath));
+  if (raw.schema_version !== undefined && raw.schema_version !== "1") {
+    throw new Error(invalidFieldMessage("scenario.schema_version", '"1"', sourcePath));
+  }
+  const rawId = typeof raw.id === "string" ? raw.id : "";
+  const id = normalizeScenarioId(rawId);
+  const goal = typeof raw.goal === "string" ? raw.goal.trim() : "";
+  if (!goal) throw new Error(requiredFieldMessage("scenario.goal", sourcePath));
+  if (!("inputs" in raw)) throw new Error(requiredFieldMessage("scenario.inputs", sourcePath));
+  if (!("outputs" in raw)) throw new Error(requiredFieldMessage("scenario.outputs", sourcePath));
+  if (!Array.isArray(raw.steps)) {
+    throw new Error(invalidFieldMessage("scenario.steps", "array", sourcePath));
+  }
+  return {
+    schema_version: "1",
+    id,
+    summary: typeof raw.summary === "string" ? raw.summary.trim() : undefined,
+    description: typeof raw.description === "string" ? raw.description.trim() : undefined,
+    goal,
+    inputs: raw.inputs,
+    outputs: raw.outputs,
+    steps: raw.steps,
+  };
+}
+
+async function readScenarioDefinition(filePath: string): Promise<ScenarioDefinition> {
+  const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
+  return validateScenarioDefinition(raw, filePath);
+}
+
+async function readScenarioIndex(filePath: string): Promise<{
+  schema_version: 1;
+  scenarios: { id: string; summary?: string }[];
+}> {
+  const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("scenarios index", "object"));
+  if (raw.schema_version !== 1)
+    throw new Error(invalidFieldMessage("scenarios index.schema_version", "1"));
+  if (!Array.isArray(raw.scenarios))
+    throw new Error(invalidFieldMessage("scenarios index.scenarios", "array"));
+  const scenarios = raw.scenarios
+    .filter((entry) => isRecord(entry))
+    .map((entry) => ({
+      id: typeof entry.id === "string" ? entry.id : "",
+      summary: typeof entry.summary === "string" ? entry.summary : undefined,
+    }))
+    .filter((entry) => entry.id);
+  return { schema_version: 1, scenarios };
+}
+
+function formatJsonBlock(value: unknown, indent: string): string {
+  const payload = JSON.stringify(value, null, 2);
+  if (!payload) return "";
+  return payload
+    .split("\n")
+    .map((line) => `${indent}${line}`)
+    .join("\n");
+}
+
+async function collectRecipeScenarioDetails(
+  recipeDir: string,
+  manifest: RecipeManifest,
+): Promise<RecipeScenarioDetail[]> {
+  const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
+  if ((await getPathKind(scenariosDir)) === "dir") {
+    const files = await readdir(scenariosDir);
+    const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
+    const details: RecipeScenarioDetail[] = [];
+    for (const file of jsonFiles) {
+      const scenario = await readScenarioDefinition(path.join(scenariosDir, file));
+      details.push({
+        id: scenario.id,
+        summary: scenario.summary,
+        description: scenario.description,
+        goal: scenario.goal,
+        inputs: scenario.inputs,
+        outputs: scenario.outputs,
+        steps: scenario.steps,
+        source: "definition",
+      });
+    }
+    return details.toSorted((a, b) => a.id.localeCompare(b.id));
+  }
+
+  const scenariosIndexPath = path.join(recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
+  if (await fileExists(scenariosIndexPath)) {
+    const index = await readScenarioIndex(scenariosIndexPath);
+    return index.scenarios
+      .map<RecipeScenarioDetail>((scenario) => ({
+        id: scenario.id,
+        summary: scenario.summary,
+        source: "index",
+      }))
+      .toSorted((a, b) => a.id.localeCompare(b.id));
+  }
+
+  const manifestScenarios = manifest.scenarios ?? [];
+  if (manifestScenarios.length > 0) {
+    return manifestScenarios
+      .map<RecipeScenarioDetail>((scenario) => ({
+        id: scenario?.id ?? "",
+        summary: scenario?.summary,
+        source: "manifest",
+      }))
+      .filter((scenario) => scenario.id)
+      .toSorted((a, b) => a.id.localeCompare(b.id));
+  }
+
+  return [];
+}
+
+function normalizeScenarioToolStep(
+  raw: unknown,
+  sourcePath: string,
+): { tool: string; args: string[]; env: Record<string, string> } {
+  if (!isRecord(raw)) {
+    throw new Error(invalidFieldMessage("scenario step", "object", sourcePath));
+  }
+  const tool = typeof raw.tool === "string" ? raw.tool.trim() : "";
+  if (!tool) {
+    throw new Error(requiredFieldMessage("scenario step.tool", sourcePath));
+  }
+  const args = Array.isArray(raw.args) ? raw.args.filter((arg) => typeof arg === "string") : [];
+  if (Array.isArray(raw.args) && args.length !== raw.args.length) {
+    throw new Error(invalidFieldMessage("scenario step.args", "string[]", sourcePath));
+  }
+  const env: Record<string, string> = {};
+  if (raw.env !== undefined) {
+    if (!isRecord(raw.env)) {
+      throw new Error(invalidFieldMessage("scenario step.env", "object", sourcePath));
+    }
+    for (const [key, value] of Object.entries(raw.env)) {
+      if (typeof value !== "string") {
+        throw new Error(invalidFieldMessage("scenario step.env", "string map", sourcePath));
+      }
+      env[key] = value;
+    }
+  }
+  return { tool, args, env };
+}
+
+async function readInstalledRecipesFile(filePath: string): Promise<InstalledRecipesFile> {
+  try {
+    const raw = JSON.parse(await readFile(filePath, "utf8")) as unknown;
+    return sortInstalledRecipes(validateInstalledRecipesFile(raw));
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return { schema_version: 1, updated_at: "", recipes: [] };
+    throw err;
+  }
+}
+
+async function writeInstalledRecipesFile(
+  filePath: string,
+  file: InstalledRecipesFile,
+): Promise<void> {
+  const sorted = sortInstalledRecipes({
+    ...file,
+    updated_at: new Date().toISOString(),
+  });
+  await mkdir(path.dirname(filePath), { recursive: true });
+  await writeFile(filePath, `${JSON.stringify(sorted, null, 2)}\n`, "utf8");
+}
+
+async function readRecipeManifest(manifestPath: string): Promise<RecipeManifest> {
+  const raw = JSON.parse(await readFile(manifestPath, "utf8")) as unknown;
+  return validateRecipeManifest(raw);
+}
+
+async function resolveRecipeRoot(extractedDir: string): Promise<string> {
+  const rootManifest = path.join(extractedDir, "manifest.json");
+  if (await fileExists(rootManifest)) return extractedDir;
+  const entries = await readdir(extractedDir, { withFileTypes: true });
+  const dirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+  if (dirs.length !== 1) {
+    throw new Error(missingFileMessage("manifest.json", "archive root"));
+  }
+  const candidate = path.join(extractedDir, dirs[0]);
+  if (!(await fileExists(path.join(candidate, "manifest.json")))) {
+    throw new Error(missingFileMessage("manifest.json", "archive root"));
+  }
+  return candidate;
+}
+
+function resolveAgentplaneHome(): string {
+  const overridden = process.env[AGENTPLANE_HOME_ENV]?.trim();
+  if (overridden) return overridden;
+  return path.join(os.homedir(), ".agentplane");
+}
+
+function resolveGlobalRecipesDir(): string {
+  return path.join(resolveAgentplaneHome(), GLOBAL_RECIPES_DIR_NAME);
+}
+
+function resolveInstalledRecipesPath(): string {
+  return path.join(resolveAgentplaneHome(), INSTALLED_RECIPES_NAME);
+}
+
+function resolveRecipesIndexCachePath(): string {
+  return path.join(resolveAgentplaneHome(), RECIPES_REMOTE_INDEX_NAME);
+}
+
+function resolveInstalledRecipeDir(entry: { id: string; version: string }): string {
+  return path.join(resolveGlobalRecipesDir(), entry.id, entry.version);
+}
+
+function resolveProjectRecipesCacheDir(resolved: { agentplaneDir: string }): string {
+  return path.join(resolved.agentplaneDir, PROJECT_RECIPES_CACHE_DIR_NAME);
+}
+
+type RecipeInstallSource =
+  | { type: "name"; value: string }
+  | { type: "path"; value: string }
+  | { type: "url"; value: string }
+  | { type: "auto"; value: string };
+
+function parseRecipeInstallArgs(args: string[]): {
+  source: RecipeInstallSource;
+  index?: string;
+  refresh: boolean;
+  onConflict: RecipeConflictMode;
+} {
+  let onConflict: RecipeConflictMode = "fail";
+  let name: string | null = null;
+  let localPath: string | null = null;
+  let url: string | null = null;
+  let index: string | undefined;
+  let refresh = false;
+  const positional: string[] = [];
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (arg === "--name") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
+      name = next;
+      i++;
+      continue;
+    }
+    if (arg === "--path") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
+      localPath = next;
+      i++;
+      continue;
+    }
+    if (arg === "--url") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
+      url = next;
+      i++;
+      continue;
+    }
+    if (arg === "--index") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
+      index = next;
+      i++;
+      continue;
+    }
+    if (arg === "--refresh") {
+      refresh = true;
+      continue;
+    }
+    if (arg === "--on-conflict") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
+      if (!RECIPE_CONFLICT_MODES.includes(next as RecipeConflictMode)) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+        });
+      }
+      onConflict = next as RecipeConflictMode;
+      i++;
+      continue;
+    }
+    if (arg.startsWith("--")) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+      });
+    }
+    positional.push(arg);
+  }
+
+  const explicitFlags = [name, localPath, url].filter(Boolean).length;
+  if (explicitFlags > 1) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+    });
+  }
+  if (positional.length > 1) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+    });
+  }
+  if (positional.length > 0 && explicitFlags > 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+    });
+  }
+
+  if (name) return { source: { type: "name", value: name }, index, refresh, onConflict };
+  if (localPath) return { source: { type: "path", value: localPath }, index, refresh, onConflict };
+  if (url) return { source: { type: "url", value: url }, index, refresh, onConflict };
+  if (positional.length === 1) {
+    return { source: { type: "auto", value: positional[0] }, index, refresh, onConflict };
+  }
+
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+  });
+}
+
+type RecipeCachePruneFlags = {
+  dryRun: boolean;
+  all: boolean;
+};
+
+type RecipeListFlags = {
+  full: boolean;
+  tag?: string;
+};
+
+function parseRecipeListArgs(args: string[]): RecipeListFlags {
+  const flags: RecipeListFlags = { full: false };
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (arg === "--full") {
+      flags.full = true;
+      continue;
+    }
+    if (arg === "--tag") {
+      const next = args[i + 1];
+      if (!next)
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+        });
+      flags.tag = next.trim();
+      i++;
+      continue;
+    }
+    if (arg.startsWith("--")) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+      });
+    }
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+    });
+  }
+  if (flags.tag !== undefined && !flags.tag) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+    });
+  }
+  return flags;
+}
+
+function parseRecipeCachePruneArgs(args: string[]): RecipeCachePruneFlags {
+  const flags: RecipeCachePruneFlags = { dryRun: false, all: false };
+  for (const arg of args) {
+    if (!arg) continue;
+    if (arg === "--dry-run") {
+      flags.dryRun = true;
+      continue;
+    }
+    if (arg === "--all") {
+      flags.all = true;
+      continue;
+    }
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_CACHE_PRUNE_USAGE, RECIPE_CACHE_PRUNE_USAGE_EXAMPLE),
+    });
+  }
+  return flags;
+}
+
+async function applyRecipeAgents(opts: {
+  manifest: RecipeManifest;
+  recipeDir: string;
+  agentplaneDir: string;
+  onConflict: RecipeConflictMode;
+}): Promise<void> {
+  const agents = opts.manifest.agents ?? [];
+  if (agents.length === 0) return;
+
+  const agentsDir = path.join(opts.agentplaneDir, "agents");
+  await mkdir(agentsDir, { recursive: true });
+
+  for (const agent of agents) {
+    const rawId = typeof agent?.id === "string" ? agent.id : "";
+    const rawFile = typeof agent?.file === "string" ? agent.file : "";
+    if (!rawId.trim() || !rawFile.trim()) {
+      throw new Error("manifest.agents entries must include id and file");
+    }
+    const agentId = normalizeAgentId(rawId);
+    const sourcePath = path.join(opts.recipeDir, rawFile);
+    if (!(await fileExists(sourcePath))) {
+      throw new Error(missingFileMessage("recipe agent file", rawFile));
+    }
+
+    const rawAgent = JSON.parse(await readFile(sourcePath, "utf8")) as unknown;
+    if (!isRecord(rawAgent)) {
+      throw new Error(invalidFieldMessage("recipe agent file", "JSON object", rawFile));
+    }
+
+    const baseId = `${opts.manifest.id}__${agentId}`;
+    let targetId = baseId;
+    let targetPath = path.join(agentsDir, `${targetId}.json`);
+    if (await getPathKind(targetPath)) {
+      if (opts.onConflict === "fail") {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Agent already exists: ${targetId}`,
+        });
+      }
+      if (opts.onConflict === "rename") {
+        let counter = 1;
+        while (await getPathKind(targetPath)) {
+          targetId = `${baseId}__${counter}`;
+          targetPath = path.join(agentsDir, `${targetId}.json`);
+          counter += 1;
+        }
+      }
+    }
+
+    rawAgent.id = targetId;
+    await writeFile(targetPath, `${JSON.stringify(rawAgent, null, 2)}\n`, "utf8");
+  }
+}
+
+async function applyRecipeScenarios(opts: {
+  manifest: RecipeManifest;
+  recipeDir: string;
+}): Promise<void> {
+  const scenariosDir = path.join(opts.recipeDir, RECIPES_SCENARIOS_DIR_NAME);
+  const scenariosIndexPath = path.join(opts.recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
+  const payload = { schema_version: 1, scenarios: [] as { id: string; summary?: string }[] };
+
+  if ((await getPathKind(scenariosDir)) === "dir") {
+    const entries = await readdir(scenariosDir);
+    const jsonEntries = entries.filter((entry) => entry.toLowerCase().endsWith(".json")).toSorted();
+    for (const entry of jsonEntries) {
+      const scenarioPath = path.join(scenariosDir, entry);
+      const scenario = await readScenarioDefinition(scenarioPath);
+      payload.scenarios.push({ id: scenario.id, summary: scenario.summary });
+    }
+  } else {
+    const scenarios = opts.manifest.scenarios ?? [];
+    payload.scenarios = scenarios
+      .filter((scenario) => isRecord(scenario))
+      .map((scenario) => ({
+        id: typeof scenario.id === "string" ? scenario.id : "",
+        summary: typeof scenario.summary === "string" ? scenario.summary : "",
+      }))
+      .filter((scenario) => scenario.id);
+  }
+
+  if (payload.scenarios.length === 0) return;
+  await writeFile(scenariosIndexPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+}
+
+function isHttpUrl(value: string): boolean {
+  return value.startsWith("http://") || value.startsWith("https://");
+}
+
+async function readRecipesIndexSource(source: string, cwd: string): Promise<unknown> {
+  if (isHttpUrl(source)) {
+    return await fetchJson(source);
+  }
+  const rawText = await readFile(path.resolve(cwd, source), "utf8");
+  return JSON.parse(rawText) as unknown;
+}
+
+async function loadRecipesRemoteIndex(opts: {
+  cwd: string;
+  source?: string;
+  refresh: boolean;
+}): Promise<RecipesIndex> {
+  const cachePath = resolveRecipesIndexCachePath();
+  const cacheDir = path.dirname(cachePath);
+  let rawIndex: unknown;
+
+  if (opts.refresh || !(await fileExists(cachePath))) {
+    const source = opts.source ?? DEFAULT_RECIPES_INDEX_URL;
+    rawIndex = await readRecipesIndexSource(source, opts.cwd);
+    await mkdir(cacheDir, { recursive: true });
+    await writeFile(cachePath, `${JSON.stringify(rawIndex, null, 2)}\n`, "utf8");
+  } else {
+    rawIndex = JSON.parse(await readFile(cachePath, "utf8")) as unknown;
+  }
+
+  return validateRecipesIndex(rawIndex);
+}
+
+async function cmdRecipeList(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  try {
+    const flags = parseRecipeListArgs(opts.args);
+    const filePath = resolveInstalledRecipesPath();
+    const installed = await readInstalledRecipesFile(filePath);
+
+    let recipes = installed.recipes;
+    if (flags.tag) {
+      const needle = flags.tag.toLowerCase();
+      recipes = recipes.filter((entry) => entry.tags.some((tag) => tag.toLowerCase() === needle));
+    }
+
+    if (recipes.length === 0) {
+      if (flags.tag) {
+        process.stdout.write(`${emptyStateMessage(`installed recipes for tag ${flags.tag}`)}\n`);
+        return 0;
+      }
+      process.stdout.write(
+        `${emptyStateMessage(
+          "installed recipes",
+          "Use `agentplane recipes list-remote` or `agentplane recipes install <id>`.",
+        )}\n`,
+      );
+      return 0;
+    }
+
+    if (flags.full) {
+      const payload: InstalledRecipesFile = {
+        schema_version: 1,
+        updated_at: installed.updated_at,
+        recipes,
+      };
+      process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+      return 0;
+    }
+
+    for (const entry of recipes) {
+      process.stdout.write(
+        `${entry.id}@${entry.version} - ${entry.manifest.summary || "No summary"}\n`,
+      );
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes list", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdRecipeListRemote(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseRecipeListRemoteFlags(opts.args);
+  try {
+    const index = await loadRecipesRemoteIndex({
+      cwd: opts.cwd,
+      source: flags.index,
+      refresh: flags.refresh,
+    });
+    for (const recipe of index.recipes) {
+      const latest = [...recipe.versions]
+        .toSorted((a, b) => a.version.localeCompare(b.version))
+        .at(-1);
+      if (!latest) continue;
+      process.stdout.write(`${recipe.id}@${latest.version} - ${recipe.summary}\n`);
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes list-remote", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdScenarioList(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  try {
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entries: { recipeId: string; scenarioId: string; summary?: string }[] = [];
+
+    for (const recipe of installed.recipes) {
+      const recipeDir = resolveInstalledRecipeDir(recipe);
+      const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
+      if ((await getPathKind(scenariosDir)) === "dir") {
+        const files = await readdir(scenariosDir);
+        const jsonFiles = files.filter((entry) => entry.toLowerCase().endsWith(".json")).toSorted();
+        for (const file of jsonFiles) {
+          const scenario = await readScenarioDefinition(path.join(scenariosDir, file));
+          entries.push({ recipeId: recipe.id, scenarioId: scenario.id, summary: scenario.summary });
+        }
+        continue;
+      }
+      const scenariosIndexPath = path.join(recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
+      if (await fileExists(scenariosIndexPath)) {
+        const index = await readScenarioIndex(scenariosIndexPath);
+        for (const scenario of index.scenarios) {
+          entries.push({
+            recipeId: recipe.id,
+            scenarioId: scenario.id,
+            summary: scenario.summary,
+          });
+        }
+      }
+    }
+
+    if (entries.length === 0) {
+      process.stdout.write(
+        `${emptyStateMessage("scenarios", "Install a recipe to add scenarios.")}\n`,
+      );
+      return 0;
+    }
+
+    const sorted = entries.toSorted((a, b) => {
+      const byRecipe = a.recipeId.localeCompare(b.recipeId);
+      if (byRecipe !== 0) return byRecipe;
+      return a.scenarioId.localeCompare(b.scenarioId);
+    });
+    for (const entry of sorted) {
+      process.stdout.write(
+        `${entry.recipeId}:${entry.scenarioId} - ${entry.summary ?? "No summary"}\n`,
+      );
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "scenario list", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdScenarioInfo(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
+  try {
+    const [recipeId, scenarioId] = opts.id.split(":");
+    if (!recipeId || !scenarioId) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(SCENARIO_INFO_USAGE, SCENARIO_INFO_USAGE_EXAMPLE),
+      });
+    }
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
+    if (!entry) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Recipe not installed: ${recipeId}`,
+      });
+    }
+    const recipeDir = resolveInstalledRecipeDir(entry);
+    const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
+    let scenario: ScenarioDefinition | null = null;
+    if ((await getPathKind(scenariosDir)) === "dir") {
+      const files = await readdir(scenariosDir);
+      const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
+      for (const file of jsonFiles) {
+        const candidate = await readScenarioDefinition(path.join(scenariosDir, file));
+        if (candidate.id === scenarioId) {
+          scenario = candidate;
+          break;
+        }
+      }
+    }
+
+    let summary: string | undefined;
+    if (!scenario) {
+      const scenariosIndexPath = path.join(recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
+      if (await fileExists(scenariosIndexPath)) {
+        const index = await readScenarioIndex(scenariosIndexPath);
+        const entrySummary = index.scenarios.find((item) => item.id === scenarioId);
+        summary = entrySummary?.summary;
+      }
+    }
+
+    if (!scenario && !summary) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Scenario not found: ${recipeId}:${scenarioId}`,
+      });
+    }
+
+    process.stdout.write(`Scenario: ${recipeId}:${scenarioId}\n`);
+    if (summary) process.stdout.write(`Summary: ${summary}\n`);
+    if (!scenario) {
+      process.stdout.write("Details: Scenario definition not found in recipe.\n");
+      return 0;
+    }
+
+    if (scenario.summary) process.stdout.write(`Summary: ${scenario.summary}\n`);
+    if (scenario.description) process.stdout.write(`Description: ${scenario.description}\n`);
+    process.stdout.write(`Goal: ${scenario.goal}\n`);
+    process.stdout.write(`Inputs: ${JSON.stringify(scenario.inputs, null, 2)}\n`);
+    process.stdout.write(`Outputs: ${JSON.stringify(scenario.outputs, null, 2)}\n`);
+    process.stdout.write("Steps:\n");
+    let stepIndex = 1;
+    for (const step of scenario.steps) {
+      process.stdout.write(`  ${stepIndex}. ${JSON.stringify(step)}\n`);
+      stepIndex += 1;
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "scenario info", root: opts.rootOverride ?? null });
+  }
+}
+
+async function executeRecipeTool(opts: {
+  runtime: "node" | "bash";
+  entrypoint: string;
+  args: string[];
+  cwd: string;
+  env: Record<string, string>;
+}): Promise<{ exitCode: number; stdout: string; stderr: string }> {
+  try {
+    const command = opts.runtime === "node" ? "node" : "bash";
+    const { stdout, stderr } = await execFileAsync(command, [opts.entrypoint, ...opts.args], {
+      cwd: opts.cwd,
+      env: opts.env,
+    });
+    return { exitCode: 0, stdout: String(stdout), stderr: String(stderr) };
+  } catch (err) {
+    let execErr: { code?: number; stdout?: string; stderr?: string } | null = null;
+    if (err && typeof err === "object") {
+      execErr = err as { code?: number; stdout?: string; stderr?: string };
+    }
+    const exitCode = typeof execErr?.code === "number" ? execErr.code : 1;
+    return {
+      exitCode,
+      stdout: String(execErr?.stdout ?? ""),
+      stderr: String(execErr?.stderr ?? ""),
+    };
+  }
+}
+
+function sanitizeRunId(value: string): string {
+  return value.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+async function cmdScenarioRun(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const [recipeId, scenarioId] = opts.id.split(":");
+    if (!recipeId || !scenarioId) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(SCENARIO_RUN_USAGE, SCENARIO_RUN_USAGE_EXAMPLE),
+      });
+    }
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
+    if (!entry) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Recipe not installed: ${recipeId}`,
+      });
+    }
+    const recipeDir = resolveInstalledRecipeDir(entry);
+    const manifestPath = path.join(recipeDir, "manifest.json");
+    const manifest = await readRecipeManifest(manifestPath);
+    const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
+    if ((await getPathKind(scenariosDir)) !== "dir") {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Scenario definitions not found for recipe: ${recipeId}`,
+      });
+    }
+    let scenario: ScenarioDefinition | null = null;
+    const files = await readdir(scenariosDir);
+    const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
+    for (const file of jsonFiles) {
+      const candidate = await readScenarioDefinition(path.join(scenariosDir, file));
+      if (candidate.id === scenarioId) {
+        scenario = candidate;
+        break;
+      }
+    }
+    if (!scenario) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Scenario not found: ${recipeId}:${scenarioId}`,
+      });
+    }
+
+    const runsRoot = path.join(resolved.agentplaneDir, RECIPES_DIR_NAME, recipeId, "runs");
+    await mkdir(runsRoot, { recursive: true });
+    const recipesCacheDir = resolveProjectRecipesCacheDir(resolved);
+    await mkdir(recipesCacheDir, { recursive: true });
+    const runId = `${new Date()
+      .toISOString()
+      .replaceAll(":", "-")
+      .replaceAll(".", "-")}-${sanitizeRunId(scenarioId)}`;
+    const runDir = path.join(runsRoot, runId);
+    await mkdir(runDir, { recursive: true });
+
+    const stepsMeta: {
+      tool: string;
+      runtime: string;
+      entrypoint: string;
+      exitCode: number;
+      duration_ms: number;
+    }[] = [];
+
+    for (let index = 0; index < scenario.steps.length; index++) {
+      const step = normalizeScenarioToolStep(scenario.steps[index], `${recipeId}:${scenarioId}`);
+      const toolEntry = manifest.tools?.find((tool) => tool?.id === step.tool);
+      if (!toolEntry) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Tool not found in recipe manifest: ${step.tool}`,
+        });
+      }
+      const runtime =
+        toolEntry.runtime === "node" || toolEntry.runtime === "bash" ? toolEntry.runtime : "";
+      const entrypoint = typeof toolEntry.entrypoint === "string" ? toolEntry.entrypoint : "";
+      if (!runtime || !entrypoint) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Tool entry is missing runtime/entrypoint: ${step.tool}`,
+        });
+      }
+      if (Array.isArray(toolEntry.permissions) && toolEntry.permissions.length > 0) {
+        process.stdout.write(
+          `Warning: tool ${toolEntry.id} declares permissions: ${toolEntry.permissions.join(", ")}\n`,
+        );
+      }
+
+      const entrypointPath = path.join(recipeDir, entrypoint);
+      if (!(await fileExists(entrypointPath))) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Tool entrypoint not found: ${entrypoint}`,
+        });
+      }
+
+      const stepDir = path.join(runDir, `step-${index + 1}-${sanitizeRunId(step.tool)}`);
+      await mkdir(stepDir, { recursive: true });
+
+      const env = {
+        ...process.env,
+        ...step.env,
+        AGENTPLANE_RUN_DIR: runDir,
+        AGENTPLANE_STEP_DIR: stepDir,
+        AGENTPLANE_RECIPES_CACHE_DIR: recipesCacheDir,
+        AGENTPLANE_RECIPE_ID: recipeId,
+        AGENTPLANE_SCENARIO_ID: scenarioId,
+        AGENTPLANE_TOOL_ID: step.tool,
+      } as Record<string, string>;
+
+      const startedAt = Date.now();
+      const result = await executeRecipeTool({
+        runtime,
+        entrypoint: entrypointPath,
+        args: step.args,
+        cwd: recipeDir,
+        env,
+      });
+      const durationMs = Date.now() - startedAt;
+      await writeFile(path.join(stepDir, "stdout.log"), result.stdout, "utf8");
+      await writeFile(path.join(stepDir, "stderr.log"), result.stderr, "utf8");
+      stepsMeta.push({
+        tool: step.tool,
+        runtime,
+        entrypoint,
+        exitCode: result.exitCode,
+        duration_ms: durationMs,
+      });
+
+      if (result.exitCode !== 0) {
+        await writeFile(
+          path.join(runDir, "meta.json"),
+          `${JSON.stringify(
+            {
+              recipe: recipeId,
+              scenario: scenarioId,
+              run_id: runId,
+              steps: stepsMeta,
+            },
+            null,
+            2,
+          )}\n`,
+          "utf8",
+        );
+        throw new CliError({
+          exitCode: result.exitCode,
+          code: "E_INTERNAL",
+          message: `Scenario step failed: ${step.tool}`,
+        });
+      }
+    }
+
+    await writeFile(
+      path.join(runDir, "meta.json"),
+      `${JSON.stringify(
+        {
+          recipe: recipeId,
+          scenario: scenarioId,
+          run_id: runId,
+          steps: stepsMeta,
+        },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+
+    process.stdout.write(`Run artifacts: ${path.relative(resolved.gitRoot, runDir)}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "scenario run", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdRecipeInfo(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
+  try {
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
+    if (!entry) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Recipe not installed: ${opts.id}`,
+      });
+    }
+    const manifest = entry.manifest;
+
+    process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
+    process.stdout.write(`Name: ${manifest.name}\n`);
+    process.stdout.write(`Summary: ${manifest.summary}\n`);
+    process.stdout.write(`Description: ${manifest.description}\n`);
+    if (manifest.tags && manifest.tags.length > 0) {
+      process.stdout.write(`Tags: ${manifest.tags.join(", ")}\n`);
+    }
+
+    const agents = manifest.agents ?? [];
+    const tools = manifest.tools ?? [];
+    const scenarios = manifest.scenarios ?? [];
+
+    if (agents.length > 0) {
+      process.stdout.write("Agents:\n");
+      for (const agent of agents) {
+        const label = agent?.id ?? "unknown";
+        const summary = agent?.summary ? ` - ${agent.summary}` : "";
+        process.stdout.write(`  - ${label}${summary}\n`);
+      }
+    }
+    if (tools.length > 0) {
+      process.stdout.write("Tools:\n");
+      for (const tool of tools) {
+        const label = tool?.id ?? "unknown";
+        const summary = tool?.summary ? ` - ${tool.summary}` : "";
+        process.stdout.write(`  - ${label}${summary}\n`);
+      }
+    }
+    if (scenarios.length > 0) {
+      process.stdout.write("Scenarios:\n");
+      for (const scenario of scenarios) {
+        const label = scenario?.id ?? "unknown";
+        const summary = scenario?.summary ? ` - ${scenario.summary}` : "";
+        process.stdout.write(`  - ${label}${summary}\n`);
+      }
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes info", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdRecipeExplain(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
+  try {
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
+    if (!entry) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Recipe not installed: ${opts.id}`,
+      });
+    }
+
+    const manifest = entry.manifest;
+    const recipeDir = resolveInstalledRecipeDir(entry);
+    const scenarioDetails = await collectRecipeScenarioDetails(recipeDir, manifest);
+
+    process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);
+    process.stdout.write(`Name: ${manifest.name}\n`);
+    process.stdout.write(`Summary: ${manifest.summary}\n`);
+    process.stdout.write(`Description: ${manifest.description}\n`);
+    if (manifest.tags && manifest.tags.length > 0) {
+      process.stdout.write(`Tags: ${manifest.tags.join(", ")}\n`);
+    }
+
+    const agents = manifest.agents ?? [];
+    const tools = manifest.tools ?? [];
+
+    if (agents.length > 0) {
+      process.stdout.write("Agents:\n");
+      for (const agent of agents) {
+        const label = agent?.id ?? "unknown";
+        const summary = agent?.summary ? ` - ${agent.summary}` : "";
+        process.stdout.write(`  - ${label}${summary}\n`);
+      }
+    }
+    if (tools.length > 0) {
+      process.stdout.write("Tools:\n");
+      for (const tool of tools) {
+        const label = tool?.id ?? "unknown";
+        const summary = tool?.summary ? ` - ${tool.summary}` : "";
+        process.stdout.write(`  - ${label}${summary}\n`);
+      }
+    }
+    if (scenarioDetails.length > 0) {
+      process.stdout.write("Scenarios:\n");
+      for (const scenario of scenarioDetails) {
+        const summary = scenario.summary ? ` - ${scenario.summary}` : "";
+        process.stdout.write(`  - ${scenario.id}${summary}\n`);
+        if (scenario.description) {
+          process.stdout.write(`    Description: ${scenario.description}\n`);
+        }
+        if (scenario.goal) {
+          process.stdout.write(`    Goal: ${scenario.goal}\n`);
+        }
+        if (scenario.inputs !== undefined) {
+          const payload = formatJsonBlock(scenario.inputs, "      ");
+          if (payload) process.stdout.write(`    Inputs:\n${payload}\n`);
+        }
+        if (scenario.outputs !== undefined) {
+          const payload = formatJsonBlock(scenario.outputs, "      ");
+          if (payload) process.stdout.write(`    Outputs:\n${payload}\n`);
+        }
+        if (scenario.steps && scenario.steps.length > 0) {
+          process.stdout.write("    Steps:\n");
+          let stepIndex = 1;
+          for (const step of scenario.steps) {
+            process.stdout.write(`      ${stepIndex}. ${JSON.stringify(step)}\n`);
+            stepIndex += 1;
+          }
+          continue;
+        }
+        if (scenario.source !== "definition") {
+          process.stdout.write("    Details: Scenario definition not found in recipe.\n");
+        }
+      }
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes explain", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdRecipeInstall(opts: {
+  cwd: string;
+  rootOverride?: string;
+  source: RecipeInstallSource;
+  index?: string;
+  refresh: boolean;
+  onConflict: RecipeConflictMode;
+}): Promise<number> {
+  try {
+    const tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
+    try {
+      let sourcePath = "";
+      let sourceLabel = "";
+      let expectedSha = "";
+      let indexTags: string[] = [];
+
+      const resolveFromIndex = async (recipeId: string): Promise<string> => {
+        const index = await loadRecipesRemoteIndex({
+          cwd: opts.cwd,
+          source: opts.index,
+          refresh: opts.refresh,
+        });
+        const entry = index.recipes.find((recipe) => recipe.id === recipeId);
+        if (!entry) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_IO",
+            message: `Recipe not found in remote index: ${recipeId}`,
+          });
+        }
+        const latest = [...entry.versions]
+          .toSorted((a, b) => a.version.localeCompare(b.version))
+          .at(-1);
+        if (!latest) {
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message: `Recipe ${entry.id} has no versions in the remote index`,
+          });
+        }
+        expectedSha = latest.sha256;
+        sourceLabel = `${entry.id}@${latest.version}`;
+        indexTags = normalizeRecipeTags(latest.tags ?? []);
+
+        if (isHttpUrl(latest.url)) {
+          const url = new URL(latest.url);
+          const filename = path.basename(url.pathname) || "recipe.tar.gz";
+          const target = path.join(tempRoot, filename);
+          await downloadToFile(latest.url, target);
+          return target;
+        }
+        const resolved = path.resolve(opts.cwd, latest.url);
+        if (!(await fileExists(resolved))) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_IO",
+            message: `Recipe archive not found: ${latest.url}`,
+          });
+        }
+        return resolved;
+      };
+
+      const resolveSourcePath = async (source: RecipeInstallSource): Promise<string> => {
+        if (source.type === "name") return await resolveFromIndex(source.value);
+        if (source.type === "url") {
+          const url = new URL(source.value);
+          const filename = path.basename(url.pathname) || "recipe.tar.gz";
+          const target = path.join(tempRoot, filename);
+          sourceLabel = source.value;
+          await downloadToFile(source.value, target);
+          return target;
+        }
+        if (source.type === "path") {
+          const candidate = await resolvePathFallback(source.value);
+          if (!(await fileExists(candidate))) {
+            throw new CliError({
+              exitCode: 5,
+              code: "E_IO",
+              message: `Recipe archive not found: ${source.value}`,
+            });
+          }
+          sourceLabel = candidate;
+          return candidate;
+        }
+        if (isHttpUrl(source.value)) {
+          return await resolveSourcePath({ type: "url", value: source.value });
+        }
+        const candidate = await resolvePathFallback(source.value);
+        if (await fileExists(candidate)) {
+          return await resolveSourcePath({ type: "path", value: source.value });
+        }
+        return await resolveSourcePath({ type: "name", value: source.value });
+      };
+
+      sourcePath = await resolveSourcePath(opts.source);
+      if (!sourceLabel) sourceLabel = opts.source.value;
+
+      const actualSha = expectedSha ? await sha256File(sourcePath) : "";
+      if (expectedSha && actualSha !== expectedSha) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Recipe checksum mismatch for ${sourceLabel}`,
+        });
+      }
+
+      await extractArchive({
+        archivePath: sourcePath,
+        destDir: tempRoot,
+        usage: RECIPE_INSTALL_USAGE,
+        example: RECIPE_INSTALL_USAGE_EXAMPLE,
+      });
+      const recipeRoot = await resolveRecipeRoot(tempRoot);
+      const manifest = await readRecipeManifest(path.join(recipeRoot, "manifest.json"));
+      const resolvedTags =
+        manifest.tags && manifest.tags.length > 0 ? manifest.tags : normalizeRecipeTags(indexTags);
+      const manifestWithTags =
+        resolvedTags.length > 0 ? { ...manifest, tags: resolvedTags } : manifest;
+
+      const installDir = resolveInstalledRecipeDir(manifestWithTags);
+      const installKind = await getPathKind(installDir);
+      if (installKind && installKind !== "dir") {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_IO",
+          message: `Recipe install path is not a directory: ${installDir}`,
+        });
+      }
+
+      const hadExisting = Boolean(installKind);
+      if (installKind) {
+        await rm(installDir, { recursive: true, force: true });
+      }
+      await mkdir(path.dirname(installDir), { recursive: true });
+      await mkdir(resolveGlobalRecipesDir(), { recursive: true });
+      try {
+        await rename(recipeRoot, installDir);
+      } catch (err) {
+        const code = (err as { code?: string } | null)?.code;
+        if (code === "EXDEV") {
+          await cp(recipeRoot, installDir, { recursive: true });
+        } else {
+          throw err;
+        }
+      }
+
+      try {
+        const project = await maybeResolveProject({
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride,
+        });
+        if (project) {
+          await applyRecipeAgents({
+            manifest: manifestWithTags,
+            recipeDir: installDir,
+            agentplaneDir: project.agentplaneDir,
+            onConflict: opts.onConflict,
+          });
+        }
+        await applyRecipeScenarios({ manifest: manifestWithTags, recipeDir: installDir });
+      } catch (err) {
+        if (!hadExisting) {
+          await rm(installDir, { recursive: true, force: true });
+        }
+        throw err;
+      }
+
+      const recipesPath = resolveInstalledRecipesPath();
+      const installed = await readInstalledRecipesFile(recipesPath);
+      const updated = installed.recipes.filter((entry) => entry.id !== manifestWithTags.id);
+      updated.push({
+        id: manifestWithTags.id,
+        version: manifestWithTags.version,
+        source: sourceLabel,
+        installed_at: new Date().toISOString(),
+        tags: resolvedTags,
+        manifest: manifestWithTags,
+      });
+      await writeInstalledRecipesFile(recipesPath, {
+        schema_version: 1,
+        updated_at: installed.updated_at,
+        recipes: updated,
+      });
+
+      process.stdout.write(`Installed recipe ${manifestWithTags.id}@${manifestWithTags.version}\n`);
+      return 0;
+    } finally {
+      await rm(tempRoot, { recursive: true, force: true });
+    }
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes install", root: opts.rootOverride ?? null });
+  }
+}
+
+async function cmdRecipeRemove(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
+  try {
+    const recipesPath = resolveInstalledRecipesPath();
+    const installed = await readInstalledRecipesFile(recipesPath);
+    const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
+    if (!entry) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_IO",
+        message: `Recipe not installed: ${opts.id}`,
+      });
+    }
+    const recipeDir = resolveInstalledRecipeDir(entry);
+    await rm(recipeDir, { recursive: true, force: true });
+
+    const updated = installed.recipes.filter((recipe) => recipe.id !== opts.id);
+    await writeInstalledRecipesFile(recipesPath, {
+      schema_version: 1,
+      updated_at: installed.updated_at,
+      recipes: updated,
+    });
+
+    process.stdout.write(`${successMessage("removed recipe", `${entry.id}@${entry.version}`)}\n`);
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes remove", root: opts.rootOverride ?? null });
+  }
+}
+
+async function listRecipeCacheEntries(cacheDir: string): Promise<
+  {
+    id: string;
+    version: string;
+    path: string;
+  }[]
+> {
+  const entries: { id: string; version: string; path: string }[] = [];
+  const recipeDirs = await readdir(cacheDir, { withFileTypes: true });
+  for (const recipeDir of recipeDirs) {
+    if (!recipeDir.isDirectory()) continue;
+    const recipeId = recipeDir.name;
+    const versionRoot = path.join(cacheDir, recipeId);
+    const versions = await readdir(versionRoot, { withFileTypes: true });
+    for (const versionDir of versions) {
+      if (!versionDir.isDirectory()) continue;
+      const version = versionDir.name;
+      entries.push({
+        id: recipeId,
+        version,
+        path: path.join(versionRoot, version),
+      });
+    }
+  }
+  return entries;
+}
+
+async function cmdRecipeCachePrune(opts: {
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseRecipeCachePruneArgs(opts.args);
+  try {
+    const cacheDir = resolveGlobalRecipesDir();
+    if (!(await fileExists(cacheDir))) {
+      process.stdout.write(`${infoMessage(`recipe cache directory not found: ${cacheDir}`)}\n`);
+      return 0;
+    }
+
+    const cacheEntries = await listRecipeCacheEntries(cacheDir);
+    if (cacheEntries.length === 0) {
+      process.stdout.write(`${infoMessage("recipe cache is empty")}\n`);
+      return 0;
+    }
+
+    if (flags.all) {
+      if (flags.dryRun) {
+        for (const entry of cacheEntries) {
+          process.stdout.write(
+            `${infoMessage(`dry-run: would remove ${entry.id}@${entry.version}`)}\n`,
+          );
+        }
+        process.stdout.write(
+          `${infoMessage(`dry-run: would remove ${cacheEntries.length} cached recipes`)}\n`,
+        );
+        return 0;
+      }
+      await rm(cacheDir, { recursive: true, force: true });
+      await writeInstalledRecipesFile(resolveInstalledRecipesPath(), {
+        schema_version: 1,
+        updated_at: "",
+        recipes: [],
+      });
+      process.stdout.write(
+        `${successMessage("removed cached recipes", undefined, `count=${cacheEntries.length}`)}\n`,
+      );
+      return 0;
+    }
+
+    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const keep = new Set(installed.recipes.map((entry) => `${entry.id}@${entry.version}`));
+    const prune = cacheEntries.filter((entry) => !keep.has(`${entry.id}@${entry.version}`));
+
+    if (prune.length === 0) {
+      process.stdout.write(
+        `${infoMessage("recipe cache already clean (no uninstalled entries)")}\n`,
+      );
+      return 0;
+    }
+
+    if (flags.dryRun) {
+      for (const entry of prune) {
+        process.stdout.write(
+          `${infoMessage(`dry-run: would remove ${entry.id}@${entry.version}`)}\n`,
+        );
+      }
+      process.stdout.write(
+        `${infoMessage(`dry-run: would remove ${prune.length} cached recipes`)}\n`,
+      );
+      return 0;
+    }
+
+    const recipeDirs = new Set<string>();
+    for (const entry of prune) {
+      recipeDirs.add(path.dirname(entry.path));
+      await rm(entry.path, { recursive: true, force: true });
+    }
+    for (const recipeDir of recipeDirs) {
+      const remaining = await readdir(recipeDir);
+      if (remaining.length === 0) {
+        await rm(recipeDir, { recursive: true, force: true });
+      }
+    }
+
+    process.stdout.write(
+      `${successMessage("removed cached recipes", undefined, `count=${prune.length}`)}\n`,
+    );
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes cache prune", root: opts.rootOverride ?? null });
+  }
+}
+
+export async function cmdRecipes(opts: {
+  cwd: string;
+  rootOverride?: string;
+  command?: string;
+  args: string[];
+}): Promise<number> {
+  const subcommand = opts.command;
+  if (!subcommand) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+    });
+  }
+  if (subcommand === "list") {
+    return await cmdRecipeList({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      args: opts.args,
+    });
+  }
+  if (subcommand === "list-remote") {
+    return await cmdRecipeListRemote({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      args: opts.args,
+    });
+  }
+  if (subcommand === "info") {
+    if (opts.args.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_INFO_USAGE, RECIPE_INFO_USAGE_EXAMPLE),
+      });
+    }
+    return await cmdRecipeInfo({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      id: opts.args[0],
+    });
+  }
+  if (subcommand === "explain") {
+    if (opts.args.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_EXPLAIN_USAGE, RECIPE_EXPLAIN_USAGE_EXAMPLE),
+      });
+    }
+    return await cmdRecipeExplain({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      id: opts.args[0],
+    });
+  }
+  if (subcommand === "install") {
+    const parsed = parseRecipeInstallArgs(opts.args);
+    return await cmdRecipeInstall({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      source: parsed.source,
+      index: parsed.index,
+      refresh: parsed.refresh,
+      onConflict: parsed.onConflict,
+    });
+  }
+  if (subcommand === "remove") {
+    if (opts.args.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_REMOVE_USAGE, RECIPE_REMOVE_USAGE_EXAMPLE),
+      });
+    }
+    return await cmdRecipeRemove({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      id: opts.args[0],
+    });
+  }
+  if (subcommand === "cache") {
+    const cacheSub = opts.args[0];
+    const cacheArgs = opts.args.slice(1);
+    if (!cacheSub) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(RECIPE_CACHE_USAGE, RECIPE_CACHE_USAGE_EXAMPLE),
+      });
+    }
+    if (cacheSub === "prune") {
+      return await cmdRecipeCachePrune({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        args: cacheArgs,
+      });
+    }
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(RECIPE_CACHE_USAGE, RECIPE_CACHE_USAGE_EXAMPLE),
+    });
+  }
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
+  });
+}
+
+export async function cmdScenario(opts: {
+  cwd: string;
+  rootOverride?: string;
+  command?: string;
+  args: string[];
+}): Promise<number> {
+  const subcommand = opts.command;
+  if (!subcommand) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
+    });
+  }
+  if (subcommand === "list") {
+    if (opts.args.length > 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
+      });
+    }
+    return await cmdScenarioList({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+  }
+  if (subcommand === "info") {
+    if (opts.args.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(SCENARIO_INFO_USAGE, SCENARIO_INFO_USAGE_EXAMPLE),
+      });
+    }
+    return await cmdScenarioInfo({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      id: opts.args[0],
+    });
+  }
+  if (subcommand === "run") {
+    if (opts.args.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(SCENARIO_RUN_USAGE, SCENARIO_RUN_USAGE_EXAMPLE),
+      });
+    }
+    return await cmdScenarioRun({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      id: opts.args[0],
+    });
+  }
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
+  });
+}

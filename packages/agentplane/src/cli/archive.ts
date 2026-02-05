@@ -2,6 +2,10 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import path from "node:path";
 
+import { CliError } from "../errors.js";
+import { exitCodeForError } from "./exit-codes.js";
+import { usageMessage } from "./output.js";
+
 const execFileAsync = promisify(execFile);
 
 type ArchiveType = "tar" | "zip";
@@ -18,6 +22,44 @@ export async function validateArchive(
   const entries = await listArchiveEntries(archivePath, type);
   const symlinks = await listArchiveSymlinks(archivePath, type);
   return validateArchiveEntries(entries, symlinks);
+}
+
+export function detectArchiveType(filePath: string): ArchiveType | null {
+  const lower = filePath.toLowerCase();
+  if (lower.endsWith(".tar.gz") || lower.endsWith(".tgz")) return "tar";
+  if (lower.endsWith(".zip")) return "zip";
+  return null;
+}
+
+export async function extractArchive(opts: {
+  archivePath: string;
+  destDir: string;
+  usage: string;
+  example?: string;
+}): Promise<void> {
+  const archiveType = detectArchiveType(opts.archivePath);
+  if (!archiveType) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(opts.usage, opts.example),
+    });
+  }
+  const issues = await validateArchive(opts.archivePath, archiveType);
+  if (issues.length > 0) {
+    const first = issues[0];
+    const suffix = issues.length > 1 ? ` (+${issues.length - 1} more)` : "";
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Unsafe archive entry: ${first.entry} (${first.reason})${suffix}`,
+    });
+  }
+  if (archiveType === "tar") {
+    await execFileAsync("tar", ["-xzf", opts.archivePath, "-C", opts.destDir]);
+    return;
+  }
+  await execFileAsync("unzip", ["-q", opts.archivePath, "-d", opts.destDir]);
 }
 
 export function validateArchiveEntries(entries: string[], symlinks: string[]): ArchiveEntryIssue[] {
