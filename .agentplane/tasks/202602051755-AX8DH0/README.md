@@ -1,17 +1,18 @@
 ---
 id: "202602051755-AX8DH0"
 title: "Document release flow"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
 tags: ["docs", "release"]
 verify: []
-commit: null
+commit: { hash: "d069a68477b45045738e7609b28a86c26ddb372d", message: "📝 AX8DH0 document tag-based releases" }
 comments:
   - { author: "DOCS", body: "Start: document tag-based release flow and GitHub Release automation." }
+  - { author: "DOCS", body: "Verified: release docs describe tag-based publish checks and GitHub Release creation." }
 doc_version: 2
-doc_updated_at: "2026-02-05T18:01:14.568Z"
+doc_updated_at: "2026-02-05T18:01:52.017Z"
 doc_updated_by: "DOCS"
 description: "Update release docs to describe tag-based publish + GitHub Release generation."
 id_source: "generated"
