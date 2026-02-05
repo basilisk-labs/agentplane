@@ -1,17 +1,18 @@
 ---
 id: "202602051552-BB7ZAC"
 title: "AP-092: Normalize env variables with compatibility"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["roadmap", "env", "compatibility"]
 verify: []
-commit: null
+commit: { hash: "c14a215c1917cb4dc5d1caf70dc80068831f482e", message: "✨ BB7ZAC normalize env vars" }
 comments:
   - { author: "CODER", body: "Start: Normalize env variable names to AGENTPLANE_* and update docs/tests (no alias compatibility)." }
+  - { author: "CODER", body: "Verified: format:check, lint, test:fast passed; env vars normalized to AGENTPLANE_* across code, tests, docs, and .env.example." }
 doc_version: 2
-doc_updated_at: "2026-02-05T16:48:49.805Z"
+doc_updated_at: "2026-02-05T16:49:39.811Z"
 doc_updated_by: "CODER"
 description: "Normalize env names with compatibility window and update docs/tests."
 id_source: "generated"

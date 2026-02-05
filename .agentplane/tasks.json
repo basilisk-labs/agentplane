@@ -15022,7 +15022,7 @@
       "id": "202602051552-BB7ZAC",
       "title": "AP-092: Normalize env variables with compatibility",
       "description": "Normalize env names with compatibility window and update docs/tests.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -15032,14 +15032,26 @@
         "compatibility"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "c14a215c1917cb4dc5d1caf70dc80068831f482e",
+        "message": "✨ BB7ZAC normalize env vars"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Normalize env variable names to AGENTPLANE_* and update docs/tests (no alias compatibility)."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: format:check, lint, test:fast passed; env vars normalized to AGENTPLANE_* across code, tests, docs, and .env.example."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T15:52:58.239Z",
+      "doc_updated_at": "2026-02-05T16:49:39.811Z",
       "doc_updated_by": "CODER",
+      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nNormalize env variable names with a compatibility window.\n\n## Scope\n\n- Define canonical env names.\\n- Support legacy names temporarily.\\n- Update tests/docs.\n\n## Risks\n\n- Unexpected overrides if both old/new env vars are set.\n\n## Verify Steps\n\n- bun run test:fast.\\n- Validate env resolution prefers canonical names.\n\n## Verification\n\nPending.\n\n## Rollback Plan\n\n- Remove normalization layer and restore legacy env usage.",
-      "dirty": false
+      "doc": "## Summary\n\nNormalize environment variable names to the AGENTPLANE_ prefix (no legacy aliases).\n\n## Scope\n\n- Replace AGENT_PLANE_* and CODEXSWARM_REDMINE_* with AGENTPLANE_* names in code.\n- Update tests and docs to match.\n- Update .env.example.\n\n## Risks\n\n- Breaking change for users relying on legacy env names.\n- Docs/tests may drift if any references are missed.\n\n## Verify Steps\n\n- bun run format:check.\n- bun run lint.\n- bun run test:fast.\n- Spot-check docs/.env.example for updated env names.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\\n- ✅ Docs/.env.example updated to AGENTPLANE_* env names.\n\n## Rollback Plan\n\n- Revert to previous env names and restore docs/tests if needed."
     },
     {
       "id": "202602051552-ET20NN",
@@ -15107,9 +15119,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T16:38:20.461Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nEnsure critical files are written atomically to avoid partial writes.\n\n## Scope\n\n- Identify critical files.\n- Add atomic write helper.\n- Replace direct writes.\n- Update tests/docs.\n\n## Risks\n\n- Atomic rename semantics differ across filesystems.\\n- Permissions/ownership could change if not preserved.\n\n## Verify Steps\n\n- bun run test:fast.\n- Spot-check task/docs writes use atomic helper.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\\n- ✅ Manual spot-check: task/docs writes use atomic helper.\n\n## Rollback Plan\n\n- Revert atomic write helper and restore direct writes."
+      "doc": "## Summary\n\nEnsure critical files are written atomically to avoid partial writes.\n\n## Scope\n\n- Identify critical files.\n- Add atomic write helper.\n- Replace direct writes.\n- Update tests/docs.\n\n## Risks\n\n- Atomic rename semantics differ across filesystems.\\n- Permissions/ownership could change if not preserved.\n\n## Verify Steps\n\n- bun run test:fast.\n- Spot-check task/docs writes use atomic helper.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\\n- ✅ Manual spot-check: task/docs writes use atomic helper.\n\n## Rollback Plan\n\n- Revert atomic write helper and restore direct writes.",
+      "dirty": false
     },
     {
       "id": "202602051602-YWVWW4",
@@ -15186,6 +15198,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "5fdb04af93afedc46a3349a018506e88acfbd743b77265b3facbd8672fe0a27e"
+    "checksum": "b571adee80666e98859a0358e362c5ce640bbe5d545958c45399669d47854a78"
   }
 }
