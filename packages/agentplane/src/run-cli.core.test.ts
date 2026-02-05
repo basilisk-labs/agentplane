@@ -1,5 +1,14 @@
 import { execFile } from "node:child_process";
-import { chmod, mkdir, mkdtemp, readdir, readFile, realpath, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  realpath,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -27,6 +36,7 @@ import {
   commitAll,
   configureGitUser,
   createUpgradeBundle,
+  getAgentplaneHome,
   gitBranchExists,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
@@ -37,6 +47,7 @@ import {
   writeConfig,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
+import { resolveUpdateCheckCachePath } from "./cli/update-check.js";
 
 registerAgentplaneHome();
 
@@ -66,6 +77,10 @@ describe("runCli", () => {
   it("prints update notice when npm has a newer version", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
+    const home = getAgentplaneHome();
+    if (!home) throw new Error("agentplane home not set");
+    const cachePath = resolveUpdateCheckCachePath(home);
+    await rm(cachePath, { force: true });
     const io = captureStdIO();
     const originalFetch = globalThis.fetch;
     const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
@@ -76,6 +91,51 @@ describe("runCli", () => {
       expect(code).toBe(0);
       expect(io.stderr).toContain("Update available");
       expect(io.stderr).toContain("npm i -g agentplane@latest");
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalNoUpdateCheck === undefined) {
+        delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+      } else {
+        process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
+      }
+      io.restore();
+    }
+  });
+
+  it("uses fresh update cache without network", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const home = getAgentplaneHome();
+    if (!home) throw new Error("agentplane home not set");
+    const cachePath = resolveUpdateCheckCachePath(home);
+    await mkdir(path.dirname(cachePath), { recursive: true });
+    await writeFile(
+      cachePath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          checked_at: new Date().toISOString(),
+          latest_version: "9.9.9",
+          etag: '"etag"',
+          status: "ok",
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    const io = captureStdIO();
+    const originalFetch = globalThis.fetch;
+    const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    globalThis.fetch = vi.fn(() => {
+      throw new Error("should not fetch");
+    }) as unknown as typeof fetch;
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).toContain("Update available");
+      expect(globalThis.fetch).not.toHaveBeenCalled();
     } finally {
       globalThis.fetch = originalFetch;
       if (originalNoUpdateCheck === undefined) {
