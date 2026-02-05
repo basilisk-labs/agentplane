@@ -9,6 +9,7 @@ import {
   captureStdIO,
   createRecipeArchive,
   createRecipeArchiveWithManifest,
+  createUnsafeRecipeArchive,
   getAgentplaneHome,
   mkGitRepoRoot,
   pathExists,
@@ -83,6 +84,36 @@ describe("runCli recipes", () => {
       "manifest.json",
     );
     expect(await pathExists(manifestPath)).toBe(true);
+  });
+
+  it("rejects tar archives with path traversal entries", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const archivePath = await createUnsafeRecipeArchive({ format: "tar" });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Unsafe archive entry");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("rejects zip archives with path traversal entries", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const archivePath = await createUnsafeRecipeArchive({ format: "zip" });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Unsafe archive entry");
+    } finally {
+      io.restore();
+    }
   });
 
   it("recipes list reports when no recipes are installed", async () => {

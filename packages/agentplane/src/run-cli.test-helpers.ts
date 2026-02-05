@@ -275,6 +275,58 @@ export async function createRecipeArchiveWithManifest(opts: {
   return archivePath;
 }
 
+export async function createUnsafeRecipeArchive(opts: {
+  format: "tar" | "zip";
+  entryPath?: string;
+}): Promise<string> {
+  const baseDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-unsafe-"));
+  const recipeDir = path.join(baseDir, "recipe");
+  await mkdir(recipeDir, { recursive: true });
+  const manifest: Record<string, unknown> = {
+    schema_version: "1",
+    id: "unsafe",
+    version: "0.0.1",
+    name: "Unsafe",
+    summary: "Unsafe recipe",
+    description: "Used for archive validation tests.",
+    agents: [{ id: "RECIPE_AGENT", summary: "Recipe agent", file: "agents/recipe.json" }],
+    tools: [
+      { id: "RECIPE_TOOL", summary: "Recipe tool", runtime: "bash", entrypoint: "tools/run.sh" },
+    ],
+    scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
+  };
+  await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
+  const agentsDir = path.join(recipeDir, "agents");
+  await mkdir(agentsDir, { recursive: true });
+  await writeFile(
+    path.join(agentsDir, "recipe.json"),
+    JSON.stringify({ id: "RECIPE_AGENT", role: "Recipe agent" }, null, 2),
+    "utf8",
+  );
+  const toolsDir = path.join(recipeDir, "tools");
+  await mkdir(toolsDir, { recursive: true });
+  await writeFile(path.join(toolsDir, "run.sh"), "#!/usr/bin/env bash\n", "utf8");
+  const scenariosDir = path.join(recipeDir, "scenarios");
+  await mkdir(scenariosDir, { recursive: true });
+  await writeFile(
+    path.join(scenariosDir, "recipe-scenario.json"),
+    JSON.stringify(
+      { schema_version: "1", id: "RECIPE_SCENARIO", summary: "Recipe scenario" },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  const entryPath = opts.entryPath ?? "../evil.txt";
+  await writeFile(path.join(baseDir, "evil.txt"), "evil", "utf8");
+  const archivePath =
+    opts.format === "zip" ? path.join(baseDir, "unsafe.zip") : path.join(baseDir, "unsafe.tar.gz");
+  await (opts.format === "zip"
+    ? execFileAsync("zip", ["-qr", archivePath, ".", entryPath], { cwd: recipeDir })
+    : execFileAsync("tar", ["-czf", archivePath, "-C", recipeDir, ".", entryPath]));
+  return archivePath;
+}
+
 export async function createUpgradeBundle(files: Record<string, string>): Promise<{
   bundlePath: string;
   checksumPath: string;
