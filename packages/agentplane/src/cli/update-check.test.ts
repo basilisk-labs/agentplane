@@ -123,4 +123,23 @@ describe("update-check fetch", () => {
     expect(result).toEqual({ status: "error" });
     vi.unstubAllGlobals();
   });
+
+  it("returns error when version is missing", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Map([["etag", " "]]),
+      json: () => Promise.resolve({}),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await fetchLatestNpmVersion({
+      url: "https://registry.npmjs.org/agentplane/latest",
+      timeoutMs: 50,
+      etag: null,
+    });
+
+    expect(result).toEqual({ status: "error" });
+    vi.unstubAllGlobals();
+  });
 });

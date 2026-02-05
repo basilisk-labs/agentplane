@@ -11,6 +11,7 @@ import {
   pathExists,
   registerAgentplaneHome,
   resetAgentplaneHomeRecipes,
+  runCliSilent,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 
@@ -25,7 +26,7 @@ describe("runCli scenario", () => {
     const { archivePath, manifest } = await createRecipeArchive();
     const manifestId = String(manifest.id);
 
-    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
     const ioList = captureStdIO();
     try {
@@ -63,7 +64,7 @@ describe("runCli scenario", () => {
     const manifestId = String(manifest.id);
     const manifestVersion = String(manifest.version);
 
-    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
     const scenariosDir = path.join(
       agentplaneHomePath(),
@@ -123,7 +124,7 @@ describe("runCli scenario", () => {
     const manifestId = String(manifest.id);
     const manifestVersion = String(manifest.version);
 
-    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
     const scenariosDir = path.join(
       agentplaneHomePath(),
@@ -181,7 +182,7 @@ describe("runCli scenario", () => {
     const { archivePath, manifest } = await createRecipeArchive();
     const manifestId = String(manifest.id);
 
-    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
     const io = captureStdIO();
     try {

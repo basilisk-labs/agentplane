@@ -38,6 +38,7 @@ import {
   createUpgradeBundle,
   getAgentplaneHome,
   gitBranchExists,
+  runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   mkTempDir,
@@ -1576,7 +1577,7 @@ describe("runCli", () => {
     await writeDefaultConfig(root);
     const taskId = "202602011330-NRM01";
 
-    const addCode = await runCli([
+    const addCode = await runCliSilent([
       "task",
       "add",
       taskId,
@@ -2409,7 +2410,7 @@ describe("runCli", () => {
     const depId = "202601301111-READY01";
     const taskId = "202601301111-READY02";
 
-    await runCli([
+    await runCliSilent([
       "task",
       "add",
       depId,
@@ -2426,7 +2427,7 @@ describe("runCli", () => {
       "--root",
       root,
     ]);
-    await runCli([
+    await runCliSilent([
       "task",
       "add",
       taskId,
@@ -2449,7 +2450,7 @@ describe("runCli", () => {
     await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
-    await runCli([
+    await runCliSilent([
       "finish",
       depId,
       "--author",
@@ -2476,7 +2477,7 @@ describe("runCli", () => {
     await writeDefaultConfig(root);
 
     const taskId = "202601301111-READY03";
-    await runCli([
+    await runCliSilent([
       "task",
       "add",
       taskId,
@@ -5592,7 +5593,7 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    await runCli([
+    await runCliSilent([
       "pr",
       "open",
       taskId,
@@ -5656,7 +5657,7 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    await runCli([
+    await runCliSilent([
       "pr",
       "open",
       taskId,
@@ -5819,7 +5820,7 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    await runCli([
+    await runCliSilent([
       "pr",
       "open",
       taskId,
@@ -5963,7 +5964,7 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
 
     const metaRaw = await readFile(
       path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json"),
@@ -6004,7 +6005,7 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    await runCli([
+    await runCliSilent([
       "pr",
       "open",
       taskId,
@@ -6172,7 +6173,7 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    await runCli([
+    await runCliSilent([
       "pr",
       "open",
       taskId,
@@ -6225,7 +6226,7 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    await runCli([
+    await runCliSilent([
       "pr",
       "open",
       taskId,
@@ -6286,7 +6287,7 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    await runCli([
+    await runCliSilent([
       "pr",
       "open",
       taskId,
@@ -6511,7 +6512,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
@@ -6581,7 +6582,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
@@ -6658,7 +6659,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
@@ -6728,7 +6729,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
@@ -6810,7 +6811,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
@@ -6892,7 +6893,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
@@ -6968,7 +6969,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
@@ -7045,7 +7046,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add feature`], { cwd: root });
 
-    await runCli(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
     await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
@@ -7592,7 +7593,7 @@ describe("runCli", () => {
   it("hooks install is idempotent for managed hooks", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    await runCli(["hooks", "install", "--root", root]);
+    await runCliSilent(["hooks", "install", "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -7643,7 +7644,7 @@ describe("runCli", () => {
   it("hooks uninstall removes managed hooks", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    await runCli(["hooks", "install", "--root", root]);
+    await runCliSilent(["hooks", "install", "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -8751,7 +8752,7 @@ describe("runCli", () => {
   it("init refuses to overwrite existing config", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
-    await runCli(["init", "--yes", "--root", root]);
+    await runCliSilent(["init", "--yes", "--root", root]);
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--yes", "--root", root]);

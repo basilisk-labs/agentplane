@@ -15,6 +15,7 @@ import {
   pathExists,
   registerAgentplaneHome,
   resetAgentplaneHomeRecipes,
+  runCliSilent,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 
@@ -144,7 +145,7 @@ describe("runCli recipes", () => {
         description: "Full description",
       },
     });
-    await runCli(["recipes", "install", "--path", archivePath, "--root", root]);
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
     const io = captureStdIO();
     try {

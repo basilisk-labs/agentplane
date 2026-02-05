@@ -8,6 +8,8 @@ import { afterAll, beforeAll } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
 
+import { runCli } from "./run-cli.js";
+
 const execFileAsync = promisify(execFile);
 
 let agentplaneHome: string | null = null;
@@ -100,6 +102,15 @@ export function captureStdIO() {
       (process.stderr.write as any) = origStderrWrite;
     },
   };
+}
+
+export async function runCliSilent(args: string[]): Promise<number> {
+  const io = captureStdIO();
+  try {
+    return await runCli(args);
+  } finally {
+    io.restore();
+  }
 }
 
 export async function mkGitRepoRoot(): Promise<string> {
