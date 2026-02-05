@@ -1859,6 +1859,27 @@ describe("loadTaskBackend", () => {
     expect(result.backendId).toBe("redmine");
   });
 
+  it("ignores legacy module/class fields in backend config", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(
+      backendPath,
+      JSON.stringify({
+        id: "local",
+        version: 2,
+        module: "legacy.py",
+        class: "LegacyBackend",
+        settings: { dir: ".agentplane/tasks" },
+      }),
+      "utf8",
+    );
+
+    const result = await loadTaskBackend({ cwd: tempDir });
+    expect(result.backendId).toBe("local");
+    expect(result.backend).toBeInstanceOf(LocalBackend);
+  });
+
   it("fails when .env is not readable", async () => {
     const agentplaneDir = path.join(tempDir, ".agentplane");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
