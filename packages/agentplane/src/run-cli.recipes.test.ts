@@ -532,14 +532,12 @@ describe("runCli recipes", () => {
     };
 
     const originalFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        status: 200,
-        statusText: "OK",
-        json: () => Promise.resolve(index),
-      }),
-    ) as typeof fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      json: () => Promise.resolve(index),
+    } as unknown as Response) as unknown as typeof fetch;
 
     const io = captureStdIO();
     try {

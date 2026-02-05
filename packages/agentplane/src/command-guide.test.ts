@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { listRoles, renderQuickstart, renderRole } from "./command-guide";
+import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
 
 const listRolesTyped = listRoles as () => string[];
 const renderRoleTyped = renderRole as (role: string) => string | null;

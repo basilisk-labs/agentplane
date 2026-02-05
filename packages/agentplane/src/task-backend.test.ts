@@ -158,7 +158,7 @@ describe("task-backend helpers", () => {
   });
 
   it("taskRecordToData tolerates missing or invalid frontmatter fields", () => {
-    const record: TaskRecord = {
+    const record = {
       id: "202601300000-ABCD",
       frontmatter: {
         id: 123,
@@ -174,7 +174,7 @@ describe("task-backend helpers", () => {
         comments: "bad",
       },
       body: "No summary here",
-    };
+    } as unknown as TaskRecord;
     const data = taskRecordToData(record);
     expect(data.commit).toBeNull();
     expect(data.comments).toEqual([]);
@@ -217,7 +217,7 @@ describe("task-backend helpers", () => {
     expect(task.id_source).toBe("generated");
   });
   it("taskRecordToData parses doc, comments, commit, and dirty", () => {
-    const record: TaskRecord = {
+    const record = {
       id: "202601300000-ABCD",
       frontmatter: {
         id: "202601300000-ABCD",
@@ -234,7 +234,7 @@ describe("task-backend helpers", () => {
         dirty: true,
       },
       body: "## Summary\n\nDoc text\n",
-    };
+    } as unknown as TaskRecord;
     const data = taskRecordToData(record);
     expect(data.doc).toBe("## Summary\n\nDoc text");
     expect(data.commit).toEqual({ hash: "abc", message: "msg" });
@@ -1167,7 +1167,7 @@ describe("RedmineBackend (mocked)", () => {
     const helper = backend as unknown as {
       listTasksRemote: () => Promise<TaskData[]>;
     };
-    helper.listTasksRemote = vi.fn(() => []);
+    helper.listTasksRemote = vi.fn().mockResolvedValue([]);
     const id = await backend.generateTaskId({ length: 4, attempts: 1 });
     expect(id).toMatch(/^\d{12}-[0-9A-Z]{4}$/u);
   });
@@ -1186,9 +1186,9 @@ describe("RedmineBackend (mocked)", () => {
       findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
       requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
     };
-    helper.requestJson = vi.fn(() => ({
+    helper.requestJson = vi.fn().mockResolvedValue({
       issues: [{ id: 1, custom_fields: [{ id: 1, value: "202601300000-ABCD" }] }],
-    }));
+    });
 
     const issue = await helper.findIssueByTaskId("202601300000-ABCD");
     expect(issue?.id).toBe(1);
@@ -1381,7 +1381,7 @@ describe("RedmineBackend (mocked)", () => {
     });
     await expect(backend.generateTaskId({ length: 4, attempts: 1 })).rejects.toThrow("boom");
 
-    helper.findIssueByTaskId = vi.fn(() => null);
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue(null);
     expect(await backend.getTask("202601300000-ABCD")).toBeNull();
   });
 
@@ -1444,7 +1444,7 @@ describe("RedmineBackend (mocked)", () => {
       writeTask: (task: TaskData) => Promise<void>;
       cacheTask: (task: TaskData, dirty: boolean) => Promise<void>;
     };
-    helper.listTasksRemote = vi.fn(() => [
+    helper.listTasksRemote = vi.fn().mockResolvedValue([
       {
         id: "202601300000-ABCD",
         title: "Remote",
@@ -1496,20 +1496,20 @@ describe("RedmineBackend (mocked)", () => {
       requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
     };
 
-    helper.findIssueByTaskId = vi.fn(() => null);
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue(null);
     await expect(backend.setTaskDoc("202601300000-ABCD", "Doc")).rejects.toThrow(/Unknown task id/);
 
-    helper.findIssueByTaskId = vi.fn(() => ({ id: null }));
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue({ id: null });
     await expect(backend.setTaskDoc("202601300000-ABCD", "Doc")).rejects.toThrow(
       /Missing Redmine issue id/,
     );
 
-    helper.findIssueByTaskId = vi.fn(() => null);
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue(null);
     await expect(backend.touchTaskDocMetadata("202601300000-ABCD")).rejects.toThrow(
       /Unknown task id/,
     );
 
-    helper.findIssueByTaskId = vi.fn(() => ({ id: null }));
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue({ id: null });
     await expect(backend.touchTaskDocMetadata("202601300000-ABCD")).rejects.toThrow(
       /Missing Redmine issue id/,
     );
@@ -1530,9 +1530,9 @@ describe("RedmineBackend (mocked)", () => {
       issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) => TaskData | null;
       requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
     };
-    helper.findIssueByTaskId = vi.fn(() => ({ id: 1 }));
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue({ id: 1 });
     helper.issueToTask = vi.fn(() => null);
-    helper.requestJson = vi.fn(() => ({}));
+    helper.requestJson = vi.fn().mockResolvedValue({});
 
     await backend.setTaskDoc("202601300000-ABCD", null as unknown as string);
     await backend.touchTaskDocMetadata("202601300000-ABCD");
@@ -1568,8 +1568,8 @@ describe("RedmineBackend (mocked)", () => {
       findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
       requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
     };
-    helper.findIssueByTaskId = vi.fn(() => ({ id: 5 }));
-    helper.requestJson = vi.fn(() => ({}));
+    helper.findIssueByTaskId = vi.fn().mockResolvedValue({ id: 5 });
+    helper.requestJson = vi.fn().mockResolvedValue({});
     await backend.touchTaskDocMetadata("202601300000-ABCD");
     expect(helper.requestJson).not.toHaveBeenCalled();
   });
@@ -1681,7 +1681,7 @@ describe("RedmineBackend (mocked)", () => {
         priority: { name: "Normal" },
         custom_fields: [{ id: 1, value: taskId }],
       };
-      return { issues: [issue], total_count: 150 };
+      return Promise.resolve({ issues: [issue], total_count: 150 });
     });
     const tasks = await helper.listTasksRemote();
     expect(tasks).toHaveLength(2);

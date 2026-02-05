@@ -34,8 +34,9 @@ import {
   promptInitBaseBranch,
   suggestAllowPrefixes,
 } from "./workflow.js";
-import { defaultConfig, type TaskData } from "@agentplaneorg/core";
+import { defaultConfig } from "@agentplaneorg/core";
 import * as taskBackend from "../task-backend.js";
+import type { TaskData } from "../task-backend.js";
 import * as prompts from "../cli/prompts.js";
 import {
   captureStdIO,
@@ -46,6 +47,16 @@ import {
 } from "../run-cli.test-helpers.js";
 
 const execFileAsync = promisify(execFile);
+
+function baseTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBackend.TaskBackend {
+  return {
+    id: "local",
+    listTasks: vi.fn().mockResolvedValue([]),
+    getTask: vi.fn().mockResolvedValue(null),
+    writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
+    ...overrides,
+  };
+}
 
 async function makeRepo(): Promise<string> {
   const root = await mkGitRepoRoot();
@@ -341,10 +352,10 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
-      backend: {
-        writeTask: vi.fn(),
+      backend: baseTaskBackend({
+        writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
         listTasks: vi.fn().mockResolvedValue([]),
-      } as taskBackend.TaskBackend,
+      }),
       resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
       config: defaultConfig(),
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
@@ -407,10 +418,10 @@ describe("commands/workflow", () => {
     const writeTask = vi.fn();
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
-      backend: {
+      backend: baseTaskBackend({
         listTasks: vi.fn().mockResolvedValue([]),
-        writeTask,
-      } as taskBackend.TaskBackend,
+        writeTask: writeTask.mockImplementation(() => Promise.resolve()),
+      }),
       resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
       config: defaultConfig(),
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
@@ -893,7 +904,7 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
-      backend: {
+      backend: baseTaskBackend({
         getTask: vi.fn().mockResolvedValue({
           id: "202602050900-V1F2",
           title: "Verify",
@@ -907,7 +918,7 @@ describe("commands/workflow", () => {
           doc_updated_at: "2026-02-05T00:00:00Z",
           doc_updated_by: "CODER",
         }),
-      } as taskBackend.TaskBackend,
+      }),
       resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
       config: defaultConfig(),
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
@@ -1125,9 +1136,9 @@ describe("commands/workflow", () => {
 
     const spyEmptySection = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
-      backend: {
+      backend: baseTaskBackend({
         getTaskDoc: vi.fn().mockResolvedValue("## Summary\n## Scope\n\ncontent"),
-      } as taskBackend.TaskBackend,
+      }),
       resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
       config: defaultConfig(),
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
@@ -1148,7 +1159,7 @@ describe("commands/workflow", () => {
 
     const spyEmpty = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
-      backend: { getTaskDoc: vi.fn().mockResolvedValue("") } as taskBackend.TaskBackend,
+      backend: baseTaskBackend({ getTaskDoc: vi.fn().mockResolvedValue("") }),
       resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
       config: defaultConfig(),
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
@@ -1238,11 +1249,11 @@ describe("commands/workflow", () => {
       },
     ];
     const writeTasks = vi.fn();
-    const backend = {
+    const backend = baseTaskBackend({
       listTasks: vi.fn().mockResolvedValue(tasks),
       writeTasks,
-      writeTask: vi.fn(),
-    } as unknown as taskBackend.TaskBackend;
+      writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
+    });
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
       backend,
@@ -1296,11 +1307,11 @@ describe("commands/workflow", () => {
       },
     ];
     const writeTasks = vi.fn();
-    const backend = {
+    const backend = baseTaskBackend({
       listTasks: vi.fn().mockResolvedValue(tasks),
       writeTasks,
-      writeTask: vi.fn(),
-    } as unknown as taskBackend.TaskBackend;
+      writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
+    });
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
       backend,
@@ -1348,10 +1359,10 @@ describe("commands/workflow", () => {
       },
     ];
     const writeTask = vi.fn();
-    const backend = {
+    const backend = baseTaskBackend({
       listTasks: vi.fn().mockResolvedValue(tasks),
-      writeTask,
-    } as unknown as taskBackend.TaskBackend;
+      writeTask: writeTask.mockImplementation(() => Promise.resolve()),
+    });
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
       backend,
@@ -1389,11 +1400,11 @@ describe("commands/workflow", () => {
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
 
     const writeTasks = vi.fn();
-    const backend = {
+    const backend = baseTaskBackend({
+      listTasks: vi.fn().mockResolvedValue([]),
       writeTasks,
-      writeTask: vi.fn(),
-      listTasks: vi.fn(),
-    } as unknown as taskBackend.TaskBackend;
+      writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
+    });
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
       backend,
@@ -1422,7 +1433,7 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     const taskId = "202602050900-J1K2";
     const resolved = { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") };
-    const backend = { getTask: vi.fn().mockResolvedValue(null) } as taskBackend.TaskBackend;
+    const backend = baseTaskBackend({ getTask: vi.fn().mockResolvedValue(null) });
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
       backend,
@@ -1462,7 +1473,7 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     const taskId = "202602050900-L3M4";
     const resolved = { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") };
-    const backend = {
+    const backend = baseTaskBackend({
       getTask: vi.fn().mockResolvedValue({
         id: taskId,
         title: "T",
@@ -1478,7 +1489,7 @@ describe("commands/workflow", () => {
         doc_updated_at: "2026-02-05T00:00:00Z",
         doc_updated_by: "agentplane",
       } satisfies TaskData),
-    } as taskBackend.TaskBackend;
+    });
     const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
       backendId: "local",
       backend,

@@ -10,6 +10,7 @@ import {
   lintTasksFile,
   lintTasksSnapshot,
   writeTasksExport,
+  type TasksExportSnapshot,
 } from "./index.js";
 
 async function mkGitRepoRoot(): Promise<string> {
@@ -20,10 +21,7 @@ async function mkGitRepoRoot(): Promise<string> {
 
 describe("tasks-lint", () => {
   it("lintTasksSnapshot rejects invalid shape", () => {
-    const result = lintTasksSnapshot(
-      {} as unknown as { tasks: unknown[]; meta: unknown },
-      defaultConfig(),
-    );
+    const result = lintTasksSnapshot({} as unknown as TasksExportSnapshot, defaultConfig());
     expect(result.errors).toEqual(["tasks.json must have { tasks: [], meta: {} }"]);
   });
 
