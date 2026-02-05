@@ -1,5 +1,6 @@
 import { exitCodeForError } from "./exit-codes.js";
 import { CliError } from "../errors.js";
+import { BackendError } from "../task-backend.js";
 
 export function mapCoreError(err: unknown, context: Record<string, unknown>): CliError {
   const message = err instanceof Error ? err.message : String(err);
@@ -32,4 +33,16 @@ export function mapCoreError(err: unknown, context: Record<string, unknown>): Cl
   }
 
   return new CliError({ exitCode: exitCodeForError("E_IO"), code: "E_IO", message, context });
+}
+
+export function mapBackendError(err: unknown, context: Record<string, unknown>): CliError {
+  if (err instanceof BackendError) {
+    return new CliError({
+      exitCode: exitCodeForError(err.code),
+      code: err.code,
+      message: err.message,
+      context,
+    });
+  }
+  return mapCoreError(err, context);
 }
