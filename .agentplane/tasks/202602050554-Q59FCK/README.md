@@ -1,17 +1,18 @@
 ---
 id: "202602050554-Q59FCK"
 title: "AP-010b: Update-check fetch + ETag"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["roadmap", "cli", "update-check", "network"]
 verify: []
-commit: null
+commit: { hash: "46de5d2c1ec6441840f234b0e445923a154cae93", message: "🧩 Q59FCK update-check fetch with ETag" }
 comments:
   - { author: "CODER", body: "Start: add update-check fetch + ETag handling and tests." }
+  - { author: "CODER", body: "Verified: update-check fetch/ETag handling added and tests pass under pre-commit hooks." }
 doc_version: 2
-doc_updated_at: "2026-02-05T06:01:39.609Z"
+doc_updated_at: "2026-02-05T06:02:39.769Z"
 doc_updated_by: "CODER"
 description: "Add conditional fetch logic and cache updates for update-check."
 id_source: "generated"

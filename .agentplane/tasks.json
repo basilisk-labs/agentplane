@@ -13182,7 +13182,7 @@
       "id": "202602050554-Q59FCK",
       "title": "AP-010b: Update-check fetch + ETag",
       "description": "Add conditional fetch logic and cache updates for update-check.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -13193,10 +13193,22 @@
         "network"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "46de5d2c1ec6441840f234b0e445923a154cae93",
+        "message": "🧩 Q59FCK update-check fetch with ETag"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: add update-check fetch + ETag handling and tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: update-check fetch/ETag handling added and tests pass under pre-commit hooks."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T05:55:38.217Z",
+      "doc_updated_at": "2026-02-05T06:02:39.769Z",
       "doc_updated_by": "CODER",
       "dirty": false,
       "id_source": "generated",
@@ -13241,6 +13253,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "53d395da1580e8c8a63309970aae081e6e04497df77a1018edde7e84f8dcbc2f"
+    "checksum": "7da296ee67f4d40e1f85e277bc7f083273f4410b2f3f5424cc67bb4dd3d17c25"
   }
 }
