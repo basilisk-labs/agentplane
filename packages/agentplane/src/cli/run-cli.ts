@@ -2588,6 +2588,7 @@ export async function runCli(argv: string[]): Promise<number> {
       let skipIfUnchanged = false;
       let quiet = false;
       let require = false;
+      let yes = false;
 
       for (let i = 0; i < verifyArgs.length; i++) {
         const arg = verifyArgs[i];
@@ -2628,6 +2629,10 @@ export async function runCli(argv: string[]): Promise<number> {
           require = true;
           continue;
         }
+        if (arg === "--yes") {
+          yes = true;
+          continue;
+        }
         if (arg.startsWith("--")) {
           throw new CliError({
             exitCode: 2,
@@ -2646,6 +2651,7 @@ export async function runCli(argv: string[]): Promise<number> {
         skipIfUnchanged,
         quiet,
         require,
+        yes,
       });
     }
 

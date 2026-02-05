@@ -930,6 +930,7 @@ describe("commands/workflow", () => {
         skipIfUnchanged: false,
         quiet: true,
         require: false,
+        yes: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
     spy.mockRestore();
@@ -942,8 +943,47 @@ describe("commands/workflow", () => {
         skipIfUnchanged: false,
         quiet: true,
         require: true,
+        yes: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
+  });
+
+  it("verify requires --yes in non-interactive mode when require_verify is enabled", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F7";
+    await addTask(root, taskId);
+    await cmdTaskUpdate({
+      cwd: root,
+      args: [taskId, "--replace-verify", "--verify", "echo ok"],
+    });
+    await gitCommitFile(root, "verify-yes.txt", "chore: verify yes");
+
+    const originalIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, "isTTY", { value: false, configurable: true });
+    try {
+      await expect(
+        cmdVerify({
+          cwd: root,
+          taskId,
+          skipIfUnchanged: false,
+          quiet: true,
+          require: false,
+          yes: false,
+        }),
+      ).rejects.toMatchObject({ code: "E_USAGE" });
+
+      const code = await cmdVerify({
+        cwd: root,
+        taskId,
+        skipIfUnchanged: false,
+        quiet: true,
+        require: false,
+        yes: true,
+      });
+      expect(code).toBe(0);
+    } finally {
+      Object.defineProperty(process.stdin, "isTTY", { value: originalIsTTY, configurable: true });
+    }
   });
 
   it("verify runs commands from Verify Steps in task README", async () => {
@@ -968,6 +1008,7 @@ describe("commands/workflow", () => {
       skipIfUnchanged: false,
       quiet: true,
       require: false,
+      yes: true,
     });
     expect(code).toBe(0);
     expect(await readFile(path.join(root, "verify-readme.txt"), "utf8")).toContain("ok");
@@ -989,6 +1030,7 @@ describe("commands/workflow", () => {
       skipIfUnchanged: false,
       quiet: true,
       require: false,
+      yes: true,
     });
     expect(code).toBe(0);
 
@@ -1035,6 +1077,7 @@ describe("commands/workflow", () => {
       skipIfUnchanged: true,
       quiet: true,
       require: false,
+      yes: true,
     });
     expect(code).toBe(0);
     const logPath = path.join(prDir, "verify.log");
@@ -1049,6 +1092,7 @@ describe("commands/workflow", () => {
         skipIfUnchanged: false,
         quiet: true,
         require: false,
+        yes: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
 
@@ -1060,6 +1104,7 @@ describe("commands/workflow", () => {
         skipIfUnchanged: false,
         quiet: true,
         require: false,
+        yes: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
@@ -1081,6 +1126,7 @@ describe("commands/workflow", () => {
         skipIfUnchanged: false,
         quiet: true,
         require: false,
+        yes: true,
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
 
@@ -1115,6 +1161,7 @@ describe("commands/workflow", () => {
         skipIfUnchanged: false,
         quiet: true,
         require: false,
+        yes: true,
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
 

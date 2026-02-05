@@ -1560,7 +1560,7 @@ export const FINISH_USAGE =
 export const FINISH_USAGE_EXAMPLE =
   'agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: ..."';
 export const VERIFY_USAGE =
-  "Usage: agentplane verify <task-id> [--cwd <path>] [--log <path>] [--skip-if-unchanged] [--quiet] [--require]";
+  "Usage: agentplane verify <task-id> [--cwd <path>] [--log <path>] [--skip-if-unchanged] [--quiet] [--require] [--yes]";
 export const VERIFY_USAGE_EXAMPLE = "agentplane verify 202602030608-F1Q8AB";
 export const WORK_START_USAGE =
   "Usage: agentplane work start <task-id> --agent <id> --slug <slug> --worktree";
@@ -3329,6 +3329,7 @@ export async function cmdVerify(opts: {
   skipIfUnchanged: boolean;
   quiet: boolean;
   require: boolean;
+  yes: boolean;
 }): Promise<number> {
   try {
     const { task, backend, config, resolved } = await loadBackendTask({
@@ -3379,13 +3380,13 @@ export async function cmdVerify(opts: {
     }
 
     const requireVerifyApproval = config.agents?.approvals?.require_verify === true;
-    if (requireVerifyApproval && !opts.quiet) {
-      if (!process.stdin.isTTY) {
+    if (requireVerifyApproval && !opts.yes) {
+      if (!process.stdin.isTTY || opts.quiet) {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
           message:
-            "Verification requires explicit approval (run in interactive mode or set agents.approvals.require_verify=false).",
+            "Verification requires explicit approval (use --yes in non-interactive mode or set agents.approvals.require_verify=false).",
         });
       }
       const approved = await promptYesNo(

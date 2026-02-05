@@ -56,6 +56,12 @@ agentplane verify <task-id>
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..."
 ```
 
+Non-interactive verify when `agents.approvals.require_verify=true`:
+
+```bash
+agentplane verify <task-id> --yes --quiet
+```
+
 ## Branching (branch_pr)
 
 ```bash
