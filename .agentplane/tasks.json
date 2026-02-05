@@ -15537,7 +15537,7 @@
       "id": "202602051806-HERVE9",
       "title": "Release notes v0.1.6",
       "description": "Draft release notes for v0.1.6.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "DOCS",
       "depends_on": [],
@@ -15546,13 +15546,26 @@
         "docs"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "e606f8c43ed0a61520dc37d1d31b006c22a39224",
+        "message": "📝 HERVE9 add v0.1.6 release notes"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: drafting v0.1.6 release notes covering core schema packaging fix."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: reviewed v0.1.6 notes for accuracy against schema packaging fix and release workflow updates."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T18:06:19.012Z",
-      "doc_updated_by": "DOCS",
+      "doc_updated_at": "2026-02-05T18:14:44.733Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
       "id_source": "generated",
-      "dirty": false
+      "doc": "## Summary\n\nRelease notes for v0.1.6 covering schema packaging fix and release workflow checks.\n\n## Scope\n\nAdd docs/releases/v0.1.6.md.\n\n## Risks\n\nLow: inaccurate release notes could mislead users.\n\n## Verify Steps\n\nHuman: review docs/releases/v0.1.6.md for accuracy vs shipped changes.\n\n## Verification\n\nReviewed docs/releases/v0.1.6.md for accuracy against packaged schema fix and release workflow updates.\n\n## Rollback Plan\n\nRemove docs/releases/v0.1.6.md."
     },
     {
       "id": "202602051806-QSGBDX",
@@ -15584,9 +15597,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T18:08:57.448Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nPackage config schema with core and update runtime path.\n\n## Scope\n\nAdd core schemas directory, update config schema path, include schemas in core package files.\n\n## Risks\n\nWrong schema path could break config validation.\n\n## Verify Steps\n\nRun agentplane --version from a packed install or confirm schema file resolves under packages/core.\n\n## Verification\n\nAdded core schema file, updated schema path, and included schemas in package files list.\n\n## Rollback Plan\n\nRevert schema path and packaging changes."
+      "doc": "## Summary\n\nPackage config schema with core and update runtime path.\n\n## Scope\n\nAdd core schemas directory, update config schema path, include schemas in core package files.\n\n## Risks\n\nWrong schema path could break config validation.\n\n## Verify Steps\n\nRun agentplane --version from a packed install or confirm schema file resolves under packages/core.\n\n## Verification\n\nAdded core schema file, updated schema path, and included schemas in package files list.\n\n## Rollback Plan\n\nRevert schema path and packaging changes.",
+      "dirty": false
     },
     {
       "id": "202602051806-RT8H8E",
@@ -15635,6 +15648,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "b0fcc0c4e808d0d15a60a6297aee19c09c53e7eccae1f8f713aa2cddf223896f"
+    "checksum": "fdc30adf117169962408de15ade372ace1909e6d3087bc854c43431f97ee2892"
   }
 }
