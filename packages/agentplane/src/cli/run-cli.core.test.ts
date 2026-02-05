@@ -8987,7 +8987,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    expect(subject.trim()).toContain("agentplane 0.1.5");
+    expect(subject.trim()).toContain("agentplane 0.1.6");
 
     const { stdout: baseBranch } = await execFileAsync(
       "git",
@@ -9084,7 +9084,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    expect(subject.trim()).toContain("agentplane 0.1.5");
+    expect(subject.trim()).toContain("agentplane 0.1.6");
 
     const { stdout: baseBranch } = await execFileAsync(
       "git",
