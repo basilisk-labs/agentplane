@@ -13375,7 +13375,7 @@
       "id": "202602050621-33SAVX",
       "title": "Epic D: Decompose run-cli.ts",
       "description": "Top-level tracking for Epic D (AP-030).",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -13385,19 +13385,28 @@
         "refactor"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "547c3fc3827e97eeb07052f871306c348a5b202f",
+        "message": "✨ 7AC9PB extract workflow namespaces"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Verified: bun run lint; bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T06:21:32.930Z",
-      "doc_updated_by": "ORCHESTRATOR",
+      "doc_updated_at": "2026-02-05T07:40:22.831Z",
+      "doc_updated_by": "CODER",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nEpic D completed: run-cli decomposition finished across AP-030a/b/c with command modules and shared utilities; core tests and hooks passed.\n\n## Scope\n\nAP-030a/b/c: utilities extraction, recipes/upgrade extraction, task/work/pr/branch/guard/hooks extraction; run-cli now routes to commands modules.\n\n## Risks\n\nRisk: routing regressions across task/recipe/upgrade namespaces. Mitigated by lint, run-cli core/scenario tests, and pre-commit hooks.\n\n## Verify Steps\n\nbun run lint\\nbun run test:cli:unit\\nbun run test:cli:scenario\n\n## Rollback Plan\n\nRevert AP-030a/b/c commits to restore monolithic run-cli.ts."
     },
     {
       "id": "202602050621-6RP0GH",
       "title": "AP-030b: Extract recipes/upgrade commands",
       "description": "Move recipes and upgrade command implementations into commands/ modules.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -13407,20 +13416,32 @@
         "cli"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "47d800b000b6a881ebcee39e119fa61a90bc1b20",
+        "message": "✨ 6RP0GH extract recipes and upgrade modules"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: extract recipes and upgrade commands into commands/ modules."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T06:22:55.837Z",
+      "doc_updated_at": "2026-02-05T07:00:11.876Z",
       "doc_updated_by": "CODER",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nExtract recipes and upgrade command implementations into commands/ modules.\n\n## Scope\n\nMove recipes and upgrade command logic out of run-cli.ts into commands/ modules with shared helpers.\n\n## Risks\n\nRisk: refactor changes behavior; mitigate with recipes and upgrade test coverage.\n\n## Verify Steps\n\nRun run-cli.recipes.test.ts and upgrade-related tests; ensure pre-commit hooks pass.\n\n## Rollback Plan\n\nRevert the recipes/upgrade extraction commits to return to run-cli.ts implementation."
+      "doc": "## Summary\n\nExtract recipes and upgrade command implementations into commands/ modules.\n\nExtracted upgrade/recipes/scenario command logic into dedicated modules, added CLI error mapping helper, and introduced unit tests for new modules.\n\n## Scope\n\nMove recipes and upgrade command logic out of run-cli.ts into commands/ modules with shared helpers.\n\n- Added  and  for command logic.\\n- Added  and .\\n- Updated  to delegate to new modules.\\n- Added unit tests: , .\\n- Updated  to export shared archive helpers.\n\n- Added packages/agentplane/src/commands/recipes.ts and packages/agentplane/src/commands/upgrade.ts for command logic.\n- Added packages/agentplane/src/cli/checksum.ts and packages/agentplane/src/cli/error-map.ts.\n- Updated packages/agentplane/src/run-cli.ts to delegate to new modules.\n- Added unit tests: packages/agentplane/src/commands/recipes.test.ts and packages/agentplane/src/cli/error-map.test.ts.\n- Updated packages/agentplane/src/cli/archive.ts to export shared archive helpers.\n\n## Risks\n\nRisk: refactor changes behavior; mitigate with recipes and upgrade test coverage.\n\n- Regression in upgrade/recipes/scenario command behavior due to refactor.\\n- Error mapping differences for upgrade edge cases if parsing changes.\n\n## Verify Steps\n\nRun run-cli.recipes.test.ts and upgrade-related tests; ensure pre-commit hooks pass.\n\n- bun run test:cli:unit\n- bun run test:cli:scenario\n\n## Rollback Plan\n\nRevert the recipes/upgrade extraction commits to return to run-cli.ts implementation.\n\nRevert the AP-030b commit(s) and restore previous run-cli command implementations."
     },
     {
       "id": "202602050621-7AC9PB",
       "title": "AP-030c: Extract task/other namespaces",
       "description": "Move task/work/pr/backend/branch/etc commands into commands/ modules and reduce run-cli.ts size.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -13430,14 +13451,26 @@
         "cli"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "547c3fc3827e97eeb07052f871306c348a5b202f",
+        "message": "✨ 7AC9PB extract workflow namespaces"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: extract task/work/pr/branch/guard/commit/hooks into commands/workflow.ts and backend sync into commands/backend.ts."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run lint; bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T06:23:33.726Z",
+      "doc_updated_at": "2026-02-05T07:36:52.301Z",
       "doc_updated_by": "CODER",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nExtract remaining namespaces (task/work/pr/backend/branch/etc) into commands/ modules.\n\n## Scope\n\nMove task/work/pr/backend/branch/guard/commit/hooks namespaces into commands/ modules; reduce run-cli.ts size.\n\n## Risks\n\nRisk: command routing regressions; mitigate with run-cli core tests and pre-commit hooks.\n\n## Verify Steps\n\nRun run-cli.core.test.ts and full pre-commit hooks; confirm CLI behavior unchanged.\n\n## Rollback Plan\n\nRevert the namespace extraction commits to restore monolithic run-cli.ts."
+      "doc": "## Summary\n\nExtract remaining namespaces (task/work/pr/backend/branch/etc) into commands/ modules.\n\nExtracted workflow/task/guard/branch/hooks commands into commands/workflow.ts and backend sync into commands/backend.ts; moved backend error mapping into cli/error-map; updated run-cli routing and added unit tests.\n\n## Scope\n\nMove task/work/pr/backend/branch/guard/commit/hooks namespaces into commands/ modules; reduce run-cli.ts size.\n\nAdded commands modules: packages/agentplane/src/commands/workflow.ts and packages/agentplane/src/commands/backend.ts; updated packages/agentplane/src/run-cli.ts and packages/agentplane/src/cli/error-map.ts; added tests under packages/agentplane/src/commands and packages/agentplane/src/cli.\n\n## Risks\n\nRisk: command routing regressions; mitigate with run-cli core tests and pre-commit hooks.\n\nRisk: CLI routing regressions after extraction. Mitigated by lint + run-cli core/scenario tests.\n\n## Verify Steps\n\nRun run-cli.core.test.ts and full pre-commit hooks; confirm CLI behavior unchanged.\n\nbun run lint\\nbun run test:cli:unit\\nbun run test:cli:scenario\n\n## Rollback Plan\n\nRevert the namespace extraction commits to restore monolithic run-cli.ts.\n\nRevert the AP-030c commit(s) to restore the monolithic run-cli implementation."
     },
     {
       "id": "202602050621-M6NF1X",
@@ -13479,6 +13512,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "b72ae20ab97a4816f7e0e3282649e63744b13e98a2d1d8b28d68bf914151d8bb"
+    "checksum": "6d1641be649199ab97bf308102dd722a72d32270eba99ba448f6994698511b5b"
   }
 }
