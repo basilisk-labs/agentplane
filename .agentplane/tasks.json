@@ -14897,12 +14897,41 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nSplit backend docs into per-backend files and keep backends.mdx as an overview.\n\n## Scope\n\n- Create docs/user/backends/local.mdx and docs/user/backends/redmine.mdx.\n- Move detailed content into per-backend files.\n- Keep docs/user/backends.mdx as overview with links.\n\n## Risks\n\n- Broken doc links if paths are wrong.\n- Redmine parity guidance may drift from code if not explicit.\n\n## Verify Steps\n\n- Open docs/user/backends.mdx to confirm it references per-backend docs.\n- Ensure docs/user/backends/local.mdx and docs/user/backends/redmine.mdx exist and render.\n- Confirm Redmine doc includes full-parity setup guidance and explicit mapping caveat.\n\n## Verification\n\nPending.\n\n- docs/user/backends.mdx now links to per-backend docs.\n- docs/user/backends/local.mdx and docs/user/backends/redmine.mdx created.\n- Redmine doc includes full-parity fields and mapping caveat.\n\n## Rollback Plan\n\n- Restore docs/user/backends.mdx from before the split.\n- Remove per-backend doc files if needed."
+    },
+    {
+      "id": "202602051513-F0G9Q7",
+      "title": "Add Redmine setup checklist",
+      "description": "Add step-by-step Redmine setup instructions including custom field configuration and env vars.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "8a6366f4f6f77478361cc682bd3de8d8cff008de",
+        "message": "📝 F0G9Q7 redmine setup checklist"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Verified: Redmine doc includes setup checklist, sources for IDs and API key, and env var list with sources."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T15:15:18.393Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd step-by-step Redmine setup instructions for new installations.\n\n## Scope\n\n- Expand docs/user/backends/redmine.mdx with setup checklist.\n- Explain where to get API key, project id, and custom field IDs.\n- List required .env variables and their sources.\n\n## Risks\n\n- Redmine UI steps may vary by version.\n- Field ID locations may differ if admin UI is customized.\n\n## Verify Steps\n\n- Review docs/user/backends/redmine.mdx for step-by-step setup instructions.\n- Confirm env vars list includes where to obtain each value.\n- Ensure custom field IDs and types are explained.\n\n## Verification\n\nPending.\n\n- docs/user/backends/redmine.mdx now includes setup checklist, where to find API key/project id/custom field IDs, and env var sources.\n\n## Rollback Plan\n\n- Revert docs/user/backends/redmine.mdx changes."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "93060fd3a4b7a80c0504b999847669fc6ae655b866d5cecda92e55c1f5ed345b"
+    "checksum": "8a539bdefa7726ff6cb6d15df8024e8f91d43aa0af58726fe85b9494fa5dc8b2"
   }
 }
