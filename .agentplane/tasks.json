@@ -12999,7 +12999,7 @@
       "id": "202602050527-K3YMDY",
       "title": "Epic A: CLI contract stability",
       "description": "Top-level tracking for Epic A (AP-001/AP-002).",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -13009,10 +13009,18 @@
         "cli"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "49f9d860f9dd6c8d7958f4e81137d608361b235f",
+        "message": "🧾 F3Y2AD record finish metadata"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Epic A tasks AP-001 and AP-002 completed; tracking task closed."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T05:27:20.733Z",
+      "doc_updated_at": "2026-02-05T05:52:37.741Z",
       "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
       "id_source": "generated"
@@ -13093,6 +13101,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "15f5788eded3a900ccb09f59b9df48f5f1edbd2235fc337ffa41376c82193716"
+    "checksum": "3e1a84bf4d3e8098aecee35c2dbd3e9a0d255eb39738d71fb4e0fd8da9047763"
   }
 }
