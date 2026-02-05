@@ -13172,7 +13172,7 @@
       "id": "202602050554-PW3TCT",
       "title": "Epic B: Offline-first update-check",
       "description": "Top-level tracking for Epic B (AP-010).",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -13182,13 +13182,22 @@
         "cli"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "d5cc9c9f0ffb52d13a535c4245c95aeec8e31604",
+        "message": "🧾 49X946 record finish metadata"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Epic B completed via AP-010a/010b/010c; update-check cache and integration done."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T05:54:35.850Z",
+      "doc_updated_at": "2026-02-05T06:07:29.623Z",
       "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nTrack completion of Epic B (update-check cache and integration).\n\n## Scope\n\nEnsure AP-010a/AP-010b/AP-010c are complete and verified.\n\n## Risks\n\nRisk: missing linkage between subtasks and epic; mitigated by explicit finish note.\n\n## Verify Steps\n\nConfirm AP-010a/AP-010b/AP-010c are DONE and hooks/tests passed.\n\n## Rollback Plan\n\nRevert the Epic B commits in order to restore previous update-check behavior."
     },
     {
       "id": "202602050554-Q59FCK",
@@ -13265,6 +13274,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "720898d3ac57e5adb08153fc9ad779636e8798997b60936dacfb1f5e404da115"
+    "checksum": "5318aec17a8d7ee17544b69d0c55b5a5cdf0a59ef3bf972157fdfb2a33fbee2d"
   }
 }
