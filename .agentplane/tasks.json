@@ -13052,12 +13052,47 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nDefine the canonical --json error format, update docs and code, and enforce via tests (no backward compatibility).\n\n## Scope\n\nUpdate JSON error formatting to match contract, revise cli-contract docs, and add strict tests for required fields.\n\n## Risks\n\nRisk: downstream tooling relying on extra JSON keys may break; mitigated by explicit contract update and tests.\n\n## Verify Steps\n\nRun errors JSON tests; confirm exact keys and types; ensure docs and runtime output match.\n\n## Rollback Plan\n\nRevert commit for this task; restore previous JSON error format if integrations require it."
+    },
+    {
+      "id": "202602050551-F3Y2AD",
+      "title": "Translate ROADMAP.md to English",
+      "description": "Translate ROADMAP.md content to English and commit as a standalone docs task.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "roadmap",
+        "localization"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "00c4d87619c70763bdcc91e2e2457229bdf95946",
+        "message": "🧩 F3Y2AD translate ROADMAP to English"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: translate ROADMAP.md to English and keep structure intact."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: ROADMAP.md translated to English; structure preserved."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T05:52:10.023Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nTranslate ROADMAP.md into English and commit as a standalone docs task.\n\n## Scope\n\nTranslate all sections and bullets in ROADMAP.md without changing structure or intent.\n\n## Risks\n\nRisk: meaning drift in translation; mitigate by keeping technical terms and structure intact.\n\n## Verify Steps\n\nReview ROADMAP.md for completeness and consistent terminology; no code tests required.\n\n## Rollback Plan\n\nRevert the translation commit to restore prior language."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "1027f0b212be7e0ede90277952dba756b58ae837f3c5c0802853b4ed4a4896fb"
+    "checksum": "15f5788eded3a900ccb09f59b9df48f5f1edbd2235fc337ffa41376c82193716"
   }
 }
