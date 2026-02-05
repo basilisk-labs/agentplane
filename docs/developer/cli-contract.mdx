@@ -54,6 +54,7 @@ Rules:
 - JSON errors are written to stdout; human-readable diagnostics go to stderr only when `--json` is not set.
 - `error.code` is a stable string enum (`E_USAGE`, `E_VALIDATION`, `E_IO`, `E_GIT`, `E_BACKEND`, `E_NETWORK`, `E_INTERNAL`).
 - `context` is optional and must not include secrets.
+- No additional keys are emitted; the schema is exact.
 
 ## 4) Namespaces and collision rules
 

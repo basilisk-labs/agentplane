@@ -126,7 +126,7 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
 function writeError(err: CliError, jsonErrors: boolean): void {
   const hint = renderErrorHint(err);
   if (jsonErrors) {
-    process.stdout.write(`${formatJsonError(err, { hint })}\n`);
+    process.stdout.write(`${formatJsonError(err)}\n`);
   } else {
     const header = `error [${err.code}]`;
     if (err.message.includes("\n")) {

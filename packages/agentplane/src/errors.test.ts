@@ -17,7 +17,6 @@ describe("errors", () => {
         code: "E_USAGE",
         message: "Bad args",
         context: { command: "config set" },
-        exit_code: 2,
       },
     });
   });
