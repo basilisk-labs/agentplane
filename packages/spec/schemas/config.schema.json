@@ -1,28 +1,40 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://agentplane.dev/schemas/config.schema.json",
   "title": "agentplane config.json (v1)",
   "type": "object",
   "additionalProperties": true,
   "required": ["schema_version", "workflow_mode", "paths", "tasks", "commit", "tasks_backend"],
   "properties": {
-    "schema_version": { "type": "integer", "const": 1 },
-    "workflow_mode": { "type": "string", "enum": ["direct", "branch_pr"] },
-    "status_commit_policy": { "type": "string", "enum": ["off", "warn", "confirm"] },
-    "finish_auto_status_commit": { "type": "boolean" },
-    "base_branch": { "type": "string", "minLength": 1 },
+    "schema_version": { "type": "integer", "const": 1, "default": 1 },
+    "workflow_mode": {
+      "type": "string",
+      "enum": ["direct", "branch_pr"],
+      "default": "direct"
+    },
+    "status_commit_policy": {
+      "type": "string",
+      "enum": ["off", "warn", "confirm"],
+      "default": "warn"
+    },
+    "finish_auto_status_commit": { "type": "boolean", "default": true },
+    "base_branch": { "type": "string", "minLength": 1, "default": "main" },
     "agents": {
       "type": "object",
       "additionalProperties": true,
       "required": ["approvals"],
+      "default": {
+        "approvals": { "require_plan": true, "require_network": true }
+      },
       "properties": {
         "approvals": {
           "type": "object",
           "additionalProperties": true,
           "required": ["require_plan", "require_network"],
+          "default": { "require_plan": true, "require_network": true },
           "properties": {
-            "require_plan": { "type": "boolean" },
-            "require_network": { "type": "boolean" }
+            "require_plan": { "type": "boolean", "default": true },
+            "require_network": { "type": "boolean", "default": true }
           }
         }
       }
@@ -31,53 +43,105 @@
       "type": "object",
       "additionalProperties": true,
       "required": ["storage_default"],
+      "default": { "storage_default": "link" },
       "properties": {
-        "storage_default": { "type": "string", "enum": ["link", "copy", "global"] }
+        "storage_default": {
+          "type": "string",
+          "enum": ["link", "copy", "global"],
+          "default": "link"
+        }
       }
     },
     "paths": {
       "type": "object",
       "additionalProperties": true,
       "required": ["agents_dir", "tasks_path", "workflow_dir", "worktrees_dir"],
+      "default": {
+        "agents_dir": ".agentplane/agents",
+        "tasks_path": ".agentplane/tasks.json",
+        "workflow_dir": ".agentplane/tasks",
+        "worktrees_dir": ".agentplane/worktrees"
+      },
       "properties": {
-        "agents_dir": { "type": "string", "minLength": 1 },
-        "tasks_path": { "type": "string", "minLength": 1 },
-        "workflow_dir": { "type": "string", "minLength": 1 },
-        "worktrees_dir": { "type": "string", "minLength": 1 }
+        "agents_dir": { "type": "string", "minLength": 1, "default": ".agentplane/agents" },
+        "tasks_path": { "type": "string", "minLength": 1, "default": ".agentplane/tasks.json" },
+        "workflow_dir": { "type": "string", "minLength": 1, "default": ".agentplane/tasks" },
+        "worktrees_dir": { "type": "string", "minLength": 1, "default": ".agentplane/worktrees" }
       }
     },
     "branch": {
       "type": "object",
       "additionalProperties": true,
       "required": ["task_prefix"],
+      "default": { "task_prefix": "task" },
       "properties": {
-        "task_prefix": { "type": "string", "minLength": 1 }
+        "task_prefix": { "type": "string", "minLength": 1, "default": "task" }
       }
     },
     "framework": {
       "type": "object",
       "additionalProperties": true,
       "required": ["source", "last_update"],
+      "default": {
+        "source": "https://github.com/basilisk-labs/agent-plane",
+        "last_update": null
+      },
       "properties": {
-        "source": { "type": "string", "minLength": 1 },
-        "last_update": { "type": ["string", "null"], "format": "date-time" }
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "default": "https://github.com/basilisk-labs/agent-plane"
+        },
+        "last_update": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "default": null
+        }
       }
     },
     "tasks": {
       "type": "object",
       "additionalProperties": true,
       "required": ["id_suffix_length_default", "verify", "doc", "comments"],
+      "default": {
+        "id_suffix_length_default": 6,
+        "verify": { "required_tags": ["code", "backend", "frontend"] },
+        "doc": {
+          "sections": [
+            "Summary",
+            "Context",
+            "Scope",
+            "Risks",
+            "Verify Steps",
+            "Rollback Plan",
+            "Notes"
+          ],
+          "required_sections": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
+        },
+        "comments": {
+          "start": { "prefix": "Start:", "min_chars": 40 },
+          "blocked": { "prefix": "Blocked:", "min_chars": 40 },
+          "verified": { "prefix": "Verified:", "min_chars": 60 }
+        }
+      },
       "properties": {
-        "id_suffix_length_default": { "type": "integer", "minimum": 3, "maximum": 16 },
+        "id_suffix_length_default": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 16,
+          "default": 6
+        },
         "verify": {
           "type": "object",
           "additionalProperties": true,
           "required": ["required_tags"],
+          "default": { "required_tags": ["code", "backend", "frontend"] },
           "properties": {
             "required_tags": {
               "type": "array",
               "items": { "type": "string", "minLength": 1 },
-              "uniqueItems": true
+              "uniqueItems": true,
+              "default": ["code", "backend", "frontend"]
             }
           }
         },
@@ -85,19 +149,61 @@
           "type": "object",
           "additionalProperties": true,
           "required": ["sections", "required_sections"],
+          "default": {
+            "sections": [
+              "Summary",
+              "Context",
+              "Scope",
+              "Risks",
+              "Verify Steps",
+              "Rollback Plan",
+              "Notes"
+            ],
+            "required_sections": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
+          },
           "properties": {
-            "sections": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-            "required_sections": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+            "sections": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "default": [
+                "Summary",
+                "Context",
+                "Scope",
+                "Risks",
+                "Verify Steps",
+                "Rollback Plan",
+                "Notes"
+              ]
+            },
+            "required_sections": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "default": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
+            }
           }
         },
         "comments": {
           "type": "object",
           "additionalProperties": true,
           "required": ["start", "blocked", "verified"],
+          "default": {
+            "start": { "prefix": "Start:", "min_chars": 40 },
+            "blocked": { "prefix": "Blocked:", "min_chars": 40 },
+            "verified": { "prefix": "Verified:", "min_chars": 60 }
+          },
           "properties": {
-            "start": { "$ref": "#/$defs/comment_policy" },
-            "blocked": { "$ref": "#/$defs/comment_policy" },
-            "verified": { "$ref": "#/$defs/comment_policy" }
+            "start": {
+              "$ref": "#/$defs/comment_policy",
+              "default": { "prefix": "Start:", "min_chars": 40 }
+            },
+            "blocked": {
+              "$ref": "#/$defs/comment_policy",
+              "default": { "prefix": "Blocked:", "min_chars": 40 }
+            },
+            "verified": {
+              "$ref": "#/$defs/comment_policy",
+              "default": { "prefix": "Verified:", "min_chars": 60 }
+            }
           }
         }
       }
@@ -106,11 +212,15 @@
       "type": "object",
       "additionalProperties": true,
       "required": ["generic_tokens"],
+      "default": {
+        "generic_tokens": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
+      },
       "properties": {
         "generic_tokens": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
-          "uniqueItems": true
+          "uniqueItems": true,
+          "default": ["start", "status", "mark", "done", "wip", "update", "tasks", "task"]
         }
       }
     },
@@ -118,11 +228,16 @@
       "type": "object",
       "additionalProperties": true,
       "required": ["config_path"],
+      "default": { "config_path": ".agentplane/backends/local/backend.json" },
       "properties": {
-        "config_path": { "type": "string", "minLength": 1 }
+        "config_path": {
+          "type": "string",
+          "minLength": 1,
+          "default": ".agentplane/backends/local/backend.json"
+        }
       }
     },
-    "closure_commit_requires_approval": { "type": "boolean" }
+    "closure_commit_requires_approval": { "type": "boolean", "default": false }
   },
   "$defs": {
     "comment_policy": {

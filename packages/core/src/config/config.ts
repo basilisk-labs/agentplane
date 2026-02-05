@@ -1,5 +1,11 @@
+import { readFileSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+import type { ErrorObject, Options, ValidateFunction } from "ajv";
+import AjvModule from "ajv";
+import AjvFormatsModule from "ajv-formats";
 
 export type WorkflowMode = "direct" | "branch_pr";
 export type StatusCommitPolicy = "off" | "warn" | "confirm";
@@ -43,160 +49,63 @@ export type AgentplaneConfig = {
 };
 
 export function defaultConfig(): AgentplaneConfig {
-  return {
-    schema_version: 1,
-    workflow_mode: "direct",
-    status_commit_policy: "warn",
-    finish_auto_status_commit: true,
-    base_branch: "main",
-    agents: {
-      approvals: {
-        require_plan: true,
-        require_network: true,
-      },
-    },
-    recipes: {
-      storage_default: "link",
-    },
-    paths: {
-      agents_dir: ".agentplane/agents",
-      tasks_path: ".agentplane/tasks.json",
-      workflow_dir: ".agentplane/tasks",
-      worktrees_dir: ".agentplane/worktrees",
-    },
-    branch: { task_prefix: "task" },
-    framework: { source: "https://github.com/basilisk-labs/agent-plane", last_update: null },
-    tasks: {
-      id_suffix_length_default: 6,
-      verify: { required_tags: ["code", "backend", "frontend"] },
-      doc: {
-        sections: [
-          "Summary",
-          "Context",
-          "Scope",
-          "Risks",
-          "Verify Steps",
-          "Rollback Plan",
-          "Notes",
-        ],
-        required_sections: ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"],
-      },
-      comments: {
-        start: { prefix: "Start:", min_chars: 40 },
-        blocked: { prefix: "Blocked:", min_chars: 40 },
-        verified: { prefix: "Verified:", min_chars: 60 },
-      },
-    },
-    commit: {
-      generic_tokens: ["start", "status", "mark", "done", "wip", "update", "tasks", "task"],
-    },
-    tasks_backend: { config_path: ".agentplane/backends/local/backend.json" },
-    closure_commit_requires_approval: false,
-  };
+  return structuredClone(DEFAULT_CONFIG);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-export function validateConfig(raw: unknown): AgentplaneConfig {
-  if (!isRecord(raw)) throw new TypeError("config must be an object");
-  if (raw.schema_version !== 1) throw new Error("config.schema_version must be 1");
-  if (raw.workflow_mode !== "direct" && raw.workflow_mode !== "branch_pr") {
-    throw new Error("config.workflow_mode must be 'direct' or 'branch_pr'");
-  }
-  if (
-    raw.status_commit_policy !== "off" &&
-    raw.status_commit_policy !== "warn" &&
-    raw.status_commit_policy !== "confirm"
-  ) {
-    throw new Error("config.status_commit_policy must be 'off' | 'warn' | 'confirm'");
-  }
-  if (typeof raw.finish_auto_status_commit !== "boolean")
-    throw new Error("config.finish_auto_status_commit must be boolean");
-  if (typeof raw.base_branch !== "string" || raw.base_branch.length === 0)
-    throw new Error("config.base_branch must be string");
-  if (raw.agents !== undefined) {
-    if (!isRecord(raw.agents)) throw new Error("config.agents must be object");
-    if (!isRecord(raw.agents.approvals)) throw new Error("config.agents.approvals must be object");
-    if (typeof raw.agents.approvals.require_plan !== "boolean") {
-      throw new Error("config.agents.approvals.require_plan must be boolean");
-    }
-    if (typeof raw.agents.approvals.require_network !== "boolean") {
-      throw new Error("config.agents.approvals.require_network must be boolean");
-    }
-  }
-  if (raw.recipes !== undefined) {
-    if (!isRecord(raw.recipes)) throw new Error("config.recipes must be object");
-    const storageDefault = raw.recipes.storage_default;
-    if (storageDefault !== "link" && storageDefault !== "copy" && storageDefault !== "global") {
-      throw new Error("config.recipes.storage_default must be 'link' | 'copy' | 'global'");
-    }
-  }
-  if (!isRecord(raw.paths)) throw new Error("config.paths must be object");
-  if (!isRecord(raw.branch)) throw new Error("config.branch must be object");
-  if (!isRecord(raw.framework)) throw new Error("config.framework must be object");
-  if (!isRecord(raw.tasks)) throw new Error("config.tasks must be object");
-  if (!isRecord(raw.commit)) throw new Error("config.commit must be object");
-  if (!isRecord(raw.tasks_backend)) throw new Error("config.tasks_backend must be object");
-  if (typeof raw.closure_commit_requires_approval !== "boolean") {
-    throw new Error("config.closure_commit_requires_approval must be boolean");
-  }
+const CONFIG_SCHEMA_URL = new URL("../../../spec/schemas/config.schema.json", import.meta.url);
+const CONFIG_SCHEMA = JSON.parse(readFileSync(fileURLToPath(CONFIG_SCHEMA_URL), "utf8")) as Record<
+  string,
+  unknown
+>;
 
-  // Minimal path fields validation.
-  for (const key of ["agents_dir", "tasks_path", "workflow_dir", "worktrees_dir"] as const) {
-    const v = raw.paths[key];
-    if (typeof v !== "string" || v.length === 0)
-      throw new Error(`config.paths.${key} must be string`);
-  }
-  if (typeof raw.branch.task_prefix !== "string" || raw.branch.task_prefix.length === 0) {
-    throw new Error("config.branch.task_prefix must be string");
-  }
-  if (typeof raw.framework.source !== "string" || raw.framework.source.length === 0) {
-    throw new Error("config.framework.source must be string");
-  }
-  if (raw.framework.last_update !== null && typeof raw.framework.last_update !== "string") {
-    throw new Error("config.framework.last_update must be string or null");
-  }
-  if (!isRecord(raw.tasks.verify) || !Array.isArray(raw.tasks.verify.required_tags)) {
-    throw new Error("config.tasks.verify.required_tags must be array");
-  }
-  if (
-    typeof raw.tasks.id_suffix_length_default !== "number" ||
-    !Number.isInteger(raw.tasks.id_suffix_length_default)
-  ) {
-    throw new Error("config.tasks.id_suffix_length_default must be integer");
-  }
-  if (
-    !isRecord(raw.tasks.doc) ||
-    !Array.isArray(raw.tasks.doc.sections) ||
-    !Array.isArray(raw.tasks.doc.required_sections)
-  ) {
-    throw new Error("config.tasks.doc.sections and required_sections must be arrays");
-  }
-  if (!isRecord(raw.tasks.comments)) throw new Error("config.tasks.comments must be object");
-  for (const k of ["start", "blocked", "verified"] as const) {
-    const policy = raw.tasks.comments[k];
-    if (
-      !isRecord(policy) ||
-      typeof policy.prefix !== "string" ||
-      typeof policy.min_chars !== "number"
-    ) {
-      throw new Error(`config.tasks.comments.${k} must have prefix/min_chars`);
-    }
-  }
-  if (!Array.isArray(raw.commit.generic_tokens))
-    throw new Error("config.commit.generic_tokens must be array");
-  if (
-    typeof raw.tasks_backend.config_path !== "string" ||
-    raw.tasks_backend.config_path.length === 0
-  ) {
-    throw new Error("config.tasks_backend.config_path must be string");
-  }
+type AjvInstance = {
+  compile: <T>(schema: unknown) => ValidateFunction<T>;
+  errorsText: (errors?: ErrorObject[] | null, opts?: { dataVar?: string }) => string;
+};
 
-  // At this point, raw satisfies the minimal contract; keep unknown fields by returning it as-is.
-  return raw as unknown as AgentplaneConfig;
+type AjvConstructor = new (opts?: Options) => AjvInstance;
+type AjvFormats = (ajv: AjvInstance) => void;
+
+const Ajv =
+  (AjvModule as unknown as { default?: AjvConstructor }).default ??
+  (AjvModule as unknown as AjvConstructor);
+
+const addFormats =
+  (AjvFormatsModule as unknown as { default?: AjvFormats }).default ??
+  (AjvFormatsModule as unknown as AjvFormats);
+
+const AJV = new Ajv({
+  allErrors: true,
+  allowUnionTypes: true,
+  useDefaults: true,
+  strict: false,
+});
+addFormats(AJV);
+
+const validateSchema = AJV.compile<AgentplaneConfig>(CONFIG_SCHEMA);
+
+function formatSchemaErrors(errors: ErrorObject[] | null | undefined): string {
+  if (!errors || errors.length === 0) return "config schema validation failed";
+  return AJV.errorsText(errors, { dataVar: "config" });
 }
+
+export function validateConfig(raw: unknown): AgentplaneConfig {
+  const candidate =
+    raw && typeof raw === "object" ? structuredClone(raw as Record<string, unknown>) : raw;
+  if (!validateSchema(candidate)) {
+    throw new Error(formatSchemaErrors(validateSchema.errors));
+  }
+  if (!isRecord(candidate)) {
+    throw new Error("config must be an object");
+  }
+  return candidate;
+}
+
+const DEFAULT_CONFIG = validateConfig({});
 
 export type LoadedConfig = {
   path: string;

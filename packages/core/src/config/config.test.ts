@@ -7,6 +7,8 @@ import { defaultConfig, loadConfig, saveConfig, setByDottedKey, validateConfig }
 
 const makeConfigRecord = (): Record<string, unknown> =>
   structuredClone(defaultConfig()) as Record<string, unknown>;
+const schemaPath = (pathValue: string): RegExp =>
+  new RegExp(`(?:config/)?${pathValue.replaceAll(".", "/")}`);
 
 describe("config", () => {
   it("defaultConfig validates", () => {
@@ -127,7 +129,7 @@ describe("config", () => {
       [
         "agents.approvals",
         (raw) => ((raw.agents as Record<string, unknown>).approvals = "nope"),
-        /agents\.approvals must be object/,
+        schemaPath("agents.approvals"),
       ],
       [
         "agents.approvals.require_plan",
@@ -149,7 +151,7 @@ describe("config", () => {
       [
         "recipes.storage_default",
         (raw) => ((raw.recipes as Record<string, unknown>).storage_default = "bad"),
-        /recipes\.storage_default/,
+        schemaPath("recipes.storage_default"),
       ],
       ["paths", (raw) => (raw.paths = "nope"), /paths must be object/],
       ["branch", (raw) => (raw.branch = "nope"), /branch must be object/],
@@ -165,53 +167,57 @@ describe("config", () => {
       [
         "paths.agents_dir",
         (raw) => ((raw.paths as Record<string, unknown>).agents_dir = ""),
-        /paths\.agents_dir/,
+        schemaPath("paths.agents_dir"),
       ],
       [
         "branch.task_prefix",
         (raw) => ((raw.branch as Record<string, unknown>).task_prefix = ""),
-        /branch\.task_prefix/,
+        schemaPath("branch.task_prefix"),
       ],
       [
         "framework.source",
         (raw) => ((raw.framework as Record<string, unknown>).source = ""),
-        /framework\.source/,
+        schemaPath("framework.source"),
       ],
       [
         "framework.last_update",
         (raw) => ((raw.framework as Record<string, unknown>).last_update = 123),
-        /framework\.last_update/,
+        schemaPath("framework.last_update"),
       ],
       [
         "tasks.verify.required_tags",
-        (raw) => ((raw.tasks as Record<string, unknown>).verify = {}),
-        /verify\.required_tags/,
+        (raw) =>
+          ((
+            (raw.tasks as Record<string, unknown>).verify as Record<string, unknown>
+          ).required_tags = [""]),
+        schemaPath("tasks.verify.required_tags"),
       ],
       [
         "tasks.doc.sections",
-        (raw) => ((raw.tasks as Record<string, unknown>).doc = {}),
-        /tasks\.doc\.sections/,
+        (raw) =>
+          (((raw.tasks as Record<string, unknown>).doc as Record<string, unknown>).sections = [""]),
+        schemaPath("tasks.doc.sections"),
       ],
       [
         "tasks.comments",
         (raw) => ((raw.tasks as Record<string, unknown>).comments = "nope"),
-        /tasks\.comments must be object/,
+        schemaPath("tasks.comments"),
       ],
       [
         "tasks.comments.start",
         (raw) =>
           (((raw.tasks as Record<string, unknown>).comments as Record<string, unknown>).start = {}),
-        /tasks\.comments\.start/,
+        schemaPath("tasks.comments.start"),
       ],
       [
         "commit.generic_tokens",
         (raw) => ((raw.commit as Record<string, unknown>).generic_tokens = "nope"),
-        /commit\.generic_tokens/,
+        schemaPath("commit.generic_tokens"),
       ],
       [
         "tasks_backend.config_path",
         (raw) => ((raw.tasks_backend as Record<string, unknown>).config_path = ""),
-        /tasks_backend\.config_path/,
+        schemaPath("tasks_backend.config_path"),
       ],
     ];
 
