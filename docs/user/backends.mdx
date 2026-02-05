@@ -7,7 +7,7 @@ description: "How task backends work, how they store data, and how sync behaves.
 
 A backend defines where tasks are stored and how synchronization happens. Backends are first-class CLI features (not recipes). The CLI loads the configured backend from `.agentplane/config.json` and routes all task commands through it.
 
-## Local backend (default)
+## Local backend
 
 - Stores tasks under `.agentplane/tasks/` as structured READMEs.
 - Exports snapshots to `.agentplane/tasks.json` for integrations.
@@ -21,7 +21,11 @@ Remote backends (for example Redmine) are optional and should be configured expl
 - Custom field mappings for task metadata.
 - Sync direction and conflict policy.
 
-## Redmine setup (required fields and config)
+## Redmine backend
+
+The Redmine backend requires explicit configuration and custom fields to preserve task metadata.
+
+### Redmine setup (required fields and config)
 
 Redmine requires custom fields to preserve task metadata. Without them, tags/priority/owner may be lost and task docs cannot be stored.
 
@@ -81,9 +85,15 @@ Set these in `.env` (the CLI reads them on startup):
 }
 ```
 
-### 5) Parity caveat
+### 5) Full parity with local backend (extra fields + mapping)
 
-If you need tag/priority/owner parity with the local backend, you must map those fields to Redmine custom fields and update the backend implementation accordingly. By default, Redmine only guarantees `task_id` and task docs when the fields above are configured.
+To reach full parity with the local backend, add custom fields for the remaining metadata and map them in the backend:
+
+- `tags` (Text). Store comma-separated tag values.
+- `priority` (Text or Integer). Store the task priority (`low|normal|med|high`).
+- `owner` (Text). Store the task owner/agent id.
+
+Then update the Redmine backend mapping to read/write these custom fields and point their IDs in `.env`. Without this code mapping, Redmine will not retain these values even if the fields exist.
 
 ## Sync model
 
