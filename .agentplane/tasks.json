@@ -13370,12 +13370,115 @@
       "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
       "id_source": "generated"
+    },
+    {
+      "id": "202602050621-33SAVX",
+      "title": "Epic D: Decompose run-cli.ts",
+      "description": "Top-level tracking for Epic D (AP-030).",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "epic",
+        "refactor"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T06:21:32.930Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602050621-6RP0GH",
+      "title": "AP-030b: Extract recipes/upgrade commands",
+      "description": "Move recipes and upgrade command implementations into commands/ modules.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "refactor",
+        "cli"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T06:22:55.837Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nExtract recipes and upgrade command implementations into commands/ modules.\n\n## Scope\n\nMove recipes and upgrade command logic out of run-cli.ts into commands/ modules with shared helpers.\n\n## Risks\n\nRisk: refactor changes behavior; mitigate with recipes and upgrade test coverage.\n\n## Verify Steps\n\nRun run-cli.recipes.test.ts and upgrade-related tests; ensure pre-commit hooks pass.\n\n## Rollback Plan\n\nRevert the recipes/upgrade extraction commits to return to run-cli.ts implementation."
+    },
+    {
+      "id": "202602050621-7AC9PB",
+      "title": "AP-030c: Extract task/other namespaces",
+      "description": "Move task/work/pr/backend/branch/etc commands into commands/ modules and reduce run-cli.ts size.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "refactor",
+        "cli"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T06:23:33.726Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nExtract remaining namespaces (task/work/pr/backend/branch/etc) into commands/ modules.\n\n## Scope\n\nMove task/work/pr/backend/branch/guard/commit/hooks namespaces into commands/ modules; reduce run-cli.ts size.\n\n## Risks\n\nRisk: command routing regressions; mitigate with run-cli core tests and pre-commit hooks.\n\n## Verify Steps\n\nRun run-cli.core.test.ts and full pre-commit hooks; confirm CLI behavior unchanged.\n\n## Rollback Plan\n\nRevert the namespace extraction commits to restore monolithic run-cli.ts."
+    },
+    {
+      "id": "202602050621-M6NF1X",
+      "title": "AP-030a: Extract shared CLI utilities",
+      "description": "Move shared helpers (http, archive, update-check, exit codes, output) into cli/ modules; thin run-cli router.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "refactor",
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "f7230770ed602e75c7645e4d91265df6679ee895",
+        "message": "🧩 M6NF1X extract cli utilities"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: extract shared CLI utilities and thin run-cli.ts."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: shared CLI utilities extracted; pre-commit hooks passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T06:26:41.550Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nExtract shared CLI utilities into cli/ modules and simplify run-cli.ts.\n\n## Scope\n\nMove shared helpers from run-cli.ts into cli/ modules; keep behavior unchanged; update imports and tests as needed.\n\n## Risks\n\nRisk: refactor breaks CLI wiring; mitigate with existing run-cli tests and pre-commit hooks.\n\n## Verify Steps\n\nRun pre-commit hooks and run-cli test suites; confirm no behavior regressions.\n\n## Rollback Plan\n\nRevert the refactor commit(s) to restore the monolithic run-cli.ts implementation."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "3c3b426c60eee3ca8d65c282ce97aeb940f4e3d8c11059c90825a76063274b6b"
+    "checksum": "b72ae20ab97a4816f7e0e3282649e63744b13e98a2d1d8b28d68bf914151d8bb"
   }
 }
