@@ -623,6 +623,93 @@ describe("commands/recipes", () => {
     const latest = runs.toSorted().at(-1);
     const metaPath = path.join(runsRoot, latest ?? "", "meta.json");
     expect(await readFile(metaPath, "utf8")).toContain('"recipe"');
+    const reportPath = path.join(runsRoot, latest ?? "", "report.json");
+    const reportText = await readFile(reportPath, "utf8");
+    const report = JSON.parse(reportText) as Record<string, unknown>;
+    expect(report.status).toBe("failed");
+  });
+
+  it("scenario run writes audit report with redacted args and env keys", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    const manifest = {
+      schema_version: "1",
+      id: "viewer",
+      version: "1.2.3",
+      name: "Viewer",
+      summary: "Preview tasks",
+      description: "Preview tasks",
+      tools: [
+        {
+          id: "AUDIT_TOOL",
+          summary: "Audit tool",
+          runtime: "bash",
+          entrypoint: "tools/run.sh",
+        },
+      ],
+      scenarios: [{ id: "AUDIT_SCENARIO", summary: "Audit scenario" }],
+    };
+    const archivePath = await createRecipeArchiveWithManifest({
+      manifest,
+      files: {
+        "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
+        "scenarios/audit.json": JSON.stringify(
+          {
+            schema_version: "1",
+            id: "AUDIT_SCENARIO",
+            goal: "audit",
+            inputs: [],
+            outputs: [],
+            steps: [
+              {
+                tool: "AUDIT_TOOL",
+                args: ["--token=supersecret", "--user", "denis", "--password", "hunter2"],
+                env: { SECRET_TOKEN: "abc123", SAFE: "ok" },
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+      },
+    });
+
+    await cmdRecipes({
+      cwd: projectDir,
+      args: ["--path", archivePath],
+      command: "install",
+    });
+
+    await cmdScenario({
+      cwd: projectDir,
+      args: ["viewer:AUDIT_SCENARIO"],
+      command: "run",
+    });
+
+    const runsRoot = path.join(projectDir, ".agentplane", "recipes", "viewer", "runs");
+    const runs = await readdir(runsRoot);
+    const latest = runs.toSorted().at(-1);
+    const reportPath = path.join(runsRoot, latest ?? "", "report.json");
+    const reportText = await readFile(reportPath, "utf8");
+    expect(reportText).not.toContain("abc123");
+    expect(reportText).not.toContain("hunter2");
+    expect(reportText).not.toContain("supersecret");
+    const report = JSON.parse(reportText) as Record<string, unknown>;
+    expect(report.status).toBe("success");
+    const steps = report.steps as Record<string, unknown>[];
+    expect(steps).toHaveLength(1);
+    expect(steps[0]?.args).toEqual([
+      "--token=<redacted>",
+      "--user",
+      "denis",
+      "--password",
+      "<redacted>",
+    ]);
+    const envKeys = steps[0]?.env_keys as string[];
+    expect(envKeys).toContain("SECRET_TOKEN");
+    expect(envKeys).toContain("SAFE");
+    expect(envKeys).toContain("AGENTPLANE_RUN_DIR");
   });
 
   it("scenario run warns on tool permissions and missing entrypoint", async () => {

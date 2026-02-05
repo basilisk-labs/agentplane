@@ -14926,12 +14926,70 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nAdd step-by-step Redmine setup instructions for new installations.\n\n## Scope\n\n- Expand docs/user/backends/redmine.mdx with setup checklist.\n- Explain where to get API key, project id, and custom field IDs.\n- List required .env variables and their sources.\n\n## Risks\n\n- Redmine UI steps may vary by version.\n- Field ID locations may differ if admin UI is customized.\n\n## Verify Steps\n\n- Review docs/user/backends/redmine.mdx for step-by-step setup instructions.\n- Confirm env vars list includes where to obtain each value.\n- Ensure custom field IDs and types are explained.\n\n## Verification\n\nPending.\n\n- docs/user/backends/redmine.mdx now includes setup checklist, where to find API key/project id/custom field IDs, and env var sources.\n\n## Rollback Plan\n\n- Revert docs/user/backends/redmine.mdx changes."
+    },
+    {
+      "id": "202602051524-D86GWE",
+      "title": "AP-080: Sign recipes index",
+      "description": "Add signed recipes index verification in CLI and publish index.json.sig in recipes repo.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "recipes",
+        "security"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "de8eaeb3cca9a840ed47be975afc1d80b8fcb5d5",
+        "message": "✨ D86GWE sign recipes index verification"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Implement signed recipes index validation, update recipes repo, and add tests/docs per scope."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Implemented signed recipes index verification and published index.json.sig; bun run test:fast. Signature failure/success validated via recipes tests."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T15:44:10.341Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nSign recipes index and verify signatures before using the catalog.\n\n## Scope\n\n- Add signature file index.json.sig in agentplane-recipes.\n- Verify index signature in CLI for remote/local/cache sources.\n- Add tests for invalid/missing signature.\n- Update docs describing signed index.\n\n## Risks\n\n- Signature verification could break existing installs without signed index.\n- Key rotation mistakes could block updates.\n\n## Verify Steps\n\n- Run bun run test:fast.\n- Verify recipes list-remote fails on missing/invalid signature.\n- Verify recipes list-remote succeeds with signed index.\n\n## Verification\n\nPending.\n\n- ✅ bun run test:fast (pass).\\n- ✅ recipes list-remote signature failure/success covered in recipes tests (missing/invalid signature + signed index).\n\n## Rollback Plan\n\n- Revert CLI signature verification changes.\n- Remove index.json.sig from recipes repo if needed."
+    },
+    {
+      "id": "202602051525-P4N6RJ",
+      "title": "AP-081: Scenario run audit report",
+      "description": "Write report.json for recipe scenario runs with redacted args/env and git diff summary.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "recipes",
+        "audit"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T15:26:08.710Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd audit report for scenario runs with redaction and git diff summary.\n\n## Scope\n\n- Add report.json under run directory.\n- Include timestamps, recipe/scenario ids, steps with redacted args, env keys, and git diff summary.\n- Update tests and docs.\n\n## Risks\n\n- Redaction rules might miss secrets.\n- Git diff summary may include unrelated changes.\n\n## Verify Steps\n\n- Run bun run test:fast.\n- Run scenario tests and confirm report.json is written with redacted args and env keys only.\n\n## Verification\n\nPending.\n\n## Rollback Plan\n\n- Revert report.json generation and related test updates."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "8a539bdefa7726ff6cb6d15df8024e8f91d43aa0af58726fe85b9494fa5dc8b2"
+    "checksum": "9f74062a331f3f9535e8dccfbe2d8b06e0d8e1d704de71784321721323129fe6"
   }
 }
