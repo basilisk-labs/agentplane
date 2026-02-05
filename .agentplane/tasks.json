@@ -14839,12 +14839,41 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nDocument Redmine setup requirements and custom fields for backend parity.\n\n## Scope\n\n- Add a Redmine setup section in docs.\n- Describe required custom fields and config keys.\n- Keep instructions concise and actionable.\n\n## Risks\n\n- Mismatch with actual Redmine field IDs if not updated in .env.\n- Docs may diverge from backend behavior.\n\n## Verify Steps\n\n- Review docs/user/backends.mdx for the new Redmine setup section.\n- Ensure custom fields and .env keys are listed and match backend expectations.\n\n## Verification\n\nPending.\n\n- Reviewed docs/user/backends.mdx for Redmine setup section and custom fields list.\n- Confirmed .env keys and backend config example are included.\n\n## Rollback Plan\n\n- Revert docs/user/backends.mdx changes.\n- Update task doc Verification with rollback note if needed."
+    },
+    {
+      "id": "202602051506-WJEZBQ",
+      "title": "Split backend docs: local vs redmine, add parity guidance",
+      "description": "Restructure backends doc into separate sections and document Redmine full-parity setup.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "8b400e4a2eb2c2a5478de2180116fdd6abc758db",
+        "message": "📝 WJEZBQ split backend docs"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Verified: Local and Redmine backend sections separated; Redmine parity requirements include extra fields and mapping note."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T15:07:29.505Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nSplit backend docs into local and Redmine sections with full-parity setup guidance.\n\n## Scope\n\n- Restructure docs/user/backends.mdx into separate Local and Redmine sections.\n- Add instructions for full-parity Redmine setup (custom fields + mapping).\n- Keep guidance concise and accurate to current code.\n\n## Risks\n\n- Doc may imply parity without code changes if wording is careless.\n- Redmine field IDs can drift from actual project settings.\n\n## Verify Steps\n\n- Review docs/user/backends.mdx for separate Local and Redmine sections.\n- Confirm Redmine parity requirements list custom fields and mapping notes.\n- Ensure wording does not claim parity without code support.\n\n## Verification\n\nPending.\n\n- docs/user/backends.mdx now has separate Local and Redmine sections.\n- Redmine parity requirements list extra custom fields and note code mapping requirement.\n\n## Rollback Plan\n\n- Revert changes in docs/user/backends.mdx.\n- Update Verification with rollback note if needed."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "c8e1ed0287b4914a2ebb18cd466ffe72b99d69b56a4165373c02135f8868b740"
+    "checksum": "5c22b9aaf42784f3098f7c18820774281c6a3507dc9472f45412b177cd9972b9"
   }
 }
