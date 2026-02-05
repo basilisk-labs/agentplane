@@ -1,15 +1,17 @@
 ---
 id: "202602051510-4C4MKZ"
 title: "Split backend docs into per-backend files"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs"]
 verify: []
-comments: []
+commit: { hash: "5b0f7460e0faace92f5becf9184d1ad8537e744e", message: "📝 4C4MKZ split backend docs" }
+comments:
+  - { author: "DOCS", body: "Verified: backends overview links to per-backend docs; local and redmine docs added with parity guidance." }
 doc_version: 2
-doc_updated_at: "2026-02-05T15:11:31.457Z"
+doc_updated_at: "2026-02-05T15:11:55.648Z"
 doc_updated_by: "DOCS"
 description: "Move backend docs into separate Local and Redmine files and leave overview in backends.mdx."
 id_source: "generated"
