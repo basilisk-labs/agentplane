@@ -457,6 +457,7 @@ async function cmdModeSet(opts: {
 type InitFlags = {
   ide?: "codex" | "cursor" | "windsurf";
   workflow?: "direct" | "branch_pr";
+  backend?: "local" | "redmine";
   hooks?: boolean;
   requirePlanApproval?: boolean;
   requireNetworkApproval?: boolean;
@@ -474,9 +475,9 @@ const ROLE_USAGE_EXAMPLE = "agentplane role ORCHESTRATOR";
 const AGENTS_USAGE = "Usage: agentplane agents";
 const AGENTS_USAGE_EXAMPLE = "agentplane agents";
 const INIT_USAGE =
-  "Usage: agentplane init --ide <...> --workflow <...> --hooks <...> --require-plan-approval <...> --require-network-approval <...> --require-verify-approval <...> [--recipes <...>] [--yes] [--force|--backup]";
+  "Usage: agentplane init --ide <...> --workflow <...> --backend <local|redmine> --hooks <...> --require-plan-approval <...> --require-network-approval <...> --require-verify-approval <...> [--recipes <...>] [--yes] [--force|--backup]";
 const INIT_USAGE_EXAMPLE =
-  "agentplane init --ide codex --workflow direct --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes";
+  "agentplane init --ide codex --workflow direct --backend local --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes";
 const CONFIG_SET_USAGE = "Usage: agentplane config set <key> <value>";
 const CONFIG_SET_USAGE_EXAMPLE = "agentplane config set workflow_mode branch_pr";
 const MODE_SET_USAGE = "Usage: agentplane mode set <direct|branch_pr>";
@@ -563,6 +564,18 @@ function parseInitFlags(args: string[]): InitFlags {
         out.workflow = next;
         break;
       }
+      case "--backend": {
+        const normalized = next.trim().toLowerCase();
+        if (normalized !== "local" && normalized !== "redmine") {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: invalidValueForFlag("--backend", next, "local|redmine"),
+          });
+        }
+        out.backend = normalized as InitFlags["backend"];
+        break;
+      }
       case "--hooks": {
         out.hooks = parseBooleanFlag(next, "--hooks");
         break;
@@ -616,6 +629,7 @@ async function cmdInit(opts: {
   const defaults: {
     ide: InitIde;
     workflow: WorkflowMode;
+    backend: NonNullable<InitFlags["backend"]>;
     hooks: boolean;
     recipes: string[];
     requirePlanApproval: boolean;
@@ -624,6 +638,7 @@ async function cmdInit(opts: {
   } = {
     ide: "codex",
     workflow: "direct",
+    backend: "local",
     hooks: false,
     recipes: [],
     requirePlanApproval: true,
@@ -632,6 +647,7 @@ async function cmdInit(opts: {
   };
   let ide: InitIde = flags.ide ?? defaults.ide;
   let workflow: WorkflowMode = flags.workflow ?? defaults.workflow;
+  let backend: NonNullable<InitFlags["backend"]> = flags.backend ?? defaults.backend;
   let hooks = flags.hooks ?? defaults.hooks;
   let recipes = flags.recipes ?? defaults.recipes;
   let requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
@@ -660,6 +676,10 @@ async function cmdInit(opts: {
     if (!flags.workflow) {
       const choice = await promptChoice("Select workflow mode", ["direct", "branch_pr"], workflow);
       workflow = choice === "branch_pr" ? "branch_pr" : "direct";
+    }
+    if (!flags.backend) {
+      const choice = await promptChoice("Select task backend", ["local", "redmine"], backend);
+      backend = choice === "redmine" ? "redmine" : "local";
     }
     if (flags.hooks === undefined) {
       hooks = await promptYesNo("Install git hooks?", hooks);
@@ -694,6 +714,7 @@ async function cmdInit(opts: {
   if (flags.yes) {
     ide = flags.ide ?? defaults.ide;
     workflow = flags.workflow ?? defaults.workflow;
+    backend = flags.backend ?? defaults.backend;
     hooks = flags.hooks ?? defaults.hooks;
     recipes = flags.recipes ?? defaults.recipes;
     requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
@@ -726,7 +747,14 @@ async function cmdInit(opts: {
       });
     }
     const configPath = path.join(resolved.agentplaneDir, "config.json");
-    const backendPath = path.join(resolved.agentplaneDir, "backends", "local", "backend.json");
+    const localBackendPath = path.join(resolved.agentplaneDir, "backends", "local", "backend.json");
+    const redmineBackendPath = path.join(
+      resolved.agentplaneDir,
+      "backends",
+      "redmine",
+      "backend.json",
+    );
+    const backendPath = backend === "redmine" ? redmineBackendPath : localBackendPath;
     const initDirs = [
       resolved.agentplaneDir,
       path.join(resolved.agentplaneDir, "tasks"),
@@ -734,8 +762,9 @@ async function cmdInit(opts: {
       path.join(resolved.agentplaneDir, "cache"),
       path.join(resolved.agentplaneDir, "backends"),
       path.join(resolved.agentplaneDir, "backends", "local"),
+      path.join(resolved.agentplaneDir, "backends", "redmine"),
     ];
-    const initFiles = [configPath, backendPath];
+    const initFiles = [configPath, localBackendPath, redmineBackendPath];
     const conflicts: string[] = [];
 
     for (const dir of initDirs) {
@@ -774,23 +803,47 @@ async function cmdInit(opts: {
     await mkdir(path.join(resolved.agentplaneDir, "agents"), { recursive: true });
     await mkdir(path.join(resolved.agentplaneDir, "cache"), { recursive: true });
     await mkdir(path.join(resolved.agentplaneDir, "backends", "local"), { recursive: true });
+    await mkdir(path.join(resolved.agentplaneDir, "backends", "redmine"), { recursive: true });
 
     const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
     setByDottedKey(rawConfig, "base_branch", initBaseBranch);
     setByDottedKey(rawConfig, "workflow_mode", workflow);
+    setByDottedKey(
+      rawConfig,
+      "tasks_backend.config_path",
+      path.relative(resolved.gitRoot, backendPath),
+    );
     setByDottedKey(rawConfig, "agents.approvals.require_plan", String(requirePlanApproval));
     setByDottedKey(rawConfig, "agents.approvals.require_network", String(requireNetworkApproval));
     setByDottedKey(rawConfig, "agents.approvals.require_verify", String(requireVerifyApproval));
     await saveConfig(resolved.agentplaneDir, rawConfig);
 
-    const backendPayload = {
+    const localBackendPayload = {
       id: "local",
       version: 1,
       module: "backend.py",
       class: "LocalBackend",
       settings: { dir: ".agentplane/tasks" },
     };
-    await writeFile(backendPath, `${JSON.stringify(backendPayload, null, 2)}\n`, "utf8");
+    const redmineBackendPayload = {
+      id: "redmine",
+      version: 1,
+      module: "backend.py",
+      class: "RedmineBackend",
+      settings: {
+        url: "https://redmine.example",
+        api_key: "replace-me",
+        project_id: "replace-me",
+        owner_agent: "REDMINE",
+        custom_fields: { task_id: 1 },
+      },
+    };
+    await writeFile(localBackendPath, `${JSON.stringify(localBackendPayload, null, 2)}\n`, "utf8");
+    await writeFile(
+      redmineBackendPath,
+      `${JSON.stringify(redmineBackendPayload, null, 2)}\n`,
+      "utf8",
+    );
 
     const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
     const installPaths: string[] = [
