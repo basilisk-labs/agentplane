@@ -946,6 +946,33 @@ describe("commands/workflow", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
+  it("verify runs commands from Verify Steps in task README", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4A";
+    await addTask(root, taskId);
+    await cmdTaskDocSet({
+      cwd: root,
+      taskId,
+      args: [
+        "--section",
+        "Verify Steps",
+        "--text",
+        "cmd: echo ok > verify-readme.txt\n- Check output manually",
+      ],
+    });
+    await gitCommitFile(root, "verify-base.txt", "chore: verify base");
+
+    const code = await cmdVerify({
+      cwd: root,
+      taskId,
+      skipIfUnchanged: false,
+      quiet: true,
+      require: false,
+    });
+    expect(code).toBe(0);
+    expect(await readFile(path.join(root, "verify-readme.txt"), "utf8")).toContain("ok");
+  });
+
   it("verify runs when working tree is dirty with skipIfUnchanged and validates cwd/log paths", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4";

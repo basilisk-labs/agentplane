@@ -1633,6 +1633,62 @@ export function dedupeStrings(items: string[]): string[] {
   return out;
 }
 
+function extractDocSection(doc: string, sectionName: string): string | null {
+  const target = normalizeDocSectionName(sectionName);
+  if (!target) return null;
+  const lines = doc.replaceAll("\r\n", "\n").split("\n");
+  let capturing = false;
+  const out: string[] = [];
+
+  for (const line of lines) {
+    const match = /^##\s+(.*)$/.exec(line.trim());
+    if (match) {
+      const key = normalizeDocSectionName(match[1] ?? "");
+      if (capturing) break;
+      capturing = key === target;
+      continue;
+    }
+    if (capturing) out.push(line);
+  }
+
+  if (!capturing) return null;
+  return out.join("\n").trimEnd();
+}
+
+function stripListMarker(line: string): string {
+  return line.replace(/^(?:[-*]|\d+\.)\s+/, "");
+}
+
+function parseVerifyStepsFromDoc(doc: string): { commands: string[]; steps: string[] } {
+  const section = extractDocSection(doc, "Verify Steps");
+  if (!section) return { commands: [], steps: [] };
+
+  const commands: string[] = [];
+  const steps: string[] = [];
+  const lines = section.split("\n");
+  let inFence = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith("```")) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const normalized = stripListMarker(trimmed);
+    const lower = normalized.toLowerCase();
+    if (lower.startsWith("cmd:")) {
+      const command = normalized.slice(4).trim();
+      if (command) commands.push(command);
+      continue;
+    }
+    steps.push(normalized);
+  }
+
+  return { commands, steps };
+}
+
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value
@@ -3237,6 +3293,9 @@ export async function cmdVerify(opts: {
       taskId: opts.taskId,
     });
 
+    const docText = typeof task.doc === "string" ? task.doc : "";
+    const { commands: docCommands, steps: docSteps } = parseVerifyStepsFromDoc(docText);
+
     const rawVerify = task.verify;
     if (rawVerify !== undefined && rawVerify !== null && !Array.isArray(rawVerify)) {
       throw new CliError({
@@ -3245,12 +3304,20 @@ export async function cmdVerify(opts: {
         message: `${task.id}: verify must be a list of strings`,
       });
     }
-    const commands = Array.isArray(rawVerify)
+    const taskCommands = Array.isArray(rawVerify)
       ? rawVerify
           .filter((item): item is string => typeof item === "string")
           .map((item) => item.trim())
           .filter(Boolean)
       : [];
+    const commands = docCommands.length > 0 ? docCommands : taskCommands;
+
+    if (docSteps.length > 0 && !opts.quiet) {
+      process.stdout.write(`${infoMessage(`${task.id}: manual verify steps:`)}\n`);
+      for (const step of docSteps) {
+        process.stdout.write(`- ${step}\n`);
+      }
+    }
 
     if (commands.length === 0) {
       if (opts.require) {
