@@ -53,6 +53,7 @@ import {
   validateBundledRecipesSelection,
 } from "./cli/recipes-bundled.js";
 import { exitCodeForError } from "./cli/exit-codes.js";
+import { validateArchive } from "./cli/archive.js";
 import {
   fetchLatestNpmVersion,
   readUpdateCheckCache,
@@ -1305,6 +1306,16 @@ async function extractArchive(archivePath: string, destDir: string): Promise<voi
       exitCode: 2,
       code: "E_USAGE",
       message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
+    });
+  }
+  const issues = await validateArchive(archivePath, archiveType);
+  if (issues.length > 0) {
+    const first = issues[0];
+    const suffix = issues.length > 1 ? ` (+${issues.length - 1} more)` : "";
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Unsafe archive entry: ${first.entry} (${first.reason})${suffix}`,
     });
   }
   if (archiveType === "tar") {
