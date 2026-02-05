@@ -15,7 +15,7 @@ This document defines:
 
 - **Recipe**: a versioned bundle of agents, tools, scenarios, and assets.
 - **Installed recipe**: stored under `~/.agentplane/recipes/<id>/<version>/` and tracked in `~/.agentplane/recipes.json`.
-- **Official catalog**: a remote `index.json` (GitHub Releases-based) fetched only by explicit commands.
+- **Official catalog**: a remote `index.json` plus `index.json.sig`, fetched only by explicit commands and verified by signature.
 
 ## 2) Built-in recipes and catalogs
 
@@ -23,9 +23,9 @@ Recipes are opt-in. The CLI does not auto-install anything.
 
 - **Bundled catalog**: compiled into the CLI at `packages/agentplane/src/recipes/bundled-recipes.ts`.
   - In this repo it is empty (as of **January 30, 2026**), so there are no built-in recipes.
-- **Official catalog**: lives in the `agentplane-recipes` repository (`index.json`).
+- **Official catalog**: lives in the `agentplane-recipes` repository (`index.json` + `index.json.sig`).
   - Use `agentplane recipes list-remote` and `agentplane recipes install --name <id>` to discover/install.
-  - The catalog can change over time; always check the remote index for the current list.
+  - The catalog can change over time; the CLI only accepts it with a valid signature.
 
 Current official recipes (January 30, 2026):
 
@@ -138,6 +138,7 @@ Installing a recipe creates/updates:
 - `~/.agentplane/recipes/<id>/<version>/...` (global recipe contents; overridable via `AGENTPLANE_HOME`)
 - `~/.agentplane/recipes.json` (installed recipes list with full metadata)
 - `~/.agentplane/recipes-index.json` (cached remote catalog for `recipes list-remote` and `recipes install --name`)
+- `~/.agentplane/recipes-index.json.sig` (signature for cached catalog)
 
 Example `recipes.json`:
 

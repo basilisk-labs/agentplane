@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { createPublicKey, verify } from "node:crypto";
 import {
   cp,
   mkdir,
@@ -20,7 +21,7 @@ import { extractArchive } from "../cli/archive.js";
 import { sha256File } from "../cli/checksum.js";
 import { mapCoreError } from "../cli/error-map.js";
 import { fileExists, getPathKind } from "../cli/fs-utils.js";
-import { downloadToFile, fetchJson } from "../cli/http.js";
+import { downloadToFile, fetchJson, fetchText } from "../cli/http.js";
 import {
   emptyStateMessage,
   infoMessage,
@@ -110,11 +111,19 @@ type RecipesIndex = {
   }[];
 };
 
+type RecipesIndexSignature = {
+  schema_version: 1;
+  key_id: string;
+  signature: string;
+  algorithm?: string;
+};
+
 const INSTALLED_RECIPES_NAME = "recipes.json";
 const RECIPES_DIR_NAME = "recipes";
 const RECIPES_SCENARIOS_DIR_NAME = "scenarios";
 const RECIPES_SCENARIOS_INDEX_NAME = "scenarios.json";
 const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";
+const RECIPES_REMOTE_INDEX_SIG_NAME = "recipes-index.json.sig";
 const RECIPE_USAGE =
   "Usage: agentplane recipes <list|info|explain|install|remove|list-remote|cache> [args]";
 const RECIPE_USAGE_EXAMPLE = "agentplane recipes list";
@@ -136,6 +145,12 @@ const RECIPE_LIST_REMOTE_USAGE =
 const RECIPE_LIST_REMOTE_USAGE_EXAMPLE = "agentplane recipes list-remote --refresh";
 const DEFAULT_RECIPES_INDEX_URL =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
+const RECIPES_INDEX_PUBLIC_KEYS_ENV = "AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS";
+const RECIPES_INDEX_PUBLIC_KEYS: Record<string, string> = {
+  "2026-02": `-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAeRWdXKVZtz0v+bnQS3zb24jMfa0gflsRUHQkeJkji6E=
+-----END PUBLIC KEY-----`,
+};
 const RECIPE_CONFLICT_MODES = ["fail", "rename", "overwrite"] as const;
 const AGENTPLANE_HOME_ENV = "AGENTPLANE_HOME";
 const GLOBAL_RECIPES_DIR_NAME = "recipes";
@@ -352,6 +367,55 @@ function validateInstalledRecipesFile(raw: unknown): InstalledRecipesFile {
 function sortInstalledRecipes(file: InstalledRecipesFile): InstalledRecipesFile {
   const recipes = [...file.recipes].toSorted((a, b) => a.id.localeCompare(b.id));
   return { schema_version: 1, updated_at: file.updated_at, recipes };
+}
+
+function loadRecipesIndexPublicKeys(): Record<string, string> {
+  const raw = process.env[RECIPES_INDEX_PUBLIC_KEYS_ENV];
+  if (!raw) return { ...RECIPES_INDEX_PUBLIC_KEYS };
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const merged: Record<string, string> = { ...RECIPES_INDEX_PUBLIC_KEYS };
+    for (const [key, value] of Object.entries(parsed)) {
+      if (typeof value === "string" && value.trim()) merged[key] = value.trim();
+    }
+    return merged;
+  } catch {
+    return { ...RECIPES_INDEX_PUBLIC_KEYS };
+  }
+}
+
+function validateRecipesIndexSignature(raw: unknown): RecipesIndexSignature {
+  if (!isRecord(raw)) throw new Error(invalidFieldMessage("recipes index signature", "object"));
+  if (raw.schema_version !== 1) {
+    throw new Error(invalidFieldMessage("recipes index signature.schema_version", "1"));
+  }
+  const keyId = typeof raw.key_id === "string" ? raw.key_id.trim() : "";
+  const signature = typeof raw.signature === "string" ? raw.signature.trim() : "";
+  if (!keyId || !signature) {
+    throw new Error(invalidFieldMessage("recipes index signature", "key_id, signature"));
+  }
+  const algorithm = typeof raw.algorithm === "string" ? raw.algorithm.trim() : undefined;
+  return { schema_version: 1, key_id: keyId, signature, algorithm };
+}
+
+function verifyRecipesIndexSignature(indexText: string, signature: RecipesIndexSignature): void {
+  if (signature.algorithm && signature.algorithm !== "ed25519") {
+    throw new Error(invalidFieldMessage("recipes index signature.algorithm", "ed25519"));
+  }
+  const keys = loadRecipesIndexPublicKeys();
+  const publicKey = keys[signature.key_id];
+  if (!publicKey) {
+    throw new Error(invalidFieldMessage("recipes index signature.key_id", "known key id"));
+  }
+  const key = createPublicKey(publicKey);
+  const ok = verify(null, Buffer.from(indexText), key, Buffer.from(signature.signature, "base64"));
+  if (!ok) {
+    throw new Error("Invalid signature for recipes index");
+  }
+}
+
+function signatureSourceForIndex(source: string): string {
+  return `${source}.sig`;
 }
 
 function validateRecipesIndex(raw: unknown): RecipesIndex {
@@ -917,12 +981,24 @@ function isHttpUrl(value: string): boolean {
   return value.startsWith("http://") || value.startsWith("https://");
 }
 
-async function readRecipesIndexSource(source: string, cwd: string): Promise<unknown> {
+async function readRecipesIndexText(source: string, cwd: string): Promise<string> {
   if (isHttpUrl(source)) {
-    return await fetchJson(source);
+    return await fetchText(source);
   }
-  const rawText = await readFile(path.resolve(cwd, source), "utf8");
-  return JSON.parse(rawText) as unknown;
+  return await readFile(path.resolve(cwd, source), "utf8");
+}
+
+async function readRecipesIndexSignature(
+  source: string,
+  cwd: string,
+): Promise<RecipesIndexSignature> {
+  const sigSource = signatureSourceForIndex(source);
+  if (isHttpUrl(sigSource)) {
+    const raw = await fetchJson(sigSource);
+    return validateRecipesIndexSignature(raw);
+  }
+  const rawText = await readFile(path.resolve(cwd, sigSource), "utf8");
+  return validateRecipesIndexSignature(JSON.parse(rawText) as unknown);
 }
 
 async function loadRecipesRemoteIndex(opts: {
@@ -931,16 +1007,27 @@ async function loadRecipesRemoteIndex(opts: {
   refresh: boolean;
 }): Promise<RecipesIndex> {
   const cachePath = resolveRecipesIndexCachePath();
+  const cacheSigPath = path.join(path.dirname(cachePath), RECIPES_REMOTE_INDEX_SIG_NAME);
   const cacheDir = path.dirname(cachePath);
   let rawIndex: unknown;
 
   if (opts.refresh || !(await fileExists(cachePath))) {
     const source = opts.source ?? DEFAULT_RECIPES_INDEX_URL;
-    rawIndex = await readRecipesIndexSource(source, opts.cwd);
+    const indexText = await readRecipesIndexText(source, opts.cwd);
+    const signature = await readRecipesIndexSignature(source, opts.cwd);
+    verifyRecipesIndexSignature(indexText, signature);
+    rawIndex = JSON.parse(indexText) as unknown;
     await mkdir(cacheDir, { recursive: true });
-    await writeFile(cachePath, `${JSON.stringify(rawIndex, null, 2)}\n`, "utf8");
+    await writeFile(cachePath, indexText, "utf8");
+    await writeFile(cacheSigPath, `${JSON.stringify(signature, null, 2)}\n`, "utf8");
   } else {
-    rawIndex = JSON.parse(await readFile(cachePath, "utf8")) as unknown;
+    const [indexText, sigText] = await Promise.all([
+      readFile(cachePath, "utf8"),
+      readFile(cacheSigPath, "utf8"),
+    ]);
+    const signature = validateRecipesIndexSignature(JSON.parse(sigText) as unknown);
+    verifyRecipesIndexSignature(indexText, signature);
+    rawIndex = JSON.parse(indexText) as unknown;
   }
 
   return validateRecipesIndex(rawIndex);

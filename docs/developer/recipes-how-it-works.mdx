@@ -16,6 +16,7 @@ Key paths the CLI reads/writes:
 - `~/.agentplane/recipes/<id>/<version>/` — global recipe contents (overridable via `AGENTPLANE_HOME`).
 - `~/.agentplane/recipes.json` — installed recipes metadata (full manifest + tags).
 - `~/.agentplane/recipes-index.json` — cached remote catalog (`recipes list-remote`).
+- `~/.agentplane/recipes-index.json.sig` — cached signature for the remote catalog.
 - `.agentplane/recipes/<id>/runs/<timestamp>-<scenario>/` — scenario run artifacts.
 - `.agentplane/recipes-cache/` — per-project cache for recipe runtime data.
 - `~/.agentplane/recipes/<id>/<version>/scenarios.json` — scenario summary index.
@@ -169,7 +170,8 @@ cannot execute scenarios.
 `agentplane recipes list-remote [--refresh] [--index <path|url>]`:
 
 - Loads the remote index and caches it at `~/.agentplane/recipes-index.json`.
-- Without `--refresh`, the cached copy is reused if present.
+- Loads and verifies the matching signature (`recipes-index.json.sig`).
+- Without `--refresh`, the cached copy is reused if present (with its signature).
 - For each recipe, it prints the **latest** version (lexicographically sorted).
 
 When `recipes install --name` is used, it reads the same cached index (unless the

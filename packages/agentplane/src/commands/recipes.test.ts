@@ -1,3 +1,4 @@
+import { generateKeyPairSync, sign } from "node:crypto";
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -14,7 +15,27 @@ import {
 } from "../cli/run-cli.test-helpers.js";
 
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
+const originalRecipesKeys = process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS;
 let tempHome: string | null = null;
+let testKeyId = "test-key";
+let testPrivateKey: ReturnType<typeof generateKeyPairSync>["privateKey"] | null = null;
+
+function signIndexPayload(indexText: string): {
+  schema_version: 1;
+  key_id: string;
+  signature: string;
+} {
+  if (!testPrivateKey) throw new Error("test private key not set");
+  const signature = sign(null, Buffer.from(indexText), testPrivateKey).toString("base64");
+  return { schema_version: 1, key_id: testKeyId, signature };
+}
+
+async function writeSignedIndex(indexPath: string, payload: unknown): Promise<void> {
+  const indexText = JSON.stringify(payload, null, 2);
+  await writeFile(indexPath, indexText, "utf8");
+  const signature = signIndexPayload(indexText);
+  await writeFile(`${indexPath}.sig`, JSON.stringify(signature, null, 2), "utf8");
+}
 
 async function writeInstalledRecipes(recipes: unknown[]): Promise<void> {
   if (!tempHome) throw new Error("temp home not set");
@@ -74,6 +95,10 @@ describe("commands/recipes", () => {
   beforeEach(async () => {
     tempHome = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-test-"));
     process.env.AGENTPLANE_HOME = tempHome;
+    const { publicKey, privateKey } = generateKeyPairSync("ed25519");
+    testPrivateKey = privateKey;
+    const publicPem = publicKey.export({ type: "spki", format: "pem" }).toString();
+    process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS = JSON.stringify({ [testKeyId]: publicPem });
   });
 
   afterEach(async () => {
@@ -86,6 +111,12 @@ describe("commands/recipes", () => {
     } else {
       process.env.AGENTPLANE_HOME = originalAgentplaneHome;
     }
+    if (originalRecipesKeys === undefined) {
+      delete process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS;
+    } else {
+      process.env.AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS = originalRecipesKeys;
+    }
+    testPrivateKey = null;
   });
 
   it("rejects missing recipes subcommand", async () => {
@@ -146,11 +177,23 @@ describe("commands/recipes", () => {
   it("rejects invalid recipes index data", async () => {
     const cwd = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-cwd-"));
     const indexPath = path.join(cwd, "recipes-index.json");
-    await writeFile(
-      indexPath,
-      JSON.stringify({ schema_version: 1, recipes: [{ id: "viewer" }] }, null, 2),
-      "utf8",
-    );
+    await writeSignedIndex(indexPath, { schema_version: 1, recipes: [{ id: "viewer" }] });
+
+    await expect(
+      cmdRecipes({
+        cwd,
+        args: ["--index", indexPath, "--refresh"],
+        command: "list-remote",
+      }),
+    ).rejects.toMatchObject({ code: "E_IO" });
+
+    await rm(cwd, { recursive: true, force: true });
+  });
+
+  it("rejects unsigned recipes index", async () => {
+    const cwd = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-cwd-"));
+    const indexPath = path.join(cwd, "recipes-index.json");
+    await writeFile(indexPath, JSON.stringify({ schema_version: 1, recipes: [] }, null, 2), "utf8");
 
     await expect(
       cmdRecipes({
@@ -337,7 +380,7 @@ describe("commands/recipes", () => {
   it("rejects install from index when recipe is missing", async () => {
     const cwd = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-cwd-"));
     const indexPath = path.join(cwd, "recipes-index.json");
-    await writeFile(indexPath, JSON.stringify({ schema_version: 1, recipes: [] }, null, 2), "utf8");
+    await writeSignedIndex(indexPath, { schema_version: 1, recipes: [] });
 
     await expect(
       cmdRecipes({
@@ -357,25 +400,17 @@ describe("commands/recipes", () => {
     await writeFile(target, await readFile(archivePath));
 
     const indexPath = path.join(cwd, "recipes-index.json");
-    await writeFile(
-      indexPath,
-      JSON.stringify(
+    await writeSignedIndex(indexPath, {
+      schema_version: 1,
+      recipes: [
         {
-          schema_version: 1,
-          recipes: [
-            {
-              id: "viewer",
-              summary: "Preview tasks",
-              description: "Preview tasks",
-              versions: [{ version: "1.0.0", url: "recipe.tar.gz", sha256: "bad" }],
-            },
-          ],
+          id: "viewer",
+          summary: "Preview tasks",
+          description: "Preview tasks",
+          versions: [{ version: "1.0.0", url: "recipe.tar.gz", sha256: "bad" }],
         },
-        null,
-        2,
-      ),
-      "utf8",
-    );
+      ],
+    });
 
     await expect(
       cmdRecipes({
@@ -801,25 +836,17 @@ describe("commands/recipes", () => {
   it("lists remote recipes from a local index", async () => {
     const cwd = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipes-cwd-"));
     const indexPath = path.join(cwd, "recipes-index.json");
-    await writeFile(
-      indexPath,
-      JSON.stringify(
+    await writeSignedIndex(indexPath, {
+      schema_version: 1,
+      recipes: [
         {
-          schema_version: 1,
-          recipes: [
-            {
-              id: "viewer",
-              summary: "Preview tasks",
-              description: "Preview tasks",
-              versions: [{ version: "1.0.0", url: "https://example.test", sha256: "abc" }],
-            },
-          ],
+          id: "viewer",
+          summary: "Preview tasks",
+          description: "Preview tasks",
+          versions: [{ version: "1.0.0", url: "https://example.test", sha256: "abc" }],
         },
-        null,
-        2,
-      ),
-      "utf8",
-    );
+      ],
+    });
 
     const io = captureStdIO();
 
@@ -838,22 +865,35 @@ describe("commands/recipes", () => {
   });
 
   it("lists remote recipes from an http index", async () => {
-    const fetchMock = vi.fn(() => ({
-      ok: true,
-      status: 200,
-      statusText: "OK",
-      json: () => ({
-        schema_version: 1,
-        recipes: [
-          {
-            id: "viewer",
-            summary: "Preview tasks",
-            description: "Preview tasks",
-            versions: [{ version: "1.0.0", url: "https://example.test", sha256: "abc" }],
-          },
-        ],
-      }),
-    }));
+    const indexPayload = {
+      schema_version: 1,
+      recipes: [
+        {
+          id: "viewer",
+          summary: "Preview tasks",
+          description: "Preview tasks",
+          versions: [{ version: "1.0.0", url: "https://example.test", sha256: "abc" }],
+        },
+      ],
+    };
+    const indexText = JSON.stringify(indexPayload, null, 2);
+    const signature = signIndexPayload(indexText);
+    const fetchMock = vi.fn((url: string) => {
+      if (url.endsWith(".sig")) {
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          statusText: "OK",
+          json: () => signature,
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        statusText: "OK",
+        text: () => Promise.resolve(indexText),
+      });
+    });
     vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
 
     const io = captureStdIO();
@@ -869,7 +909,7 @@ describe("commands/recipes", () => {
     io.restore();
     vi.unstubAllGlobals();
 
-    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(io.stdout).toContain("viewer@1.0.0");
   });
 
