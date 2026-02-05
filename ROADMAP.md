@@ -378,7 +378,11 @@ Choose and enforce a strategy:
 
 # Epic F: Remove task-doc duplication and ID generation (P1)
 
+Status: DONE (2026-02-05, tasks 202602051316-2XC43Y, 202602051316-J8K6A5)
+
 ## AP-050 — Move doc/markdown operations to `core` and reuse everywhere
+
+Status: DONE (2026-02-05, task 202602051316-2XC43Y)
 
 **Problem**
 Identical functions (markdown section normalization, combined heading split, set section, ensure metadata) are duplicated in:
@@ -411,6 +415,8 @@ Create `task-doc.ts` in `@agentplaneorg/core` as the single implementation:
 ---
 
 ## AP-051 — Unify task id generation (crypto instead of Math.random)
+
+Status: DONE (2026-02-05, task 202602051316-J8K6A5)
 
 **Problem**
 `core/task-store.ts` uses `Math.random`, while `task-backend.ts` uses `crypto.randomInt`. This impacts quality and consistency.
