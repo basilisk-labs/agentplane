@@ -607,13 +607,13 @@ export class RedmineBackend implements TaskBackend {
   reverseStatus = new Map<number, string>();
 
   constructor(settings: RedmineSettings, opts: { cache?: LocalBackend | null }) {
-    const envUrl = firstNonEmptyString(process.env.CODEXSWARM_REDMINE_URL);
-    const envApiKey = firstNonEmptyString(process.env.CODEXSWARM_REDMINE_API_KEY);
-    const envProjectId = firstNonEmptyString(process.env.CODEXSWARM_REDMINE_PROJECT_ID);
-    const envAssignee = (process.env.CODEXSWARM_REDMINE_ASSIGNEE_ID ?? "").trim();
+    const envUrl = firstNonEmptyString(process.env.AGENTPLANE_REDMINE_URL);
+    const envApiKey = firstNonEmptyString(process.env.AGENTPLANE_REDMINE_API_KEY);
+    const envProjectId = firstNonEmptyString(process.env.AGENTPLANE_REDMINE_PROJECT_ID);
+    const envAssignee = (process.env.AGENTPLANE_REDMINE_ASSIGNEE_ID ?? "").trim();
     const envOwner = firstNonEmptyString(
-      process.env.CODEXSWARM_REDMINE_OWNER,
-      process.env.CODEXSWARM_REDMINE_OWNER_AGENT,
+      process.env.AGENTPLANE_REDMINE_OWNER,
+      process.env.AGENTPLANE_REDMINE_OWNER_AGENT,
     );
 
     this.baseUrl = firstNonEmptyString(envUrl, settings.url).replaceAll(/\/+$/gu, "");

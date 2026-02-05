@@ -2117,7 +2117,7 @@ export async function runCli(argv: string[]): Promise<number> {
         if (taskId?.startsWith("-")) {
           startArgs = [taskId, ...args];
         }
-        taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+        taskId = process.env.AGENTPLANE_TASK_ID ?? "";
       }
       if (!taskId) {
         throw new CliError({
@@ -2259,7 +2259,7 @@ export async function runCli(argv: string[]): Promise<number> {
         if (taskId?.startsWith("-")) {
           blockArgs = [taskId, ...args];
         }
-        taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+        taskId = process.env.AGENTPLANE_TASK_ID ?? "";
       }
       if (!taskId) {
         throw new CliError({
@@ -2411,7 +2411,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
       const flagArgs = finishArgs.slice(argIndex);
       if (taskIds.length === 0) {
-        const envTaskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+        const envTaskId = process.env.AGENTPLANE_TASK_ID ?? "";
         if (envTaskId) taskIds.push(envTaskId);
       }
       if (taskIds.length === 0) {
@@ -2626,7 +2626,7 @@ export async function runCli(argv: string[]): Promise<number> {
         if (taskId?.startsWith("-")) {
           verifyArgs = [taskId, ...args];
         }
-        taskId = process.env.AGENT_PLANE_TASK_ID ?? "";
+        taskId = process.env.AGENTPLANE_TASK_ID ?? "";
       }
       if (!taskId) {
         throw new CliError({

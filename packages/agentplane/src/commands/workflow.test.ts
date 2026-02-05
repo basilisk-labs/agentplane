@@ -1232,8 +1232,8 @@ describe("commands/workflow", () => {
 
     const messagePath = path.join(root, "COMMIT_MSG");
     await writeFile(messagePath, "✨ A1B2 update\n\nBody\n", "utf8");
-    const prevTaskId = process.env.AGENT_PLANE_TASK_ID;
-    process.env.AGENT_PLANE_TASK_ID = "202602050900-A1B2";
+    const prevTaskId = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = "202602050900-A1B2";
     try {
       const code = await cmdHooksRun({
         cwd: root,
@@ -1243,9 +1243,9 @@ describe("commands/workflow", () => {
       expect(code).toBe(0);
     } finally {
       if (prevTaskId === undefined) {
-        delete process.env.AGENT_PLANE_TASK_ID;
+        delete process.env.AGENTPLANE_TASK_ID;
       } else {
-        process.env.AGENT_PLANE_TASK_ID = prevTaskId;
+        process.env.AGENTPLANE_TASK_ID = prevTaskId;
       }
     }
 
@@ -1255,17 +1255,17 @@ describe("commands/workflow", () => {
 
     await cmdTaskExport({ cwd: root });
     await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
-    const prevAllowTasks = process.env.AGENT_PLANE_ALLOW_TASKS;
-    delete process.env.AGENT_PLANE_ALLOW_TASKS;
+    const prevAllowTasks = process.env.AGENTPLANE_ALLOW_TASKS;
+    delete process.env.AGENTPLANE_ALLOW_TASKS;
     try {
       await expect(cmdHooksRun({ cwd: root, hook: "pre-commit", args: [] })).rejects.toMatchObject({
         code: "E_GIT",
       });
     } finally {
       if (prevAllowTasks === undefined) {
-        delete process.env.AGENT_PLANE_ALLOW_TASKS;
+        delete process.env.AGENTPLANE_ALLOW_TASKS;
       } else {
-        process.env.AGENT_PLANE_ALLOW_TASKS = prevAllowTasks;
+        process.env.AGENTPLANE_ALLOW_TASKS = prevAllowTasks;
       }
     }
   });
