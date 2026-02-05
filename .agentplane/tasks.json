@@ -14635,12 +14635,49 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nRefine ROADMAP AP-071 to standardize system backend modules for future integration.\n\n## Scope\n\nUpdate AP-071 section text in ROADMAP.md to focus on standardizing system backend modules.\n\n## Risks\n\nLow risk; ensure AP-071 status and wording stay consistent with Epic H completion.\n\n## Verify Steps\n\n- Open ROADMAP.md and confirm AP-071 wording updated for backend module standardization.\n\n## Verification\n\nVerified on 2026-02-05: ROADMAP.md AP-071 updated to backend module standardization wording.\n\n## Rollback Plan\n\nRevert AP-071 wording in ROADMAP.md to prior text."
+    },
+    {
+      "id": "202602051439-H7JERJ",
+      "title": "AP-071: Standardize backend config format",
+      "description": "Implement standardized backend config shape and document format; treat module/class as legacy.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "backend",
+        "docs"
+      ],
+      "verify": [
+        "bun run lint",
+        "bun run test:fast"
+      ],
+      "commit": {
+        "hash": "bed62fcdb343c1d09b00839a0206a7da84f383ac",
+        "message": "✨ 202602051439-H7JERJ standardize backend config"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: standardize backend config format, ignore legacy module/class, update docs/tests."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: bun run lint; bun run test:fast; agentplane verify 202602051439-H7JERJ. Summary: standardized backend config shape and docs; legacy module/class ignored."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T14:43:18.238Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nStandardize backend config shape (id/version/settings), treat module/class as legacy, and document the format.\n\n## Scope\n\nAdd backend config validation in loadTaskBackend, ignore module/class legacy fields, update docs/user/backends.mdx with standardized format, add tests.\n\n## Risks\n\nPotentially stricter config validation could reject existing configs; keep validation minimal and backward-tolerant.\n\n## Verify Steps\n\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Confirm loadTaskBackend accepts standardized config and ignores legacy module/class fields.\n\n## Verification\n\n- bun run lint\n- bun run test:fast\n- node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\nStatus: pass\nVerified at: 2026-02-05T14:43:05.971Z\nVerified sha: bed62fcdb343c1d09b00839a0206a7da84f383ac\n\nCommands:\n- bun run lint\n- bun run test:fast\n\nManual steps:\n- Run bun run lint.\\n- Run bun run test:fast.\\n- Confirm loadTaskBackend accepts standardized config and ignores legacy module/class fields.\n\n## Rollback Plan\n\nRevert backend config validation and docs changes if compatibility issues appear."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "212edf7d8ae7ac5d196d309100fc8a9dfebdb2632bb90f16f801f7e3b55d1cf0"
+    "checksum": "9f361f097c716a7eaf06d0341ec4b481fd30ba50035ef5e60466f20efa585c6e"
   }
 }
