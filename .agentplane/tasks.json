@@ -13506,12 +13506,45 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nExtract shared CLI utilities into cli/ modules and simplify run-cli.ts.\n\n## Scope\n\nMove shared helpers from run-cli.ts into cli/ modules; keep behavior unchanged; update imports and tests as needed.\n\n## Risks\n\nRisk: refactor breaks CLI wiring; mitigate with existing run-cli tests and pre-commit hooks.\n\n## Verify Steps\n\nRun pre-commit hooks and run-cli test suites; confirm no behavior regressions.\n\n## Rollback Plan\n\nRevert the refactor commit(s) to restore the monolithic run-cli.ts implementation."
+    },
+    {
+      "id": "202602050746-B15AVK",
+      "title": "Raise coverage and fix run-cli test warnings",
+      "description": "Increase test coverage for packages/agentplane (lines>=80, branches>=70), add tests for recent CLI modules, and fix warnings in run-cli tests.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "testing"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "8b5eef4bdb8c0ce08f7d85f9e52ba31f3d15ff63",
+        "message": "✅ B15AVK test coverage and quiet output"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: raising coverage for packages/agentplane and removing run-cli test warnings; will add tests for recent CLI modules, run coverage and pre-commit hooks, then document and close the task."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:agentplane; bun run coverage; node packages/agentplane/bin/agentplane.js hooks run pre-commit"
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T08:33:14.221Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nRaised test coverage past the global branch threshold and silenced noisy test output by adding targeted tests and stdout/stderr capture helpers.\n\n## Scope\n\nAdded fs-utils and update-check tests, expanded silent CLI helpers in run-cli tests, and muted task-backend/recipes test output while keeping command behavior unchanged.\n\n## Risks\n\nLow risk. Test-only output capture could hide useful debug logs, so failures may show less context if the capture is too broad.\n\n## Verify Steps\n\n1. bun run test:agentplane\n2. bun run coverage\n3. node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Rollback Plan\n\nRevert the commit for this task or restore the prior versions of the modified test files and rerun the test suite."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "6d1641be649199ab97bf308102dd722a72d32270eba99ba448f6994698511b5b"
+    "checksum": "65f55d5416731523bb06eab7169083aded9dd9104029e9c6869c521813238b72"
   }
 }
