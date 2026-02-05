@@ -1,17 +1,18 @@
 ---
 id: "202602050554-8DBHJY"
 title: "AP-010a: Update-check cache model"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["roadmap", "cli", "update-check", "cache"]
 verify: []
-commit: null
+commit: { hash: "a30ee95bf927eb28c22951e02315a34f7037a47d", message: "🧩 8DBHJY update-check cache utilities" }
 comments:
   - { author: "CODER", body: "Start: implement update-check cache model and persistence utilities." }
+  - { author: "CODER", body: "Verified: update-check cache utilities and TTL tests added; pre-commit hooks passed." }
 doc_version: 2
-doc_updated_at: "2026-02-05T05:56:14.902Z"
+doc_updated_at: "2026-02-05T06:00:41.246Z"
 doc_updated_by: "CODER"
 description: "Implement update-check cache read/write, TTL, and atomic writes."
 id_source: "generated"

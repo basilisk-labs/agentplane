@@ -13124,7 +13124,7 @@
       "id": "202602050554-8DBHJY",
       "title": "AP-010a: Update-check cache model",
       "description": "Implement update-check cache read/write, TTL, and atomic writes.",
-      "status": "DOING",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -13135,15 +13135,22 @@
         "cache"
       ],
       "verify": [],
-      "commit": null,
+      "commit": {
+        "hash": "a30ee95bf927eb28c22951e02315a34f7037a47d",
+        "message": "🧩 8DBHJY update-check cache utilities"
+      },
       "comments": [
         {
           "author": "CODER",
           "body": "Start: implement update-check cache model and persistence utilities."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: update-check cache utilities and TTL tests added; pre-commit hooks passed."
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T05:56:14.902Z",
+      "doc_updated_at": "2026-02-05T06:00:41.246Z",
       "doc_updated_by": "CODER",
       "dirty": false,
       "id_source": "generated",
@@ -13234,6 +13241,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "929385a699cfce565316e5c0b7e1e6da3f8fcfd4367e12d2344fb5ab99e1f75c"
+    "checksum": "53d395da1580e8c8a63309970aae081e6e04497df77a1018edde7e84f8dcbc2f"
   }
 }
