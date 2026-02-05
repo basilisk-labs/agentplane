@@ -13882,12 +13882,161 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nReorganized packages/agentplane and packages/core source trees into domain folders (cli/agents/backends/shared, config/git/tasks, etc.) and updated imports, scripts, and docs.\n\n## Scope\n\nMoved files under packages/agentplane/src and packages/core/src, adjusted imports, test paths, and updated docs/ROADMAP references.\n\n## Risks\n\nMedium risk: large file moves may break paths if any import was missed; mitigated by lint and test runs.\n\n## Verify Steps\n\n./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit\nbun run format:check\nbun run lint\nbun run test:fast\n\n## Rollback Plan\n\nRevert commit 7d1a2099737c to restore original structure."
+    },
+    {
+      "id": "202602051201-695YXF",
+      "title": "Config/init: require verify confirmation + add Verification section",
+      "description": "Add config flag to require verify confirmation, enable it during init, and add Verification to task README section schema/templates.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [
+        "202602051201-F8YMCF"
+      ],
+      "tags": [
+        "workflow",
+        "config",
+        "init",
+        "docs",
+        "frontend"
+      ],
+      "verify": [
+        "bun run test:fast"
+      ],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T12:01:51.517Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602051201-7KW7RP",
+      "title": "Verify: write Verification section and fail-back workflow",
+      "description": "Write Verification results to task README and return task to DOING with comments on failure.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [
+        "202602051201-F8YMCF"
+      ],
+      "tags": [
+        "workflow",
+        "tasks",
+        "verify",
+        "code"
+      ],
+      "verify": [
+        "bun run test:fast"
+      ],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T12:01:45.554Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602051201-8C5SHH",
+      "title": "AP-020c: zip validation via yauzl",
+      "description": "Replace/extend zip validation to use yauzl for safe entry inspection (zip-slip prevention) across updates/recipes.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [
+        "202602051201-MNK3HD"
+      ],
+      "tags": [
+        "roadmap",
+        "security",
+        "archive",
+        "backend"
+      ],
+      "verify": [
+        "bun run test:fast"
+      ],
+      "commit": {
+        "hash": "4c71f6e7f028d30b66722e2944e917817abc7865",
+        "message": "🛡️ 8C5SHH yauzl zip validation"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: auditing current archive validation (tar/unzip), recipe/upgrade entry points, and tests before switching zip handling to yauzl."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:fast; bun run lint; bun run test:fast (post-lint)."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T12:09:10.752Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nSwitched zip entry validation to yauzl (zip-slip/symlink detection) and added yauzl dependencies.\n\n## Scope\n\nUpdated archive validation to use yauzl for zip entry inspection; kept tar handling via tar/unzip; added @types/yauzl; retained existing extract flow.\n\n## Risks\n\nZip symlink detection relies on externalFileAttributes; archives without proper attributes may bypass symlink detection.\n\n## Verify Steps\n\nbun run test:fast -- --run packages/agentplane/src/cli/archive.test.ts\n\n## Rollback Plan\n\nRevert this task commit to restore unzip-based zip validation."
+    },
+    {
+      "id": "202602051201-F8YMCF",
+      "title": "Verify: parse Verify Steps and execute commands",
+      "description": "Parse Verify Steps from task README (cmd vs human), execute commands, and collect results for verification.",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [
+        "202602051201-MNK3HD"
+      ],
+      "tags": [
+        "workflow",
+        "cli",
+        "verify",
+        "code"
+      ],
+      "verify": [
+        "bun run test:fast"
+      ],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T12:01:40.386Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602051201-MNK3HD",
+      "title": "Epic: verify from README + zip validation (yauzl)",
+      "description": "Implement verify workflow from Verify Steps, add Verification section, and switch zip validation to yauzl with config/init support.",
+      "status": "DOING",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "workflow",
+        "verify",
+        "security"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: coordinating zip validation via yauzl and README-driven verify workflow across sub-tasks."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T12:02:30.534Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated"
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "bc411b92ae2b7e196578519f7288fe8d10434c94b3104eb73a33b153971dbda7"
+    "checksum": "4a1853bc758d9d5006fbb1dd1d3d0323f2c4068cc6aaaafe0b4a7eaeca58e9f1"
   }
 }
