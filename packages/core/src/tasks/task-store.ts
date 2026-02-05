@@ -5,6 +5,7 @@ import { loadConfig } from "../config/config.js";
 import { resolveProject } from "../project/project-root.js";
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
 import { ensureDocSections, setMarkdownSection } from "./task-doc.js";
+import { generateTaskId } from "./task-id.js";
 
 export type TaskStatus = "TODO" | "DOING" | "DONE" | "BLOCKED";
 export type TaskPriority = "low" | "normal" | "med" | "high";
@@ -57,25 +58,6 @@ export function validateTaskDocMetadata(frontmatter: Record<string, unknown>): s
   }
 
   return errors;
-}
-
-const ID_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function randomSuffix(length: number): string {
-  let out = "";
-  for (let i = 0; i < length; i++) {
-    out += ID_ALPHABET[Math.floor(Math.random() * ID_ALPHABET.length)];
-  }
-  return out;
-}
-
-function timestampIdPrefix(date: Date): string {
-  const yyyy = String(date.getUTCFullYear()).padStart(4, "0");
-  const mm = String(date.getUTCMonth() + 1).padStart(2, "0");
-  const dd = String(date.getUTCDate()).padStart(2, "0");
-  const hh = String(date.getUTCHours()).padStart(2, "0");
-  const min = String(date.getUTCMinutes()).padStart(2, "0");
-  return `${yyyy}${mm}${dd}${hh}${min}`;
 }
 
 async function fileExists(filePath: string): Promise<boolean> {
@@ -180,6 +162,7 @@ export async function createTask(opts: {
   tags: string[];
   dependsOn: string[];
   verify: string[];
+  idGenerator?: typeof generateTaskId;
 }): Promise<{ id: string; readmePath: string }> {
   const { tasksDir, idSuffixLengthDefault } = await getTasksDir({
     cwd: opts.cwd,
@@ -188,37 +171,34 @@ export async function createTask(opts: {
   await mkdir(tasksDir, { recursive: true });
 
   const suffixLength = idSuffixLengthDefault;
-  const base = timestampIdPrefix(new Date());
+  const id = await (opts.idGenerator ?? generateTaskId)({
+    length: suffixLength,
+    attempts: 20,
+    isAvailable: async (taskId) => !(await fileExists(taskReadmePath(tasksDir, taskId))),
+  });
 
-  for (let attempt = 0; attempt < 20; attempt++) {
-    const id = `${base}-${randomSuffix(suffixLength)}`;
-    const readmePath = taskReadmePath(tasksDir, id);
-    if (await fileExists(readmePath)) continue;
+  const readmePath = taskReadmePath(tasksDir, id);
+  const frontmatter: TaskFrontmatter = {
+    id,
+    title: opts.title,
+    status: "TODO",
+    priority: opts.priority,
+    owner: opts.owner,
+    depends_on: opts.dependsOn,
+    tags: opts.tags,
+    verify: opts.verify,
+    comments: [],
+    doc_version: 2,
+    doc_updated_at: nowIso(),
+    doc_updated_by: opts.owner,
+    description: opts.description,
+  };
 
-    const frontmatter: TaskFrontmatter = {
-      id,
-      title: opts.title,
-      status: "TODO",
-      priority: opts.priority,
-      owner: opts.owner,
-      depends_on: opts.dependsOn,
-      tags: opts.tags,
-      verify: opts.verify,
-      comments: [],
-      doc_version: 2,
-      doc_updated_at: nowIso(),
-      doc_updated_by: opts.owner,
-      description: opts.description,
-    };
-
-    const body = defaultTaskBody();
-    const text = renderTaskReadme(frontmatter as unknown as Record<string, unknown>, body);
-    await mkdir(path.dirname(readmePath), { recursive: true });
-    await writeFile(readmePath, text, "utf8");
-    return { id, readmePath };
-  }
-
-  throw new Error("Failed to generate a unique task id");
+  const body = defaultTaskBody();
+  const text = renderTaskReadme(frontmatter as unknown as Record<string, unknown>, body);
+  await mkdir(path.dirname(readmePath), { recursive: true });
+  await writeFile(readmePath, text, "utf8");
+  return { id, readmePath };
 }
 
 export async function setTaskDocSection(opts: {
