@@ -1,15 +1,17 @@
 ---
 id: "202602051458-XDYC0T"
 title: "Document Redmine setup and custom fields"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs"]
 verify: []
-comments: []
+commit: { hash: "a314a01990e73aec91a8ac6c4ee897a27a86ffc2", message: "📝 XDYC0T redmine setup docs" }
+comments:
+  - { author: "DOCS", body: "Verified: Redmine setup section added with required custom fields, .env keys, and backend config example." }
 doc_version: 2
-doc_updated_at: "2026-02-05T15:00:05.921Z"
+doc_updated_at: "2026-02-05T15:00:28.732Z"
 doc_updated_by: "DOCS"
 description: "Add a Redmine setup section describing required custom fields and configuration for parity."
 id_source: "generated"
