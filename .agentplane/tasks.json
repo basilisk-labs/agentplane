@@ -15049,9 +15049,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T16:49:39.811Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nNormalize environment variable names to the AGENTPLANE_ prefix (no legacy aliases).\n\n## Scope\n\n- Replace AGENT_PLANE_* and CODEXSWARM_REDMINE_* with AGENTPLANE_* names in code.\n- Update tests and docs to match.\n- Update .env.example.\n\n## Risks\n\n- Breaking change for users relying on legacy env names.\n- Docs/tests may drift if any references are missed.\n\n## Verify Steps\n\n- bun run format:check.\n- bun run lint.\n- bun run test:fast.\n- Spot-check docs/.env.example for updated env names.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\\n- ✅ Docs/.env.example updated to AGENTPLANE_* env names.\n\n## Rollback Plan\n\n- Revert to previous env names and restore docs/tests if needed."
+      "doc": "## Summary\n\nNormalize environment variable names to the AGENTPLANE_ prefix (no legacy aliases).\n\n## Scope\n\n- Replace AGENT_PLANE_* and CODEXSWARM_REDMINE_* with AGENTPLANE_* names in code.\n- Update tests and docs to match.\n- Update .env.example.\n\n## Risks\n\n- Breaking change for users relying on legacy env names.\n- Docs/tests may drift if any references are missed.\n\n## Verify Steps\n\n- bun run format:check.\n- bun run lint.\n- bun run test:fast.\n- Spot-check docs/.env.example for updated env names.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\\n- ✅ Docs/.env.example updated to AGENTPLANE_* env names.\n\n## Rollback Plan\n\n- Revert to previous env names and restore docs/tests if needed.",
+      "dirty": false
     },
     {
       "id": "202602051552-ET20NN",
@@ -15192,12 +15192,45 @@
       "id_source": "generated",
       "doc": "## Summary\n\nNormalize depends_on handling so literal [] inputs do not create invalid references.\n\n## Scope\n\n- Treat depends_on: [\"[]\"] as empty when reading.\n- Ignore --depends-on [] in CLI parsing.\n- Normalize existing task READMEs via task normalize.\n- Update tests.\n\n## Risks\n\n- Behavior change could mask user typos if they intended a literal task id of [].\n\n## Verify Steps\n\n- bun run test:fast.\n- Run agentplane task normalize and ensure depends_on: [] in affected READMEs.\n\n## Verification\n\n- ✅ bun run test:fast (pass).\\n- ✅ task normalize rewrote depends_on to [] in affected READMEs.\n\n## Rollback Plan\n\n- Revert parsing/normalization changes.",
       "dirty": false
+    },
+    {
+      "id": "202602051655-AZ858W",
+      "title": "Update Redmine env defaults",
+      "description": "Document recommended Redmine env values in .env.example and sync local .env owner alias.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "cab571a0a4c8cbff3a4f5a9202ca11b46ed27cf5",
+        "message": "✨ AZ858W update Redmine env defaults"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: update .env.example with recommended Redmine env defaults and note local .env owner alias."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: format:check, lint, test:fast passed; .env.example updated with recommended Redmine env defaults."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T16:58:07.453Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nDocument recommended Redmine env values in .env.example and align local .env owner alias.\n\n## Scope\n\n- Update .env.example with recommended Redmine env defaults and custom field placeholders.\\n- Set AGENTPLANE_REDMINE_OWNER_AGENT in .env to match owner (local only).\n\n## Risks\n\n- Minimal risk; only docs/example updates.\\n- Local .env edit should not be committed.\n\n## Verify Steps\n\n- bun run format:check.\\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n- ✅ bun run format:check.\\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\n\n## Rollback Plan\n\n- Revert .env.example changes if undesired."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "b571adee80666e98859a0358e362c5ce640bbe5d545958c45399669d47854a78"
+    "checksum": "74533ff4a5684dec89763746ae986636fc3e04cd1034eed484f7694f346b7e16"
   }
 }

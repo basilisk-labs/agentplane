@@ -1,17 +1,18 @@
 ---
 id: "202602051655-AZ858W"
 title: "Update Redmine env defaults"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs"]
 verify: []
-commit: null
+commit: { hash: "cab571a0a4c8cbff3a4f5a9202ca11b46ed27cf5", message: "✨ AZ858W update Redmine env defaults" }
 comments:
   - { author: "DOCS", body: "Start: update .env.example with recommended Redmine env defaults and note local .env owner alias." }
+  - { author: "DOCS", body: "Verified: format:check, lint, test:fast passed; .env.example updated with recommended Redmine env defaults." }
 doc_version: 2
-doc_updated_at: "2026-02-05T16:57:10.218Z"
+doc_updated_at: "2026-02-05T16:58:07.453Z"
 doc_updated_by: "DOCS"
 description: "Document recommended Redmine env values in .env.example and sync local .env owner alias."
 id_source: "generated"
