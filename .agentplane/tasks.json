@@ -13539,12 +13539,166 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nRaised test coverage past the global branch threshold and silenced noisy test output by adding targeted tests and stdout/stderr capture helpers.\n\n## Scope\n\nAdded fs-utils and update-check tests, expanded silent CLI helpers in run-cli tests, and muted task-backend/recipes test output while keeping command behavior unchanged.\n\n## Risks\n\nLow risk. Test-only output capture could hide useful debug logs, so failures may show less context if the capture is too broad.\n\n## Verify Steps\n\n1. bun run test:agentplane\n2. bun run coverage\n3. node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Rollback Plan\n\nRevert the commit for this task or restore the prior versions of the modified test files and rerun the test suite."
+    },
+    {
+      "id": "202602050837-5HTSEG",
+      "title": "Fix run-cli/task-backend test warnings and raise coverage to 80%",
+      "description": "Eliminate remaining warnings in run-cli.*.test.ts and task-backend.test.ts, then add tests to raise overall branch coverage to at least 80% with required verification.",
+      "status": "DOING",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "testing",
+        "coverage"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: remove remaining test warnings in run-cli/task-backend suites, then raise branch coverage to >=80% with targeted tests and full verification."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T08:37:15.628Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602050954-3JC3CW",
+      "title": "Finalize Epic D and document completion",
+      "description": "Verify Epic D implementation, commit coverage test artifacts, update ROADMAP with completion marks, and close Epic D with required docs/verify.",
+      "status": "DOING",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "epic-d",
+        "roadmap"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: verify Epic D status, commit test artifacts, update ROADMAP."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T09:54:31.179Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602050956-E9QMJN",
+      "title": "Update ROADMAP and finalize Epic D",
+      "description": "Mark completed items in ROADMAP, verify Epic D status, and finalize documentation/verify. Parent: 202602050954-3JC3CW.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "epic-d"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "a21b8aeb9bcd55bae600ad3479bacecc38579b2e",
+        "message": "🧾 E9QMJN roadmap"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: update ROADMAP done markers and finalize Epic D status."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: bun run format:check; bun run lint; bun run test:fast. Commit: a21b8aeb9bcd."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T10:02:13.688Z",
+      "doc_updated_by": "DOCS",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nMarked Epic A-D items in ROADMAP as completed with task IDs and dates.\n\n## Scope\n\nUpdated ROADMAP.md only.\n\n## Risks\n\nLow risk; documentation-only change.\n\n## Verify Steps\n\nbun run format:check\\nbun run lint\\nbun run test:fast\n\n## Rollback Plan\n\nRevert commit a21b8aeb9bcd to remove ROADMAP status markers."
+    },
+    {
+      "id": "202602050956-XCF4WB",
+      "title": "Commit coverage test artifacts",
+      "description": "Commit existing test changes that raise coverage and reduce warnings (from prior work). Parent: 202602050954-3JC3CW.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "TESTER",
+      "depends_on": [],
+      "tags": [
+        "tests",
+        "coverage"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "66fc897910ee66c689852f97bf5dbc092ff2d9f6",
+        "message": "🧪 XCF4WB tests"
+      },
+      "comments": [
+        {
+          "author": "TESTER",
+          "body": "Start: commit existing coverage test artifacts."
+        },
+        {
+          "author": "TESTER",
+          "body": "Verified: bun run format:check; bun run lint; bun run test:fast. Commit: 66fc897910ee. Completed test coverage commit."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T09:59:41.970Z",
+      "doc_updated_by": "TESTER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nCommitted expanded test coverage for workflow/recipes/run-cli/task-backend and related helpers.\n\n## Scope\n\nUpdated test files under packages/agentplane/src and packages/core/src to raise coverage and fix linting issues.\n\n## Risks\n\nLow risk; changes are test-only. Risk of brittle test assumptions if CLI behavior changes.\n\n## Verify Steps\n\nbun run format:check\\nbun run lint\\nbun run test:fast\n\n## Rollback Plan\n\nRevert commit 66fc897910ee if test updates need to be removed."
+    },
+    {
+      "id": "202602051004-QCRB8X",
+      "title": "Stabilize hooks pre-commit test env",
+      "description": "Ensure workflow hook test unsets AGENT_PLANE_ALLOW_TASKS so it behaves consistently under agentplane commit.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "TESTER",
+      "depends_on": [],
+      "tags": [
+        "testing",
+        "hooks"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "42af88597c5e55218d3fb344dbc0aed8d1ef4d44",
+        "message": "🧪 QCRB8X tests"
+      },
+      "comments": [
+        {
+          "author": "TESTER",
+          "body": "Start: stabilize hooks pre-commit test against env leakage."
+        },
+        {
+          "author": "TESTER",
+          "body": "Verified: bun run format:check; bun run lint; bun run test:fast. Commit: 42af88597c5e."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T10:06:00.644Z",
+      "doc_updated_by": "TESTER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nUnset AGENT_PLANE_ALLOW_TASKS during hooks pre-commit test to avoid env leakage.\n\n## Scope\n\nUpdated workflow hook test in packages/agentplane/src/commands/workflow.test.ts.\n\n## Risks\n\nLow risk; test-only change.\n\n## Verify Steps\n\nbun run format:check\\nbun run lint\\nbun run test:fast\n\n## Rollback Plan\n\nRevert commit 42af88597c5e if the test change is unwanted."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "65f55d5416731523bb06eab7169083aded9dd9104029e9c6869c521813238b72"
+    "checksum": "8b12d9c0c00bd5b682e79f00fcd660bf071a8eb2bc4fa65819fffe78e671e821"
   }
 }
