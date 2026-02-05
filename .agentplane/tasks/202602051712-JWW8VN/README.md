@@ -1,17 +1,18 @@
 ---
 id: "202602051712-JWW8VN"
 title: "Remove ROADMAP.md"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs"]
 verify: []
-commit: null
+commit: { hash: "91fe55412646f6a05c879367b54d772855535cad", message: "✨ JWW8VN remove ROADMAP.md" }
 comments:
   - { author: "DOCS", body: "Start: remove ROADMAP.md after completion." }
+  - { author: "DOCS", body: "Verified: ROADMAP.md removed after completion; repository no longer tracks the roadmap file." }
 doc_version: 2
-doc_updated_at: "2026-02-05T17:13:19.953Z"
+doc_updated_at: "2026-02-05T17:14:10.430Z"
 doc_updated_by: "DOCS"
 description: "Delete ROADMAP.md now that roadmap is complete."
 id_source: "generated"

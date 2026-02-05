@@ -15255,15 +15255,74 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T17:06:04.271Z",
       "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nRemove ESLint no-unsafe-* warnings in task backend/tests by ensuring typed exports.\n\n## Scope\n\n- Ensure extractTaskDoc/mergeTaskDoc/atomicWriteFile/generateTaskId have explicit types in task backend.\\n- Verify lint/test:fast.\\n- Leave ignored-file ESLint warning for agentplane-recipes as non-issue.\n\n## Risks\n\n- Low risk; type-only changes could mask real type mismatches if mis-specified.\n\n## Verify Steps\n\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\n\n## Rollback Plan\n\n- Revert typed aliases if they cause mismatches.",
+      "dirty": false
+    },
+    {
+      "id": "202602051709-TF7WD8",
+      "title": "Fix ESLint no-unsafe warnings",
+      "description": "Resolve remaining @typescript-eslint/no-unsafe-* warnings in workflow/config/recipes/run-cli/archive/task-backend paths; document ignored file warning.",
+      "status": "DOING",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "testing"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: fix ESLint no-unsafe warnings across workflow/config/recipes/run-cli/archive/task-backend and clarify ignored-file warning."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T17:10:00.730Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nResolve remaining ESLint no-unsafe warnings in key modules and note ignored-file warning.\n\n## Scope\n\n- Address no-unsafe-* ESLint warnings in workflow.ts, config.ts, archive.ts, recipes tests, run-cli recipes tests, task-backend/test.\\n- Keep behavior unchanged; add explicit typing/casts where needed.\\n- Note ignored-file ESLint warning for agentplane-recipes/scripts/sign-index.ts.\n\n## Risks\n\n- Type-only changes might hide real issues if misapplied.\\n- Avoid behavior changes.\n\n## Verify Steps\n\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n\n## Rollback Plan\n\n- Revert type annotations if they cause mismatches.",
+      "dirty": false
+    },
+    {
+      "id": "202602051712-JWW8VN",
+      "title": "Remove ROADMAP.md",
+      "description": "Delete ROADMAP.md now that roadmap is complete.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "91fe55412646f6a05c879367b54d772855535cad",
+        "message": "✨ JWW8VN remove ROADMAP.md"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: remove ROADMAP.md after completion."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: ROADMAP.md removed after completion; repository no longer tracks the roadmap file."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T17:14:10.430Z",
+      "doc_updated_by": "DOCS",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nRemove ESLint no-unsafe-* warnings in task backend/tests by ensuring typed exports.\n\n## Scope\n\n- Ensure extractTaskDoc/mergeTaskDoc/atomicWriteFile/generateTaskId have explicit types in task backend.\\n- Verify lint/test:fast.\\n- Leave ignored-file ESLint warning for agentplane-recipes as non-issue.\n\n## Risks\n\n- Low risk; type-only changes could mask real type mismatches if mis-specified.\n\n## Verify Steps\n\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n- ✅ bun run lint.\\n- ✅ bun run test:fast.\n\n## Rollback Plan\n\n- Revert typed aliases if they cause mismatches."
+      "doc": "## Summary\n\nRemove ROADMAP.md after completion.\n\n## Scope\n\n- Delete ROADMAP.md.\\n- Commit removal as standalone task.\n\n## Risks\n\n- Minimal risk; removes completed roadmap from repo.\n\n## Verify Steps\n\n- git status shows ROADMAP.md removed.\n\n## Verification\n\n\n## Rollback Plan\n\n- Restore ROADMAP.md from git history if needed."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "264c71f33c4217bb9e907c11ea6c40adc14aa019979fbbfcf18eeb8e52b224da"
+    "checksum": "47fc923caac683d4068646e0c0398befe74c6782f68aa6bbbff071e914778b0d"
   }
 }
