@@ -13100,7 +13100,7 @@
       "id": "202602050554-49X946",
       "title": "AP-010c: Integrate update-check with CLI",
       "description": "Wire cached update-check into CLI with offline-first behavior and tests.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -13111,10 +13111,22 @@
         "integration"
       ],
       "verify": [],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "b8d498ad200bd00637fb3da03e2a6e7ea075e076",
+        "message": "🧩 49X946 integrate cached update-check"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: integrate cached update-check into CLI and adjust tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: cached update-check integrated; tests updated; pre-commit hooks passed."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T05:56:10.072Z",
+      "doc_updated_at": "2026-02-05T06:06:24.848Z",
       "doc_updated_by": "CODER",
       "dirty": false,
       "id_source": "generated",
@@ -13253,6 +13265,6 @@
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "7da296ee67f4d40e1f85e277bc7f083273f4410b2f3f5424cc67bb4dd3d17c25"
+    "checksum": "720898d3ac57e5adb08153fc9ad779636e8798997b60936dacfb1f5e404da115"
   }
 }
