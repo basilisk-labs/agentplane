@@ -1,4 +1,5 @@
 import { execFile } from "node:child_process";
+import { readFileSync } from "node:fs";
 import {
   chmod,
   mkdir,
@@ -87,11 +88,15 @@ describe("runCli", () => {
   });
 
   it("prints version on --version", async () => {
+    const pkg = JSON.parse(
+      readFileSync(path.join(process.cwd(), "packages/agentplane/package.json"), "utf8"),
+    ) as { version?: string };
+    const expectedVersion = pkg.version ?? "0.0.0";
     const io = captureStdIO();
     try {
       const code = await runCli(["--version"]);
       expect(code).toBe(0);
-      expect(io.stdout.trim()).toBe("0.1.4");
+      expect(io.stdout.trim()).toBe(expectedVersion);
     } finally {
       io.restore();
     }
