@@ -1,15 +1,17 @@
 ---
 id: "202602051506-WJEZBQ"
 title: "Split backend docs: local vs redmine, add parity guidance"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs"]
 verify: []
-comments: []
+commit: { hash: "8b400e4a2eb2c2a5478de2180116fdd6abc758db", message: "📝 WJEZBQ split backend docs" }
+comments:
+  - { author: "DOCS", body: "Verified: Local and Redmine backend sections separated; Redmine parity requirements include extra fields and mapping note." }
 doc_version: 2
-doc_updated_at: "2026-02-05T15:07:04.281Z"
+doc_updated_at: "2026-02-05T15:07:29.505Z"
 doc_updated_by: "DOCS"
 description: "Restructure backends doc into separate sections and document Redmine full-parity setup."
 id_source: "generated"
