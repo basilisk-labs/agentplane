@@ -2,7 +2,11 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { loadAgentTemplates, loadAgentsTemplate } from "./agents-template.js";
+import {
+  filterAgentsByWorkflow,
+  loadAgentTemplates,
+  loadAgentsTemplate,
+} from "./agents-template.js";
 
 const LOCAL_CLI = "node packages/agentplane/bin/agentplane.js";
 
@@ -51,5 +55,45 @@ describe("agents-template", () => {
       expect(repoText).toContain(LOCAL_CLI);
       expect(repoText).not.toMatch(systemCommandRe);
     }
+  });
+
+  it("filters workflow-specific sections for direct mode", () => {
+    const template = [
+      "## A) direct mode (single checkout)",
+      "Direct text.",
+      "## B) branch_pr mode (parallel work)",
+      "Branch text.",
+      "## INTEGRATION & CLOSURE (branch_pr)",
+      "Integration text.",
+      "## Other",
+      "Other text.",
+    ].join("\n");
+
+    const filtered = filterAgentsByWorkflow(template, "direct");
+    expect(filtered).toContain("A) direct mode (single checkout)");
+    expect(filtered).not.toContain("branch_pr mode (parallel work)");
+    expect(filtered).not.toContain("INTEGRATION & CLOSURE (branch_pr)");
+    expect(filtered).toContain("Other text.");
+  });
+
+  it("filters workflow-specific sections for branch_pr mode", () => {
+    const template = [
+      "## A) direct mode (single checkout)",
+      "Direct text.",
+      "## B) branch_pr mode (parallel work)",
+      "Branch text.",
+      "## Other",
+      "Other text.",
+    ].join("\n");
+
+    const filtered = filterAgentsByWorkflow(template, "branch_pr");
+    expect(filtered).not.toContain("A) direct mode (single checkout)");
+    expect(filtered).toContain("branch_pr mode (parallel work)");
+    expect(filtered).toContain("Other text.");
+  });
+
+  it("keeps templates unchanged when no workflow sections exist", () => {
+    const template = ["# Title", "No workflow sections here."].join("\n");
+    expect(filterAgentsByWorkflow(template, "direct")).toBe(`${template}\n`);
   });
 });

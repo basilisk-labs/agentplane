@@ -1,6 +1,6 @@
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -12,12 +12,23 @@ import {
   registerAgentplaneHome,
   resetAgentplaneHomeRecipes,
   runCliSilent,
+  silenceStdIO,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 
 registerAgentplaneHome();
 
 const agentplaneHomePath = () => getAgentplaneHome() ?? "";
+let restoreStdIO: (() => void) | null = null;
+
+beforeEach(() => {
+  restoreStdIO = silenceStdIO();
+});
+
+afterEach(() => {
+  restoreStdIO?.();
+  restoreStdIO = null;
+});
 
 describe("runCli scenario", () => {
   it("scenario list and info read installed recipe scenarios", async () => {
