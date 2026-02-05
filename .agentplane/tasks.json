@@ -15631,15 +15631,15 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T18:18:19.723Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nBump agentplane and core packages to v0.1.6 for release.\n\n## Scope\n\nUpdate package.json versions and internal dependency versions to 0.1.6.\n\n## Risks\n\nLow: mismatched versions could break release checks or publish.\n\n## Verify Steps\n\nCommand: rg \"version\" packages/agentplane/package.json packages/core/package.json; ensure both are 0.1.6 and dependency aligns.\n\n## Verification\n\nChecked package.json versions and @agentplaneorg/core dependency set to 0.1.6.\n\n## Rollback Plan\n\nRestore previous version numbers in package.json files."
+      "doc": "## Summary\n\nBump agentplane and core packages to v0.1.6 for release.\n\n## Scope\n\nUpdate package.json versions and internal dependency versions to 0.1.6.\n\n## Risks\n\nLow: mismatched versions could break release checks or publish.\n\n## Verify Steps\n\nCommand: rg \"version\" packages/agentplane/package.json packages/core/package.json; ensure both are 0.1.6 and dependency aligns.\n\n## Verification\n\nChecked package.json versions and @agentplaneorg/core dependency set to 0.1.6.\n\n## Rollback Plan\n\nRestore previous version numbers in package.json files.",
+      "dirty": false
     },
     {
       "id": "202602051806-S76RDP",
       "title": "Tag and push v0.1.6",
       "description": "Create tag v0.1.6 and push main + tag to origin.",
-      "status": "TODO",
+      "status": "DOING",
       "priority": "high",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -15649,18 +15649,57 @@
       ],
       "verify": [],
       "commit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: tag v0.1.6 and push main plus tag for release publish."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T18:06:35.953Z",
+      "doc_updated_at": "2026-02-05T18:20:47.538Z",
       "doc_updated_by": "ORCHESTRATOR",
       "id_source": "generated",
+      "doc": "## Summary\n\nTag v0.1.6 and push to origin to trigger release workflow.\n\n## Scope\n\nCreate git tag v0.1.6 on the release commit and push main + tag.\n\n## Risks\n\nMedium: tagging the wrong commit could publish incorrect release.\n\n## Verify Steps\n\nCommand: git tag --list v0.1.6; git log -1 --decorate; ensure tag points to release commit.\n\n## Verification\n\nTagged v0.1.6 on HEAD and confirmed tag points to latest release commit.\n\n## Rollback Plan\n\nDelete tag locally and on origin, then retag the correct commit.",
       "dirty": false
+    },
+    {
+      "id": "202602051821-DD9BY6",
+      "title": "Update init version expectations in tests",
+      "description": "Adjust run-cli core tests to expect the current package version (0.1.6) after the version bump.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "testing"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "2130610b4a0f53fc3433b024b7a71dfed1ff0b78",
+        "message": "🧪 DD9BY6 update init version expectations"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: update run-cli tests to match the bumped package version."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: run-cli core tests pass with updated 0.1.6 install subject expectations."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T18:23:53.111Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nUpdate init tests to expect agentplane 0.1.6 after version bump.\n\n## Scope\n\nUpdate run-cli core test assertions for init install commit subject.\n\n## Risks\n\nLow: mismatched expectations could still break CI/push hooks.\n\n## Verify Steps\n\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts\n\n## Verification\n\nRan: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts\n\n## Rollback Plan\n\nRestore previous version strings in test expectations."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "4fb6567cba08afbacddc05f8061c6368baca00ce0468fdc365c7d8de4f635191"
+    "checksum": "5db5a5e4561541656daebbd2c0d2e9ec593aea35ec3c4964eac4f987d3b2595d"
   }
 }
