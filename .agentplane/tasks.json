@@ -15401,7 +15401,7 @@
       "id": "202602051724-EPSZ0H",
       "title": "Tag and push v0.1.5",
       "description": "Create tag v0.1.5 and push main + tag to origin.",
-      "status": "DOING",
+      "status": "DONE",
       "priority": "high",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -15410,19 +15410,26 @@
         "git"
       ],
       "verify": [],
-      "commit": null,
+      "commit": {
+        "hash": "b80aa9c1fd6b5a74d3e4ad4ca592585c382455d5",
+        "message": "📝 PFN0KP record task metadata"
+      },
       "comments": [
         {
           "author": "ORCHESTRATOR",
           "body": "Start: prepare tag v0.1.5 and push main + tag to origin."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: main and v0.1.5 pushed; tag points to release commit."
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T17:35:49.582Z",
+      "doc_updated_at": "2026-02-05T17:44:08.655Z",
       "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nCreate tag v0.1.5 and push main and tag to origin.\n\n## Scope\n\nTag current HEAD as v0.1.5 and push main + tag.\n\n## Risks\n\nPushing wrong tag or missing release note commit.\n\n## Verify Steps\n\nConfirm HEAD includes release notes and version bumps; tag v0.1.5 points to the release commit; push main + tag to origin.\n\n## Verification\n\nPending.\n\n## Rollback Plan\n\nDelete tag v0.1.5 locally/remotely and reset to prior state if needed.",
-      "dirty": false
+      "doc": "## Summary\n\nCreate tag v0.1.5 and push main and tag to origin.\n\n## Scope\n\nTag current HEAD as v0.1.5 and push main + tag.\n\n## Risks\n\nPushing wrong tag or missing release note commit.\n\n## Verify Steps\n\nConfirm HEAD includes release notes and version bumps; tag v0.1.5 points to the release commit; push main + tag to origin.\n\n## Verification\n\nConfirmed tag v0.1.5 points to commit b80aa9c1fd6b; push main and v0.1.5 succeeded with pre-push tests.\n\n## Rollback Plan\n\nDelete tag v0.1.5 locally/remotely and reset to prior state if needed."
     },
     {
       "id": "202602051736-PFN0KP",
@@ -15454,15 +15461,15 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T17:42:16.480Z",
       "doc_updated_by": "TESTER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nUpdate tests for new version and current verify/zip error behavior.\n\n## Scope\n\nAdjust failing run-cli tests for verify approvals, zip traversal exit codes, and version expectations.\n\n## Risks\n\nIncorrect expectations could mask regressions in verify or archive safety.\n\n## Verify Steps\n\nRun vitest run (full) or relevant run-cli tests; confirm pre-push passes.\n\n## Verification\n\nRan: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts; bunx vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts.\n\n## Rollback Plan\n\nRevert test expectation changes if they hide real regressions."
+      "doc": "## Summary\n\nUpdate tests for new version and current verify/zip error behavior.\n\n## Scope\n\nAdjust failing run-cli tests for verify approvals, zip traversal exit codes, and version expectations.\n\n## Risks\n\nIncorrect expectations could mask regressions in verify or archive safety.\n\n## Verify Steps\n\nRun vitest run (full) or relevant run-cli tests; confirm pre-push passes.\n\n## Verification\n\nRan: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts; bunx vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts.\n\n## Rollback Plan\n\nRevert test expectation changes if they hide real regressions.",
+      "dirty": false
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "2caa466223b3b119d9dd7913013a0a5c66262f96b56badf3ae023358ca727a97"
+    "checksum": "f1c0488ad80d7e4fd056771ac2d6932ee5a13fe7bdb9caedbdcdb313d724830e"
   }
 }
