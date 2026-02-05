@@ -2821,9 +2821,9 @@ async function commitFromComment(opts: {
   });
   const env = {
     ...process.env,
-    AGENT_PLANE_TASK_ID: opts.taskId,
-    AGENT_PLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
-    AGENT_PLANE_ALLOW_BASE: opts.allowTasks ? "1" : "0",
+    AGENTPLANE_TASK_ID: opts.taskId,
+    AGENTPLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
+    AGENTPLANE_ALLOW_BASE: opts.allowTasks ? "1" : "0",
   };
   await execFileAsync("git", ["commit", "-m", message], { cwd: resolved.gitRoot, env });
 
@@ -2902,9 +2902,9 @@ export async function cmdCommit(opts: {
     });
     const env = {
       ...process.env,
-      AGENT_PLANE_TASK_ID: opts.taskId,
-      AGENT_PLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
-      AGENT_PLANE_ALLOW_BASE: opts.allowBase ? "1" : "0",
+      AGENTPLANE_TASK_ID: opts.taskId,
+      AGENTPLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
+      AGENTPLANE_ALLOW_BASE: opts.allowBase ? "1" : "0",
     };
     await execFileAsync("git", ["commit", "-m", opts.message], { cwd: resolved.gitRoot, env });
 
@@ -4355,9 +4355,9 @@ export async function cmdIntegrate(opts: {
       }
       const env = {
         ...process.env,
-        AGENT_PLANE_TASK_ID: task.id,
-        AGENT_PLANE_ALLOW_BASE: "1",
-        AGENT_PLANE_ALLOW_TASKS: "0",
+        AGENTPLANE_TASK_ID: task.id,
+        AGENTPLANE_ALLOW_BASE: "1",
+        AGENTPLANE_ALLOW_TASKS: "0",
       };
       try {
         await execFileAsync("git", ["commit", "-m", subject], {
@@ -4376,9 +4376,9 @@ export async function cmdIntegrate(opts: {
     } else if (opts.mergeStrategy === "merge") {
       const env = {
         ...process.env,
-        AGENT_PLANE_TASK_ID: task.id,
-        AGENT_PLANE_ALLOW_BASE: "1",
-        AGENT_PLANE_ALLOW_TASKS: "0",
+        AGENTPLANE_TASK_ID: task.id,
+        AGENTPLANE_ALLOW_BASE: "1",
+        AGENTPLANE_ALLOW_TASKS: "0",
       };
       try {
         await execFileAsync(
@@ -4821,7 +4821,7 @@ export async function cmdHooksRun(opts: {
           message: "Commit message subject is empty",
         });
       }
-      const taskId = (process.env.AGENT_PLANE_TASK_ID ?? "").trim();
+      const taskId = (process.env.AGENTPLANE_TASK_ID ?? "").trim();
       if (taskId) {
         const suffix = taskId.split("-").at(-1) ?? "";
         if (!subject.includes(taskId) && (suffix.length === 0 || !subject.includes(suffix))) {
@@ -4863,8 +4863,8 @@ export async function cmdHooksRun(opts: {
         rootOverride: opts.rootOverride ?? null,
       });
       if (staged.length === 0) return 0;
-      const allowTasks = (process.env.AGENT_PLANE_ALLOW_TASKS ?? "").trim() === "1";
-      const allowBase = (process.env.AGENT_PLANE_ALLOW_BASE ?? "").trim() === "1";
+      const allowTasks = (process.env.AGENTPLANE_ALLOW_TASKS ?? "").trim() === "1";
+      const allowBase = (process.env.AGENTPLANE_ALLOW_BASE ?? "").trim() === "1";
 
       const resolved = await resolveProject({
         cwd: opts.cwd,
@@ -4879,7 +4879,7 @@ export async function cmdHooksRun(opts: {
         throw new CliError({
           exitCode: 5,
           code: "E_GIT",
-          message: `${tasksPath} is protected by agentplane hooks (set AGENT_PLANE_ALLOW_TASKS=1 to override)`,
+          message: `${tasksPath} is protected by agentplane hooks (set AGENTPLANE_ALLOW_TASKS=1 to override)`,
         });
       }
 

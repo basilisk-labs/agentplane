@@ -649,11 +649,11 @@ describe("RedmineBackend (mocked)", () => {
   beforeEach(async () => {
     tempDir = await makeTempDir();
     originalEnv = { ...process.env };
-    process.env.CODEXSWARM_REDMINE_URL = "https://redmine.example";
-    process.env.CODEXSWARM_REDMINE_API_KEY = "key";
-    process.env.CODEXSWARM_REDMINE_PROJECT_ID = "proj";
-    process.env.CODEXSWARM_REDMINE_OWNER = "REDMINE";
-    process.env.CODEXSWARM_REDMINE_ASSIGNEE_ID = "7";
+    process.env.AGENTPLANE_REDMINE_URL = "https://redmine.example";
+    process.env.AGENTPLANE_REDMINE_API_KEY = "key";
+    process.env.AGENTPLANE_REDMINE_PROJECT_ID = "proj";
+    process.env.AGENTPLANE_REDMINE_OWNER = "REDMINE";
+    process.env.AGENTPLANE_REDMINE_ASSIGNEE_ID = "7";
   });
 
   afterEach(async () => {
@@ -1743,11 +1743,11 @@ describe("loadTaskBackend", () => {
   let tempDir = "";
   let originalEnv: NodeJS.ProcessEnv = {};
   const redmineEnvKeys = [
-    "CODEXSWARM_REDMINE_URL",
-    "CODEXSWARM_REDMINE_API_KEY",
-    "CODEXSWARM_REDMINE_PROJECT_ID",
-    "CODEXSWARM_REDMINE_OWNER",
-    "CODEXSWARM_REDMINE_EXTRA",
+    "AGENTPLANE_REDMINE_URL",
+    "AGENTPLANE_REDMINE_API_KEY",
+    "AGENTPLANE_REDMINE_PROJECT_ID",
+    "AGENTPLANE_REDMINE_OWNER",
+    "AGENTPLANE_REDMINE_EXTRA",
   ] as const;
 
   beforeEach(async () => {
@@ -1791,18 +1791,18 @@ describe("loadTaskBackend", () => {
     );
     await writeFile(
       path.join(tempDir, ".env"),
-      ["CODEXSWARM_REDMINE_URL=https://redmine.env", 'CODEXSWARM_REDMINE_API_KEY="env-key"'].join(
+      ["AGENTPLANE_REDMINE_URL=https://redmine.env", 'AGENTPLANE_REDMINE_API_KEY="env-key"'].join(
         "\n",
       ),
       "utf8",
     );
-    process.env.CODEXSWARM_REDMINE_API_KEY = "preserve";
+    process.env.AGENTPLANE_REDMINE_API_KEY = "preserve";
 
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("redmine");
     expect(result.backend).toBeInstanceOf(RedmineBackend);
-    expect(process.env.CODEXSWARM_REDMINE_API_KEY).toBe("preserve");
-    expect(process.env.CODEXSWARM_REDMINE_URL).toBe("https://redmine.env");
+    expect(process.env.AGENTPLANE_REDMINE_API_KEY).toBe("preserve");
+    expect(process.env.AGENTPLANE_REDMINE_URL).toBe("https://redmine.env");
   });
 
   it("parses quoted .env values and resolves backend directories", async () => {
@@ -1826,11 +1826,11 @@ describe("loadTaskBackend", () => {
     await writeFile(
       path.join(tempDir, ".env"),
       [
-        'CODEXSWARM_REDMINE_URL="https://redmine.env/"',
-        String.raw`CODEXSWARM_REDMINE_API_KEY="env\nkey"`,
-        "CODEXSWARM_REDMINE_PROJECT_ID=proj",
-        "CODEXSWARM_REDMINE_OWNER='  owner  '",
-        "CODEXSWARM_REDMINE_EXTRA=plain",
+        'AGENTPLANE_REDMINE_URL="https://redmine.env/"',
+        String.raw`AGENTPLANE_REDMINE_API_KEY="env\nkey"`,
+        "AGENTPLANE_REDMINE_PROJECT_ID=proj",
+        "AGENTPLANE_REDMINE_OWNER='  owner  '",
+        "AGENTPLANE_REDMINE_EXTRA=plain",
         "# ignored line",
         "BADLINE",
       ].join("\n"),
@@ -1839,10 +1839,10 @@ describe("loadTaskBackend", () => {
 
     const result = await loadTaskBackend({ cwd: tempDir });
     expect(result.backendId).toBe("redmine");
-    expect(process.env.CODEXSWARM_REDMINE_URL).toBe("https://redmine.env/");
-    expect(process.env.CODEXSWARM_REDMINE_API_KEY).toBe("env\nkey");
-    expect(process.env.CODEXSWARM_REDMINE_OWNER).toBe("  owner  ");
-    expect(process.env.CODEXSWARM_REDMINE_EXTRA).toBe("plain");
+    expect(process.env.AGENTPLANE_REDMINE_URL).toBe("https://redmine.env/");
+    expect(process.env.AGENTPLANE_REDMINE_API_KEY).toBe("env\nkey");
+    expect(process.env.AGENTPLANE_REDMINE_OWNER).toBe("  owner  ");
+    expect(process.env.AGENTPLANE_REDMINE_EXTRA).toBe("plain");
 
     const localBackendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
     await writeFile(

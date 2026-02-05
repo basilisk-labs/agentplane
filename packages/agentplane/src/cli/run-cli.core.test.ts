@@ -415,28 +415,28 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeFile(
       path.join(root, ".env"),
-      ["CODEXSWARM_REDMINE_URL=https://redmine.env", "CODEXSWARM_REDMINE_API_KEY=from-env"].join(
+      ["AGENTPLANE_REDMINE_URL=https://redmine.env", "AGENTPLANE_REDMINE_API_KEY=from-env"].join(
         "\n",
       ),
       "utf8",
     );
-    const prevUrl = process.env.CODEXSWARM_REDMINE_URL;
-    const prevKey = process.env.CODEXSWARM_REDMINE_API_KEY;
-    delete process.env.CODEXSWARM_REDMINE_URL;
-    process.env.CODEXSWARM_REDMINE_API_KEY = "preserve";
+    const prevUrl = process.env.AGENTPLANE_REDMINE_URL;
+    const prevKey = process.env.AGENTPLANE_REDMINE_API_KEY;
+    delete process.env.AGENTPLANE_REDMINE_URL;
+    process.env.AGENTPLANE_REDMINE_API_KEY = "preserve";
 
     const io = captureStdIO();
     try {
       const code = await runCli(["config", "show", "--root", root]);
       expect(code).toBe(0);
-      expect(process.env.CODEXSWARM_REDMINE_URL).toBe("https://redmine.env");
-      expect(process.env.CODEXSWARM_REDMINE_API_KEY).toBe("preserve");
+      expect(process.env.AGENTPLANE_REDMINE_URL).toBe("https://redmine.env");
+      expect(process.env.AGENTPLANE_REDMINE_API_KEY).toBe("preserve");
     } finally {
       io.restore();
-      if (prevUrl === undefined) delete process.env.CODEXSWARM_REDMINE_URL;
-      else process.env.CODEXSWARM_REDMINE_URL = prevUrl;
-      if (prevKey === undefined) delete process.env.CODEXSWARM_REDMINE_API_KEY;
-      else process.env.CODEXSWARM_REDMINE_API_KEY = prevKey;
+      if (prevUrl === undefined) delete process.env.AGENTPLANE_REDMINE_URL;
+      else process.env.AGENTPLANE_REDMINE_URL = prevUrl;
+      if (prevKey === undefined) delete process.env.AGENTPLANE_REDMINE_API_KEY;
+      else process.env.AGENTPLANE_REDMINE_API_KEY = prevKey;
     }
   });
 
@@ -3861,8 +3861,8 @@ describe("runCli", () => {
 
   it("start requires a task id", async () => {
     const root = await mkGitRepoRoot();
-    const previous = process.env.AGENT_PLANE_TASK_ID;
-    delete process.env.AGENT_PLANE_TASK_ID;
+    const previous = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -3878,7 +3878,7 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Usage: agentplane start");
     } finally {
       io.restore();
-      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
+      if (previous) process.env.AGENTPLANE_TASK_ID = previous;
     }
   });
 
@@ -3981,8 +3981,8 @@ describe("runCli", () => {
       ioNew.restore();
     }
 
-    const previous = process.env.AGENT_PLANE_TASK_ID;
-    process.env.AGENT_PLANE_TASK_ID = taskId;
+    const previous = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = taskId;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -3997,8 +3997,8 @@ describe("runCli", () => {
       expect(code).toBe(0);
     } finally {
       io.restore();
-      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
-      else delete process.env.AGENT_PLANE_TASK_ID;
+      if (previous) process.env.AGENTPLANE_TASK_ID = previous;
+      else delete process.env.AGENTPLANE_TASK_ID;
     }
   });
 
@@ -4904,8 +4904,8 @@ describe("runCli", () => {
       ioNew.restore();
     }
 
-    const previous = process.env.AGENT_PLANE_TASK_ID;
-    process.env.AGENT_PLANE_TASK_ID = taskId;
+    const previous = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = taskId;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -4920,8 +4920,8 @@ describe("runCli", () => {
       expect(code).toBe(0);
     } finally {
       io.restore();
-      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
-      else delete process.env.AGENT_PLANE_TASK_ID;
+      if (previous) process.env.AGENTPLANE_TASK_ID = previous;
+      else delete process.env.AGENTPLANE_TASK_ID;
     }
   });
 
@@ -4939,8 +4939,8 @@ describe("runCli", () => {
 
   it("block requires a task id when env is unset", async () => {
     const root = await mkGitRepoRoot();
-    const previous = process.env.AGENT_PLANE_TASK_ID;
-    delete process.env.AGENT_PLANE_TASK_ID;
+    const previous = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -4956,7 +4956,7 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Usage: agentplane block");
     } finally {
       io.restore();
-      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
+      if (previous) process.env.AGENTPLANE_TASK_ID = previous;
     }
   });
 
@@ -5084,8 +5084,8 @@ describe("runCli", () => {
       ioNew.restore();
     }
 
-    const previous = process.env.AGENT_PLANE_TASK_ID;
-    process.env.AGENT_PLANE_TASK_ID = taskId;
+    const previous = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = taskId;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -5100,8 +5100,8 @@ describe("runCli", () => {
       expect(code).toBe(0);
     } finally {
       io.restore();
-      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
-      else delete process.env.AGENT_PLANE_TASK_ID;
+      if (previous) process.env.AGENTPLANE_TASK_ID = previous;
+      else delete process.env.AGENTPLANE_TASK_ID;
     }
   });
 
@@ -5199,8 +5199,8 @@ describe("runCli", () => {
 
   it("finish requires a task id when env is unset", async () => {
     const root = await mkGitRepoRoot();
-    const previous = process.env.AGENT_PLANE_TASK_ID;
-    delete process.env.AGENT_PLANE_TASK_ID;
+    const previous = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -5216,7 +5216,7 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Usage: agentplane finish");
     } finally {
       io.restore();
-      if (previous) process.env.AGENT_PLANE_TASK_ID = previous;
+      if (previous) process.env.AGENTPLANE_TASK_ID = previous;
     }
   });
 
@@ -5341,16 +5341,16 @@ describe("runCli", () => {
   it("verify requires a task id", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
-    const previous = process.env.AGENT_PLANE_TASK_ID;
-    delete process.env.AGENT_PLANE_TASK_ID;
+    const previous = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
     try {
       const code = await runCli(["verify", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage: agentplane verify");
     } finally {
       io.restore();
-      if (previous === undefined) delete process.env.AGENT_PLANE_TASK_ID;
-      else process.env.AGENT_PLANE_TASK_ID = previous;
+      if (previous === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = previous;
     }
   });
 
@@ -5837,8 +5837,8 @@ describe("runCli", () => {
       ioTask.restore();
     }
 
-    const previous = process.env.AGENT_PLANE_TASK_ID;
-    process.env.AGENT_PLANE_TASK_ID = taskId;
+    const previous = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = taskId;
     const io = captureStdIO();
     try {
       const code = await runCli(["verify", "--quiet", "--root", root]);
@@ -5846,8 +5846,8 @@ describe("runCli", () => {
       expect(io.stdout.trim()).toBe("");
     } finally {
       io.restore();
-      if (previous === undefined) delete process.env.AGENT_PLANE_TASK_ID;
-      else process.env.AGENT_PLANE_TASK_ID = previous;
+      if (previous === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = previous;
     }
   });
 
@@ -8250,8 +8250,8 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     const messagePath = path.join(root, "COMMIT_EDITMSG");
     await writeFile(messagePath, "✨ ABCDEF add guard checks\n", "utf8");
-    const prev = process.env.AGENT_PLANE_TASK_ID;
-    process.env.AGENT_PLANE_TASK_ID = "202601010101-ABCDEF";
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
 
     const io = captureStdIO();
     try {
@@ -8259,8 +8259,8 @@ describe("runCli", () => {
       expect(code).toBe(0);
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
-      else process.env.AGENT_PLANE_TASK_ID = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
     }
   });
 
@@ -8280,8 +8280,8 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     const messagePath = path.join(root, "COMMIT_EDITMSG");
     await writeFile(messagePath, "# comment\n\n", "utf8");
-    const prev = process.env.AGENT_PLANE_TASK_ID;
-    delete process.env.AGENT_PLANE_TASK_ID;
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
 
     const io = captureStdIO();
     try {
@@ -8290,8 +8290,8 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Commit message subject is empty");
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
-      else process.env.AGENT_PLANE_TASK_ID = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
     }
   });
 
@@ -8299,8 +8299,8 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     const messagePath = path.join(root, "COMMIT_EDITMSG");
     await writeFile(messagePath, "chore: update\n", "utf8");
-    const prev = process.env.AGENT_PLANE_TASK_ID;
-    process.env.AGENT_PLANE_TASK_ID = "202601010101-ABCDEF";
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
 
     const io = captureStdIO();
     try {
@@ -8308,8 +8308,8 @@ describe("runCli", () => {
       expect(code).toBe(5);
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
-      else process.env.AGENT_PLANE_TASK_ID = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
     }
   });
 
@@ -8343,8 +8343,8 @@ describe("runCli", () => {
     const messagePath = path.join(root, "COMMIT_EDITMSG");
     const suffix = taskId.split("-").at(-1) ?? "";
     await writeFile(messagePath, `feat: ${suffix} add hooks\n`, "utf8");
-    const prev = process.env.AGENT_PLANE_TASK_ID;
-    delete process.env.AGENT_PLANE_TASK_ID;
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
 
     const io = captureStdIO();
     try {
@@ -8352,8 +8352,8 @@ describe("runCli", () => {
       expect(code).toBe(0);
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
-      else process.env.AGENT_PLANE_TASK_ID = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
     }
   });
 
@@ -8386,8 +8386,8 @@ describe("runCli", () => {
 
     const messagePath = path.join(root, "COMMIT_EDITMSG");
     await writeFile(messagePath, "feat: add hooks\n", "utf8");
-    const prev = process.env.AGENT_PLANE_TASK_ID;
-    delete process.env.AGENT_PLANE_TASK_ID;
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
 
     const io = captureStdIO();
     try {
@@ -8397,8 +8397,8 @@ describe("runCli", () => {
       expect(taskId).not.toEqual("");
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
-      else process.env.AGENT_PLANE_TASK_ID = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
     }
   });
 
@@ -8407,8 +8407,8 @@ describe("runCli", () => {
     await writeDefaultConfig(root);
     const messagePath = path.join(root, "COMMIT_EDITMSG");
     await writeFile(messagePath, "feat: add hooks\n", "utf8");
-    const prev = process.env.AGENT_PLANE_TASK_ID;
-    delete process.env.AGENT_PLANE_TASK_ID;
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
 
     const io = captureStdIO();
     try {
@@ -8417,8 +8417,8 @@ describe("runCli", () => {
       expect(io.stderr).toContain("No task IDs available");
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_TASK_ID;
-      else process.env.AGENT_PLANE_TASK_ID = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
     }
   });
 
@@ -8454,8 +8454,8 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
 
-    const prev = process.env.AGENT_PLANE_ALLOW_TASKS;
-    process.env.AGENT_PLANE_ALLOW_TASKS = "0";
+    const prev = process.env.AGENTPLANE_ALLOW_TASKS;
+    process.env.AGENTPLANE_ALLOW_TASKS = "0";
 
     const io = captureStdIO();
     try {
@@ -8464,8 +8464,8 @@ describe("runCli", () => {
       expect(io.stderr).toContain("protected by agentplane hooks");
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_TASKS;
-      else process.env.AGENT_PLANE_ALLOW_TASKS = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_ALLOW_TASKS;
+      else process.env.AGENTPLANE_ALLOW_TASKS = prev;
     }
   });
 
@@ -8488,8 +8488,8 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
 
-    const prev = process.env.AGENT_PLANE_ALLOW_TASKS;
-    process.env.AGENT_PLANE_ALLOW_TASKS = "1";
+    const prev = process.env.AGENTPLANE_ALLOW_TASKS;
+    process.env.AGENTPLANE_ALLOW_TASKS = "1";
 
     const io = captureStdIO();
     try {
@@ -8497,8 +8497,8 @@ describe("runCli", () => {
       expect(code).toBe(0);
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_TASKS;
-      else process.env.AGENT_PLANE_ALLOW_TASKS = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_ALLOW_TASKS;
+      else process.env.AGENTPLANE_ALLOW_TASKS = prev;
     }
   });
 
@@ -8512,8 +8512,8 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
 
-    const prev = process.env.AGENT_PLANE_ALLOW_BASE;
-    process.env.AGENT_PLANE_ALLOW_BASE = "1";
+    const prev = process.env.AGENTPLANE_ALLOW_BASE;
+    process.env.AGENTPLANE_ALLOW_BASE = "1";
 
     const io = captureStdIO();
     try {
@@ -8521,8 +8521,8 @@ describe("runCli", () => {
       expect(code).toBe(0);
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_BASE;
-      else process.env.AGENT_PLANE_ALLOW_BASE = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_ALLOW_BASE;
+      else process.env.AGENTPLANE_ALLOW_BASE = prev;
     }
   });
 
@@ -8536,8 +8536,8 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", "src/app.ts"], { cwd: root });
 
-    const prev = process.env.AGENT_PLANE_ALLOW_BASE;
-    delete process.env.AGENT_PLANE_ALLOW_BASE;
+    const prev = process.env.AGENTPLANE_ALLOW_BASE;
+    delete process.env.AGENTPLANE_ALLOW_BASE;
 
     const io = captureStdIO();
     try {
@@ -8546,8 +8546,8 @@ describe("runCli", () => {
       expect(io.stderr).toContain("forbidden on main");
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_BASE;
-      else process.env.AGENT_PLANE_ALLOW_BASE = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_ALLOW_BASE;
+      else process.env.AGENTPLANE_ALLOW_BASE = prev;
     }
   });
 
@@ -8561,8 +8561,8 @@ describe("runCli", () => {
     await writeFile(path.join(root, ".agentplane", "tasks.json"), "{}", "utf8");
     await execFileAsync("git", ["add", ".agentplane/tasks.json"], { cwd: root });
 
-    const prev = process.env.AGENT_PLANE_ALLOW_TASKS;
-    process.env.AGENT_PLANE_ALLOW_TASKS = "1";
+    const prev = process.env.AGENTPLANE_ALLOW_TASKS;
+    process.env.AGENTPLANE_ALLOW_TASKS = "1";
 
     const io = captureStdIO();
     try {
@@ -8571,8 +8571,8 @@ describe("runCli", () => {
       expect(io.stderr).toContain("allowed only on main");
     } finally {
       io.restore();
-      if (prev === undefined) delete process.env.AGENT_PLANE_ALLOW_TASKS;
-      else process.env.AGENT_PLANE_ALLOW_TASKS = prev;
+      if (prev === undefined) delete process.env.AGENTPLANE_ALLOW_TASKS;
+      else process.env.AGENTPLANE_ALLOW_TASKS = prev;
     }
   });
 
