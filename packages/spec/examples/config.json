@@ -7,7 +7,8 @@
   "agents": {
     "approvals": {
       "require_plan": true,
-      "require_network": true
+      "require_network": true,
+      "require_verify": true
     }
   },
   "recipes": {
@@ -34,10 +35,18 @@
         "Scope",
         "Risks",
         "Verify Steps",
+        "Verification",
         "Rollback Plan",
         "Notes"
       ],
-      "required_sections": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
+      "required_sections": [
+        "Summary",
+        "Scope",
+        "Risks",
+        "Verify Steps",
+        "Verification",
+        "Rollback Plan"
+      ]
     },
     "comments": {
       "start": { "prefix": "Start:", "min_chars": 40 },

@@ -119,6 +119,9 @@ function defaultTaskBody(): string {
     "## Verify Steps",
     "",
     "",
+    "## Verification",
+    "",
+    "",
     "## Rollback Plan",
     "",
   ].join("\n");

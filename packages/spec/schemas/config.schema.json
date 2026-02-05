@@ -24,17 +24,18 @@
       "additionalProperties": true,
       "required": ["approvals"],
       "default": {
-        "approvals": { "require_plan": true, "require_network": true }
+        "approvals": { "require_plan": true, "require_network": true, "require_verify": true }
       },
       "properties": {
         "approvals": {
           "type": "object",
           "additionalProperties": true,
-          "required": ["require_plan", "require_network"],
-          "default": { "require_plan": true, "require_network": true },
+          "required": ["require_plan", "require_network", "require_verify"],
+          "default": { "require_plan": true, "require_network": true, "require_verify": true },
           "properties": {
             "require_plan": { "type": "boolean", "default": true },
-            "require_network": { "type": "boolean", "default": true }
+            "require_network": { "type": "boolean", "default": true },
+            "require_verify": { "type": "boolean", "default": true }
           }
         }
       }
@@ -156,10 +157,18 @@
               "Scope",
               "Risks",
               "Verify Steps",
+              "Verification",
               "Rollback Plan",
               "Notes"
             ],
-            "required_sections": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
+            "required_sections": [
+              "Summary",
+              "Scope",
+              "Risks",
+              "Verify Steps",
+              "Verification",
+              "Rollback Plan"
+            ]
           },
           "properties": {
             "sections": {
@@ -171,6 +180,7 @@
                 "Scope",
                 "Risks",
                 "Verify Steps",
+                "Verification",
                 "Rollback Plan",
                 "Notes"
               ]
@@ -178,7 +188,14 @@
             "required_sections": {
               "type": "array",
               "items": { "type": "string", "minLength": 1 },
-              "default": ["Summary", "Scope", "Risks", "Verify Steps", "Rollback Plan"]
+              "default": [
+                "Summary",
+                "Scope",
+                "Risks",
+                "Verify Steps",
+                "Verification",
+                "Rollback Plan"
+              ]
             }
           }
         },

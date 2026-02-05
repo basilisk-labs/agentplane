@@ -147,6 +147,14 @@ describe("config", () => {
           ).require_network = "nope"),
         /require_network must be boolean/,
       ],
+      [
+        "agents.approvals.require_verify",
+        (raw) =>
+          ((
+            (raw.agents as Record<string, unknown>).approvals as Record<string, unknown>
+          ).require_verify = "nope"),
+        /require_verify must be boolean/,
+      ],
       ["recipes", (raw) => (raw.recipes = "nope"), /recipes must be object/],
       [
         "recipes.storage_default",
