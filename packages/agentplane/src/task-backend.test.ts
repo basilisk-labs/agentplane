@@ -20,6 +20,35 @@ import {
 } from "./task-backend.js";
 
 const TMP_PREFIX = "agentplane-task-backend-";
+let stdioCapture: { restore: () => void } | null = null;
+
+function captureStdIO() {
+  const origStdoutWrite = process.stdout.write.bind(process.stdout);
+  const origStderrWrite = process.stderr.write.bind(process.stderr);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (process.stdout.write as any) = () => true;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (process.stderr.write as any) = () => true;
+
+  return {
+    restore() {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (process.stdout.write as any) = origStdoutWrite;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (process.stderr.write as any) = origStderrWrite;
+    },
+  };
+}
+
+beforeEach(() => {
+  stdioCapture = captureStdIO();
+});
+
+afterEach(() => {
+  stdioCapture?.restore();
+  stdioCapture = null;
+});
 
 async function makeTempDir(): Promise<string> {
   return await mkdtemp(path.join(os.tmpdir(), TMP_PREFIX));
