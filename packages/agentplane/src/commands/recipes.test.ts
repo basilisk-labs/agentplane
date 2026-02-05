@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -8,7 +8,8 @@ import { CliError } from "../errors.js";
 import {
   captureStdIO,
   createRecipeArchive,
-  mkTempDir,
+  createRecipeArchiveWithManifest,
+  mkGitRepoRoot,
   writeDefaultConfig,
 } from "../run-cli.test-helpers.js";
 
@@ -204,7 +205,7 @@ describe("commands/recipes", () => {
 
   it("installs a recipe from a local archive path", async () => {
     if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkTempDir();
+    const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
     const { archivePath } = await createRecipeArchive();
 
@@ -218,7 +219,7 @@ describe("commands/recipes", () => {
 
   it("prints recipe info details", async () => {
     if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkTempDir();
+    const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
     await installRecipe({ projectDir, tags: ["docs"] });
 
@@ -241,7 +242,7 @@ describe("commands/recipes", () => {
 
   it("prints recipe explain output", async () => {
     if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkTempDir();
+    const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
     await installRecipe({ projectDir });
 
@@ -260,9 +261,47 @@ describe("commands/recipes", () => {
     expect(io.stdout).toContain("Steps:");
   });
 
+  it("recipe explain uses manifest scenarios when no scenario files exist", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await writeInstalledRecipes([
+      baseRecipeEntry({
+        manifest: {
+          schema_version: "1",
+          id: "viewer",
+          version: "1.2.3",
+          name: "Viewer",
+          summary: "Preview tasks",
+          description: "Preview tasks",
+          tags: [],
+          agents: [],
+          tools: [],
+          scenarios: [{ id: "alpha", summary: "Alpha scenario" }],
+        },
+      }),
+    ]);
+    const recipeDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
+    await mkdir(recipeDir, { recursive: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await cmdRecipes({
+        cwd: projectDir,
+        args: ["viewer"],
+        command: "explain",
+      });
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Scenarios:");
+      expect(io.stdout).toContain("alpha");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("removes an installed recipe", async () => {
     if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkTempDir();
+    const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
     await installRecipe({ projectDir });
 
@@ -347,6 +386,316 @@ describe("commands/recipes", () => {
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
 
     await rm(cwd, { recursive: true, force: true });
+  });
+
+  it("scenario list and info read installed recipe scenarios", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await installRecipe({ projectDir });
+
+    const ioList = captureStdIO();
+    try {
+      const code = await cmdScenario({
+        cwd: projectDir,
+        args: [],
+        command: "list",
+      });
+      expect(code).toBe(0);
+      expect(ioList.stdout).toContain("viewer:RECIPE_SCENARIO");
+    } finally {
+      ioList.restore();
+    }
+
+    const ioInfo = captureStdIO();
+    try {
+      const code = await cmdScenario({
+        cwd: projectDir,
+        args: ["viewer:RECIPE_SCENARIO"],
+        command: "info",
+      });
+      expect(code).toBe(0);
+      expect(ioInfo.stdout).toContain("Goal:");
+      expect(ioInfo.stdout).toContain("Inputs:");
+      expect(ioInfo.stdout).toContain("Outputs:");
+      expect(ioInfo.stdout).toContain("Steps:");
+    } finally {
+      ioInfo.restore();
+    }
+  });
+
+  it("scenario commands validate usage and run scenarios", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await installRecipe({ projectDir });
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: [], command: undefined }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["extra"], command: "list" }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    await expect(cmdScenario({ cwd: projectDir, args: [], command: "info" })).rejects.toMatchObject(
+      { code: "E_USAGE" },
+    );
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["viewer"], command: "info" }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    await expect(cmdScenario({ cwd: projectDir, args: [], command: "run" })).rejects.toMatchObject({
+      code: "E_USAGE",
+    });
+
+    const ioRun = captureStdIO();
+    try {
+      const code = await cmdScenario({
+        cwd: projectDir,
+        args: ["viewer:RECIPE_SCENARIO"],
+        command: "run",
+      });
+      expect(code).toBe(0);
+    } finally {
+      ioRun.restore();
+    }
+  });
+
+  it("scenario run rejects missing recipes and scenarios", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["missing:scenario"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_IO" });
+
+    await installRecipe({ projectDir });
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["viewer"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["viewer:UNKNOWN"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_IO" });
+
+    const scenariosDir = path.join(tempHome, "recipes", "viewer", "1.2.3", "scenarios");
+    await rm(scenariosDir, { recursive: true, force: true });
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
+  it("scenario list prints empty state when no scenarios exist", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await writeInstalledRecipes([
+      baseRecipeEntry({
+        manifest: {
+          schema_version: "1",
+          id: "viewer",
+          version: "1.2.3",
+          name: "Viewer",
+          summary: "Preview tasks",
+          description: "Preview tasks",
+          tags: ["docs"],
+          agents: [],
+          tools: [],
+          scenarios: [],
+        },
+      }),
+    ]);
+    const recipeDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
+    await mkdir(recipeDir, { recursive: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await cmdScenario({ cwd: projectDir, args: [], command: "list" });
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("No scenarios found");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("scenario info falls back to index summary when definition is missing", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await writeInstalledRecipes([baseRecipeEntry()]);
+    const recipeDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
+    await mkdir(recipeDir, { recursive: true });
+    await writeFile(
+      path.join(recipeDir, "scenarios.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          scenarios: [{ id: "beta", summary: "Beta scenario" }],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await cmdScenario({
+        cwd: projectDir,
+        args: ["viewer:beta"],
+        command: "info",
+      });
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Summary: Beta scenario");
+      expect(io.stdout).toContain("Scenario definition not found in recipe");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("scenario run rejects invalid tool runtime and failing tools", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await installRecipe({ projectDir });
+
+    const recipeDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
+    const manifestPath = path.join(recipeDir, "manifest.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as Record<string, unknown>;
+    (manifest.tools as Record<string, unknown>[])[0].runtime = "python";
+    await writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+
+    (manifest.tools as Record<string, unknown>[])[0].runtime = "bash";
+    await writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
+    await writeFile(path.join(recipeDir, "tools", "run.sh"), "exit 2\n", "utf8");
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_INTERNAL" });
+
+    const runsRoot = path.join(projectDir, ".agentplane", "recipes", "viewer", "runs");
+    const runs = await readdir(runsRoot);
+    expect(runs.length).toBeGreaterThan(0);
+    const latest = runs.toSorted().at(-1);
+    const metaPath = path.join(runsRoot, latest ?? "", "meta.json");
+    expect(await readFile(metaPath, "utf8")).toContain('"recipe"');
+  });
+
+  it("scenario run warns on tool permissions and missing entrypoint", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    const manifest = {
+      schema_version: "1",
+      id: "viewer",
+      version: "1.2.3",
+      name: "Viewer",
+      summary: "Preview tasks",
+      description: "Preview tasks",
+      tools: [
+        {
+          id: "WARN_TOOL",
+          summary: "Warn tool",
+          runtime: "bash",
+          entrypoint: "tools/missing.sh",
+          permissions: ["read", "write"],
+        },
+      ],
+      scenarios: [{ id: "WARN_SCENARIO", summary: "Warn scenario" }],
+    };
+    const archivePath = await createRecipeArchiveWithManifest({
+      manifest,
+      files: {
+        "scenarios/warn.json": JSON.stringify(
+          {
+            schema_version: "1",
+            id: "WARN_SCENARIO",
+            goal: "warn",
+            inputs: [],
+            outputs: [],
+            steps: [{ tool: "WARN_TOOL" }],
+          },
+          null,
+          2,
+        ),
+      },
+    });
+
+    await cmdRecipes({
+      cwd: projectDir,
+      args: ["--path", archivePath],
+      command: "install",
+    });
+
+    const io = captureStdIO();
+    try {
+      await expect(
+        cmdScenario({ cwd: projectDir, args: ["viewer:WARN_SCENARIO"], command: "run" }),
+      ).rejects.toMatchObject({ code: "E_IO" });
+      expect(io.stdout).toContain("Warning: tool WARN_TOOL declares permissions");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("scenario run rejects invalid step args", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    const manifest = {
+      schema_version: "1",
+      id: "viewer",
+      version: "1.2.3",
+      name: "Viewer",
+      summary: "Preview tasks",
+      description: "Preview tasks",
+      tools: [
+        {
+          id: "BAD_ARGS_TOOL",
+          summary: "Bad args tool",
+          runtime: "bash",
+          entrypoint: "tools/run.sh",
+        },
+      ],
+      scenarios: [{ id: "BAD_ARGS", summary: "Bad args scenario" }],
+    };
+    const archivePath = await createRecipeArchiveWithManifest({
+      manifest,
+      files: {
+        "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
+        "scenarios/bad-args.json": JSON.stringify(
+          {
+            schema_version: "1",
+            id: "BAD_ARGS",
+            goal: "bad args",
+            inputs: [],
+            outputs: [],
+            steps: [{ tool: "BAD_ARGS_TOOL", args: [1] }],
+          },
+          null,
+          2,
+        ),
+      },
+    });
+
+    await cmdRecipes({
+      cwd: projectDir,
+      args: ["--path", archivePath],
+      command: "install",
+    });
+
+    await expect(
+      cmdScenario({ cwd: projectDir, args: ["viewer:BAD_ARGS"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_IO" });
   });
 
   it("lists empty recipes with default hint", async () => {

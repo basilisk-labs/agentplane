@@ -369,4 +369,76 @@ describe("task-store", () => {
       "doc_updated_by must be a non-empty string",
     ]);
   });
+
+  it("validateTaskDocMetadata returns no errors for valid metadata", () => {
+    const errors = validateTaskDocMetadata({
+      doc_version: 2,
+      doc_updated_at: "2026-02-05T00:00:00Z",
+      doc_updated_by: "CODER",
+    });
+    expect(errors).toEqual([]);
+  });
+
+  it("setTaskDocSection prefers existing doc_updated_by when available", async () => {
+    const root = await mkGitRepoRoot();
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "My task",
+      description: "Why it matters",
+      owner: "CODER",
+      priority: "med",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const original = await readFile(created.readmePath, "utf8");
+    const withDocAuthor = original.replace('doc_updated_by: "CODER"', 'doc_updated_by: "DOCS"');
+    await writeFile(created.readmePath, withDocAuthor, "utf8");
+
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: created.id,
+      section: "Summary",
+      text: "Updated summary",
+    });
+
+    const updated = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+    expect(updated.frontmatter.doc_updated_by).toBe("DOCS");
+  });
+
+  it("setTaskDocSection falls back to owner when doc_updated_by is agentplane", async () => {
+    const root = await mkGitRepoRoot();
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "My task",
+      description: "Why it matters",
+      owner: "CODER",
+      priority: "med",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const original = await readFile(created.readmePath, "utf8");
+    const withAgentplane = original.replace(
+      'doc_updated_by: "CODER"',
+      'doc_updated_by: "agentplane"',
+    );
+    await writeFile(created.readmePath, withAgentplane, "utf8");
+
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: created.id,
+      section: "Summary",
+      text: "Updated summary",
+    });
+
+    const updated = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+    expect(updated.frontmatter.doc_updated_by).toBe("CODER");
+  });
 });

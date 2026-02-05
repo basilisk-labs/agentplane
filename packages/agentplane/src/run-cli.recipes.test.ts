@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { runCli } from "./run-cli.js";
 import {
@@ -16,12 +16,23 @@ import {
   registerAgentplaneHome,
   resetAgentplaneHomeRecipes,
   runCliSilent,
+  silenceStdIO,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 
 registerAgentplaneHome();
 
 const agentplaneHomePath = () => getAgentplaneHome() ?? "";
+let restoreStdIO: (() => void) | null = null;
+
+beforeEach(() => {
+  restoreStdIO = silenceStdIO();
+});
+
+afterEach(() => {
+  restoreStdIO?.();
+  restoreStdIO = null;
+});
 
 describe("runCli recipes", () => {
   it("recipes install renames agents on conflict when requested", async () => {

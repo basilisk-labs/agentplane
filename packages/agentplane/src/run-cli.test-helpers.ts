@@ -15,6 +15,9 @@ const execFileAsync = promisify(execFile);
 let agentplaneHome: string | null = null;
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
 const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+const originalStdoutWrite = process.stdout.write.bind(process.stdout);
+const originalStderrWrite = process.stderr.write.bind(process.stderr);
+let stdioSilenceDepth = 0;
 const recipeArchiveCache = new Map<
   string,
   { archivePath: string; manifest: Record<string, unknown> }
@@ -101,6 +104,26 @@ export function captureStdIO() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (process.stderr.write as any) = origStderrWrite;
     },
+  };
+}
+
+export function silenceStdIO(): () => void {
+  if (stdioSilenceDepth === 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (process.stdout.write as any) = () => true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (process.stderr.write as any) = () => true;
+  }
+  stdioSilenceDepth += 1;
+  return () => {
+    stdioSilenceDepth -= 1;
+    if (stdioSilenceDepth <= 0) {
+      stdioSilenceDepth = 0;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (process.stdout.write as any) = originalStdoutWrite;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (process.stderr.write as any) = originalStderrWrite;
+    }
   };
 }
 

@@ -12,7 +12,7 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   defaultConfig,
@@ -44,13 +44,25 @@ import {
   mkTempDir,
   pathExists,
   registerAgentplaneHome,
+  silenceStdIO,
   stageGitignoreIfPresent,
   writeConfig,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 import { resolveUpdateCheckCachePath } from "./cli/update-check.js";
+import * as prompts from "./cli/prompts.js";
 
 registerAgentplaneHome();
+let restoreStdIO: (() => void) | null = null;
+
+beforeEach(() => {
+  restoreStdIO = silenceStdIO();
+});
+
+afterEach(() => {
+  restoreStdIO?.();
+  restoreStdIO = null;
+});
 
 describe("runCli", () => {
   it("prints help on --help", async () => {
@@ -163,6 +175,104 @@ describe("runCli", () => {
       expect(globalThis.fetch).not.toHaveBeenCalled();
     } finally {
       globalThis.fetch = originalFetch;
+      io.restore();
+    }
+  });
+
+  it("skips update check when AGENTPLANE_NO_UPDATE_CHECK is truthy", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    const originalFetch = globalThis.fetch;
+    const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    process.env.AGENTPLANE_NO_UPDATE_CHECK = "yes";
+    globalThis.fetch = vi.fn(() => {
+      throw new Error("should not fetch");
+    }) as unknown as typeof fetch;
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Update available");
+      expect(globalThis.fetch).not.toHaveBeenCalled();
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalNoUpdateCheck === undefined) {
+        delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+      } else {
+        process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
+      }
+      io.restore();
+    }
+  });
+
+  it("does not warn on prerelease versions", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const home = getAgentplaneHome();
+    if (!home) throw new Error("agentplane home not set");
+    const cachePath = resolveUpdateCheckCachePath(home);
+    await rm(cachePath, { force: true });
+    const io = captureStdIO();
+    const originalFetch = globalThis.fetch;
+    const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    globalThis.fetch = vi.fn(() =>
+      Response.json({ version: "0.1.4-beta.1" }),
+    ) as unknown as typeof fetch;
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Update available");
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalNoUpdateCheck === undefined) {
+        delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+      } else {
+        process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
+      }
+      io.restore();
+    }
+  });
+
+  it("handles not-modified update responses", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const home = getAgentplaneHome();
+    if (!home) throw new Error("agentplane home not set");
+    const cachePath = resolveUpdateCheckCachePath(home);
+    await mkdir(path.dirname(cachePath), { recursive: true });
+    await writeFile(
+      cachePath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          checked_at: "2020-01-01T00:00:00Z",
+          latest_version: "0.1.4",
+          etag: '"etag"',
+          status: "ok",
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    const io = captureStdIO();
+    const originalFetch = globalThis.fetch;
+    const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    globalThis.fetch = vi.fn(() => new Response(null, { status: 304 })) as unknown as typeof fetch;
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Update available");
+      expect(globalThis.fetch).toHaveBeenCalled();
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalNoUpdateCheck === undefined) {
+        delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+      } else {
+        process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
+      }
       io.restore();
     }
   });
@@ -461,6 +571,95 @@ describe("runCli", () => {
     }
   });
 
+  it("task comment validates flags and appends comments", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Comment task",
+          "--description",
+          "Needs comments",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--verify",
+          "echo ok",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "comment", taskId, "--author", "Coder", "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Usage: agentplane task comment");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "comment", taskId, "--author", "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Missing value for --author");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "comment", taskId, "--nope", "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Usage: agentplane task comment");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "comment",
+          taskId,
+          "--author",
+          "Coder",
+          "--body",
+          "All good",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.comments?.length).toBe(1);
+    expect(task.frontmatter.comments?.[0]?.body).toContain("All good");
+  });
+
   it("task update appends tags and depends-on", async () => {
     const root = await mkGitRepoRoot();
     let taskId = "";
@@ -511,6 +710,243 @@ describe("runCli", () => {
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
     expect(task.frontmatter.tags).toContain("nodejs");
     expect(task.frontmatter.depends_on).toContain("202601010101-ABCD");
+  });
+
+  it("task set-status validates commit flags and policies", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Status task",
+          "--description",
+          "Needs status",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--verify",
+          "echo ok",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Missing value for --commit");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--commit-emoji",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Missing value for --commit-emoji");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--commit-allow",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Missing value for --commit-allow");
+      } finally {
+        io.restore();
+      }
+    }
+
+    const config = defaultConfig();
+    config.status_commit_policy = "confirm";
+    await writeConfig(root, config);
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--commit-from-comment",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("status_commit_policy");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--commit-from-comment",
+          "--confirm-status-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("--body is required");
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
+  it("task set-status enforces readiness and accepts commit metadata", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Ready task",
+          "--description",
+          "Needs deps",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--verify",
+          "echo ok",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "update",
+          taskId,
+          "--depends-on",
+          "202601010101-ABCD",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["task", "set-status", taskId, "DOING", "--root", root]);
+        expect(code).toBe(2);
+        expect(io.stderr).toContain("Task is not ready");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--force",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    await writeFile(path.join(root, "commit.txt"), "content", "utf8");
+    await commitAll(root, "chore: status");
+    const execFileAsync = promisify(execFile);
+    const { stdout: commitSha } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "set-status",
+        taskId,
+        "DONE",
+        "--force",
+        "--commit",
+        commitSha.trim(),
+        "--author",
+        "CODER",
+        "--body",
+        "Done",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
   });
 
   it("task update supports replace flags", async () => {
@@ -2658,6 +3094,105 @@ describe("runCli", () => {
     } finally {
       io.restore();
       spy.mockRestore();
+    }
+  });
+
+  it("sync maps backend errors with backend config hints", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: {
+        id: "redmine",
+        sync: vi.fn().mockImplementation(() => {
+          throw new taskBackend.BackendError("Missing config", "E_BACKEND");
+        }),
+      } as taskBackend.TaskBackend,
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["sync", "redmine", "--direction", "pull", "--root", root]);
+      expect(code).toBe(6);
+      expect(io.stderr).toContain("error [E_BACKEND]");
+      expect(io.stderr).toContain("Check backend config under .agentplane/backends and retry.");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("task list maps backend errors with default backend hints", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
+      backend: {
+        listTasks: vi.fn().mockImplementation(() => {
+          throw new taskBackend.BackendError("Backend failed", "E_BACKEND");
+        }),
+      } as taskBackend.TaskBackend,
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "list", "--root", root]);
+      expect(code).toBe(6);
+      expect(io.stderr).toContain("error [E_BACKEND]");
+      expect(io.stderr).toContain("Check backend config under .agentplane/backends.");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("renders git hint for branch commands", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "base", "get", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Check git repo/branch");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("renders git hint for non-branch commands", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "list", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("Check git repo context");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("renders usage hint for missing args", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["config", "set"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("See `agentplane --help` for usage.");
+    } finally {
+      io.restore();
     }
   });
 
@@ -8683,6 +9218,30 @@ describe("runCli", () => {
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage: agentplane init");
     } finally {
+      io.restore();
+    }
+  });
+
+  it("init prompts for interactive defaults", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const originalIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
+    const choice = vi.spyOn(prompts, "promptChoice").mockResolvedValue("branch_pr");
+    const yesNo = vi.spyOn(prompts, "promptYesNo").mockResolvedValue(true);
+    const promptInput = vi.spyOn(prompts, "promptInput").mockResolvedValue("");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root]);
+      expect(code).toBe(0);
+      expect(choice).toHaveBeenCalled();
+      expect(yesNo).toHaveBeenCalled();
+      expect(promptInput).toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(process.stdin, "isTTY", { value: originalIsTTY, configurable: true });
+      choice.mockRestore();
+      yesNo.mockRestore();
+      promptInput.mockRestore();
       io.restore();
     }
   });
