@@ -1,12 +1,13 @@
 import { mkdtemp, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   readUpdateCheckCache,
   shouldCheckNow,
   UPDATE_CHECK_SCHEMA_VERSION,
+  fetchLatestNpmVersion,
   writeUpdateCheckCache,
   type UpdateCheckCache,
 } from "./update-check.js";
@@ -62,5 +63,64 @@ describe("update-check TTL", () => {
     const stale = new Date(now.getTime() - 1500).toISOString();
     expect(shouldCheckNow(fresh, now, 1000)).toBe(false);
     expect(shouldCheckNow(stale, now, 1000)).toBe(true);
+  });
+});
+
+describe("update-check fetch", () => {
+  it("returns ok with version and etag", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: new Map([["etag", '"abc"']]),
+      json: () => Promise.resolve({ version: "1.2.3" }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await fetchLatestNpmVersion({
+      url: "https://registry.npmjs.org/agentplane/latest",
+      timeoutMs: 50,
+      etag: null,
+    });
+
+    expect(result).toEqual({ status: "ok", latestVersion: "1.2.3", etag: '"abc"' });
+    vi.unstubAllGlobals();
+  });
+
+  it("returns not_modified on 304", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 304,
+      headers: new Map(),
+      json: () => Promise.resolve({}),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await fetchLatestNpmVersion({
+      url: "https://registry.npmjs.org/agentplane/latest",
+      timeoutMs: 50,
+      etag: '"prev"',
+    });
+
+    expect(result).toEqual({ status: "not_modified", etag: '"prev"' });
+    vi.unstubAllGlobals();
+  });
+
+  it("returns error on bad response", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      headers: new Map(),
+      json: () => Promise.resolve({}),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await fetchLatestNpmVersion({
+      url: "https://registry.npmjs.org/agentplane/latest",
+      timeoutMs: 50,
+      etag: null,
+    });
+
+    expect(result).toEqual({ status: "error" });
+    vi.unstubAllGlobals();
   });
 });
