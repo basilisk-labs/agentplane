@@ -530,34 +530,30 @@ Make backends first-class:
 
 ---
 
-## AP-071 — (Optional) Support external backend modules via `module`/`export`
+## AP-071 — Standardize system backend modules for future integrations
 
-Status: Deferred (not required for current backend model)
+Status: DONE (2026-02-05, task 202602051431-6WW12G)
 
 **Problem**
-`backend.json` has `module/class`, but they are not used (and look like Python legacy).
+Backend configuration still carries legacy fields (`module`/`class`) and lacks a consistent, forward‑compatible shape for built-in backends. This makes it harder to add a new backend later without revisiting loader logic.
 
 **Solution**
-If third-party backend extensibility is needed, implement a safe loader:
-
-- backend.json:
-  - `id`
-  - `module`: npm package name or relative path
-  - `export`: exported factory/class name (JS/TS)
-
-- load via dynamic import
-- allowlist (disabled by default, enabled by flag/config)
+Define a standardized, versioned backend config shape for built-in/system backends that can be extended later without changing loader semantics. Keep dynamic module loading out of scope for now.
 
 **Steps**
 
-1. Design new format (versioned).
-2. Implement loader + validation.
-3. Add a safety flag:
-   - `config.backends.allow_dynamic_modules=false` by default
+1. Define a stable backend config schema (versioned):
+   - `id`
+   - `version`
+   - `settings` (backend-specific)
+2. Treat `module`/`class` as legacy fields (ignored by loader).
+3. Document that adding a new backend should only require:
+   - a new built-in backend implementation
+   - a new config template under `.agentplane/backends/<id>/backend.json`
 
 **Acceptance Criteria**
 
-- Third-party backends load only with explicit permission.
+- Adding a future backend does not require changing core loader logic or init flow.
 
 ---
 
