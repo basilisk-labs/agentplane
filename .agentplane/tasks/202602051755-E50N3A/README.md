@@ -1,17 +1,18 @@
 ---
 id: "202602051755-E50N3A"
 title: "Release workflow: version checks + GitHub Release"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["release", "ci"]
 verify: []
-commit: null
+commit: { hash: "d57f00d6203e3184099564f8a8b2bb61a43e59fc", message: "✨ E50N3A automate tagged releases" }
 comments:
   - { author: "CODER", body: "Start: add version/tag validation and auto GitHub Release to publish workflow." }
+  - { author: "CODER", body: "Verified: publish workflow validates versions/notes and creates GitHub Release on tag." }
 doc_version: 2
-doc_updated_at: "2026-02-05T17:57:29.849Z"
+doc_updated_at: "2026-02-05T17:59:06.953Z"
 doc_updated_by: "CODER"
 description: "Add version/tag validation and auto-create GitHub Release on tag publish."
 id_source: "generated"
