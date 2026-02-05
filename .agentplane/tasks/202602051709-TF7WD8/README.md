@@ -1,17 +1,18 @@
 ---
 id: "202602051709-TF7WD8"
 title: "Fix ESLint no-unsafe warnings"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["testing"]
 verify: []
-commit: null
+commit: { hash: "f8e481e8923cafbe3d10af9ac8e61af3b8e79361", message: "✨ TF7WD8 align ESLint settings" }
 comments:
   - { author: "CODER", body: "Start: fix ESLint no-unsafe warnings across workflow/config/recipes/run-cli/archive/task-backend and clarify ignored-file warning." }
+  - { author: "CODER", body: "Verified: ESLint now uses flat config in IDE; lint and test:fast passed to confirm no-unsafe warnings are resolved." }
 doc_version: 2
-doc_updated_at: "2026-02-05T17:10:00.730Z"
+doc_updated_at: "2026-02-05T17:18:07.448Z"
 doc_updated_by: "CODER"
 description: "Resolve remaining @typescript-eslint/no-unsafe-* warnings in workflow/config/recipes/run-cli/archive/task-backend paths; document ignored file warning."
 id_source: "generated"

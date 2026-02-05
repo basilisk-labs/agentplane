@@ -15263,7 +15263,7 @@
       "id": "202602051709-TF7WD8",
       "title": "Fix ESLint no-unsafe warnings",
       "description": "Resolve remaining @typescript-eslint/no-unsafe-* warnings in workflow/config/recipes/run-cli/archive/task-backend paths; document ignored file warning.",
-      "status": "DOING",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [],
@@ -15271,19 +15271,26 @@
         "testing"
       ],
       "verify": [],
-      "commit": null,
+      "commit": {
+        "hash": "f8e481e8923cafbe3d10af9ac8e61af3b8e79361",
+        "message": "✨ TF7WD8 align ESLint settings"
+      },
       "comments": [
         {
           "author": "CODER",
           "body": "Start: fix ESLint no-unsafe warnings across workflow/config/recipes/run-cli/archive/task-backend and clarify ignored-file warning."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: ESLint now uses flat config in IDE; lint and test:fast passed to confirm no-unsafe warnings are resolved."
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T17:10:00.730Z",
+      "doc_updated_at": "2026-02-05T17:18:07.448Z",
       "doc_updated_by": "CODER",
+      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nResolve remaining ESLint no-unsafe warnings in key modules and note ignored-file warning.\n\n## Scope\n\n- Address no-unsafe-* ESLint warnings in workflow.ts, config.ts, archive.ts, recipes tests, run-cli recipes tests, task-backend/test.\\n- Keep behavior unchanged; add explicit typing/casts where needed.\\n- Note ignored-file ESLint warning for agentplane-recipes/scripts/sign-index.ts.\n\n## Risks\n\n- Type-only changes might hide real issues if misapplied.\\n- Avoid behavior changes.\n\n## Verify Steps\n\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n\n## Rollback Plan\n\n- Revert type annotations if they cause mismatches.",
-      "dirty": false
+      "doc": "## Summary\n\nResolve remaining ESLint no-unsafe warnings in key modules and note ignored-file warning.\n\n## Scope\n\n- Address no-unsafe-* ESLint warnings in workflow.ts, config.ts, archive.ts, recipes tests, run-cli recipes tests, task-backend/test.\\n- Keep behavior unchanged; add explicit typing/casts where needed.\\n- Note ignored-file ESLint warning for agentplane-recipes/scripts/sign-index.ts.\n\n## Risks\n\n- Type-only changes might hide real issues if misapplied.\\n- Avoid behavior changes.\n\n## Verify Steps\n\n- bun run lint.\\n- bun run test:fast.\n\n## Verification\n\n\n## Rollback Plan\n\n- Revert type annotations if they cause mismatches."
     },
     {
       "id": "202602051712-JWW8VN",
@@ -15314,15 +15321,15 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T17:14:10.430Z",
       "doc_updated_by": "DOCS",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nRemove ROADMAP.md after completion.\n\n## Scope\n\n- Delete ROADMAP.md.\\n- Commit removal as standalone task.\n\n## Risks\n\n- Minimal risk; removes completed roadmap from repo.\n\n## Verify Steps\n\n- git status shows ROADMAP.md removed.\n\n## Verification\n\n\n## Rollback Plan\n\n- Restore ROADMAP.md from git history if needed."
+      "doc": "## Summary\n\nRemove ROADMAP.md after completion.\n\n## Scope\n\n- Delete ROADMAP.md.\\n- Commit removal as standalone task.\n\n## Risks\n\n- Minimal risk; removes completed roadmap from repo.\n\n## Verify Steps\n\n- git status shows ROADMAP.md removed.\n\n## Verification\n\n\n## Rollback Plan\n\n- Restore ROADMAP.md from git history if needed.",
+      "dirty": false
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "47fc923caac683d4068646e0c0398befe74c6782f68aa6bbbff071e914778b0d"
+    "checksum": "baf0551c8b4cd4b2d3361eaedcd177f20f5d3c5acacf02362323467efa919ed2"
   }
 }
