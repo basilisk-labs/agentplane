@@ -1,0 +1,6 @@
+{
+  "eslint.useFlatConfig": true,
+  "eslint.experimental.useFlatConfig": true,
+  "eslint.onIgnoredFiles": "off",
+  "eslint.workingDirectories": [{ "mode": "auto" }]
+}
