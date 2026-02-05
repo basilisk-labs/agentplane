@@ -1,18 +1,19 @@
 ---
 id: "202602051311-6RYAY0"
 title: "Audit Epic E: align config defaults and validate spec example"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["epic-e", "config", "schema", "tests"]
 verify: []
-commit: null
+commit: { hash: "ffa7a7a5094a85afae04d91110d5c2c61b3d48f3", message: "✨ 6RYAY0 align schema defaults and validate example" }
 comments:
   - { author: "CODER", body: "Start: align schema defaults for tasks.doc and add runtime test for spec example config." }
+  - { author: "CODER", body: "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify --yes --quiet." }
 doc_version: 2
-doc_updated_at: "2026-02-05T13:13:58.634Z"
-doc_updated_by: "VERIFY"
+doc_updated_at: "2026-02-05T13:14:35.589Z"
+doc_updated_by: "CODER"
 description: "Fix schema defaults for tasks.doc to include Verification and add runtime test for spec example config."
 id_source: "generated"
 ---
