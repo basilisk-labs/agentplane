@@ -1,17 +1,18 @@
 ---
 id: "202602050558-QYTQJN"
 title: "Format ROADMAP.md for Prettier"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs", "formatting"]
 verify: []
-commit: null
+commit: { hash: "0b2cd79f9c942e8e11bdbfefd0304c02a74ab1af", message: "🧩 QYTQJN format ROADMAP.md" }
 comments:
   - { author: "DOCS", body: "Start: apply Prettier formatting to ROADMAP.md." }
+  - { author: "DOCS", body: "Verified: ROADMAP.md formatted with Prettier and pre-commit format:check passes." }
 doc_version: 2
-doc_updated_at: "2026-02-05T05:59:25.056Z"
+doc_updated_at: "2026-02-05T06:00:06.249Z"
 doc_updated_by: "DOCS"
 description: "Apply Prettier formatting to ROADMAP.md so pre-commit checks pass."
 id_source: "generated"
