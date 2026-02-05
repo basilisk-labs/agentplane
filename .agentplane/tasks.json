@@ -13887,7 +13887,7 @@
       "id": "202602051201-695YXF",
       "title": "Config/init: require verify confirmation + add Verification section",
       "description": "Add config flag to require verify confirmation, enable it during init, and add Verification to task README section schema/templates.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [
@@ -13903,19 +13903,32 @@
       "verify": [
         "bun run test:fast"
       ],
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "6a587632ce9708997b47079cec39dcadf582040b",
+        "message": "✨ 695YXF add verify approval config/init"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: add Verification doc section to config/schema/templates and add verify approval setting to init/config."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify (Verification section updated)."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T12:01:51.517Z",
+      "doc_updated_at": "2026-02-05T12:50:42.459Z",
       "doc_updated_by": "CODER",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdd require_verify approval config and init flag; document new verification approval and section.\n\n## Scope\n\nUpdate config schema/examples and core config types; add init flag + help/usage; update docs and init tests; include Verification section in defaults.\n\n## Risks\n\nInteractive verify approval may interrupt automation if enabled; docs/backends without task docs will now block verification.\n\n## Verify Steps\n\ncmd: bun run lint\ncmd: bun run test:fast\ncmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Rollback Plan\n\nRevert commits for config/init and docs changes; reset config schema/example to previous approvals and sections.\n\n## Verification\n\nPending: execute verify after implementation."
     },
     {
       "id": "202602051201-7KW7RP",
       "title": "Verify: write Verification section and fail-back workflow",
       "description": "Write Verification results to task README and return task to DOING with comments on failure.",
-      "status": "TODO",
+      "status": "DOING",
       "priority": "high",
       "owner": "CODER",
       "depends_on": [
@@ -13931,12 +13944,18 @@
         "bun run test:fast"
       ],
       "commit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: implement Verification section updates and fail-back workflow on verify failure."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T12:01:45.554Z",
+      "doc_updated_at": "2026-02-05T12:43:28.791Z",
       "doc_updated_by": "CODER",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nMake verify write a Verification section and fail back to DOING with a comment on errors.\n\n## Scope\n\nUpdate cmdVerify to write Verification content, track failure details, update task status/comments, and add unit tests for pass/fail behavior.\n\n## Risks\n\nVerification now requires task docs support; failure handling updates task state and could be noisy if commands are flaky.\n\n## Verify Steps\n\ncmd: bun run lint\ncmd: bun run test:fast\ncmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit\n\n## Verification\n\nPending: execute verify after implementation.\n\n## Rollback Plan\n\nRevert verify workflow changes and restore previous cmdVerify behavior; remove added tests."
     },
     {
       "id": "202602051201-8C5SHH",
@@ -14040,16 +14059,17 @@
         }
       ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-05T12:02:30.534Z",
+      "doc_updated_at": "2026-02-05T12:48:56.026Z",
       "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
-      "id_source": "generated"
+      "id_source": "generated",
+      "doc": "## Summary\n\nEpic: add README-driven verify execution, write Verification sections on verify, and switch zip validation to yauzl with approval/config/init updates.\n\n## Scope\n\nDeliver AP-020c zip validation (yauzl), README-driven verify execution, Verification section updates, and require_verify config/init/docs changes.\n\n## Risks\n\nVerify now depends on task docs support and may prompt in interactive mode; zip symlink detection relies on externalFileAttributes.\n\n## Verify Steps\n\ncmd: bun run lint\ncmd: bun run test:fast\ncmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit\n- Confirm Verification sections populated for tasks 202602051201-695YXF and 202602051201-7KW7RP\n- Confirm zip validation uses yauzl in archive handling\n\n## Verification\n\nStatus: pass\nVerified at: 2026-02-05\nDetails: bun run lint; bun run test:fast; hooks pre-commit; verify tasks 695YXF and 7KW7RP.\n\n## Rollback Plan\n\nRevert task commits for verify workflow and yauzl integration; restore previous config sections and remove require_verify."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "4089dbe09398dfff075f00d9d1202f8df39824f914d7cb61b798b49f03e14c9c"
+    "checksum": "1540432800870843f851c3bda7bc4875147617bed5cd10a01f88c40a75baf626"
   }
 }
