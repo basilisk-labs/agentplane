@@ -12954,12 +12954,103 @@
       "dirty": false,
       "id_source": "generated",
       "doc": "## Summary\n\nRemoved external Codex worktrees for agentplane under `~/.codex/worktrees` and pruned git worktree metadata.\n\n## Scope\n\nIdentified external worktrees, removed the directories, and ran `git worktree prune`.\n\n## Risks\n\nIf any external worktree was still needed, it was removed; no changes were made to repo contents.\n\n## Verify Steps\n\n1. Run `git worktree list` and confirm only the main repo remains.\n2. Confirm `~/.codex/worktrees` has no `agentplane` worktrees.\n\n## Rollback Plan\n\nRecreate the external worktree via `git worktree add` if required."
+    },
+    {
+      "id": "202602050527-2VHF3R",
+      "title": "AP-001: Align exit codes with CLI contract",
+      "description": "Unify exit codes for E_NETWORK/E_BACKEND per cli-contract; add tests.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "cli",
+        "errors",
+        "contract"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "0e43b050ec7a13329ae787bff9163f0f64a0fd4b",
+        "message": "🧩 2VHF3R align exit codes with contract"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: align E_NETWORK/E_BACKEND exit codes and add contract tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:agentplane; bun run test:cli:core; updated E_NETWORK/E_BACKEND exit codes per contract."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:agentplane; bun run test:cli:core; updated exit codes per contract."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T05:37:53.404Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAlign CLI exit codes with documented contract for network/backend errors and lock behavior via tests.\n\n## Scope\n\nAdd a single exit-code mapping module, update network/backend call sites, and add contract tests.\n\n## Risks\n\nRisk: hidden call sites still set legacy exit codes; mitigate via targeted tests covering E_NETWORK/E_BACKEND and contract table.\n\n## Verify Steps\n\nRun CLI unit tests covering exit codes; confirm E_NETWORK -> 7 and E_BACKEND -> 6; ensure other codes match doc.\n\n## Rollback Plan\n\nRevert commit for this task; restore previous exit-code assignments and tests if regressions appear."
+    },
+    {
+      "id": "202602050527-K3YMDY",
+      "title": "Epic A: CLI contract stability",
+      "description": "Top-level tracking for Epic A (AP-001/AP-002).",
+      "status": "TODO",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "epic",
+        "cli"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T05:27:20.733Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602050527-T58547",
+      "title": "AP-002: Fix JSON error format contract",
+      "description": "Define stable --json error format; update docs and tests; no backward compatibility.",
+      "status": "DOING",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "cli",
+        "errors",
+        "docs"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: lock --json error schema to contract and update tests/docs."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-05T05:34:56.715Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nDefine the canonical --json error format, update docs and code, and enforce via tests (no backward compatibility).\n\n## Scope\n\nUpdate JSON error formatting to match contract, revise cli-contract docs, and add strict tests for required fields.\n\n## Risks\n\nRisk: downstream tooling relying on extra JSON keys may break; mitigated by explicit contract update and tests.\n\n## Verify Steps\n\nRun errors JSON tests; confirm exact keys and types; ensure docs and runtime output match.\n\n## Rollback Plan\n\nRevert commit for this task; restore previous JSON error format if integrations require it."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "eb384cebf3153841d1e4626fcd29e584c9c3900a75127571ac9e714173c55b79"
+    "checksum": "47e945dfabb4537e47981af7ea8765a650cc5e126a2e65e184872c46e4bae3f9"
   }
 }
