@@ -973,6 +973,32 @@ describe("commands/workflow", () => {
     expect(await readFile(path.join(root, "verify-readme.txt"), "utf8")).toContain("ok");
   });
 
+  it("verify writes Verification section on success", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4B";
+    await addTask(root, taskId);
+    await cmdTaskUpdate({
+      cwd: root,
+      args: [taskId, "--replace-verify", "--verify", "echo ok > verify-success.txt"],
+    });
+    await gitCommitFile(root, "verify-success-base.txt", "chore: verify success");
+
+    const code = await cmdVerify({
+      cwd: root,
+      taskId,
+      skipIfUnchanged: false,
+      quiet: true,
+      require: false,
+    });
+    expect(code).toBe(0);
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("## Verification");
+    expect(readme).toContain("Status: pass");
+    expect(readme).toContain("echo ok > verify-success.txt");
+  });
+
   it("verify runs when working tree is dirty with skipIfUnchanged and validates cwd/log paths", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4";
@@ -1057,6 +1083,17 @@ describe("commands/workflow", () => {
         require: false,
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
+
+    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
+    const task = await backend.getTask(taskId);
+    expect(task?.status).toBe("DOING");
+    const lastComment = Array.isArray(task?.comments) ? task?.comments.at(-1) : null;
+    expect(lastComment?.body ?? "").toContain("Verify failed");
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("## Verification");
+    expect(readme).toContain("Status: fail");
   });
 
   it("verify captures stdout and stderr on failure", async () => {
