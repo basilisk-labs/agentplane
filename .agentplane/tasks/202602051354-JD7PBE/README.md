@@ -1,17 +1,18 @@
 ---
 id: "202602051354-JD7PBE"
 title: "AP-060d: Task index docs"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["roadmap", "docs", "cache"]
 verify: []
-commit: null
+commit: { hash: "394f1cdf40d4e9aa9eb33c4b74bd7927e381de3c", message: "📝 JD7PBE document task index cache" }
 comments:
   - { author: "DOCS", body: "Start: document task index cache behavior and file format." }
+  - { author: "DOCS", body: "Verified: project layout docs updated with task index cache entry." }
 doc_version: 2
-doc_updated_at: "2026-02-05T14:06:13.857Z"
+doc_updated_at: "2026-02-05T14:08:47.796Z"
 doc_updated_by: "DOCS"
 description: "Document task index cache behavior and file format in developer docs/README as needed."
 id_source: "generated"

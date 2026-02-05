@@ -1,17 +1,18 @@
 ---
 id: "202602051409-NCKJNQ"
 title: "Update ROADMAP Epic G status"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
 tags: ["docs", "roadmap"]
 verify: []
-commit: null
+commit: { hash: "b06d7d8693889e7cbf45e4459b91b9fed9e4369c", message: "📝 NCKJNQ update roadmap Epic G status" }
 comments:
   - { author: "DOCS", body: "Start: mark Epic G/AP-060 done in ROADMAP.md." }
+  - { author: "DOCS", body: "Verified: ROADMAP.md updated with Epic G/AP-060 DONE lines and task IDs for 2026-02-05." }
 doc_version: 2
-doc_updated_at: "2026-02-05T14:10:25.309Z"
+doc_updated_at: "2026-02-05T14:10:56.334Z"
 doc_updated_by: "DOCS"
 description: "Mark Epic G and AP-060 as DONE in ROADMAP.md."
 id_source: "generated"

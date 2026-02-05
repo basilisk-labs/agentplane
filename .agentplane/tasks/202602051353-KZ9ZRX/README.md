@@ -1,17 +1,18 @@
 ---
 id: "202602051353-KZ9ZRX"
 title: "AP-060a: Task index storage + updater"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["roadmap", "tasks", "cache", "performance"]
 verify: []
-commit: null
+commit: { hash: "bacd2e6a7645a3a326772c374678fa8e9f8bd74f", message: "✨ KZ9ZRX add task index cache helpers" }
 comments:
   - { author: "CODER", body: "Start: design and implement task index cache model and incremental updater." }
+  - { author: "CODER", body: "Verified: ran bun run lint, bun run test:fast, and pre-commit hooks; task index helpers added." }
 doc_version: 2
-doc_updated_at: "2026-02-05T14:05:54.095Z"
+doc_updated_at: "2026-02-05T14:08:23.360Z"
 doc_updated_by: "CODER"
 description: "Implement .agentplane/cache/tasks-index.v1.json with load/save and incremental update helpers."
 id_source: "generated"
