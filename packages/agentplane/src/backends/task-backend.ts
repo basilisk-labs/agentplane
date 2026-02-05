@@ -1,4 +1,4 @@
-import { createHash, randomInt } from "node:crypto";
+import { createHash } from "node:crypto";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -6,11 +6,13 @@ import {
   canonicalizeJson,
   docChanged,
   extractTaskDoc,
+  generateTaskId,
   loadConfig,
   mergeTaskDoc,
   parseTaskReadme,
   renderTaskReadme,
   resolveProject,
+  TASK_ID_ALPHABET,
   taskReadmePath,
   type AgentplaneConfig,
   type ResolvedProject,
@@ -19,8 +21,7 @@ import {
 
 import { loadDotEnv } from "../shared/env.js";
 
-const ID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${ID_ALPHABET}]{4,}$`);
+const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${TASK_ID_ALPHABET}]{4,}$`);
 const DEFAULT_DOC_UPDATED_BY = "agentplane";
 const DOC_VERSION = 2;
 
@@ -332,29 +333,21 @@ export class LocalBackend implements TaskBackend {
     const length = opts.length;
     if (length < 4) throw new Error(invalidLengthMessage(length, 4));
     const attempts = Math.max(1, opts.attempts);
-    for (let i = 0; i < attempts; i++) {
-      const now = new Date();
-      const yyyy = String(now.getUTCFullYear()).padStart(4, "0");
-      const mm = String(now.getUTCMonth() + 1).padStart(2, "0");
-      const dd = String(now.getUTCDate()).padStart(2, "0");
-      const hh = String(now.getUTCHours()).padStart(2, "0");
-      const min = String(now.getUTCMinutes()).padStart(2, "0");
-      let suffix = "";
-      for (let j = 0; j < length; j++) {
-        suffix += ID_ALPHABET[randomInt(0, ID_ALPHABET.length)];
-      }
-      const taskId = `${yyyy}${mm}${dd}${hh}${min}-${suffix}`;
-      const readmePath = taskReadmePath(this.root, taskId);
-      try {
-        await readFile(readmePath, "utf8");
-        continue;
-      } catch (err) {
-        const code = (err as { code?: string } | null)?.code;
-        if (code === "ENOENT") return taskId;
-        throw err;
-      }
-    }
-    throw new Error("Failed to generate a unique task id (exhausted attempts)");
+    return await generateTaskId({
+      length,
+      attempts,
+      isAvailable: async (taskId) => {
+        const readmePath = taskReadmePath(this.root, taskId);
+        try {
+          await readFile(readmePath, "utf8");
+          return false;
+        } catch (err) {
+          const code = (err as { code?: string } | null)?.code;
+          if (code === "ENOENT") return true;
+          throw err;
+        }
+      },
+    });
   }
 
   async listTasks(): Promise<TaskData[]> {
@@ -608,7 +601,11 @@ export class RedmineBackend implements TaskBackend {
       const cached = await this.cache.listTasks();
       existingIds = new Set(cached.map((task) => toStringSafe(task.id)).filter(Boolean));
     }
-    return generateTaskId(existingIds, length, attempts);
+    return await generateTaskId({
+      length,
+      attempts,
+      isAvailable: (taskId) => !existingIds.has(taskId),
+    });
   }
 
   async listTasks(): Promise<TaskData[]> {
@@ -1324,25 +1321,6 @@ export class RedmineBackend implements TaskBackend {
 
     throw lastError instanceof Error ? lastError : new RedmineUnavailable("Redmine unavailable");
   }
-}
-
-function generateTaskId(existingIds: Set<string>, length: number, attempts: number): string {
-  if (length < 4) throw new Error(invalidLengthMessage(length, 4));
-  for (let i = 0; i < attempts; i++) {
-    const now = new Date();
-    const yyyy = String(now.getUTCFullYear()).padStart(4, "0");
-    const mm = String(now.getUTCMonth() + 1).padStart(2, "0");
-    const dd = String(now.getUTCDate()).padStart(2, "0");
-    const hh = String(now.getUTCHours()).padStart(2, "0");
-    const min = String(now.getUTCMinutes()).padStart(2, "0");
-    let suffix = "";
-    for (let j = 0; j < length; j++) {
-      suffix += ID_ALPHABET[randomInt(0, ID_ALPHABET.length)];
-    }
-    const candidate = `${yyyy}${mm}${dd}${hh}${min}-${suffix}`;
-    if (!existingIds.has(candidate)) return candidate;
-  }
-  throw new Error("Failed to generate a unique task id (exhausted attempts)");
 }
 
 type BackendConfig = {

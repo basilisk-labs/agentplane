@@ -38,6 +38,8 @@ export {
   splitCombinedHeadingLines,
 } from "./tasks/task-doc.js";
 
+export { generateTaskId, timestampIdPrefix, TASK_ID_ALPHABET } from "./tasks/task-id.js";
+
 export {
   createTask,
   getTasksDir,

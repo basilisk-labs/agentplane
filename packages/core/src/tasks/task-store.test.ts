@@ -84,18 +84,24 @@ describe("task-store", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-01-01T00:00:00Z"));
 
-    const randomSpy = vi.spyOn(Math, "random");
-    let calls = 0;
-    randomSpy.mockImplementation(() => {
-      calls++;
-      return calls <= 6 ? 0 : 0.5;
-    });
-
     try {
-      const collisionId = "202601010000-AAAAAA";
+      const collisionId = "202601010000-000000";
       const collisionReadme = path.join(root, ".agentplane", "tasks", collisionId, "README.md");
       await mkdir(path.dirname(collisionReadme), { recursive: true });
       await writeFile(collisionReadme, "already exists\n", "utf8");
+
+      const idGenerator = async (opts: {
+        attempts: number;
+        isAvailable?: (taskId: string) => boolean | Promise<boolean>;
+      }) => {
+        const candidates = ["202601010000-000000", "202601010000-111111"];
+        for (let i = 0; i < opts.attempts; i += 1) {
+          const candidate = candidates[i];
+          if (!candidate) break;
+          if (await opts.isAvailable?.(candidate)) return candidate;
+        }
+        throw new Error("Failed to generate a unique task id (exhausted attempts)");
+      };
 
       const created = await createTask({
         cwd: root,
@@ -107,6 +113,7 @@ describe("task-store", () => {
         tags: ["nodejs"],
         dependsOn: [],
         verify: [],
+        idGenerator,
       });
       expect(created.id).not.toBe(collisionId);
 
@@ -118,7 +125,6 @@ describe("task-store", () => {
       expect(tasks.some((t) => t.id === "BROKEN")).toBe(false);
       expect(tasks.some((t) => t.id === created.id)).toBe(true);
     } finally {
-      randomSpy.mockRestore();
       vi.useRealTimers();
     }
   });
@@ -129,13 +135,22 @@ describe("task-store", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-01-01T00:00:00Z"));
 
-    const randomSpy = vi.spyOn(Math, "random").mockReturnValue(0);
-
     try {
-      const collisionId = "202601010000-AAAAAA";
+      const collisionId = "202601010000-000000";
       const collisionReadme = path.join(root, ".agentplane", "tasks", collisionId, "README.md");
       await mkdir(path.dirname(collisionReadme), { recursive: true });
       await writeFile(collisionReadme, "already exists\n", "utf8");
+
+      const idGenerator = async (opts: {
+        attempts: number;
+        isAvailable?: (taskId: string) => boolean | Promise<boolean>;
+      }) => {
+        const candidate = "202601010000-000000";
+        for (let i = 0; i < opts.attempts; i += 1) {
+          if (await opts.isAvailable?.(candidate)) return candidate;
+        }
+        throw new Error("Failed to generate a unique task id (exhausted attempts)");
+      };
 
       await expect(
         createTask({
@@ -148,10 +163,10 @@ describe("task-store", () => {
           tags: ["nodejs"],
           dependsOn: [],
           verify: [],
+          idGenerator,
         }),
       ).rejects.toThrow(/unique task id/i);
     } finally {
-      randomSpy.mockRestore();
       vi.useRealTimers();
     }
   });
