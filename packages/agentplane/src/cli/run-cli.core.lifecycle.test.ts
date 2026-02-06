@@ -426,6 +426,15 @@ describe("runCli", () => {
     expect(stdout.trim()).toBe(
       `🚧 ${suffix} task: implement comment-driven commit for start flow | details: detail A; detail B`,
     );
+
+    const { stdout: body } = await execFileAsync("git", ["log", "-1", "--pretty=%b"], {
+      cwd: root,
+    });
+    expect(body).toContain(`Task: ${taskId}`);
+    expect(body).toContain("Agent: CODER");
+    expect(body).toContain("Status: TODO -> DOING");
+    expect(body).toContain("Comment:");
+    expect(body).toContain("implement comment-driven commit for start flow");
   });
 
   it("start --commit-from-comment normalizes ./ prefixes in allowlist", async () => {
