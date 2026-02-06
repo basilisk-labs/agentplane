@@ -1,17 +1,18 @@
 ---
 id: "202602060612-BQ8HRK"
 title: "Release v0.1.7"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["release", "versioning", "docs", "git"]
 verify: []
-commit: null
+commit: { hash: "8d8fc83cc866475eb469c1a3f8709e0600f4584d", message: "🚀 BQ8HRK release" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: Prepare and publish release v0.1.7 (release notes, version bumps, verification), create git tag v0.1.7 on the release commit, and push main+tag to origin for GitHub Actions publish." }
+  - { author: "ORCHESTRATOR", body: "Verified: agentplane verify passed (2026-02-06); release commit 8d8fc83cc866. Bumped core+cli to 0.1.7, added docs/releases/v0.1.7.md, updated versioned tests." }
 doc_version: 2
-doc_updated_at: "2026-02-06T06:18:14.720Z"
+doc_updated_at: "2026-02-06T06:19:39.341Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Goal: cut a new release tag v0.1.7 and push to GitHub for automated publish.\\n\\nDeliverables:\\n- docs/releases/v0.1.7.md (non-empty, user-facing English notes)\\n- Bump packages/core and packages/agentplane versions to 0.1.7 (and update agentplane dependency on @agentplaneorg/core)\\n- Update any versioned tests/fixtures expecting 0.1.6 -> 0.1.7\\n- Create git tag v0.1.7 on the release commit\\n- Push main and the tag to origin\\n\\nConstraints:\\n- direct mode; commits via agentplane; run agentplane verify before finish."
 ---
