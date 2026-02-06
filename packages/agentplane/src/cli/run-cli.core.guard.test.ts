@@ -292,6 +292,60 @@ describe("runCli", () => {
     }
   });
 
+  it("guard commit fails when AGENTS.md is staged without allow-policy", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "AGENTS.md"), "# policy\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "AGENTS.md"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF guard protected paths",
+        "--allow",
+        ".",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("AGENTS.md");
+      expect(io.stderr).toContain("--allow-policy");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit allows AGENTS.md with allow-policy", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "AGENTS.md"), "# policy\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "AGENTS.md"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF guard protected paths",
+        "--allow",
+        ".",
+        "--allow-policy",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("OK");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("guard commit quiet suppresses output", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "file.txt"), "x", "utf8");
@@ -465,6 +519,65 @@ describe("runCli", () => {
 
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     expect(stdout.trim()).toBe("✨ ABCDEF commit wrapper");
+  });
+
+  it("commit wrapper blocks AGENTS.md without allow-policy", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "AGENTS.md"), "# policy\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "AGENTS.md"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit protected policy",
+        "--allow",
+        ".",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("AGENTS.md");
+      expect(io.stderr).toContain("--allow-policy");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("commit wrapper allows AGENTS.md with allow-policy", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "AGENTS.md"), "# policy\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "AGENTS.md"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit protected policy",
+        "--allow",
+        ".",
+        "--allow-policy",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ committed");
+    } finally {
+      io.restore();
+    }
+
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+    expect(stdout.trim()).toBe("✨ ABCDEF commit protected policy");
   });
 
   it("commit wrapper normalizes ./ prefixes in allowlist", async () => {

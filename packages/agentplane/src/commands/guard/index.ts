@@ -12,6 +12,10 @@ import { invalidValueMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { execFileAsync } from "../shared/git.js";
+import {
+  getProtectedPathOverride,
+  protectedPathKindForFile,
+} from "../../shared/protected-paths.js";
 
 function pathIsUnder(candidate: string, prefix: string): boolean {
   if (prefix === "." || prefix === "") return true;
@@ -44,12 +48,20 @@ export function buildGitCommitEnv(opts: {
   taskId: string;
   allowTasks: boolean;
   allowBase: boolean;
+  allowPolicy: boolean;
+  allowConfig: boolean;
+  allowHooks: boolean;
+  allowCI: boolean;
 }): NodeJS.ProcessEnv {
   return {
     ...process.env,
     AGENTPLANE_TASK_ID: opts.taskId,
     AGENTPLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
     AGENTPLANE_ALLOW_BASE: opts.allowBase ? "1" : "0",
+    AGENTPLANE_ALLOW_POLICY: opts.allowPolicy ? "1" : "0",
+    AGENTPLANE_ALLOW_CONFIG: opts.allowConfig ? "1" : "0",
+    AGENTPLANE_ALLOW_HOOKS: opts.allowHooks ? "1" : "0",
+    AGENTPLANE_ALLOW_CI: opts.allowCI ? "1" : "0",
   };
 }
 
@@ -78,6 +90,10 @@ type GuardCommitOptions = {
   message: string;
   allow: string[];
   allowTasks: boolean;
+  allowPolicy: boolean;
+  allowConfig: boolean;
+  allowHooks: boolean;
+  allowCI: boolean;
   requireClean: boolean;
   quiet: boolean;
 };
@@ -114,8 +130,7 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
   }
 
   const allow = opts.allow.map((prefix) => normalizeAllowPrefix(prefix));
-  const denied = new Set<string>();
-  if (!opts.allowTasks) denied.add(".agentplane/tasks.json");
+  const tasksPath = loaded.config.paths.tasks_path;
 
   if (opts.requireClean) {
     const unstaged = await getUnstagedFiles({
@@ -128,12 +143,28 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
   }
 
   for (const filePath of staged) {
-    if (denied.has(filePath)) {
+    const kind = protectedPathKindForFile({ filePath, tasksPath });
+    if (kind === "tasks" && !opts.allowTasks) {
       throw new CliError({
         exitCode: 5,
         code: "E_GIT",
         message: `Staged file is forbidden by default: ${filePath} (use --allow-tasks to override)`,
       });
+    }
+    if (kind && kind !== "tasks") {
+      const override = getProtectedPathOverride(kind);
+      const allowed =
+        (kind === "policy" && opts.allowPolicy) ||
+        (kind === "config" && opts.allowConfig) ||
+        (kind === "hooks" && opts.allowHooks) ||
+        (kind === "ci" && opts.allowCI);
+      if (!allowed) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: `Staged file is protected by default: ${filePath} (use ${override.cliFlag} to override)`,
+        });
+      }
     }
     if (!allow.some((prefix) => pathIsUnder(filePath, prefix))) {
       throw new CliError({
@@ -291,7 +322,16 @@ export async function commitFromComment(opts: {
   let allowPrefixes = opts.allow.map((prefix) => prefix.trim()).filter(Boolean);
   if (opts.autoAllow && allowPrefixes.length === 0) {
     const changed = await gitStatusChangedPaths({ cwd: opts.cwd, rootOverride: opts.rootOverride });
-    allowPrefixes = suggestAllowPrefixes(changed);
+    const tasksPath = opts.config.paths.tasks_path;
+    // Auto-allow is for ergonomic status commits. It must never silently
+    // broaden into policy/config/CI changes (those require explicit intent).
+    const eligible = changed.filter((filePath) => {
+      const kind = protectedPathKindForFile({ filePath, tasksPath });
+      if (!kind) return true;
+      if (kind === "tasks") return opts.allowTasks;
+      return false;
+    });
+    allowPrefixes = suggestAllowPrefixes(eligible);
   }
   if (allowPrefixes.length === 0) {
     throw new CliError({
@@ -323,6 +363,10 @@ export async function commitFromComment(opts: {
     message,
     allow: allowPrefixes,
     allowTasks: opts.allowTasks,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
     requireClean: opts.requireClean,
     quiet: opts.quiet,
   });
@@ -337,6 +381,10 @@ export async function commitFromComment(opts: {
     taskId: opts.taskId,
     allowTasks: opts.allowTasks,
     allowBase: false,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
   });
   await execFileAsync("git", ["commit", "-m", message], { cwd: resolved.gitRoot, env });
 
@@ -428,6 +476,10 @@ export async function cmdCommit(opts: {
   autoAllow: boolean;
   allowTasks: boolean;
   allowBase: boolean;
+  allowPolicy: boolean;
+  allowConfig: boolean;
+  allowHooks: boolean;
+  allowCI: boolean;
   requireClean: boolean;
   quiet: boolean;
 }): Promise<number> {
@@ -456,6 +508,10 @@ export async function cmdCommit(opts: {
       message: opts.message,
       allow,
       allowTasks: opts.allowTasks,
+      allowPolicy: opts.allowPolicy,
+      allowConfig: opts.allowConfig,
+      allowHooks: opts.allowHooks,
+      allowCI: opts.allowCI,
       requireClean: opts.requireClean,
       quiet: opts.quiet,
     });
@@ -468,6 +524,10 @@ export async function cmdCommit(opts: {
       taskId: opts.taskId,
       allowTasks: opts.allowTasks,
       allowBase: opts.allowBase,
+      allowPolicy: opts.allowPolicy,
+      allowConfig: opts.allowConfig,
+      allowHooks: opts.allowHooks,
+      allowCI: opts.allowCI,
     });
     await execFileAsync("git", ["commit", "-m", opts.message], { cwd: resolved.gitRoot, env });
 

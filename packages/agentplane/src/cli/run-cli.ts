@@ -1946,6 +1946,10 @@ export async function runCli(argv: string[]): Promise<number> {
         let message = "";
         let autoAllow = false;
         let allowTasks = false;
+        let allowPolicy = false;
+        let allowConfig = false;
+        let allowHooks = false;
+        let allowCI = false;
         let allowDirty = false;
         let requireClean = false;
         let quiet = false;
@@ -1979,6 +1983,22 @@ export async function runCli(argv: string[]): Promise<number> {
           }
           if (arg === "--allow-tasks") {
             allowTasks = true;
+            continue;
+          }
+          if (arg === "--allow-policy") {
+            allowPolicy = true;
+            continue;
+          }
+          if (arg === "--allow-config") {
+            allowConfig = true;
+            continue;
+          }
+          if (arg === "--allow-hooks") {
+            allowHooks = true;
+            continue;
+          }
+          if (arg === "--allow-ci") {
+            allowCI = true;
             continue;
           }
           if (arg === "--auto-allow") {
@@ -2041,6 +2061,10 @@ export async function runCli(argv: string[]): Promise<number> {
           message,
           allow,
           allowTasks,
+          allowPolicy,
+          allowConfig,
+          allowHooks,
+          allowCI,
           requireClean,
           quiet,
         });
@@ -2066,6 +2090,10 @@ export async function runCli(argv: string[]): Promise<number> {
       let autoAllow = false;
       let allowTasks = false;
       let allowBase = false;
+      let allowPolicy = false;
+      let allowConfig = false;
+      let allowHooks = false;
+      let allowCI = false;
       let requireClean = false;
       let quiet = false;
 
@@ -2108,6 +2136,22 @@ export async function runCli(argv: string[]): Promise<number> {
           allowBase = true;
           continue;
         }
+        if (arg === "--allow-policy") {
+          allowPolicy = true;
+          continue;
+        }
+        if (arg === "--allow-config") {
+          allowConfig = true;
+          continue;
+        }
+        if (arg === "--allow-hooks") {
+          allowHooks = true;
+          continue;
+        }
+        if (arg === "--allow-ci") {
+          allowCI = true;
+          continue;
+        }
         if (arg === "--require-clean") {
           requireClean = true;
           continue;
@@ -2142,6 +2186,10 @@ export async function runCli(argv: string[]): Promise<number> {
         autoAllow,
         allowTasks,
         allowBase,
+        allowPolicy,
+        allowConfig,
+        allowHooks,
+        allowCI,
         requireClean,
         quiet,
       });

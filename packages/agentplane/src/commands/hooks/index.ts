@@ -14,6 +14,10 @@ import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  getProtectedPathOverride,
+  protectedPathKindForFile,
+} from "../../shared/protected-paths.js";
 import { gitCurrentBranch, gitRevParse } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
 
@@ -293,6 +297,10 @@ export async function cmdHooksRun(opts: {
       if (staged.length === 0) return 0;
       const allowTasks = (process.env.AGENTPLANE_ALLOW_TASKS ?? "").trim() === "1";
       const allowBase = (process.env.AGENTPLANE_ALLOW_BASE ?? "").trim() === "1";
+      const allowPolicy = (process.env.AGENTPLANE_ALLOW_POLICY ?? "").trim() === "1";
+      const allowConfig = (process.env.AGENTPLANE_ALLOW_CONFIG ?? "").trim() === "1";
+      const allowHooks = (process.env.AGENTPLANE_ALLOW_HOOKS ?? "").trim() === "1";
+      const allowCI = (process.env.AGENTPLANE_ALLOW_CI ?? "").trim() === "1";
 
       const resolved = await resolveProject({
         cwd: opts.cwd,
@@ -309,6 +317,24 @@ export async function cmdHooksRun(opts: {
           code: "E_GIT",
           message: `${tasksPath} is protected by agentplane hooks (set AGENTPLANE_ALLOW_TASKS=1 to override)`,
         });
+      }
+
+      for (const filePath of staged) {
+        const kind = protectedPathKindForFile({ filePath, tasksPath });
+        if (!kind || kind === "tasks") continue;
+        const override = getProtectedPathOverride(kind);
+        const allowed =
+          (kind === "policy" && allowPolicy) ||
+          (kind === "config" && allowConfig) ||
+          (kind === "hooks" && allowHooks) ||
+          (kind === "ci" && allowCI);
+        if (!allowed) {
+          throw new CliError({
+            exitCode: 5,
+            code: "E_GIT",
+            message: `${filePath} is protected by agentplane hooks (set ${override.envVar}=1 to override)`,
+          });
+        }
       }
 
       if (loaded.config.workflow_mode === "branch_pr") {

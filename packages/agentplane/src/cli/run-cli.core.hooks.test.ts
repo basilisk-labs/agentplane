@@ -543,6 +543,50 @@ describe("runCli", () => {
     }
   });
 
+  it("hooks run pre-commit blocks AGENTS.md without env override", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "# policy\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "AGENTS.md"], { cwd: root });
+
+    const prev = process.env.AGENTPLANE_ALLOW_POLICY;
+    process.env.AGENTPLANE_ALLOW_POLICY = "0";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("AGENTS.md is protected by agentplane hooks");
+      expect(io.stderr).toContain("AGENTPLANE_ALLOW_POLICY=1");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_ALLOW_POLICY;
+      else process.env.AGENTPLANE_ALLOW_POLICY = prev;
+    }
+  });
+
+  it("hooks run pre-commit allows AGENTS.md with env override", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "# policy\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "AGENTS.md"], { cwd: root });
+
+    const prev = process.env.AGENTPLANE_ALLOW_POLICY;
+    process.env.AGENTPLANE_ALLOW_POLICY = "1";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_ALLOW_POLICY;
+      else process.env.AGENTPLANE_ALLOW_POLICY = prev;
+    }
+  });
+
   it("hooks run pre-commit allows base branch with allowBase", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
