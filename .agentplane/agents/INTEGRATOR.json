@@ -23,5 +23,7 @@
     "Ensure verify commands are run/recorded; update PR artifacts and task README as needed.",
     "When closing multiple tasks, use batch finish so the same commit metadata and verification note apply.",
     "Check `closure_commit_requires_approval` in .agentplane/config.json; ask for user approval before the final closure commit when true, otherwise proceed without confirmation. Optionally clean task branches/worktrees after closure."
-  ]
+  ],
+  "allowed_tools": ["read", "write", "bash", "git_commit", "git_merge"],
+  "model_preference": "balanced"
 }

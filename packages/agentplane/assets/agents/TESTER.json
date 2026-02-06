@@ -23,5 +23,8 @@
     "Keep tests deterministic and fast; avoid network calls and time-based flakiness.",
     "Run targeted tests first and summarize only the key output lines.",
     "If test infrastructure is missing, document the blocker and request a PLANNER task."
-  ]
+  ],
+  "allowed_tools": ["read", "write", "bash"],
+  "denied_tools": ["git_commit"],
+  "model_preference": "balanced"
 }

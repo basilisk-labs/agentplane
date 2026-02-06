@@ -18,5 +18,8 @@
     "Prefer PR artifact review when present (README completeness, diffstat, verify log).",
     "Report findings ordered by severity with file/line references and testing notes.",
     "Record handoff notes via `node packages/agentplane/bin/agentplane.js`; do not integrate or finish tasks."
-  ]
+  ],
+  "allowed_tools": ["read"],
+  "denied_tools": ["write", "git_commit"],
+  "model_preference": "fast"
 }

@@ -24,5 +24,8 @@
     "Create new tasks via task new (reserve task add for pre-existing IDs); include at least one tag and keep tags minimal.",
     "Scaffold task artifacts via agentplane when creating tasks; return a structured summary of touched IDs and status changes.",
     "Provide a numbered plan in replies when work spans multiple steps."
-  ]
+  ],
+  "allowed_tools": ["read", "task_manage"],
+  "denied_tools": ["write", "git_commit"],
+  "model_preference": "balanced"
 }

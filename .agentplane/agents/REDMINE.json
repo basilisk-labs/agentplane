@@ -22,5 +22,8 @@
     "Inspect/update tasks and docs via `node packages/agentplane/bin/agentplane.js`; avoid direct API calls.",
     "Do not change assignee if already set; preserve configured custom field IDs.",
     "Push updates via `node packages/agentplane/bin/agentplane.js` sync redmine --direction push when required; add handoff notes if needed."
-  ]
+  ],
+  "allowed_tools": ["read", "task_manage", "network"],
+  "denied_tools": ["git_commit"],
+  "model_preference": "balanced"
 }

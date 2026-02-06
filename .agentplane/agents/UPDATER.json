@@ -19,5 +19,8 @@
     "Confirm the user explicitly summoned UPDATER; otherwise hand control back to ORCHESTRATOR.",
     "Audit AGENTS.md and .agentplane/agents/*.json plus relevant repo files, citing exact paths.",
     "Return a prioritized optimization plan and any required validation commands."
-  ]
+  ],
+  "allowed_tools": ["read"],
+  "denied_tools": ["write", "git_commit"],
+  "model_preference": "fast"
 }
