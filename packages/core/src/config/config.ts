@@ -15,7 +15,6 @@ export type AgentplaneConfig = {
   workflow_mode: WorkflowMode;
   status_commit_policy: StatusCommitPolicy;
   finish_auto_status_commit: boolean;
-  base_branch: string;
   agents?: {
     approvals: {
       require_plan: boolean;
@@ -94,9 +93,35 @@ function formatSchemaErrors(errors: ErrorObject[] | null | undefined): string {
   return AJV.errorsText(errors, { dataVar: "config" });
 }
 
+const DEPRECATED_CONFIG_KEYS = ["base_branch"];
+
+function stripDeprecatedConfigKeys(raw: Record<string, unknown>): {
+  sanitized: Record<string, unknown>;
+  removed: string[];
+} {
+  const sanitized = { ...raw };
+  const removed: string[] = [];
+  for (const key of DEPRECATED_CONFIG_KEYS) {
+    if (key in sanitized) {
+      delete sanitized[key];
+      removed.push(key);
+    }
+  }
+  return { sanitized, removed };
+}
+
+function warnDeprecatedConfigKeys(keys: string[]): void {
+  for (const key of keys) {
+    console.warn(`config key "${key}" is deprecated and ignored`);
+  }
+}
+
 export function validateConfig(raw: unknown): AgentplaneConfig {
-  const candidate =
+  let candidate =
     raw && typeof raw === "object" ? structuredClone(raw as Record<string, unknown>) : raw;
+  if (isRecord(candidate)) {
+    candidate = stripDeprecatedConfigKeys(candidate).sanitized;
+  }
   if (!validateSchema(candidate)) {
     throw new Error(formatSchemaErrors(validateSchema.errors));
   }
@@ -126,12 +151,17 @@ export async function loadConfig(agentplaneDir: string): Promise<LoadedConfig> {
   try {
     const rawText = await readFile(filePath, "utf8");
     const parsed = JSON.parse(rawText) as unknown;
-    const validated = validateConfig(parsed);
+    const rawRecord = isRecord(parsed) ? parsed : null;
+    const sanitized = rawRecord
+      ? stripDeprecatedConfigKeys(rawRecord)
+      : { sanitized: parsed, removed: [] };
+    if (sanitized.removed.length > 0) warnDeprecatedConfigKeys(sanitized.removed);
+    const validated = validateConfig(sanitized.sanitized);
     return {
       path: filePath,
       exists: true,
       config: validated,
-      raw: parsed as Record<string, unknown>,
+      raw: (sanitized.sanitized ?? parsed) as Record<string, unknown>,
     };
   } catch (err) {
     const errno = toErrnoException(err);
@@ -190,10 +220,12 @@ export async function saveConfig(
   agentplaneDir: string,
   raw: Record<string, unknown>,
 ): Promise<AgentplaneConfig> {
-  const validated = validateConfig(raw);
+  const sanitized = stripDeprecatedConfigKeys(raw);
+  if (sanitized.removed.length > 0) warnDeprecatedConfigKeys(sanitized.removed);
+  const validated = validateConfig(sanitized.sanitized);
   await mkdir(agentplaneDir, { recursive: true });
   const filePath = path.join(agentplaneDir, "config.json");
-  const text = `${JSON.stringify(raw, null, 2)}\n`;
+  const text = `${JSON.stringify(sanitized.sanitized, null, 2)}\n`;
   await writeFile(filePath, text, "utf8");
   return validated;
 }

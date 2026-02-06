@@ -74,7 +74,13 @@ export {
   type TasksLintResult,
 } from "./tasks/tasks-lint.js";
 
-export { getBaseBranch, getPinnedBaseBranch, setPinnedBaseBranch } from "./git/base-branch.js";
+export {
+  clearPinnedBaseBranch,
+  getBaseBranch,
+  getPinnedBaseBranch,
+  resolveBaseBranch,
+  setPinnedBaseBranch,
+} from "./git/base-branch.js";
 
 export {
   extractTaskSuffix,

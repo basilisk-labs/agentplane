@@ -4,9 +4,10 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import {
+  clearPinnedBaseBranch,
   extractTaskSuffix,
   ensureDocSections,
-  getBaseBranch,
+  getPinnedBaseBranch,
   getStagedFiles,
   getUnstagedFiles,
   lintTasksFile,
@@ -14,8 +15,10 @@ import {
   normalizeDocSectionName,
   parseDocSections,
   renderTaskReadme,
+  resolveBaseBranch,
   resolveProject,
   setMarkdownSection,
+  getBaseBranch,
   setPinnedBaseBranch,
   taskReadmePath,
   validateCommitSubject,
@@ -82,8 +85,9 @@ export const TASK_UPDATE_USAGE_EXAMPLE =
 export const TASK_SCAFFOLD_USAGE =
   "Usage: agentplane task scaffold <task-id> [--title <text>] [--overwrite] [--force]";
 export const TASK_SCAFFOLD_USAGE_EXAMPLE = "agentplane task scaffold 202602030608-F1Q8AB";
-export const BRANCH_BASE_USAGE = "Usage: agentplane branch base get|set <name>";
-export const BRANCH_BASE_USAGE_EXAMPLE = "agentplane branch base set main";
+export const BRANCH_BASE_USAGE =
+  "Usage: agentplane branch base get|set|clear|explain [<name>|--current]";
+export const BRANCH_BASE_USAGE_EXAMPLE = "agentplane branch base set --current";
 export const BRANCH_STATUS_USAGE =
   "Usage: agentplane branch status [--branch <name>] [--base <name>]";
 export const BRANCH_STATUS_USAGE_EXAMPLE = "agentplane branch status --base main";
@@ -1430,10 +1434,7 @@ export async function cmdTaskSetStatus(opts: {
     }
     await backend.writeTask(next);
 
-    if (backend.exportTasksJson) {
-      const outPath = path.join(resolved.gitRoot, config.paths.tasks_path);
-      await backend.exportTasksJson(outPath);
-    }
+    // tasks.json is export-only; generated via `agentplane task export`.
 
     if (opts.commitFromComment) {
       if (!opts.body) {
@@ -1573,7 +1574,7 @@ export const VERIFY_USAGE =
   "Usage: agentplane verify <task-id> [--cwd <path>] [--log <path>] [--skip-if-unchanged] [--quiet] [--require] [--yes]";
 export const VERIFY_USAGE_EXAMPLE = "agentplane verify 202602030608-F1Q8AB";
 export const WORK_START_USAGE =
-  "Usage: agentplane work start <task-id> --agent <id> --slug <slug> --worktree";
+  "Usage: agentplane work start <task-id> --agent <id> --slug <slug> [--worktree]";
 export const WORK_START_USAGE_EXAMPLE =
   "agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli --worktree";
 export const PR_OPEN_USAGE = "Usage: agentplane pr open <task-id> --author <id> [--branch <name>]";
@@ -3215,7 +3216,7 @@ export async function cmdFinish(opts: {
       });
     }
 
-    const { backend, config } = await loadTaskBackend({
+    const { backend } = await loadTaskBackend({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
@@ -3265,26 +3266,7 @@ export async function cmdFinish(opts: {
       // No-op for parity; verify is handled by `agentplane verify`.
     }
 
-    if (!backend.exportTasksJson) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: backendNotSupportedMessage("exportTasksJson()"),
-      });
-    }
-    const outPath = path.join(resolved.gitRoot, config.paths.tasks_path);
-    await backend.exportTasksJson(outPath);
-    const lintResult = await lintTasksFile({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    if (lintResult.errors.length > 0) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: lintResult.errors.join("\n"),
-      });
-    }
+    // tasks.json is export-only; generated via `agentplane task export`.
 
     if (opts.commitFromComment) {
       await commitFromComment({
@@ -3645,14 +3627,8 @@ export async function cmdWorkStart(opts: {
       rootOverride: opts.rootOverride ?? null,
     });
     const loaded = await loadConfig(resolved.agentplaneDir);
-    if (loaded.config.workflow_mode !== "branch_pr") {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: workflowModeMessage(loaded.config.workflow_mode, "branch_pr"),
-      });
-    }
-    if (!opts.worktree) {
+    const mode = loaded.config.workflow_mode;
+    if (mode === "branch_pr" && !opts.worktree) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
@@ -3666,50 +3642,81 @@ export async function cmdWorkStart(opts: {
       taskId: opts.taskId,
     });
 
-    const baseBranch = await getBaseBranch({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
     const currentBranch = await gitCurrentBranch(resolved.gitRoot);
-    if (currentBranch !== baseBranch) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_GIT",
-        message: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
+    let baseRef = currentBranch;
+    if (mode === "branch_pr") {
+      const baseBranch = await resolveBaseBranch({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+        cliBaseOpt: null,
+        mode,
       });
+      if (!baseBranch) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: "Base branch could not be resolved (use `agentplane branch base set`).",
+        });
+      }
+      if (currentBranch !== baseBranch) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: `work start must be run on base branch ${baseBranch} (current: ${currentBranch})`,
+        });
+      }
+      baseRef = baseBranch;
     }
 
     const prefix = loaded.config.branch.task_prefix;
     const branchName = `${prefix}/${opts.taskId}/${opts.slug.trim()}`;
-    const worktreesDir = path.resolve(resolved.gitRoot, loaded.config.paths.worktrees_dir);
-    if (!isPathWithin(resolved.gitRoot, worktreesDir)) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_GIT",
-        message: `worktrees_dir must be inside the repo: ${worktreesDir}`,
-      });
-    }
-    const worktreePath = path.join(worktreesDir, `${opts.taskId}-${opts.slug.trim()}`);
-    if (await fileExists(worktreePath)) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_GIT",
-        message: `Worktree path already exists: ${worktreePath}`,
-      });
-    }
-    await mkdir(worktreesDir, { recursive: true });
 
     const branchExists = await gitBranchExists(resolved.gitRoot, branchName);
-    const worktreeArgs = branchExists
-      ? ["worktree", "add", worktreePath, branchName]
-      : ["worktree", "add", "-b", branchName, worktreePath, baseBranch];
-    await execFileAsync("git", worktreeArgs, { cwd: resolved.gitRoot, env: gitEnv() });
+    let worktreePath = "";
+    if (opts.worktree) {
+      const worktreesDir = path.resolve(resolved.gitRoot, loaded.config.paths.worktrees_dir);
+      if (!isPathWithin(resolved.gitRoot, worktreesDir)) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: `worktrees_dir must be inside the repo: ${worktreesDir}`,
+        });
+      }
+      worktreePath = path.join(worktreesDir, `${opts.taskId}-${opts.slug.trim()}`);
+      if (await fileExists(worktreePath)) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: `Worktree path already exists: ${worktreePath}`,
+        });
+      }
+      await mkdir(worktreesDir, { recursive: true });
+
+      const worktreeArgs = branchExists
+        ? ["worktree", "add", worktreePath, branchName]
+        : ["worktree", "add", "-b", branchName, worktreePath, baseRef];
+      await execFileAsync("git", worktreeArgs, { cwd: resolved.gitRoot, env: gitEnv() });
+    } else {
+      if (branchExists) {
+        if (currentBranch !== branchName) {
+          await execFileAsync("git", ["checkout", "-q", branchName], {
+            cwd: resolved.gitRoot,
+            env: gitEnv(),
+          });
+        }
+      } else {
+        await execFileAsync("git", ["checkout", "-q", "-b", branchName, baseRef], {
+          cwd: resolved.gitRoot,
+          env: gitEnv(),
+        });
+      }
+    }
 
     process.stdout.write(
       `${successMessage(
         "work start",
         branchName,
-        `worktree=${path.relative(resolved.gitRoot, worktreePath)}`,
+        opts.worktree ? `worktree=${path.relative(resolved.gitRoot, worktreePath)}` : "",
       )}\n`,
     );
     return 0;
@@ -3860,10 +3867,19 @@ export async function cmdPrUpdate(opts: {
       });
     }
 
-    const baseBranch = await getBaseBranch({
+    const baseBranch = await resolveBaseBranch({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
+      cliBaseOpt: null,
+      mode: config.workflow_mode,
     });
+    if (!baseBranch) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Base branch could not be resolved (use `agentplane branch base set`).",
+      });
+    }
     const branch = await gitCurrentBranch(resolved.gitRoot);
     const { stdout: diffStatOut } = await execFileAsync(
       "git",
@@ -4104,9 +4120,27 @@ export async function cmdIntegrate(opts: {
 
     await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
 
-    const baseBranch = (
-      opts.base ?? (await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }))
-    ).trim();
+    if (opts.base?.trim().length === 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
+      });
+    }
+
+    const baseBranch = await resolveBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      cliBaseOpt: opts.base ?? null,
+      mode: loaded.config.workflow_mode,
+    });
+    if (!baseBranch) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Base branch could not be resolved (use `agentplane branch base set` or --base).",
+      });
+    }
     const currentBranch = await gitCurrentBranch(resolved.gitRoot);
     if (currentBranch !== baseBranch) {
       throw new CliError({
@@ -4597,9 +4631,12 @@ export async function cmdCleanupMerged(opts: {
 
     await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
 
-    const baseBranch = (
-      opts.base ?? (await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }))
-    ).trim();
+    const baseBranch = await resolveBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      cliBaseOpt: opts.base ?? null,
+      mode: loaded.config.workflow_mode,
+    });
     if (!baseBranch) {
       throw new CliError({
         exitCode: 2,
@@ -4884,10 +4921,19 @@ export async function cmdHooksRun(opts: {
       }
 
       if (loaded.config.workflow_mode === "branch_pr") {
-        const baseBranch = await getBaseBranch({
+        const baseBranch = await resolveBaseBranch({
           cwd: opts.cwd,
           rootOverride: opts.rootOverride ?? null,
+          cliBaseOpt: null,
+          mode: loaded.config.workflow_mode,
         });
+        if (!baseBranch) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Base branch could not be resolved (use `agentplane branch base set`).",
+          });
+        }
         const currentBranch = await gitCurrentBranch(resolved.gitRoot);
         if (tasksStaged && currentBranch !== baseBranch) {
           throw new CliError({
@@ -4933,10 +4979,11 @@ export async function cmdBranchBaseGet(opts: {
 export async function cmdBranchBaseSet(opts: {
   cwd: string;
   rootOverride?: string;
-  value: string;
+  value?: string;
+  useCurrent?: boolean;
 }): Promise<number> {
-  const trimmed = opts.value.trim();
-  if (trimmed.length === 0) {
+  const trimmed = (opts.value ?? "").trim();
+  if (trimmed.length === 0 && !opts.useCurrent) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
@@ -4944,15 +4991,89 @@ export async function cmdBranchBaseSet(opts: {
     });
   }
   try {
+    let nextValue = trimmed;
+    if (opts.useCurrent) {
+      const resolved = await resolveProject({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      nextValue = await gitCurrentBranch(resolved.gitRoot);
+    }
     const value = await setPinnedBaseBranch({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
-      value: trimmed,
+      value: nextValue,
     });
     process.stdout.write(`${value}\n`);
     return 0;
   } catch (err) {
     throw mapCoreError(err, { command: "branch base set", root: opts.rootOverride ?? null });
+  }
+}
+
+export async function cmdBranchBaseClear(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<number> {
+  try {
+    const cleared = await clearPinnedBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    process.stdout.write(`${cleared ? "cleared" : "no-op"}\n`);
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "branch base clear", root: opts.rootOverride ?? null });
+  }
+}
+
+export async function cmdBranchBaseExplain(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<number> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    let current: string | null = null;
+    try {
+      current = await gitCurrentBranch(resolved.gitRoot);
+    } catch {
+      current = null;
+    }
+
+    const pinned = await getPinnedBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const effective = await resolveBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      cliBaseOpt: null,
+      mode: loaded.config.workflow_mode,
+    });
+
+    const warnings: string[] = [];
+    if (pinned && !(await gitBranchExists(resolved.gitRoot, pinned))) {
+      warnings.push(`Pinned base branch not found: ${pinned}`);
+    }
+    if (effective && !(await gitBranchExists(resolved.gitRoot, effective))) {
+      warnings.push(`Effective base branch not found: ${effective}`);
+    }
+
+    process.stdout.write(`current_branch=${current ?? "-"}\n`);
+    process.stdout.write(`pinned_base=${pinned ?? "-"}\n`);
+    process.stdout.write(`effective_base=${effective ?? "-"}\n`);
+    if (warnings.length > 0) {
+      for (const warning of warnings) {
+        process.stdout.write(`warning=${warning}\n`);
+      }
+    }
+    return 0;
+  } catch (err) {
+    throw mapCoreError(err, { command: "branch base explain", root: opts.rootOverride ?? null });
   }
 }
 
@@ -4969,9 +5090,12 @@ export async function cmdBranchStatus(opts: {
     });
     const loaded = await loadConfig(resolved.agentplaneDir);
     const branch = (opts.branch ?? (await gitCurrentBranch(resolved.gitRoot))).trim();
-    const base = (
-      opts.base ?? (await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }))
-    ).trim();
+    const base = await resolveBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      cliBaseOpt: opts.base ?? null,
+      mode: loaded.config.workflow_mode,
+    });
     if (!branch || !base) {
       throw new CliError({
         exitCode: 2,

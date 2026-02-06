@@ -2806,6 +2806,87 @@ describe("runCli", () => {
     }
   });
 
+  it("branch base set --current pins the current branch", async () => {
+    const root = await mkGitRepoRootWithBranch("feature");
+    const io1 = captureStdIO();
+    try {
+      const code1 = await runCli(["branch", "base", "set", "--current", "--root", root]);
+      expect(code1).toBe(0);
+      expect(io1.stdout.trim()).toBe("feature");
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["branch", "base", "get", "--root", root]);
+      expect(code2).toBe(0);
+      expect(io2.stdout.trim()).toBe("feature");
+    } finally {
+      io2.restore();
+    }
+  });
+
+  it("branch base clear removes pinned base", async () => {
+    const root = await mkGitRepoRoot();
+    await runCliSilent(["branch", "base", "set", "develop", "--root", root]);
+
+    const io1 = captureStdIO();
+    try {
+      const code1 = await runCli(["branch", "base", "clear", "--root", root]);
+      expect(code1).toBe(0);
+      expect(io1.stdout.trim()).toBe("cleared");
+    } finally {
+      io1.restore();
+    }
+
+    const io2 = captureStdIO();
+    try {
+      const code2 = await runCli(["branch", "base", "get", "--root", root]);
+      expect(code2).toBe(0);
+      expect(io2.stdout.trim()).toBe("main");
+    } finally {
+      io2.restore();
+    }
+  });
+
+  it("branch base explain prints current, pinned, and effective base", async () => {
+    const root = await mkGitRepoRootWithBranch("feature");
+    const execFileAsync = promisify(execFile);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    await execFileAsync("git", ["branch", "main"], { cwd: root }).catch(() => null);
+    await execFileAsync("git", ["config", "--local", "--unset-all", "agentplane.baseBranch"], {
+      cwd: root,
+    }).catch(() => null);
+    await execFileAsync("git", ["config", "--local", "agentplane.baseBranch", "main"], {
+      cwd: root,
+    });
+
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["branch", "base", "explain", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("current_branch=feature");
+      expect(io.stdout).toContain("pinned_base=main");
+      expect(io.stdout).toContain("effective_base=main");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("branch base set maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
     const io = captureStdIO();
@@ -3271,6 +3352,8 @@ describe("runCli", () => {
         "status",
         "--branch",
         "task/202601301111-STAT01/test",
+        "--base",
+        "main",
         "--root",
         root,
       ]);
@@ -5045,6 +5128,7 @@ describe("runCli", () => {
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
     expect(task.frontmatter.status).toBe("DONE");
     expect(task.frontmatter.commit?.hash).toBeTruthy();
+    await runCliSilent(["task", "export", "--root", root]);
     const tasksJson = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
     expect(tasksJson).toContain(taskId);
   });
@@ -5904,8 +5988,12 @@ describe("runCli", () => {
     }
   });
 
-  it("work start rejects missing --worktree flag", async () => {
+  it("work start requires --worktree in branch_pr mode", async () => {
     const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -5950,29 +6038,62 @@ describe("runCli", () => {
     }
   });
 
-  it("work start requires branch_pr workflow", async () => {
+  it("work start supports direct mode without worktree", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Work start direct",
+        "--description",
+        "Work start in direct mode without worktree",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
 
     const io = captureStdIO();
     try {
       const code = await runCli([
         "work",
         "start",
-        "202601010101-ABCDEF",
+        taskId,
         "--agent",
         "CODER",
         "--slug",
         "work-start",
-        "--worktree",
         "--root",
         root,
       ]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("Invalid workflow_mode: direct (expected branch_pr)");
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ work start");
     } finally {
       io.restore();
     }
+
+    const { stdout } = await execFileAsync("git", ["branch", "--show-current"], { cwd: root });
+    expect(stdout.trim()).toBe(`task/${taskId}/work-start`);
   });
 
   it("work start creates a branch and worktree", async () => {
@@ -6142,6 +6263,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     await runCliSilent([
       "pr",
@@ -7647,7 +7770,7 @@ describe("runCli", () => {
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
     await commitAll(root, "chore config");
-
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["checkout", "-b", "feature"], { cwd: root });
 
@@ -8556,6 +8679,7 @@ describe("runCli", () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["checkout", "-b", "feature"], { cwd: root });
     await writeFile(path.join(root, ".agentplane", "tasks.json"), "{}", "utf8");
@@ -8950,7 +9074,7 @@ describe("runCli", () => {
     }
 
     const configPath = path.join(root, ".agentplane", "config.json");
-    const configText = await readFile(configPath, "utf8");
+    await readFile(configPath, "utf8");
     expect(configText).toContain('"config_path": ".agentplane/backends/redmine/backend.json"');
   });
 
@@ -9023,8 +9147,7 @@ describe("runCli", () => {
     }
 
     const configPath = path.join(root, ".agentplane", "config.json");
-    const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"base_branch": "main"');
+    await readFile(configPath, "utf8");
 
     const execFileAsync = promisify(execFile);
     const { stdout: baseBranch } = await execFileAsync(
@@ -9107,8 +9230,7 @@ describe("runCli", () => {
     }
 
     const configPath = path.join(root, ".agentplane", "config.json");
-    const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"base_branch": "trunk"');
+    await readFile(configPath, "utf8");
 
     const execFileAsync = promisify(execFile);
     const { stdout: baseBranch } = await execFileAsync(
@@ -9132,8 +9254,7 @@ describe("runCli", () => {
     }
 
     const configPath = path.join(root, ".agentplane", "config.json");
-    const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"base_branch": "trunk"');
+    await readFile(configPath, "utf8");
 
     const execFileAsync = promisify(execFile);
     const { stdout: baseBranch } = await execFileAsync(

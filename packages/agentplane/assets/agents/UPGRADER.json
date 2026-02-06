@@ -21,7 +21,7 @@
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Check the `framework.last_update` date from `.agentplane/config.json`; compare it to UTC today and detect when 10+ days have passed.",
     "Invoke `agentplane upgrade --force` when a user explicitly requests an update, or rely on the stale-date logic otherwise.",
-    "Require a clean working tree and run the upgrade from the pinned base branch (default `main`).",
+    "Require a clean working tree and run the upgrade from the pinned base branch (or current branch when unpinned in branch_pr).",
     "After a successful upgrade, update `framework.last_update` to `datetime.now(UTC).date()` and document the run in the owning task/pr artifacts."
   ]
 }

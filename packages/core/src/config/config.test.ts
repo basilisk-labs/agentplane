@@ -1,7 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import os from "node:os";
 import path from "node:path";
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdtemp, readFile, writeFile, mkdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 import { defaultConfig, loadConfig, saveConfig, setByDottedKey, validateConfig } from "../index.js";
@@ -37,6 +37,26 @@ describe("config", () => {
     expect(loaded.exists).toBe(false);
     expect(loaded.config.schema_version).toBe(1);
     expect(loaded.raw).toHaveProperty("schema_version", 1);
+  });
+
+  it("loadConfig strips deprecated base_branch and warns", async () => {
+    const tmp = await mkdtemp(path.join(os.tmpdir(), "agentplane-config-deprecated-"));
+    const agentplaneDir = path.join(tmp, ".agentplane");
+    await mkdir(agentplaneDir, { recursive: true });
+
+    const raw = defaultConfig() as unknown as Record<string, unknown>;
+    (raw as { base_branch?: string }).base_branch = "main";
+    await writeFile(path.join(agentplaneDir, "config.json"), JSON.stringify(raw, null, 2), "utf8");
+
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => false);
+    try {
+      const loaded = await loadConfig(agentplaneDir);
+      expect(loaded.raw).not.toHaveProperty("base_branch");
+      expect(loaded.config).not.toHaveProperty("base_branch");
+      expect(warnSpy).toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 
   it("setByDottedKey sets nested fields and preserves object shape", () => {
@@ -132,7 +152,6 @@ describe("config", () => {
         (raw) => (raw.finish_auto_status_commit = "nope"),
         /finish_auto_status_commit/,
       ],
-      ["base_branch", (raw) => (raw.base_branch = ""), /base_branch/],
       ["agents", (raw) => (raw.agents = "nope"), /agents must be object/],
       [
         "agents.approvals",

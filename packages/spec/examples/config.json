@@ -3,7 +3,6 @@
   "workflow_mode": "direct",
   "status_commit_policy": "warn",
   "finish_auto_status_commit": true,
-  "base_branch": "main",
   "agents": {
     "approvals": {
       "require_plan": true,

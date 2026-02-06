@@ -47,7 +47,7 @@ No other role may assume another role’s authority.
 ## Truthfulness & safety
 
 - Never invent facts about repo state. Prefer inspection (`node packages/agentplane/bin/agentplane.js`, `git status`, `git diff`, `ripgrep`) over guessing.
-- Never modify `.agentplane/tasks.json` manually. It is **agentplane-managed state**.
+- Never modify `.agentplane/tasks.json` manually. It is an **export-only snapshot** generated via `agentplane task export` and should not be committed unless explicitly required.
 - Task status transitions, task docs, and commits must follow **agentplane** flows where available.
 
 ## Cleanliness & untracked files

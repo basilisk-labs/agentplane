@@ -97,6 +97,8 @@ import {
   WORK_START_USAGE_EXAMPLE,
   cmdBlock,
   cmdBranchBaseGet,
+  cmdBranchBaseClear,
+  cmdBranchBaseExplain,
   cmdBranchBaseSet,
   cmdBranchRemove,
   cmdBranchStatus,
@@ -729,7 +731,7 @@ async function cmdInit(opts: {
     const existingGitRoot = await findGitRoot(initRoot);
     const gitRootExisted = Boolean(existingGitRoot);
     let gitRoot = existingGitRoot;
-    const baseBranchFallback = defaultConfig().base_branch;
+    const baseBranchFallback = "main";
     if (!gitRoot) {
       await gitInitRepo(initRoot, baseBranchFallback);
       gitRoot = initRoot;
@@ -806,7 +808,6 @@ async function cmdInit(opts: {
     await mkdir(path.join(resolved.agentplaneDir, "backends", "redmine"), { recursive: true });
 
     const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
-    setByDottedKey(rawConfig, "base_branch", initBaseBranch);
     setByDottedKey(rawConfig, "workflow_mode", workflow);
     setByDottedKey(
       rawConfig,
@@ -1515,12 +1516,21 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "branch") {
       if (command === "base") {
-        const [subcommand, value] = args;
+        const [subcommand, ...rest] = args;
         if (subcommand === "get") {
           return await cmdBranchBaseGet({ cwd: process.cwd(), rootOverride: globals.root });
         }
         if (subcommand === "set") {
-          if (!value) {
+          const useCurrent = rest.includes("--current");
+          const value = rest.find((entry) => entry && entry !== "--current");
+          if (useCurrent && value) {
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
+            });
+          }
+          if (!value && !useCurrent) {
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
@@ -1531,7 +1541,14 @@ export async function runCli(argv: string[]): Promise<number> {
             cwd: process.cwd(),
             rootOverride: globals.root,
             value,
+            useCurrent,
           });
+        }
+        if (subcommand === "clear") {
+          return await cmdBranchBaseClear({ cwd: process.cwd(), rootOverride: globals.root });
+        }
+        if (subcommand === "explain") {
+          return await cmdBranchBaseExplain({ cwd: process.cwd(), rootOverride: globals.root });
         }
         throw new CliError({
           exitCode: 2,
@@ -1699,7 +1716,7 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
 
-      if (!agent || !slug || !worktree) {
+      if (!agent || !slug) {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
@@ -2822,7 +2839,7 @@ export async function runCli(argv: string[]): Promise<number> {
         if (!arg) continue;
         if (arg === "--base") {
           const next = args[i + 1];
-          if (!next)
+          if (!next || next.trim().length === 0)
             throw new CliError({
               exitCode: 2,
               code: "E_USAGE",
