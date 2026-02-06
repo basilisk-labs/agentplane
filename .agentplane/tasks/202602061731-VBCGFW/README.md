@@ -1,7 +1,7 @@
 ---
 id: "202602061731-VBCGFW"
 title: "FIX.md: P0/P1 guardrails + hooks alignment"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -18,14 +18,19 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved plan: implement FIX.md P0/P1 via atomic tasks and per-task verify/commit/finish."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
+  state: "ok"
+  updated_at: "2026-02-06T19:11:17.543Z"
+  updated_by: "ORCHESTRATOR"
+  note: "All FIX.md P0/P1 atomic tasks completed (P0.1..P0.4, P1.1..P1.4). Verified via bun run test:core, bun run build, bun run test:cli:core, bun run lint; each subtask has verify ok recorded."
+commit:
+  hash: "6ca05404f567702830b30798a31c6543c65a9f24"
+  message: "✨ NG820E docs"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: completed FIX.md P0/P1 guardrails and hooks alignment via atomic tasks; core/CLI tests and lint pass; protected paths + base pinning now enforced. See Notes/Verification for commands and key commits."
 doc_version: 2
-doc_updated_at: "2026-02-06T18:27:09.035Z"
+doc_updated_at: "2026-02-06T19:11:22.958Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement P0/P1 fixes from FIX.md: guard commit env bug, allowlist staging correctness, allow prefix normalization, robust git path parsing, commit subject policy hardening, hook/CLI drift fixes, branch_pr base pin enforcement, protected paths policy."
 id_source: "generated"
@@ -48,6 +53,18 @@ Risk: hooks/CLI drift causes confusing failures; robust git path parsing must pr
 
 ## Verification
 
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-06T19:11:17.543Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: All FIX.md P0/P1 atomic tasks completed (P0.1..P0.4, P1.1..P1.4). Verified via bun run test:core, bun run build, bun run test:cli:core, bun run lint; each subtask has verify ok recorded.
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
@@ -59,4 +76,4 @@ Revert the per-task commits created for P0/P1 tasks; validate hooks still run an
 
 ## Notes
 
-Completed P0.1 (KTZK7K), P0.2 (VJNCQP), P0.3 (MTEEWA), P0.4 (9Y4CR4). Next: P1.1+P1.2, P1.3, P1.4.
+Completed: P0.1 KTZK7K, P0.2 VJNCQP, P0.3 MTEEWA, P0.4 9Y4CR4, P1.1 F17C02, P1.2 RA99FE, P1.3 QQVMHA, P1.4 NG820E. Key commits: QQVMHA=29604e30fbcd, NG820E=a6b1850439ea.
