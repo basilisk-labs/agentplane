@@ -1,9 +1,11 @@
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { loadConfig } from "../config/config.js";
+import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
+import { updateTaskReadmeAtomic } from "./task-readme-io.js";
 import { ensureDocSections, setMarkdownSection } from "./task-doc.js";
 import { generateTaskId } from "./task-id.js";
 
@@ -230,8 +232,7 @@ export async function createTask(opts: {
 
   const body = defaultTaskBody();
   const text = renderTaskReadme(frontmatter as unknown as Record<string, unknown>, body);
-  await mkdir(path.dirname(readmePath), { recursive: true });
-  await writeFile(readmePath, text, "utf8");
+  await atomicWriteFile(readmePath, text, "utf8");
   return { id, readmePath };
 }
 
@@ -253,25 +254,21 @@ export async function setTaskDocSection(opts: {
 
   const tasksDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir);
   const readmePath = taskReadmePath(tasksDir, opts.taskId);
-  const original = await readFile(readmePath, "utf8");
-  const parsed = parseTaskReadme(original);
-
-  const updatedBy = resolveDocUpdatedBy(parsed.frontmatter, opts.updatedBy);
-
-  const nextFrontmatter: Record<string, unknown> = {
-    ...parsed.frontmatter,
-    doc_version: 2,
-    doc_updated_at: nowIso(),
-    doc_updated_by: updatedBy,
-  };
-
-  const baseDoc = ensureDocSections(parsed.body, loaded.config.tasks.doc.required_sections);
-  const nextBody = ensureDocSections(
-    setMarkdownSection(baseDoc, opts.section, opts.text),
-    loaded.config.tasks.doc.required_sections,
-  );
-  const nextText = renderTaskReadme(nextFrontmatter, nextBody);
-  await writeFile(readmePath, nextText, "utf8");
+  await updateTaskReadmeAtomic(readmePath, (parsed) => {
+    const updatedBy = resolveDocUpdatedBy(parsed.frontmatter, opts.updatedBy);
+    const nextFrontmatter: Record<string, unknown> = {
+      ...parsed.frontmatter,
+      doc_version: 2,
+      doc_updated_at: nowIso(),
+      doc_updated_by: updatedBy,
+    };
+    const baseDoc = ensureDocSections(parsed.body, loaded.config.tasks.doc.required_sections);
+    const nextBody = ensureDocSections(
+      setMarkdownSection(baseDoc, opts.section, opts.text),
+      loaded.config.tasks.doc.required_sections,
+    );
+    return { frontmatter: nextFrontmatter, body: nextBody };
+  });
   return { readmePath };
 }
 

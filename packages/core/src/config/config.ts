@@ -1,11 +1,13 @@
 import { readFileSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type { ErrorObject, Options, ValidateFunction } from "ajv";
 import AjvModule from "ajv";
 import AjvFormatsModule from "ajv-formats";
+
+import { atomicWriteFile } from "../fs/atomic-write.js";
 
 export type WorkflowMode = "direct" | "branch_pr";
 export type StatusCommitPolicy = "off" | "warn" | "confirm";
@@ -226,6 +228,6 @@ export async function saveConfig(
   await mkdir(agentplaneDir, { recursive: true });
   const filePath = path.join(agentplaneDir, "config.json");
   const text = `${JSON.stringify(sanitized.sanitized, null, 2)}\n`;
-  await writeFile(filePath, text, "utf8");
+  await atomicWriteFile(filePath, text, "utf8");
   return validated;
 }

@@ -1,21 +1,11 @@
 import { execFile } from "node:child_process";
 import { createPublicKey, verify } from "node:crypto";
-import {
-  cp,
-  mkdir,
-  mkdtemp,
-  readdir,
-  readFile,
-  realpath,
-  rename,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readdir, readFile, realpath, rename, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import { resolveProject } from "@agentplaneorg/core";
+import { atomicWriteFile, resolveProject } from "@agentplaneorg/core";
 
 import { extractArchive } from "../cli/archive.js";
 import { sha256File } from "../cli/checksum.js";
@@ -315,7 +305,7 @@ async function writeScenarioReport(opts: {
     steps: opts.steps,
     git: opts.gitSummary,
   };
-  await writeFile(
+  await atomicWriteFile(
     path.join(opts.runDir, SCENARIO_REPORT_NAME),
     `${JSON.stringify(report, null, 2)}\n`,
     "utf8",
@@ -754,7 +744,7 @@ async function writeInstalledRecipesFile(
     updated_at: new Date().toISOString(),
   });
   await mkdir(path.dirname(filePath), { recursive: true });
-  await writeFile(filePath, `${JSON.stringify(sorted, null, 2)}\n`, "utf8");
+  await atomicWriteFile(filePath, `${JSON.stringify(sorted, null, 2)}\n`, "utf8");
 }
 
 async function readRecipeManifest(manifestPath: string): Promise<RecipeManifest> {
@@ -1070,7 +1060,7 @@ async function applyRecipeAgents(opts: {
     }
 
     rawAgent.id = targetId;
-    await writeFile(targetPath, `${JSON.stringify(rawAgent, null, 2)}\n`, "utf8");
+    await atomicWriteFile(targetPath, `${JSON.stringify(rawAgent, null, 2)}\n`, "utf8");
   }
 }
 
@@ -1102,7 +1092,7 @@ async function applyRecipeScenarios(opts: {
   }
 
   if (payload.scenarios.length === 0) return;
-  await writeFile(scenariosIndexPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  await atomicWriteFile(scenariosIndexPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
 }
 
 function isHttpUrl(value: string): boolean {
@@ -1146,8 +1136,8 @@ async function loadRecipesRemoteIndex(opts: {
     verifyRecipesIndexSignature(indexText, signature);
     rawIndex = JSON.parse(indexText) as unknown;
     await mkdir(cacheDir, { recursive: true });
-    await writeFile(cachePath, indexText, "utf8");
-    await writeFile(cacheSigPath, `${JSON.stringify(signature, null, 2)}\n`, "utf8");
+    await atomicWriteFile(cachePath, indexText, "utf8");
+    await atomicWriteFile(cacheSigPath, `${JSON.stringify(signature, null, 2)}\n`, "utf8");
   } else {
     const [indexText, sigText] = await Promise.all([
       readFile(cachePath, "utf8"),
@@ -1542,8 +1532,8 @@ async function cmdScenarioRun(opts: {
         env,
       });
       const durationMs = Date.now() - startedAt;
-      await writeFile(path.join(stepDir, "stdout.log"), result.stdout, "utf8");
-      await writeFile(path.join(stepDir, "stderr.log"), result.stderr, "utf8");
+      await atomicWriteFile(path.join(stepDir, "stdout.log"), result.stdout, "utf8");
+      await atomicWriteFile(path.join(stepDir, "stderr.log"), result.stderr, "utf8");
       stepsMeta.push({
         tool: step.tool,
         runtime,
@@ -1574,7 +1564,7 @@ async function cmdScenarioRun(opts: {
           steps: stepsReport,
           gitSummary,
         });
-        await writeFile(
+        await atomicWriteFile(
           path.join(runDir, "meta.json"),
           `${JSON.stringify(
             {
@@ -1607,7 +1597,7 @@ async function cmdScenarioRun(opts: {
       steps: stepsReport,
       gitSummary,
     });
-    await writeFile(
+    await atomicWriteFile(
       path.join(runDir, "meta.json"),
       `${JSON.stringify(
         {
