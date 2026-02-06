@@ -11,6 +11,9 @@ import {
 } from "../../cli/output.js";
 import { type TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
+import { dedupeStrings } from "../../shared/strings.js";
+
+export { dedupeStrings } from "../../shared/strings.js";
 
 export const execFileAsync = promisify(execFile);
 
@@ -40,19 +43,6 @@ export function normalizeTaskStatus(value: string): string {
     });
   }
   return normalized;
-}
-
-export function dedupeStrings(items: string[]): string[] {
-  const seen = new Set<string>();
-  const out: string[] = [];
-  for (const item of items) {
-    const trimmed = item.trim();
-    if (!trimmed) continue;
-    if (seen.has(trimmed)) continue;
-    seen.add(trimmed);
-    out.push(trimmed);
-  }
-  return out;
 }
 
 export function toStringArray(value: unknown): string[] {

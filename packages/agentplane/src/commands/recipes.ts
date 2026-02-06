@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { createPublicKey, verify } from "node:crypto";
-import { cp, mkdir, mkdtemp, readdir, readFile, realpath, rename, rm } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readdir, readFile, rename, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -23,8 +23,11 @@ import {
   successMessage,
   usageMessage,
 } from "../cli/output.js";
+import { isRecord } from "../shared/guards.js";
 import { CliError } from "../shared/errors.js";
+import { dedupeStrings } from "../shared/strings.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
+import { resolvePathFallback } from "./shared/path.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -195,10 +198,6 @@ const SENSITIVE_ARG_FLAGS = new Set([
   "--bearer",
 ]);
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
-}
-
 function redactArgs(args: string[]): string[] {
   const out = [...args];
   for (let i = 0; i < out.length; i++) {
@@ -218,27 +217,6 @@ function redactArgs(args: string[]): string[] {
     }
   }
   return out;
-}
-
-function dedupeStrings(items: string[]): string[] {
-  const seen = new Set<string>();
-  const out: string[] = [];
-  for (const item of items) {
-    const trimmed = item.trim();
-    if (!trimmed) continue;
-    if (seen.has(trimmed)) continue;
-    seen.add(trimmed);
-    out.push(trimmed);
-  }
-  return out;
-}
-
-async function resolvePathFallback(filePath: string): Promise<string> {
-  try {
-    return await realpath(filePath);
-  } catch {
-    return path.resolve(filePath);
-  }
 }
 
 function isNotGitRepoError(err: unknown): boolean {
