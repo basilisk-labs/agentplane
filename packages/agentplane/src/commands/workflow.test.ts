@@ -15,6 +15,7 @@ import {
   cmdTaskNew,
   cmdTaskNext,
   cmdTaskSearch,
+  cmdTaskPlan,
   cmdTaskUpdate,
   cmdBlock,
   cmdFinish,
@@ -338,6 +339,77 @@ describe("commands/workflow", () => {
     expect(text).toContain("Alpha");
     expect(text).toContain("## Scope");
     expect(text).toContain("Beta");
+  });
+
+  it("task plan set writes ## Plan and resets plan_approval to pending", async () => {
+    const root = await makeRepo();
+    const taskId = "202602060840-P1A1";
+    await addTask(root, taskId);
+
+    const io = captureStdIO();
+    try {
+      const code = await cmdTaskPlan({
+        cwd: root,
+        args: ["set", taskId, "--text", "Do X then Y.", "--updated-by", "ORCHESTRATOR"],
+      });
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const text = await readFile(readmePath, "utf8");
+    expect(text).toContain("## Plan");
+    expect(text).toContain("Do X then Y.");
+    expect(text).toContain("plan_approval:");
+    expect(text).toContain('state: "pending"');
+  });
+
+  it("task plan approve rejects when plan is empty", async () => {
+    const root = await makeRepo();
+    const taskId = "202602060840-P1A2";
+    await addTask(root, taskId);
+
+    await expect(
+      cmdTaskPlan({ cwd: root, args: ["approve", taskId, "--by", "USER"] }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+    });
+  });
+
+  it("task plan approve and reject update plan_approval state", async () => {
+    const root = await makeRepo();
+    const taskId = "202602060840-P1A3";
+    await addTask(root, taskId);
+
+    await cmdTaskPlan({
+      cwd: root,
+      args: ["set", taskId, "--text", "Plan content."],
+    });
+    await cmdTaskPlan({
+      cwd: root,
+      args: ["approve", taskId, "--by", "USER", "--note", "OK"],
+    });
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const approved = await readFile(readmePath, "utf8");
+    expect(approved).toContain('state: "approved"');
+    expect(approved).toContain('updated_by: "USER"');
+
+    await expect(
+      cmdTaskPlan({ cwd: root, args: ["reject", taskId, "--by", "USER"] }),
+    ).rejects.toMatchObject({
+      code: "E_USAGE",
+    });
+
+    await cmdTaskPlan({
+      cwd: root,
+      args: ["reject", taskId, "--by", "USER", "--note", "Nope"],
+    });
+
+    const rejected = await readFile(readmePath, "utf8");
+    expect(rejected).toContain('state: "rejected"');
+    expect(rejected).toContain('note: "Nope"');
   });
 
   it("task new enforces verify requirements and writes tasks", async () => {
