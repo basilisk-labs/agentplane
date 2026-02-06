@@ -31,8 +31,11 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Completed all FIX2.md scoped changes via tasks RNTNEP/FY8TYM/DZBAW0/DH1CKG/FXTNQ0/KNHP1Y/D3QVVY; repo is green on bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli."
+  -
+    author: "ORCHESTRATOR"
+    body: "Note: Exported .agentplane/tasks.json snapshot after completing FIX2.md work."
 doc_version: 2
-doc_updated_at: "2026-02-06T20:36:11.508Z"
+doc_updated_at: "2026-02-06T20:38:23.739Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Реализовать пункты из FIX2.md: убрать повторные resolve/load в командах, унифицировать guard/hooks policy, стандартизовать commit message (без обратной совместимости), дедуп утилит и распил монолитов."
 id_source: "generated"
