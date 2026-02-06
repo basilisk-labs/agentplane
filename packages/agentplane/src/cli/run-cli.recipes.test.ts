@@ -589,6 +589,7 @@ describe("runCli recipes", () => {
         "--refresh",
         "--index",
         "https://example.com/index.json",
+        "--yes",
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("remote-recipe@1.0.0");
