@@ -25,6 +25,12 @@ export type TaskFrontmatter = {
     updated_by: string | null;
     note: string | null;
   };
+  verification?: {
+    state: "pending" | "ok" | "needs_rework";
+    updated_at: string | null;
+    updated_by: string | null;
+    note: string | null;
+  };
   comments: { author: string; body: string }[];
   doc_version: 2;
   doc_updated_at: string;
@@ -204,6 +210,12 @@ export async function createTask(opts: {
     tags: opts.tags,
     verify: opts.verify,
     plan_approval: {
+      state: "pending",
+      updated_at: null,
+      updated_by: null,
+      note: null,
+    },
+    verification: {
       state: "pending",
       updated_at: null,
       updated_by: null,

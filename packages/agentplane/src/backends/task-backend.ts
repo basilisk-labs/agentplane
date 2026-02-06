@@ -41,6 +41,14 @@ export type PlanApproval = {
   note: string | null;
 };
 
+export type VerificationState = "pending" | "ok" | "needs_rework";
+export type VerificationResult = {
+  state: VerificationState;
+  updated_at: string | null;
+  updated_by: string | null;
+  note: string | null;
+};
+
 type AtomicWriteFile = (
   filePath: string,
   contents: string | Buffer,
@@ -195,6 +203,7 @@ export type TaskData = {
   tags: string[];
   verify: string[];
   plan_approval?: PlanApproval;
+  verification?: VerificationResult;
   commit?: { hash: string; message: string } | null;
   comments?: { author: string; body: string }[];
   doc?: string;
@@ -280,6 +289,22 @@ function normalizePlanApproval(value: unknown): PlanApproval | null {
   return { state, updated_at: updatedAt, updated_by: updatedBy, note };
 }
 
+function defaultVerificationResult(): VerificationResult {
+  return { state: "pending", updated_at: null, updated_by: null, note: null };
+}
+
+function normalizeVerificationResult(value: unknown): VerificationResult | null {
+  if (!isRecord(value)) return null;
+  const state = typeof value.state === "string" ? value.state : "";
+  if (state !== "pending" && state !== "ok" && state !== "needs_rework") return null;
+  const updatedAt =
+    value.updated_at === null || typeof value.updated_at === "string" ? value.updated_at : null;
+  const updatedBy =
+    value.updated_by === null || typeof value.updated_by === "string" ? value.updated_by : null;
+  const note = value.note === null || typeof value.note === "string" ? value.note : null;
+  return { state, updated_at: updatedAt, updated_by: updatedBy, note };
+}
+
 export function taskRecordToData(record: TaskRecord): TaskData {
   const fm = record.frontmatter as unknown as Record<string, unknown>;
   const comments = Array.isArray(fm.comments)
@@ -298,6 +323,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
       ? { hash: fm.commit.hash, message: fm.commit.message }
       : null;
   const planApproval = normalizePlanApproval(fm.plan_approval);
+  const verification = normalizeVerificationResult(fm.verification);
 
   const baseId = typeof fm.id === "string" ? fm.id : typeof record.id === "string" ? record.id : "";
   const task: TaskData = {
@@ -311,6 +337,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     tags: toStringArray(fm.tags),
     verify: toStringArray(fm.verify),
     plan_approval: planApproval ?? undefined,
+    verification: verification ?? undefined,
     commit,
     comments,
     doc_version: typeof fm.doc_version === "number" ? fm.doc_version : undefined,
@@ -554,6 +581,13 @@ export class LocalBackend implements TaskBackend {
     }
     if (payload.plan_approval === undefined) {
       payload.plan_approval = defaultPlanApproval();
+    }
+
+    if (payload.verification === undefined && existingFrontmatter.verification !== undefined) {
+      payload.verification = existingFrontmatter.verification;
+    }
+    if (payload.verification === undefined) {
+      payload.verification = defaultVerificationResult();
     }
 
     if (task.doc !== undefined) {
