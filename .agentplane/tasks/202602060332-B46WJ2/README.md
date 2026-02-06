@@ -1,15 +1,17 @@
 ---
 id: "202602060332-B46WJ2"
 title: "AP-BR-04 Direct mode work start alignment"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
 tags: ["workflow"]
 verify: []
-comments: []
+commit: { hash: "01fb738a7780db1f8f3c140d0bc6de6455909a7d", message: "📝 S76RDP record task metadata" }
+comments:
+  - { author: "CODER", body: "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d." }
 doc_version: 2
-doc_updated_at: "2026-02-06T04:09:49.927Z"
+doc_updated_at: "2026-02-06T04:13:09.717Z"
 doc_updated_by: "CODER"
 description: "Implement work start in direct mode (create task branch from HEAD, optional worktree, minimal scaffold) and align docs. Includes tests and docs updates."
 id_source: "generated"

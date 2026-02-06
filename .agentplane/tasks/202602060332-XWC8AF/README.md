@@ -1,17 +1,18 @@
 ---
 id: "202602060332-XWC8AF"
 title: "AP-BR-01 Remove base_branch from config"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["config"]
 verify: []
-commit: null
+commit: { hash: "01fb738a7780db1f8f3c140d0bc6de6455909a7d", message: "📝 S76RDP record task metadata" }
 comments:
   - { author: "CODER", body: "Start: remove base_branch from config schema/types, add compat ignore warning, update tests/docs." }
+  - { author: "CODER", body: "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d." }
 doc_version: 2
-doc_updated_at: "2026-02-06T04:08:06.129Z"
+doc_updated_at: "2026-02-06T04:13:09.713Z"
 doc_updated_by: "CODER"
 description: "Remove base_branch from config schema/examples/types; ignore if present with warning for compatibility; ensure base comes only from git config/--base. Include tests and docs updates."
 id_source: "generated"
