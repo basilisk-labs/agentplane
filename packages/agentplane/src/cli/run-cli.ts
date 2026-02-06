@@ -1946,6 +1946,7 @@ export async function runCli(argv: string[]): Promise<number> {
         let message = "";
         let autoAllow = false;
         let allowTasks = false;
+        let allowBase = false;
         let allowPolicy = false;
         let allowConfig = false;
         let allowHooks = false;
@@ -1983,6 +1984,10 @@ export async function runCli(argv: string[]): Promise<number> {
           }
           if (arg === "--allow-tasks") {
             allowTasks = true;
+            continue;
+          }
+          if (arg === "--allow-base") {
+            allowBase = true;
             continue;
           }
           if (arg === "--allow-policy") {
@@ -2060,6 +2065,7 @@ export async function runCli(argv: string[]): Promise<number> {
           taskId,
           message,
           allow,
+          allowBase,
           allowTasks,
           allowPolicy,
           allowConfig,

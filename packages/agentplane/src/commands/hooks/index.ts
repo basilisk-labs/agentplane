@@ -9,7 +9,6 @@ import {
   validateCommitSubject,
 } from "@agentplaneorg/core";
 
-import { loadTaskBackend } from "../../backends/task-backend.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
@@ -117,15 +116,6 @@ function readCommitSubject(message: string): string {
     return trimmed;
   }
   return "";
-}
-
-function findMatchingTaskId(opts: { subject: string; tasks: { id: string }[] }): string | null {
-  const lowered = opts.subject.toLowerCase();
-  for (const task of opts.tasks) {
-    const suffix = task.id.split("-").at(-1) ?? "";
-    if (suffix && lowered.includes(suffix.toLowerCase())) return task.id;
-  }
-  return null;
 }
 
 export async function cmdHooksInstall(opts: {
@@ -251,42 +241,11 @@ export async function cmdHooksRun(opts: {
         }
         return 0;
       }
-
-      const { backend } = await loadTaskBackend({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride ?? null,
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: "AGENTPLANE_TASK_ID is required (use `agentplane commit ...`)",
       });
-      const tasks = await backend.listTasks();
-      if (tasks.length === 0) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: "No task IDs available to validate commit subject",
-        });
-      }
-
-      const matchedTaskId = findMatchingTaskId({ subject, tasks });
-      if (!matchedTaskId) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: "Commit subject must mention a task suffix",
-        });
-      }
-
-      const policy = validateCommitSubject({
-        subject,
-        taskId: matchedTaskId,
-        genericTokens: loaded.config.commit.generic_tokens,
-      });
-      if (!policy.ok) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: policy.errors.join("\n"),
-        });
-      }
-      return 0;
     }
 
     if (opts.hook === "pre-commit") {

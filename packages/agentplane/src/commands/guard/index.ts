@@ -3,6 +3,7 @@ import {
   getStagedFiles,
   getUnstagedFiles,
   loadConfig,
+  resolveBaseBranch,
   resolveProject,
   validateCommitSubject,
 } from "@agentplaneorg/core";
@@ -11,30 +12,13 @@ import { mapCoreError } from "../../cli/error-map.js";
 import { invalidValueMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
+import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
 import { execFileAsync } from "../shared/git.js";
+import { gitCurrentBranch } from "../shared/git-ops.js";
 import {
   getProtectedPathOverride,
   protectedPathKindForFile,
 } from "../../shared/protected-paths.js";
-
-function pathIsUnder(candidate: string, prefix: string): boolean {
-  if (prefix === "." || prefix === "") return true;
-  if (candidate === prefix) return true;
-  return candidate.startsWith(`${prefix}/`);
-}
-
-function normalizeAllowPrefix(prefix: string): string {
-  const raw = prefix.trim();
-  if (raw === "." || raw === "./" || raw === ".\\") return ".";
-
-  // Normalize user-provided allow prefixes so staging and checks agree.
-  // Git paths are treated as repo-relative POSIX paths.
-  let p = raw.replaceAll("\\", "/");
-  while (p.startsWith("./")) p = p.slice(2);
-  p = p.replaceAll(/\/{2,}/g, "/");
-  p = p.replaceAll(/\/+$/g, "");
-  return p;
-}
 
 function parseNullSeparatedPaths(stdout: Buffer | string): string[] {
   const text = Buffer.isBuffer(stdout) ? stdout.toString("utf8") : stdout;
@@ -77,7 +61,7 @@ export function suggestAllowPrefixes(paths: string[]): string[] {
 }
 
 export const GUARD_COMMIT_USAGE =
-  "Usage: agentplane guard commit <task-id> -m <message> --allow <path> [--allow <path>...] [--auto-allow] [--allow-tasks] [--require-clean] [--quiet]";
+  "Usage: agentplane guard commit <task-id> -m <message> --allow <path> [--allow <path>...] [--auto-allow] [--allow-tasks] [--allow-base] [--allow-policy] [--allow-config] [--allow-hooks] [--allow-ci] [--require-clean] [--quiet]";
 export const GUARD_COMMIT_USAGE_EXAMPLE =
   'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB update" --allow packages/agentplane';
 export const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
@@ -89,6 +73,7 @@ type GuardCommitOptions = {
   taskId: string;
   message: string;
   allow: string[];
+  allowBase: boolean;
   allowTasks: boolean;
   allowPolicy: boolean;
   allowConfig: boolean;
@@ -129,7 +114,7 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
     });
   }
 
-  const allow = opts.allow.map((prefix) => normalizeAllowPrefix(prefix));
+  const allow = opts.allow.map((prefix) => normalizeGitPathPrefix(prefix));
   const tasksPath = loaded.config.paths.tasks_path;
 
   if (opts.requireClean) {
@@ -139,6 +124,39 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
     });
     if (unstaged.length > 0) {
       throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree is dirty" });
+    }
+  }
+
+  if (loaded.config.workflow_mode === "branch_pr") {
+    const baseBranch = await resolveBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      cliBaseOpt: null,
+      mode: loaded.config.workflow_mode,
+    });
+    if (!baseBranch) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Base branch could not be resolved (use `agentplane branch base set`).",
+      });
+    }
+    const currentBranch = await gitCurrentBranch(resolved.gitRoot);
+    const tasksStaged = staged.includes(tasksPath);
+    const nonTasks = staged.filter((entry) => entry !== tasksPath);
+    if (tasksStaged && currentBranch !== baseBranch) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `${tasksPath} commits are allowed only on ${baseBranch} in branch_pr mode`,
+      });
+    }
+    if (nonTasks.length > 0 && currentBranch === baseBranch && !opts.allowBase) {
+      throw new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: `Code commits are forbidden on ${baseBranch} in branch_pr mode`,
+      });
     }
   }
 
@@ -166,7 +184,7 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
         });
       }
     }
-    if (!allow.some((prefix) => pathIsUnder(filePath, prefix))) {
+    if (!allow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) {
       throw new CliError({
         exitCode: 5,
         code: "E_GIT",
@@ -227,6 +245,7 @@ async function stageAllowlist(opts: {
   rootOverride?: string;
   allow: string[];
   allowTasks: boolean;
+  tasksPath: string;
 }): Promise<string[]> {
   const resolved = await resolveProject({
     cwd: opts.cwd,
@@ -241,14 +260,14 @@ async function stageAllowlist(opts: {
     });
   }
 
-  const allow = opts.allow.map((prefix) => normalizeAllowPrefix(prefix));
+  const allow = opts.allow.map((prefix) => normalizeGitPathPrefix(prefix));
   const denied = new Set<string>();
-  if (!opts.allowTasks) denied.add(".agentplane/tasks.json");
+  if (!opts.allowTasks) denied.add(opts.tasksPath);
 
   const staged: string[] = [];
   for (const filePath of changed) {
     if (denied.has(filePath)) continue;
-    if (allow.some((prefix) => pathIsUnder(filePath, prefix))) {
+    if (allow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) {
       staged.push(filePath);
     }
   }
@@ -346,6 +365,7 @@ export async function commitFromComment(opts: {
     rootOverride: opts.rootOverride,
     allow: allowPrefixes,
     allowTasks: opts.allowTasks,
+    tasksPath: opts.config.paths.tasks_path,
   });
 
   const message = deriveCommitMessageFromComment({
@@ -362,6 +382,7 @@ export async function commitFromComment(opts: {
     taskId: opts.taskId,
     message,
     allow: allowPrefixes,
+    allowBase: false,
     allowTasks: opts.allowTasks,
     allowPolicy: false,
     allowConfig: false,
@@ -507,6 +528,7 @@ export async function cmdCommit(opts: {
       taskId: opts.taskId,
       message: opts.message,
       allow,
+      allowBase: opts.allowBase,
       allowTasks: opts.allowTasks,
       allowPolicy: opts.allowPolicy,
       allowConfig: opts.allowConfig,
