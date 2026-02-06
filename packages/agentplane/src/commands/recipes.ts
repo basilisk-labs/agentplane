@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import { atomicWriteFile, resolveProject } from "@agentplaneorg/core";
+import { atomicWriteFile, defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import { extractArchive } from "../cli/archive.js";
 import { sha256File } from "../cli/checksum.js";
@@ -24,6 +24,7 @@ import {
   usageMessage,
 } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
+import { ensureNetworkApproved } from "./shared/network-approval.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -151,7 +152,7 @@ const RECIPE_INFO_USAGE_EXAMPLE = "agentplane recipes info viewer";
 const RECIPE_EXPLAIN_USAGE = "Usage: agentplane recipes explain <id>";
 const RECIPE_EXPLAIN_USAGE_EXAMPLE = "agentplane recipes explain viewer";
 const RECIPE_INSTALL_USAGE =
-  "Usage: agentplane recipes install --name <id> [--index <path|url>] [--refresh] | --path <path> | --url <url>";
+  "Usage: agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] | --path <path> | --url <url> [--yes]";
 const RECIPE_INSTALL_USAGE_EXAMPLE = "agentplane recipes install --name viewer";
 const RECIPE_REMOVE_USAGE = "Usage: agentplane recipes remove <id>";
 const RECIPE_REMOVE_USAGE_EXAMPLE = "agentplane recipes remove viewer";
@@ -160,7 +161,7 @@ const RECIPE_CACHE_USAGE_EXAMPLE = "agentplane recipes cache prune --dry-run";
 const RECIPE_CACHE_PRUNE_USAGE = "Usage: agentplane recipes cache prune [--dry-run] [--all]";
 const RECIPE_CACHE_PRUNE_USAGE_EXAMPLE = "agentplane recipes cache prune --dry-run";
 const RECIPE_LIST_REMOTE_USAGE =
-  "Usage: agentplane recipes list-remote [--refresh] [--index <path|url>]";
+  "Usage: agentplane recipes list-remote [--refresh] [--index <path|url>] [--yes]";
 const RECIPE_LIST_REMOTE_USAGE_EXAMPLE = "agentplane recipes list-remote --refresh";
 const DEFAULT_RECIPES_INDEX_URL =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
@@ -333,10 +334,11 @@ async function maybeResolveProject(opts: {
 type RecipeListRemoteFlags = {
   refresh: boolean;
   index?: string;
+  yes: boolean;
 };
 
 function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
-  const out: RecipeListRemoteFlags = { refresh: false };
+  const out: RecipeListRemoteFlags = { refresh: false, yes: false };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (!arg) continue;
@@ -349,6 +351,10 @@ function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
     }
     if (arg === "--refresh") {
       out.refresh = true;
+      continue;
+    }
+    if (arg === "--yes") {
+      out.yes = true;
       continue;
     }
     const next = args[i + 1];
@@ -804,6 +810,7 @@ function parseRecipeInstallArgs(args: string[]): {
   index?: string;
   refresh: boolean;
   onConflict: RecipeConflictMode;
+  yes: boolean;
 } {
   let onConflict: RecipeConflictMode = "fail";
   let name: string | null = null;
@@ -811,6 +818,7 @@ function parseRecipeInstallArgs(args: string[]): {
   let url: string | null = null;
   let index: string | undefined;
   let refresh = false;
+  let yes = false;
   const positional: string[] = [];
 
   for (let i = 0; i < args.length; i++) {
@@ -868,6 +876,10 @@ function parseRecipeInstallArgs(args: string[]): {
       refresh = true;
       continue;
     }
+    if (arg === "--yes") {
+      yes = true;
+      continue;
+    }
     if (arg === "--on-conflict") {
       const next = args[i + 1];
       if (!next)
@@ -920,11 +932,12 @@ function parseRecipeInstallArgs(args: string[]): {
     });
   }
 
-  if (name) return { source: { type: "name", value: name }, index, refresh, onConflict };
-  if (localPath) return { source: { type: "path", value: localPath }, index, refresh, onConflict };
-  if (url) return { source: { type: "url", value: url }, index, refresh, onConflict };
+  if (name) return { source: { type: "name", value: name }, index, refresh, onConflict, yes };
+  if (localPath)
+    return { source: { type: "path", value: localPath }, index, refresh, onConflict, yes };
+  if (url) return { source: { type: "url", value: url }, index, refresh, onConflict, yes };
   if (positional.length === 1) {
-    return { source: { type: "auto", value: positional[0] }, index, refresh, onConflict };
+    return { source: { type: "auto", value: positional[0] }, index, refresh, onConflict, yes };
   }
 
   throw new CliError({
@@ -1210,6 +1223,22 @@ async function cmdRecipeListRemote(opts: {
 }): Promise<number> {
   const flags = parseRecipeListRemoteFlags(opts.args);
   try {
+    const project = await maybeResolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    let config = defaultConfig();
+    if (project) {
+      const loaded = await loadConfig(project.agentplaneDir);
+      config = loaded.config;
+    }
+    const source = flags.index ?? DEFAULT_RECIPES_INDEX_URL;
+    const cachePath = resolveRecipesIndexCachePath();
+    const willFetchRemote = (flags.refresh || !(await fileExists(cachePath))) && isHttpUrl(source);
+    if (willFetchRemote) {
+      await ensureNetworkApproved({
+        config,
+        yes: flags.yes,
+        reason: "recipes list-remote fetches the remote recipes index",
+      });
+    }
     const index = await loadRecipesRemoteIndex({
       cwd: opts.cwd,
       source: flags.index,
@@ -1774,8 +1803,22 @@ async function cmdRecipeInstall(opts: {
   index?: string;
   refresh: boolean;
   onConflict: RecipeConflictMode;
+  yes: boolean;
 }): Promise<number> {
   try {
+    const project = await maybeResolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    let config = defaultConfig();
+    if (project) {
+      const loaded = await loadConfig(project.agentplaneDir);
+      config = loaded.config;
+    }
+    let networkApproved = false;
+    const ensureApproved = async (reason: string): Promise<void> => {
+      if (networkApproved) return;
+      await ensureNetworkApproved({ config, yes: opts.yes, reason });
+      networkApproved = true;
+    };
+
     const tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
     try {
       let sourcePath = "";
@@ -1784,6 +1827,13 @@ async function cmdRecipeInstall(opts: {
       let indexTags: string[] = [];
 
       const resolveFromIndex = async (recipeId: string): Promise<string> => {
+        const indexSource = opts.index ?? DEFAULT_RECIPES_INDEX_URL;
+        const cachePath = resolveRecipesIndexCachePath();
+        const willFetchRemote =
+          (opts.refresh || !(await fileExists(cachePath))) && isHttpUrl(indexSource);
+        if (willFetchRemote) {
+          await ensureApproved("recipes install fetches the remote recipes index");
+        }
         const index = await loadRecipesRemoteIndex({
           cwd: opts.cwd,
           source: opts.index,
@@ -1812,6 +1862,7 @@ async function cmdRecipeInstall(opts: {
         indexTags = normalizeRecipeTags(latest.tags ?? []);
 
         if (isHttpUrl(latest.url)) {
+          await ensureApproved("recipes install downloads a recipe archive");
           const url = new URL(latest.url);
           const filename = path.basename(url.pathname) || "recipe.tar.gz";
           const target = path.join(tempRoot, filename);
@@ -1832,6 +1883,7 @@ async function cmdRecipeInstall(opts: {
       const resolveSourcePath = async (source: RecipeInstallSource): Promise<string> => {
         if (source.type === "name") return await resolveFromIndex(source.value);
         if (source.type === "url") {
+          await ensureApproved("recipes install downloads a recipe archive");
           const url = new URL(source.value);
           const filename = path.basename(url.pathname) || "recipe.tar.gz";
           const target = path.join(tempRoot, filename);
@@ -1914,10 +1966,6 @@ async function cmdRecipeInstall(opts: {
       }
 
       try {
-        const project = await maybeResolveProject({
-          cwd: opts.cwd,
-          rootOverride: opts.rootOverride,
-        });
         if (project) {
           await applyRecipeAgents({
             manifest: manifestWithTags,
@@ -2176,6 +2224,7 @@ export async function cmdRecipes(opts: {
       index: parsed.index,
       refresh: parsed.refresh,
       onConflict: parsed.onConflict,
+      yes: parsed.yes,
     });
   }
   if (subcommand === "remove") {

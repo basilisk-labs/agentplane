@@ -790,6 +790,19 @@ describe("runCli", () => {
     expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
   });
 
+  it("upgrade requires --yes in non-tty mode when require_network=true and it would fetch remote assets", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["upgrade", "--dry-run", "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("--yes");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("upgrade validates bundle/checksum flag combinations", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -970,6 +983,43 @@ describe("runCli", () => {
         quiet: false,
         confirm: true,
       });
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("backend sync requires --yes in non-tty mode when require_network=true and backend is non-local", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", sync }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "backend",
+        "sync",
+        "redmine",
+        "--direction",
+        "push",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("--yes");
+      expect(sync).not.toHaveBeenCalled();
     } finally {
       io.restore();
       spy.mockRestore();

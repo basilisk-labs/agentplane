@@ -321,4 +321,30 @@ describe("runCli", () => {
       io.restore();
     }
   });
+
+  it("recipes list-remote requires --yes in non-tty mode when require_network=true", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "list-remote", "--refresh", "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("--yes");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("recipes install requires --yes in non-tty mode when require_network=true", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["recipes", "install", "--name", "viewer", "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("--yes");
+    } finally {
+      io.restore();
+    }
+  });
 });

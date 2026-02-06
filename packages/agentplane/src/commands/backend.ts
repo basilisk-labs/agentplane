@@ -2,6 +2,7 @@ import { backendNotSupportedMessage, usageMessage } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
 import { loadTaskBackend } from "../backends/task-backend.js";
+import { ensureNetworkApproved } from "./shared/network-approval.js";
 
 export const BACKEND_SYNC_USAGE =
   "Usage: agentplane backend sync <id> --direction <push|pull> [--conflict <diff|prefer-local|prefer-remote|fail>] [--yes] [--quiet]";
@@ -173,7 +174,7 @@ export async function cmdBackendSync(opts: {
 }): Promise<number> {
   const flags = parseBackendSyncArgs(opts.args);
   try {
-    const { backend, backendId } = await loadTaskBackend({
+    const { backend, backendId, config } = await loadTaskBackend({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
@@ -189,6 +190,13 @@ export async function cmdBackendSync(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: backendNotSupportedMessage("sync()"),
+      });
+    }
+    if (backendId !== "local") {
+      await ensureNetworkApproved({
+        config,
+        yes: flags.confirm,
+        reason: `backend sync may access the network (backend: ${backendId})`,
       });
     }
     await backend.sync({
@@ -211,7 +219,7 @@ export async function cmdSync(opts: {
 }): Promise<number> {
   const flags = parseSyncArgs(opts.args);
   try {
-    const { backend, backendId } = await loadTaskBackend({
+    const { backend, backendId, config } = await loadTaskBackend({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
@@ -227,6 +235,13 @@ export async function cmdSync(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: backendNotSupportedMessage("sync()"),
+      });
+    }
+    if (backendId !== "local") {
+      await ensureNetworkApproved({
+        config,
+        yes: flags.confirm,
+        reason: `sync may access the network (backend: ${backendId})`,
       });
     }
     await backend.sync({

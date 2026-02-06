@@ -17,11 +17,12 @@ import {
 } from "../cli/output.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
 import { CliError } from "../shared/errors.js";
+import { ensureNetworkApproved } from "./shared/network-approval.js";
 
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
 const DEFAULT_UPGRADE_CHECKSUM_ASSET = "agentplane-upgrade.tar.gz.sha256";
 const UPGRADE_USAGE =
-  "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>]";
+  "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>] [--yes]";
 const UPGRADE_USAGE_EXAMPLE = "agentplane upgrade --tag v0.1.4 --dry-run";
 
 type UpgradeFlags = {
@@ -33,10 +34,11 @@ type UpgradeFlags = {
   checksumAsset?: string;
   dryRun: boolean;
   backup: boolean;
+  yes: boolean;
 };
 
 function parseUpgradeFlags(args: string[]): UpgradeFlags {
-  const out: UpgradeFlags = { dryRun: false, backup: true };
+  const out: UpgradeFlags = { dryRun: false, backup: true, yes: false };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (!arg) continue;
@@ -53,6 +55,10 @@ function parseUpgradeFlags(args: string[]): UpgradeFlags {
     }
     if (arg === "--no-backup") {
       out.backup = false;
+      continue;
+    }
+    if (arg === "--yes") {
+      out.yes = true;
       continue;
     }
     const next = args[i + 1];
@@ -163,6 +169,12 @@ export async function cmdUpgrade(opts: {
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
   const source = flags.source ?? loaded.config.framework.source;
+  let networkApproved = false;
+  const ensureApproved = async (reason: string): Promise<void> => {
+    if (networkApproved) return;
+    await ensureNetworkApproved({ config: loaded.config, yes: flags.yes, reason });
+    networkApproved = true;
+  };
 
   let tempRoot: string | null = null;
   let extractRoot: string | null = null;
@@ -176,6 +188,7 @@ export async function cmdUpgrade(opts: {
       const isUrl = flags.bundle.startsWith("http://") || flags.bundle.startsWith("https://");
       bundlePath = isUrl ? path.join(tempRoot, "bundle.tar.gz") : path.resolve(flags.bundle);
       if (isUrl) {
+        await ensureApproved("upgrade downloads the bundle/checksum from the network");
         await downloadToFile(flags.bundle, bundlePath);
       }
       const checksumValue = flags.checksum ?? "";
@@ -185,6 +198,7 @@ export async function cmdUpgrade(opts: {
         ? path.join(tempRoot, "bundle.tar.gz.sha256")
         : path.resolve(checksumValue);
       if (checksumIsUrl) {
+        await ensureApproved("upgrade downloads the bundle/checksum from the network");
         await downloadToFile(checksumValue, checksumPath);
       }
     } else {
@@ -192,6 +206,9 @@ export async function cmdUpgrade(opts: {
       const releaseUrl = flags.tag
         ? `https://api.github.com/repos/${owner}/${repo}/releases/tags/${flags.tag}`
         : `https://api.github.com/repos/${owner}/${repo}/releases/latest`;
+      await ensureApproved(
+        "upgrade fetches release metadata and downloads assets from the network",
+      );
       const release = (await fetchJson(releaseUrl)) as {
         assets?: { name?: string; browser_download_url?: string }[];
       };
