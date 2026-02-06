@@ -23,6 +23,19 @@ function normalizeAllowPrefix(prefix: string): string {
   return prefix.replace(/\/+$/, "");
 }
 
+export function buildGitCommitEnv(opts: {
+  taskId: string;
+  allowTasks: boolean;
+  allowBase: boolean;
+}): NodeJS.ProcessEnv {
+  return {
+    ...process.env,
+    AGENTPLANE_TASK_ID: opts.taskId,
+    AGENTPLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
+    AGENTPLANE_ALLOW_BASE: opts.allowBase ? "1" : "0",
+  };
+}
+
 export function suggestAllowPrefixes(paths: string[]): string[] {
   const out = new Set<string>();
   for (const filePath of paths) {
@@ -296,12 +309,13 @@ export async function commitFromComment(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
   });
-  const env = {
-    ...process.env,
-    AGENTPLANE_TASK_ID: opts.taskId,
-    AGENTPLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
-    AGENTPLANE_ALLOW_BASE: opts.allowTasks ? "1" : "0",
-  };
+  // Never allow base-branch code commits implicitly from comment-driven commits.
+  // Base overrides must be explicit via the `commit` command's --allow-base flag.
+  const env = buildGitCommitEnv({
+    taskId: opts.taskId,
+    allowTasks: opts.allowTasks,
+    allowBase: false,
+  });
   await execFileAsync("git", ["commit", "-m", message], { cwd: resolved.gitRoot, env });
 
   const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], {
@@ -428,12 +442,11 @@ export async function cmdCommit(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const env = {
-      ...process.env,
-      AGENTPLANE_TASK_ID: opts.taskId,
-      AGENTPLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
-      AGENTPLANE_ALLOW_BASE: opts.allowBase ? "1" : "0",
-    };
+    const env = buildGitCommitEnv({
+      taskId: opts.taskId,
+      allowTasks: opts.allowTasks,
+      allowBase: opts.allowBase,
+    });
     await execFileAsync("git", ["commit", "-m", opts.message], { cwd: resolved.gitRoot, env });
 
     if (!opts.quiet) {
