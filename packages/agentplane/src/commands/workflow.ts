@@ -34,6 +34,8 @@ export {
   FINISH_USAGE_EXAMPLE,
   VERIFY_USAGE,
   VERIFY_USAGE_EXAMPLE,
+  TASK_VERIFY_USAGE,
+  TASK_VERIFY_USAGE_EXAMPLE,
   dedupeStrings,
   cmdTaskNew,
   cmdTaskAdd,
@@ -59,6 +61,7 @@ export {
   cmdBlock,
   cmdFinish,
   cmdVerify,
+  cmdTaskVerify,
 } from "./task/index.js";
 
 export {

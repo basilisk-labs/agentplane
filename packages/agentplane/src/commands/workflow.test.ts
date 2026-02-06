@@ -26,6 +26,7 @@ import {
   cmdHooksUninstall,
   cmdStart,
   cmdVerify,
+  cmdTaskVerify,
   cmdReady,
   cmdTaskNormalize,
   cmdTaskScaffold,
@@ -42,7 +43,6 @@ import * as prompts from "../cli/prompts.js";
 import {
   captureStdIO,
   mkGitRepoRoot,
-  mkTempDir,
   silenceStdIO,
   writeDefaultConfig,
 } from "../cli/run-cli.test-helpers.js";
@@ -1004,275 +1004,134 @@ describe("commands/workflow", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("verify rejects non-list verify and requires commands when requested", async () => {
+  it("verify requires --ok|--rework and --by/--note", async () => {
     const root = await makeRepo();
-    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
-      backendId: "local",
-      backend: baseTaskBackend({
-        getTask: vi.fn().mockResolvedValue({
-          id: "202602050900-V1F2",
-          title: "Verify",
-          status: "TODO",
-          priority: "med",
-          owner: "CODER",
-          tags: ["docs"],
-          verify: "not-a-list",
-          comments: [],
-          doc_version: 2,
-          doc_updated_at: "2026-02-05T00:00:00Z",
-          doc_updated_by: "CODER",
-        }),
-      }),
-      resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
-      config: defaultConfig(),
-      backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
-    });
-    await expect(
-      cmdVerify({
-        cwd: root,
-        taskId: "202602050900-V1F2",
-        skipIfUnchanged: false,
-        quiet: true,
-        require: false,
-        yes: true,
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-    spy.mockRestore();
-
-    await addTask(root, "202602050900-V1F3");
-    await expect(
-      cmdVerify({
-        cwd: root,
-        taskId: "202602050900-V1F3",
-        skipIfUnchanged: false,
-        quiet: true,
-        require: true,
-        yes: true,
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-  });
-
-  it("verify requires --yes in non-interactive mode when require_verify is enabled", async () => {
-    const root = await makeRepo();
-    const taskId = "202602050900-V1F7";
+    const taskId = "202602050900-V1F2";
     await addTask(root, taskId);
-    await cmdTaskUpdate({
-      cwd: root,
-      args: [taskId, "--replace-verify", "--verify", "echo ok"],
+
+    await expect(cmdVerify({ cwd: root, taskId, args: [] })).rejects.toMatchObject({
+      code: "E_USAGE",
     });
-    await gitCommitFile(root, "verify-yes.txt", "chore: verify yes");
-
-    const originalIsTTY = process.stdin.isTTY;
-    Object.defineProperty(process.stdin, "isTTY", { value: false, configurable: true });
-    try {
-      await expect(
-        cmdVerify({
-          cwd: root,
-          taskId,
-          skipIfUnchanged: false,
-          quiet: true,
-          require: false,
-          yes: false,
-        }),
-      ).rejects.toMatchObject({ code: "E_USAGE" });
-
-      const code = await cmdVerify({
+    await expect(
+      cmdVerify({ cwd: root, taskId, args: ["--ok", "--by", "REVIEWER", "--note"] }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+    await expect(
+      cmdVerify({
         cwd: root,
         taskId,
-        skipIfUnchanged: false,
-        quiet: true,
-        require: false,
-        yes: true,
-      });
-      expect(code).toBe(0);
-    } finally {
-      Object.defineProperty(process.stdin, "isTTY", { value: originalIsTTY, configurable: true });
-    }
+        args: ["--ok", "--rework", "--by", "REVIEWER", "--note", "x"],
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+    await expect(
+      cmdVerify({ cwd: root, taskId, args: ["--ok", "--by", "REVIEWER"] }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("verify runs commands from Verify Steps in task README", async () => {
-    const root = await makeRepo();
-    const taskId = "202602050900-V1F4A";
-    await addTask(root, taskId);
-    await cmdTaskDocSet({
-      cwd: root,
-      taskId,
-      args: [
-        "--section",
-        "Verify Steps",
-        "--text",
-        "cmd: echo ok > verify-readme.txt\n- Check output manually",
-      ],
-    });
-    await gitCommitFile(root, "verify-base.txt", "chore: verify base");
-
-    const code = await cmdVerify({
-      cwd: root,
-      taskId,
-      skipIfUnchanged: false,
-      quiet: true,
-      require: false,
-      yes: true,
-    });
-    expect(code).toBe(0);
-    expect(await readFile(path.join(root, "verify-readme.txt"), "utf8")).toContain("ok");
-  });
-
-  it("verify writes Verification section on success", async () => {
+  it("verify appends a result entry and updates task.verification state", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F4B";
     await addTask(root, taskId);
-    await cmdTaskUpdate({
-      cwd: root,
-      args: [taskId, "--replace-verify", "--verify", "echo ok > verify-success.txt"],
-    });
-    await gitCommitFile(root, "verify-success-base.txt", "chore: verify success");
 
     const code = await cmdVerify({
       cwd: root,
       taskId,
-      skipIfUnchanged: false,
-      quiet: true,
-      require: false,
-      yes: true,
+      args: ["--ok", "--by", "REVIEWER", "--note", "Looks good", "--quiet"],
+    });
+    expect(code).toBe(0);
+
+    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
+    const task = await backend.getTask(taskId);
+    expect(task?.verification?.state).toBe("ok");
+    expect(task?.verification?.updated_by).toBe("REVIEWER");
+    expect(task?.verification?.note).toBe("Looks good");
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+    expect(readme).toContain("VERIFY — ok");
+    expect(readme).toContain("By: REVIEWER");
+    expect(readme).toContain("Note: Looks good");
+  });
+
+  it("verify supports --file details and rejects --details with --file", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F4C";
+    await addTask(root, taskId);
+
+    const detailsPath = path.join(root, "verify-details.txt");
+    await writeFile(detailsPath, "detail-line\n", "utf8");
+
+    const code = await cmdVerify({
+      cwd: root,
+      taskId,
+      args: ["--ok", "--by", "REVIEWER", "--note", "Ok", "--file", detailsPath, "--quiet"],
     });
     expect(code).toBe(0);
 
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
-    expect(readme).toContain("## Verification");
-    expect(readme).toContain("Status: pass");
-    expect(readme).toContain("echo ok > verify-success.txt");
-  });
-
-  it("verify runs when working tree is dirty with skipIfUnchanged and validates cwd/log paths", async () => {
-    const root = await makeRepo();
-    const taskId = "202602050900-V1F4";
-    await addTask(root, taskId);
-    await cmdTaskUpdate({
-      cwd: root,
-      args: [taskId, "--replace-verify", "--verify", "echo ok"],
-    });
-    await gitCommitFile(root, "verify.txt", "chore: verify");
-
-    const { stdout: headSha } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    await mkdir(prDir, { recursive: true });
-    const metaPath = path.join(prDir, "meta.json");
-    await writeFile(
-      metaPath,
-      JSON.stringify(
-        {
-          schema_version: 1,
-          task_id: taskId,
-          created_at: "2026-02-05T00:00:00Z",
-          updated_at: "2026-02-05T00:00:00Z",
-          last_verified_sha: headSha.trim(),
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
-
-    const code = await cmdVerify({
-      cwd: root,
-      taskId,
-      skipIfUnchanged: true,
-      quiet: true,
-      require: false,
-      yes: true,
-    });
-    expect(code).toBe(0);
-    const logPath = path.join(prDir, "verify.log");
-    expect(await readFile(logPath, "utf8")).toContain("$ echo ok");
-
-    const outside = await mkTempDir();
-    await expect(
-      cmdVerify({
-        cwd: root,
-        taskId,
-        execCwd: outside,
-        skipIfUnchanged: false,
-        quiet: true,
-        require: false,
-        yes: true,
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
+    expect(readme).toContain("detail-line");
 
     await expect(
       cmdVerify({
         cwd: root,
         taskId,
-        logPath: path.join(outside, "verify.log"),
-        skipIfUnchanged: false,
-        quiet: true,
-        require: false,
-        yes: true,
+        args: [
+          "--ok",
+          "--by",
+          "REVIEWER",
+          "--note",
+          "Ok",
+          "--details",
+          "inline",
+          "--file",
+          detailsPath,
+          "--quiet",
+        ],
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("verify runs commands and reports failures", async () => {
+  it("task verify rework resets commit and sets status to DOING", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-V1F5";
     await addTask(root, taskId);
-    await cmdTaskUpdate({
-      cwd: root,
-      args: [taskId, "--replace-verify", "--verify", "exit 2"],
-    });
-    await gitCommitFile(root, "verify-fail.txt", "chore: verify fail");
+    await gitCommitFile(root, "seed.txt", "chore: seed");
 
-    await expect(
-      cmdVerify({
-        cwd: root,
-        taskId,
-        skipIfUnchanged: false,
-        quiet: true,
-        require: false,
-        yes: true,
-      }),
-    ).rejects.toMatchObject({ code: "E_IO" });
+    const codeFinish = await cmdFinish({
+      cwd: root,
+      taskIds: [taskId],
+      author: "CODER",
+      body: "Verified: ".padEnd(70, "D"),
+      commit: undefined,
+      skipVerify: true,
+      force: false,
+      noRequireTaskIdInCommit: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+    expect(codeFinish).toBe(0);
+
+    const code = await cmdTaskVerify({
+      cwd: root,
+      args: ["rework", taskId, "--by", "REVIEWER", "--note", "Needs changes", "--quiet"],
+    });
+    expect(code).toBe(0);
 
     const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
     const task = await backend.getTask(taskId);
     expect(task?.status).toBe("DOING");
-    const lastComment = Array.isArray(task?.comments) ? task?.comments.at(-1) : null;
-    expect(lastComment?.body ?? "").toContain("Verify failed");
-
-    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
-    const readme = await readFile(readmePath, "utf8");
-    expect(readme).toContain("## Verification");
-    expect(readme).toContain("Status: fail");
-  });
-
-  it("verify captures stdout and stderr on failure", async () => {
-    const root = await makeRepo();
-    const taskId = "202602051630-V1F6";
-    await addTask(root, taskId);
-    await cmdTaskUpdate({
-      cwd: root,
-      args: [taskId, "--replace-verify", "--verify", "printf 'out'; printf 'err' 1>&2; exit 3"],
-    });
-    await gitCommitFile(root, "verify-stderr.txt", "chore: verify stderr");
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    await mkdir(prDir, { recursive: true });
-
-    await expect(
-      cmdVerify({
-        cwd: root,
-        taskId,
-        skipIfUnchanged: false,
-        quiet: true,
-        require: false,
-        yes: true,
-      }),
-    ).rejects.toMatchObject({ code: "E_IO" });
-
-    const logPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "verify.log");
-    const log = await readFile(logPath, "utf8");
-    expect(log).toContain("out");
-    expect(log).toContain("err");
+    expect(task?.commit ?? null).toBeNull();
+    expect(task?.verification?.state).toBe("needs_rework");
   });
 
   it("hooks install/uninstall and run validate commit-msg and pre-commit", async () => {

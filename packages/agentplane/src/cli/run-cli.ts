@@ -137,6 +137,7 @@ import {
   cmdTaskUpdate,
   cmdTaskList,
   cmdVerify,
+  cmdTaskVerify,
   cmdWorkStart,
   dedupeStrings,
   ensureInitCommit,
@@ -1313,6 +1314,10 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "task" && command === "plan") {
       return await cmdTaskPlan({ cwd: process.cwd(), rootOverride: globals.root, args });
+    }
+
+    if (namespace === "task" && command === "verify") {
+      return await cmdTaskVerify({ cwd: process.cwd(), rootOverride: globals.root, args });
     }
 
     if (namespace === "task" && command === "comment") {
@@ -2657,76 +2662,11 @@ export async function runCli(argv: string[]): Promise<number> {
           message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
         });
       }
-
-      let cwdOverride: string | undefined;
-      let logPath: string | undefined;
-      let skipIfUnchanged = false;
-      let quiet = false;
-      let require = false;
-      let yes = false;
-
-      for (let i = 0; i < verifyArgs.length; i++) {
-        const arg = verifyArgs[i];
-        if (!arg) continue;
-        if (arg === "--cwd") {
-          const next = verifyArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
-            });
-          cwdOverride = next;
-          i++;
-          continue;
-        }
-        if (arg === "--log") {
-          const next = verifyArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
-            });
-          logPath = next;
-          i++;
-          continue;
-        }
-        if (arg === "--skip-if-unchanged") {
-          skipIfUnchanged = true;
-          continue;
-        }
-        if (arg === "--quiet") {
-          quiet = true;
-          continue;
-        }
-        if (arg === "--require") {
-          require = true;
-          continue;
-        }
-        if (arg === "--yes") {
-          yes = true;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
-          });
-        }
-      }
-
       return await cmdVerify({
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
-        execCwd: cwdOverride,
-        logPath,
-        skipIfUnchanged,
-        quiet,
-        require,
-        yes,
+        args: verifyArgs,
       });
     }
 

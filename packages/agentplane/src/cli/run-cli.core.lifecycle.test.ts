@@ -76,6 +76,36 @@ function stubTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBacke
   };
 }
 
+async function approveTaskPlan(root: string, taskId: string): Promise<void> {
+  const codeSet = await runCli([
+    "task",
+    "plan",
+    "set",
+    taskId,
+    "--text",
+    "1) Do the work\n2) Verify the work",
+    "--updated-by",
+    "ORCHESTRATOR",
+    "--root",
+    root,
+  ]);
+  expect(codeSet).toBe(0);
+
+  const codeApprove = await runCli([
+    "task",
+    "plan",
+    "approve",
+    taskId,
+    "--by",
+    "USER",
+    "--note",
+    "OK",
+    "--root",
+    root,
+  ]);
+  expect(codeApprove).toBe(0);
+}
+
 describe("runCli", () => {
   it("start requires --author and --body", async () => {
     const root = await mkGitRepoRoot();
@@ -162,6 +192,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -210,6 +241,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const previous = process.env.AGENTPLANE_TASK_ID;
     process.env.AGENTPLANE_TASK_ID = taskId;
@@ -288,6 +320,7 @@ describe("runCli", () => {
         io.restore();
       }
     }
+    await approveTaskPlan(root, taskB);
 
     {
       const io = captureStdIO();
@@ -357,6 +390,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const commentBody =
       "Start: implement comment-driven commit for start flow | detail A; detail B";
@@ -424,6 +458,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -474,6 +509,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -526,6 +562,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const commentBody =
       "Start: implement sentence-based summary for commit messages. Add follow-up details.";
@@ -586,6 +623,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -637,6 +675,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -696,6 +735,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -756,6 +796,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -807,6 +848,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -859,6 +901,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -918,6 +961,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -980,6 +1024,7 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -1585,11 +1630,36 @@ describe("runCli", () => {
     }
   });
 
-  it("verify requires a value for --log", async () => {
+  it("verify requires --ok|--rework and --by/--note", async () => {
     const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify args",
+        "--description",
+        "Verify requires ok/rework and by/note",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", "202601010101-ABCDEF", "--log", "--root", root]);
+      const code = await runCli(["verify", taskId, "--ok", "--by", "REVIEWER", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("Usage: agentplane verify");
     } finally {
@@ -1597,7 +1667,7 @@ describe("runCli", () => {
     }
   });
 
-  it("verify reports when no commands are configured", async () => {
+  it("verify records ok result and prints README path", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -1608,9 +1678,9 @@ describe("runCli", () => {
         "task",
         "new",
         "--title",
-        "Verify info",
+        "Verify ok",
         "--description",
-        "No verify commands configured",
+        "Verify records ok result",
         "--owner",
         "CODER",
         "--tag",
@@ -1626,15 +1696,30 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--yes", "--root", root]);
+      const code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Looks good",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("no verify commands configured");
+      expect(io.stdout).toContain(path.join(root, ".agentplane", "tasks", taskId, "README.md"));
     } finally {
       io.restore();
     }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("VERIFY — ok");
+    expect(readme).toContain("Note: Looks good");
   });
 
-  it("verify --require fails when no commands are configured", async () => {
+  it("verify supports --quiet", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -1645,9 +1730,9 @@ describe("runCli", () => {
         "task",
         "new",
         "--title",
-        "Verify required",
+        "Verify quiet",
         "--description",
-        "Require verify commands",
+        "Quiet verify output",
         "--owner",
         "CODER",
         "--tag",
@@ -1663,165 +1748,23 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--require", "--yes", "--root", root]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("no verify commands configured");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("verify runs commands and updates pr meta/log", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-
-    await writeFile(path.join(root, "file.txt"), "content", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
-    const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-    const headSha = headOut.trim();
-
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
       const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify task",
-        "--description",
-        "Verify command runs",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--verify",
-        "echo ok",
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Ok",
+        "--quiet",
         "--root",
         root,
       ]);
       expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    await mkdir(prDir, { recursive: true });
-    const metaPath = path.join(prDir, "meta.json");
-    const now = new Date().toISOString();
-    await writeFile(
-      metaPath,
-      JSON.stringify(
-        {
-          schema_version: 1,
-          task_id: taskId,
-          created_at: now,
-          updated_at: now,
-          last_verified_sha: null,
-          last_verified_at: null,
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["verify", taskId, "--yes", "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ verify passed");
+      expect(io.stdout.trim()).toBe("");
     } finally {
       io.restore();
     }
-
-    const logText = await readFile(path.join(prDir, "verify.log"), "utf8");
-    expect(logText).toContain("$ echo ok");
-    expect(logText).toContain("verified_sha=");
-
-    const meta = JSON.parse(await readFile(metaPath, "utf8")) as {
-      last_verified_sha?: string;
-      last_verified_at?: string;
-      verify?: { status?: string };
-    };
-    expect(meta.last_verified_sha).toBe(headSha);
-    expect(meta.last_verified_at).toBeTruthy();
-    expect(meta.verify?.status).toBe("pass");
-  });
-
-  it("verify skips when unchanged and updates log", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-
-    await writeFile(path.join(root, ".gitignore"), ".agentplane/\n", "utf8");
-    await writeFile(path.join(root, "file.txt"), "content", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", ".gitignore", "file.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
-    const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
-    const headSha = headOut.trim();
-
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify skip",
-        "--description",
-        "Verify skip-if-unchanged",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--verify",
-        "echo ok",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
-    await mkdir(prDir, { recursive: true });
-    const metaPath = path.join(prDir, "meta.json");
-    const now = new Date().toISOString();
-    await writeFile(
-      metaPath,
-      JSON.stringify(
-        {
-          schema_version: 1,
-          task_id: taskId,
-          created_at: now,
-          updated_at: now,
-          last_verified_sha: headSha,
-          last_verified_at: now,
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["verify", taskId, "--skip-if-unchanged", "--yes", "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("verify skipped");
-    } finally {
-      io.restore();
-    }
-
-    const logText = await readFile(path.join(prDir, "verify.log"), "utf8");
-    expect(logText).toContain("skipped (unchanged verified_sha=");
   });
 
   it("verify rejects unknown flags", async () => {
@@ -1842,8 +1785,6 @@ describe("runCli", () => {
         "CODER",
         "--tag",
         "nodejs",
-        "--verify",
-        "echo ok",
         "--root",
         root,
       ]);
@@ -1855,23 +1796,29 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--nope", "--yes", "--root", root]);
+      const code = await runCli([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Ok",
+        "--nope",
+        "x",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane verify");
+      expect(io.stderr).toContain("Unknown flag: --nope");
     } finally {
       io.restore();
     }
   });
 
-  it("verify supports --quiet", async () => {
+  it("task verify ok writes record", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    await configureGitUser(root);
-
-    await writeFile(path.join(root, "file.txt"), "content", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
 
     const ioTask = captureStdIO();
     let taskId = "";
@@ -1880,15 +1827,13 @@ describe("runCli", () => {
         "task",
         "new",
         "--title",
-        "Verify quiet",
+        "Task verify",
         "--description",
-        "Quiet verify output",
+        "Task verify ok writes record",
         "--owner",
         "CODER",
         "--tag",
         "nodejs",
-        "--verify",
-        "echo ok",
         "--root",
         root,
       ]);
@@ -1900,134 +1845,20 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", taskId, "--quiet", "--yes", "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout.trim()).toBe("");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("verify rejects --cwd outside repo root", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
       const code = await runCli([
         "task",
-        "new",
-        "--title",
-        "Verify cwd",
-        "--description",
-        "Reject cwd outside root",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--verify",
-        "echo ok",
+        "verify",
+        "ok",
+        taskId,
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Ok",
         "--root",
         root,
       ]);
       expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    const io = captureStdIO();
-    try {
-      const outside = path.join(os.tmpdir(), "agentplane-verify-outside");
-      const code = await runCli(["verify", taskId, "--cwd", outside, "--yes", "--root", root]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("--cwd must stay under repo root");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("verify rejects --log outside repo root", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify log",
-        "--description",
-        "Reject log outside root",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--verify",
-        "echo ok",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    const io = captureStdIO();
-    try {
-      const outside = path.join(os.tmpdir(), "agentplane-verify.log");
-      const code = await runCli(["verify", taskId, "--log", outside, "--yes", "--root", root]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("--log must stay under repo root");
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("verify returns command exit code on failure", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await configureGitUser(root);
-
-    await writeFile(path.join(root, "file.txt"), "content", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
-
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify failure",
-        "--description",
-        "Verify command fails",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--verify",
-        "exit 3",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["verify", taskId, "--yes", "--root", root]);
-      expect(code).toBe(3);
-      expect(io.stderr).toContain("Verify command failed");
+      expect(io.stdout).toContain(path.join(root, ".agentplane", "tasks", taskId, "README.md"));
     } finally {
       io.restore();
     }
@@ -2036,12 +1867,6 @@ describe("runCli", () => {
   it("verify uses env task id when flags come first", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    await configureGitUser(root);
-
-    await writeFile(path.join(root, "file.txt"), "content", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
 
     const ioTask = captureStdIO();
     let taskId = "";
@@ -2057,8 +1882,6 @@ describe("runCli", () => {
         "CODER",
         "--tag",
         "nodejs",
-        "--verify",
-        "echo ok",
         "--root",
         root,
       ]);
@@ -2072,7 +1895,17 @@ describe("runCli", () => {
     process.env.AGENTPLANE_TASK_ID = taskId;
     const io = captureStdIO();
     try {
-      const code = await runCli(["verify", "--quiet", "--yes", "--root", root]);
+      const code = await runCli([
+        "verify",
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Ok",
+        "--quiet",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(0);
       expect(io.stdout.trim()).toBe("");
     } finally {

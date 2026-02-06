@@ -44,7 +44,8 @@ const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
   },
   {
     operation: "CODER/TESTER: verify task",
-    command: "`agentplane verify <task-id>`",
+    command:
+      '`agentplane verify <task-id> --ok|--rework --by <id> --note "..."` (record-only; appends to README)',
   },
   {
     operation: "REVIEWER: check PR artifacts",
@@ -92,7 +93,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- direct mode: work in the current checkout; optional `agentplane work start <task-id> --agent <ROLE> --slug <slug>` only scaffolds docs",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
-      "- Verify: `agentplane verify <task-id>`",
+      '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
       '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> ..."` / `agentplane commit <task-id> -m "<emoji> <suffix> ..." --allow <path-prefix>`',
     ],
@@ -103,7 +104,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- direct mode: work in the current checkout; optional `agentplane work start <task-id> --agent <ROLE> --slug <slug>` only scaffolds docs",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
-      "- Verify: `agentplane verify <task-id>`",
+      '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
       '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> ..."` / `agentplane commit <task-id> -m "<emoji> <suffix> ..." --allow <path-prefix>`',
     ],
@@ -202,7 +203,7 @@ export function renderQuickstart(): string {
     "- `agentplane task list` / `agentplane task show <task-id>`",
     '- `agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag>`',
     '- `agentplane start <task-id> --author <ROLE> --body "Start: ..."`',
-    "- `agentplane verify <task-id>`",
+    '- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
     '- `agentplane finish <task-id> --author <ROLE> --body "Verified: ..."`',
     "",
     "## Branch workflow (branch_pr)",
