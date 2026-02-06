@@ -16,7 +16,7 @@ tags:
   - "quality"
 commit:
   hash: "80f68e162a6963667157f14a1b739ed8d6a3f22d"
-  message: "✨ 8V7XF4 quality gates + bun"
+  message: "✨ 8V7XF4 task: define quality gates"
 comments:
   -
     author: "CODER"

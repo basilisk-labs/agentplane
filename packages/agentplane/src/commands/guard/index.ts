@@ -11,7 +11,10 @@ import {
 import { mapCoreError } from "../../cli/error-map.js";
 import { invalidValueMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
+import {
+  formatCommentBodyForCommit,
+  normalizeCommentBodyForCommit,
+} from "../../shared/comment-format.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
 import { execFileAsync } from "../shared/git.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
@@ -63,9 +66,10 @@ export function suggestAllowPrefixes(paths: string[]): string[] {
 export const GUARD_COMMIT_USAGE =
   "Usage: agentplane guard commit <task-id> -m <message> --allow <path> [--allow <path>...] [--auto-allow] [--allow-tasks] [--allow-base] [--allow-policy] [--allow-config] [--allow-hooks] [--allow-ci] [--require-clean] [--quiet]";
 export const GUARD_COMMIT_USAGE_EXAMPLE =
-  'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB update" --allow packages/agentplane';
+  'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane';
 export const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
-export const COMMIT_USAGE_EXAMPLE = 'agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB update"';
+export const COMMIT_USAGE_EXAMPLE =
+  'agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard"';
 
 type GuardCommitOptions = {
   cwd: string;
@@ -295,9 +299,17 @@ function deriveCommitMessageFromComment(opts: {
   formattedComment?: string | null;
   config: Awaited<ReturnType<typeof loadConfig>>["config"];
 }): string {
-  const summary = (opts.formattedComment ?? formatCommentBodyForCommit(opts.body, opts.config))
+  const raw = (opts.formattedComment ?? formatCommentBodyForCommit(opts.body, opts.config))
     .trim()
     .replaceAll(/\s+/g, " ");
+  if (!raw) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Comment body is required to build a commit message from the task comment",
+    });
+  }
+  const summary = raw.replace(/^(start|blocked|verified):\s+/i, "").trim();
   if (!summary) {
     throw new CliError({
       exitCode: 2,
@@ -321,13 +333,34 @@ function deriveCommitMessageFromComment(opts: {
       message: invalidValueMessage("task id", opts.taskId, "valid task id"),
     });
   }
-  return `${prefix} ${suffix} ${summary}`;
+  return `${prefix} ${suffix} task: ${summary}`;
+}
+
+function deriveCommitBodyFromComment(opts: {
+  taskId: string;
+  author?: string;
+  statusFrom?: string;
+  statusTo?: string;
+  commentBody: string;
+  formattedComment: string;
+}): string {
+  const lines = [
+    `Task: ${opts.taskId}`,
+    ...(opts.author ? [`Agent: ${opts.author}`] : []),
+    ...(opts.statusFrom && opts.statusTo ? [`Status: ${opts.statusFrom} -> ${opts.statusTo}`] : []),
+    `Comment: ${normalizeCommentBodyForCommit(opts.formattedComment || opts.commentBody)}`,
+  ];
+
+  return lines.join("\n").trimEnd();
 }
 
 export async function commitFromComment(opts: {
   cwd: string;
   rootOverride?: string;
   taskId: string;
+  author?: string;
+  statusFrom?: string;
+  statusTo?: string;
   commentBody: string;
   formattedComment: string | null;
   emoji: string;
@@ -375,6 +408,16 @@ export async function commitFromComment(opts: {
     formattedComment: opts.formattedComment,
     config: opts.config,
   });
+  const formattedComment =
+    opts.formattedComment ?? formatCommentBodyForCommit(opts.commentBody, opts.config);
+  const body = deriveCommitBodyFromComment({
+    taskId: opts.taskId,
+    author: opts.author,
+    statusFrom: opts.statusFrom,
+    statusTo: opts.statusTo,
+    commentBody: opts.commentBody,
+    formattedComment,
+  });
 
   await guardCommitCheck({
     cwd: opts.cwd,
@@ -407,7 +450,7 @@ export async function commitFromComment(opts: {
     allowHooks: false,
     allowCI: false,
   });
-  await execFileAsync("git", ["commit", "-m", message], { cwd: resolved.gitRoot, env });
+  await execFileAsync("git", ["commit", "-m", message, "-m", body], { cwd: resolved.gitRoot, env });
 
   const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], {
     cwd: resolved.gitRoot,

@@ -424,7 +424,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} start: implement comment-driven commit for start flow | details: detail A; detail B`,
+      `🚧 ${suffix} task: implement comment-driven commit for start flow | details: detail A; detail B`,
     );
   });
 
@@ -773,7 +773,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} start: implement sentence-based summary for commit messages. | details: Add follow-up details.`,
+      `🚧 ${suffix} task: implement sentence-based summary for commit messages. | details: Add follow-up details.`,
     );
   });
 
@@ -884,7 +884,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} start: handle policy off | details: follow-up; extra details included for coverage`,
+      `🚧 ${suffix} task: handle policy off | details: follow-up; extra details included for coverage`,
     );
   });
 
@@ -946,7 +946,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} start: apply separator rules | details: include extra details in the commit message`,
+      `🚧 ${suffix} task: apply separator rules | details: include extra details in the commit message`,
     );
   });
 
@@ -1110,7 +1110,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} start: implement summary-only commit message formatting for start actions`,
+      `🚧 ${suffix} task: implement summary-only commit message formatting for start actions`,
     );
   });
 
@@ -1173,7 +1173,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     expect(stdout.trim()).toBe(
-      `✨ ${suffix} start: custom emoji commit path for start command coverage and validation`,
+      `✨ ${suffix} task: custom emoji commit path for start command coverage and validation`,
     );
   });
 

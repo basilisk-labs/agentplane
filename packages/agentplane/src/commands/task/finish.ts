@@ -84,6 +84,7 @@ export async function cmdFinish(opts: {
       ? await readCommitInfo(ctx.resolved.gitRoot, opts.commit)
       : await readHeadCommit(ctx.resolved.gitRoot);
 
+    let primaryStatusFrom: string | null = null;
     for (const taskId of opts.taskIds) {
       const task = await loadTaskFromContext({ ctx, taskId });
 
@@ -96,6 +97,14 @@ export async function cmdFinish(opts: {
             message: `Task is already DONE: ${task.id} (use --force to override)`,
           });
         }
+      }
+
+      if (
+        taskId === primaryTaskId &&
+        (opts.commitFromComment || opts.statusCommit) &&
+        primaryStatusFrom === null
+      ) {
+        primaryStatusFrom = String(task.status || "TODO").toUpperCase();
       }
 
       ensureVerificationSatisfiedIfRequired(task, ctx.config);
@@ -130,6 +139,9 @@ export async function cmdFinish(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
+        author: opts.author,
+        statusFrom: primaryStatusFrom ?? undefined,
+        statusTo: "DONE",
         commentBody: opts.body,
         formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
         emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DONE"),
@@ -147,6 +159,9 @@ export async function cmdFinish(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
+        author: opts.author,
+        statusFrom: primaryStatusFrom ?? undefined,
+        statusTo: "DONE",
         commentBody: opts.body,
         formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
         emoji: opts.statusCommitEmoji ?? defaultCommitEmojiForStatus("DONE"),

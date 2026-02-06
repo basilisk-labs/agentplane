@@ -21,31 +21,30 @@ export function isGenericSubject(subject: string, genericTokens: string[]): bool
   return words.length <= 3 && words.every((w) => tokenSet.has(w));
 }
 
-function isGenericAfterStrippingTaskRef(opts: {
-  subject: string;
-  taskId: string;
+function parseSubjectTemplate(subject: string): {
+  emoji: string;
   suffix: string;
-  genericTokens: string[];
-}): boolean {
-  const normalized = stripPunctuation(opts.subject).toLowerCase().trim();
-  if (!normalized) return true;
+  scope: string;
+  summary: string;
+} | null {
+  const trimmed = subject.trim();
+  if (!trimmed) return null;
 
-  const taskId = opts.taskId.toLowerCase();
-  const suffix = opts.suffix.toLowerCase();
-  const tokenSet = new Set(opts.genericTokens.map((t) => t.toLowerCase()));
+  const match = /^(\S+)\s+(\S+)\s+(.+)$/.exec(trimmed);
+  if (!match) return null;
 
-  const words = normalized
-    .split(/\s+/)
-    .filter(Boolean)
-    .filter((w) => w !== taskId && (suffix.length === 0 || w !== suffix));
+  const emoji = match[1] ?? "";
+  const suffix = match[2] ?? "";
+  const rest = (match[3] ?? "").trim();
+  if (!emoji || !suffix || !rest) return null;
 
-  if (words.length === 0) return true;
+  const scopeMatch = /^([a-z][a-z0-9_-]*):\s+(.+)$/.exec(rest);
+  if (!scopeMatch) return null;
+  const scope = scopeMatch[1] ?? "";
+  const summary = (scopeMatch[2] ?? "").trim();
+  if (!scope || !summary) return null;
 
-  const nonGenericCount = words.filter((w) => !tokenSet.has(w)).length;
-
-  // Require at least two meaningful words after stripping task refs,
-  // and at least one of them must be non-generic.
-  return words.length < 2 || nonGenericCount < 1;
+  return { emoji, suffix, scope, summary };
 }
 
 export function validateCommitSubject(opts: {
@@ -58,26 +57,30 @@ export function validateCommitSubject(opts: {
   if (!subject) errors.push("commit subject must be non-empty");
 
   const suffix = extractTaskSuffix(opts.taskId);
-  const subjectLower = subject.toLowerCase();
-  const taskIdLower = opts.taskId.toLowerCase();
-  const suffixLower = suffix.toLowerCase();
-  if (
-    !subjectLower.includes(taskIdLower) &&
-    (suffixLower.length === 0 || !subjectLower.includes(suffixLower))
-  ) {
-    errors.push("commit subject must include task id or suffix");
+
+  const template = parseSubjectTemplate(subject);
+  if (!template) {
+    errors.push("commit subject must match: <emoji> <suffix> <scope>: <summary>");
+    return { ok: false, errors };
   }
 
-  if (
-    isGenericAfterStrippingTaskRef({
-      subject,
-      taskId: opts.taskId,
-      suffix,
-      genericTokens: opts.genericTokens,
-    })
-  ) {
-    errors.push("commit subject is too generic");
+  if (!suffix) {
+    errors.push("task id has no suffix");
+  } else if (template.suffix.toLowerCase() !== suffix.toLowerCase()) {
+    errors.push("commit subject must include task suffix as the second token");
   }
+
+  const normalizedSummary = stripPunctuation(template.summary).toLowerCase().trim();
+  if (!normalizedSummary) {
+    errors.push("commit subject is too generic");
+    return { ok: errors.length === 0, errors };
+  }
+  const words = normalizedSummary.split(/\s+/).filter(Boolean);
+  const tokenSet = new Set(opts.genericTokens.map((t) => t.toLowerCase()));
+  const nonGenericCount = words.filter((w) => !tokenSet.has(w)).length;
+
+  // Require at least two words in the summary and at least one non-generic token.
+  if (words.length < 2 || nonGenericCount < 1) errors.push("commit subject is too generic");
 
   return { ok: errors.length === 0, errors };
 }

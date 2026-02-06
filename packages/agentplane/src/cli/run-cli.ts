@@ -505,7 +505,7 @@ const PR_GROUP_USAGE = "Usage: agentplane pr open|update|check|note <task-id>";
 const PR_GROUP_USAGE_EXAMPLE = "agentplane pr open 202602030608-F1Q8AB --author CODER";
 const GUARD_USAGE = "Usage: agentplane guard <subcommand>";
 const GUARD_USAGE_EXAMPLE =
-  'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB update" --allow packages/agentplane';
+  'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane';
 const HOOKS_RUN_USAGE = "Usage: agentplane hooks run <hook>";
 const HOOKS_RUN_USAGE_EXAMPLE = "agentplane hooks run pre-commit";
 const HOOKS_INSTALL_USAGE = "Usage: agentplane hooks install|uninstall";

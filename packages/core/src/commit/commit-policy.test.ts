@@ -29,7 +29,7 @@ describe("commit-policy", () => {
 
   it("validates subject includes suffix or task id", () => {
     const result = validateCommitSubject({
-      subject: "✨ ABCDEF add base branch pinning",
+      subject: "✨ ABCDEF task: add base branch pinning",
       taskId: "202601010101-ABCDEF",
       genericTokens: ["update", "tasks"],
     });
@@ -38,27 +38,28 @@ describe("commit-policy", () => {
 
   it("matches task id and suffix case-insensitively", () => {
     const result = validateCommitSubject({
-      subject: "✨ abcdef add base branch pinning",
+      subject: "✨ abcdef task: add base branch pinning",
       taskId: "202601010101-ABCDEF",
       genericTokens: ["update", "tasks"],
     });
     expect(result.ok).toBe(true);
   });
 
-  it("rejects missing suffix and generic subject", () => {
+  it("rejects subjects that do not match the required template", () => {
     const result = validateCommitSubject({
       subject: "update tasks",
       taskId: "202601010101-ABCDEF",
       genericTokens: ["update", "tasks"],
     });
     expect(result.ok).toBe(false);
-    expect(result.errors.join("\n")).toContain("commit subject must include task id or suffix");
-    expect(result.errors.join("\n")).toContain("commit subject is too generic");
+    expect(result.errors.join("\n")).toContain(
+      "commit subject must match: <emoji> <suffix> <scope>: <summary>",
+    );
   });
 
   it("rejects generic subjects even when they include the task ref", () => {
     const result = validateCommitSubject({
-      subject: "✨ ABCDEF update",
+      subject: "✨ ABCDEF task: update",
       taskId: "202601010101-ABCDEF",
       genericTokens: ["update", "tasks", "wip"],
     });
@@ -66,15 +67,29 @@ describe("commit-policy", () => {
     expect(result.errors.join("\n")).toContain("commit subject is too generic");
   });
 
-  it("rejects empty subject and task ids without suffix", () => {
+  it("rejects empty subject", () => {
     const result = validateCommitSubject({
       subject: "   ",
-      taskId: "NO-DASH",
+      taskId: "202601010101-ABCDEF",
       genericTokens: ["update", "tasks"],
     });
     expect(result.ok).toBe(false);
     expect(result.errors.join("\n")).toContain("commit subject must be non-empty");
-    expect(result.errors.join("\n")).toContain("commit subject must include task id or suffix");
+    expect(result.errors.join("\n")).toContain(
+      "commit subject must match: <emoji> <suffix> <scope>: <summary>",
+    );
+  });
+
+  it("rejects when suffix token does not match the task id suffix", () => {
+    const result = validateCommitSubject({
+      subject: "✨ ZZZZZZ task: add base branch pinning",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors.join("\n")).toContain(
+      "commit subject must include task suffix as the second token",
+    );
   });
 
   it("integrates with git commit message", async () => {
@@ -90,7 +105,7 @@ describe("commit-policy", () => {
         "user.name=Tester",
         "commit",
         "-m",
-        "✨ ABCDEF commit policy integration test",
+        "✨ ABCDEF task: commit policy integration test",
       ],
       { cwd: root },
     );

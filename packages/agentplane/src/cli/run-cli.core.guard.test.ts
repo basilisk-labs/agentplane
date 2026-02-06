@@ -175,7 +175,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF add guard checks",
+        "✨ ABCDEF guard: add checks",
         "--allow",
         "src",
         "--root",
@@ -201,7 +201,7 @@ describe("runCli", () => {
         "commit",
         "202601301004-B2MTY4",
         "-m",
-        "✨ B2MTY4 allow auto list",
+        "✨ B2MTY4 guard: auto allow staging",
         "--auto-allow",
         "--root",
         root,
@@ -226,7 +226,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF add guard checks",
+        "✨ ABCDEF guard: add checks",
         "--root",
         root,
       ]);
@@ -251,7 +251,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF add guard checks",
+        "✨ ABCDEF guard: add checks",
         "--allow",
         ".agentplane",
         "--root",
@@ -278,7 +278,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF allow tasks",
+        "✨ ABCDEF guard: allow tasks",
         "--allow",
         ".agentplane",
         "--allow-tasks",
@@ -305,7 +305,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF guard protected paths",
+        "✨ ABCDEF guard: protect paths",
         "--allow",
         ".",
         "--root",
@@ -332,7 +332,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF guard protected paths",
+        "✨ ABCDEF guard: protect paths",
         "--allow",
         ".",
         "--allow-policy",
@@ -359,7 +359,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF quiet guard",
+        "✨ ABCDEF guard: quiet mode",
         "--allow",
         "file.txt",
         "--quiet",
@@ -387,7 +387,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF add guard checks",
+        "✨ ABCDEF guard: add checks",
         "--allow",
         ".",
         "--require-clean",
@@ -434,7 +434,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF guard allow",
+        "✨ ABCDEF guard: allow prefix",
         "--allow",
         "--root",
         root,
@@ -467,7 +467,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF guard",
+        "✨ ABCDEF guard: run checks",
         "--nope",
         "--root",
         root,
@@ -505,7 +505,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF commit wrapper",
+        "✨ ABCDEF commit: wrapper command",
         "--allow",
         "file.txt",
         "--root",
@@ -518,7 +518,7 @@ describe("runCli", () => {
     }
 
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
-    expect(stdout.trim()).toBe("✨ ABCDEF commit wrapper");
+    expect(stdout.trim()).toBe("✨ ABCDEF commit: wrapper command");
   });
 
   it("commit wrapper blocks AGENTS.md without allow-policy", async () => {
@@ -535,7 +535,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF commit protected policy",
+        "✨ ABCDEF commit: protected policy",
         "--allow",
         ".",
         "--root",
@@ -563,7 +563,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF commit protected policy",
+        "✨ ABCDEF commit: protected policy",
         "--allow",
         ".",
         "--allow-policy",
@@ -577,7 +577,7 @@ describe("runCli", () => {
     }
 
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
-    expect(stdout.trim()).toBe("✨ ABCDEF commit protected policy");
+    expect(stdout.trim()).toBe("✨ ABCDEF commit: protected policy");
   });
 
   it("commit wrapper normalizes ./ prefixes in allowlist", async () => {
@@ -594,7 +594,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF commit wrapper allow ./file.txt",
+        "✨ ABCDEF commit: allow file.txt",
         "--allow",
         "./file.txt",
         "--root",
@@ -621,7 +621,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF quiet commit",
+        "✨ ABCDEF commit: quiet mode",
         "--allow",
         "file.txt",
         "--quiet",
@@ -650,7 +650,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF auto allow",
+        "✨ ABCDEF commit: auto allow",
         "--auto-allow",
         "--root",
         root,
@@ -675,7 +675,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF allow base",
+        "✨ ABCDEF commit: allow base",
         "--allow",
         "base.txt",
         "--allow-base",
@@ -703,7 +703,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF allow tasks",
+        "✨ ABCDEF commit: allow tasks",
         "--allow",
         "note.txt",
         "--allow-tasks",
@@ -748,7 +748,7 @@ describe("runCli", () => {
         "commit",
         "202601010101-ABCDEF",
         "-m",
-        "✨ ABCDEF commit",
+        "✨ ABCDEF commit: run commit",
         "--nope",
         "--root",
         root,

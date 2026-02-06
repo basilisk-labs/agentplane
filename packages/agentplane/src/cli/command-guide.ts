@@ -95,7 +95,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> ..."` / `agentplane commit <task-id> -m "<emoji> <suffix> ..." --allow <path-prefix>`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>`',
     ],
   },
   {
@@ -106,7 +106,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> ..."` / `agentplane commit <task-id> -m "<emoji> <suffix> ..." --allow <path-prefix>`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>`',
     ],
   },
   {
@@ -114,7 +114,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       '- Task docs: `agentplane task doc set <task-id> --section Summary --text "..."` (repeat per section or use `--file`)',
       '- PR notes: `agentplane pr note <task-id> --author DOCS --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> ..."` / `agentplane commit <task-id> -m "<emoji> <suffix> ..." --allow <path-prefix>`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>`',
     ],
   },
   {
@@ -136,7 +136,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "CREATOR",
     lines: [
       '- Task bookkeeping: `agentplane task update <task-id> ...` / `agentplane start <task-id> --author CREATOR --body "Start: ..."`',
-      '- Commits: `agentplane guard commit <task-id> -m "<emoji> <suffix> ..."` / `agentplane commit <task-id> -m "<emoji> <suffix> ..." --allow <path-prefix>`',
+      '- Commits: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>`',
     ],
   },
   {
@@ -253,11 +253,10 @@ export function renderQuickstart(): string {
     "",
     "## Commit message format",
     "",
-    "Use: `<emoji> <suffix> <detailed changelog ...>`.",
+    "Use: `<emoji> <suffix> <scope>: <summary>`.",
     "",
     "Notes:",
     "- `suffix` is the task ID segment after the last dash.",
-    "- For batch commits, include every task suffix in the subject.",
-    "- When using comment-driven flags, the subject is auto-built as `<emoji> <suffix> <formatted comment>` from your status/finish body.",
+    "- When using comment-driven flags, the subject is auto-built as `<emoji> <suffix> <scope>: <summary>`, and the body is auto-built from your status/finish comment.",
   ].join("\n");
 }

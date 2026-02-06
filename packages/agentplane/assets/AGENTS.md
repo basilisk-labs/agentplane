@@ -181,7 +181,7 @@ There are two supported modes:
 
 Use agentplane commit flows with a message that conforms to the built-in command guide, e.g.:
 
-`agentplane guard commit <task-id> -m "✨ <suffix> <detailed changelog ...>" ...`
+`agentplane guard commit <task-id> -m "✨ <suffix> <scope>: <summary>" ...`
 
 In this mode:
 
@@ -197,7 +197,18 @@ Use comment-driven flags (where supported by agentplane), e.g.:
 
 In this mode:
 
-- agentplane builds the commit subject as `<emoji> <suffix> <formatted comment>` from the status/finish body.
+- agentplane builds the commit subject as `<emoji> <suffix> <scope>: <summary>` from the status/finish body.
+- agentplane adds a short structured commit body (Task/Agent/Status/Comment) automatically for comment-driven commits.
+
+## Commit subject format (enforced)
+
+`<emoji> <suffix> <scope>: <summary>`
+
+Recommended action/status emojis:
+
+- `🚧` start / DOING
+- `⛔` blocked / BLOCKED
+- `✅` finish / DONE
 
 Agents must not reinterpret `-m` as “body-only” or “comment-only”. `-m` is a commit message.
 
