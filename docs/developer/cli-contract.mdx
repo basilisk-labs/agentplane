@@ -76,32 +76,32 @@ This table lists commands and required minimum flags. Implementation may add add
 
 ### 5.1 Core (offline-first)
 
-| Command                                | Purpose                                                 | Notes                                                                 |
-| -------------------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------- | ----------------------- |
-| `agentplane init`                      | Initialize `.agentplane/` in a repo                     | Bootstraps git if missing; pins base branch + creates install commit  |
-| `agentplane quickstart`                | Print a built-in command guide                          | Helps onboard new users without external docs                         |
-| `agentplane role <role>`               | Print role-specific guidance                            | Uses the same built-in guide source                                   |
-| `agentplane config show`               | Print effective project config                          | JSON output                                                           |
-| `agentplane config set <key> <value>`  | Update project config                                   | Dotted keys; `--json` for structured values                           |
-| `agentplane mode get`                  | Print workflow mode                                     | `direct` \| `branch_pr`                                               |
-| `agentplane mode set <mode>`           | Change workflow mode                                    | Must not lose task data                                               |
-| `agentplane task <subcommand>`         | Task CRUD + exports + doc tools                         | See 5.3                                                               |
-| `agentplane start <task-id>`           | Mark task `DOING` + comment                             | Comment required                                                      |
-| `agentplane block <task-id>`           | Mark task `BLOCKED` + comment                           | Comment required                                                      |
-| `agentplane finish <task-id> [...]`    | Mark task(s) `DONE` + commit metadata                   | Typically after code commit                                           |
-| `agentplane verify <task-id>`          | Run per-task verify commands                            | `--skip-if-unchanged` supported; `--yes` for non-interactive approval |
-| `agentplane ready <task-id>`           | Readiness check (deps DONE)                             | Non-zero exit on not-ready                                            |
-| `agentplane guard <subcommand>`        | Staging/commit guardrails                               | See 5.4                                                               |
-| `agentplane commit <task-id>`          | Guarded `git commit` wrapper                            | Enforces commit policy                                                |
-| `agentplane hooks install              | uninstall`                                              | Optional git hooks                                                    | Must be safe/idempotent |
-| `agentplane ide sync`                  | Generate IDE entrypoints from the agent policy document | Cursor + Windsurf                                                     |
-| `agentplane scenario list`             | List installed scenarios                                | Uses recipes registry                                                 |
-| `agentplane scenario info <recipe:id>` | Show scenario details                                   | `<recipe-id>:<scenario-id>`                                           |
-| `agentplane scenario run <recipe:id>`  | Run scenario tools                                      | Logs to `.agentplane/recipes/<id>/runs/...`                           |
-| `agentplane recipes list`              | List installed recipes                                  | `--full` for metadata, `--tag <tag>` for tag filter                   |
-| `agentplane recipes info <id>`         | Show recipe metadata                                    | Basic manifest fields                                                 |
-| `agentplane recipes explain <id>`      | Show detailed recipe info                               | Includes scenario details when available                              |
-| `agentplane recipes cache prune`       | Prune global recipe cache                               | Removes installed recipes not referenced by `recipes.json`            |
+| Command                                | Purpose                                                 | Notes                                                                |
+| -------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------- |
+| `agentplane init`                      | Initialize `.agentplane/` in a repo                     | Bootstraps git if missing; pins base branch + creates install commit |
+| `agentplane quickstart`                | Print a built-in command guide                          | Helps onboard new users without external docs                        |
+| `agentplane role <role>`               | Print role-specific guidance                            | Uses the same built-in guide source                                  |
+| `agentplane config show`               | Print effective project config                          | JSON output                                                          |
+| `agentplane config set <key> <value>`  | Update project config                                   | Dotted keys; `--json` for structured values                          |
+| `agentplane mode get`                  | Print workflow mode                                     | `direct` \| `branch_pr`                                              |
+| `agentplane mode set <mode>`           | Change workflow mode                                    | Must not lose task data                                              |
+| `agentplane task <subcommand>`         | Task CRUD + exports + doc tools                         | See 5.3                                                              |
+| `agentplane start <task-id>`           | Mark task `DOING` + comment                             | Comment required                                                     |
+| `agentplane block <task-id>`           | Mark task `BLOCKED` + comment                           | Comment required                                                     |
+| `agentplane finish <task-id> [...]`    | Mark task(s) `DONE` + commit metadata                   | Typically after code commit                                          |
+| `agentplane verify <task-id>`          | Record verification results for the task                | Does not execute commands from task README; free-form verification   |
+| `agentplane ready <task-id>`           | Readiness check (deps DONE)                             | Non-zero exit on not-ready                                           |
+| `agentplane guard <subcommand>`        | Staging/commit guardrails                               | See 5.4                                                              |
+| `agentplane commit <task-id>`          | Guarded `git commit` wrapper                            | Enforces commit policy                                               |
+| `agentplane hooks install              | uninstall`                                              | Optional git hooks                                                   | Must be safe/idempotent |
+| `agentplane ide sync`                  | Generate IDE entrypoints from the agent policy document | Cursor + Windsurf                                                    |
+| `agentplane scenario list`             | List installed scenarios                                | Uses recipes registry                                                |
+| `agentplane scenario info <recipe:id>` | Show scenario details                                   | `<recipe-id>:<scenario-id>`                                          |
+| `agentplane scenario run <recipe:id>`  | Run scenario tools                                      | Logs to `.agentplane/recipes/<id>/runs/...`                          |
+| `agentplane recipes list`              | List installed recipes                                  | `--full` for metadata, `--tag <tag>` for tag filter                  |
+| `agentplane recipes info <id>`         | Show recipe metadata                                    | Basic manifest fields                                                |
+| `agentplane recipes explain <id>`      | Show detailed recipe info                               | Includes scenario details when available                             |
+| `agentplane recipes cache prune`       | Prune global recipe cache                               | Removes installed recipes not referenced by `recipes.json`           |
 
 ### 5.2 Explicit-network commands
 
