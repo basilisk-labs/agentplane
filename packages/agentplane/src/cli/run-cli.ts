@@ -126,6 +126,7 @@ import {
   cmdTaskExport,
   cmdTaskLint,
   cmdTaskMigrate,
+  cmdTaskMigrateDoc,
   cmdTaskNew,
   cmdTaskNext,
   cmdTaskNormalize,
@@ -1268,6 +1269,10 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "task" && command === "migrate") {
       return await cmdTaskMigrate({ cwd: process.cwd(), rootOverride: globals.root, args });
+    }
+
+    if (namespace === "task" && command === "migrate-doc") {
+      return await cmdTaskMigrateDoc({ cwd: process.cwd(), rootOverride: globals.root, args });
     }
 
     if (namespace === "task" && command === "export") {
