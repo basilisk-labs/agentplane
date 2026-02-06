@@ -1,7 +1,7 @@
 ---
 id: "202602061732-F17C02"
 title: "P1.1: Harden commit subject policy (case-insensitive + anti-generic)"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -20,13 +20,18 @@ verification:
   updated_at: "2026-02-06T18:31:33.580Z"
   updated_by: "TESTER"
   note: "Updated validateCommitSubject: case-insensitive task ref matching and anti-generic check after stripping task ref; bun run test:core passed."
-commit: null
+commit:
+  hash: "7d308196b67d18e207943d4c876533699df598a1"
+  message: "✨ F17C02 harden commit subject policy"
 comments:
   -
     author: "CODER"
     body: "Start: Harden commit subject policy (case-insensitive task ref, anti-generic after stripping task ref)."
+  -
+    author: "CODER"
+    body: "Verified: Commit subject policy now matches task refs case-insensitively and rejects generic subjects after stripping task ref; updated unit tests; bun run test:core passed."
 doc_version: 2
-doc_updated_at: "2026-02-06T18:31:33.589Z"
+doc_updated_at: "2026-02-06T18:37:19.989Z"
 doc_updated_by: "CODER"
 description: "Improve validateCommitSubject: task ref match should be case-insensitive; anti-generic should ignore emoji and task ref before evaluating remaining words."
 id_source: "generated"
