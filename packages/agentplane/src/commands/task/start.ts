@@ -11,6 +11,7 @@ import { loadBackendTask } from "../shared/task-backend.js";
 
 import {
   buildDependencyState,
+  ensurePlanApprovedIfRequired,
   enforceStatusCommitPolicy,
   isTransitionAllowed,
   nowIso,
@@ -61,6 +62,8 @@ export async function cmdStart(opts: {
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
+
+    ensurePlanApprovedIfRequired(task, loaded.config);
 
     const currentStatus = String(task.status || "TODO").toUpperCase();
     if (!opts.force && !isTransitionAllowed(currentStatus, "DOING")) {
