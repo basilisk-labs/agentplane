@@ -1,7 +1,7 @@
 ---
 id: "202602061732-NG820E"
 title: "P1.4: Protected paths policy in guard commit"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -20,13 +20,18 @@ verification:
   updated_at: "2026-02-06T19:09:23.464Z"
   updated_by: "CODER"
   note: "Implemented protected paths policy for guard commit and hooks pre-commit with explicit overrides. Ran bun run build, bun run test:cli:core, bun run lint."
-commit: null
+commit:
+  hash: "a6b1850439ea8587554dd0e41d6c30ba582a29d1"
+  message: "✨ NG820E protect policy/config/ci paths"
 comments:
   -
     author: "CODER"
     body: "Start: implement protected paths policy in guard commit and hooks pre-commit; add explicit override flags/env and regression tests."
+  -
+    author: "CODER"
+    body: "Verified: protected paths policy enforced in guard commit and hooks pre-commit with explicit override flags/env. Verified via bun run build, bun run test:cli:core, bun run lint. Commit=a6b1850439ea."
 doc_version: 2
-doc_updated_at: "2026-02-06T19:09:23.470Z"
+doc_updated_at: "2026-02-06T19:10:13.075Z"
 doc_updated_by: "CODER"
 description: "Introduce protected paths deny policy for critical guardrail/config files, with explicit override flags to allow intentional edits."
 id_source: "generated"
