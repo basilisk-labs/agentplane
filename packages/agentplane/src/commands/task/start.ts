@@ -1,5 +1,3 @@
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
-
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, warnMessage } from "../../cli/output.js";
@@ -7,7 +5,7 @@ import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
 import { commitFromComment } from "../guard/index.js";
-import { loadBackendTask } from "../shared/task-backend.js";
+import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 
 import {
   buildDependencyState,
@@ -39,31 +37,26 @@ export async function cmdStart(opts: {
   quiet: boolean;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
+    const ctx = await loadCommandContext({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const loaded = await loadConfig(resolved.agentplaneDir);
 
     if (opts.commitFromComment) {
       enforceStatusCommitPolicy({
-        policy: loaded.config.status_commit_policy,
+        policy: ctx.config.status_commit_policy,
         action: "start",
         confirmed: opts.confirmStatusCommit,
         quiet: opts.quiet,
       });
     }
 
-    const { prefix, min_chars: minChars } = loaded.config.tasks.comments.start;
+    const { prefix, min_chars: minChars } = ctx.config.tasks.comments.start;
     requireStructuredComment(opts.body, prefix, minChars);
 
-    const { backend, task } = await loadBackendTask({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
-    });
+    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
 
-    ensurePlanApprovedIfRequired(task, loaded.config);
+    ensurePlanApprovedIfRequired(task, ctx.config);
 
     const currentStatus = String(task.status || "TODO").toUpperCase();
     if (!opts.force && !isTransitionAllowed(currentStatus, "DOING")) {
@@ -75,7 +68,7 @@ export async function cmdStart(opts: {
     }
 
     if (!opts.force) {
-      const allTasks = await backend.listTasks();
+      const allTasks = await ctx.backend.listTasks();
       const depState = buildDependencyState(allTasks);
       const dep = depState.get(task.id);
       if (dep && (dep.missing.length > 0 || dep.incomplete.length > 0)) {
@@ -98,7 +91,7 @@ export async function cmdStart(opts: {
     }
 
     const formattedComment = opts.commitFromComment
-      ? formatCommentBodyForCommit(opts.body, loaded.config)
+      ? formatCommentBodyForCommit(opts.body, ctx.config)
       : null;
     const commentBody = formattedComment ?? opts.body;
 
@@ -122,7 +115,7 @@ export async function cmdStart(opts: {
       doc_updated_by: opts.author,
     };
 
-    await backend.writeTask(nextTask);
+    await ctx.backend.writeTask(nextTask);
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
@@ -138,7 +131,7 @@ export async function cmdStart(opts: {
         allowTasks: opts.commitAllowTasks,
         requireClean: opts.commitRequireClean,
         quiet: opts.quiet,
-        config: loaded.config,
+        config: ctx.config,
       });
     }
 

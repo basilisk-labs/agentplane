@@ -1,13 +1,11 @@
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
-
-import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
 import { commitFromComment } from "../guard/index.js";
-import { loadBackendTask } from "../shared/task-backend.js";
+import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 
 import {
   defaultCommitEmojiForStatus,
@@ -52,16 +50,15 @@ export async function cmdFinish(opts: {
     if (opts.noRequireTaskIdInCommit) {
       // Parity flag (commit subject checks are not enforced in node CLI).
     }
-    const resolved = await resolveProject({
+    const ctx = await loadCommandContext({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const loaded = await loadConfig(resolved.agentplaneDir);
-    const { prefix, min_chars: minChars } = loaded.config.tasks.comments.verified;
+    const { prefix, min_chars: minChars } = ctx.config.tasks.comments.verified;
     requireStructuredComment(opts.body, prefix, minChars);
     if (opts.commitFromComment || opts.statusCommit) {
       enforceStatusCommitPolicy({
-        policy: loaded.config.status_commit_policy,
+        policy: ctx.config.status_commit_policy,
         action: "finish",
         confirmed: opts.confirmStatusCommit,
         quiet: opts.quiet,
@@ -83,21 +80,12 @@ export async function cmdFinish(opts: {
       });
     }
 
-    const { backend } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-
     const commitInfo = opts.commit
-      ? await readCommitInfo(resolved.gitRoot, opts.commit)
-      : await readHeadCommit(resolved.gitRoot);
+      ? await readCommitInfo(ctx.resolved.gitRoot, opts.commit)
+      : await readHeadCommit(ctx.resolved.gitRoot);
 
     for (const taskId of opts.taskIds) {
-      const { task } = await loadBackendTask({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        taskId,
-      });
+      const task = await loadTaskFromContext({ ctx, taskId });
 
       if (!opts.force) {
         const currentStatus = String(task.status || "TODO").toUpperCase();
@@ -110,7 +98,7 @@ export async function cmdFinish(opts: {
         }
       }
 
-      ensureVerificationSatisfiedIfRequired(task, loaded.config);
+      ensureVerificationSatisfiedIfRequired(task, ctx.config);
 
       const existingComments = Array.isArray(task.comments)
         ? task.comments.filter(
@@ -128,7 +116,7 @@ export async function cmdFinish(opts: {
         doc_updated_at: nowIso(),
         doc_updated_by: opts.author,
       };
-      await backend.writeTask(nextTask);
+      await ctx.backend.writeTask(nextTask);
     }
 
     if (!opts.skipVerify) {
@@ -143,14 +131,14 @@ export async function cmdFinish(opts: {
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
         commentBody: opts.body,
-        formattedComment: formatCommentBodyForCommit(opts.body, loaded.config),
+        formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
         emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DONE"),
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,
         requireClean: opts.commitRequireClean,
         quiet: opts.quiet,
-        config: loaded.config,
+        config: ctx.config,
       });
     }
 
@@ -160,14 +148,14 @@ export async function cmdFinish(opts: {
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
         commentBody: opts.body,
-        formattedComment: formatCommentBodyForCommit(opts.body, loaded.config),
+        formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
         emoji: opts.statusCommitEmoji ?? defaultCommitEmojiForStatus("DONE"),
         allow: opts.statusCommitAllow,
         autoAllow: opts.statusCommitAutoAllow || opts.statusCommitAllow.length === 0,
         allowTasks: true,
         requireClean: opts.statusCommitRequireClean,
         quiet: opts.quiet,
-        config: loaded.config,
+        config: ctx.config,
       });
     }
 
