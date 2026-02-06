@@ -11,6 +11,11 @@ export { cmdTaskSearch } from "./search.js";
 export { TASK_SCAFFOLD_USAGE, TASK_SCAFFOLD_USAGE_EXAMPLE, cmdTaskScaffold } from "./scaffold.js";
 export { cmdTaskNormalize } from "./normalize.js";
 export { cmdTaskMigrate } from "./migrate.js";
+export {
+  TASK_MIGRATE_DOC_USAGE,
+  TASK_MIGRATE_DOC_USAGE_EXAMPLE,
+  cmdTaskMigrateDoc,
+} from "./migrate-doc.js";
 
 export { cmdTaskComment } from "./comment.js";
 export { cmdTaskSetStatus } from "./set-status.js";
