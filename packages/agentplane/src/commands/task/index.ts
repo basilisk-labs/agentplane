@@ -19,6 +19,18 @@ export { cmdTaskShow } from "./show.js";
 export { cmdTaskExport } from "./export.js";
 export { cmdTaskLint } from "./lint.js";
 
+export {
+  TASK_PLAN_USAGE,
+  TASK_PLAN_USAGE_EXAMPLE,
+  TASK_PLAN_SET_USAGE,
+  TASK_PLAN_SET_USAGE_EXAMPLE,
+  TASK_PLAN_APPROVE_USAGE,
+  TASK_PLAN_APPROVE_USAGE_EXAMPLE,
+  TASK_PLAN_REJECT_USAGE,
+  TASK_PLAN_REJECT_USAGE_EXAMPLE,
+  cmdTaskPlan,
+} from "./plan.js";
+
 export { START_USAGE, START_USAGE_EXAMPLE, cmdStart } from "./start.js";
 export { BLOCK_USAGE, BLOCK_USAGE_EXAMPLE, cmdBlock } from "./block.js";
 export { FINISH_USAGE, FINISH_USAGE_EXAMPLE, cmdFinish } from "./finish.js";

@@ -128,6 +128,7 @@ import {
   cmdTaskNew,
   cmdTaskNext,
   cmdTaskNormalize,
+  cmdTaskPlan,
   cmdTaskScaffold,
   cmdTaskScrub,
   cmdTaskSearch,
@@ -1308,6 +1309,10 @@ export async function runCli(argv: string[]): Promise<number> {
         code: "E_USAGE",
         message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
       });
+    }
+
+    if (namespace === "task" && command === "plan") {
+      return await cmdTaskPlan({ cwd: process.cwd(), rootOverride: globals.root, args });
     }
 
     if (namespace === "task" && command === "comment") {
