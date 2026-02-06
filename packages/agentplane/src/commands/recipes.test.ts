@@ -988,7 +988,7 @@ describe("commands/recipes", () => {
     await expect(
       cmdRecipes({
         cwd: process.cwd(),
-        args: ["--index", "https://example.test/index.json", "--refresh"],
+        args: ["--index", "https://example.test/index.json", "--refresh", "--yes"],
         command: "list-remote",
       }),
     ).resolves.toBe(0);

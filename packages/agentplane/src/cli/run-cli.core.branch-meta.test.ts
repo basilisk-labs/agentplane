@@ -511,7 +511,15 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["sync", "redmine", "--direction", "push", "--root", root]);
+      const code = await runCli([
+        "sync",
+        "redmine",
+        "--direction",
+        "push",
+        "--yes",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(7);
       expect(io.stderr).toContain("error [E_NETWORK]");
       expect(io.stderr).toContain("Check network access and credentials.");
@@ -544,7 +552,15 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["sync", "redmine", "--direction", "pull", "--root", root]);
+      const code = await runCli([
+        "sync",
+        "redmine",
+        "--direction",
+        "pull",
+        "--yes",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(6);
       expect(io.stderr).toContain("error [E_BACKEND]");
       expect(io.stderr).toContain("Check backend config under .agentplane/backends and retry.");
