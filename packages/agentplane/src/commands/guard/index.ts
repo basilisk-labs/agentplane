@@ -32,6 +32,14 @@ function normalizeAllowPrefix(prefix: string): string {
   return p;
 }
 
+function parseNullSeparatedPaths(stdout: Buffer | string): string[] {
+  const text = Buffer.isBuffer(stdout) ? stdout.toString("utf8") : stdout;
+  return text
+    .split("\0")
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+}
+
 export function buildGitCommitEnv(opts: {
   taskId: string;
   allowTasks: boolean;
@@ -145,19 +153,24 @@ export async function gitStatusChangedPaths(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
   });
-  const { stdout } = await execFileAsync("git", ["status", "--porcelain", "-uall"], {
+
+  const optsExec = {
     cwd: resolved.gitRoot,
-  });
-  const files: string[] = [];
-  for (const line of stdout.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-    const filePart = trimmed.slice(2).trim();
-    if (!filePart) continue;
-    const name = filePart.includes("->") ? filePart.split("->").at(-1)?.trim() : filePart;
-    if (name) files.push(name);
-  }
-  return files;
+    encoding: "buffer" as const,
+    maxBuffer: 10 * 1024 * 1024,
+  };
+  const [unstaged, staged, untracked] = await Promise.all([
+    execFileAsync("git", ["diff", "--name-only", "-z"], optsExec),
+    execFileAsync("git", ["diff", "--name-only", "--cached", "-z"], optsExec),
+    execFileAsync("git", ["ls-files", "--others", "--exclude-standard", "-z"], optsExec),
+  ]);
+
+  const files = [
+    ...parseNullSeparatedPaths(unstaged.stdout),
+    ...parseNullSeparatedPaths(staged.stdout),
+    ...parseNullSeparatedPaths(untracked.stdout),
+  ];
+  return [...new Set(files)].toSorted((a, b) => a.localeCompare(b));
 }
 
 export async function ensureGitClean(opts: { cwd: string; rootOverride?: string }): Promise<void> {

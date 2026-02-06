@@ -485,6 +485,65 @@ describe("runCli", () => {
     }
   });
 
+  it("start --commit-from-comment handles paths with spaces", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await mkdir(path.join(root, "tmp"), { recursive: true });
+    await writeFile(path.join(root, "tmp", "a b.txt"), "hello\n", "utf8");
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Spaced paths",
+        "--description",
+        "Ensure commit-from-comment can stage file paths with spaces",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+    await approveTaskPlan(root, taskId);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "start",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: stage path with spaces via -z parsing (tmp/a b.txt).",
+        "--commit-from-comment",
+        "--commit-allow",
+        ".agentplane/tasks",
+        "--commit-allow",
+        "tmp",
+        "--confirm-status-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ started");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("start --commit-from-comment stages deletions under allowlist", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
