@@ -1,7 +1,7 @@
 ---
 id: "202602061915-RNTNEP"
 title: "P0: CommandContext для CLI команд"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,13 +20,18 @@ verification:
   updated_at: "2026-02-06T19:19:26.497Z"
   updated_by: "TESTER"
   note: "bun run test:agentplane (vitest) passed."
-commit: null
+commit:
+  hash: "239769bb4950faf2599844c4e33ee5fa9c19204f"
+  message: "✨ RNTNEP commands"
 comments:
   -
     author: "CODER"
     body: "Start: Implement command-level context (resolved+config+backend) to remove repeated resolveProject/loadConfig/loadTaskBackend; add ctx-aware task loader and migrate call sites."
+  -
+    author: "CODER"
+    body: "Verified: Added CommandContext helpers in commands/shared/task-backend.ts to reuse backend/config/resolved per command; bun run test:agentplane passed."
 doc_version: 2
-doc_updated_at: "2026-02-06T19:19:26.500Z"
+doc_updated_at: "2026-02-06T19:24:03.231Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92) Ввести единый Execution/CommandContext (resolved+config+backend) на вызов команды; дать API для загрузки задач из контекста; убрать повторные resolveProject/loadConfig/loadTaskBackend."
 id_source: "generated"
