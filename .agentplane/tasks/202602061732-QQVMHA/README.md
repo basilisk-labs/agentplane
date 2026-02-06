@@ -1,7 +1,7 @@
 ---
 id: "202602061732-QQVMHA"
 title: "P1.3: branch_pr base branch must be pinned"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -20,13 +20,18 @@ verification:
   updated_at: "2026-02-06T18:54:13.138Z"
   updated_by: "CODER"
   note: "P1.3: branch_pr base resolution no longer falls back to current branch when unpinned; prefers main/master if present. Ran bun run test:core, bun run build, bun run test:cli:core."
-commit: null
+commit:
+  hash: "29604e30fbcd5879610722ff9532dddbded51232"
+  message: "✨ QQVMHA branch_pr base must be pinned"
 comments:
   -
     author: "CODER"
     body: "Start: Remove silent fallback of branch_pr base branch to current; prefer main/master or require pin."
+  -
+    author: "CODER"
+    body: "Verified: branch_pr base resolution now requires pinning; unpinned resolves to main/master if they exist else null. Verified via bun run test:core, bun run build, bun run test:cli:core. Commit=29604e30fbcd."
 doc_version: 2
-doc_updated_at: "2026-02-06T18:54:13.139Z"
+doc_updated_at: "2026-02-06T18:57:54.595Z"
 doc_updated_by: "CODER"
 description: "In branch_pr mode, require pinned base branch (or explicit default) and avoid silent fallback to current branch."
 id_source: "generated"
