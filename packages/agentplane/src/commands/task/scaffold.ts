@@ -5,6 +5,7 @@ import {
   atomicWriteFile,
   ensureDocSections,
   renderTaskReadme,
+  setMarkdownSection,
   taskReadmePath,
 } from "@agentplaneorg/core";
 
@@ -146,7 +147,18 @@ export async function cmdTaskScaffold(opts: {
     }
 
     const frontmatter = taskDataToFrontmatter(baseTask);
-    const body = ensureDocSections("", config.tasks.doc.required_sections);
+    const verificationTemplate = [
+      "### Plan",
+      "",
+      "",
+      "### Results",
+      "",
+      "",
+      "<!-- BEGIN VERIFICATION RESULTS -->",
+      "<!-- END VERIFICATION RESULTS -->",
+    ].join("\n");
+    const baseDoc = ensureDocSections("", config.tasks.doc.required_sections);
+    const body = setMarkdownSection(baseDoc, "Verification", verificationTemplate);
     const text = renderTaskReadme(frontmatter, body);
     await mkdir(path.dirname(readmePath), { recursive: true });
     await atomicWriteFile(readmePath, text.endsWith("\n") ? text : `${text}\n`);
