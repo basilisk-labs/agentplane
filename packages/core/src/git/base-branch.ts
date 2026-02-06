@@ -8,6 +8,7 @@ const execFileAsync = promisify(execFile);
 
 const DEFAULT_BASE_BRANCH = "main";
 const GIT_CONFIG_BASE_BRANCH_KEY = "agentplane.baseBranch";
+const LEGACY_DEFAULT_BASE_BRANCH = "master";
 
 async function gitConfigGet(cwd: string, key: string): Promise<string | null> {
   try {
@@ -35,20 +36,18 @@ async function gitConfigUnset(cwd: string, key: string): Promise<boolean> {
     throw err;
   }
 }
-async function gitCurrentBranch(cwd: string): Promise<string> {
+
+async function gitLocalBranchExists(cwd: string, branch: string): Promise<boolean> {
   try {
-    const { stdout } = await execFileAsync("git", ["symbolic-ref", "--short", "HEAD"], { cwd });
-    const trimmed = stdout.trim();
-    if (trimmed) return trimmed;
-  } catch {
-    // fall through
+    await execFileAsync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
+      cwd,
+    });
+    return true;
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code === 1) return false;
+    throw err;
   }
-  const { stdout } = await execFileAsync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd });
-  const trimmed = stdout.trim();
-  if (!trimmed || trimmed === "HEAD") {
-    throw new Error("Failed to resolve current branch");
-  }
-  return trimmed;
 }
 
 export async function getPinnedBaseBranch(opts: {
@@ -105,7 +104,12 @@ export async function resolveBaseBranch(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    return await gitCurrentBranch(resolved.gitRoot);
+    if (await gitLocalBranchExists(resolved.gitRoot, DEFAULT_BASE_BRANCH))
+      return DEFAULT_BASE_BRANCH;
+    if (await gitLocalBranchExists(resolved.gitRoot, LEGACY_DEFAULT_BASE_BRANCH))
+      return LEGACY_DEFAULT_BASE_BRANCH;
+    // No safe default: require pinning to avoid silently treating feature branches as base.
+    return null;
   }
   return null;
 }

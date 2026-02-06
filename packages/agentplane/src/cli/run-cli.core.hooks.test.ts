@@ -548,6 +548,7 @@ describe("runCli", () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await mkdir(path.join(root, "src"), { recursive: true });
     await writeFile(path.join(root, "src", "app.ts"), "x", "utf8");
     const execFileAsync = promisify(execFile);
@@ -572,6 +573,7 @@ describe("runCli", () => {
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";
     await writeConfig(root, config);
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await mkdir(path.join(root, "src"), { recursive: true });
     await writeFile(path.join(root, "src", "app.ts"), "x", "utf8");
     const execFileAsync = promisify(execFile);
