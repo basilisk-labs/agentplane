@@ -1,7 +1,7 @@
 ---
 id: "202602061055-3YT8H7"
 title: "Release v0.1.8"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -16,17 +16,22 @@ plan_approval:
   updated_by: "USER"
   note: "Approved: ship 0.1.8"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-06T11:00:59.525Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Release 0.1.8 verified: format:check, lint, test:fast, test:cli:core all green; version bumps + release notes present; tag v0.1.8 created."
+commit:
+  hash: "b07ab88f8ac3af8fb50390ed7b1016a4b9c60d63"
+  message: "🚀 3YT8H7 release"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Preparing v0.1.8 release: notes + version bumps + test updates + tag/push, with full lint/format/tests before tagging."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Released v0.1.8 with notes, package version bumps, and updated CLI version expectations. Tagged v0.1.8 after passing format:check, lint, test:fast, and test:cli:core."
 doc_version: 2
-doc_updated_at: "2026-02-06T10:56:26.346Z"
+doc_updated_at: "2026-02-06T11:01:05.237Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Release 0.1.8: add release notes, bump package versions, update CLI version expectations, tag and push."
 id_source: "generated"
@@ -53,5 +58,17 @@ id_source: "generated"
 
 ## Verification
 
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-06T11:00:59.525Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Release 0.1.8 verified: format:check, lint, test:fast, test:cli:core all green; version bumps + release notes present; tag v0.1.8 created.
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
