@@ -38,6 +38,7 @@
         "Summary",
         "Context",
         "Scope",
+        "Plan",
         "Risks",
         "Verify Steps",
         "Verification",
@@ -47,8 +48,8 @@
       "required_sections": [
         "Summary",
         "Scope",
+        "Plan",
         "Risks",
-        "Verify Steps",
         "Verification",
         "Rollback Plan"
       ]

@@ -21,6 +21,9 @@ export function resolveDocUpdatedBy(task: TaskData, author?: string): string {
 }
 
 export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
+  const planApproval =
+    task.plan_approval ??
+    ({ state: "pending", updated_at: null, updated_by: null, note: null } as const);
   return {
     id: task.id,
     title: task.title,
@@ -30,6 +33,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     depends_on: task.depends_on ?? [],
     tags: task.tags ?? [],
     verify: task.verify ?? [],
+    plan_approval: planApproval,
     commit: task.commit ?? null,
     comments: task.comments ?? [],
     doc_version: task.doc_version,

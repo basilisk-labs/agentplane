@@ -19,6 +19,12 @@ export type TaskFrontmatter = {
   depends_on: string[];
   tags: string[];
   verify: string[];
+  plan_approval?: {
+    state: "pending" | "approved" | "rejected";
+    updated_at: string | null;
+    updated_by: string | null;
+    note: string | null;
+  };
   comments: { author: string; body: string }[];
   doc_version: 2;
   doc_updated_at: string;
@@ -96,10 +102,10 @@ function defaultTaskBody(): string {
     "## Scope",
     "",
     "",
+    "## Plan",
+    "",
+    "",
     "## Risks",
-    "",
-    "",
-    "## Verify Steps",
     "",
     "",
     "## Verification",
@@ -187,6 +193,12 @@ export async function createTask(opts: {
     depends_on: opts.dependsOn,
     tags: opts.tags,
     verify: opts.verify,
+    plan_approval: {
+      state: "pending",
+      updated_at: null,
+      updated_by: null,
+      note: null,
+    },
     comments: [],
     doc_version: 2,
     doc_updated_at: nowIso(),
