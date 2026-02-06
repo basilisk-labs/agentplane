@@ -84,6 +84,28 @@ export function ensurePlanApprovedIfRequired(task: TaskData, config: AgentplaneC
   });
 }
 
+export function ensureVerificationSatisfiedIfRequired(
+  task: TaskData,
+  config: AgentplaneConfig,
+): void {
+  if (config.agents?.approvals?.require_verify !== true) return;
+
+  const state = task.verification?.state ?? "missing";
+  if (state === "ok") return;
+
+  const hint =
+    `use \`agentplane verify ${task.id} --ok|--rework --by <ID> --note <TEXT>\` ` +
+    `or \`agentplane task verify ok|rework ${task.id} --by <ID> --note <TEXT>\``;
+
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message:
+      `${task.id}: verification result is required before integration/closure can proceed ` +
+      `(verification.state=${JSON.stringify(state)}; ${hint} or set agents.approvals.require_verify=false).`,
+  });
+}
+
 export type DependencyState = {
   dependsOn: string[];
   missing: string[];

@@ -12,6 +12,7 @@ import { loadBackendTask } from "../shared/task-backend.js";
 import {
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
+  ensureVerificationSatisfiedIfRequired,
   nowIso,
   readCommitInfo,
   readHeadCommit,
@@ -108,6 +109,8 @@ export async function cmdFinish(opts: {
           });
         }
       }
+
+      ensureVerificationSatisfiedIfRequired(task, loaded.config);
 
       const existingComments = Array.isArray(task.comments)
         ? task.comments.filter(

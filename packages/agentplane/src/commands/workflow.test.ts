@@ -953,6 +953,11 @@ describe("commands/workflow", () => {
 
     await addTask(root, "202602050900-Z9Y8");
     await gitCommitFile(root, "done.txt", "chore: done");
+    await cmdVerify({
+      cwd: root,
+      taskId,
+      args: ["--ok", "--by", "TESTER", "--note", "Looks good", "--quiet"],
+    });
     const codeFinish = await cmdFinish({
       cwd: root,
       taskIds: [taskId],
@@ -1097,6 +1102,11 @@ describe("commands/workflow", () => {
     const taskId = "202602050900-V1F5";
     await addTask(root, taskId);
     await gitCommitFile(root, "seed.txt", "chore: seed");
+    await cmdVerify({
+      cwd: root,
+      taskId,
+      args: ["--ok", "--by", "TESTER", "--note", "Ok to finish", "--quiet"],
+    });
 
     const codeFinish = await cmdFinish({
       cwd: root,

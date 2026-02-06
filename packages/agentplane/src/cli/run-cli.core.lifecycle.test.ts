@@ -1295,6 +1295,19 @@ describe("runCli", () => {
       ioNew.restore();
     }
 
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Ok to finish",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -1359,6 +1372,19 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Ok to finish",
+      "--quiet",
+      "--root",
+      root,
+    ]);
 
     const previous = process.env.AGENTPLANE_TASK_ID;
     process.env.AGENTPLANE_TASK_ID = taskId;
@@ -1432,6 +1458,31 @@ describe("runCli", () => {
         io.restore();
       }
     }
+
+    await runCliSilent([
+      "verify",
+      taskA,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Ok A",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
+      "verify",
+      taskB,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Ok B",
+      "--quiet",
+      "--root",
+      root,
+    ]);
 
     await writeFile(path.join(root, "finish.txt"), "done\n", "utf8");
     await execFileAsync("git", ["add", "."], { cwd: root });
