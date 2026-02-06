@@ -36,6 +36,15 @@ describe("commit-policy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("matches task id and suffix case-insensitively", () => {
+    const result = validateCommitSubject({
+      subject: "✨ abcdef add base branch pinning",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+    });
+    expect(result.ok).toBe(true);
+  });
+
   it("rejects missing suffix and generic subject", () => {
     const result = validateCommitSubject({
       subject: "update tasks",
@@ -44,6 +53,16 @@ describe("commit-policy", () => {
     });
     expect(result.ok).toBe(false);
     expect(result.errors.join("\n")).toContain("commit subject must include task id or suffix");
+    expect(result.errors.join("\n")).toContain("commit subject is too generic");
+  });
+
+  it("rejects generic subjects even when they include the task ref", () => {
+    const result = validateCommitSubject({
+      subject: "✨ ABCDEF update",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks", "wip"],
+    });
+    expect(result.ok).toBe(false);
     expect(result.errors.join("\n")).toContain("commit subject is too generic");
   });
 
