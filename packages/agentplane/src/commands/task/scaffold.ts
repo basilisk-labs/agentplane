@@ -1,7 +1,12 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { ensureDocSections, renderTaskReadme, taskReadmePath } from "@agentplaneorg/core";
+import {
+  atomicWriteFile,
+  ensureDocSections,
+  renderTaskReadme,
+  taskReadmePath,
+} from "@agentplaneorg/core";
 
 import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
@@ -144,7 +149,7 @@ export async function cmdTaskScaffold(opts: {
     const body = ensureDocSections("", config.tasks.doc.required_sections);
     const text = renderTaskReadme(frontmatter, body);
     await mkdir(path.dirname(readmePath), { recursive: true });
-    await writeFile(readmePath, text.endsWith("\n") ? text : `${text}\n`, "utf8");
+    await atomicWriteFile(readmePath, text.endsWith("\n") ? text : `${text}\n`);
     if (!flags.quiet) {
       process.stdout.write(
         `${successMessage("wrote", path.relative(resolved.gitRoot, readmePath))}\n`,

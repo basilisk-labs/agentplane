@@ -26,6 +26,8 @@ export {
   type ParsedTaskReadme,
 } from "./tasks/task-readme.js";
 
+export { readTaskReadme, updateTaskReadmeAtomic } from "./tasks/task-readme-io.js";
+
 export {
   docChanged,
   ensureDocSections,
