@@ -1,7 +1,7 @@
 ---
 id: "202602061732-VJNCQP"
 title: "P0.2: stageAllowlist must stage deletes/renames"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-06T17:51:37.099Z"
   updated_by: "TESTER"
   note: "bun run test:cli:core passed; added lifecycle regression test covering deletion staging under allowlist."
-commit: null
+commit:
+  hash: "45d27fa683ac84352d13056e44893c6407531f79"
+  message: "✨ VJNCQP stage allowlist with git add -A"
 comments:
   -
     author: "CODER"
     body: "Start: Switch stageAllowlist to git add -A and add regression test for deleted file staging."
+  -
+    author: "CODER"
+    body: "Verified: stageAllowlist now uses git add -A -- <paths...> for deterministic staging of deletes/renames; added CLI lifecycle regression test for deletion staging; bun run test:cli:core passed."
 doc_version: 2
-doc_updated_at: "2026-02-06T17:51:37.105Z"
+doc_updated_at: "2026-02-06T17:53:21.320Z"
 doc_updated_by: "CODER"
 description: "Update stageAllowlist to use git add -A -- <paths...> so deletes/renames are staged correctly under allowlist."
 id_source: "generated"
