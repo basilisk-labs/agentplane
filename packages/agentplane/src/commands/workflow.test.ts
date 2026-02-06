@@ -1175,7 +1175,7 @@ describe("commands/workflow", () => {
     }
 
     const messagePath = path.join(root, "COMMIT_MSG");
-    await writeFile(messagePath, "✨ A1B2 update\n\nBody\n", "utf8");
+    await writeFile(messagePath, "✨ A1B2 update hooks policy\n\nBody\n", "utf8");
     const prevTaskId = process.env.AGENTPLANE_TASK_ID;
     process.env.AGENTPLANE_TASK_ID = "202602050900-A1B2";
     try {

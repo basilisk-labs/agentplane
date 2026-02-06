@@ -223,6 +223,7 @@ describe("runCli", () => {
 
   it("hooks run commit-msg enforces task id env", async () => {
     const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
     const messagePath = path.join(root, "COMMIT_EDITMSG");
     await writeFile(messagePath, "✨ ABCDEF add guard checks\n", "utf8");
     const prev = process.env.AGENTPLANE_TASK_ID;
@@ -232,6 +233,26 @@ describe("runCli", () => {
     try {
       const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
       expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run commit-msg rejects generic subjects even with task env", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ ABCDEF update\n", "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("commit subject is too generic");
     } finally {
       io.restore();
       if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
@@ -325,6 +346,51 @@ describe("runCli", () => {
     try {
       const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
       expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run commit-msg rejects generic subjects from task list matching", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioTask = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "My task",
+        "--description",
+        "Context",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    const suffix = taskId.split("-").at(-1) ?? "";
+    await writeFile(messagePath, `✨ ${suffix} update\n`, "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("commit subject is too generic");
     } finally {
       io.restore();
       if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;

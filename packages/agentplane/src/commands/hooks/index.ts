@@ -1,7 +1,13 @@
 import { chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { getStagedFiles, loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import {
+  getStagedFiles,
+  loadConfig,
+  resolveBaseBranch,
+  resolveProject,
+  validateCommitSubject,
+} from "@agentplaneorg/core";
 
 import { loadTaskBackend } from "../../backends/task-backend.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
@@ -109,9 +115,13 @@ function readCommitSubject(message: string): string {
   return "";
 }
 
-function subjectHasSuffix(subject: string, suffixes: string[]): boolean {
-  const lowered = subject.toLowerCase();
-  return suffixes.some((suffix) => suffix && lowered.includes(suffix.toLowerCase()));
+function findMatchingTaskId(opts: { subject: string; tasks: { id: string }[] }): string | null {
+  const lowered = opts.subject.toLowerCase();
+  for (const task of opts.tasks) {
+    const suffix = task.id.split("-").at(-1) ?? "";
+    if (suffix && lowered.includes(suffix.toLowerCase())) return task.id;
+  }
+  return null;
 }
 
 export async function cmdHooksInstall(opts: {
@@ -214,14 +224,25 @@ export async function cmdHooksRun(opts: {
           message: "Commit message subject is empty",
         });
       }
+
+      const resolved = await resolveProject({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      const loaded = await loadConfig(resolved.agentplaneDir);
+
       const taskId = (process.env.AGENTPLANE_TASK_ID ?? "").trim();
       if (taskId) {
-        const suffix = taskId.split("-").at(-1) ?? "";
-        if (!subject.includes(taskId) && (suffix.length === 0 || !subject.includes(suffix))) {
+        const policy = validateCommitSubject({
+          subject,
+          taskId,
+          genericTokens: loaded.config.commit.generic_tokens,
+        });
+        if (!policy.ok) {
           throw new CliError({
             exitCode: 5,
             code: "E_GIT",
-            message: "Commit subject must include task id or suffix",
+            message: policy.errors.join("\n"),
           });
         }
         return 0;
@@ -232,19 +253,33 @@ export async function cmdHooksRun(opts: {
         rootOverride: opts.rootOverride ?? null,
       });
       const tasks = await backend.listTasks();
-      const suffixes = tasks.map((task) => task.id.split("-").at(-1) ?? "").filter(Boolean);
-      if (suffixes.length === 0) {
+      if (tasks.length === 0) {
         throw new CliError({
           exitCode: 5,
           code: "E_GIT",
           message: "No task IDs available to validate commit subject",
         });
       }
-      if (!subjectHasSuffix(subject, suffixes)) {
+
+      const matchedTaskId = findMatchingTaskId({ subject, tasks });
+      if (!matchedTaskId) {
         throw new CliError({
           exitCode: 5,
           code: "E_GIT",
           message: "Commit subject must mention a task suffix",
+        });
+      }
+
+      const policy = validateCommitSubject({
+        subject,
+        taskId: matchedTaskId,
+        genericTokens: loaded.config.commit.generic_tokens,
+      });
+      if (!policy.ok) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: policy.errors.join("\n"),
         });
       }
       return 0;
