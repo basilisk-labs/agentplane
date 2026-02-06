@@ -1,17 +1,18 @@
 ---
 id: "202602060332-0SZTB3"
 title: "AP-BR-05 Make tasks.json export-only"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
 tags: ["tasks"]
 verify: []
-commit: null
+commit: { hash: "01fb738a7780db1f8f3c140d0bc6de6455909a7d", message: "📝 S76RDP record task metadata" }
 comments:
   - { author: "CODER", body: "Start: enforce export-only tasks.json policy with gitignore updates and CLI behavior changes." }
+  - { author: "CODER", body: "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d." }
 doc_version: 2
-doc_updated_at: "2026-02-06T04:10:23.363Z"
+doc_updated_at: "2026-02-06T04:13:09.718Z"
 doc_updated_by: "CODER"
 description: "Add gitignore for tasks.json/cache/worktrees; make tasks.json generated only by export/flag; document hooks policy and optional tasks_path relocation if needed. Include tests and docs."
 id_source: "generated"

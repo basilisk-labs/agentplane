@@ -15665,9 +15665,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-05T18:25:16.882Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nTag v0.1.6 and push to origin to trigger release workflow.\n\n## Scope\n\nCreate git tag v0.1.6 on the release commit and push main + tag.\n\n## Risks\n\nMedium: tagging the wrong commit could publish incorrect release.\n\n## Verify Steps\n\nCommand: git tag --list v0.1.6; git log -1 --decorate; ensure tag points to release commit.\n\n## Verification\n\nTagged v0.1.6 on HEAD and confirmed tag points to latest release commit.\n\n## Rollback Plan\n\nDelete tag locally and on origin, then retag the correct commit."
+      "doc": "## Summary\n\nTag v0.1.6 and push to origin to trigger release workflow.\n\n## Scope\n\nCreate git tag v0.1.6 on the release commit and push main + tag.\n\n## Risks\n\nMedium: tagging the wrong commit could publish incorrect release.\n\n## Verify Steps\n\nCommand: git tag --list v0.1.6; git log -1 --decorate; ensure tag points to release commit.\n\n## Verification\n\nTagged v0.1.6 on HEAD and confirmed tag points to latest release commit.\n\n## Rollback Plan\n\nDelete tag locally and on origin, then retag the correct commit.",
+      "dirty": false
     },
     {
       "id": "202602051821-DD9BY6",
@@ -15701,12 +15701,242 @@
       "id_source": "generated",
       "doc": "## Summary\n\nUpdate init tests to expect agentplane 0.1.6 after version bump.\n\n## Scope\n\nUpdate run-cli core test assertions for init install commit subject.\n\n## Risks\n\nLow: mismatched expectations could still break CI/push hooks.\n\n## Verify Steps\n\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts\n\n## Verification\n\nRan: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts\n\n## Rollback Plan\n\nRestore previous version strings in test expectations.",
       "dirty": false
+    },
+    {
+      "id": "202602060332-0SZTB3",
+      "title": "AP-BR-05 Make tasks.json export-only",
+      "description": "Add gitignore for tasks.json/cache/worktrees; make tasks.json generated only by export/flag; document hooks policy and optional tasks_path relocation if needed. Include tests and docs.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "tasks"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "01fb738a7780db1f8f3c140d0bc6de6455909a7d",
+        "message": "📝 S76RDP record task metadata"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: enforce export-only tasks.json policy with gitignore updates and CLI behavior changes."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T04:13:09.718Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nMade tasks.json export-only, removed auto-exports from status/finish, and updated gitignore/tests/docs.\n\n## Scope\n\nWorkflow commands for status/finish, gitignore policy, CLI parsing, tests, and docs for tasks.json export.\n\n## Risks\n\nTeams relying on auto-updated tasks.json must run task export explicitly; documentation updated to reduce surprises.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert export-only policy changes, re-enable auto-export on status/finish, and restore prior docs/tests."
+    },
+    {
+      "id": "202602060332-0Y7RGM",
+      "title": "AP-BR-06 Stabilize task README formatting",
+      "description": "Optional: centralize task README formatting (frontmatter order, newlines, section normalization) in core to reduce diff noise. Include tests and docs if implemented.",
+      "status": "TODO",
+      "priority": "low",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "tasks"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T03:32:49.024Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060332-4Q9MSM",
+      "title": "AP-BR-02 Effective base resolver",
+      "description": "Add resolveBaseBranch helper with prioritized base selection; unify base resolution in work start/integrate/cleanup/guard and add tests+docs.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "branching"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "01fb738a7780db1f8f3c140d0bc6de6455909a7d",
+        "message": "📝 S76RDP record task metadata"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: design effective base resolver and refactor callers to use unified selection; update tests/docs."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T04:13:09.715Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nAdded resolveBaseBranch for effective base selection and updated branch_pr commands to use it.\n\n## Scope\n\nCore git base-branch utilities, workflow command base resolution, and related tests.\n\n## Risks\n\nBranch_pr fallback now uses current branch when unpinned; users should pin base to avoid unexpected diffs.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert resolveBaseBranch additions and restore getBaseBranch usage in workflow commands/tests."
+    },
+    {
+      "id": "202602060332-B46WJ2",
+      "title": "AP-BR-04 Direct mode work start alignment",
+      "description": "Implement work start in direct mode (create task branch from HEAD, optional worktree, minimal scaffold) and align docs. Includes tests and docs updates.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "workflow"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "01fb738a7780db1f8f3c140d0bc6de6455909a7d",
+        "message": "📝 S76RDP record task metadata"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T04:13:09.717Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nEnabled work start in direct mode (optional worktree) and aligned CLI parsing/tests/docs.\n\n## Scope\n\nWork start command behavior, CLI flag validation, tests, and workflow documentation.\n\n## Risks\n\nDirect-mode work start now switches/creates branches; users must be ready for checkout changes.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert work start direct-mode changes and restore strict branch_pr-only behavior."
+    },
+    {
+      "id": "202602060332-KYXD2V",
+      "title": "AP-BR-07 Append-only task events (advanced)",
+      "description": "Optional/advanced: move task status/comments to append-only events with README render. Requires policy and renderer changes; include tests and docs if implemented.",
+      "status": "TODO",
+      "priority": "low",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "tasks"
+      ],
+      "verify": [],
+      "commit": null,
+      "comments": [],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T03:32:52.108Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060332-MWKYQ4",
+      "title": "AP-BR-03 Branch base UX commands",
+      "description": "Add branch base set --current, branch base clear, and branch base explain output; include tests and docs.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "01fb738a7780db1f8f3c140d0bc6de6455909a7d",
+        "message": "📝 S76RDP record task metadata"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: extend branch base commands (set --current, clear, explain) and update tests/docs."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T04:13:09.716Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nExtended branch base commands with set --current, clear, and explain, plus updated CLI parsing/tests.\n\n## Scope\n\nBranch base command handlers, git config helpers, CLI parsing, and tests.\n\n## Risks\n\nUsers relying on previous branch base usage strings may see different output/usage guidance.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert branch base command additions and restore prior CLI parsing/tests."
+    },
+    {
+      "id": "202602060332-S98829",
+      "title": "Branching model improvements (tracking)",
+      "description": "Tracking task for BRANCH.md implementation: effective base resolver, branch UX, tasks.json export-only policy, direct work start behavior, and related docs/tests.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "workflow"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "01fb738a7780db1f8f3c140d0bc6de6455909a7d",
+        "message": "📝 S76RDP record task metadata"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T04:13:09.711Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nTracking task for BRANCH.md improvements across base resolution, branch UX, work start, and tasks.json export policy.\n\n## Scope\n\nCoordinate AP-BR-01 through AP-BR-05 implementation, tests, and documentation updates.\n\n## Risks\n\nScope spans multiple commands and docs; coordination mistakes could leave inconsistent guidance or behavior.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert all AP-BR changes in core/agentplane/docs and restore previous behavior."
+    },
+    {
+      "id": "202602060332-XWC8AF",
+      "title": "AP-BR-01 Remove base_branch from config",
+      "description": "Remove base_branch from config schema/examples/types; ignore if present with warning for compatibility; ensure base comes only from git config/--base. Include tests and docs updates.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "config"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "01fb738a7780db1f8f3c140d0bc6de6455909a7d",
+        "message": "📝 S76RDP record task metadata"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: remove base_branch from config schema/types, add compat ignore warning, update tests/docs."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: bun run test:core; bun run test:cli:core; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build.\\nSummary: Implemented base-branch cleanup (remove base_branch, new base resolution/clear/explain), direct work start without worktree, task exports only via task export, docs/tests updates.\\nCommit: 01fb738a7780db1f8f3c140d0bc6de6455909a7d."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T04:13:09.713Z",
+      "doc_updated_by": "CODER",
+      "dirty": false,
+      "id_source": "generated",
+      "doc": "## Summary\n\nRemoved base_branch from config schema/examples/types and ignore legacy values with a warning.\n\n## Scope\n\nConfig schema/examples, config validation/sanitization, init config writing, and related tests.\n\n## Risks\n\nLegacy configs relying on base_branch may be surprised; warning added to surface ignored field.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert config schema/type changes and init/config handling updates; restore prior tests."
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "9e02a13c1fe0cb0b1752dbff0be16dd70ad5ad8aecbab773b5cfed9185939234"
+    "checksum": "5ac5645904f22ec8203edf69087196a4252a28bfc21a9878d49ff5ab6af85aff"
   }
 }
