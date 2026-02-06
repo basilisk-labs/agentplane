@@ -1,5 +1,7 @@
-import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
+
+import { atomicWriteFile } from "@agentplaneorg/core";
 
 import type { TaskData } from "./task-backend.js";
 
@@ -71,11 +73,7 @@ export async function loadTaskIndex(indexPath: string): Promise<TaskIndexFile | 
 }
 
 export async function saveTaskIndex(indexPath: string, index: TaskIndexFile): Promise<void> {
-  const dir = path.dirname(indexPath);
-  await mkdir(dir, { recursive: true });
-  const tmpPath = `${indexPath}.tmp-${process.pid}`;
-  await writeFile(tmpPath, `${JSON.stringify(index, null, 2)}\n`, "utf8");
-  await rename(tmpPath, indexPath);
+  await atomicWriteFile(indexPath, `${JSON.stringify(index, null, 2)}\n`, "utf8");
 }
 
 export function buildTaskIndexEntry(

@@ -1,8 +1,9 @@
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
 import {
+  atomicWriteFile,
   defaultConfig,
   findGitRoot,
   getStagedFiles,
@@ -373,7 +374,7 @@ async function writeFileIfChanged(filePath: string, content: string): Promise<bo
     const code = (err as { code?: string } | null)?.code;
     if (code !== "ENOENT") throw err;
   }
-  await writeFile(filePath, content, "utf8");
+  await atomicWriteFile(filePath, content, "utf8");
   return true;
 }
 
@@ -841,8 +842,12 @@ async function cmdInit(opts: {
         custom_fields: { task_id: 1 },
       },
     };
-    await writeFile(localBackendPath, `${JSON.stringify(localBackendPayload, null, 2)}\n`, "utf8");
-    await writeFile(
+    await atomicWriteFile(
+      localBackendPath,
+      `${JSON.stringify(localBackendPayload, null, 2)}\n`,
+      "utf8",
+    );
+    await atomicWriteFile(
       redmineBackendPath,
       `${JSON.stringify(redmineBackendPayload, null, 2)}\n`,
       "utf8",
@@ -857,7 +862,7 @@ async function cmdInit(opts: {
     if (!(await fileExists(agentsPath))) {
       const template = await loadAgentsTemplate();
       const filtered = filterAgentsByWorkflow(template, workflow);
-      await writeFile(agentsPath, filtered, "utf8");
+      await atomicWriteFile(agentsPath, filtered, "utf8");
       wroteAgents = true;
     }
     if (wroteAgents) {
@@ -868,7 +873,7 @@ async function cmdInit(opts: {
     for (const agent of agentTemplates) {
       const targetPath = path.join(resolved.agentplaneDir, "agents", agent.fileName);
       if (await fileExists(targetPath)) continue;
-      await writeFile(targetPath, agent.contents, "utf8");
+      await atomicWriteFile(targetPath, agent.contents, "utf8");
       installPaths.push(path.relative(resolved.gitRoot, targetPath));
     }
 
