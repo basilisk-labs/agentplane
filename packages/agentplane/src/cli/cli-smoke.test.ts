@@ -125,6 +125,30 @@ describe("agentplane CLI smoke", () => {
       const taskId = taskNew.stdout.trim();
       expect(taskId).toMatch(/^\d{12}-/);
 
+      const planSet = await runCliWithOutput(root, [
+        "task",
+        "plan",
+        "set",
+        taskId,
+        "--text",
+        "1) Smoke plan: proceed with start/verify/finish and basic recipe/work checks.\n",
+        "--updated-by",
+        "ORCHESTRATOR",
+      ]);
+      expect(planSet.code).toBe(0);
+
+      const planApprove = await runCliWithOutput(root, [
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "USER",
+        "--note",
+        "Smoke plan approved.",
+      ]);
+      expect(planApprove.code).toBe(0);
+
       const start = await runCliWithOutput(root, [
         "start",
         taskId,
@@ -138,6 +162,17 @@ describe("agentplane CLI smoke", () => {
       await writeFile(path.join(root, "note.txt"), "smoke\n", "utf8");
       await execFileAsync("git", ["add", "."], { cwd: root });
       await execFileAsync("git", ["commit", "-m", "smoke change"], { cwd: root });
+
+      const verify = await runCliWithOutput(root, [
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "ORCHESTRATOR",
+        "--note",
+        "Smoke verification: local checks only; core lifecycle commands succeeded.",
+      ]);
+      expect(verify.code).toBe(0);
 
       const finish = await runCliWithOutput(root, [
         "finish",
