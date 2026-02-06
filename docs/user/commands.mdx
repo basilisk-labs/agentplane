@@ -65,11 +65,17 @@ agentplane verify <task-id> --yes --quiet
 ## Branching (branch_pr)
 
 ```bash
-agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane work start <task-id> --agent CODER --slug <slug> [--worktree]
 agentplane pr open <task-id>
 agentplane pr update <task-id>
 agentplane pr check <task-id>
 agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify
+```
+
+```bash
+agentplane branch base set --current
+agentplane branch base clear
+agentplane branch base explain
 ```
 
 ## Recipes

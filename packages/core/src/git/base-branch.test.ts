@@ -5,7 +5,14 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { getBaseBranch, getPinnedBaseBranch, saveConfig, setPinnedBaseBranch } from "../index.js";
+import {
+  getBaseBranch,
+  getPinnedBaseBranch,
+  resolveBaseBranch,
+  saveConfig,
+  clearPinnedBaseBranch,
+  setPinnedBaseBranch,
+} from "../index.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -37,6 +44,69 @@ describe("base-branch", () => {
     expect(base).toBe("develop");
   });
 
+  it("resolveBaseBranch prefers explicit CLI base", async () => {
+    const root = await mkGitRepoRoot();
+    await execFileAsync("git", ["checkout", "-q", "-b", "feature"], { cwd: root });
+    const base = await resolveBaseBranch({
+      cwd: root,
+      rootOverride: root,
+      cliBaseOpt: "release",
+      mode: "branch_pr",
+    });
+    expect(base).toBe("release");
+  });
+
+  it("resolveBaseBranch falls back to pinned base", async () => {
+    const root = await mkGitRepoRoot();
+    await execFileAsync("git", ["checkout", "-q", "-b", "feature"], { cwd: root });
+    await setPinnedBaseBranch({ cwd: root, rootOverride: root, value: "develop" });
+    const base = await resolveBaseBranch({
+      cwd: root,
+      rootOverride: root,
+      cliBaseOpt: null,
+      mode: "branch_pr",
+    });
+    expect(base).toBe("develop");
+  });
+
+  it("resolveBaseBranch uses current branch for branch_pr when unpinned", async () => {
+    const root = await mkGitRepoRoot();
+    await execFileAsync("git", ["checkout", "-q", "-b", "feature"], { cwd: root });
+    const base = await resolveBaseBranch({
+      cwd: root,
+      rootOverride: root,
+      cliBaseOpt: null,
+      mode: "branch_pr",
+    });
+    expect(base).toBe("feature");
+  });
+
+  it("resolveBaseBranch returns null for direct mode without explicit base", async () => {
+    const root = await mkGitRepoRoot();
+    const base = await resolveBaseBranch({
+      cwd: root,
+      rootOverride: root,
+      cliBaseOpt: null,
+      mode: "direct",
+    });
+    expect(base).toBeNull();
+  });
+
+  it("clearPinnedBaseBranch removes the pinned base", async () => {
+    const root = await mkGitRepoRoot();
+    await setPinnedBaseBranch({ cwd: root, rootOverride: root, value: "develop" });
+    const cleared = await clearPinnedBaseBranch({ cwd: root, rootOverride: root });
+    expect(cleared).toBe(true);
+    const pinned = await getPinnedBaseBranch({ cwd: root, rootOverride: root });
+    expect(pinned).toBeNull();
+  });
+
+  it("clearPinnedBaseBranch is a no-op when unset", async () => {
+    const root = await mkGitRepoRoot();
+    const cleared = await clearPinnedBaseBranch({ cwd: root, rootOverride: root });
+    expect(cleared).toBe(false);
+  });
+
   it("keeps pinned branch even if config exists", async () => {
     const root = await mkGitRepoRoot();
     await setPinnedBaseBranch({ cwd: root, rootOverride: root, value: "develop" });
@@ -48,7 +118,6 @@ describe("base-branch", () => {
       workflow_mode: "direct",
       status_commit_policy: "warn",
       finish_auto_status_commit: true,
-      base_branch: "release",
       paths: {
         agents_dir: ".agentplane/agents",
         tasks_path: ".agentplane/tasks.json",

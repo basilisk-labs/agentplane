@@ -12,6 +12,7 @@ Configured in `.agentplane/config.json`.
 - Single-checkout workflow.
 - Task branches and PR artifacts are optional.
 - Tasks can be implemented and closed on the current branch.
+- `agentplane work start` can create a task branch from the current HEAD (worktree optional).
 
 ### branch_pr
 
@@ -39,6 +40,6 @@ Configured in `.agentplane/config.json`.
 
 See [`cli-contract`](../developer/cli-contract) for the authoritative command surface. The 1.0 workflow uses:
 
-- `agentplane work start` (create task branch + worktree)
+- `agentplane work start` (create task branch; worktree required in branch_pr)
 - `agentplane pr open|update|check|note`
 - `agentplane integrate` (branch_pr integration)

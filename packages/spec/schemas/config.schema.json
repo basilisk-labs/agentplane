@@ -18,7 +18,6 @@
       "default": "warn"
     },
     "finish_auto_status_commit": { "type": "boolean", "default": true },
-    "base_branch": { "type": "string", "minLength": 1, "default": "main" },
     "agents": {
       "type": "object",
       "additionalProperties": true,

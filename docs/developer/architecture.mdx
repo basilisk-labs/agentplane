@@ -36,7 +36,7 @@ Agent Plane is a CLI-first workflow framework. The CLI orchestrates task state, 
 1. CLI reads `.agentplane/config.json`.
 2. CLI resolves the active backend config.
 3. Task commands read/write through the backend.
-4. Exports are written to `.agentplane/tasks.json` for integrations.
+4. Export-only snapshots are written to `.agentplane/tasks.json` for integrations.
 5. Recipe runs write artifacts under `.agentplane/.runs/`.
 
 ## Guardrails
