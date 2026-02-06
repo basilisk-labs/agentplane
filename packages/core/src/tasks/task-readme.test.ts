@@ -10,11 +10,20 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["nodejs", "tooling", "quality"]
-commit: { hash: "80f68e162a6963667157f14a1b739ed8d6a3f22d", message: "✨ 8V7XF4 quality gates + bun" }
+tags:
+  - "nodejs"
+  - "tooling"
+  - "quality"
+commit:
+  hash: "80f68e162a6963667157f14a1b739ed8d6a3f22d"
+  message: "✨ 8V7XF4 quality gates + bun"
 comments:
-  - { author: "CODER", body: "Start: defining quality gates (lint/format/typecheck/tests/coverage) and switching workspace tooling/docs to bun." }
-  - { author: "CODER", body: "verified: bun run ci passed." }
+  -
+    author: "CODER"
+    body: "Start: defining quality gates (lint/format/typecheck/tests/coverage) and switching workspace tooling/docs to bun."
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed."
 doc_version: 2
 doc_updated_at: "2026-01-27T09:05:55+00:00"
 doc_updated_by: "agentplane"
