@@ -1,7 +1,7 @@
 ---
 id: "202602061732-9Y4CR4"
 title: "P0.4: Robust git changed paths parsing (-z)"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-06T18:19:21.507Z"
   updated_by: "TESTER"
   note: "Updated core/agentplane git path listing to -z based parsing; added CLI regression for spaced file paths; bun run test:core and bun run test:cli:core passed."
-commit: null
+commit:
+  hash: "1ce1eabc7bdb630f1020a4893de9995940ed4a18"
+  message: "✨ 9Y4CR4 robust git path parsing via -z"
 comments:
   -
     author: "CODER"
     body: "Start: Replace porcelain parsing with -z based path enumeration and add regression for spaced paths."
+  -
+    author: "CODER"
+    body: "Verified: Replaced porcelain parsing with -z/NUL-based git path listing (core getStagedFiles/getUnstagedFiles, guard gitStatusChangedPaths) to handle spaces/quotes/renames safely; added CLI regression test for a spaced path; bun run test:core and bun run test:cli:core passed."
 doc_version: 2
-doc_updated_at: "2026-02-06T18:19:21.516Z"
+doc_updated_at: "2026-02-06T18:26:08.245Z"
 doc_updated_by: "CODER"
 description: "Replace porcelain v1 parsing with -z based path enumeration (diff --name-only -z / --cached) to handle spaces/quotes/renames safely."
 id_source: "generated"
