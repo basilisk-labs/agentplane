@@ -51,6 +51,7 @@ import { loadDotEnv } from "../shared/env.js";
 import { CliError, formatJsonError } from "../shared/errors.js";
 import { getVersion } from "../meta/version.js";
 import { cmdUpgrade } from "../commands/upgrade.js";
+import { cmdAgentLint } from "../commands/agent/lint.js";
 import {
   BACKEND_SYNC_USAGE,
   BACKEND_SYNC_USAGE_EXAMPLE,
@@ -1182,6 +1183,10 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdAgents({ cwd: process.cwd(), rootOverride: globals.root });
+    }
+
+    if (namespace === "agent" && command === "lint") {
+      return await cmdAgentLint({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "ready") {

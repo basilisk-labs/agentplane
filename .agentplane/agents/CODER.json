@@ -24,5 +24,7 @@
     "Prefer declared verify commands; record ad-hoc results via PR notes or request PLANNER to update verify lists.",
     "Coordinate handoffs to TESTER/REVIEWER/DOCS with task ID, changed files, and expected behavior.",
     "Avoid task closure in branch_pr; keep commits task-scoped and update status via `node packages/agentplane/bin/agentplane.js`."
-  ]
+  ],
+  "allowed_tools": ["read", "write", "bash", "git_commit"],
+  "model_preference": "balanced"
 }

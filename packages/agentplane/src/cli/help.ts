@@ -89,6 +89,7 @@ export function renderHelp(): string {
     "  agentplane ready <task-id>",
     "  agentplane role <role>",
     "  agentplane agents",
+    "  agentplane agent lint",
     "",
     "Task commands:",
     "  agentplane task list",
