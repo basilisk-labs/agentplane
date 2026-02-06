@@ -1,7 +1,7 @@
 ---
 id: "202602061103-48CPAH"
 title: "Fix full test suite for approvals enforcement"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -16,17 +16,22 @@ plan_approval:
   updated_by: "USER"
   note: "Approved: fix pre-push tests"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-06T11:06:27.258Z"
+  updated_by: "CODER"
+  note: "Pre-push gate fixed: bun run test:full passes; smoke test now approves plan and records verify before finish; remote recipes list-remote test uses --yes under require_network."
+commit:
+  hash: "460da49e111829c12cb69f03c88e5e55808b9993"
+  message: "🧪 48CPAH fix"
 comments:
   -
     author: "CODER"
     body: "Start: Fix failing full test suite after approvals enforcement (require_plan / require_network)."
+  -
+    author: "CODER"
+    body: "Verified: Updated CLI smoke and recipes tests to satisfy require_plan and require_network enforcement. Pre-push full suite (bun run test:full) is green; lint and format checks pass."
 doc_version: 2
-doc_updated_at: "2026-02-06T11:03:22.576Z"
+doc_updated_at: "2026-02-06T11:06:49.204Z"
 doc_updated_by: "CODER"
 description: "Update CLI smoke and recipes tests to account for require_plan and require_network enforcement (exit code 3 without approval/--yes)."
 id_source: "generated"
@@ -49,5 +54,17 @@ id_source: "generated"
 
 ## Verification
 
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-06T11:06:27.258Z — VERIFY — ok
+
+By: CODER
+
+Note: Pre-push gate fixed: bun run test:full passes; smoke test now approves plan and records verify before finish; remote recipes list-remote test uses --yes under require_network.
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
