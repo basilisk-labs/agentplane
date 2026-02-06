@@ -33,6 +33,14 @@ const TASK_ID_RE = new RegExp(String.raw`^\d{12}-[${TASK_ID_ALPHABET}]{4,}$`);
 const DEFAULT_DOC_UPDATED_BY = "agentplane";
 const DOC_VERSION = 2;
 
+export type PlanApprovalState = "pending" | "approved" | "rejected";
+export type PlanApproval = {
+  state: PlanApprovalState;
+  updated_at: string | null;
+  updated_by: string | null;
+  note: string | null;
+};
+
 type AtomicWriteFile = (
   filePath: string,
   contents: string | Buffer,
@@ -186,6 +194,7 @@ export type TaskData = {
   depends_on: string[];
   tags: string[];
   verify: string[];
+  plan_approval?: PlanApproval;
   commit?: { hash: string; message: string } | null;
   comments?: { author: string; body: string }[];
   doc?: string;
@@ -255,6 +264,22 @@ function normalizePriority(value: unknown): string {
   return "med";
 }
 
+function defaultPlanApproval(): PlanApproval {
+  return { state: "pending", updated_at: null, updated_by: null, note: null };
+}
+
+function normalizePlanApproval(value: unknown): PlanApproval | null {
+  if (!isRecord(value)) return null;
+  const state = typeof value.state === "string" ? value.state : "";
+  if (state !== "pending" && state !== "approved" && state !== "rejected") return null;
+  const updatedAt =
+    value.updated_at === null || typeof value.updated_at === "string" ? value.updated_at : null;
+  const updatedBy =
+    value.updated_by === null || typeof value.updated_by === "string" ? value.updated_by : null;
+  const note = value.note === null || typeof value.note === "string" ? value.note : null;
+  return { state, updated_at: updatedAt, updated_by: updatedBy, note };
+}
+
 export function taskRecordToData(record: TaskRecord): TaskData {
   const fm = record.frontmatter as unknown as Record<string, unknown>;
   const comments = Array.isArray(fm.comments)
@@ -272,6 +297,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     typeof fm.commit.message === "string"
       ? { hash: fm.commit.hash, message: fm.commit.message }
       : null;
+  const planApproval = normalizePlanApproval(fm.plan_approval);
 
   const baseId = typeof fm.id === "string" ? fm.id : typeof record.id === "string" ? record.id : "";
   const task: TaskData = {
@@ -284,6 +310,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     depends_on: normalizeDependsOn(fm.depends_on),
     tags: toStringArray(fm.tags),
     verify: toStringArray(fm.verify),
+    plan_approval: planApproval ?? undefined,
     commit,
     comments,
     doc_version: typeof fm.doc_version === "number" ? fm.doc_version : undefined,
@@ -520,6 +547,13 @@ export class LocalBackend implements TaskBackend {
       if (payload[key] === undefined && existingFrontmatter[key] !== undefined) {
         payload[key] = existingFrontmatter[key];
       }
+    }
+
+    if (payload.plan_approval === undefined && existingFrontmatter.plan_approval !== undefined) {
+      payload.plan_approval = existingFrontmatter.plan_approval;
+    }
+    if (payload.plan_approval === undefined) {
+      payload.plan_approval = defaultPlanApproval();
     }
 
     if (task.doc !== undefined) {

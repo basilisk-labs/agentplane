@@ -111,6 +111,7 @@
             "Summary",
             "Context",
             "Scope",
+            "Plan",
             "Risks",
             "Verify Steps",
             "Verification",
@@ -120,8 +121,8 @@
           "required_sections": [
             "Summary",
             "Scope",
+            "Plan",
             "Risks",
-            "Verify Steps",
             "Verification",
             "Rollback Plan"
           ]
@@ -162,6 +163,7 @@
               "Summary",
               "Context",
               "Scope",
+              "Plan",
               "Risks",
               "Verify Steps",
               "Verification",
@@ -171,8 +173,8 @@
             "required_sections": [
               "Summary",
               "Scope",
+              "Plan",
               "Risks",
-              "Verify Steps",
               "Verification",
               "Rollback Plan"
             ]
@@ -185,6 +187,7 @@
                 "Summary",
                 "Context",
                 "Scope",
+                "Plan",
                 "Risks",
                 "Verify Steps",
                 "Verification",
@@ -195,14 +198,7 @@
             "required_sections": {
               "type": "array",
               "items": { "type": "string", "minLength": 1 },
-              "default": [
-                "Summary",
-                "Scope",
-                "Risks",
-                "Verify Steps",
-                "Verification",
-                "Rollback Plan"
-              ]
+              "default": ["Summary", "Scope", "Plan", "Risks", "Verification", "Rollback Plan"]
             }
           }
         },
