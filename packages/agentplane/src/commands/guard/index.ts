@@ -212,7 +212,9 @@ async function stageAllowlist(opts: {
     });
   }
 
-  await execFileAsync("git", ["add", "--", ...unique], { cwd: resolved.gitRoot });
+  // `git add <pathspec>` is not reliable for staging deletes/renames across versions/configs.
+  // `-A -- <pathspec...>` makes the allowlist staging semantics deterministic.
+  await execFileAsync("git", ["add", "-A", "--", ...unique], { cwd: resolved.gitRoot });
   return unique;
 }
 

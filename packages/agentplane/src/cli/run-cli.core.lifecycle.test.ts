@@ -428,6 +428,72 @@ describe("runCli", () => {
     );
   });
 
+  it("start --commit-from-comment stages deletions under allowlist", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    // Seed a tracked file we will delete (so staging deletes is required).
+    await mkdir(path.join(root, "tmp"), { recursive: true });
+    await writeFile(path.join(root, "tmp", "a.txt"), "hello\n", "utf8");
+    await commitAll(root, "seed");
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Delete staging",
+        "--description",
+        "Ensure allowlist staging includes deletions",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+    await approveTaskPlan(root, taskId);
+
+    await rm(path.join(root, "tmp", "a.txt"));
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "start",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: ensure allowlist stages deletions",
+        "--commit-from-comment",
+        "--commit-allow",
+        "tmp",
+        "--confirm-status-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync("git", ["show", "--name-status", "--pretty=%s"], {
+      cwd: root,
+    });
+    expect(stdout).toContain("D\ttmp/a.txt");
+  });
+
   it("start blocks comment-driven commits when status_commit_policy=confirm", async () => {
     const root = await mkGitRepoRoot();
     const cfg = defaultConfig();
