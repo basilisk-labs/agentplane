@@ -20,7 +20,16 @@ function pathIsUnder(candidate: string, prefix: string): boolean {
 }
 
 function normalizeAllowPrefix(prefix: string): string {
-  return prefix.replace(/\/+$/, "");
+  const raw = prefix.trim();
+  if (raw === "." || raw === "./" || raw === ".\\") return ".";
+
+  // Normalize user-provided allow prefixes so staging and checks agree.
+  // Git paths are treated as repo-relative POSIX paths.
+  let p = raw.replaceAll("\\", "/");
+  while (p.startsWith("./")) p = p.slice(2);
+  p = p.replaceAll(/\/{2,}/g, "/");
+  p = p.replaceAll(/\/+$/g, "");
+  return p;
 }
 
 export function buildGitCommitEnv(opts: {
@@ -188,9 +197,7 @@ async function stageAllowlist(opts: {
     });
   }
 
-  const allow = opts.allow.map((prefix) =>
-    normalizeAllowPrefix(prefix.trim().replace(/^\.?\//, "")),
-  );
+  const allow = opts.allow.map((prefix) => normalizeAllowPrefix(prefix));
   const denied = new Set<string>();
   if (!opts.allowTasks) denied.add(".agentplane/tasks.json");
 

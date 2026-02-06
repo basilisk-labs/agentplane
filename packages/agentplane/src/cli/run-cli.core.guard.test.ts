@@ -467,6 +467,33 @@ describe("runCli", () => {
     expect(stdout.trim()).toBe("✨ ABCDEF commit wrapper");
   });
 
+  it("commit wrapper normalizes ./ prefixes in allowlist", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit wrapper allow ./file.txt",
+        "--allow",
+        "./file.txt",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ committed");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("commit wrapper supports --quiet", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
