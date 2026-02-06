@@ -15735,9 +15735,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-06T04:23:17.660Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nMade tasks.json export-only, removed auto-exports from status/finish, and updated gitignore/tests/docs.\n\n## Scope\n\nWorkflow commands for status/finish, gitignore policy, CLI parsing, tests, and docs for tasks.json export.\n\n## Risks\n\nTeams relying on auto-updated tasks.json must run task export explicitly; documentation updated to reduce surprises.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert export-only policy changes, re-enable auto-export on status/finish, and restore prior docs/tests."
+      "doc": "## Summary\n\nMade tasks.json export-only, removed auto-exports from status/finish, and updated gitignore/tests/docs.\n\n## Scope\n\nWorkflow commands for status/finish, gitignore policy, CLI parsing, tests, and docs for tasks.json export.\n\n## Risks\n\nTeams relying on auto-updated tasks.json must run task export explicitly; documentation updated to reduce surprises.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert export-only policy changes, re-enable auto-export on status/finish, and restore prior docs/tests.",
+      "dirty": false
     },
     {
       "id": "202602060332-0Y7RGM",
@@ -15792,9 +15792,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-06T04:23:17.312Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nAdded resolveBaseBranch for effective base selection and updated branch_pr commands to use it.\n\n## Scope\n\nCore git base-branch utilities, workflow command base resolution, and related tests.\n\n## Risks\n\nBranch_pr fallback now uses current branch when unpinned; users should pin base to avoid unexpected diffs.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert resolveBaseBranch additions and restore getBaseBranch usage in workflow commands/tests."
+      "doc": "## Summary\n\nAdded resolveBaseBranch for effective base selection and updated branch_pr commands to use it.\n\n## Scope\n\nCore git base-branch utilities, workflow command base resolution, and related tests.\n\n## Risks\n\nBranch_pr fallback now uses current branch when unpinned; users should pin base to avoid unexpected diffs.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert resolveBaseBranch additions and restore getBaseBranch usage in workflow commands/tests.",
+      "dirty": false
     },
     {
       "id": "202602060332-B46WJ2",
@@ -15825,9 +15825,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-06T04:23:17.545Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nEnabled work start in direct mode (optional worktree) and aligned CLI parsing/tests/docs.\n\n## Scope\n\nWork start command behavior, CLI flag validation, tests, and workflow documentation.\n\n## Risks\n\nDirect-mode work start now switches/creates branches; users must be ready for checkout changes.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert work start direct-mode changes and restore strict branch_pr-only behavior."
+      "doc": "## Summary\n\nEnabled work start in direct mode (optional worktree) and aligned CLI parsing/tests/docs.\n\n## Scope\n\nWork start command behavior, CLI flag validation, tests, and workflow documentation.\n\n## Risks\n\nDirect-mode work start now switches/creates branches; users must be ready for checkout changes.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert work start direct-mode changes and restore strict branch_pr-only behavior.",
+      "dirty": false
     },
     {
       "id": "202602060332-KYXD2V",
@@ -15882,9 +15882,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-06T04:23:17.428Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nExtended branch base commands with set --current, clear, and explain, plus updated CLI parsing/tests.\n\n## Scope\n\nBranch base command handlers, git config helpers, CLI parsing, and tests.\n\n## Risks\n\nUsers relying on previous branch base usage strings may see different output/usage guidance.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert branch base command additions and restore prior CLI parsing/tests."
+      "doc": "## Summary\n\nExtended branch base commands with set --current, clear, and explain, plus updated CLI parsing/tests.\n\n## Scope\n\nBranch base command handlers, git config helpers, CLI parsing, and tests.\n\n## Risks\n\nUsers relying on previous branch base usage strings may see different output/usage guidance.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert branch base command additions and restore prior CLI parsing/tests.",
+      "dirty": false
     },
     {
       "id": "202602060332-S98829",
@@ -15915,9 +15915,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-06T04:23:17.080Z",
       "doc_updated_by": "CODER",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nTracking task for BRANCH.md improvements across base resolution, branch UX, work start, and tasks.json export policy.\n\n## Scope\n\nCoordinate AP-BR-01 through AP-BR-05 implementation, tests, and documentation updates.\n\n## Risks\n\nScope spans multiple commands and docs; coordination mistakes could leave inconsistent guidance or behavior.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert all AP-BR changes in core/agentplane/docs and restore previous behavior."
+      "doc": "## Summary\n\nTracking task for BRANCH.md improvements across base resolution, branch UX, work start, and tasks.json export policy.\n\n## Scope\n\nCoordinate AP-BR-01 through AP-BR-05 implementation, tests, and documentation updates.\n\n## Risks\n\nScope spans multiple commands and docs; coordination mistakes could leave inconsistent guidance or behavior.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert all AP-BR changes in core/agentplane/docs and restore previous behavior.",
+      "dirty": false
     },
     {
       "id": "202602060332-XWC8AF",
@@ -15952,15 +15952,1646 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-06T04:23:17.197Z",
       "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nRemoved base_branch from config schema/examples/types and ignore legacy values with a warning.\n\n## Scope\n\nConfig schema/examples, config validation/sanitization, init config writing, and related tests.\n\n## Risks\n\nLegacy configs relying on base_branch may be surprised; warning added to surface ignored field.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert config schema/type changes and init/config handling updates; restore prior tests.",
+      "dirty": false
+    },
+    {
+      "id": "202602060427-AFQFMQ",
+      "title": "P2: Split commands/workflow.ts by domains + split run-cli core tests",
+      "description": "Goal: reduce churn and review scope by splitting the largest prod file and the largest test file.\\n\\nDeliverables:\\n- Decompose packages/agentplane/src/commands/workflow.ts into domain modules under packages/agentplane/src/commands/{task,branch,pr,guard,hooks}/\\n- Keep stable workflow entrypoint for CLI (run-cli.ts import stays simple)\\n- Split packages/agentplane/src/cli/run-cli.core.test.ts into multiple scenario/command-focused files; keep smoke/contract separate\\n\\nConstraints:\\n- direct mode; no manual edits to .agentplane/tasks.json; commits via agentplane\\n",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "refactor",
+        "cli",
+        "testing"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "53f2c70644c22d930ee5d401890f1d64d1f904c4",
+        "message": "🧩 AFQFMQ refactor"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Split commands/workflow.ts and run-cli.core.test.ts into smaller domain/scenario modules; keep CLI API stable; run full CLI test suite and agentplane verify before finish."
+        },
+        {
+          "author": "VERIFY",
+          "body": "Verify failed: Verify command failed: bun run typecheck\\ncmd: bun run lint\\ncmd: bun run test:cli:core\\ncmd: bun run test:cli:unit\\ncmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ (command: bun run typecheck\\ncmd: bun run lint\\ncmd: bun run test:cli:core\\ncmd: bun run test:cli:unit\\ncmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ)"
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: agentplane verify passed (2026-02-06); commit 53f2c70644c2. Ran typecheck, lint, and test:cli:unit."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T05:37:07.671Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "doc": "## Summary\n\n- Refactored packages/agentplane/src/commands/workflow.ts into domain modules (task/branch/pr/guard/hooks) while keeping workflow.ts as a stable re-export entrypoint.\\n- Split packages/agentplane/src/cli/run-cli.core.test.ts into multiple core test files (scenario/command focused) and updated root test scripts to target run-cli.core*.test.ts.\n\n## Scope\n\n- Added domain command modules under packages/agentplane/src/commands/{task,branch,pr,guard,hooks}/ and shared helpers under packages/agentplane/src/commands/shared/.\\n- Left packages/agentplane/src/commands/workflow.ts as the compatibility surface (explicit re-exports; no export *).\\n- Split core CLI tests into packages/agentplane/src/cli/run-cli.core.*.test.ts and adjusted root package.json CLI test scripts to include the new glob.\\n- No intended behavior changes; change is structural for review/scope isolation.\n\n## Risks\n\n- Refactor risk: import boundary mistakes or subtle behavior drift (especially around git/worktree/pr-meta helpers) despite typecheck passing.\\n- Test split risk: ordering/state coupling between tests can surface if some helpers relied on file-level initialization side effects.\\n- Maintainability risk: some split test files include broad ESLint disables added during the mechanical split; should be tightened in a follow-up to avoid hiding real lint regressions.\n\n## Verify Steps\n\ncmd: bun run typecheck\ncmd: bun run lint\ncmd: bun run test:cli:unit\n\n## Verification\n\nVerified: 2026-02-06 12:33:19 +0700\n\n- agentplane verify 202602060427-AFQFMQ --require --yes\n- Verify Steps executed:\n  - bun run typecheck\n  - bun run lint\n  - bun run test:cli:unit\n\n## Rollback Plan\n\n- Revert the task commit created via agentplane (single commit expected): git revert <sha>.\\n- Re-run: bun run typecheck && bun run lint && bun run test:cli:unit (and agentplane verify if required).\\n- If rollback is urgent, temporarily restore the previous monolithic files from mainline and re-run the same verification steps.",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602060542-EHBPD9",
+      "title": "P2: Split commands/task/index.ts into per-command modules",
+      "description": "Goal: reduce churn and review scope by splitting packages/agentplane/src/commands/task/index.ts into multiple command-specific modules.\\n\\nDeliverables:\\n- Move cmdTask* and lifecycle handlers into files under packages/agentplane/src/commands/task/*.ts (one command per file).\\n- Keep packages/agentplane/src/commands/task/index.ts as stable explicit re-export surface.\\n- No intended behavior changes; preserve public exports and CLI behavior.\\n\\nConstraints:\\n- direct mode; commits via agentplane; run agentplane verify before finish.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "refactor",
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "94cedb4c3e5e0f5cd5da01284e19a7b54c6e6e5c",
+        "message": "🧩 EHBPD9 refactor"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Split commands/task/index.ts by individual commands (new/add/update/comment/set-status/doc/finish/verify/etc.) while keeping index.ts as explicit re-export entrypoint; run typecheck/lint/cli unit tests and agentplane verify."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: agentplane verify passed (2026-02-06); commit 94cedb4c3e5e. Split commands/task/index.ts into per-command modules; ran typecheck, lint, and test:cli:unit."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T06:04:47.956Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "doc": "## Summary\n\n- Split packages/agentplane/src/commands/task/index.ts into per-command modules under packages/agentplane/src/commands/task/.\\n- Keep index.ts as stable explicit re-export surface to avoid wide import churn.\n\n## Scope\n\n- Move cmdTaskNew/Add/Update/Scrub/List/Next/Ready/Search/Scaffold/Normalize/Migrate/Comment/SetStatus/Show/List/Export/Lint and lifecycle cmdStart/cmdBlock/cmdFinish/cmdVerify + doc cmdTaskDocSet/Show into separate files.\\n- Preserve public exports by re-exporting the same identifiers from packages/agentplane/src/commands/task/index.ts.\\n- No intended behavior changes.\n\n## Risks\n\n\n## Verify Steps\n\ncmd: bun run typecheck\ncmd: bun run lint\ncmd: bun run test:cli:unit\n\n## Verification\n\nVerified: 2026-02-06 13:03:01 +0700\n\n- agentplane verify 202602060542-EHBPD9 --require --yes\n- Verify Steps executed:\n  - bun run typecheck\n  - bun run lint\n  - bun run test:cli:unit\n\n## Rollback Plan\n\n- Revert the task commit(s) created via agentplane.\\n- Re-run: bun run typecheck && bun run lint && bun run test:cli:unit (and agentplane verify).\\n- If needed, temporarily restore the monolithic task/index.ts from mainline.",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602060612-BQ8HRK",
+      "title": "Release v0.1.7",
+      "description": "Goal: cut a new release tag v0.1.7 and push to GitHub for automated publish.\\n\\nDeliverables:\\n- docs/releases/v0.1.7.md (non-empty, user-facing English notes)\\n- Bump packages/core and packages/agentplane versions to 0.1.7 (and update agentplane dependency on @agentplaneorg/core)\\n- Update any versioned tests/fixtures expecting 0.1.6 -> 0.1.7\\n- Create git tag v0.1.7 on the release commit\\n- Push main and the tag to origin\\n\\nConstraints:\\n- direct mode; commits via agentplane; run agentplane verify before finish.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "release",
+        "versioning",
+        "docs",
+        "git"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "8d8fc83cc866475eb469c1a3f8709e0600f4584d",
+        "message": "🚀 BQ8HRK release"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Prepare and publish release v0.1.7 (release notes, version bumps, verification), create git tag v0.1.7 on the release commit, and push main+tag to origin for GitHub Actions publish."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: agentplane verify passed (2026-02-06); release commit 8d8fc83cc866. Bumped core+cli to 0.1.7, added docs/releases/v0.1.7.md, updated versioned tests."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T06:19:39.341Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "doc": "## Summary\n\n- Prepare release v0.1.7 (release notes + version bumps across packages).\\n- Tag the release commit as v0.1.7 and push main+tag to GitHub to trigger the publish workflow.\n\n## Scope\n\n- Add docs/releases/v0.1.7.md (English notes).\\n- Bump packages/core/package.json + packages/agentplane/package.json versions to 0.1.7 and update @agentplaneorg/core dependency in agentplane.\\n- Update version expectations in tests/fixtures (0.1.6 -> 0.1.7).\\n- Create and push git tag v0.1.7 and push main to origin.\n\n## Risks\n\n- Tag collision risk if v0.1.7 already exists on origin (must check before tagging/pushing).\\n- Release workflow gate: missing/empty docs/releases/v0.1.7.md or version mismatch causes publish.yml to fail.\\n- Push risk: origin/main may be ahead; push could be rejected (needs explicit resolution).\n\n## Verify Steps\n\ncmd: bun run ci\ncmd: bun run release:check\n\n## Verification\n\nVerified: 2026-02-06 13:18:08 +0700\n\n- agentplane verify 202602060612-BQ8HRK --require --yes\n- Verify Steps executed:\n  - bun run ci\n  - bun run release:check\n\n## Rollback Plan\n\n- Delete local tag v0.1.7 if created: git tag -d v0.1.7.\\n- If tag pushed, delete remote tag (requires explicit decision): git push origin :refs/tags/v0.1.7.\\n- Revert the release commit(s) via git revert and re-run verification.\\n- Re-cut the release with corrected notes/versions.",
+      "dirty": false,
+      "id_source": "generated"
+    },
+    {
+      "id": "202602060818-75173M",
+      "title": "ROADMAP: approvals/plan/verification (tracking)",
+      "description": "Tracking task: implement ROADMAP A-F for plan approval + verification contract, diff-friendly README format, guards, and migration.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "workflow",
+        "tasks"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T10:45:50.929Z",
+        "updated_by": "USER",
+        "note": "Approved tracking closure (chat 2026-02-06)"
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T10:46:11.073Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": "Tracking closure: B3/E1/F1 integrated; approvals/plan/verification contract enforced; tests green (format:check, lint, test:fast, test:cli:core)."
+      },
+      "commit": {
+        "hash": "33b0547928e046be1196b930c0c96c0f1de26c61",
+        "message": "🧰 TZ355H migrate task README docs to new template"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Close tracking task now that B3, E1, and F1 are integrated with tests and docs."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Tracking task closed after implementing B3 (atomic writes), E1 (require_network enforcement), and F1 (README migrate-doc), with plan+verification guards and full test runs."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T10:46:20.488Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\nTracking closeout: all ROADMAP items A1,B1,B2,B3,C1-C4,D1-D4,E1,F1 are implemented and verified; see task commits for details.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T10:46:11.073Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: Tracking closure: B3/E1/F1 integrated; approvals/plan/verification contract enforced; tests green (format:check, lint, test:fast, test:cli:core).\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602060821-T6304R",
+      "title": "A1: Contract for approvals + verification (docs + schema)",
+      "description": "Document and encode the contract for require_plan/require_verify/require_network and Verification semantics (free-form plan+results, no cmd execution).",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "docs",
+        "spec",
+        "contract"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "d1bc261f439697ecd9b4fabc514df9fd31478294",
+        "message": "✨ T6304R contract"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: update docs+schema to define approvals/verification contract and remove verify-as-command-exec from the public contract."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: updated spec schema and docs to define approvals/verification contract; no behavior changes yet (implemented in follow-up tasks)."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T08:24:55.218Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060825-KT3S1B",
+      "title": "B1: Centralize task README writes + atomic update API",
+      "description": "Introduce a single core API for reading/updating task README (frontmatter + body) and ensure all CLI writes go through atomic write paths (no direct writeFile for README).",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "io",
+        "safety"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "05886cf7ca33dc206dccbfea9cec3efeae40149c",
+        "message": "✨ KT3S1B core"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: add core task README atomic update helper and switch CLI writes (notably task scaffold) to use atomic write paths."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: added core updateTaskReadmeAtomic helper and switched task scaffold to atomic writes; core+agentplane fast tests pass."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T08:27:15.789Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060828-XNQ05M",
+      "title": "B2: Render task README YAML frontmatter diff-friendly",
+      "description": "Update core task README YAML renderer for deterministic key ordering and merge-friendly formatting (block string arrays, multi-line maps). Add idempotency tests.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "formatting",
+        "core"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "d0758cfce701373dff9592449bf3d988fbcbeb1a",
+        "message": "✨ XNQ05M core"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: rewrite core task README YAML renderer to be deterministic and diff-friendly (block arrays, multi-line maps) and update tests."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: task README YAML renderer now uses block string arrays + multi-line maps with deterministic key ordering; core+agentplane fast tests pass."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T08:30:50.306Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060831-K1EC6R",
+      "title": "C1+C2: Add Plan section + plan_approval state to task README",
+      "description": "Introduce free-form ## Plan section and machine-checkable frontmatter.plan_approval (pending/approved/rejected) for require_plan enforcement.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "approvals",
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "7fa27d9cd0732a70f9e94968032426af71d3d9b5",
+        "message": "✨ K1EC6R plan"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: extend task README template to include ## Plan and add plan_approval frontmatter; update types/schemas and keep formatting deterministic."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: config/doc templates now include ## Plan and tasks carry frontmatter.plan_approval; schemas updated and fast tests pass."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T08:38:39.612Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060840-PGWRP7",
+      "title": "C3: CLI commands for task plan lifecycle (set/approve/reject)",
+      "description": "Add agentplane task plan set/approve/reject commands to update ## Plan section and frontmatter.plan_approval atomically via backend writes.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "cli",
+        "approvals"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "8dacf2cba069bee0f4faf3ffb1a3bb7b7c491f17",
+        "message": "✨ PGWRP7 task plan"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: implement agentplane task plan set/approve/reject with validation and README updates (Plan section + plan_approval frontmatter)."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: added task plan set/approve/reject commands with validation and tests; lint + fast tests pass."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T08:48:28.268Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060850-P2VNYW",
+      "title": "C4: Enforce require_plan by blocking start/work/integrate until approved",
+      "description": "Implement ensurePlanApprovedIfRequired guard and apply it to start, work start, and integrate when agents.approvals.require_plan=true.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "approvals",
+        "guard",
+        "cli"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "aad4f84218a7ffeb6db879a568165cbeef2bebe6",
+        "message": "✨ P2VNYW guard"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: enforce require_plan via plan_approval.state guard in start/work start/integrate; update tests to require plan approval first."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: require_plan now blocks start/work start/integrate until plan_approval.state=approved; updated tests, lint and fast tests pass."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T08:53:35.490Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060854-JQSPBS",
+      "title": "D1: Define free-form Verification section template (Plan + Results)",
+      "description": "Update task README templates to scaffold ## Verification with suggested ### Plan / ### Results structure (no command parsing/execution).",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "verification",
+        "docs"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "d9fb219b2fd987bb403a0e1dd0bf69c6e128668f",
+        "message": "✨ JQSPBS docs"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: update task README templates to include free-form Verification section structure (### Plan/### Results + results markers)."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: scaffolded ## Verification with ### Plan/### Results + append-only results markers; fast tests pass."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T08:57:05.269Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060857-KN1ZRG",
+      "title": "D2: Add frontmatter.verification machine-state (pending|ok|needs_rework)",
+      "description": "Extend task model to include verification object in frontmatter and ensure it is initialized/normalized on write.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "verification",
+        "schema"
+      ],
+      "verify": [],
+      "commit": {
+        "hash": "f2e76da4467a0dc265a7a7bff19b92d5da9ea5b5",
+        "message": "✨ KN1ZRG tasks"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: add verification machine-state (frontmatter.verification) to task data model, normalize it on write, and update templates/schemas/tests."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: tasks now carry frontmatter.verification (pending|ok|needs_rework) and it is defaulted/preserved on write; lint + fast tests pass."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T09:00:20.944Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "dirty": false
+    },
+    {
+      "id": "202602060902-QW7TBG",
+      "title": "D3: Record verification results (append-only) instead of executing commands",
+      "description": "Replace agentplane verify with a record-only command and add task verify ok/rework to append results + update frontmatter.verification.state.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "roadmap",
+        "verification",
+        "cli",
+        "tasks"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "pending",
+        "updated_at": null,
+        "updated_by": null,
+        "note": null
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T09:37:29.308Z",
+        "updated_by": "CODER",
+        "note": "format:check + lint + test:fast; run-cli.core.lifecycle"
+      },
+      "commit": {
+        "hash": "1cf1da4855ed417dd30ca61b06290df9b67808a0",
+        "message": "✅ QW7TBG verify"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: rewrite agentplane verify to record verification results (ok/needs_rework) and add task verify ok/rework with append-only Results + frontmatter state."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: switched verify to record-only (ok/rework) + task verify, updated CLI help/guide, and ran format:check + lint + test:fast + run-cli.core.lifecycle."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T09:37:49.689Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T09:37:29.308Z — VERIFY — ok\n\nBy: CODER\n\nNote: format:check + lint + test:fast; run-cli.core.lifecycle\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602060939-6RY2B2",
+      "title": "B3: Atomic writes for config/meta/index and other critical files",
+      "description": "Replace non-atomic writes (config save, task index/meta) with atomicWriteFile; add tests.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [
+        "202602060825-KT3S1B"
+      ],
+      "tags": [
+        "roadmap",
+        "io",
+        "safety",
+        "config"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T09:51:40.301Z",
+        "updated_by": "USER",
+        "note": "Approved"
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T10:08:26.807Z",
+        "updated_by": "CODER",
+        "note": "B3: atomic writes; bun run format:check, lint, test:fast, test:cli:core"
+      },
+      "commit": {
+        "hash": "6918fa5dd08b220b6caf65a429567206aec1a1e9",
+        "message": "🛡️ 6RY2B2 atomic writes for config/meta/cache"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: audit critical file writers and switch remaining config/meta/index writes to atomic write helpers with tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Switched config/meta/cache writes to atomicWriteFile; updated init/recipes/pr/index; added atomic-write regression test and ran format:check, lint, test:fast, test:cli:core."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T10:08:34.887Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Audit non-atomic writes (config, index/meta, caches)\\n2) Replace with atomicWriteFile where safe\\n3) Add targeted unit tests for critical writers\\n4) Verify: format:check, lint, test:fast\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T10:08:26.807Z — VERIFY — ok\n\nBy: CODER\n\nNote: B3: atomic writes; bun run format:check, lint, test:fast, test:cli:core\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602060939-8MHP8F",
+      "title": "D4: Enforce require_verify by blocking finish/integrate without ok",
+      "description": "Add ensureVerificationSatisfiedIfRequired guard and wire into finish/integrate; update tests.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [
+        "202602060902-QW7TBG"
+      ],
+      "tags": [
+        "roadmap",
+        "approvals",
+        "verification",
+        "guard",
+        "cli"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T09:40:24.689Z",
+        "updated_by": "USER",
+        "note": "Approved"
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T09:50:28.179Z",
+        "updated_by": "CODER",
+        "note": "format:check + lint + test:fast + test:cli:core"
+      },
+      "commit": {
+        "hash": "ee100bfae1e54694b69b3ff94f7b37392d1feb39",
+        "message": "✅ 8MHP8F require_verify"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: implement require_verify enforcement (finish/integrate guards) and update tests to use record-only verification results."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: added require_verify guard to finish/integrate, updated CLI tests to record verification ok before closure, and ran format:check + lint + test:fast + test:cli:core."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T09:50:34.129Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Add ensureVerificationSatisfiedIfRequired guard (pending/needs_rework blocks)\\n2) Wire guard into finish (direct) + integrate (branch_pr)\\n3) Update workflow/run-cli tests to set verification ok before finish/integrate\\n4) Verify: format:check, lint, test:fast, test:cli:core\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T09:50:28.179Z — VERIFY — ok\n\nBy: CODER\n\nNote: format:check + lint + test:fast + test:cli:core\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602060939-NBAAT0",
+      "title": "E1: Enforce require_network across all network operations",
+      "description": "Add guard ensureNetworkApproved and apply to recipe install/update/refresh, upgrade, redmine sync, remote fetch.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [
+        "202602060821-T6304R"
+      ],
+      "tags": [
+        "roadmap",
+        "approvals",
+        "network",
+        "guard",
+        "cli"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T10:27:51.306Z",
+        "updated_by": "USER",
+        "note": "Approved (chat 2026-02-06)"
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T10:28:42.818Z",
+        "updated_by": "CODER",
+        "note": "E1: ensureNetworkApproved; wired to recipes/upgrade/sync; tests updated; bun run format:check, lint, test:fast, test:cli:core"
+      },
+      "commit": {
+        "hash": "56202849e418561f517cb60132355f077a945a73",
+        "message": "🛡️ NBAAT0 require_network"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Implement ensureNetworkApproved guard + wire into recipes/upgrade/sync with --yes enforcement and tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Added ensureNetworkApproved guard (prompt in TTY; require --yes otherwise) and applied it to recipes list-remote/install, upgrade remote fetch, and backend sync; updated tests and ran format:check, lint, test:fast, test:cli:core."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T10:29:09.585Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Add ensureNetworkApproved guard (interactive prompt; non-interactive requires --yes)\\n2) Apply to recipes list-remote/install, upgrade, backend sync\\n3) Add/adjust tests for --yes enforcement and preserve existing error mapping coverage\\n4) Verify: bun run format:check, lint, test:fast, test:cli:core\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T10:28:42.818Z — VERIFY — ok\n\nBy: CODER\n\nNote: E1: ensureNetworkApproved; wired to recipes/upgrade/sync; tests updated; bun run format:check, lint, test:fast, test:cli:core\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602060939-TZ355H",
+      "title": "F1: Migrate task README docs to new template (Plan + Verification + frontmatter)",
+      "description": "Add migrate-doc command to backfill Plan/Verification sections and plan_approval/verification objects without losing content; idempotent.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [
+        "202602060828-XNQ05M",
+        "202602060831-K1EC6R",
+        "202602060857-KN1ZRG"
+      ],
+      "tags": [
+        "roadmap",
+        "tasks",
+        "migration",
+        "docs"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T10:31:59.336Z",
+        "updated_by": "USER",
+        "note": "Approved (chat 2026-02-06)"
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T10:43:04.867Z",
+        "updated_by": "CODER",
+        "note": "F1: added task migrate-doc command and tests; bun run format:check, lint, test:fast, test:cli:core"
+      },
+      "commit": {
+        "hash": "33b0547928e046be1196b930c0c96c0f1de26c61",
+        "message": "🧰 TZ355H migrate task README docs to new template"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Implement doc migration command (migrate-doc) to add Plan/Verification sections and frontmatter defaults without content loss; add idempotence tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Implemented  to add missing Plan/Verification sections and pending plan_approval/verification frontmatter without losing content, with idempotence tests; updated CLI wiring/help and ran format:check, lint, test:fast, test:cli:core."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T10:43:13.577Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Add agentplane task migrate-doc command to migrate existing task READMEs\\n2) Migration: add missing ## Plan/## Verification sections without deleting content\\n3) Initialize missing frontmatter plan_approval + verification with pending state\\n4) Ensure YAML formatting uses current diff-friendly renderer\\n5) Tests: migration preserves content; second run is idempotent (0 diff)\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T10:43:04.867Z — VERIFY — ok\n\nBy: CODER\n\nNote: F1: added task migrate-doc command and tests; bun run format:check, lint, test:fast, test:cli:core\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061055-3YT8H7",
+      "title": "Release v0.1.8",
+      "description": "Release 0.1.8: add release notes, bump package versions, update CLI version expectations, tag and push.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "release",
+        "versioning",
+        "git"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T10:56:20.233Z",
+        "updated_by": "USER",
+        "note": "Approved: ship 0.1.8"
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T11:00:59.525Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": "Release 0.1.8 verified: format:check, lint, test:fast, test:cli:core all green; version bumps + release notes present; tag v0.1.8 created."
+      },
+      "commit": {
+        "hash": "b07ab88f8ac3af8fb50390ed7b1016a4b9c60d63",
+        "message": "🚀 3YT8H7 release"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Preparing v0.1.8 release: notes + version bumps + test updates + tag/push, with full lint/format/tests before tagging."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Released v0.1.8 with notes, package version bumps, and updated CLI version expectations. Tagged v0.1.8 after passing format:check, lint, test:fast, and test:cli:core."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T11:01:05.237Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Добавить release notes: docs/releases/v0.1.8.md (по TEMPLATE.md, только по-английски).\n2) Обновить версии до 0.1.8: packages/core/package.json, packages/agentplane/package.json (+ dependency @agentplaneorg/core).\n3) Обновить тест-ожидания, где проверяется строка версии CLI.\n4) Прогнать quality gates: bun run format:check, bun run lint, bun run test:fast, bun run test:cli:core.\n5) Сделать release commit через agentplane guard commit с allowlist.\n6) Поставить git tag v0.1.8 на release commit.\n7) Записать verify (ok) и finish с --commit на release commit; сделать close commit (README).\n8) Запушить main и tag v0.1.8 в origin.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T11:00:59.525Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: Release 0.1.8 verified: format:check, lint, test:fast, test:cli:core all green; version bumps + release notes present; tag v0.1.8 created.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061103-48CPAH",
+      "title": "Fix full test suite for approvals enforcement",
+      "description": "Update CLI smoke and recipes tests to account for require_plan and require_network enforcement (exit code 3 without approval/--yes).",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "testing",
+        "workflow",
+        "approvals"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T11:03:22.085Z",
+        "updated_by": "USER",
+        "note": "Approved: fix pre-push tests"
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T11:06:27.258Z",
+        "updated_by": "CODER",
+        "note": "Pre-push gate fixed: bun run test:full passes; smoke test now approves plan and records verify before finish; remote recipes list-remote test uses --yes under require_network."
+      },
+      "commit": {
+        "hash": "460da49e111829c12cb69f03c88e5e55808b9993",
+        "message": "🧪 48CPAH fix"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Fix failing full test suite after approvals enforcement (require_plan / require_network)."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Updated CLI smoke and recipes tests to satisfy require_plan and require_network enforcement. Pre-push full suite (bun run test:full) is green; lint and format checks pass."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T11:06:49.204Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Исправить tests, которые ожидают код 0 там, где теперь требуется plan approval / network approval.\n2) Прогнать bun run test:full локально (это то же, что гоняет pre-push).\n3) Закоммитить через agentplane commit с allowlist.\n4) verify(ok) + finish + close commit.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T11:06:27.258Z — VERIFY — ok\n\nBy: CODER\n\nNote: Pre-push gate fixed: bun run test:full passes; smoke test now approves plan and records verify before finish; remote recipes list-remote test uses --yes under require_network.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061731-VBCGFW",
+      "title": "FIX.md: P0/P1 guardrails + hooks alignment",
+      "description": "Implement P0/P1 fixes from FIX.md: guard commit env bug, allowlist staging correctness, allow prefix normalization, robust git path parsing, commit subject policy hardening, hook/CLI drift fixes, branch_pr base pin enforcement, protected paths policy.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "workflow",
+        "git",
+        "cli",
+        "hooks",
+        "tasks"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T17:32:19.880Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": "Approved plan: implement FIX.md P0/P1 via atomic tasks and per-task verify/commit/finish."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T19:11:17.543Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": "All FIX.md P0/P1 atomic tasks completed (P0.1..P0.4, P1.1..P1.4). Verified via bun run test:core, bun run build, bun run test:cli:core, bun run lint; each subtask has verify ok recorded."
+      },
+      "commit": {
+        "hash": "6ca05404f567702830b30798a31c6543c65a9f24",
+        "message": "✨ NG820E docs"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: completed FIX.md P0/P1 guardrails and hooks alignment via atomic tasks; core/CLI tests and lint pass; protected paths + base pinning now enforced. See Notes/Verification for commands and key commits."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T19:11:22.958Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "id_source": "generated",
+      "doc": "## Summary\n\nTracking task for implementing FIX.md P0/P1 guardrails and hooks alignment in AgentPlane CLI.\n\n## Scope\n\nImplement P0/P1 items from FIX.md in code and hooks; add/adjust tests as needed; keep changes minimal and deterministic.\n\n## Plan\n\n1) Create atomic tasks for each P0/P1 fix.\\n2) For each task: set plan, approve, start, implement, run tests, record verify ok, commit via guard with tight allowlist, finish.\\n3) Ensure hooks and CLI share the same commit subject validation.\n\n## Risks\n\nRisk: hooks/CLI drift causes confusing failures; robust git path parsing must preserve semantics for renames/deletes; protected paths policy can block legit changes unless override flags are explicit.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T19:11:17.543Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: All FIX.md P0/P1 atomic tasks completed (P0.1..P0.4, P1.1..P1.4). Verified via bun run test:core, bun run build, bun run test:cli:core, bun run lint; each subtask has verify ok recorded.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the per-task commits created for P0/P1 tasks; validate hooks still run and commits still gated; if protected-paths blocks workflow, disable via config flag introduced by the task (if any) or revert that specific task.\n\n## Verify Steps\n\n- pnpm test (or project test runner)\\n- Targeted unit tests for guard/hook logic\\n- Manual smoke: allowlist with ./src, delete, rename, commit-from-comment\n\n## Notes\n\nCompleted: P0.1 KTZK7K, P0.2 VJNCQP, P0.3 MTEEWA, P0.4 9Y4CR4, P1.1 F17C02, P1.2 RA99FE, P1.3 QQVMHA, P1.4 NG820E. Key commits: QQVMHA=29604e30fbcd, NG820E=a6b1850439ea.",
+      "dirty": false
+    },
+    {
+      "id": "202602061732-9Y4CR4",
+      "title": "P0.4: Robust git changed paths parsing (-z)",
+      "description": "Replace porcelain v1 parsing with -z based path enumeration (diff --name-only -z / --cached) to handle spaces/quotes/renames safely.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "cli",
+        "guard"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T18:16:39.708Z",
+        "updated_by": "CODER",
+        "note": "Approved: move to -z based git path parsing and add regression test."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T18:19:21.507Z",
+        "updated_by": "TESTER",
+        "note": "Updated core/agentplane git path listing to -z based parsing; added CLI regression for spaced file paths; bun run test:core and bun run test:cli:core passed."
+      },
+      "commit": {
+        "hash": "1ce1eabc7bdb630f1020a4893de9995940ed4a18",
+        "message": "✨ 9Y4CR4 robust git path parsing via -z"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Replace porcelain parsing with -z based path enumeration and add regression for spaced paths."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Replaced porcelain parsing with -z/NUL-based git path listing (core getStagedFiles/getUnstagedFiles, guard gitStatusChangedPaths) to handle spaces/quotes/renames safely; added CLI regression test for a spaced path; bun run test:core and bun run test:cli:core passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T18:26:08.245Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nReplace fragile git porcelain parsing with -z/NUL-based path listing for changed/staged/unstaged/untracked files.\n\n## Scope\n\npackages/core/src/git/git-utils.ts; packages/agentplane/src/commands/guard/index.ts; add CLI regression test for paths with spaces.\n\n## Plan\n\n1) Update core getStagedFiles/getUnstagedFiles to use -z outputs.\\n2) Replace guard gitStatusChangedPaths with -z based enumeration (diff + ls-files).\\n3) Add CLI regression test ensuring commit-from-comment stages a path with spaces.\\n4) Run bun run test:cli:core and bun run test:core.\n\n## Risks\n\nRisk: -z parsing changes edge cases (renames, submodules); keep semantics close to previous behavior (report new path for renames).\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T18:19:21.507Z — VERIFY — ok\n\nBy: TESTER\n\nNote: Updated core/agentplane git path listing to -z based parsing; added CLI regression for spaced file paths; bun run test:core and bun run test:cli:core passed.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the commit(s) for this task.\n\n## Verify Steps\n\n- bun run test:core\\n- bun run test:cli:core",
+      "dirty": false
+    },
+    {
+      "id": "202602061732-F17C02",
+      "title": "P1.1: Harden commit subject policy (case-insensitive + anti-generic)",
+      "description": "Improve validateCommitSubject: task ref match should be case-insensitive; anti-generic should ignore emoji and task ref before evaluating remaining words.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "cli"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T18:29:34.212Z",
+        "updated_by": "CODER",
+        "note": "Approved: improve subject validator and update tests."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T18:31:33.580Z",
+        "updated_by": "TESTER",
+        "note": "Updated validateCommitSubject: case-insensitive task ref matching and anti-generic check after stripping task ref; bun run test:core passed."
+      },
+      "commit": {
+        "hash": "7d308196b67d18e207943d4c876533699df598a1",
+        "message": "✨ F17C02 harden commit subject policy"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Harden commit subject policy (case-insensitive task ref, anti-generic after stripping task ref)."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Commit subject policy now matches task refs case-insensitively and rejects generic subjects after stripping task ref; updated unit tests; bun run test:core passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T18:37:19.989Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nHarden commit subject policy: case-insensitive task ref matching and anti-generic check after stripping task ref.\n\n## Scope\n\npackages/core/src/commit/commit-policy.ts + tests.\n\n## Plan\n\n1) Make task id/suffix detection case-insensitive.\\n2) Update validateCommitSubject to evaluate genericness after stripping task ref (and emoji/punctuation).\\n3) Update unit tests.\\n4) Run bun run test:core.\n\n## Risks\n\nRisk: Tightening policy may reject previously-accepted short subjects; adjust tests to reflect intended quality gate.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T18:31:33.580Z — VERIFY — ok\n\nBy: TESTER\n\nNote: Updated validateCommitSubject: case-insensitive task ref matching and anti-generic check after stripping task ref; bun run test:core passed.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the commit(s) for this task.\n\n## Verify Steps\n\n- bun run test:core",
+      "dirty": false
+    },
+    {
+      "id": "202602061732-KTZK7K",
+      "title": "P0.1: Fix commitFromComment allow-base env",
+      "description": "Fix guard/commitFromComment env wiring: AGENTPLANE_ALLOW_BASE must not mirror allowTasks; default to 0 unless explicitly allowed.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "cli",
+        "guard"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T17:35:11.882Z",
+        "updated_by": "CODER",
+        "note": "Plan approved: fix env bug + add regression test for base restriction bypass."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T17:37:21.293Z",
+        "updated_by": "TESTER",
+        "note": "bun run test:agentplane passed; added unit test ensuring buildGitCommitEnv does not enable allow-base implicitly."
+      },
+      "commit": {
+        "hash": "86eeef4f203705ee806f84c21fdb9cc8c0db4802",
+        "message": "✨ KTZK7K fix allow-base env in comment commits"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Fix commitFromComment env wiring so allow-tasks cannot enable allow-base; add regression coverage in run-cli lifecycle tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Fixed commitFromComment to never set AGENTPLANE_ALLOW_BASE implicitly; introduced buildGitCommitEnv helper and a unit test asserting allow-base stays disabled unless explicitly requested."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T17:47:50.076Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nFix env var wiring in guard commit-from-comment so base-branch bypass cannot be enabled via --allow-tasks.\n\n## Scope\n\npackages/agentplane/src/commands/guard/index.ts: commitFromComment env for git commit.\n\n## Plan\n\n1) Update commitFromComment to set AGENTPLANE_ALLOW_BASE=0 by default.\\n2) Add/adjust CLI test to ensure commit-from-comment cannot bypass branch_pr base restriction.\\n3) Run relevant vitest suite.\n\n## Risks\n\nRisk: Changing env behavior could break expected workflows that relied on the bug; test will codify intended restriction.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T17:37:21.293Z — VERIFY — ok\n\nBy: TESTER\n\nNote: bun run test:agentplane passed; added unit test ensuring buildGitCommitEnv does not enable allow-base implicitly.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the commit for this task; re-run bun run test:cli:core.\n\n## Verify Steps\n\n- bun run test:cli:core\\n- bun run test:agentplane",
+      "dirty": false
+    },
+    {
+      "id": "202602061732-MTEEWA",
+      "title": "P0.3: Unify allow prefix normalization",
+      "description": "Make allow prefix normalization consistent across staging and guard checks (trim ./, trailing slashes, backslashes, double slashes).",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "cli",
+        "guard"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T17:57:58.678Z",
+        "updated_by": "CODER",
+        "note": "Approved: unify allow prefix normalization and add ./ regression tests."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T18:01:45.799Z",
+        "updated_by": "TESTER",
+        "note": "bun run test:cli:core passed; added regressions for ./ allow prefixes in commit wrapper and comment-driven start."
+      },
+      "commit": {
+        "hash": "660b2c72550d629e98c8f20f3d0c2150e1306c7b",
+        "message": "✨ MTEEWA normalize allow prefixes consistently"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Unify allow prefix normalization (./, trailing slashes, backslashes) and add regression tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Unified allow prefix normalization so ./ prefixes, trailing slashes, and backslashes behave consistently across staging and guard checks; added CLI regressions for commit wrapper and comment-driven start; bun run test:cli:core passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T18:10:39.798Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nUnify allow prefix normalization across staging and guard checks so ./src and similar inputs behave consistently.\n\n## Scope\n\npackages/agentplane/src/commands/guard/index.ts; add CLI regression tests for ./ prefixes.\n\n## Plan\n\n1) Replace ad-hoc allow prefix trimming with a single normalizeAllowPrefix implementation.\\n2) Use it in guardCommitCheck and stageAllowlist.\\n3) Add CLI regression test for comment-driven commit with --commit-allow ./<path>.\\n4) Run bun run test:cli:core.\n\n## Risks\n\nRisk: Changing normalization may alter edge-case behavior; ensure '.' stays special-cased and empty prefixes are rejected.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T18:01:45.799Z — VERIFY — ok\n\nBy: TESTER\n\nNote: bun run test:cli:core passed; added regressions for ./ allow prefixes in commit wrapper and comment-driven start.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the commit(s) for this task.\n\n## Verify Steps\n\n- bun run test:cli:core\\n- bun run test:agentplane",
+      "dirty": false
+    },
+    {
+      "id": "202602061732-NG820E",
+      "title": "P1.4: Protected paths policy in guard commit",
+      "description": "Introduce protected paths deny policy for critical guardrail/config files, with explicit override flags to allow intentional edits.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "guard"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T19:01:29.239Z",
+        "updated_by": "USER",
+        "note": "OK"
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T19:09:23.464Z",
+        "updated_by": "CODER",
+        "note": "Implemented protected paths policy for guard commit and hooks pre-commit with explicit overrides. Ran bun run build, bun run test:cli:core, bun run lint."
+      },
+      "commit": {
+        "hash": "a6b1850439ea8587554dd0e41d6c30ba582a29d1",
+        "message": "✨ NG820E protect policy/config/ci paths"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: implement protected paths policy in guard commit and hooks pre-commit; add explicit override flags/env and regression tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: protected paths policy enforced in guard commit and hooks pre-commit with explicit override flags/env. Verified via bun run build, bun run test:cli:core, bun run lint. Commit=a6b1850439ea."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T19:10:13.075Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nImplements FIX.md item for: 202602061732-NG820E\n\n## Scope\n\n\n## Plan\n\n1. Add protected-paths classification shared between guard commit and hooks pre-commit.\n2. Extend CLI commit/guard commit parsing with override flags: --allow-policy, --allow-config, --allow-hooks, --allow-ci.\n3. Enforce protected paths in guardCommitCheck (fail unless override present), and export env vars for hooks.\n4. Enforce the same in hooks run pre-commit using AGENTPLANE_ALLOW_* env overrides.\n5. Add unit/CLI tests for guard commit + commit wrapper + hooks pre-commit.\n6. Run bun run test:cli:core and bun run lint; record agentplane verify ok; commit and finish.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T19:09:23.464Z — VERIFY — ok\n\nBy: CODER\n\nNote: Implemented protected paths policy for guard commit and hooks pre-commit with explicit overrides. Ran bun run build, bun run test:cli:core, bun run lint.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061732-QQVMHA",
+      "title": "P1.3: branch_pr base branch must be pinned",
+      "description": "In branch_pr mode, require pinned base branch (or explicit default) and avoid silent fallback to current branch.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "branching"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T18:48:27.725Z",
+        "updated_by": "CODER",
+        "note": "Approved: require pinned base in branch_pr (with main/master fallback)."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T18:54:13.138Z",
+        "updated_by": "CODER",
+        "note": "P1.3: branch_pr base resolution no longer falls back to current branch when unpinned; prefers main/master if present. Ran bun run test:core, bun run build, bun run test:cli:core."
+      },
+      "commit": {
+        "hash": "29604e30fbcd5879610722ff9532dddbded51232",
+        "message": "✨ QQVMHA branch_pr base must be pinned"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Remove silent fallback of branch_pr base branch to current; prefer main/master or require pin."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: branch_pr base resolution now requires pinning; unpinned resolves to main/master if they exist else null. Verified via bun run test:core, bun run build, bun run test:cli:core. Commit=29604e30fbcd."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T18:57:54.595Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nIn branch_pr mode, resolveBaseBranch should not silently fall back to current branch when base is unpinned; prefer main/master or return null to force pinning.\n\n## Scope\n\npackages/core/src/git/base-branch.ts + tests; adjust agentplane hook behavior if needed.\n\n## Plan\n\n1) Update resolveBaseBranch: when mode=branch_pr and unpinned, prefer main/master if present, else return null.\\n2) Update core base-branch tests.\\n3) Run bun run test:core and bun run test:cli:core.\n\n## Risks\n\nRisk: Some flows relied on implicit current-branch base; this change will surface E_USAGE and require explicit pinning.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T18:54:13.138Z — VERIFY — ok\n\nBy: CODER\n\nNote: P1.3: branch_pr base resolution no longer falls back to current branch when unpinned; prefers main/master if present. Ran bun run test:core, bun run build, bun run test:cli:core.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the commit(s) for this task.\n\n## Verify Steps\n\n- bun run test:core\\n- bun run test:cli:core",
+      "dirty": false
+    },
+    {
+      "id": "202602061732-RA99FE",
+      "title": "P1.2: commit-msg hook must share CLI subject validator",
+      "description": "Update hooks commit-msg to load config and call the same commit subject validator used by CLI (incl. anti-generic).",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [
+        "202602061732-F17C02"
+      ],
+      "tags": [
+        "git",
+        "hooks",
+        "workflow"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T18:38:15.451Z",
+        "updated_by": "CODER",
+        "note": "Approved: commit-msg hook uses validateCommitSubject."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T18:45:06.404Z",
+        "updated_by": "TESTER",
+        "note": "commit-msg hook now uses core validateCommitSubject (including anti-generic); added hook tests for generic rejection; bun run build and bun run test:cli:core passed."
+      },
+      "commit": {
+        "hash": "d606210f55eea163a1532c3e0fb5a169c118336c",
+        "message": "✨ RA99FE align commit-msg hook with subject policy"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Update commit-msg hook to share core validateCommitSubject logic (including anti-generic)."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: commit-msg hook now loads config and uses validateCommitSubject (incl. anti-generic); when task env is missing it selects a matching task by suffix before validating; updated hook tests and workflow test fixture; bun run build, bun run test:cli:core, and bun run test:fast passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T18:47:34.536Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nAlign commit-msg hook with CLI commit subject validator (incl. anti-generic) by using core validateCommitSubject.\n\n## Scope\n\npackages/agentplane/src/commands/hooks/index.ts + hook CLI tests.\n\n## Plan\n\n1) In hooks run commit-msg, load config and call validateCommitSubject.\\n2) When AGENTPLANE_TASK_ID is unset, select a matching task based on suffix occurrence before validating.\\n3) Update hook tests to cover anti-generic rejection (e.g., '✨ ABCDEF update').\\n4) Run bun run test:cli:core.\n\n## Risks\n\nRisk: Hook becomes stricter and may reject previously accepted messages; tests will codify the intended gate.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T18:45:06.404Z — VERIFY — ok\n\nBy: TESTER\n\nNote: commit-msg hook now uses core validateCommitSubject (including anti-generic); added hook tests for generic rejection; bun run build and bun run test:cli:core passed.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the commit(s) for this task.\n\n## Verify Steps\n\n- bun run test:cli:core",
+      "dirty": false
+    },
+    {
+      "id": "202602061732-VJNCQP",
+      "title": "P0.2: stageAllowlist must stage deletes/renames",
+      "description": "Update stageAllowlist to use git add -A -- <paths...> so deletes/renames are staged correctly under allowlist.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "cli",
+        "guard"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T17:50:10.054Z",
+        "updated_by": "CODER",
+        "note": "Approved: stageAllowlist uses git add -A; add deletion regression test."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T17:51:37.099Z",
+        "updated_by": "TESTER",
+        "note": "bun run test:cli:core passed; added lifecycle regression test covering deletion staging under allowlist."
+      },
+      "commit": {
+        "hash": "45d27fa683ac84352d13056e44893c6407531f79",
+        "message": "✨ VJNCQP stage allowlist with git add -A"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Switch stageAllowlist to git add -A and add regression test for deleted file staging."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: stageAllowlist now uses git add -A -- <paths...> for deterministic staging of deletes/renames; added CLI lifecycle regression test for deletion staging; bun run test:cli:core passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T17:53:21.320Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nFix stageAllowlist to stage deletions/renames reliably by using git add -A -- <paths...>.\n\n## Scope\n\npackages/agentplane/src/commands/guard/index.ts: stageAllowlist.\n\n## Plan\n\n1) Switch stageAllowlist to git add -A.\\n2) Add CLI lifecycle regression test covering deleted file staging under allowlist.\\n3) Run bun run test:cli:core.\n\n## Risks\n\nRisk: -A stages all changes under each allowed pathspec; expected and desired for prefix allowlists.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T17:51:37.099Z — VERIFY — ok\n\nBy: TESTER\n\nNote: bun run test:cli:core passed; added lifecycle regression test covering deletion staging under allowlist.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the commit for this task.\n\n## Verify Steps\n\n- bun run test:cli:core\\n- bun run test:agentplane",
+      "dirty": false
+    },
+    {
+      "id": "202602061739-G8712J",
+      "title": "Repo: Prettier format FIX.md to unblock hooks",
+      "description": "Pre-commit runs bun run format:check across repo; FIX.md currently fails Prettier check and blocks all commits. Format FIX.md without changing meaning.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "DOCS",
+      "depends_on": [],
+      "tags": [
+        "docs",
+        "workflow"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T17:40:01.260Z",
+        "updated_by": "DOCS",
+        "note": "Approved: format FIX.md only to satisfy pre-commit."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T17:40:47.537Z",
+        "updated_by": "TESTER",
+        "note": "bunx prettier FIX.md --write; bun run format:check passes."
+      },
+      "commit": {
+        "hash": "ba5b1d129f36731c96cf13b6a6ccf841a95780e1",
+        "message": "✨ G8712J record verification"
+      },
+      "comments": [
+        {
+          "author": "DOCS",
+          "body": "Start: Format FIX.md with Prettier so format:check hook passes."
+        },
+        {
+          "author": "DOCS",
+          "body": "Verified: Formatted FIX.md with Prettier to satisfy lefthook pre-commit format:check; confirmed bun run format:check passes; committed verification record."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T17:44:16.527Z",
+      "doc_updated_by": "DOCS",
+      "id_source": "generated",
+      "doc": "## Summary\n\nFormat FIX.md with Prettier so lefthook pre-commit (format:check) stops blocking commits.\n\n## Scope\n\nOnly FIX.md formatting; no semantic changes.\n\n## Plan\n\n1) Run Prettier on FIX.md only.\\n2) Ensure bun run format:check passes.\\n3) Commit with allowlist=FIX.md.\n\n## Risks\n\nRisk: Prettier may reflow text; keep meaning intact.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T17:40:47.537Z — VERIFY — ok\n\nBy: TESTER\n\nNote: bunx prettier FIX.md --write; bun run format:check passes.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nRevert the commit for this task.\n\n## Verify Steps\n\n- bun run format:check",
+      "dirty": false
+    },
+    {
+      "id": "202602061915-D3QVVY",
+      "title": "Tests: покрыть CommandContext и CommitPolicy",
+      "description": "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-FY8TYM,202602061915-DZBAW0,202602061915-DH1CKG,202602061915-FXTNQ0,202602061915-KNHP1Y) Добавить/обновить unit/cli тесты для нового контекста, allowlist matching, commit-msg/guard policy, commit message generation.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "TESTER",
+      "depends_on": [],
+      "tags": [
+        "testing",
+        "git",
+        "cli"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T20:31:56.265Z",
+        "updated_by": "USER",
+        "note": "Approved by user in chat on 2026-02-06; proceed with test additions."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T20:34:00.707Z",
+        "updated_by": "TESTER",
+        "note": "Verified locally on 2026-02-06: added CommandContext tests and commit-from-comment body assertions; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli pass."
+      },
+      "commit": {
+        "hash": "7cc58952be547760015df1cda806e66d8827a04b",
+        "message": "✨ D3QVVY test: cover CommandContext and commit bodies"
+      },
+      "comments": [
+        {
+          "author": "TESTER",
+          "body": "Start: Add targeted unit/integration tests for CommandContext and commit policy/commit body generation to prevent regressions after FIX2 refactors."
+        },
+        {
+          "author": "TESTER",
+          "body": "Verified: Added unit tests for CommandContext loading and CLI assertions for structured commit bodies; ran bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T20:34:41.178Z",
+      "doc_updated_by": "TESTER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Add unit tests for CommandContext helpers (loadCommandContext/loadTaskFromContext) using a temp repo with local backend config.\n2) Add coverage for comment-driven commit body generation (Task/Agent/Status/Comment) and subject validation edge cases.\n3) Run bun run lint, bun run test:core, bun run test:agentplane, bun run test:cli.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T20:34:00.707Z — VERIFY — ok\n\nBy: TESTER\n\nNote: Verified locally on 2026-02-06: added CommandContext tests and commit-from-comment body assertions; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli pass.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061915-DH1CKG",
+      "title": "P2: Новый стандарт commit message (emoji map + body), без совместимости",
+      "description": "(Tracking=202602061915-XCPF92; depends_on=202602061915-DZBAW0) Реализовать action/status emoji map, subject template, автогенерацию body для comment-driven коммитов; обновить commit-msg hook под новый формат без обратной совместимости; обновить docs (AGENTS.md).",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "hooks",
+        "docs"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T19:41:25.123Z",
+        "updated_by": "USER",
+        "note": "Approved by user on 2026-02-06: implement new commit message standard; no backward compatibility required."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T19:58:30.972Z",
+        "updated_by": "TESTER",
+        "note": "Verified locally on 2026-02-06: bun run test:core and bun run test:cli both pass (vitest)."
+      },
+      "commit": {
+        "hash": "b7f74c7c3f9e97e0dccef6a8a9f9547a140442af",
+        "message": "✨ DH1CKG commit"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Implement new commit message standard (<emoji> <suffix> <scope>: <summary> + structured body) across core validator, guard/commitFromComment, hooks, tests, and docs; no backward-compat."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Enforced <emoji> <suffix> <scope>: <summary> subject standard (no backward-compat), generated structured bodies for comment-driven commits, updated hooks/docs/tests; ran bun run test:core and bun run test:cli."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T20:03:11.697Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\nEnforced a new commit subject standard (<emoji> <suffix> <scope>: <summary>) with no backward compatibility; comment-driven commits now generate a structured body (Task/Agent/Status/Comment); hooks/guard/docs/tests updated accordingly.\n\n## Scope\n\n- core: enforce commit subject template in validateCommitSubject (no backward compat)\n- agentplane: generate subject+body for comment-driven commits (start/block/finish/set-status)\n- hooks: commit-msg uses core validator and requires AGENTPLANE_TASK_ID\n- docs/tests: update AGENTS.md, command guide, and CLI tests to match the new template\n\n## Plan\n\n1. Update core CommitPolicy to enforce `<emoji> <suffix> <scope>: <summary>` (and keep anti-generic checks).\n2. Update comment-driven commit generation to produce the new subject format and an informative body.\n3. Update commit-msg hook to validate via core CommitPolicy and require `AGENTPLANE_TASK_ID`.\n4. Update docs and examples (AGENTS.md, assets) to reflect the new standard and emoji map.\n5. Update/repair affected tests and run `bun run test:core` + `bun run test:cli`.\n\n## Risks\n\n- Breaking change: commits not created via agentplane may fail commit-msg due to missing `AGENTPLANE_TASK_ID`.\n- Any downstream tooling that assumed the old `<emoji> <suffix> <summary>` template will need updates.\n- Strict subject validation may reject “generic” summaries more often; keep the rules aligned with docs/examples.\n\n## Verification\n\nLocal verification: bun run test:core, bun run test:cli (see verify record below).\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T19:58:30.972Z — VERIFY — ok\n\nBy: TESTER\n\nNote: Verified locally on 2026-02-06: bun run test:core and bun run test:cli both pass (vitest).\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\n1. Revert the implementation commit for this task.\n2. Restore the previous commit subject validator in core (accepting `<emoji> <suffix> <summary>`).\n3. Relax commit-msg hook to not require `AGENTPLANE_TASK_ID` (or accept a fallback path).\n4. Re-run `bun run test:core` + `bun run test:cli`.",
+      "dirty": false
+    },
+    {
+      "id": "202602061915-DZBAW0",
+      "title": "P1: Единый CommitPolicy для guard и hooks",
+      "description": "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Унифицировать policy: protected paths из config, allowlist matching через path.relative, commit-msg и guard используют core validateCommitSubject; hooks не должны дергать backend/network.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "git",
+        "workflow",
+        "cli",
+        "hooks"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T19:31:09.086Z",
+        "updated_by": "USER",
+        "note": "Approved by user on 2026-02-06: unify guard/hooks policy; can drop backward-compat and avoid backend/network in hooks."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T19:37:41.003Z",
+        "updated_by": "TESTER",
+        "note": "bun run test:agentplane passed."
+      },
+      "commit": {
+        "hash": "55aa964f36b865424c44e860ad31671faf618524",
+        "message": "✨ DZBAW0 git"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Unify guard/hooks commit policies: protected paths from config, robust allowlist matching, branch_pr base restrictions in guard, and commit-msg hook without backend/network."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Guard and hooks share consistent commit policy behavior (tasks_path from config, robust allowlist matching, branch_pr base restrictions); commit-msg hook requires AGENTPLANE_TASK_ID; bun run test:agentplane passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T19:39:09.220Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Extract shared commit/allowlist path policy helpers.\\n2) Use config.paths.tasks_path in guard, and switch allowlist matching to path.relative-based logic.\\n3) Add branch_pr base-branch restrictions to guard commit (align with pre-commit hook).\\n4) Make commit-msg hook avoid backend/network (require AGENTPLANE_TASK_ID if needed).\\n5) Update tests and run bun run test:agentplane.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T19:37:41.003Z — VERIFY — ok\n\nBy: TESTER\n\nNote: bun run test:agentplane passed.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061915-FXTNQ0",
+      "title": "P0: Дедуп утилит в recipes.ts",
+      "description": "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Убрать локальные dedupeStrings/resolvePathFallback/isRecord из recipes.ts, вынести/использовать shared/core утилиты.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "refactor",
+        "cli"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T20:09:20.440Z",
+        "updated_by": "USER",
+        "note": "Approved by user in chat on 2026-02-06; proceed without backward compatibility."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T20:12:47.220Z",
+        "updated_by": "TESTER",
+        "note": "Verified locally on 2026-02-06: dedupe refactor in recipes.ts; bun run lint and bun run test:cli pass."
+      },
+      "commit": {
+        "hash": "7a2d76c247220cbb6bc94d3e00330d8a8ba69f68",
+        "message": "✨ FXTNQ0 refactor"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Deduplicate recipes.ts helper functions by importing shared/core utilities; keep behavior stable and cover with lint+CLI tests."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Removed duplicate helpers from recipes.ts by reusing shared utility modules (isRecord/dedupeStrings/resolvePathFallback) and kept behavior stable; ran bun run lint and bun run test:cli."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T20:13:38.747Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Remove local copies of dedupeStrings/resolvePathFallback/isRecord from recipes.ts.\n2) Import canonical helpers from shared/core modules.\n3) Ensure behavior and error messages remain consistent.\n4) Run bun run lint + bun run test:cli.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T20:12:47.220Z — VERIFY — ok\n\nBy: TESTER\n\nNote: Verified locally on 2026-02-06: dedupe refactor in recipes.ts; bun run lint and bun run test:cli pass.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061915-FY8TYM",
+      "title": "P0: start/block/finish без повторной загрузки backend",
+      "description": "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Перевести команды start/block/finish на CommandContext: один backend на команду; в finish не вызывать loadBackendTask в цикле.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "cli",
+        "tasks"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T19:25:18.302Z",
+        "updated_by": "USER",
+        "note": "Approved by user on 2026-02-06: refactor start/block/finish to reuse context; no backward-compat required."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T19:26:48.681Z",
+        "updated_by": "TESTER",
+        "note": "bun run test:agentplane passed."
+      },
+      "commit": {
+        "hash": "731128a96708d986319153d6609f37e16c900827",
+        "message": "✨ FY8TYM task"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Refactor start/block/finish to load CommandContext once and reuse backend/config/resolved; remove per-task backend reloads in finish."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: start/block/finish now reuse CommandContext (loadTaskBackend once per command) and load tasks via ctx; bun run test:agentplane passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T19:29:06.811Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Switch cmdStart/cmdBlock/cmdFinish to call loadCommandContext once per invocation.\\n2) Load tasks via loadTaskFromContext instead of loadBackendTask (no repeated loadTaskBackend).\\n3) In finish: remove per-task loadBackendTask call inside loop; reuse ctx.backend.\\n4) Run bun run test:agentplane.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T19:26:48.681Z — VERIFY — ok\n\nBy: TESTER\n\nNote: bun run test:agentplane passed.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061915-KNHP1Y",
+      "title": "P3: Распил run-cli.ts / recipes.ts / task-backend.ts",
+      "description": "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Разнести монолиты по доменным модулям, убрать локальные утилиты, упростить тестирование; без сохранения старых внутренних API, если не требуется.",
+      "status": "DONE",
+      "priority": "med",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "refactor",
+        "cli"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T20:16:13.129Z",
+        "updated_by": "USER",
+        "note": "Approved by user in chat on 2026-02-06; proceed with refactors, no backward compatibility required."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T20:27:58.516Z",
+        "updated_by": "TESTER",
+        "note": "Verified locally on 2026-02-06: scenario command extracted to its own module, git log hash/subject parsing made colon-safe; bun run lint, bun run test:agentplane, and bun run test:cli pass."
+      },
+      "commit": {
+        "hash": "44068eea70533c28c83b8aa859dde0fc86f28b98",
+        "message": "✨ KNHP1Y refactor"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Split monolithic modules and centralize small helpers (recipes/scenario split, git log parsing, backend guard utils) to reduce duplication and improve testability."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Split scenario command implementation into its own module, extracted colon-safe git log hash/subject parsing, and reduced duplicated helper usage in task-backend; ran bun run lint, bun run test:agentplane, and bun run test:cli."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T20:28:45.820Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Split commands/recipes.ts into focused modules (recipes vs scenario) while keeping run-cli wiring intact.\n2) Extract colon-safe git log parsing into a shared helper and update all %H:%s call sites.\n3) Remove a few duplicated micro-utils from backends/task-backend.ts by importing shared helpers (start with isRecord).\n4) Run bun run lint + bun run test:cli + bun run test:agentplane.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T20:27:58.516Z — VERIFY — ok\n\nBy: TESTER\n\nNote: Verified locally on 2026-02-06: scenario command extracted to its own module, git log hash/subject parsing made colon-safe; bun run lint, bun run test:agentplane, and bun run test:cli pass.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061915-RNTNEP",
+      "title": "P0: CommandContext для CLI команд",
+      "description": "(Tracking=202602061915-XCPF92) Ввести единый Execution/CommandContext (resolved+config+backend) на вызов команды; дать API для загрузки задач из контекста; убрать повторные resolveProject/loadConfig/loadTaskBackend.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "CODER",
+      "depends_on": [],
+      "tags": [
+        "cli",
+        "refactor",
+        "tasks"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T19:17:32.421Z",
+        "updated_by": "USER",
+        "note": "Approved by user on 2026-02-06: proceed with FIX2.md implementation; no backward-compat required."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T19:19:26.497Z",
+        "updated_by": "TESTER",
+        "note": "bun run test:agentplane (vitest) passed."
+      },
+      "commit": {
+        "hash": "239769bb4950faf2599844c4e33ee5fa9c19204f",
+        "message": "✨ RNTNEP commands"
+      },
+      "comments": [
+        {
+          "author": "CODER",
+          "body": "Start: Implement command-level context (resolved+config+backend) to remove repeated resolveProject/loadConfig/loadTaskBackend; add ctx-aware task loader and migrate call sites."
+        },
+        {
+          "author": "CODER",
+          "body": "Verified: Added CommandContext helpers in commands/shared/task-backend.ts to reuse backend/config/resolved per command; bun run test:agentplane passed."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T19:24:03.231Z",
+      "doc_updated_by": "CODER",
+      "id_source": "generated",
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Add CommandContext builder that loads resolved+config+backend once per command.\\n2) Add ctx-aware helpers to load tasks without reloading backend.\\n3) Migrate a small initial call site to validate wiring.\\n4) Add/adjust tests for context builder.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T19:19:26.497Z — VERIFY — ok\n\nBy: TESTER\n\nNote: bun run test:agentplane (vitest) passed.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
+    },
+    {
+      "id": "202602061915-XCPF92",
+      "title": "FIX2.md: контекст команд, policy, коммиты, распил",
+      "description": "Реализовать пункты из FIX2.md: убрать повторные resolve/load в командах, унифицировать guard/hooks policy, стандартизовать commit message (без обратной совместимости), дедуп утилит и распил монолитов.",
+      "status": "DONE",
+      "priority": "high",
+      "owner": "ORCHESTRATOR",
+      "depends_on": [],
+      "tags": [
+        "workflow",
+        "git",
+        "cli",
+        "refactor"
+      ],
+      "verify": [],
+      "plan_approval": {
+        "state": "approved",
+        "updated_at": "2026-02-06T20:36:00.372Z",
+        "updated_by": "USER",
+        "note": "Approved by user in chat on 2026-02-06."
+      },
+      "verification": {
+        "state": "ok",
+        "updated_at": "2026-02-06T20:36:11.296Z",
+        "updated_by": "TESTER",
+        "note": "Verified locally on 2026-02-06: FIX2.md work completed via subtasks; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli are green."
+      },
+      "commit": {
+        "hash": "c8d553f5c49aff674b71db71f96d5d9c352bb2c4",
+        "message": "✅ D3QVVY close: record verification and closure"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Execute FIX2.md implementation as a tracked set of dependent tasks (context caching, policy unification, commit format, dedupe, and refactors) with verification via lint and tests."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: Completed all FIX2.md scoped changes via tasks RNTNEP/FY8TYM/DZBAW0/DH1CKG/FXTNQ0/KNHP1Y/D3QVVY; repo is green on bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli."
+        }
+      ],
+      "doc_version": 2,
+      "doc_updated_at": "2026-02-06T20:36:11.508Z",
+      "doc_updated_by": "ORCHESTRATOR",
       "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nRemoved base_branch from config schema/examples/types and ignore legacy values with a warning.\n\n## Scope\n\nConfig schema/examples, config validation/sanitization, init config writing, and related tests.\n\n## Risks\n\nLegacy configs relying on base_branch may be surprised; warning added to surface ignored field.\n\n## Verify Steps\n\nbun run test:core; bun run test:cli:core.\n\n## Verification\n\nbun run test:core; bun run test:cli:core.\n\n## Rollback Plan\n\nRevert config schema/type changes and init/config handling updates; restore prior tests."
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\nWork breakdown:\n- 202602061915-RNTNEP (DONE): CommandContext + loadBackendTask context.\n- 202602061915-FY8TYM (DONE): start/block/finish use CommandContext, avoid repeated backend loads.\n- 202602061915-DZBAW0 (DONE): unify CommitPolicy across guard/hooks and harden allowlist matching.\n- 202602061915-DH1CKG (DONE): new commit subject template + structured bodies, no backward-compat.\n- 202602061915-FXTNQ0 (DONE): dedupe recipes.ts helpers via shared modules.\n- 202602061915-KNHP1Y (DONE): split scenario command, colon-safe git log parsing, reduce duplicated utils.\n- 202602061915-D3QVVY (DONE): tests for CommandContext + commit body generation.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-06T20:36:11.296Z — VERIFY — ok\n\nBy: TESTER\n\nNote: Verified locally on 2026-02-06: FIX2.md work completed via subtasks; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli are green.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan"
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "b236b6839f9294010fbf735e3ef13d26f1cb29a11044c108c35e9c3a0e722496"
+    "checksum": "609b0f300cd8354355ef78402606573b2e0773c5203df82639936cfd93de75b3"
   }
 }
