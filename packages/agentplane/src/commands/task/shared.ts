@@ -1,0 +1,318 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+
+import { type AgentplaneConfig } from "@agentplaneorg/core";
+
+import {
+  invalidValueForFlag,
+  invalidValueMessage,
+  missingValueMessage,
+  warnMessage,
+} from "../../cli/output.js";
+import { type TaskData } from "../../backends/task-backend.js";
+import { CliError } from "../../shared/errors.js";
+
+export const execFileAsync = promisify(execFile);
+
+export function nowIso(): string {
+  return new Date().toISOString();
+}
+
+export function normalizeDependsOnInput(value: string): string[] {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "[]") return [];
+  return [trimmed];
+}
+
+const ALLOWED_TASK_STATUSES = new Set(["TODO", "DOING", "DONE", "BLOCKED"]);
+
+export function normalizeTaskStatus(value: string): string {
+  const normalized = value.trim().toUpperCase();
+  if (!ALLOWED_TASK_STATUSES.has(normalized)) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: invalidValueMessage(
+        "status",
+        value,
+        `one of ${[...ALLOWED_TASK_STATUSES].join(", ")}`,
+      ),
+    });
+  }
+  return normalized;
+}
+
+export function dedupeStrings(items: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const item of items) {
+    const trimmed = item.trim();
+    if (!trimmed) continue;
+    if (seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    out.push(trimmed);
+  }
+  return out;
+}
+
+export function toStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim());
+}
+
+export function requiresVerify(tags: string[], requiredTags: string[]): boolean {
+  const required = new Set(requiredTags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
+  if (required.size === 0) return false;
+  return tags.some((tag) => required.has(tag.trim().toLowerCase()));
+}
+
+export type DependencyState = {
+  dependsOn: string[];
+  missing: string[];
+  incomplete: string[];
+};
+
+export function buildDependencyState(tasks: TaskData[]): Map<string, DependencyState> {
+  const byId = new Map(tasks.map((task) => [task.id, task]));
+  const state = new Map<string, DependencyState>();
+  for (const task of tasks) {
+    const dependsOn = dedupeStrings(toStringArray(task.depends_on));
+    const missing: string[] = [];
+    const incomplete: string[] = [];
+    for (const depId of dependsOn) {
+      const dep = byId.get(depId);
+      if (!dep) {
+        missing.push(depId);
+        continue;
+      }
+      const status = String(dep.status || "TODO").toUpperCase();
+      if (status !== "DONE") {
+        incomplete.push(depId);
+      }
+    }
+    state.set(task.id, { dependsOn, missing, incomplete });
+  }
+  return state;
+}
+
+function formatDepsSummary(dep: DependencyState | undefined): string | null {
+  if (!dep) return null;
+  if (dep.dependsOn.length === 0) return "deps=none";
+  if (dep.missing.length === 0 && dep.incomplete.length === 0) return "deps=ready";
+  const parts: string[] = [];
+  if (dep.missing.length > 0) {
+    parts.push(`missing:${dep.missing.join(",")}`);
+  }
+  if (dep.incomplete.length > 0) {
+    parts.push(`wait:${dep.incomplete.join(",")}`);
+  }
+  return `deps=${parts.join(",")}`;
+}
+
+export function formatTaskLine(task: TaskData, depState?: DependencyState): string {
+  const status = String(task.status || "TODO").toUpperCase();
+  const title = task.title?.trim() || "(untitled task)";
+  const extras: string[] = [];
+  if (task.owner?.trim()) extras.push(`owner=${task.owner.trim()}`);
+  if (task.priority !== undefined && String(task.priority).trim()) {
+    extras.push(`prio=${String(task.priority).trim()}`);
+  }
+  const depsSummary = formatDepsSummary(depState);
+  if (depsSummary) extras.push(depsSummary);
+  const tags = dedupeStrings(toStringArray(task.tags));
+  if (tags.length > 0) extras.push(`tags=${tags.join(",")}`);
+  const verify = dedupeStrings(toStringArray(task.verify));
+  if (verify.length > 0) extras.push(`verify=${verify.length}`);
+  const suffix = extras.length > 0 ? ` (${extras.join(", ")})` : "";
+  return `${task.id} [${status}] ${title}${suffix}`;
+}
+
+export function isTransitionAllowed(current: string, next: string): boolean {
+  if (current === next) return true;
+  if (current === "TODO") return next === "DOING" || next === "BLOCKED";
+  if (current === "DOING") return next === "DONE" || next === "BLOCKED";
+  if (current === "BLOCKED") return next === "TODO" || next === "DOING";
+  if (current === "DONE") return false;
+  return false;
+}
+
+export function requireStructuredComment(body: string, prefix: string, minChars: number): void {
+  const normalized = body.trim();
+  if (!normalized.toLowerCase().startsWith(prefix.toLowerCase())) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Comment body must start with ${prefix}`,
+    });
+  }
+  if (normalized.length < minChars) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Comment body must be at least ${minChars} characters`,
+    });
+  }
+}
+
+export async function readHeadCommit(cwd: string): Promise<{ hash: string; message: string }> {
+  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], { cwd });
+  const trimmed = stdout.trim();
+  const [hash, message] = trimmed.split(":", 2);
+  if (!hash || !message) {
+    throw new Error("Unable to read git HEAD commit");
+  }
+  return { hash, message };
+}
+
+export function enforceStatusCommitPolicy(opts: {
+  policy: AgentplaneConfig["status_commit_policy"];
+  action: string;
+  confirmed: boolean;
+  quiet: boolean;
+}): void {
+  if (opts.policy === "off") return;
+  if (opts.policy === "warn") {
+    if (!opts.quiet && !opts.confirmed) {
+      process.stderr.write(
+        `${warnMessage(
+          `${opts.action}: status/comment-driven commit requested; policy=warn (pass --confirm-status-commit to acknowledge)`,
+        )}\n`,
+      );
+    }
+    return;
+  }
+  if (opts.policy === "confirm" && !opts.confirmed) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        `${opts.action}: status/comment-driven commit blocked by status_commit_policy='confirm' ` +
+        "(pass --confirm-status-commit to proceed)",
+    });
+  }
+}
+
+export async function readCommitInfo(
+  cwd: string,
+  rev: string,
+): Promise<{ hash: string; message: string }> {
+  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s", rev], { cwd });
+  const trimmed = stdout.trim();
+  const [hash, message] = trimmed.split(":", 2);
+  if (!hash || !message) {
+    throw new Error("Unable to read git commit");
+  }
+  return { hash, message };
+}
+
+export function defaultCommitEmojiForStatus(status: string): string {
+  const normalized = status.trim().toUpperCase();
+  if (normalized === "DOING") return "🚧";
+  if (normalized === "DONE") return "✅";
+  if (normalized === "BLOCKED") return "⛔";
+  return "🧩";
+}
+
+export type TaskListFilters = {
+  status: string[];
+  owner: string[];
+  tag: string[];
+  limit?: number;
+  quiet: boolean;
+};
+
+export function parseTaskListFilters(
+  args: string[],
+  opts?: { allowLimit?: boolean },
+): TaskListFilters {
+  const out: TaskListFilters = { status: [], owner: [], tag: [], quiet: false };
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (!arg) continue;
+    if (arg === "--quiet") {
+      out.quiet = true;
+      continue;
+    }
+    if (arg === "--status") {
+      const next = args[i + 1];
+      if (!next) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: missingValueMessage("--status"),
+        });
+      }
+      out.status.push(next);
+      i++;
+      continue;
+    }
+    if (arg === "--owner") {
+      const next = args[i + 1];
+      if (!next) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: missingValueMessage("--owner"),
+        });
+      }
+      out.owner.push(next);
+      i++;
+      continue;
+    }
+    if (arg === "--tag") {
+      const next = args[i + 1];
+      if (!next) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage("--tag") });
+      }
+      out.tag.push(next);
+      i++;
+      continue;
+    }
+    if (opts?.allowLimit && arg === "--limit") {
+      const next = args[i + 1];
+      if (!next) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: missingValueMessage("--limit"),
+        });
+      }
+      const parsed = Number.parseInt(next, 10);
+      if (!Number.isFinite(parsed)) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: invalidValueForFlag("--limit", next, "integer"),
+        });
+      }
+      out.limit = parsed;
+      i++;
+      continue;
+    }
+    if (arg.startsWith("--")) {
+      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
+    }
+  }
+  return out;
+}
+
+export function taskTextBlob(task: TaskData): string {
+  const parts: string[] = [];
+  for (const key of ["id", "title", "description", "status", "priority", "owner"] as const) {
+    const value = (task as Record<string, unknown>)[key];
+    if (typeof value === "string" && value.trim()) parts.push(value.trim());
+  }
+  const tags = toStringArray(task.tags);
+  parts.push(...tags.filter(Boolean));
+  const comments = Array.isArray(task.comments) ? task.comments : [];
+  for (const comment of comments) {
+    if (comment && typeof comment.author === "string") parts.push(comment.author);
+    if (comment && typeof comment.body === "string") parts.push(comment.body);
+  }
+  const commit = task.commit ?? null;
+  if (commit && typeof commit.hash === "string") parts.push(commit.hash);
+  if (commit && typeof commit.message === "string") parts.push(commit.message);
+  return parts.join("\n");
+}
