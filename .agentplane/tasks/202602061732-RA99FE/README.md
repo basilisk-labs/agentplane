@@ -1,7 +1,7 @@
 ---
 id: "202602061732-RA99FE"
 title: "P1.2: commit-msg hook must share CLI subject validator"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-06T18:45:06.404Z"
   updated_by: "TESTER"
   note: "commit-msg hook now uses core validateCommitSubject (including anti-generic); added hook tests for generic rejection; bun run build and bun run test:cli:core passed."
-commit: null
+commit:
+  hash: "d606210f55eea163a1532c3e0fb5a169c118336c"
+  message: "✨ RA99FE align commit-msg hook with subject policy"
 comments:
   -
     author: "CODER"
     body: "Start: Update commit-msg hook to share core validateCommitSubject logic (including anti-generic)."
+  -
+    author: "CODER"
+    body: "Verified: commit-msg hook now loads config and uses validateCommitSubject (incl. anti-generic); when task env is missing it selects a matching task by suffix before validating; updated hook tests and workflow test fixture; bun run build, bun run test:cli:core, and bun run test:fast passed."
 doc_version: 2
-doc_updated_at: "2026-02-06T18:45:06.410Z"
+doc_updated_at: "2026-02-06T18:47:34.536Z"
 doc_updated_by: "CODER"
 description: "Update hooks commit-msg to load config and call the same commit subject validator used by CLI (incl. anti-generic)."
 id_source: "generated"
