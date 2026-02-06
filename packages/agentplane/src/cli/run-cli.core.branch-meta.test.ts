@@ -299,6 +299,18 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
     await runCliSilent([
+      "verify",
+      depId,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Ok to finish dependency",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+    await runCliSilent([
       "finish",
       depId,
       "--author",

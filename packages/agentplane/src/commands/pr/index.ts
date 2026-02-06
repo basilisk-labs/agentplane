@@ -32,7 +32,10 @@ import {
 import { isPathWithin } from "../shared/path.js";
 import { loadBackendTask } from "../shared/task-backend.js";
 import { cmdFinish } from "../task/index.js";
-import { ensurePlanApprovedIfRequired } from "../task/shared.js";
+import {
+  ensurePlanApprovedIfRequired,
+  ensureVerificationSatisfiedIfRequired,
+} from "../task/shared.js";
 
 export const PR_OPEN_USAGE = "Usage: agentplane pr open <task-id> --author <id> [--branch <name>]";
 export const PR_OPEN_USAGE_EXAMPLE = "agentplane pr open 202602030608-F1Q8AB --author CODER";
@@ -490,6 +493,7 @@ export async function cmdIntegrate(opts: {
     }
 
     ensurePlanApprovedIfRequired(task, loaded.config);
+    ensureVerificationSatisfiedIfRequired(task, loaded.config);
 
     await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
 

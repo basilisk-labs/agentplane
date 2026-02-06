@@ -76,6 +76,48 @@ function stubTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBacke
   };
 }
 
+async function approveTaskPlan(root: string, taskId: string): Promise<void> {
+  await runCliSilent([
+    "task",
+    "plan",
+    "set",
+    taskId,
+    "--text",
+    "1) Do the work\n2) Verify the work",
+    "--updated-by",
+    "ORCHESTRATOR",
+    "--root",
+    root,
+  ]);
+  await runCliSilent([
+    "task",
+    "plan",
+    "approve",
+    taskId,
+    "--by",
+    "USER",
+    "--note",
+    "OK",
+    "--root",
+    root,
+  ]);
+}
+
+async function recordVerificationOk(root: string, taskId: string): Promise<void> {
+  await runCliSilent([
+    "verify",
+    taskId,
+    "--ok",
+    "--by",
+    "REVIEWER",
+    "--note",
+    "Ok to integrate",
+    "--quiet",
+    "--root",
+    root,
+  ]);
+}
+
 describe("runCli", () => {
   it("work start requires task id and flags", async () => {
     const root = await mkGitRepoRoot();
@@ -214,6 +256,7 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     try {
@@ -274,6 +317,7 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
 
     const io = captureStdIO();
     let branchName = "";
@@ -1318,6 +1362,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
@@ -1388,6 +1434,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
@@ -1465,6 +1513,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
@@ -1535,6 +1585,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
@@ -1617,6 +1669,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
@@ -1699,6 +1753,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
@@ -1775,6 +1831,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
@@ -1852,6 +1910,8 @@ describe("runCli", () => {
     } finally {
       ioTask.restore();
     }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
     await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
 
