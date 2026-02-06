@@ -21,6 +21,7 @@ import {
 } from "@agentplaneorg/core";
 
 import { loadDotEnv } from "../shared/env.js";
+import { isRecord } from "../shared/guards.js";
 import {
   buildTaskIndexEntry,
   loadTaskIndex,
@@ -70,10 +71,6 @@ const generateTaskId: GenerateTaskId = generateTaskIdCore;
 
 function nowIso(): string {
   return new Date().toISOString();
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
 function toStringSafe(value: unknown): string {

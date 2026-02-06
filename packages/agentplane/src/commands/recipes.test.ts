@@ -4,7 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { cmdRecipes, cmdScenario } from "./recipes.js";
+import { cmdScenario } from "./scenario.js";
+import { cmdRecipes } from "./recipes.js";
 import { CliError } from "../shared/errors.js";
 import {
   captureStdIO,

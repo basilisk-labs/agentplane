@@ -22,6 +22,7 @@ import {
   getProtectedPathOverride,
   protectedPathKindForFile,
 } from "../../shared/protected-paths.js";
+import { parseGitLogHashSubject } from "../../shared/git-log.js";
 
 function parseNullSeparatedPaths(stdout: Buffer | string): string[] {
   const text = Buffer.isBuffer(stdout) ? stdout.toString("utf8") : stdout;
@@ -452,11 +453,10 @@ export async function commitFromComment(opts: {
   });
   await execFileAsync("git", ["commit", "-m", message, "-m", body], { cwd: resolved.gitRoot, env });
 
-  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], {
+  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], {
     cwd: resolved.gitRoot,
   });
-  const trimmed = stdout.trim();
-  const [hash, subject] = trimmed.split(":", 2);
+  const { hash, subject } = parseGitLogHashSubject(stdout);
   if (!opts.quiet) {
     process.stdout.write(
       `${successMessage(
@@ -466,7 +466,7 @@ export async function commitFromComment(opts: {
       )}\n`,
     );
   }
-  return { hash: hash ?? "", message: subject ?? "", staged };
+  return { hash, message: subject, staged };
 }
 
 export async function cmdGuardClean(opts: {
@@ -597,11 +597,10 @@ export async function cmdCommit(opts: {
     await execFileAsync("git", ["commit", "-m", opts.message], { cwd: resolved.gitRoot, env });
 
     if (!opts.quiet) {
-      const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], {
+      const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], {
         cwd: resolved.gitRoot,
       });
-      const trimmed = stdout.trim();
-      const [hash, subject] = trimmed.split(":", 2);
+      const { hash, subject } = parseGitLogHashSubject(stdout);
       process.stdout.write(
         `${successMessage("committed", `${hash?.slice(0, 12) ?? ""} ${subject ?? ""}`.trim())}\n`,
       );

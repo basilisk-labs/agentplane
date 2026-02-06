@@ -57,7 +57,8 @@ import {
   cmdBackendSync,
   cmdSync,
 } from "../commands/backend.js";
-import { cmdRecipes, cmdScenario } from "../commands/recipes.js";
+import { cmdRecipes } from "../commands/recipes.js";
+import { cmdScenario } from "../commands/scenario.js";
 import {
   BLOCK_USAGE,
   BLOCK_USAGE_EXAMPLE,

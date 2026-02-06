@@ -12,6 +12,7 @@ import {
 import { type TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { dedupeStrings } from "../../shared/strings.js";
+import { parseGitLogHashSubject } from "../../shared/git-log.js";
 
 export { dedupeStrings } from "../../shared/strings.js";
 
@@ -185,13 +186,9 @@ export function requireStructuredComment(body: string, prefix: string, minChars:
 }
 
 export async function readHeadCommit(cwd: string): Promise<{ hash: string; message: string }> {
-  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s"], { cwd });
-  const trimmed = stdout.trim();
-  const [hash, message] = trimmed.split(":", 2);
-  if (!hash || !message) {
-    throw new Error("Unable to read git HEAD commit");
-  }
-  return { hash, message };
+  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], { cwd });
+  const { hash, subject } = parseGitLogHashSubject(stdout);
+  return { hash, message: subject };
 }
 
 export function enforceStatusCommitPolicy(opts: {
@@ -226,13 +223,9 @@ export async function readCommitInfo(
   cwd: string,
   rev: string,
 ): Promise<{ hash: string; message: string }> {
-  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H:%s", rev], { cwd });
-  const trimmed = stdout.trim();
-  const [hash, message] = trimmed.split(":", 2);
-  if (!hash || !message) {
-    throw new Error("Unable to read git commit");
-  }
-  return { hash, message };
+  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s", rev], { cwd });
+  const { hash, subject } = parseGitLogHashSubject(stdout);
+  return { hash, message: subject };
 }
 
 export function defaultCommitEmojiForStatus(status: string): string {
