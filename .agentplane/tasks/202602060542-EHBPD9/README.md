@@ -1,17 +1,18 @@
 ---
 id: "202602060542-EHBPD9"
 title: "P2: Split commands/task/index.ts into per-command modules"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
 tags: ["refactor", "cli"]
 verify: []
-commit: null
+commit: { hash: "94cedb4c3e5e0f5cd5da01284e19a7b54c6e6e5c", message: "🧩 EHBPD9 refactor" }
 comments:
   - { author: "ORCHESTRATOR", body: "Start: Split commands/task/index.ts by individual commands (new/add/update/comment/set-status/doc/finish/verify/etc.) while keeping index.ts as explicit re-export entrypoint; run typecheck/lint/cli unit tests and agentplane verify." }
+  - { author: "ORCHESTRATOR", body: "Verified: agentplane verify passed (2026-02-06); commit 94cedb4c3e5e. Split commands/task/index.ts into per-command modules; ran typecheck, lint, and test:cli:unit." }
 doc_version: 2
-doc_updated_at: "2026-02-06T06:03:07.187Z"
+doc_updated_at: "2026-02-06T06:04:47.956Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Goal: reduce churn and review scope by splitting packages/agentplane/src/commands/task/index.ts into multiple command-specific modules.\\n\\nDeliverables:\\n- Move cmdTask* and lifecycle handlers into files under packages/agentplane/src/commands/task/*.ts (one command per file).\\n- Keep packages/agentplane/src/commands/task/index.ts as stable explicit re-export surface.\\n- No intended behavior changes; preserve public exports and CLI behavior.\\n\\nConstraints:\\n- direct mode; commits via agentplane; run agentplane verify before finish."
 ---
