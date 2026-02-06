@@ -1,7 +1,7 @@
 ---
 id: "202602061732-MTEEWA"
 title: "P0.3: Unify allow prefix normalization"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-06T18:01:45.799Z"
   updated_by: "TESTER"
   note: "bun run test:cli:core passed; added regressions for ./ allow prefixes in commit wrapper and comment-driven start."
-commit: null
+commit:
+  hash: "660b2c72550d629e98c8f20f3d0c2150e1306c7b"
+  message: "✨ MTEEWA normalize allow prefixes consistently"
 comments:
   -
     author: "CODER"
     body: "Start: Unify allow prefix normalization (./, trailing slashes, backslashes) and add regression tests."
+  -
+    author: "CODER"
+    body: "Verified: Unified allow prefix normalization so ./ prefixes, trailing slashes, and backslashes behave consistently across staging and guard checks; added CLI regressions for commit wrapper and comment-driven start; bun run test:cli:core passed."
 doc_version: 2
-doc_updated_at: "2026-02-06T18:01:45.806Z"
+doc_updated_at: "2026-02-06T18:10:39.798Z"
 doc_updated_by: "CODER"
 description: "Make allow prefix normalization consistent across staging and guard checks (trim ./, trailing slashes, backslashes, double slashes)."
 id_source: "generated"
