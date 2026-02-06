@@ -1,7 +1,7 @@
 ---
 id: "202602061915-FY8TYM"
 title: "P0: start/block/finish без повторной загрузки backend"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-06T19:26:48.681Z"
   updated_by: "TESTER"
   note: "bun run test:agentplane passed."
-commit: null
+commit:
+  hash: "731128a96708d986319153d6609f37e16c900827"
+  message: "✨ FY8TYM task"
 comments:
   -
     author: "CODER"
     body: "Start: Refactor start/block/finish to load CommandContext once and reuse backend/config/resolved; remove per-task backend reloads in finish."
+  -
+    author: "CODER"
+    body: "Verified: start/block/finish now reuse CommandContext (loadTaskBackend once per command) and load tasks via ctx; bun run test:agentplane passed."
 doc_version: 2
-doc_updated_at: "2026-02-06T19:26:48.684Z"
+doc_updated_at: "2026-02-06T19:29:06.811Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Перевести команды start/block/finish на CommandContext: один backend на команду; в finish не вызывать loadBackendTask в цикле."
 id_source: "generated"
