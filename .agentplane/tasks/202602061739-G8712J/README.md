@@ -1,7 +1,7 @@
 ---
 id: "202602061739-G8712J"
 title: "Repo: Prettier format FIX.md to unblock hooks"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-06T17:40:47.537Z"
   updated_by: "TESTER"
   note: "bunx prettier FIX.md --write; bun run format:check passes."
-commit: null
+commit:
+  hash: "ba5b1d129f36731c96cf13b6a6ccf841a95780e1"
+  message: "✨ G8712J record verification"
 comments:
   -
     author: "DOCS"
     body: "Start: Format FIX.md with Prettier so format:check hook passes."
+  -
+    author: "DOCS"
+    body: "Verified: Formatted FIX.md with Prettier to satisfy lefthook pre-commit format:check; confirmed bun run format:check passes; committed verification record."
 doc_version: 2
-doc_updated_at: "2026-02-06T17:40:47.547Z"
+doc_updated_at: "2026-02-06T17:44:16.527Z"
 doc_updated_by: "DOCS"
 description: "Pre-commit runs bun run format:check across repo; FIX.md currently fails Prettier check and blocks all commits. Format FIX.md without changing meaning."
 id_source: "generated"
