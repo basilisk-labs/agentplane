@@ -3,6 +3,14 @@ import path from "node:path";
 import { CliError } from "../../shared/errors.js";
 import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
 
+export type CommandContext = {
+  backend: Awaited<ReturnType<typeof loadTaskBackend>>["backend"];
+  backendId: string;
+  backendConfigPath: string;
+  resolved: Awaited<ReturnType<typeof loadTaskBackend>>["resolved"];
+  config: Awaited<ReturnType<typeof loadTaskBackend>>["config"];
+};
+
 function normalizeDocUpdatedBy(value?: string): string {
   const trimmed = value?.trim() ?? "";
   if (!trimmed) return "";
@@ -47,24 +55,24 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
   };
 }
 
-export async function loadBackendTask(opts: {
+export async function loadCommandContext(opts: {
   cwd: string;
   rootOverride?: string | null;
-  taskId: string;
-}): Promise<{
-  backend: Awaited<ReturnType<typeof loadTaskBackend>>["backend"];
-  backendId: string;
-  resolved: Awaited<ReturnType<typeof loadTaskBackend>>["resolved"];
-  config: Awaited<ReturnType<typeof loadTaskBackend>>["config"];
-  task: TaskData;
-}> {
-  const { backend, backendId, resolved, config } = await loadTaskBackend({
+}): Promise<CommandContext> {
+  const { backend, backendId, backendConfigPath, resolved, config } = await loadTaskBackend({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
   });
-  const task = await backend.getTask(opts.taskId);
+  return { backend, backendId, backendConfigPath, resolved, config };
+}
+
+export async function loadTaskFromContext(opts: {
+  ctx: CommandContext;
+  taskId: string;
+}): Promise<TaskData> {
+  const task = await opts.ctx.backend.getTask(opts.taskId);
   if (!task) {
-    const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
+    const tasksDir = path.join(opts.ctx.resolved.gitRoot, opts.ctx.config.paths.workflow_dir);
     const readmePath = path.join(tasksDir, opts.taskId, "README.md");
     throw new CliError({
       exitCode: 4,
@@ -72,5 +80,22 @@ export async function loadBackendTask(opts: {
       message: `ENOENT: no such file or directory, open '${readmePath}'`,
     });
   }
-  return { backend, backendId, resolved, config, task };
+  return task;
+}
+
+export async function loadBackendTask(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  taskId: string;
+}): Promise<{
+  backend: CommandContext["backend"];
+  backendId: string;
+  backendConfigPath: string;
+  resolved: CommandContext["resolved"];
+  config: CommandContext["config"];
+  task: TaskData;
+}> {
+  const ctx = await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+  return { ...ctx, task };
 }
