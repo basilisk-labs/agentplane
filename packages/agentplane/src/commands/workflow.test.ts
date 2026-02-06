@@ -873,6 +873,9 @@ describe("commands/workflow", () => {
     const taskId = "202602050900-A9B8";
     await addTask(root, taskId);
 
+    await cmdTaskPlan({ cwd: root, args: ["set", taskId, "--text", "Plan content."] });
+    await cmdTaskPlan({ cwd: root, args: ["approve", taskId, "--by", "USER"] });
+
     await expect(
       cmdStart({
         cwd: root,

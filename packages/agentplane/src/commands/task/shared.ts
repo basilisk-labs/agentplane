@@ -68,6 +68,22 @@ export function requiresVerify(tags: string[], requiredTags: string[]): boolean 
   return tags.some((tag) => required.has(tag.trim().toLowerCase()));
 }
 
+export function ensurePlanApprovedIfRequired(task: TaskData, config: AgentplaneConfig): void {
+  if (config.agents?.approvals?.require_plan !== true) return;
+
+  const state = task.plan_approval?.state ?? "missing";
+  if (state === "approved") return;
+
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message:
+      `${task.id}: plan approval is required before work can proceed ` +
+      `(plan_approval.state=${JSON.stringify(state)}; use \`agentplane task plan approve ${task.id} --by <USER>\` ` +
+      "or set agents.approvals.require_plan=false).",
+  });
+}
+
 export type DependencyState = {
   dependsOn: string[];
   missing: string[];

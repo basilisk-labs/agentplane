@@ -32,6 +32,7 @@ import {
 } from "../shared/git-worktree.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
 import { loadBackendTask } from "../shared/task-backend.js";
+import { ensurePlanApprovedIfRequired } from "../task/shared.js";
 
 export {
   gitInitRepo,
@@ -134,11 +135,12 @@ export async function cmdWorkStart(opts: {
       });
     }
 
-    await loadBackendTask({
+    const { task } = await loadBackendTask({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
+    ensurePlanApprovedIfRequired(task, loaded.config);
 
     const currentBranch = await gitCurrentBranch(resolved.gitRoot);
     let baseRef = currentBranch;
