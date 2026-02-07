@@ -1,7 +1,7 @@
 ---
 id: "202602071657-RTQW9H"
 title: "Docs: Update command guide/help/AGENTS for 2-step verify + spike flow"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -17,17 +17,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T18:23:30.053Z"
+  updated_by: "DOCS"
+  note: "Docs updated; tests/lint passed"
+commit:
+  hash: "547c7f7682fbccc4c02851516711ee0e294585b3"
+  message: "✅ RTQW9H docs: update help/guide for Verify Steps + spike flow"
 comments:
   -
     author: "DOCS"
     body: "Start: update help/command guide/AGENTS docs for two-stage verification and spike->implementation workflow."
+  -
+    author: "DOCS"
+    body: "Verified: Updated CLI help/command guide/AGENTS for Verify Steps vs Verification + spike derive/verify-show; bun run test:fast and bun run lint passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T18:21:42.307Z"
+doc_updated_at: "2026-02-07T18:23:42.440Z"
 doc_updated_by: "DOCS"
 description: "Document Verify Steps vs Verification, new gates, and spike->implementation derive workflow."
 ---
@@ -78,6 +83,18 @@ Update only help/guide/policy docs for two-stage verification and spike workflow
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T18:23:30.053Z — VERIFY — ok
+
+By: DOCS
+
+Note: Docs updated; tests/lint passed
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T18:21:42.307Z, excerpt_hash=sha256:cc1d929f4af07c13cb321039de0ef16355f81d68c598f5d5a97895daa306b54d
+
+Details:
+
+bun run test:fast (pass); bun run lint (pass)
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
