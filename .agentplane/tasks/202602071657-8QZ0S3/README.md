@@ -1,7 +1,7 @@
 ---
 id: "202602071657-8QZ0S3"
 title: "Config: Add verify-steps gating settings"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T18:07:42.494Z"
   updated_by: "CODER"
   note: "Added config keys for Verify Steps gates (require_steps_for_tags/spike_tag/enforce flags) with schema + type updates; removed legacy lint requiring verify commands; bun run test:fast + bun run test:cli:core."
-commit: null
+commit:
+  hash: "dd7447aba2b4bcbdd053646f63f659486f7df24b"
+  message: "✅ 8QZ0S3 config: add Verify Steps gating settings"
 comments:
   -
     author: "CODER"
     body: "Start: add config keys for Verify Steps gating and wire plan/start behavior with backward-compatible defaults."
+  -
+    author: "CODER"
+    body: "Verified: config now supports Verify Steps gating settings with schema defaults; legacy required_tags fallback preserved; removed verify-command lint requirement; tests: bun run test:fast, bun run test:cli:core."
 doc_version: 2
-doc_updated_at: "2026-02-07T18:07:42.498Z"
+doc_updated_at: "2026-02-07T18:13:41.631Z"
 doc_updated_by: "CODER"
 description: "Add optional config keys for require_steps_for_tags/spike_tag/enforce_on_plan_approve/enforce_on_start_when_no_plan."
 ---
