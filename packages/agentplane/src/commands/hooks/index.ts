@@ -4,28 +4,17 @@ import path from "node:path";
 import { getStagedFiles, loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
-import type { PolicyResult } from "../../policy/types.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { gitCurrentBranch, gitRevParse } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
 
 const HOOK_MARKER = "agentplane-hook";
 const SHIM_MARKER = "agentplane-hook-shim";
 export const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push"] as const;
-
-function throwIfPolicyDenied(res: PolicyResult): void {
-  if (res.ok) return;
-  const messages = res.errors.map((e) => e.message).join("\n");
-  const chosen =
-    res.errors.find((e) => e.code === "E_INTERNAL") ??
-    res.errors.find((e) => e.code === "E_USAGE") ??
-    res.errors[0];
-  if (!chosen) return;
-  throw new CliError({ exitCode: chosen.exitCode, code: chosen.code, message: messages });
-}
 
 async function resolveGitHooksDir(cwd: string): Promise<string> {
   const repoRoot = await gitRevParse(cwd, ["--show-toplevel"]);
@@ -214,13 +203,6 @@ export async function cmdHooksRun(opts: {
       }
       const raw = await readFile(messagePath, "utf8");
       const subject = readCommitSubject(raw);
-      if (!subject) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: "Commit message subject is empty",
-        });
-      }
 
       const resolved = await resolveProject({
         cwd: opts.cwd,

@@ -6,7 +6,6 @@ import {
 } from "@agentplaneorg/core";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
-import type { PolicyResult } from "../../policy/types.js";
 import { mapCoreError } from "../../cli/error-map.js";
 import { invalidValueMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -19,6 +18,7 @@ import { gitCurrentBranch } from "../shared/git-ops.js";
 import { GitContext } from "../shared/git-context.js";
 import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 
 export function buildGitCommitEnv(opts: {
   taskId: string;
@@ -76,17 +76,6 @@ type GuardCommitOptions = {
   requireClean: boolean;
   quiet: boolean;
 };
-
-function throwIfPolicyDenied(res: PolicyResult): void {
-  if (res.ok) return;
-  const messages = res.errors.map((e) => e.message).join("\n");
-  const chosen =
-    res.errors.find((e) => e.code === "E_INTERNAL") ??
-    res.errors.find((e) => e.code === "E_USAGE") ??
-    res.errors[0];
-  if (!chosen) return;
-  throw new CliError({ exitCode: chosen.exitCode, code: chosen.code, message: messages });
-}
 
 async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
   const ctx =

@@ -33,9 +33,7 @@ export type ParsedFinish = {
   author: string;
   body: string;
   commit: string | undefined;
-  skipVerify: boolean;
   force: boolean;
-  noRequireTaskIdInCommit: boolean;
   commitFromComment: boolean;
   commitEmoji: string | undefined;
   commitAllow: string[];
@@ -211,9 +209,7 @@ export function parseFinish(opts: {
   let author = "";
   let body = "";
   let commit: string | undefined;
-  let skipVerify = false;
   let force = false;
-  let noRequireTaskIdInCommit = false;
   let commitFromComment = false;
   let commitEmoji: string | undefined;
   const commitAllow: string[] = [];
@@ -252,16 +248,8 @@ export function parseFinish(opts: {
       i++;
       continue;
     }
-    if (arg === "--skip-verify") {
-      skipVerify = true;
-      continue;
-    }
     if (arg === "--force") {
       force = true;
-      continue;
-    }
-    if (arg === "--no-require-task-id-in-commit") {
-      noRequireTaskIdInCommit = true;
       continue;
     }
     if (arg === "--commit-from-comment") {
@@ -338,9 +326,7 @@ export function parseFinish(opts: {
     author,
     body,
     commit,
-    skipVerify,
     force,
-    noRequireTaskIdInCommit,
     commitFromComment,
     commitEmoji,
     commitAllow,

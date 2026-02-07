@@ -3,9 +3,11 @@ import path from "node:path";
 
 import {
   atomicWriteFile,
+  extractTaskSuffix,
   loadConfig,
   resolveBaseBranch,
   resolveProject,
+  validateCommitSubject,
   type AgentplaneConfig,
 } from "@agentplaneorg/core";
 
@@ -598,8 +600,7 @@ export async function cmdIntegrate(opts: {
         ),
         task.id,
       );
-    const baseCandidate =
-      opts.base ?? (metaSource as Record<string, unknown>).base_branch ?? baseBranch;
+    const baseCandidate = opts.base ?? (metaSource as Record<string, unknown>).base ?? baseBranch;
     const base =
       typeof baseCandidate === "string" && baseCandidate.trim().length > 0
         ? baseCandidate.trim()
@@ -797,8 +798,14 @@ export async function cmdIntegrate(opts: {
         { cwd: resolved.gitRoot, env: gitEnv() },
       );
       let subject = subjectOut.trim();
-      if (!subject.includes(task.id)) {
-        subject = `🧩 ${task.id} integrate ${branch}`;
+      const subjectPolicy = validateCommitSubject({
+        subject,
+        taskId: task.id,
+        genericTokens: loadedConfig.commit.generic_tokens,
+      });
+      if (!subjectPolicy.ok) {
+        const suffix = extractTaskSuffix(task.id);
+        subject = `🧩 ${suffix} integrate: squash ${branch}`;
       }
       const env = {
         ...process.env,
@@ -821,6 +828,7 @@ export async function cmdIntegrate(opts: {
       }
       mergeHash = await gitRevParse(resolved.gitRoot, ["HEAD"]);
     } else if (opts.mergeStrategy === "merge") {
+      const suffix = extractTaskSuffix(task.id);
       const env = {
         ...process.env,
         AGENTPLANE_TASK_ID: task.id,
@@ -830,7 +838,7 @@ export async function cmdIntegrate(opts: {
       try {
         await execFileAsync(
           "git",
-          ["merge", "--no-ff", branch, "-m", `🔀 ${task.id} merge ${branch}`],
+          ["merge", "--no-ff", branch, "-m", `🔀 ${suffix} integrate: merge ${branch}`],
           {
             cwd: resolved.gitRoot,
             env,
@@ -942,7 +950,7 @@ export async function cmdIntegrate(opts: {
     const nextMeta: Record<string, unknown> = {
       ...mergedMeta,
       branch,
-      base_branch: base,
+      base,
       merge_strategy: opts.mergeStrategy,
       status: "MERGED",
       merged_at: (mergedMeta as Record<string, unknown>).merged_at ?? now,
@@ -981,9 +989,7 @@ export async function cmdIntegrate(opts: {
       author: "INTEGRATOR",
       body: finishBody,
       commit: undefined,
-      skipVerify: false,
       force: false,
-      noRequireTaskIdInCommit: false,
       commitFromComment: false,
       commitEmoji: undefined,
       commitAllow: [],

@@ -36,9 +36,7 @@ export async function cmdFinish(opts: {
   author: string;
   body: string;
   commit?: string;
-  skipVerify: boolean;
   force: boolean;
-  noRequireTaskIdInCommit: boolean;
   commitFromComment: boolean;
   commitEmoji?: string;
   commitAllow: string[];
@@ -54,9 +52,6 @@ export async function cmdFinish(opts: {
   quiet: boolean;
 }): Promise<number> {
   try {
-    if (opts.noRequireTaskIdInCommit) {
-      // Parity flag (commit subject checks are not enforced in node CLI).
-    }
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
@@ -146,10 +141,6 @@ export async function cmdFinish(opts: {
       await (useStore
         ? store!.update(taskId, () => nextTask)
         : ctx.taskBackend.writeTask(nextTask));
-    }
-
-    if (!opts.skipVerify) {
-      // No-op for parity; verify is handled by `agentplane verify`.
     }
 
     // tasks.json is export-only; generated via `agentplane task export`.
