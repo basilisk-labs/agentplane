@@ -247,7 +247,8 @@ export async function cmdTaskPlan(opts: {
       if (subcommand === "approve") {
         const tags = toStringArray(task.tags);
         const verifyRequired = requiresVerify(tags, config.tasks.verify.required_tags);
-        if (verifyRequired) {
+        const isSpike = tags.some((tag) => tag.trim().toLowerCase() === "spike");
+        if (verifyRequired || isSpike) {
           const verifySteps = extractDocSection(baseDoc, "Verify Steps");
           if (!isVerifyStepsFilled(verifySteps)) {
             throw new CliError({
@@ -256,6 +257,18 @@ export async function cmdTaskPlan(opts: {
               message:
                 `${task.id}: cannot approve plan: ## Verify Steps section is missing/empty/unfilled ` +
                 "(fill it before approving plan)",
+            });
+          }
+        }
+        if (isSpike) {
+          const notes = extractDocSection(baseDoc, "Notes");
+          if (!notes || notes.trim().length === 0) {
+            throw new CliError({
+              exitCode: 3,
+              code: "E_VALIDATION",
+              message:
+                `${task.id}: cannot approve plan for spike: ## Notes section is missing or empty ` +
+                "(include Findings/Decision/Next Steps)",
             });
           }
         }
