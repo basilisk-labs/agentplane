@@ -5,13 +5,32 @@ status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
-tags: ["cli,ux"]
+tags:
+  - "cli,ux"
 verify: []
-commit: { hash: "28fc717789a0f4e32cecb73eff978da9458c94ad", message: "✨ CCHDAQ+EEFK09+HT8JWS+Q39M3X+YZGRB2+F1Q8AB refine cli messaging and tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "28fc717789a0f4e32cecb73eff978da9458c94ad"
+  message: "✨ CCHDAQ+EEFK09+HT8JWS+Q39M3X+YZGRB2+F1Q8AB refine cli messaging and tests"
 comments:
-  - { author: "CODER", body: "Start: standardize empty-state output and terminology." }
-  - { author: "INTEGRATOR", body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts" }
-  - { author: "INTEGRATOR", body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint" }
+  -
+    author: "CODER"
+    body: "Start: standardize empty-state output and terminology."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts"
+  -
+    author: "INTEGRATOR"
+    body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:46.887Z"
 doc_updated_by: "agentplane"
@@ -31,3 +50,9 @@ id_source: "generated"
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

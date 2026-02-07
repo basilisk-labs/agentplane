@@ -5,12 +5,31 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["code", "backend"]
-verify: ["bun run coverage"]
-commit: { hash: "04fd35075ad5c26d7d35597595f10660a471ae5b", message: "✨ 5HD2YB raise branch coverage to 72 with expanded tests" }
+tags:
+  - "code"
+  - "backend"
+verify:
+  - "bun run coverage"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "04fd35075ad5c26d7d35597595f10660a471ae5b"
+  message: "✨ 5HD2YB raise branch coverage to 72 with expanded tests"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: raise branch coverage to 72 by expanding task-backend tests and restoring vitest threshold." }
-  - { author: "ORCHESTRATOR", body: "verified: ran bun run coverage on 2026-01-30 | details: all 347 tests passed and branch coverage reached 72.02%." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: raise branch coverage to 72 by expanding task-backend tests and restoring vitest threshold."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: ran bun run coverage on 2026-01-30 | details: all 347 tests passed and branch coverage reached 72.02%."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:24.337Z"
 doc_updated_by: "agentplane"
@@ -43,3 +62,8 @@ Revert commit to restore previous tests/thresholds if coverage regressions or un
 ## Notes
 
 Focus on untested branches in task-backend helpers and error paths.
+
+## Plan
+
+
+## Verification

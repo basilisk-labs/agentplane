@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["recipes", "docs"]
+tags:
+  - "recipes"
+  - "docs"
 verify: []
-commit: { hash: "f9ff22e97f43eae7d139d1eba26712387cd89344", message: "✨ 5YN5YQ defer feature-spec-to-tasks recipe doc" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f9ff22e97f43eae7d139d1eba26712387cd89344"
+  message: "✨ 5YN5YQ defer feature-spec-to-tasks recipe doc"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: document feature-spec-to-tasks recipe usage and behavior." }
-  - { author: "ORCHESTRATOR", body: "verified: task deferred per request | details: no tests required and no code changes made." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: document feature-spec-to-tasks recipe usage and behavior."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: task deferred per request | details: no tests required and no code changes made."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:56.423Z"
 doc_updated_by: "agentplane"
@@ -39,3 +57,8 @@ No tests required (task deferred).
 ## Rollback Plan
 
 Reopen task if recipe documentation becomes a priority.
+
+## Plan
+
+
+## Verification

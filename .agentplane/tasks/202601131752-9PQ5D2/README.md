@@ -5,11 +5,26 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["config"]
+tags:
+  - "config"
 verify: []
-commit: { hash: "b9ae9669bcf1b892d8b9f45ef78a82f0379b0ecd", message: "✨ 9PQ5D2 format config.json" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b9ae9669bcf1b892d8b9f45ef78a82f0379b0ecd"
+  message: "✨ 9PQ5D2 format config.json"
 comments:
-  - { author: "CODER", body: "verified: formatting-only change in .agent-plane/config.json | details: task docs updated; no tests run." }
+  -
+    author: "CODER"
+    body: "verified: formatting-only change in .agent-plane/config.json | details: task docs updated; no tests run."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:50.446Z"
 doc_updated_by: "agentplane"
@@ -42,3 +57,8 @@ Revert commit b9ae966 to restore previous formatting.
 ## Notes
 
 No tests run.
+
+## Plan
+
+
+## Verification

@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "PLANNER"
 depends_on: []
-tags: ["agents", "docs"]
+tags:
+  - "agents"
+  - "docs"
 verify: []
-commit: { hash: "7d60d437aba09ecb77ccfa5f895c0401b7479a6c", message: "🧰 JBDS9R reduce snapshot mentions: centralize export rules in AGENTS; remove snapshot wording from agent roles; simplify export references" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7d60d437aba09ecb77ccfa5f895c0401b7479a6c"
+  message: "🧰 JBDS9R reduce snapshot mentions: centralize export rules in AGENTS; remove snapshot wording from agent roles; simplify export references"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: not run; doc/instruction edits only, no runtime impact." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: not run; doc/instruction edits only, no runtime impact."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:34.625Z"
 doc_updated_by: "agentplane"
@@ -41,3 +57,8 @@ description: "Minimize repeated snapshot mentions across AGENTS.md and agent JSO
 ## Rollback Plan
 
 - Revert commit `7d60d437aba0`.
+
+## Plan
+
+
+## Verification

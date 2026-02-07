@@ -5,12 +5,31 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs", "recipes", "analysis"]
+tags:
+  - "docs"
+  - "recipes"
+  - "analysis"
 verify: []
-commit: { hash: "b4c70ce1d0ca7c8c3052d568952ffb1b299660de", message: "✨ REC123 document recipes behavior" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b4c70ce1d0ca7c8c3052d568952ffb1b299660de"
+  message: "✨ REC123 document recipes behavior"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: Not run (documentation-only change) | details: lint/tests skipped by request. Notes: recipes behavior documented from current Node CLI implementation." }
-  - { author: "ORCHESTRATOR", body: "verified: Not run (documentation-only change). Notes: lint/tests skipped | details: behavior documented from current Node CLI implementation." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: Not run (documentation-only change) | details: lint/tests skipped by request. Notes: recipes behavior documented from current Node CLI implementation."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: Not run (documentation-only change). Notes: lint/tests skipped | details: behavior documented from current Node CLI implementation."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:31.057Z"
 doc_updated_by: "agentplane"
@@ -40,3 +59,8 @@ Documented how recipes work based on the current Node CLI implementation, includ
 ## Notes
 
 The doc intentionally separates Node CLI recipes from the legacy `.agent-plane/recipes.py` helper.
+
+## Plan
+
+
+## Verification

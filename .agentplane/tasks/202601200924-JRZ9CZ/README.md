@@ -5,9 +5,23 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "recipes"]
+tags:
+  - "docs"
+  - "recipes"
 verify: []
-commit: { hash: "2765924aa6ce9914af70f55930c1302daa750f7c", message: "✅ JRZ9CZ docs: add bundle read guidance" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2765924aa6ce9914af70f55930c1302daa750f7c"
+  message: "✅ JRZ9CZ docs: add bundle read guidance"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T09:25:09+00:00"
@@ -38,3 +52,8 @@ Review AGENTS.md and RECIPES.md for accuracy.
 ## Rollback Plan
 
 Revert documentation changes.
+
+## Plan
+
+
+## Verification

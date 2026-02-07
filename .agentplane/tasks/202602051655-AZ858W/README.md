@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "cab571a0a4c8cbff3a4f5a9202ca11b46ed27cf5", message: "✨ AZ858W update Redmine env defaults" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "cab571a0a4c8cbff3a4f5a9202ca11b46ed27cf5"
+  message: "✨ AZ858W update Redmine env defaults"
 comments:
-  - { author: "DOCS", body: "Start: update .env.example with recommended Redmine env defaults and note local .env owner alias." }
-  - { author: "DOCS", body: "Verified: format:check, lint, test:fast passed; .env.example updated with recommended Redmine env defaults." }
+  -
+    author: "DOCS"
+    body: "Start: update .env.example with recommended Redmine env defaults and note local .env owner alias."
+  -
+    author: "DOCS"
+    body: "Verified: format:check, lint, test:fast passed; .env.example updated with recommended Redmine env defaults."
 doc_version: 2
 doc_updated_at: "2026-02-05T16:58:07.453Z"
 doc_updated_by: "DOCS"
@@ -40,3 +57,5 @@ Document recommended Redmine env values in .env.example and align local .env own
 ## Rollback Plan
 
 - Revert .env.example changes if undesired.
+
+## Plan

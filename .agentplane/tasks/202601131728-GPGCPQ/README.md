@@ -5,18 +5,37 @@ status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
-tags: ["git", "workflow", "sync"]
+tags:
+  - "git"
+  - "workflow"
+  - "sync"
 verify: []
-commit: { hash: "3e56a20261227f0243ccffeecf1a4c8310abb68c", message: "✨ GPGCPQ sync stored comments with formatted commit subjects; reuse formatted text for comment-driven commits" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3e56a20261227f0243ccffeecf1a4c8310abb68c"
+  message: "✨ GPGCPQ sync stored comments with formatted commit subjects; reuse formatted text for comment-driven commits"
 comments:
-  - { author: "REDMINE", body: "verified: align stored comments with formatted commit subjects | details: docs updated; tests not run." }
-  - { author: "REDMINE", body: "verified: align stored comments with formatted commit subjects | details: docs updated; tests not run." }
+  -
+    author: "REDMINE"
+    body: "verified: align stored comments with formatted commit subjects | details: docs updated; tests not run."
+  -
+    author: "REDMINE"
+    body: "verified: align stored comments with formatted commit subjects | details: docs updated; tests not run."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:49.105Z"
 doc_updated_by: "agentplane"
 description: "Ensure comment-driven commits store the same formatted comment text used in commit subjects so length/content stay aligned and nothing is truncated across systems."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -45,3 +64,8 @@ Revert the agentctl commit that normalizes stored comments to restore previous c
 ## Notes
 
 The normalized comment text should be identical to the commit subject body fragment produced by comment-driven commits.
+
+## Plan
+
+
+## Verification

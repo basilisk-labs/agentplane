@@ -5,13 +5,32 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "769b13d6c21a50546143ad0cdc8b127b21948da4", message: "📝 6M1YXR require repo-local agentplane.js usage" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "769b13d6c21a50546143ad0cdc8b127b21948da4"
+  message: "📝 6M1YXR require repo-local agentplane.js usage"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: Update AGENTS.md to require repo-local agentplane.js usage and avoid system binaries." }
-  - { author: "ORCHESTRATOR", body: "Verified: Ran agentplane verify; it reported no verify commands configured for this documentation-only change." }
-  - { author: "ORCHESTRATOR", body: "Verified: Commit 769b13d6c21a captured AGENTS.md update; no additional verify commands configured." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Update AGENTS.md to require repo-local agentplane.js usage and avoid system binaries."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Ran agentplane verify; it reported no verify commands configured for this documentation-only change."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Commit 769b13d6c21a captured AGENTS.md update; no additional verify commands configured."
 doc_version: 2
 doc_updated_at: "2026-02-03T16:38:47.252Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -37,3 +56,8 @@ Not run (documentation-only change).
 ## Rollback Plan
 
 Revert AGENTS.md to the previous guidance.
+
+## Plan
+
+
+## Verification

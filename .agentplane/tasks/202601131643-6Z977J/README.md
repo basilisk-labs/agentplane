@@ -5,17 +5,32 @@ status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
-tags: ["tasks"]
+tags:
+  - "tasks"
 verify: []
-commit: { hash: "e701172accefdfc0e34992471983363a9303ae33", message: "✨ 6Z977J auto-create tasks after plan approval: remove post-approval task prompt; update orchestrator guidance; sync agentctl doc" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "e701172accefdfc0e34992471983363a9303ae33"
+  message: "✨ 6Z977J auto-create tasks after plan approval: remove post-approval task prompt; update orchestrator guidance; sync agentctl doc"
 comments:
-  - { author: "REDMINE", body: "Verified: documentation-only updates; no tests run; confirmed auto-task creation guidance." }
+  -
+    author: "REDMINE"
+    body: "Verified: documentation-only updates; no tests run; confirmed auto-task creation guidance."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:48.224Z"
 doc_updated_by: "agentplane"
 description: "Update orchestrator guidance so it auto-creates the top-level tracking task after plan approval unless the user explicitly opts out; remove the post-approval prompt asking whether to create tasks. Align AGENTS.md, .agent-plane/agents/ORCHESTRATOR.json, and .agent-plane/agentctl.md with the new flow."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -40,3 +55,8 @@ Revert commit e701172accef.
 ## Notes
 
 Task creation is automatic after plan approval unless the user opts out.
+
+## Plan
+
+
+## Verification

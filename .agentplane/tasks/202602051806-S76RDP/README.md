@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release", "git"]
+tags:
+  - "release"
+  - "git"
 verify: []
-commit: { hash: "1230485bea51a24eaf89d77cbf120cc2c37e56ed", message: "📝 DD9BY6 record task metadata" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "1230485bea51a24eaf89d77cbf120cc2c37e56ed"
+  message: "📝 DD9BY6 record task metadata"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: tag v0.1.6 and push main plus tag for release publish." }
-  - { author: "ORCHESTRATOR", body: "Verified: tag v0.1.6 points to HEAD and main+tag pushed after passing pre-push tests." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: tag v0.1.6 and push main plus tag for release publish."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: tag v0.1.6 points to HEAD and main+tag pushed after passing pre-push tests."
 doc_version: 2
 doc_updated_at: "2026-02-05T18:25:16.882Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -40,3 +58,5 @@ Tagged v0.1.6 on HEAD and confirmed tag points to latest release commit.
 ## Rollback Plan
 
 Delete tag locally and on origin, then retag the correct commit.
+
+## Plan

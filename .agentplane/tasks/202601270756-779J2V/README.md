@@ -4,13 +4,33 @@ title: "AP-003: Fix recipes spec v1 (manifest/schema/commands)"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601270755-M1Q50F"]
-tags: ["nodejs", "recipes", "spec"]
+depends_on:
+  - "202601270755-M1Q50F"
+tags:
+  - "nodejs"
+  - "recipes"
+  - "spec"
 verify: []
-commit: { hash: "eb94fcb00f796dd2837e125e8b1f08cfcd528dce", message: "✨ 779J2V recipes spec: document v1 and add recipe-manifest schema" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "eb94fcb00f796dd2837e125e8b1f08cfcd528dce"
+  message: "✨ 779J2V recipes spec: document v1 and add recipe-manifest schema"
 comments:
-  - { author: "CODER", body: "Start: writing recipes v1 spec doc and JSON Schema for manifest.json to support offline/local installs and remote catalog." }
-  - { author: "CODER", body: "verified: added docs/recipes-spec.md plus schemas/recipe-manifest.schema.json defining v1 recipe archive + manifest contract." }
+  -
+    author: "CODER"
+    body: "Start: writing recipes v1 spec doc and JSON Schema for manifest.json to support offline/local installs and remote catalog."
+  -
+    author: "CODER"
+    body: "verified: added docs/recipes-spec.md plus schemas/recipe-manifest.schema.json defining v1 recipe archive + manifest contract."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:02.775Z"
 doc_updated_by: "agentplane"
@@ -39,3 +59,8 @@ Define the v1 recipes spec (package format, manifest schema, and CLI surface) so
 ## Rollback Plan
 
 - Revert the recipe spec docs/schemas and keep recipes as an internal-only concept until M5.
+
+## Plan
+
+
+## Verification

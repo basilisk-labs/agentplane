@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "workflow"]
+tags:
+  - "docs"
+  - "workflow"
 verify: []
-commit: { hash: "ec13d916bfc5d0e577b757d2a16dd8380ca3861d", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ec13d916bfc5d0e577b757d2a16dd8380ca3861d"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "docs", body: "Added CONTRIBUTING.md with the requested contribution guidance." }
+  -
+    author: "docs"
+    body: "Added CONTRIBUTING.md with the requested contribution guidance."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:16.740Z"
 doc_updated_by: "agentplane"
@@ -29,3 +45,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

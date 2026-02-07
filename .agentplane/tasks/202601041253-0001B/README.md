@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["git", "workflow"]
+tags:
+  - "git"
+  - "workflow"
 verify: []
-commit: { hash: "a63694f182aff97ce18b5b9458bf54982e787120", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a63694f182aff97ce18b5b9458bf54982e787120"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "docs", body: ".gitignore now ignores `.env` variants following the cleanup." }
+  -
+    author: "docs"
+    body: ".gitignore now ignores `.env` variants following the cleanup."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:18.135Z"
 doc_updated_by: "agentplane"
@@ -29,3 +45,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

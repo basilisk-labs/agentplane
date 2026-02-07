@@ -4,12 +4,30 @@ title: "Integrate and verify recipes CLI changes"
 status: "DONE"
 priority: "med"
 owner: "INTEGRATOR"
-depends_on: ["202601191510-0AWCPY", "202601191510-6ZKD5S"]
-tags: ["recipes", "testing"]
+depends_on:
+  - "202601191510-0AWCPY"
+  - "202601191510-6ZKD5S"
+tags:
+  - "recipes"
+  - "testing"
 verify: []
-commit: { hash: "32756c66b7a73956cd183fa8c8aae937ccb4afef", message: "✨ BZPKM2 document integration summary for recipes CLI" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "32756c66b7a73956cd183fa8c8aae937ccb4afef"
+  message: "✨ BZPKM2 document integration summary for recipes CLI"
 comments:
-  - { author: "INTEGRATOR", body: "verified: reviewed recipes CLI and docs commits | details: no additional verification required." }
+  -
+    author: "INTEGRATOR"
+    body: "verified: reviewed recipes CLI and docs commits | details: no additional verification required."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:55.776Z"
 doc_updated_by: "agentplane"
@@ -42,3 +60,8 @@ Revert the recipes CLI and documentation commits if integration needs to be undo
 ## Notes
 
 Integration complete in direct mode; no branch/worktree merge required.
+
+## Plan
+
+
+## Verification

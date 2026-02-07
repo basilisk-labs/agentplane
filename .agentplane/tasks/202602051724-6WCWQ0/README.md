@@ -5,13 +5,33 @@ status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
-tags: ["release", "docs"]
+tags:
+  - "release"
+  - "docs"
 verify: []
-commit: { hash: "43a5d12584849db84f6fc89f52ae2693305eaa7b", message: "📝 6WCWQ0 add v0.1.5 release notes" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "43a5d12584849db84f6fc89f52ae2693305eaa7b"
+  message: "📝 6WCWQ0 add v0.1.5 release notes"
 comments:
-  - { author: "DOCS", body: "Start: drafting release notes for v0.1.5 from v0.1.4..HEAD and capturing user-facing changes." }
-  - { author: "DOCS", body: "Verified: release notes created and reviewed against v0.1.4..HEAD log." }
-  - { author: "DOCS", body: "Verified: release notes created and reviewed against v0.1.4..HEAD log." }
+  -
+    author: "DOCS"
+    body: "Start: drafting release notes for v0.1.5 from v0.1.4..HEAD and capturing user-facing changes."
+  -
+    author: "DOCS"
+    body: "Verified: release notes created and reviewed against v0.1.4..HEAD log."
+  -
+    author: "DOCS"
+    body: "Verified: release notes created and reviewed against v0.1.4..HEAD log."
 doc_version: 2
 doc_updated_at: "2026-02-05T17:33:36.631Z"
 doc_updated_by: "DOCS"
@@ -41,3 +61,5 @@ Reviewed docs/releases/v0.1.5.md against git log v0.1.4..HEAD.
 ## Rollback Plan
 
 Remove docs/releases/v0.1.5.md if notes are incorrect.
+
+## Plan

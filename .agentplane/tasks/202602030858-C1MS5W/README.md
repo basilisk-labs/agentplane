@@ -5,13 +5,32 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["testing"]
+tags:
+  - "testing"
 verify: []
-commit: { hash: "dd0d0788ecd52a358887c79b5bfb7f8654dbfadd", message: "🧾 C1MS5W record test run and push" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "dd0d0788ecd52a358887c79b5bfb7f8654dbfadd"
+  message: "🧾 C1MS5W record test run and push"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: run fast/full tests, resolve any failures, confirm clean status, then push to remote." }
-  - { author: "ORCHESTRATOR", body: "Verified: ran bun run test:fast and bun run test:full; pre-push hook re-ran full tests; git push succeeded." }
-  - { author: "ORCHESTRATOR", body: "Verified: ran bun run test:fast and bun run test:full; pre-push hook re-ran full tests; git push succeeded." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: run fast/full tests, resolve any failures, confirm clean status, then push to remote."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: ran bun run test:fast and bun run test:full; pre-push hook re-ran full tests; git push succeeded."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: ran bun run test:fast and bun run test:full; pre-push hook re-ran full tests; git push succeeded."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:50.064Z"
 doc_updated_by: "agentplane"
@@ -39,3 +58,8 @@ None; pre-push hook re-ran the full test suite.
 ## Rollback Plan
 
 No rollback required; no repository changes were made.
+
+## Plan
+
+
+## Verification

@@ -5,9 +5,24 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["workflow", "cleanup", "policy"]
+tags:
+  - "workflow"
+  - "cleanup"
+  - "policy"
 verify: []
-commit: { hash: "c9a25a5a7d02119017ef6fff74de6d1d63d29b7e", message: "🧹 MADM7W suffix-only commit policy" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c9a25a5a7d02119017ef6fff74de6d1d63d29b7e"
+  message: "🧹 MADM7W suffix-only commit policy"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -39,3 +54,8 @@ description: "Enforce suffix-only task IDs in commit subjects, remove non-Englis
 ## Rollback Plan
 
 - Revert the commit and re-export tasks.json from the prior state.
+
+## Plan
+
+
+## Verification

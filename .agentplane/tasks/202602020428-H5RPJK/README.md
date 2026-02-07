@@ -5,11 +5,28 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["refactor", "nodejs", "cli"]
+tags:
+  - "refactor"
+  - "nodejs"
+  - "cli"
 verify: []
-commit: { hash: "a4c01b7ba474d06c44b21d1073dc41238daffb18", message: "♻️ H5RPJK refactor cli helpers: extract fs/prompts/bundled recipes" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a4c01b7ba474d06c44b21d1073dc41238daffb18"
+  message: "♻️ H5RPJK refactor cli helpers: extract fs/prompts/bundled recipes"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: ran bun run test:cli:core, bun run test:cli:recipes, and bun run test:cli:scenario." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: ran bun run test:cli:core, bun run test:cli:recipes, and bun run test:cli:scenario."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:40.394Z"
 doc_updated_by: "agentplane"
@@ -42,3 +59,8 @@ Refactor the Node.js CLI code into clearer modules while preserving CLI behavior
 
 - Revert refactor commits and restore prior module layout if tests fail.
 - Re-run CLI tests to confirm baseline behavior.
+
+## Plan
+
+
+## Verification

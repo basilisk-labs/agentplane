@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs", "roadmap", "cleanup"]
+tags:
+  - "docs"
+  - "roadmap"
+  - "cleanup"
 verify: []
-commit: { hash: "288bfc1d0793b4b65ac77a20134d9221a4da03b5", message: "✨ VYSD18 0K6CMD BEQYED PAR1TY RDMP01 RCP1A2 RJHP2H quickstart guide, recipes explain, parity docs, roadmap" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "288bfc1d0793b4b65ac77a20134d9221a4da03b5"
+  message: "✨ VYSD18 0K6CMD BEQYED PAR1TY RDMP01 RCP1A2 RJHP2H quickstart guide, recipes explain, parity docs, roadmap"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:34.557Z"
 doc_updated_by: "agentplane"
@@ -34,3 +51,8 @@ Review ROADMAP.md for accuracy and references.
 ## Rollback Plan
 
 Remove ROADMAP.md or revert the commit to restore prior state.
+
+## Plan
+
+
+## Verification

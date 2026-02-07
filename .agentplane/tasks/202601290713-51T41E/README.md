@@ -4,13 +4,37 @@ title: "AP-026: init interactive + non-TTY flags"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601270756-B8J0CW", "202601270756-V6CK4Q", "202601270943-DEBAMR", "202601271201-64SSC0", "202601290713-JACYHS"]
-tags: ["roadmap", "nodejs", "init"]
+depends_on:
+  - "202601270756-B8J0CW"
+  - "202601270756-V6CK4Q"
+  - "202601270943-DEBAMR"
+  - "202601271201-64SSC0"
+  - "202601290713-JACYHS"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "init"
 verify: []
-commit: { hash: "ccd6c06cb81ed9c6e634d7838e2250244af2013a", message: "test: 51T41E cover init flag validation and integrate quiet parse" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ccd6c06cb81ed9c6e634d7838e2250244af2013a"
+  message: "test: 51T41E cover init flag validation and integrate quiet parse"
 comments:
-  - { author: "CODER", body: "Start: Begin AP-026 implementation for agentplane init (interactive + non-TTY flags)." }
-  - { author: "CODER", body: "verified: 51T41E close: bun run ci | details: update doc sections and mark DONE." }
+  -
+    author: "CODER"
+    body: "Start: Begin AP-026 implementation for agentplane init (interactive + non-TTY flags)."
+  -
+    author: "CODER"
+    body: "verified: 51T41E close: bun run ci | details: update doc sections and mark DONE."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:15.511Z"
 doc_updated_by: "agentplane"
@@ -35,3 +59,8 @@ bun run ci
 ## Rollback Plan
 
 git revert <commit>
+
+## Plan
+
+
+## Verification

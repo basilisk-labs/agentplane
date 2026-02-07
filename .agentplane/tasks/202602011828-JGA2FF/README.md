@@ -5,11 +5,28 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["init", "agents", "docs"]
+tags:
+  - "init"
+  - "agents"
+  - "docs"
 verify: []
-commit: { hash: "27817e8a50742b36ce3f2b77ad48fc1dd3f7c70f", message: "📝 JGA2FF align init templates: sync agent text and assert exact match" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "27817e8a50742b36ce3f2b77ad48fc1dd3f7c70f"
+  message: "📝 JGA2FF align init templates: sync agent text and assert exact match"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: ran bun run test:cli:core and bun run test:cli:scenario | details: synced agent template text with repo agents and asserted exact matches." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: ran bun run test:cli:core and bun run test:cli:scenario | details: synced agent template text with repo agents and asserted exact matches."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:40.044Z"
 doc_updated_by: "agentplane"
@@ -40,3 +57,8 @@ Audit and fix agentplane init to render AGENTS.md and agent JSON files from curr
 
 - Revert changes to init/template rendering and related tests.
 - Restore previous AGENTS.md/agent templates if needed.
+
+## Plan
+
+
+## Verification

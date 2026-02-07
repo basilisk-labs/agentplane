@@ -4,12 +4,32 @@ title: "agentctl: pr check validates README completeness"
 status: "DONE"
 priority: "normal"
 owner: "CODER"
-depends_on: ["202601041253-0002A"]
-tags: ["agentctl", "workflow", "quality"]
-verify: ["python -m compileall scripts/agentctl.py", "python scripts/agentctl.py task lint"]
-commit: { hash: "1d665885edb4a478f1e627e75e0cceb8d34b569e", message: "Legacy completion (backfill)" }
+depends_on:
+  - "202601041253-0002A"
+tags:
+  - "agentctl"
+  - "workflow"
+  - "quality"
+verify:
+  - "python -m compileall scripts/agentctl.py"
+  - "python scripts/agentctl.py task lint"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "1d665885edb4a478f1e627e75e0cceb8d34b569e"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/T-078/pr." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/T-078/pr."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:26.992Z"
 doc_updated_by: "agentplane"
@@ -29,3 +49,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

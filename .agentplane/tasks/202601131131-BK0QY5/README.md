@@ -5,12 +5,29 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["tasks"]
+tags:
+  - "tasks"
 verify: []
-commit: { hash: "59702a9703596bd4a062f967ec69b24a452d5315", message: "✨ BK0QY5 replace roadmap flow: update AGENTS.md orchestration; sync ORCHESTRATOR/PLANNER specs; adjust umbrella task guidance" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "59702a9703596bd4a062f967ec69b24a452d5315"
+  message: "✨ BK0QY5 replace roadmap flow: update AGENTS.md orchestration; sync ORCHESTRATOR/PLANNER specs; adjust umbrella task guidance"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: replace roadmap flow with top-level plan and task proposal." }
-  - { author: "ORCHESTRATOR", body: "Verified: not run (spec-only updates); no executable changes or tests required in this task." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: replace roadmap flow with top-level plan and task proposal."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: not run (spec-only updates); no executable changes or tests required in this task."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:44.208Z"
 doc_updated_by: "agentplane"
@@ -39,3 +56,8 @@ No tests (spec changes only).
 ## Rollback Plan
 
 Revert the commit to restore the prior roadmap workflow.
+
+## Plan
+
+
+## Verification

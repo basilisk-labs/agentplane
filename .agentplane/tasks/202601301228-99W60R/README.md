@@ -5,11 +5,27 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["config", "docs"]
+tags:
+  - "config"
+  - "docs"
 verify: []
-commit: { hash: "0e9d07c1b46118f7cb600143436ebc71b626b6a3", message: "✨ 99W60R sync config.json formatting with code" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "0e9d07c1b46118f7cb600143436ebc71b626b6a3"
+  message: "✨ 99W60R sync config.json formatting with code"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: Formatting-only change | details: no automated tests run beyond pre-commit format/lint hooks." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: Formatting-only change | details: no automated tests run beyond pre-commit format/lint hooks."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:28.431Z"
 doc_updated_by: "agentplane"
@@ -38,3 +54,8 @@ User requested syncing config format with code; use packages/spec/examples/confi
 ## Rollback Plan
 
 - Revert .agent-plane/config.json to the previous revision.
+
+## Plan
+
+
+## Verification

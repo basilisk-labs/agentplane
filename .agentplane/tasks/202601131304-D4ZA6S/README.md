@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "config"]
+tags:
+  - "agentctl"
+  - "config"
 verify: []
-commit: { hash: "dddeba676b1818a4b66c49ed91f3db1cdc47cb97", message: "✨ D4ZA6S add config-driven settings and config CLI" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "dddeba676b1818a4b66c49ed91f3db1cdc47cb97"
+  message: "✨ D4ZA6S add config-driven settings and config CLI"
 comments:
-  - { author: "CODER", body: "Verified: ran python .agent-plane/agentctl.py --help to confirm config show/set is registered; changes add config-driven defaults in agentctl and config.json." }
+  -
+    author: "CODER"
+    body: "Verified: ran python .agent-plane/agentctl.py --help to confirm config show/set is registered; changes add config-driven defaults in agentctl and config.json."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:46.677Z"
 doc_updated_by: "agentplane"
@@ -42,3 +58,8 @@ Revert .agent-plane/config.json and .agent-plane/agentctl.py to the previous com
 ## Notes
 
 Added config keys: base_branch, paths.worktrees_dir, branch.task_prefix, tasks.id_suffix_length_default, tasks.verify.required_tags, tasks.doc sections, tasks.comments rules, commit.generic_tokens; added agentctl config show/set.
+
+## Plan
+
+
+## Verification

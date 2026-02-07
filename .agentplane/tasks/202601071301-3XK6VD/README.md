@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "PLANNER"
 depends_on: []
-tags: ["agents", "docs"]
+tags:
+  - "agents"
+  - "docs"
 verify: []
-commit: { hash: "3ad71a3bcebb400acf2b8204c490415b406511b4", message: "🧩 3XK6VD centralize commit format: define canonical format in agentctl; replace per-agent format rules with agentctl reference; align AGENTS commit rule to agentctl" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3ad71a3bcebb400acf2b8204c490415b406511b4"
+  message: "🧩 3XK6VD centralize commit format: define canonical format in agentctl; replace per-agent format rules with agentctl reference; align AGENTS commit rule to agentctl"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: not run; doc/instruction edits only, no runtime impact." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: not run; doc/instruction edits only, no runtime impact."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:33.392Z"
 doc_updated_by: "agentplane"
@@ -42,3 +58,8 @@ description: "Make agentctl.md the single source of truth for commit format; upd
 ## Rollback Plan
 
 - Revert commit `3ad71a3bcebb`.
+
+## Plan
+
+
+## Verification

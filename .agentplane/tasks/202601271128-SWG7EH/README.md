@@ -5,11 +5,28 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["nodejs", "roadmap", "m1"]
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "m1"
 verify: []
-commit: { hash: "33b854c64ad1cb069840ad4da87c2d5089f44c91", message: "✨ SWG7EH plan: track M1 completion" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "33b854c64ad1cb069840ad4da87c2d5089f44c91"
+  message: "✨ SWG7EH plan: track M1 completion"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: bun run ci passed | details: M1 completion tracked and AP-012 deliverables are pushed." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run ci passed | details: M1 completion tracked and AP-012 deliverables are pushed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:09.380Z"
 doc_updated_by: "agentplane"
@@ -34,3 +51,8 @@ bun run ci
 ## Rollback Plan
 
 Revert commits d78c21e6561c and b000cf3964bf (and 33b854c64ad1 for task creation).
+
+## Plan
+
+
+## Verification

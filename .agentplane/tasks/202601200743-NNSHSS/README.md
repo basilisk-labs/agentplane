@@ -4,12 +4,29 @@ title: "Phase Redmine backend to recipe"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601200743-6CQN5R"]
-tags: ["recipes", "planning"]
+depends_on:
+  - "202601200743-6CQN5R"
+tags:
+  - "recipes"
+  - "planning"
 verify: []
-commit: { hash: "b09bec2ae55a0afa1f5864ffd4cbdc133a73b55d", message: "✅ 6CQN5R verified: close: redmine recipe spec defined with scenarios, inputs, outputs, and mini-cli contract." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b09bec2ae55a0afa1f5864ffd4cbdc133a73b55d"
+  message: "✅ 6CQN5R verified: close: redmine recipe spec defined with scenarios, inputs, outputs, and mini-cli contract."
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: close: redmine migration steps and dependencies recorded." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: close: redmine migration steps and dependencies recorded."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:00.897Z"
 doc_updated_by: "agentplane"
@@ -42,3 +59,8 @@ Keep core local backend untouched; re-enable local backend via recipe disable co
 ## Notes
 
 Implementation task should include updating docs/12-redmine.md to point to the recipe enable/disable workflow.
+
+## Plan
+
+
+## Verification

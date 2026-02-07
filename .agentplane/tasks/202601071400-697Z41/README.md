@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["readme", "docs", "agentctl"]
+tags:
+  - "readme"
+  - "docs"
+  - "agentctl"
 verify: []
-commit: { hash: "95bfbb7f4d285be96102403b7946db516fa7358e", message: "✨ 697Z41 harden task README metadata guard across backends" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "95bfbb7f4d285be96102403b7946db516fa7358e"
+  message: "✨ 697Z41 harden task README metadata guard across backends"
 comments:
-  - { author: "CODER", body: "Verified: ran python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/local/backend.py .agent-plane/backends/redmine/backend.py and python .agent-plane/agentctl.py task lint; README metadata guard now applies across backends and task doc notes updated." }
+  -
+    author: "CODER"
+    body: "Verified: ran python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/local/backend.py .agent-plane/backends/redmine/backend.py and python .agent-plane/agentctl.py task lint; README metadata guard now applies across backends and task doc notes updated."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:35.478Z"
 doc_updated_by: "agentplane"
@@ -56,6 +73,11 @@ description: "Refine task README.md format for human/agent readability and enfor
 - Redmine needs custom fields for comments/doc metadata to keep parity with local.
 - Journal notes are appended only when comment list grows in order.
 - README metadata guard now enforces agentctl frontmatter even when the active backend is not local (cache + Redmine workflows).
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

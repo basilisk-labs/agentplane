@@ -5,9 +5,22 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["workflow"]
+tags:
+  - "workflow"
 verify: []
-commit: { hash: "ffcdb2da7012172300e53cd8ac5f2d6b412a64f5", message: "🐛 XS8TD4 fix view toggle and add order indicator" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ffcdb2da7012172300e53cd8ac5f2d6b412a64f5"
+  message: "🐛 XS8TD4 fix view toggle and add order indicator"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -43,3 +56,8 @@ Revert the updated toggle and visibility logic in `.agent-plane/viewer/tasks.htm
 ## Notes
 
 No backend changes required.
+
+## Plan
+
+
+## Verification

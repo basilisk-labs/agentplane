@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["parity", "audit", "nodejs", "agentctl"]
+tags:
+  - "parity"
+  - "audit"
+  - "nodejs"
+  - "agentctl"
 verify: []
-commit: { hash: "dd3c6909140aa0bd96555ceebdec639ddf66c038", message: "✨ Z2MR4B add parity audit reports" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "dd3c6909140aa0bd96555ceebdec639ddf66c038"
+  message: "✨ Z2MR4B add parity audit reports"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: begin full parity audit of python agentctl + scripts vs node cli." }
-  - { author: "ORCHESTRATOR", body: "verified: produced python inventory, parity matrix, and report | details: audit files saved under docs/audits." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: begin full parity audit of python agentctl + scripts vs node cli."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: produced python inventory, parity matrix, and report | details: audit files saved under docs/audits."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:29.553Z"
 doc_updated_by: "agentplane"
@@ -35,3 +55,8 @@ description: "Audit Python agentctl + supporting scripts, compare against Node.j
 ## Rollback Plan
 
 - Reopen the task and expand the audit if gaps are found after review.\n- Revise the parity plan and re-issue the report.
+
+## Plan
+
+
+## Verification

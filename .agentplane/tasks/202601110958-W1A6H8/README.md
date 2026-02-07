@@ -5,17 +5,33 @@ status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
-tags: ["sync", "redmine"]
+tags:
+  - "sync"
+  - "redmine"
 verify: []
-commit: { hash: "0e5bacb3095951ee4f4d7a36658dfc733b580f4b", message: "✨ W1A6H8 FZ099X switch to redmine backend and add redmine sync smoke tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "0e5bacb3095951ee4f4d7a36658dfc733b580f4b"
+  message: "✨ W1A6H8 FZ099X switch to redmine backend and add redmine sync smoke tests"
 comments:
-  - { author: "CODER", body: "Verified: ran python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py; migrated a 3-task subset to Redmine (full 150-task migration timed out); task list + sync pull show remote tasks; created and exercised test task 202601111002-FZ099X (doc + comment) via Redmine backend." }
+  -
+    author: "CODER"
+    body: "Verified: ran python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py; migrated a 3-task subset to Redmine (full 150-task migration timed out); task list + sync pull show remote tasks; created and exercised test task 202601111002-FZ099X (doc + comment) via Redmine backend."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:38.702Z"
 doc_updated_by: "agentplane"
 description: "Switch backend to Redmine using env config, migrate local tasks as source of truth, and validate CRUD/sync flows."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -55,3 +71,8 @@ Switch backend to Redmine using env config and prove end-to-end sync from local 
 ## Notes
 
 - Full migration of 150 tasks to Redmine hit HTTP timeouts; migrated a 3-task subset for smoke testing instead.\n- Created test task 202601111002-FZ099X via Redmine backend, updated docs, and added a comment to verify custom fields/journals.\n-  succeeds; owners/priorities reflect Redmine assignee/priority names (e.g., Via Mentis Assistant / "normal").
+
+## Plan
+
+
+## Verification

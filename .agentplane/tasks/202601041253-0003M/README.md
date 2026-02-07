@@ -5,16 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agents", "tasks"]
+tags:
+  - "agents"
+  - "tasks"
 verify: []
-commit: { hash: "188350307b487d91a3ef004847f87f8b6d1a3995", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "188350307b487d91a3ef004847f87f8b6d1a3995"
+  message: "Legacy completion (backfill)"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Update agent prompts to require tasks.json export after finish/closure and align task source-of-truth wording with backend model."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 # 202601041253-0003M: Agents: export tasks.json on close
 
@@ -48,3 +62,8 @@ id_source: "custom"
 
 - Updated agent prompts to treat `tasks.json` as a snapshot and export it after closure.
 - Aligned backend wording across AGENTS and agent JSONs.
+
+## Plan
+
+
+## Verification

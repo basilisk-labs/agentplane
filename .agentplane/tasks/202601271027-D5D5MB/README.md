@@ -4,12 +4,31 @@ title: "AP-010: Task doc set + metadata enforcement"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601271008-63G26Q"]
-tags: ["nodejs", "roadmap", "tasks"]
-verify: ["bun run ci"]
-commit: { hash: "00c544bd0ab65b43f35c0af26d6dcd3268b5f97c", message: "✨ D5D5MB AP-010: task doc set + metadata enforcement" }
+depends_on:
+  - "202601271008-63G26Q"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "tasks"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "00c544bd0ab65b43f35c0af26d6dcd3268b5f97c"
+  message: "✨ D5D5MB AP-010: task doc set + metadata enforcement"
 comments:
-  - { author: "CODER", body: "verified: bun run ci passed | details: details: add agentplane task doc set + enforce doc metadata fields; update gitignore so coverage/index.html is visible in IDE." }
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: details: add agentplane task doc set + enforce doc metadata fields; update gitignore so coverage/index.html is visible in IDE."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:08.014Z"
 doc_updated_by: "agentplane"
@@ -37,3 +56,8 @@ bun run ci
 ## Rollback Plan
 
 git revert 00c544bd0ab6
+
+## Plan
+
+
+## Verification

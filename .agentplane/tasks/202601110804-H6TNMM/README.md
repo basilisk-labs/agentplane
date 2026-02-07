@@ -5,17 +5,33 @@ status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
-tags: ["git", "workflow"]
+tags:
+  - "git"
+  - "workflow"
 verify: []
-commit: { hash: "22de83cff2560324e36b4904e559141b1bef206b", message: "✅ H6TNMM backfill commit metadata export" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "22de83cff2560324e36b4904e559141b1bef206b"
+  message: "✅ H6TNMM backfill commit metadata export"
 comments:
-  - { author: "CODER", body: "Verified: task lint passes after commit backfill; legacy branch parsing removed per request." }
+  -
+    author: "CODER"
+    body: "Verified: task lint passes after commit backfill; legacy branch parsing removed per request."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:37.536Z"
 doc_updated_by: "agentplane"
 description: "Drop old T-### compatibility from agentctl/clean.sh and backfill commit metadata on DONE tasks to keep lint clean."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -47,3 +63,8 @@ We no longer need legacy T-### branches or task reid; branch_pr mode should only
 ## Notes
 
 - Owner warnings for 'AUTOMATION' remain; acceptable as lint warnings.
+
+## Plan
+
+
+## Verification

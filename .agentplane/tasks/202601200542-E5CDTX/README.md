@@ -5,11 +5,27 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["recipes", "docs"]
+tags:
+  - "recipes"
+  - "docs"
 verify: []
-commit: { hash: "f91c90b847200d91fc5dadfdff39f83ae31a0126", message: "✨ 202601200542-E5CDTX update roadmap recipe docs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f91c90b847200d91fc5dadfdff39f83ae31a0126"
+  message: "✨ 202601200542-E5CDTX update roadmap recipe docs"
 comments:
-  - { author: "DOCS", body: "verified: close: roadmap recipe docs in English | details: updated scenarios and input schemas; documented layout and inventory workflow." }
+  -
+    author: "DOCS"
+    body: "verified: close: roadmap recipe docs in English | details: updated scenarios and input schemas; documented layout and inventory workflow."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:57.439Z"
 doc_updated_by: "agentplane"
@@ -42,3 +58,8 @@ Revert commit f91c90b84720 to restore the prior documentation and schemas.
 ## Notes
 
 Documentation-only changes; no runtime behavior updates in this task.
+
+## Plan
+
+
+## Verification

@@ -4,10 +4,26 @@ title: "Connect agents to global bundle"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601200924-JRZ9CZ", "202601200924-1YRX4P"]
-tags: ["recipes", "workflow"]
+depends_on:
+  - "202601200924-JRZ9CZ"
+  - "202601200924-1YRX4P"
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "fd7b8cd355edd6c825de15c80511ceabeb28b3e7", message: "✅ 1YRX4P orchestrator: read global bundle" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "fd7b8cd355edd6c825de15c80511ceabeb28b3e7"
+  message: "✅ 1YRX4P orchestrator: read global bundle"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T09:25:24+00:00"
@@ -38,3 +54,8 @@ Review AGENTS.md, RECIPES.md, and ORCHESTRATOR.json for consistency.
 ## Rollback Plan
 
 Revert docs and workflow changes.
+
+## Plan
+
+
+## Verification

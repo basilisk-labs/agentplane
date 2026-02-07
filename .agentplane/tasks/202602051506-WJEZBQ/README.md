@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "8b400e4a2eb2c2a5478de2180116fdd6abc758db", message: "📝 WJEZBQ split backend docs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8b400e4a2eb2c2a5478de2180116fdd6abc758db"
+  message: "📝 WJEZBQ split backend docs"
 comments:
-  - { author: "DOCS", body: "Verified: Local and Redmine backend sections separated; Redmine parity requirements include extra fields and mapping note." }
+  -
+    author: "DOCS"
+    body: "Verified: Local and Redmine backend sections separated; Redmine parity requirements include extra fields and mapping note."
 doc_version: 2
 doc_updated_at: "2026-02-05T15:07:29.505Z"
 doc_updated_by: "DOCS"
@@ -48,3 +63,5 @@ Pending.
 
 - Revert changes in docs/user/backends.mdx.
 - Update Verification with rollback note if needed.
+
+## Plan

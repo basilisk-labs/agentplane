@@ -5,11 +5,26 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["workflow"]
+tags:
+  - "workflow"
 verify: []
-commit: { hash: "7cd26ceb1def078ab4426a44fe0c2629601220c1", message: "✨ ZR7CN1 remove umbrella wording; clarify top-level plan language; update planner/orchestrator specs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7cd26ceb1def078ab4426a44fe0c2629601220c1"
+  message: "✨ ZR7CN1 remove umbrella wording; clarify top-level plan language; update planner/orchestrator specs"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: remove umbrella mentions in AGENTS.md; update ORCHESTRATOR/PLANNER specs; doc-only change; no tests run." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: remove umbrella mentions in AGENTS.md; update ORCHESTRATOR/PLANNER specs; doc-only change; no tests run."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:47.601Z"
 doc_updated_by: "agentplane"
@@ -47,6 +62,11 @@ description: "Remove umbrella task mentions and rephrase instructions so the orc
 ## Notes
 
 - None.
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

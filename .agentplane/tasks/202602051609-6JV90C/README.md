@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["tasks", "workflow", "bug"]
+tags:
+  - "tasks"
+  - "workflow"
+  - "bug"
 verify: []
-commit: { hash: "ebe79986333ccc8d9e6eaeba9c8e0d676807df91", message: "🐛 6JV90C normalize depends_on inputs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ebe79986333ccc8d9e6eaeba9c8e0d676807df91"
+  message: "🐛 6JV90C normalize depends_on inputs"
 comments:
-  - { author: "CODER", body: "Start: Fix depends_on parsing and normalize task README frontmatter." }
-  - { author: "CODER", body: "Verified: Fixed depends_on parsing (ignore []), normalized frontmatter via task normalize, bun run test:fast." }
+  -
+    author: "CODER"
+    body: "Start: Fix depends_on parsing and normalize task README frontmatter."
+  -
+    author: "CODER"
+    body: "Verified: Fixed depends_on parsing (ignore []), normalized frontmatter via task normalize, bun run test:fast."
 doc_version: 2
 doc_updated_at: "2026-02-05T16:16:31.654Z"
 doc_updated_by: "CODER"
@@ -44,3 +63,5 @@ Normalize depends_on handling so literal [] inputs do not create invalid referen
 ## Rollback Plan
 
 - Revert parsing/normalization changes.
+
+## Plan

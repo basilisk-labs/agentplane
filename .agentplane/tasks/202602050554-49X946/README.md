@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "cli", "update-check", "integration"]
+tags:
+  - "roadmap"
+  - "cli"
+  - "update-check"
+  - "integration"
 verify: []
-commit: { hash: "b8d498ad200bd00637fb3da03e2a6e7ea075e076", message: "🧩 49X946 integrate cached update-check" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b8d498ad200bd00637fb3da03e2a6e7ea075e076"
+  message: "🧩 49X946 integrate cached update-check"
 comments:
-  - { author: "CODER", body: "Start: integrate cached update-check into CLI and adjust tests." }
-  - { author: "CODER", body: "Verified: cached update-check integrated; tests updated; pre-commit hooks passed." }
+  -
+    author: "CODER"
+    body: "Start: integrate cached update-check into CLI and adjust tests."
+  -
+    author: "CODER"
+    body: "Verified: cached update-check integrated; tests updated; pre-commit hooks passed."
 doc_version: 2
 doc_updated_at: "2026-02-05T06:06:24.848Z"
 doc_updated_by: "CODER"
@@ -36,3 +56,8 @@ Run update-check integration tests; ensure no network for fresh cache and proper
 ## Rollback Plan
 
 Revert the CLI integration commit to restore previous update-check behavior.
+
+## Plan
+
+
+## Verification

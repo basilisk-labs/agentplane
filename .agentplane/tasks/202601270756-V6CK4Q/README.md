@@ -4,13 +4,33 @@ title: "AP-006: Project config (config.json) + validation + config show|set"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601270756-RMNY59", "202601270756-KREHV4"]
-tags: ["nodejs", "config"]
+depends_on:
+  - "202601270756-RMNY59"
+  - "202601270756-KREHV4"
+tags:
+  - "nodejs"
+  - "config"
 verify: []
-commit: { hash: "b7843363e7eae64f96f5344b3748075f00994992", message: "✨ V6CK4Q config: add core config loader/validator and cli config show|set" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b7843363e7eae64f96f5344b3748075f00994992"
+  message: "✨ V6CK4Q config: add core config loader/validator and cli config show|set"
 comments:
-  - { author: "CODER", body: "Start: implementing .agentplane/config.json load/save+validation and wiring agentplane config show|set into the Node CLI stub." }
-  - { author: "CODER", body: "verified: implemented .agentplane/config.json defaults+validation in @agentplane/core and wired agentplane config show | details: set (requires npm install+build to run)." }
+  -
+    author: "CODER"
+    body: "Start: implementing .agentplane/config.json load/save+validation and wiring agentplane config show|set into the Node CLI stub."
+  -
+    author: "CODER"
+    body: "verified: implemented .agentplane/config.json defaults+validation in @agentplane/core and wired agentplane config show | details: set (requires npm install+build to run)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:03.922Z"
 doc_updated_by: "agentplane"
@@ -45,3 +65,8 @@ Implement `.agentplane/config.json` defaults + schema validation and expose `age
 ## Rollback Plan
 
 - Revert config read/write changes and keep config hard-coded until schema stabilizes.
+
+## Plan
+
+
+## Verification

@@ -5,9 +5,23 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["recipes", "dokploy"]
+tags:
+  - "recipes"
+  - "dokploy"
 verify: []
-commit: { hash: "b5bd66823e703c9a539be81d60d6a32f1db90287", message: "✨ 202601300418-XPJTRW load .env in dokploy tool" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b5bd66823e703c9a539be81d60d6a32f1db90287"
+  message: "✨ 202601300418-XPJTRW load .env in dokploy tool"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-30T04:19:22+00:00"
@@ -42,3 +56,8 @@ Dokploy scenarios require API endpoint and key from .env; this change reduces fr
 ## Notes
 
 Loader ignores comments/blank lines and strips surrounding quotes.
+
+## Plan
+
+
+## Verification

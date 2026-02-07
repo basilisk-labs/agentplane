@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["recipes", "workflow"]
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "cdb841383165163e845dc4204580b8f052c3d08c", message: "✨ 202601200542-534F3X implement roadmap recipe runner" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "cdb841383165163e845dc4204580b8f052c3d08c"
+  message: "✨ 202601200542-534F3X implement roadmap recipe runner"
 comments:
-  - { author: "ORCHESTRATOR", body: "Subtasks: 202601200542-E5CDTX (docs updates), 202601200542-534F3X (runner/manifest updates)." }
-  - { author: "ORCHESTRATOR", body: "verified: close: roadmap recipe overhaul complete | details: docs and schemas aligned; runner and manifest updated; inventory refreshed." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Subtasks: 202601200542-E5CDTX (docs updates), 202601200542-534F3X (runner/manifest updates)."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: close: roadmap recipe overhaul complete | details: docs and schemas aligned; runner and manifest updated; inventory refreshed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:57.090Z"
 doc_updated_by: "agentplane"
@@ -43,3 +61,8 @@ Revert commits f91c90b84720 and cdb841383165 to undo the docs and runner changes
 ## Notes
 
 Subtasks completed: 202601200542-E5CDTX (docs), 202601200542-534F3X (runner and manifest).
+
+## Plan
+
+
+## Verification

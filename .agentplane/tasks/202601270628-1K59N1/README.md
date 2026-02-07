@@ -5,9 +5,22 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["nodejs"]
+tags:
+  - "nodejs"
 verify: []
-commit: { hash: "24b66f5d8c85bbeb344970da45c41d3ad760c33a", message: "✨ 1K59N1 roadmap: Node.js port plan" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "24b66f5d8c85bbeb344970da45c41d3ad760c33a"
+  message: "✨ 1K59N1 roadmap: Node.js port plan"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-27T06:29:03+00:00"
@@ -33,3 +46,8 @@ Create ROADMAP.md (repo root) describing the full work breakdown to port the cur
 ## Rollback Plan
 
 - git revert <commit-hash> (reverts ROADMAP.md + task artifacts).\n- If tasks export becomes inconsistent, re-run: python .agent-plane/agentctl.py task export --format json --out .agent-plane/tasks.json
+
+## Plan
+
+
+## Verification

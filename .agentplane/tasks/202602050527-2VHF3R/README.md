@@ -5,13 +5,35 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "cli", "errors", "contract"]
+tags:
+  - "roadmap"
+  - "cli"
+  - "errors"
+  - "contract"
 verify: []
-commit: { hash: "0e43b050ec7a13329ae787bff9163f0f64a0fd4b", message: "🧩 2VHF3R align exit codes with contract" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "0e43b050ec7a13329ae787bff9163f0f64a0fd4b"
+  message: "🧩 2VHF3R align exit codes with contract"
 comments:
-  - { author: "CODER", body: "Start: align E_NETWORK/E_BACKEND exit codes and add contract tests." }
-  - { author: "CODER", body: "Verified: bun run test:agentplane; bun run test:cli:core; updated E_NETWORK/E_BACKEND exit codes per contract." }
-  - { author: "CODER", body: "Verified: bun run test:agentplane; bun run test:cli:core; updated exit codes per contract." }
+  -
+    author: "CODER"
+    body: "Start: align E_NETWORK/E_BACKEND exit codes and add contract tests."
+  -
+    author: "CODER"
+    body: "Verified: bun run test:agentplane; bun run test:cli:core; updated E_NETWORK/E_BACKEND exit codes per contract."
+  -
+    author: "CODER"
+    body: "Verified: bun run test:agentplane; bun run test:cli:core; updated exit codes per contract."
 doc_version: 2
 doc_updated_at: "2026-02-05T05:37:53.404Z"
 doc_updated_by: "CODER"
@@ -37,3 +59,8 @@ Run CLI unit tests covering exit codes; confirm E_NETWORK -> 7 and E_BACKEND -> 
 ## Rollback Plan
 
 Revert commit for this task; restore previous exit-code assignments and tests if regressions appear.
+
+## Plan
+
+
+## Verification

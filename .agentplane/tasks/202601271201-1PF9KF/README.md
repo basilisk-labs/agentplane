@@ -4,12 +4,33 @@ title: "AP-018: comment-driven commits + status_commit_policy"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601271008-63G26Q", "202601271201-K5PCNY"]
-tags: ["nodejs", "roadmap", "git", "commit"]
-verify: ["bun run ci"]
-commit: { hash: "9a6cd0b2e133b909dae0dafeeccd9a5b730143d9", message: "✨ 1PF9KF start: add comment-driven status commit and tests" }
+depends_on:
+  - "202601271008-63G26Q"
+  - "202601271201-K5PCNY"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "git"
+  - "commit"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "9a6cd0b2e133b909dae0dafeeccd9a5b730143d9"
+  message: "✨ 1PF9KF start: add comment-driven status commit and tests"
 comments:
-  - { author: "CODER", body: "verified: bun run ci (format, typecheck, lint, coverage) passed with branch coverage above 75%." }
+  -
+    author: "CODER"
+    body: "verified: bun run ci (format, typecheck, lint, coverage) passed with branch coverage above 75%."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:10.921Z"
 doc_updated_by: "agentplane"
@@ -34,3 +55,8 @@ bun run ci
 ## Rollback Plan
 
 git revert 9a6cd0b2e133
+
+## Plan
+
+
+## Verification

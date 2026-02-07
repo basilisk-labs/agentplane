@@ -5,12 +5,33 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "workflow", "pipeline"]
-verify: ["python -m compileall scripts/agentctl.py", "python scripts/agentctl.py task lint"]
-commit: { hash: "324e74e5f3bcb4ad1bb239eb1e02bac645553721", message: "Legacy completion (backfill)" }
+tags:
+  - "agentctl"
+  - "workflow"
+  - "pipeline"
+verify:
+  - "python -m compileall scripts/agentctl.py"
+  - "python scripts/agentctl.py task lint"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "324e74e5f3bcb4ad1bb239eb1e02bac645553721"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "CODER", body: "Start: Implement agentctl verify --log + --skip-if-unchanged; update PR meta.json with last_verified_sha/at and refresh .agent-plane/agentctl.md. Plan: implement flags, add smoke steps, ensure branch_pr behavior. Risks: PR meta may be missing; keep safe fallbacks." }
-  - { author: "INTEGRATOR", body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/prs/T-068." }
+  -
+    author: "CODER"
+    body: "Start: Implement agentctl verify --log + --skip-if-unchanged; update PR meta.json with last_verified_sha/at and refresh .agent-plane/agentctl.md. Plan: implement flags, add smoke steps, ensure branch_pr behavior. Risks: PR meta may be missing; keep safe fallbacks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/prs/T-068."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:25.178Z"
 doc_updated_by: "agentplane"
@@ -30,3 +51,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

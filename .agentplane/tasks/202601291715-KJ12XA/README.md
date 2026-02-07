@@ -4,10 +4,26 @@ title: "Add Dokploy recipe"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601290715-46R6VZ"]
-tags: ["recipes", "dokploy", "deploy"]
+depends_on:
+  - "202601290715-46R6VZ"
+tags:
+  - "recipes"
+  - "dokploy"
+  - "deploy"
 verify: []
-commit: { hash: "acdc0e8f58aee85f03189caee3b228c2b082dbbd", message: "✨ 202601291715-FW4RHR 202601291715-KJ12XA add github-sync and dokploy recipes" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "acdc0e8f58aee85f03189caee3b228c2b082dbbd"
+  message: "✨ 202601291715-FW4RHR 202601291715-KJ12XA add github-sync and dokploy recipes"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-30T03:08:51+00:00"
@@ -45,3 +61,8 @@ Dokploy automation is exposed as a recipe so deployments and project listing can
 ## Notes
 
 Tool expects DOKPLOY_API_ENDPOINTS (or DOKPLOY_API_BASE) and DOKPLOY_API_KEY; deploy uses DOKPLOY_APPLICATION_ID if not provided.
+
+## Plan
+
+
+## Verification

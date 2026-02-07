@@ -5,13 +5,36 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["nodejs", "cli", "tasks", "roadmap"]
-verify: ["bun run ci"]
-commit: { hash: "d5f7efc2d4bea64f7bc9ff3d211221cf8dc89911", message: "✨ 63G26Q AP-009: task new/show/list" }
+tags:
+  - "nodejs"
+  - "cli"
+  - "tasks"
+  - "roadmap"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d5f7efc2d4bea64f7bc9ff3d211221cf8dc89911"
+  message: "✨ 63G26Q AP-009: task new/show/list"
 comments:
-  - { author: "CODER", body: "Start: AP-009 implement local tasks backend + task new/show/list." }
-  - { author: "CODER", body: "Start: implementing local tasks backend and CLI commands task new/show/list." }
-  - { author: "CODER", body: "verified: bun run ci passed | details: task new/show/list implemented with file-based store." }
+  -
+    author: "CODER"
+    body: "Start: AP-009 implement local tasks backend + task new/show/list."
+  -
+    author: "CODER"
+    body: "Start: implementing local tasks backend and CLI commands task new/show/list."
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: task new/show/list implemented with file-based store."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:06.992Z"
 doc_updated_by: "agentplane"
@@ -41,3 +64,8 @@ Implement AP-009 (minimal): a local tasks backend stored as task README frontmat
 ## Rollback Plan
 
 - Revert commits; remove task command handling and core task storage module
+
+## Plan
+
+
+## Verification

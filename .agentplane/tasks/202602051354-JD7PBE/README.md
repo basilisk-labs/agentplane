@@ -5,12 +5,31 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["roadmap", "docs", "cache"]
+tags:
+  - "roadmap"
+  - "docs"
+  - "cache"
 verify: []
-commit: { hash: "394f1cdf40d4e9aa9eb33c4b74bd7927e381de3c", message: "📝 JD7PBE document task index cache" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "394f1cdf40d4e9aa9eb33c4b74bd7927e381de3c"
+  message: "📝 JD7PBE document task index cache"
 comments:
-  - { author: "DOCS", body: "Start: document task index cache behavior and file format." }
-  - { author: "DOCS", body: "Verified: project layout docs updated with task index cache entry." }
+  -
+    author: "DOCS"
+    body: "Start: document task index cache behavior and file format."
+  -
+    author: "DOCS"
+    body: "Verified: project layout docs updated with task index cache entry."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:08:47.796Z"
 doc_updated_by: "DOCS"
@@ -40,3 +59,5 @@ Verified on 2026-02-05: docs/developer/project-layout.mdx updated with cache ent
 ## Rollback Plan
 
 Remove cache entry from docs if index is reverted.
+
+## Plan

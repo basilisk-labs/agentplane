@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "PLANNER"
 depends_on: []
-tags: ["agents", "docs"]
+tags:
+  - "agents"
+  - "docs"
 verify: []
-commit: { hash: "1b7c1e37569071a725602a2ac9b7a1904de7e834", message: "🧭 JGRGE3 dedupe workflow and terms: unify workflow_mode guidance; standardize task-id references; switch handoff notes to agentctl pr note; remove snapshot filename mentions" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "1b7c1e37569071a725602a2ac9b7a1904de7e834"
+  message: "🧭 JGRGE3 dedupe workflow and terms: unify workflow_mode guidance; standardize task-id references; switch handoff notes to agentctl pr note; remove snapshot filename mentions"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: not run; doc/instruction edits only, no runtime impact." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: not run; doc/instruction edits only, no runtime impact."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:33.717Z"
 doc_updated_by: "agentplane"
@@ -42,3 +58,8 @@ description: "Reduce duplicated workflow_mode and handoff guidance across agent 
 ## Rollback Plan
 
 - Revert commit `1b7c1e375690`.
+
+## Plan
+
+
+## Verification

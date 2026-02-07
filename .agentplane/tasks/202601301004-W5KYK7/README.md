@@ -4,13 +4,34 @@ title: "Node CLI parity: workflow/support commands"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601300958-HRNHRH"]
-tags: ["nodejs", "cli", "parity", "workflow"]
+depends_on:
+  - "202601300958-HRNHRH"
+tags:
+  - "nodejs"
+  - "cli"
+  - "parity"
+  - "workflow"
 verify: []
-commit: { hash: "90fbdc8c6776805798173e8abc181006d9469e3e", message: "W5KYK7 add workflow/support parity commands" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "90fbdc8c6776805798173e8abc181006d9469e3e"
+  message: "W5KYK7 add workflow/support parity commands"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: parity for workflow/support commands." }
-  - { author: "ORCHESTRATOR", body: "verified: bun run test | details: packages/agentplane/src/run-cli.test.ts" }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: parity for workflow/support commands."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run test | details: packages/agentplane/src/run-cli.test.ts"
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:26.784Z"
 doc_updated_by: "agentplane"
@@ -35,3 +56,8 @@ bun run test -- packages/agentplane/src/run-cli.test.ts
 ## Rollback Plan
 
 git revert <commit>
+
+## Plan
+
+
+## Verification

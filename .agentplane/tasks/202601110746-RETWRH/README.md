@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "tasks"]
+tags:
+  - "docs"
+  - "tasks"
 verify: []
-commit: { hash: "33b3e35be2da5d7acf1964178bf06813e285a7c4", message: "✨ RETWRH repair task docs metadata" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "33b3e35be2da5d7acf1964178bf06813e285a7c4"
+  message: "✨ RETWRH repair task docs metadata"
 comments:
-  - { author: "DOCS", body: "Verified: task lint reports many legacy DONE tasks missing commit metadata (pre-existing); updated C7W2GE status/doc and scaffolded GH5YSV sections via agentctl." }
+  -
+    author: "DOCS"
+    body: "Verified: task lint reports many legacy DONE tasks missing commit metadata (pre-existing); updated C7W2GE status/doc and scaffolded GH5YSV sections via agentctl."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:37.170Z"
 doc_updated_by: "agentplane"
@@ -45,3 +61,8 @@ Task 202601071438-C7W2GE frontmatter is malformed (`Яstatus`) and contains esca
 ## Notes
 
 - Do not change task ownership/status beyond correcting the corrupted frontmatter.
+
+## Plan
+
+
+## Verification

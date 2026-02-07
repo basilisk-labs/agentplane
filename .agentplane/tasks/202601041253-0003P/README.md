@@ -5,16 +5,29 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["cleanup"]
+tags:
+  - "cleanup"
 verify: []
-commit: { hash: "04fdd37dca3c7541e1d957e263b473547c94d6ad", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "04fdd37dca3c7541e1d957e263b473547c94d6ad"
+  message: "Legacy completion (backfill)"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Update clean.sh to remove non-framework artifacts under the new tasks layout while preserving framework data."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 # 202601041253-0003P: Update clean.sh for new structure
 
@@ -44,6 +57,11 @@ id_source: "custom"
 ## Rollback Plan
 
 - `git checkout -- clean.sh`
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

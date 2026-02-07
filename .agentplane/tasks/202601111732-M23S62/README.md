@@ -4,14 +4,42 @@ title: "Refactor agentctl/backends for strict mypy"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601111656-4HQ6XY"]
-tags: ["python", "mypy", "refactor", "typing", "agentctl", "backend"]
-verify: [".venv/bin/ruff format .", ".venv/bin/ruff check .", ".venv/bin/mypy"]
-commit: { hash: "7b469b885764e3f4220fb5c2b8d6ea6bbc1ef0c8", message: "🛠️ M23S62 Verified: strict mypy typing for redmine backend/agentctl, cleanup scripts keep viewer; ruff and mypy pass." }
+depends_on:
+  - "202601111656-4HQ6XY"
+tags:
+  - "python"
+  - "mypy"
+  - "refactor"
+  - "typing"
+  - "agentctl"
+  - "backend"
+verify:
+  - ".venv/bin/ruff format ."
+  - ".venv/bin/ruff check ."
+  - ".venv/bin/mypy"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7b469b885764e3f4220fb5c2b8d6ea6bbc1ef0c8"
+  message: "🛠️ M23S62 Verified: strict mypy typing for redmine backend/agentctl, cleanup scripts keep viewer; ruff and mypy pass."
 comments:
-  - { author: "CODER", body: "Plan: add refactor task for strict mypy in agentctl/backends and schedule GitHub sync + cleanup update task." }
-  - { author: "CODER", body: "Start: begin strict mypy refactor plan for agentctl/backends." }
-  - { author: "CODER", body: "Verified: strict mypy typing for redmine backend/agentctl, cleanup scripts keep viewer; ruff and mypy pass." }
+  -
+    author: "CODER"
+    body: "Plan: add refactor task for strict mypy in agentctl/backends and schedule GitHub sync + cleanup update task."
+  -
+    author: "CODER"
+    body: "Start: begin strict mypy refactor plan for agentctl/backends."
+  -
+    author: "CODER"
+    body: "Verified: strict mypy typing for redmine backend/agentctl, cleanup scripts keep viewer; ruff and mypy pass."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:41.247Z"
 doc_updated_by: "agentplane"
@@ -46,3 +74,8 @@ Revert refactor commits and restore previous mypy excludes; rerun ruff/mypy to c
 ## Notes
 
 Aim for incremental, well-tested typing improvements rather than broad rewrites.
+
+## Plan
+
+
+## Verification

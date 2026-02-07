@@ -4,13 +4,34 @@ title: "AP-029: local recipe manager (install/remove/list/info)"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601270756-779J2V", "202601270756-V6CK4Q"]
-tags: ["roadmap", "nodejs", "recipes"]
+depends_on:
+  - "202601270756-779J2V"
+  - "202601270756-V6CK4Q"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "recipes"
 verify: []
-commit: { hash: "bc04958a64853ffb98ac7e556ed2530418d943de", message: "feat: GGRDKD add local recipe manager commands and tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "bc04958a64853ffb98ac7e556ed2530418d943de"
+  message: "feat: GGRDKD add local recipe manager commands and tests"
 comments:
-  - { author: "CODER", body: "Start: implement local recipe manager (install/remove/list/info + lockfile)." }
-  - { author: "CODER", body: "verified: GGRDKD close: bun run ci | details: document recipe manager implementation and tests." }
+  -
+    author: "CODER"
+    body: "Start: implement local recipe manager (install/remove/list/info + lockfile)."
+  -
+    author: "CODER"
+    body: "verified: GGRDKD close: bun run ci | details: document recipe manager implementation and tests."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:17.785Z"
 doc_updated_by: "agentplane"
@@ -35,3 +56,8 @@ bun run ci
 ## Rollback Plan
 
 git revert <commit>
+
+## Plan
+
+
+## Verification

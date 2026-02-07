@@ -5,17 +5,33 @@ status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
-tags: ["git", "workflow"]
+tags:
+  - "git"
+  - "workflow"
 verify: []
-commit: { hash: "8fd29a0da544ca8b96eb9326d418863e3963a0bf", message: "✨ VXPBHQ infer emojis for intermediate comment commits; format comment bodies into summary/details; document rules" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8fd29a0da544ca8b96eb9326d418863e3963a0bf"
+  message: "✨ VXPBHQ infer emojis for intermediate comment commits; format comment bodies into summary/details; document rules"
 comments:
-  - { author: "REDMINE", body: "Verified: mark task done; commit emoji inference and comment formatting updates; docs updated; tests not run." }
+  -
+    author: "REDMINE"
+    body: "Verified: mark task done; commit emoji inference and comment formatting updates; docs updated; tests not run."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:48.496Z"
 doc_updated_by: "agentplane"
 description: "Define fixed emojis for start/finish status commits, choose intermediate emojis based on comment intent, and improve commit message formatting/detail in the agentctl workflow."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -44,3 +60,8 @@ Revert the agentctl commit(s) that adjust emoji selection/formatting to restore 
 ## Notes
 
 Document the emoji inference rules and examples in agentctl.md alongside the comment-driven commit guidance.
+
+## Plan
+
+
+## Verification

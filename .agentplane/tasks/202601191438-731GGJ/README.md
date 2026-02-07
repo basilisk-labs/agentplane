@@ -5,9 +5,22 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["workflow"]
+tags:
+  - "workflow"
 verify: []
-commit: { hash: "8ec4f84a917d8c4664d3ce47c5d3dbdb72755645", message: "✨ 731GGJ add sort order toggle" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8ec4f84a917d8c4664d3ce47c5d3dbdb72755645"
+  message: "✨ 731GGJ add sort order toggle"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -42,3 +55,8 @@ Revert the toggle control and handler changes in `.agent-plane/viewer/tasks.html
 ## Notes
 
 Reuse existing ORDER_MODE state and updateOrderToggle behavior.
+
+## Plan
+
+
+## Verification

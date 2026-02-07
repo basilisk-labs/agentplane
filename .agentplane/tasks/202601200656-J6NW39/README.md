@@ -5,11 +5,27 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["recipes", "docs"]
+tags:
+  - "recipes"
+  - "docs"
 verify: []
-commit: { hash: "6a935ba8cde99e26ae1e49cb20e1ea8294296797", message: "✨ J6NW39 codify core minimum and recipe permissions" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "6a935ba8cde99e26ae1e49cb20e1ea8294296797"
+  message: "✨ J6NW39 codify core minimum and recipe permissions"
 comments:
-  - { author: "DOCS", body: "verified: close: core minimum defined | details: tools allowed by default; recipe agentctl usage permitted under guardrails." }
+  -
+    author: "DOCS"
+    body: "verified: close: core minimum defined | details: tools allowed by default; recipe agentctl usage permitted under guardrails."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:58.348Z"
 doc_updated_by: "agentplane"
@@ -42,3 +58,8 @@ Revert commit 6a935ba8cde9 to restore the previous core minimum and recipe permi
 ## Notes
 
 Tools are still explicit; only the default allowance changed, not the confirmation requirement.
+
+## Plan
+
+
+## Verification

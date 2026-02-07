@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "branch_pr", "cleanup"]
+tags:
+  - "agentctl"
+  - "branch_pr"
+  - "cleanup"
 verify: []
-commit: { hash: "88e82c4af90d4611745387fb2de4147147c57943", message: "✨ AAQVJW fix branch_pr id parsing and clean scrub" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "88e82c4af90d4611745387fb2de4147147c57943"
+  message: "✨ AAQVJW fix branch_pr id parsing and clean scrub"
 comments:
-  - { author: "CODER", body: "Verified: python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/local/backend.py .agent-plane/backends/redmine/backend.py; branch_pr regex now accepts timestamp task IDs; clean.sh scrub examples updated to timestamp format." }
+  -
+    author: "CODER"
+    body: "Verified: python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/local/backend.py .agent-plane/backends/redmine/backend.py; branch_pr regex now accepts timestamp task IDs; clean.sh scrub examples updated to timestamp format."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:36.816Z"
 doc_updated_by: "agentplane"
@@ -45,3 +62,8 @@ Branch/PR helpers still parse only legacy task branches (`task/T-###/<slug>`), a
 ## Notes
 
 - Keep legacy T-### task branches working for old repositories; timestamp IDs are the primary path.
+
+## Plan
+
+
+## Verification

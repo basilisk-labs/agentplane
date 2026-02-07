@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "86ba27f256e959bf830bae00e1aa6a6aa3ef12b7", message: "📝 RK4QCY update npm package READMEs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "86ba27f256e959bf830bae00e1aa6a6aa3ef12b7"
+  message: "📝 RK4QCY update npm package READMEs"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: bun run format:check; bun run lint; bun run test:fast." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run format:check; bun run lint; bun run test:fast."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:53.186Z"
 doc_updated_by: "agentplane"
@@ -35,3 +50,8 @@ Low risk: README formatting changes only.
 ## Rollback Plan
 
 Revert README updates and task doc changes.
+
+## Plan
+
+
+## Verification

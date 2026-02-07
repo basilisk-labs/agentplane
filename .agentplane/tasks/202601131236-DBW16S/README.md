@@ -5,12 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["config", "agentctl"]
+tags:
+  - "config"
+  - "agentctl"
 verify: []
-commit: { hash: "0c10cf66377f30d87d7f9049a820a193b137b6cd", message: "✨ DBW16S analyze config candidates for agent settings" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "0c10cf66377f30d87d7f9049a820a193b137b6cd"
+  message: "✨ DBW16S analyze config candidates for agent settings"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: audit config.json and agent guidance to propose new agent settings and agentctl toggles." }
-  - { author: "ORCHESTRATOR", body: "verified: doc-only analysis | details: no tests required for this task." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: audit config.json and agent guidance to propose new agent settings and agentctl toggles."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: doc-only analysis | details: no tests required for this task."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:45.392Z"
 doc_updated_by: "agentplane"
@@ -68,3 +86,8 @@ Optional non-agent config candidates (CLI/runtime constants to reduce hardcoding
 - recipes.dir / recipes.lock / recipes.index (currently RECIPES_DIR_NAME, RECIPES_LOCK_NAME, RECIPES_INDEX_NAME)
 
 Recommendation: only promote settings that agentctl or wrapper tooling can honor without violating the “core minimum” principle.
+
+## Plan
+
+
+## Verification

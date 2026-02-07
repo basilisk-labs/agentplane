@@ -4,13 +4,35 @@ title: "AP-024: cleanup worktrees and branches"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601271401-Q2WSGM"]
-tags: ["nodejs", "roadmap", "workflow", "branch_pr"]
-verify: ["bun run ci"]
-commit: { hash: "b671420a05c20cf9ba7fbaf2b358f15afa1485a1", message: "✨ 0AHH5X add cleanup merged command and tests" }
+depends_on:
+  - "202601271401-Q2WSGM"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "workflow"
+  - "branch_pr"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b671420a05c20cf9ba7fbaf2b358f15afa1485a1"
+  message: "✨ 0AHH5X add cleanup merged command and tests"
 comments:
-  - { author: "CODER", body: "verified: bun run ci (2026-01-29) | details: cleanup merged command and tests pass with coverage >= thresholds." }
-  - { author: "CODER", body: "verified: bun run ci (2026-01-29) | details: cleanup merged command and tests pass with coverage >= thresholds." }
+  -
+    author: "CODER"
+    body: "verified: bun run ci (2026-01-29) | details: cleanup merged command and tests pass with coverage >= thresholds."
+  -
+    author: "CODER"
+    body: "verified: bun run ci (2026-01-29) | details: cleanup merged command and tests pass with coverage >= thresholds."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:13.235Z"
 doc_updated_by: "agentplane"
@@ -35,3 +57,8 @@ description: "Implement cleanup command to remove branch_pr worktrees and task b
 ## Rollback Plan
 
 - Revert the cleanup command changes and test additions with git revert.
+
+## Plan
+
+
+## Verification

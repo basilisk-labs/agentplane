@@ -5,11 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["nodejs", "recipes", "config", "cli", "cleanup", "docs"]
+tags:
+  - "nodejs"
+  - "recipes"
+  - "config"
+  - "cli"
+  - "cleanup"
+  - "docs"
 verify: []
-commit: { hash: "1ebcf79f3873a57a7ba9e5c54b0534d0c0f4d7da", message: "♻️ VJC5RD migrate to .agentplane layout and add publish environment" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "1ebcf79f3873a57a7ba9e5c54b0534d0c0f4d7da"
+  message: "♻️ VJC5RD migrate to .agentplane layout and add publish environment"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: backfilled commit metadata during migration to satisfy lint; no code changes for this task." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: backfilled commit metadata during migration to satisfy lint; no code changes for this task."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:35.521Z"
 doc_updated_by: "agentplane"
@@ -34,3 +54,8 @@ bun test packages/agentplane/src/run-cli.test.ts -t "recipe cache prune|recipe i
 ## Rollback Plan
 
 Remove recipes.storage_default from config/schema and revert recipe cache prune command; restore prior recipe install default behavior.
+
+## Plan
+
+
+## Verification

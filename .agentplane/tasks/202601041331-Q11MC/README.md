@@ -5,16 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "refactor"]
+tags:
+  - "agentctl"
+  - "refactor"
 verify: []
-commit: { hash: "a13b7c8bf9ce6143bad33fb58ac0fed49089c83c", message: "✅ P7AMW3 close task" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a13b7c8bf9ce6143bad33fb58ac0fed49089c83c"
+  message: "✅ P7AMW3 close task"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Remove legacy workspace/PR fallback paths (keep legacy ID reid), add task normalize, use backend export fast path, reduce redundant backend writes, add per-run task cache, and unify repeated error messaging in agentctl."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -46,6 +60,11 @@ id_source: "custom"
 ## Rollback Plan
 
 - Restore `.agent-plane/agentctl.py` and backend files from git history.
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

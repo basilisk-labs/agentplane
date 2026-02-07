@@ -5,13 +5,32 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release"]
+tags:
+  - "release"
 verify: []
-commit: { hash: "4c81d24df85e1cc179f2f8152e21b1bc6ab1c6c2", message: "🏗️ 5KNHSY add npm trusted publishing workflow and release notes" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4c81d24df85e1cc179f2f8152e21b1bc6ab1c6c2"
+  message: "🏗️ 5KNHSY add npm trusted publishing workflow and release notes"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: add GitHub Actions trusted publishing workflow, update release docs, and normalize npm repository URLs for publish." }
-  - { author: "ORCHESTRATOR", body: "verified: not run (workflow/doc/metadata changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit." }
-  - { author: "ORCHESTRATOR", body: "verified: not run (workflow/doc/metadata changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: add GitHub Actions trusted publishing workflow, update release docs, and normalize npm repository URLs for publish."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: not run (workflow/doc/metadata changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: not run (workflow/doc/metadata changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:42.869Z"
 doc_updated_by: "agentplane"
@@ -36,3 +55,8 @@ Not run (workflow/doc changes only).
 ## Rollback Plan
 
 Revert the commit for 202602020803-5KNHSY.
+
+## Plan
+
+
+## Verification

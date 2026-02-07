@@ -5,12 +5,31 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["git", "workflow", "config"]
+tags:
+  - "git"
+  - "workflow"
+  - "config"
 verify: []
-commit: { hash: "b893afa5c44be3efa381f3e47a266b032ee39f2a", message: "✨ 4YPF2T auto-commit on finish: add config flag; wire agentctl finish; document behavior" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b893afa5c44be3efa381f3e47a266b032ee39f2a"
+  message: "✨ 4YPF2T auto-commit on finish: add config flag; wire agentctl finish; document behavior"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: add config-driven auto status commit on finish and document the behavior." }
-  - { author: "ORCHESTRATOR", body: "Verified: spec-only change; finish auto status commit enabled and no runtime behavior beyond agentctl finish flag." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: add config-driven auto status commit on finish and document the behavior."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: spec-only change; finish auto status commit enabled and no runtime behavior beyond agentctl finish flag."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:44.482Z"
 doc_updated_by: "agentplane"
@@ -39,3 +58,8 @@ No tests (behavior verified by inspection).
 ## Rollback Plan
 
 Revert the commit and remove the config flag from config.json.
+
+## Plan
+
+
+## Verification

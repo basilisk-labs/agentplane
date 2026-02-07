@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["tasks"]
+tags:
+  - "tasks"
 verify: []
-commit: { hash: "035fe3006ba926ba630905fb979261fa0e98a5af", message: "📝 Q5MHE6 fill task README sections" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "035fe3006ba926ba630905fb979261fa0e98a5af"
+  message: "📝 Q5MHE6 fill task README sections"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: inspect task 202602031824-Y1YVDB, update docs if needed, finish it, and commit metadata." }
-  - { author: "ORCHESTRATOR", body: "Verified: task Y1YVDB is DONE, metadata committed, and README sections are complete." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: inspect task 202602031824-Y1YVDB, update docs if needed, finish it, and commit metadata."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: task Y1YVDB is DONE, metadata committed, and README sections are complete."
 doc_version: 2
 doc_updated_at: "2026-02-04T06:09:23.749Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -37,3 +54,8 @@ If commit references were wrong, task metadata could be inconsistent; no product
 ## Rollback Plan
 
 Revert the commits that update `.agentplane/tasks.json` and task README files.
+
+## Plan
+
+
+## Verification

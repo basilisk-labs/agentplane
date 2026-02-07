@@ -5,18 +5,35 @@ status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
-tags: ["redmine"]
+tags:
+  - "redmine"
 verify: []
-commit: { hash: "0e5bacb3095951ee4f4d7a36658dfc733b580f4b", message: "✨ W1A6H8 FZ099X switch to redmine backend and add redmine sync smoke tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "0e5bacb3095951ee4f4d7a36658dfc733b580f4b"
+  message: "✨ W1A6H8 FZ099X switch to redmine backend and add redmine sync smoke tests"
 comments:
-  - { author: "CODER", body: "Test comment via Redmine backend" }
-  - { author: "CODER", body: "Verified: created task via Redmine backend, set docs, added comment; task show confirms doc metadata and stored comment after sync pull." }
+  -
+    author: "CODER"
+    body: "Test comment via Redmine backend"
+  -
+    author: "CODER"
+    body: "Verified: created task via Redmine backend, set docs, added comment; task show confirms doc metadata and stored comment after sync pull."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:38.970Z"
 doc_updated_by: "agentplane"
 description: "Create/update/comment tasks directly against Redmine backend to verify CLI flows."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -48,3 +65,8 @@ Validate that Redmine backend supports create/update/comment flows via agentctl 
 
 - Delete the test issue from Redmine if it pollutes the sandbox.
 - Re-run task list to confirm it is gone.
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["tasks"]
+tags:
+  - "tasks"
 verify: []
-commit: { hash: "0a9cba50d54ab86ae6bedbf17b4240f27600a7bf", message: "🛠 GNAF6S fix task doc merge and dedupe headings" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "0a9cba50d54ab86ae6bedbf17b4240f27600a7bf"
+  message: "🛠 GNAF6S fix task doc merge and dedupe headings"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: fixing duplicate headings in task READMEs and updating doc merge logic/tests; will update affected task docs via agentplane." }
-  - { author: "ORCHESTRATOR", body: "Verified: pre-commit hooks ran format:check, lint, and test-fast successfully." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: fixing duplicate headings in task READMEs and updating doc merge logic/tests; will update affected task docs via agentplane."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: pre-commit hooks ran format:check, lint, and test-fast successfully."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:53.595Z"
 doc_updated_by: "agentplane"
@@ -37,3 +54,8 @@ Doc normalization could over-collapse unusual headings; mitigated with targeted 
 ## Rollback Plan
 
 Revert doc normalization changes and task README updates.
+
+## Plan
+
+
+## Verification

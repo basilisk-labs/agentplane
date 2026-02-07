@@ -5,12 +5,35 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["github", "sync", "cleanup", "scripting"]
-verify: [".venv/bin/ruff format .", ".venv/bin/ruff check .", ".venv/bin/mypy"]
-commit: { hash: "abfa29f605aac03cf6d878f23cc2701db263ada3", message: "✨ 2ZFSDR Update GitHub sync script to reflect current task fields and keep viewer.sh in cleanup scripts." }
+tags:
+  - "github"
+  - "sync"
+  - "cleanup"
+  - "scripting"
+verify:
+  - ".venv/bin/ruff format ."
+  - ".venv/bin/ruff check ."
+  - ".venv/bin/mypy"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "abfa29f605aac03cf6d878f23cc2701db263ada3"
+  message: "✨ 2ZFSDR Update GitHub sync script to reflect current task fields and keep viewer.sh in cleanup scripts."
 comments:
-  - { author: "CODER", body: "Update GitHub sync script to reflect current task fields and keep viewer.sh in cleanup scripts." }
-  - { author: "CODER", body: "Verified: ran .venv/bin/ruff format ., .venv/bin/ruff check ., and .venv/bin/mypy; all passed. Updated GitHub sync labeling/status handling and preserved viewer.sh in cleanup scripts." }
+  -
+    author: "CODER"
+    body: "Update GitHub sync script to reflect current task fields and keep viewer.sh in cleanup scripts."
+  -
+    author: "CODER"
+    body: "Verified: ran .venv/bin/ruff format ., .venv/bin/ruff check ., and .venv/bin/mypy; all passed. Updated GitHub sync labeling/status handling and preserved viewer.sh in cleanup scripts."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:40.862Z"
 doc_updated_by: "agentplane"
@@ -40,3 +63,8 @@ Update GitHub task sync scripts/workflow to match current backend schema and kee
 ## Rollback Plan
 
 Revert sync script and clean script changes; rerun ruff/mypy to confirm previous behavior.
+
+## Plan
+
+
+## Verification

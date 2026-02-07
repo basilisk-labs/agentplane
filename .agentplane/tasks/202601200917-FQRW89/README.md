@@ -5,9 +5,23 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agents", "recipes"]
+tags:
+  - "agents"
+  - "recipes"
 verify: []
-commit: { hash: "36dea396b5c5d9e3c99d19c2782c6941c987cb6d", message: "✅ FQRW89 orchestrator: refresh global recipes bundle" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "36dea396b5c5d9e3c99d19c2782c6941c987cb6d"
+  message: "✅ FQRW89 orchestrator: refresh global recipes bundle"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T09:18:12+00:00"
@@ -37,3 +51,8 @@ Review ORCHESTRATOR.json for updated instructions.
 ## Rollback Plan
 
 Revert ORCHESTRATOR.json changes.
+
+## Plan
+
+
+## Verification

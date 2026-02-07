@@ -5,9 +5,24 @@ status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
-tags: ["recipes", "cli", "context"]
+tags:
+  - "recipes"
+  - "cli"
+  - "context"
 verify: []
-commit: { hash: "66fca3f2b17e97b9144a62891e912dcd08a9c343", message: "✅ MMT18V recipes: add global bundle build/show" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "66fca3f2b17e97b9144a62891e912dcd08a9c343"
+  message: "✅ MMT18V recipes: add global bundle build/show"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:18+00:00"
@@ -44,3 +59,8 @@ Revert recipes.py and .gitignore changes.
 ## Notes
 
 No tool execution; bundle is metadata only.
+
+## Plan
+
+
+## Verification

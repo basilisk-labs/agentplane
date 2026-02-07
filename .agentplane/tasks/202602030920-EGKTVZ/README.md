@@ -5,12 +5,29 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release"]
+tags:
+  - "release"
 verify: []
-commit: { hash: "4b155224cb4deacab75c8377d86d2268bf90ca32", message: "🛠️ EGKTVZ fix publish auth + add release check" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4b155224cb4deacab75c8377d86d2268bf90ca32"
+  message: "🛠️ EGKTVZ fix publish auth + add release check"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: fix npm publish auth in workflow, ensure OIDC trusted publishing, add local dry-run check." }
-  - { author: "ORCHESTRATOR", body: "Verified: ran bun run release:check; workflow updated to clear npm auth token before publish." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: fix npm publish auth in workflow, ensure OIDC trusted publishing, add local dry-run check."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: ran bun run release:check; workflow updated to clear npm auth token before publish."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:50.778Z"
 doc_updated_by: "agentplane"
@@ -38,3 +55,8 @@ Low; publish now relies on GitHub OIDC only.
 ## Rollback Plan
 
 Revert workflow/script changes and re-run publish with corrected auth.
+
+## Plan
+
+
+## Verification

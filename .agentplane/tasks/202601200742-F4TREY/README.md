@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["recipes", "workflow"]
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "2ada67f606a03c73e9f91bb20fdc88e17a512913", message: "✅ NNSHSS verified: close: redmine migration steps and dependencies recorded." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2ada67f606a03c73e9f91bb20fdc88e17a512913"
+  message: "✅ NNSHSS verified: close: redmine migration steps and dependencies recorded."
 comments:
-  - { author: "ORCHESTRATOR", body: "Subtasks: 202601200743-6CQN5R (recipe spec), 202601200743-NNSHSS (migration steps)." }
-  - { author: "ORCHESTRATOR", body: "verified: close: redmine backend audit and recipe migration plan complete." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Subtasks: 202601200743-6CQN5R (recipe spec), 202601200743-NNSHSS (migration steps)."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: close: redmine backend audit and recipe migration plan complete."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:00.341Z"
 doc_updated_by: "agentplane"
@@ -43,3 +61,8 @@ Leave core local backend untouched; migration can be abandoned by keeping local 
 ## Notes
 
 Next step is implementing the redmine-backend recipe and updating docs/12-redmine.md to reference it.
+
+## Plan
+
+
+## Verification

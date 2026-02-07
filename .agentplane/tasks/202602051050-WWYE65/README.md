@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["refactor", "structure"]
+tags:
+  - "refactor"
+  - "structure"
 verify: []
-commit: { hash: "7d1a2099737cbfd0030a5c33a2adde43d3e9c6b1", message: "♻️ WWYE65 refactor" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7d1a2099737cbfd0030a5c33a2adde43d3e9c6b1"
+  message: "♻️ WWYE65 refactor"
 comments:
-  - { author: "CODER", body: "Start: restructure packages/* for clearer navigation and maintainability." }
-  - { author: "CODER", body: "Verified: ./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit; bun run format:check; bun run lint; bun run test:fast. Commit: 7d1a2099737c." }
+  -
+    author: "CODER"
+    body: "Start: restructure packages/* for clearer navigation and maintainability."
+  -
+    author: "CODER"
+    body: "Verified: ./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit; bun run format:check; bun run lint; bun run test:fast. Commit: 7d1a2099737c."
 doc_version: 2
 doc_updated_at: "2026-02-05T11:21:07.778Z"
 doc_updated_by: "CODER"
@@ -39,3 +57,8 @@ bun run test:fast
 ## Rollback Plan
 
 Revert commit 7d1a2099737c to restore original structure.
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["tasks", "workflow"]
+tags:
+  - "tasks"
+  - "workflow"
 verify: []
-commit: { hash: "936d13947c2e68f35dd9a8ab4a5ee8bcf3cfe04b", message: "✨ E89YQT add minimal tags to completed tasks" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "936d13947c2e68f35dd9a8ab4a5ee8bcf3cfe04b"
+  message: "✨ E89YQT add minimal tags to completed tasks"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: identify DONE tasks missing tags and add minimal tags." }
-  - { author: "ORCHESTRATOR", body: "verified: ran agentctl task export after tagging completed tasks." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: identify DONE tasks missing tags and add minimal tags."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: ran agentctl task export after tagging completed tasks."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:54.259Z"
 doc_updated_by: "agentplane"
@@ -43,3 +61,8 @@ Revert the commit to restore previous tag state in tasks.json.
 ## Notes
 
 Mapping was keyword-based with a workflow fallback for uncategorized titles.
+
+## Plan
+
+
+## Verification

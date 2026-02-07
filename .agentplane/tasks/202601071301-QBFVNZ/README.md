@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "PLANNER"
 depends_on: []
-tags: ["agents", "docs"]
+tags:
+  - "agents"
+  - "docs"
 verify: []
-commit: { hash: "e55fa3aa761e778f65518407a0ac13d4fa5a32c7", message: "🧷 QBFVNZ tighten role guardrails: require agentctl commit wrapper for CODER/TESTER/DOCS; add integrator checklist; add orchestrator UPDATER trigger" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "e55fa3aa761e778f65518407a0ac13d4fa5a32c7"
+  message: "🧷 QBFVNZ tighten role guardrails: require agentctl commit wrapper for CODER/TESTER/DOCS; add integrator checklist; add orchestrator UPDATER trigger"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: not run; doc/instruction edits only, no runtime impact." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: not run; doc/instruction edits only, no runtime impact."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:34.346Z"
 doc_updated_by: "agentplane"
@@ -44,3 +60,8 @@ description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guar
 ## Rollback Plan
 
 - Revert commit `e55fa3aa761e`.
+
+## Plan
+
+
+## Verification

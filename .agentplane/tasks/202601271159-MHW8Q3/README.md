@@ -5,11 +5,27 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "assets"]
+tags:
+  - "docs"
+  - "assets"
 verify: []
-commit: { hash: "72a4f109728d0ffb3475eafac459ba1ee9bc811b", message: "✨ MHW8Q3 docs: update header asset location" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "72a4f109728d0ffb3475eafac459ba1ee9bc811b"
+  message: "✨ MHW8Q3 docs: update header asset location"
 comments:
-  - { author: "DOCS", body: "verified: bun run ci passed | details: docs header asset moved and README updated." }
+  -
+    author: "DOCS"
+    body: "verified: bun run ci passed | details: docs header asset moved and README updated."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:09.659Z"
 doc_updated_by: "agentplane"
@@ -34,3 +50,8 @@ bun run ci
 ## Rollback Plan
 
 Revert commit 72a4f109728d.
+
+## Plan
+
+
+## Verification

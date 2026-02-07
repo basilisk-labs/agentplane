@@ -4,12 +4,29 @@ title: "Phase 1 migration: planning and analysis recipes"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601200657-E52CV8"]
-tags: ["recipes", "workflow"]
+depends_on:
+  - "202601200657-E52CV8"
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "ce9a0aff3c97eb72fed6c4889ed3000b186ba71b", message: "✨ W1Y6ND add spec-to-tasks recipe" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ce9a0aff3c97eb72fed6c4889ed3000b186ba71b"
+  message: "✨ W1Y6ND add spec-to-tasks recipe"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: close: spec-to-tasks recipe added | details: inventory refreshed." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: close: spec-to-tasks recipe added | details: inventory refreshed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:59.293Z"
 doc_updated_by: "agentplane"
@@ -42,3 +59,8 @@ Revert commit ce9a0aff3c97 to remove the spec-to-tasks recipe and inventory upda
 ## Notes
 
 Phase 1 now includes roadmap and spec decomposition recipes; further planning recipes can be added as needed.
+
+## Plan
+
+
+## Verification

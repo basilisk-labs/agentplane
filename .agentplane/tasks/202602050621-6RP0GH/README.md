@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "refactor", "cli"]
+tags:
+  - "roadmap"
+  - "refactor"
+  - "cli"
 verify: []
-commit: { hash: "47d800b000b6a881ebcee39e119fa61a90bc1b20", message: "✨ 6RP0GH extract recipes and upgrade modules" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "47d800b000b6a881ebcee39e119fa61a90bc1b20"
+  message: "✨ 6RP0GH extract recipes and upgrade modules"
 comments:
-  - { author: "CODER", body: "Start: extract recipes and upgrade commands into commands/ modules." }
-  - { author: "CODER", body: "Verified: bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit." }
+  -
+    author: "CODER"
+    body: "Start: extract recipes and upgrade commands into commands/ modules."
+  -
+    author: "CODER"
+    body: "Verified: bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit."
 doc_version: 2
 doc_updated_at: "2026-02-05T07:00:11.876Z"
 doc_updated_by: "CODER"
@@ -53,3 +72,8 @@ Run run-cli.recipes.test.ts and upgrade-related tests; ensure pre-commit hooks p
 Revert the recipes/upgrade extraction commits to return to run-cli.ts implementation.
 
 Revert the AP-030b commit(s) and restore previous run-cli command implementations.
+
+## Plan
+
+
+## Verification

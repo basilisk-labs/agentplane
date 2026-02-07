@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on: []
-tags: ["roadmap", "testing", "cache"]
+tags:
+  - "roadmap"
+  - "testing"
+  - "cache"
 verify: []
-commit: { hash: "cccabcefc9572359364bcdf465ff066826b7a73c", message: "✨ XDB53D add task index cache tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "cccabcefc9572359364bcdf465ff066826b7a73c"
+  message: "✨ XDB53D add task index cache tests"
 comments:
-  - { author: "TESTER", body: "Start: add tests for task index cache and list/search behavior." }
-  - { author: "TESTER", body: "Verified: bun run test:fast passes; task index cache test added." }
+  -
+    author: "TESTER"
+    body: "Start: add tests for task index cache and list/search behavior."
+  -
+    author: "TESTER"
+    body: "Verified: bun run test:fast passes; task index cache test added."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:08:40.401Z"
 doc_updated_by: "TESTER"
@@ -40,3 +59,5 @@ Verified on 2026-02-05: bun run test:fast passes; task index cache test green.
 ## Rollback Plan
 
 Revert task index tests to prior state.
+
+## Plan

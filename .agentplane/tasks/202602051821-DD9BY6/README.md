@@ -5,12 +5,29 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["testing"]
+tags:
+  - "testing"
 verify: []
-commit: { hash: "2130610b4a0f53fc3433b024b7a71dfed1ff0b78", message: "🧪 DD9BY6 update init version expectations" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2130610b4a0f53fc3433b024b7a71dfed1ff0b78"
+  message: "🧪 DD9BY6 update init version expectations"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: update run-cli tests to match the bumped package version." }
-  - { author: "ORCHESTRATOR", body: "Verified: run-cli core tests pass with updated 0.1.6 install subject expectations." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: update run-cli tests to match the bumped package version."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: run-cli core tests pass with updated 0.1.6 install subject expectations."
 doc_version: 2
 doc_updated_at: "2026-02-05T18:23:53.111Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -40,3 +57,5 @@ Ran: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts
 ## Rollback Plan
 
 Restore previous version strings in test expectations.
+
+## Plan

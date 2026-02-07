@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["release", "versioning"]
+tags:
+  - "release"
+  - "versioning"
 verify: []
-commit: { hash: "4d98b10e1d37c274969266b10db2f4a61ad456b8", message: "🔖 RT8H8E bump packages to 0.1.6" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4d98b10e1d37c274969266b10db2f4a61ad456b8"
+  message: "🔖 RT8H8E bump packages to 0.1.6"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: bump package versions to 0.1.6 and align dependencies for release." }
-  - { author: "ORCHESTRATOR", body: "Verified: package versions and core dependency aligned to 0.1.6 in both package.json files." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: bump package versions to 0.1.6 and align dependencies for release."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: package versions and core dependency aligned to 0.1.6 in both package.json files."
 doc_version: 2
 doc_updated_at: "2026-02-05T18:18:19.723Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -40,3 +58,5 @@ Checked package.json versions and @agentplaneorg/core dependency set to 0.1.6.
 ## Rollback Plan
 
 Restore previous version numbers in package.json files.
+
+## Plan

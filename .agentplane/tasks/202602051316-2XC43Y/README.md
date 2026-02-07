@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "tasks", "core", "docs"]
+tags:
+  - "roadmap"
+  - "tasks"
+  - "core"
+  - "docs"
 verify: []
-commit: { hash: "5d7978477a559c0286fc4ae2fbb73f18ea4ce297", message: "✨ 2XC43Y move task doc helpers to core" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "5d7978477a559c0286fc4ae2fbb73f18ea4ce297"
+  message: "✨ 2XC43Y move task doc helpers to core"
 comments:
-  - { author: "CODER", body: "Start: extract task-doc helpers to core and replace duplicates in core/task-store and agentplane task-backend." }
-  - { author: "CODER", body: "Verified: ran bun run lint, bun run test:fast, and agentplane hooks run pre-commit; task-doc helpers now centralized in core." }
+  -
+    author: "CODER"
+    body: "Start: extract task-doc helpers to core and replace duplicates in core/task-store and agentplane task-backend."
+  -
+    author: "CODER"
+    body: "Verified: ran bun run lint, bun run test:fast, and agentplane hooks run pre-commit; task-doc helpers now centralized in core."
 doc_version: 2
 doc_updated_at: "2026-02-05T13:45:43.415Z"
 doc_updated_by: "CODER"
@@ -120,3 +140,5 @@ Installed recipe viewer@1.2.3
 ## Rollback Plan
 
 Revert core task-doc/task-id modules and restore prior in-file helpers in task-store, task-backend, and workflow.
+
+## Plan

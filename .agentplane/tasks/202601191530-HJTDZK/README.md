@@ -5,11 +5,28 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agents", "tasks", "workflow"]
+tags:
+  - "agents"
+  - "tasks"
+  - "workflow"
 verify: []
-commit: { hash: "55943b360a037b343be0a24b2514600ba6c63092", message: "✨ HJTDZK require tags on task creation; update agentctl guidance; align orchestrator/planner rules; add task doc" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "55943b360a037b343be0a24b2514600ba6c63092"
+  message: "✨ HJTDZK require tags on task creation; update agentctl guidance; align orchestrator/planner rules; add task doc"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: not run (doc/guidance updates only) | details: manual review only, no code execution." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: not run (doc/guidance updates only) | details: manual review only, no code execution."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:56.079Z"
 doc_updated_by: "agentplane"
@@ -34,3 +51,8 @@ Task creation without tags will now error, which may break existing automation. 
 ## Rollback Plan
 
 Revert the commit and rerun agentctl task lint if needed.
+
+## Plan
+
+
+## Verification

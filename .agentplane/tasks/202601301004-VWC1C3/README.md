@@ -4,13 +4,34 @@ title: "Node CLI parity: start/block/finish flags"
 status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
-depends_on: ["202601300958-HRNHRH"]
-tags: ["nodejs", "cli", "parity", "workflow"]
+depends_on:
+  - "202601300958-HRNHRH"
+tags:
+  - "nodejs"
+  - "cli"
+  - "parity"
+  - "workflow"
 verify: []
-commit: { hash: "dde1e7b60f59644ce330be1134035a739b180408", message: "VWC1C3 align start/block/finish parity and integrate finish" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "dde1e7b60f59644ce330be1134035a739b180408"
+  message: "VWC1C3 align start/block/finish parity and integrate finish"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: Extend start/block/finish flags for parity with agentctl and update tests." }
-  - { author: "ORCHESTRATOR", body: "verified: bun run test | details: packages/agentplane/src/run-cli.test.ts" }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Extend start/block/finish flags for parity with agentctl and update tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run test | details: packages/agentplane/src/run-cli.test.ts"
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:26.449Z"
 doc_updated_by: "agentplane"
@@ -35,3 +56,8 @@ bun run test -- packages/agentplane/src/run-cli.test.ts
 ## Rollback Plan
 
 git revert <commit>
+
+## Plan
+
+
+## Verification

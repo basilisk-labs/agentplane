@@ -4,13 +4,33 @@ title: "AP-028: upgrade command (GitHub source, dry-run, backup)"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601290713-51T41E"]
-tags: ["roadmap", "nodejs", "upgrade"]
+depends_on:
+  - "202601290713-51T41E"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "upgrade"
 verify: []
-commit: { hash: "554ddb2ec2114b948f572832990c04d807b6c3db", message: "feat: TACT48 upgrade command" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "554ddb2ec2114b948f572832990c04d807b6c3db"
+  message: "feat: TACT48 upgrade command"
 comments:
-  - { author: "CODER", body: "Start: implement agentplane upgrade (GitHub source, dry-run, backup) and tests." }
-  - { author: "CODER", body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: upgrade command with bundle download, checksum validation, backups, and tests." }
+  -
+    author: "CODER"
+    body: "Start: implement agentplane upgrade (GitHub source, dry-run, backup) and tests."
+  -
+    author: "CODER"
+    body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: upgrade command with bundle download, checksum validation, backups, and tests."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:16.207Z"
 doc_updated_by: "agentplane"
@@ -35,3 +55,8 @@ Implement agentplane upgrade to fetch a release bundle, verify sha256, support 2
 ## Rollback Plan
 
 - Revert the upgrade command commits to restore previous behavior.
+
+## Plan
+
+
+## Verification

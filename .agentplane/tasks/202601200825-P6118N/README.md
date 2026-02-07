@@ -5,9 +5,23 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agents", "recipes"]
+tags:
+  - "agents"
+  - "recipes"
 verify: []
-commit: { hash: "90401fcb0b8a347e9d7ec4d88eea5febb58b3c72", message: "✅ P6118N orchestrator: refresh bundle.json on startup" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "90401fcb0b8a347e9d7ec4d88eea5febb58b3c72"
+  message: "✅ P6118N orchestrator: refresh bundle.json on startup"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T08:30:07+00:00"
@@ -42,3 +56,8 @@ Revert ORCHESTRATOR.json.
 ## Notes
 
 No runtime behavior changes beyond documented workflow.
+
+## Plan
+
+
+## Verification

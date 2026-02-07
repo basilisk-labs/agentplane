@@ -5,9 +5,22 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["workflow"]
+tags:
+  - "workflow"
 verify: []
-commit: { hash: "a9e6272ec10cf312be4d2050950a75aab87e2d54", message: "🎨 KTZPAD move order toggle to navbar" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a9e6272ec10cf312be4d2050950a75aab87e2d54"
+  message: "🎨 KTZPAD move order toggle to navbar"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -42,3 +55,8 @@ Move the order toggle back to the filter grid in `.agent-plane/viewer/tasks.html
 ## Notes
 
 No behavior changes beyond placement.
+
+## Plan
+
+
+## Verification

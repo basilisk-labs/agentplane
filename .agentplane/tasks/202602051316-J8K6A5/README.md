@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "tasks", "core"]
+tags:
+  - "roadmap"
+  - "tasks"
+  - "core"
 verify: []
-commit: { hash: "22592cf39afbfd4e1fdb0e6ee6d23dbe2f96553e", message: "✨ J8K6A5 unify task id generation" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "22592cf39afbfd4e1fdb0e6ee6d23dbe2f96553e"
+  message: "✨ J8K6A5 unify task id generation"
 comments:
-  - { author: "CODER", body: "Start: implement core generateTaskId with crypto.randomInt and replace existing generators." }
-  - { author: "CODER", body: "Verified: ran bun run lint, bun run test:fast, and agentplane hooks run pre-commit; task ids now generated via core crypto helper." }
+  -
+    author: "CODER"
+    body: "Start: implement core generateTaskId with crypto.randomInt and replace existing generators."
+  -
+    author: "CODER"
+    body: "Verified: ran bun run lint, bun run test:fast, and agentplane hooks run pre-commit; task ids now generated via core crypto helper."
 doc_version: 2
 doc_updated_at: "2026-02-05T13:45:49.396Z"
 doc_updated_by: "CODER"
@@ -118,3 +137,5 @@ Installed recipe viewer@1.2.3
 ## Rollback Plan
 
 Revert core task-id module and restore prior per-backend/task-store ID generation.
+
+## Plan

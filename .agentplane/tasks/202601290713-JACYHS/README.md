@@ -4,13 +4,33 @@ title: "AP-025: IDE entrypoints from AGENTS.md"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601270756-KREHV4"]
-tags: ["roadmap", "nodejs", "ide"]
+depends_on:
+  - "202601270756-KREHV4"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "ide"
 verify: []
-commit: { hash: "8be23728d342b30e4e3caa153e1658b8ef509a6d", message: "✨ JACYHS implement ide sync entrypoints" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8be23728d342b30e4e3caa153e1658b8ef509a6d"
+  message: "✨ JACYHS implement ide sync entrypoints"
 comments:
-  - { author: "CODER", body: "Start: Begin AP-025 implementation planning and code changes for ide sync generation." }
-  - { author: "CODER", body: "verified: bun run ci (2026-01-29) | details: ide sync generates Cursor/Windsurf rules from AGENTS.md." }
+  -
+    author: "CODER"
+    body: "Start: Begin AP-025 implementation planning and code changes for ide sync generation."
+  -
+    author: "CODER"
+    body: "verified: bun run ci (2026-01-29) | details: ide sync generates Cursor/Windsurf rules from AGENTS.md."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:15.859Z"
 doc_updated_by: "agentplane"
@@ -35,3 +55,8 @@ bun run ci
 ## Rollback Plan
 
 Revert commit 8be23728d342.
+
+## Plan
+
+
+## Verification

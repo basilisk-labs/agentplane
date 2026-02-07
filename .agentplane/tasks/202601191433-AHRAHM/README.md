@@ -5,9 +5,23 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["ui", "tasks"]
+tags:
+  - "ui"
+  - "tasks"
 verify: []
-commit: { hash: "85e3a6149c131b329fea8576cf49bda4d86bec9f", message: "🐛 AHRAHM fix board/list toggle" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "85e3a6149c131b329fea8576cf49bda4d86bec9f"
+  message: "🐛 AHRAHM fix board/list toggle"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -41,3 +55,8 @@ Revert the toggle logic in `.agent-plane/viewer/tasks.html`.
 ## Notes
 
 Keep the change small and localized to the view mode handler.
+
+## Plan
+
+
+## Verification

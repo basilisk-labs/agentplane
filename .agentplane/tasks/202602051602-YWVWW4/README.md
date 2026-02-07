@@ -5,12 +5,31 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "tasks", "formatting"]
+tags:
+  - "docs"
+  - "tasks"
+  - "formatting"
 verify: []
-commit: { hash: "c628670d76e3b9790bcb45955850ea6a55ba64ed", message: "📝 YWVWW4 normalize task README spacing" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c628670d76e3b9790bcb45955850ea6a55ba64ed"
+  message: "📝 YWVWW4 normalize task README spacing"
 comments:
-  - { author: "DOCS", body: "Start: Accept normalized spacing in historical task README docs." }
-  - { author: "DOCS", body: "Verified: Normalized task README spacing; formatted BRANCH.md to satisfy Prettier hook." }
+  -
+    author: "DOCS"
+    body: "Start: Accept normalized spacing in historical task README docs."
+  -
+    author: "DOCS"
+    body: "Verified: Normalized task README spacing; formatted BRANCH.md to satisfy Prettier hook."
 doc_version: 2
 doc_updated_at: "2026-02-05T16:03:46.822Z"
 doc_updated_by: "DOCS"
@@ -46,3 +65,5 @@ Pending.
 ## Rollback Plan
 
 - Revert README formatting changes.
+
+## Plan

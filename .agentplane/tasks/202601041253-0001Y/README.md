@@ -5,12 +5,33 @@ status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "cleanup", "readme"]
-verify: ["bash -n clean.sh", "python scripts/agentctl.py task lint"]
-commit: { hash: "c4d8084771dabcdb57353f5e7792322010f648ed", message: "Legacy completion (backfill)" }
+tags:
+  - "docs"
+  - "cleanup"
+  - "readme"
+verify:
+  - "bash -n clean.sh"
+  - "python scripts/agentctl.py task lint"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c4d8084771dabcdb57353f5e7792322010f648ed"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "PLANNER", body: "Plan: refresh root docs + reorganize supporting docs under docs/, then tighten clean.sh so a cleanup leaves only the framework runtime files." }
-  - { author: "REVIEWER", body: "Verified: Ran bash -n clean.sh and python scripts/agentctl.py task lint; docs refreshed and docs/architecture.md added; clean.sh now removes dev artifacts, preserves docs/agentctl.md when present, and recreates checksum-valid tasks.json." }
+  -
+    author: "PLANNER"
+    body: "Plan: refresh root docs + reorganize supporting docs under docs/, then tighten clean.sh so a cleanup leaves only the framework runtime files."
+  -
+    author: "REVIEWER"
+    body: "Verified: Ran bash -n clean.sh and python scripts/agentctl.py task lint; docs refreshed and docs/architecture.md added; clean.sh now removes dev artifacts, preserves docs/agentctl.md when present, and recreates checksum-valid tasks.json."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:23.189Z"
 doc_updated_by: "agentplane"
@@ -30,3 +51,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

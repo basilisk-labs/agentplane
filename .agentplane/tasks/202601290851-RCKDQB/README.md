@@ -4,13 +4,33 @@ title: "AP-040: modular CI/CLI for scoped checks"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601290714-GGRDKD"]
-tags: ["roadmap", "nodejs", "ci"]
+depends_on:
+  - "202601290714-GGRDKD"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "ci"
 verify: []
-commit: { hash: "09b567123757e8982bde85d269aafaf16af281d8", message: "feat: RCKDQB add scoped ci scripts" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "09b567123757e8982bde85d269aafaf16af281d8"
+  message: "feat: RCKDQB add scoped ci scripts"
 comments:
-  - { author: "CODER", body: "Start: add modular CI/CLI scoped checks to speed development while keeping full CI." }
-  - { author: "CODER", body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: scoped CI scripts and docs updates." }
+  -
+    author: "CODER"
+    body: "Start: add modular CI/CLI scoped checks to speed development while keeping full CI."
+  -
+    author: "CODER"
+    body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: scoped CI scripts and docs updates."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:22.773Z"
 doc_updated_by: "agentplane"
@@ -35,3 +55,8 @@ Added scoped CI scripts for per-package checks (format/lint/typecheck/tests) plu
 ## Rollback Plan
 
 - Revert the task commit and remove scoped scripts/doc updates if needed.
+
+## Plan
+
+
+## Verification

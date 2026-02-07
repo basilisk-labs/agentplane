@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agents", "docs"]
+tags:
+  - "agents"
+  - "docs"
 verify: []
-commit: { hash: "dfe8bde0e62aa129ea63873ccc9ce428317abfce", message: "✨ Z6B0HA apply AGENTS policy updates (preflight, approvals, commit modes, config patch)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "dfe8bde0e62aa129ea63873ccc9ce428317abfce"
+  message: "✨ Z6B0HA apply AGENTS policy updates (preflight, approvals, commit modes, config patch)"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit formatting/lint hooks; AGENTS.md formatted with Prettier." }
-  - { author: "ORCHESTRATOR", body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit formatting/lint hooks; AGENTS.md formatted with Prettier." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit formatting/lint hooks; AGENTS.md formatted with Prettier."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit formatting/lint hooks; AGENTS.md formatted with Prettier."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:27.495Z"
 doc_updated_by: "agentplane"
@@ -43,3 +61,8 @@ User requested applying relevant AGENTS.md recommendations to current policy fil
 ## Notes
 
 Config patch is documented only; no config changes applied.
+
+## Plan
+
+
+## Verification

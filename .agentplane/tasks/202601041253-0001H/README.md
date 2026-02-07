@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "DOCS"
 depends_on: []
-tags: ["ui", "tasks", "workflow"]
+tags:
+  - "ui"
+  - "tasks"
+  - "workflow"
 verify: []
-commit: { hash: "5cc30b601bb86f224a984851dae8137374db7ded", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "5cc30b601bb86f224a984851dae8137374db7ded"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "docs", body: "Added tasks.html as a local-first viewer for tasks.json (auto-load over HTTP, plus file picker/drag-drop when opened via file://)." }
+  -
+    author: "docs"
+    body: "Added tasks.html as a local-first viewer for tasks.json (auto-load over HTTP, plus file picker/drag-drop when opened via file://)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:20.614Z"
 doc_updated_by: "agentplane"
@@ -29,3 +46,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

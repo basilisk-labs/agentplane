@@ -5,11 +5,28 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["docs", "workflow", "formatting"]
+tags:
+  - "docs"
+  - "workflow"
+  - "formatting"
 verify: []
-commit: { hash: "f52008459f7415f33a7d3064d064ec841718d00e", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f52008459f7415f33a7d3064d064ec841718d00e"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "reviewer", body: "Confirmed the label prefixes are bold while the italics remain on the suffix, so the board matches the request." }
+  -
+    author: "reviewer"
+    body: "Confirmed the label prefixes are bold while the italics remain on the suffix, so the board matches the request."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:15.817Z"
 doc_updated_by: "agentplane"
@@ -29,3 +46,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "fc4bf8e8c8a497ccc58484eeca110831532434da", message: "📝 V8A8XC require hooks as quality gate" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "fc4bf8e8c8a497ccc58484eeca110831532434da"
+  message: "📝 V8A8XC require hooks as quality gate"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: add explicit hook quality gate policy and ensure hook checks pass cleanly." }
-  - { author: "ORCHESTRATOR", body: "Verified: bun run format:check, bun run lint, bun run test:fast (all passed)." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: add explicit hook quality gate policy and ensure hook checks pass cleanly."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run format:check, bun run lint, bun run test:fast (all passed)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:52.216Z"
 doc_updated_by: "agentplane"
@@ -38,3 +55,8 @@ bun run format:check\nbun run lint\nbun run test:fast
 ## Rollback Plan
 
 Revert docs/developer/testing-and-quality.mdx and docs/developer/code-quality.mdx, then rerun hook checks.
+
+## Plan
+
+
+## Verification

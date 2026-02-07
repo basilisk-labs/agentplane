@@ -5,13 +5,36 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["nodejs", "cli", "config", "roadmap"]
-verify: ["bun run ci"]
-commit: { hash: "47a83183d1db0ec2609dbc68033bd5421a915f00", message: "✨ DEBAMR AP-007: add mode get/set" }
+tags:
+  - "nodejs"
+  - "cli"
+  - "config"
+  - "roadmap"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "47a83183d1db0ec2609dbc68033bd5421a915f00"
+  message: "✨ DEBAMR AP-007: add mode get/set"
 comments:
-  - { author: "CODER", body: "Start: AP-007 implement agentplane mode get|set backed by .agentplane/config.json." }
-  - { author: "CODER", body: "Start: implementing mode get/set CLI commands and wiring to config workflow_mode." }
-  - { author: "CODER", body: "verified: bun run ci passed | details: mode get/set implemented and tested." }
+  -
+    author: "CODER"
+    body: "Start: AP-007 implement agentplane mode get|set backed by .agentplane/config.json."
+  -
+    author: "CODER"
+    body: "Start: implementing mode get/set CLI commands and wiring to config workflow_mode."
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: mode get/set implemented and tested."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:06.100Z"
 doc_updated_by: "agentplane"
@@ -43,3 +66,8 @@ Implement AP-007: expose workflow_mode via agentplane mode get|set <direct|branc
 
 - Revert commits; remove `mode` command handling and docs references
 - Existing config remains valid (workflow_mode field already supported)
+
+## Plan
+
+
+## Verification

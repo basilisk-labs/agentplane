@@ -5,9 +5,23 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["recipes", "docs"]
+tags:
+  - "recipes"
+  - "docs"
 verify: []
-commit: { hash: "97ee8149d897bc6544a629c9623b3b7cb0e19cd2", message: "✅ RDDNMZ docs: document bundle refresh" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "97ee8149d897bc6544a629c9623b3b7cb0e19cd2"
+  message: "✅ RDDNMZ docs: document bundle refresh"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T08:29:59+00:00"
@@ -42,3 +56,8 @@ Revert RECIPES.md changes.
 ## Notes
 
 Keep examples minimal and consistent with recipes.py flags.
+
+## Plan
+
+
+## Verification

@@ -4,13 +4,36 @@ title: "AP-041: backend sync redmine"
 status: "DONE"
 priority: "high"
 owner: "REDMINE"
-depends_on: ["202601290715-46R6VZ", "202601290715-AG5VAH"]
-tags: ["roadmap", "nodejs", "backend", "sync"]
-verify: ["bun run ci"]
-commit: { hash: "e4a40c05cb1ac7a47dea8bc23ce1bf851ff757a1", message: "✨ WJ0QVE add backend sync flag forwarding test" }
+depends_on:
+  - "202601290715-46R6VZ"
+  - "202601290715-AG5VAH"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "backend"
+  - "sync"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "e4a40c05cb1ac7a47dea8bc23ce1bf851ff757a1"
+  message: "✨ WJ0QVE add backend sync flag forwarding test"
 comments:
-  - { author: "REDMINE", body: "Start: implement backend sync redmine (push/pull/conflict modes) with contract tests and CLI wiring." }
-  - { author: "REDMINE", body: "verified: ran bun run ci on 2026-01-30 | details: all checks passed (format, typecheck, lint, coverage)." }
+  -
+    author: "REDMINE"
+    body: "Start: implement backend sync redmine (push/pull/conflict modes) with contract tests and CLI wiring."
+  -
+    author: "REDMINE"
+    body: "verified: ran bun run ci on 2026-01-30 | details: all checks passed (format, typecheck, lint, coverage)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:21.134Z"
 doc_updated_by: "agentplane"
@@ -36,3 +59,8 @@ bun run ci
 ## Rollback Plan
 
 Revert the backend sync CLI test addition and keep existing sync behavior unchanged.
+
+## Plan
+
+
+## Verification

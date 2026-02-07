@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "versioning", "cli"]
+tags:
+  - "roadmap"
+  - "versioning"
+  - "cli"
 verify: []
-commit: { hash: "512e6848b9a46ae3e7b4a03f078de6c3b46f6a95", message: "✨ ET20NN read CLI version from package.json" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "512e6848b9a46ae3e7b4a03f078de6c3b46f6a95"
+  message: "✨ ET20NN read CLI version from package.json"
 comments:
-  - { author: "CODER", body: "Start: Switch CLI version to package.json source, update tests/docs." }
-  - { author: "CODER", body: "Verified: CLI version sourced from package.json; bun run test:fast." }
+  -
+    author: "CODER"
+    body: "Start: Switch CLI version to package.json source, update tests/docs."
+  -
+    author: "CODER"
+    body: "Verified: CLI version sourced from package.json; bun run test:fast."
 doc_version: 2
 doc_updated_at: "2026-02-05T16:19:12.687Z"
 doc_updated_by: "CODER"
@@ -45,3 +64,5 @@ Use package.json as the single source for CLI version and remove hardcoded versi
 ## Rollback Plan
 
 - Revert to prior version constant behavior.
+
+## Plan

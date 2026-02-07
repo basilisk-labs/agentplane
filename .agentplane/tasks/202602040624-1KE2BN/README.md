@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["cleanup"]
+tags:
+  - "cleanup"
 verify: []
-commit: { hash: "7608b88f2f1c38d06c75ee62b76d221b822c9347", message: "📝 1KE2BN fill task README sections" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7608b88f2f1c38d06c75ee62b76d221b822c9347"
+  message: "📝 1KE2BN fill task README sections"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: audit external Codex worktrees for agentplane, remove them, and prune git worktree metadata." }
-  - { author: "ORCHESTRATOR", body: "Verified: external Codex worktrees removed and git worktree metadata pruned." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: audit external Codex worktrees for agentplane, remove them, and prune git worktree metadata."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: external Codex worktrees removed and git worktree metadata pruned."
 doc_version: 2
 doc_updated_at: "2026-02-04T06:29:05.515Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -37,3 +54,8 @@ If any external worktree was still needed, it was removed; no changes were made 
 ## Rollback Plan
 
 Recreate the external worktree via `git worktree add` if required.
+
+## Plan
+
+
+## Verification

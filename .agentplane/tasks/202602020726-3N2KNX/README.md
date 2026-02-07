@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["npm"]
+tags:
+  - "npm"
 verify: []
-commit: { hash: "ac77e3ec777c21300af9a27984fc2493d6a1c70d", message: "🔧 3N2KNX set basilisk-labs package metadata for npm publish" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ac77e3ec777c21300af9a27984fc2493d6a1c70d"
+  message: "🔧 3N2KNX set basilisk-labs package metadata for npm publish"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: prepare npm publish checklist, update package metadata for basilisk-labs ownership, and document publish steps in Russian without running networked commands." }
-  - { author: "ORCHESTRATOR", body: "verified: not run (metadata-only change) | details: pre-commit hooks ran format/lint/test-fast as part of commit." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: prepare npm publish checklist, update package metadata for basilisk-labs ownership, and document publish steps in Russian without running networked commands."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: not run (metadata-only change) | details: pre-commit hooks ran format/lint/test-fast as part of commit."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:42.584Z"
 doc_updated_by: "agentplane"
@@ -35,3 +52,8 @@ Not run (metadata-only change).
 ## Rollback Plan
 
 Revert the commit for 202602020726-3N2KNX.
+
+## Plan
+
+
+## Verification

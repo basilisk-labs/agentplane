@@ -4,12 +4,31 @@ title: "Verify viewer dashboards"
 status: "DONE"
 priority: "normal"
 owner: "TESTER"
-depends_on: ["202601191414-2N28WV", "202601191414-J99M5D"]
-tags: ["ui", "tasks", "testing"]
+depends_on:
+  - "202601191414-2N28WV"
+  - "202601191414-J99M5D"
+tags:
+  - "ui"
+  - "tasks"
+  - "testing"
 verify: []
-commit: { hash: "3fb91cf7aaed42142d8e706dbda629c54a13b089", message: "✨ 2N28WV J99M5D add dashboard UI and aggregation" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3fb91cf7aaed42142d8e706dbda629c54a13b089"
+  message: "✨ 2N28WV J99M5D add dashboard UI and aggregation"
 comments:
-  - { author: "TESTER", body: "verified: Manual UI smoke-check not run here | details: please open the viewer to confirm dashboard cards, presets, and filters respond correctly." }
+  -
+    author: "TESTER"
+    body: "verified: Manual UI smoke-check not run here | details: please open the viewer to confirm dashboard cards, presets, and filters respond correctly."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:52.711Z"
 doc_updated_by: "agentplane"
@@ -44,3 +63,8 @@ Revert dashboard changes if critical failures are observed.
 ## Notes
 
 No automated tests expected for this UI pass.
+
+## Plan
+
+
+## Verification

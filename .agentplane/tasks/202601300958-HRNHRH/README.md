@@ -5,13 +5,34 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agentctl", "parity", "audit"]
+tags:
+  - "agentctl"
+  - "parity"
+  - "audit"
 verify: []
-commit: { hash: "4adde64fde4cacfb4ef567e0e3e269fc0436495e", message: "🚧 HRNHRH audit: create parity tasks" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4adde64fde4cacfb4ef567e0e3e269fc0436495e"
+  message: "🚧 HRNHRH audit: create parity tasks"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: audit agentctl.py parity against node CLI and list gaps." }
-  - { author: "ORCHESTRATOR", body: "Collected agentctl help outputs and created parity implementation tasks: 202601301004-QCQWCN (task subcommands), 202601301004-VWC1C3 (start/block/finish flags), 202601301004-W5KYK7 (workflow/support cmds), 202601301004-B2MTY4 (commit/guard flags)." }
-  - { author: "ORCHESTRATOR", body: "verified: HRNHRH audit complete | details: parity tasks created and recorded for implementation." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: audit agentctl.py parity against node CLI and list gaps."
+  -
+    author: "ORCHESTRATOR"
+    body: "Collected agentctl help outputs and created parity implementation tasks: 202601301004-QCQWCN (task subcommands), 202601301004-VWC1C3 (start/block/finish flags), 202601301004-W5KYK7 (workflow/support cmds), 202601301004-B2MTY4 (commit/guard flags)."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: HRNHRH audit complete | details: parity tasks created and recorded for implementation."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:25.406Z"
 doc_updated_by: "agentplane"
@@ -36,3 +57,8 @@ N/A (audit only).
 ## Rollback Plan
 
 N/A (audit only).
+
+## Plan
+
+
+## Verification

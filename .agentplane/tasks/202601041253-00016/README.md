@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "readme"]
+tags:
+  - "docs"
+  - "readme"
 verify: []
-commit: { hash: "bec7e7de9cbeaed166adefb51ff2c497e1ffa1fc", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "bec7e7de9cbeaed166adefb51ff2c497e1ffa1fc"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "docs", body: "Extended README with code breakdown and local dev steps (download zip, run clean.sh)." }
+  -
+    author: "docs"
+    body: "Extended README with code breakdown and local dev steps (download zip, run clean.sh)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:17.135Z"
 doc_updated_by: "agentplane"
@@ -29,3 +45,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

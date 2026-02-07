@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
-tags: ["testing"]
+tags:
+  - "testing"
 verify: []
-commit: { hash: "f50b22b9557ddf437bf99baa07cd9c8a1d5127f4", message: "✨ WFTS3K type-safe task backend exports" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f50b22b9557ddf437bf99baa07cd9c8a1d5127f4"
+  message: "✨ WFTS3K type-safe task backend exports"
 comments:
-  - { author: "CODER", body: "Start: fix ESLint no-unsafe-* warnings in task backend/tests by making typed exports and validating lint/test." }
-  - { author: "CODER", body: "Verified: lint and test:fast passed; typed task backend exports to silence no-unsafe warnings." }
+  -
+    author: "CODER"
+    body: "Start: fix ESLint no-unsafe-* warnings in task backend/tests by making typed exports and validating lint/test."
+  -
+    author: "CODER"
+    body: "Verified: lint and test:fast passed; typed task backend exports to silence no-unsafe warnings."
 doc_version: 2
 doc_updated_at: "2026-02-05T17:06:04.271Z"
 doc_updated_by: "CODER"
@@ -40,3 +57,5 @@ Remove ESLint no-unsafe-* warnings in task backend/tests by ensuring typed expor
 ## Rollback Plan
 
 - Revert typed aliases if they cause mismatches.
+
+## Plan

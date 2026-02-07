@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["epic-e", "schema", "validation"]
+tags:
+  - "epic-e"
+  - "schema"
+  - "validation"
 verify: []
-commit: { hash: "b33cf73f8ff6426b3a3ee1633377d9716be15447", message: "✨ W39G86 schema-driven config validation" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b33cf73f8ff6426b3a3ee1633377d9716be15447"
+  message: "✨ W39G86 schema-driven config validation"
 comments:
-  - { author: "CODER", body: "Start: Epic E schema as source of truth (Ajv defaults)." }
-  - { author: "CODER", body: "Verified: Ran tsc (tsconfig.eslint), bun run lint, bun run test:fast, and lefthook pre-commit. Updated schema defaults and Ajv validation; docs aligned." }
+  -
+    author: "CODER"
+    body: "Start: Epic E schema as source of truth (Ajv defaults)."
+  -
+    author: "CODER"
+    body: "Verified: Ran tsc (tsconfig.eslint), bun run lint, bun run test:fast, and lefthook pre-commit. Updated schema defaults and Ajv validation; docs aligned."
 doc_version: 2
 doc_updated_at: "2026-02-05T11:43:14.028Z"
 doc_updated_by: "CODER"
@@ -36,3 +55,8 @@ Defaults are now applied during validation; callers relying on missing fields ma
 ## Rollback Plan
 
 Revert the Epic E commit to restore prior config validation behavior and schema draft.
+
+## Plan
+
+
+## Verification

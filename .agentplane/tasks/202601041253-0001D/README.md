@@ -5,11 +5,27 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["automation", "workflow"]
+tags:
+  - "automation"
+  - "workflow"
 verify: []
-commit: { hash: "7b8445b4326e1d8c52e7f0e2718b9d88f75db502", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7b8445b4326e1d8c52e7f0e2718b9d88f75db502"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "docs", body: "Workflow file exists and ensures tasks.json is kept in sync via GitHub Actions." }
+  -
+    author: "docs"
+    body: "Workflow file exists and ensures tasks.json is kept in sync via GitHub Actions."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:18.745Z"
 doc_updated_by: "agentplane"
@@ -29,3 +45,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

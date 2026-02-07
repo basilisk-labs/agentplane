@@ -5,16 +5,29 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl"]
+tags:
+  - "agentctl"
 verify: []
-commit: { hash: "e571744e288fc0f63599967eae460d290d4c97ef", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "e571744e288fc0f63599967eae460d290d4c97ef"
+  message: "Legacy completion (backfill)"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Keep the frontmatter block intact when overwriting task README scaffolds."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 # 202601041253-0003S: agentctl: preserve frontmatter on scaffold overwrite
 
@@ -42,6 +55,11 @@ id_source: "custom"
 ## Rollback Plan
 
 - Revert the scaffold changes in `.agent-plane/agentctl.py`.
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

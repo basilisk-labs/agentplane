@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "refactor"]
-verify: ["python scripts/agentctl.py task lint"]
-commit: { hash: "6b22130b391becfada866dfc8136dbe1decff850", message: "Legacy completion (backfill)" }
+tags:
+  - "docs"
+  - "refactor"
+verify:
+  - "python scripts/agentctl.py task lint"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "6b22130b391becfada866dfc8136dbe1decff850"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "REVIEWER", body: "Verified: Ran python scripts/agentctl.py verify T-065 (task lint) and reviewed README/architecture pointer consistency." }
+  -
+    author: "REVIEWER"
+    body: "Verified: Ran python scripts/agentctl.py verify T-065 (task lint) and reviewed README/architecture pointer consistency."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:24.241Z"
 doc_updated_by: "agentplane"
@@ -29,3 +46,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

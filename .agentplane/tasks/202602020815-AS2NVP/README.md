@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["npm"]
+tags:
+  - "npm"
 verify: []
-commit: { hash: "539dfb3266e85ae72c2073cce904f19a9eff3b61", message: "🔧 AS2NVP switch core scope to @agentplaneorg and update docs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "539dfb3266e85ae72c2073cce904f19a9eff3b61"
+  message: "🔧 AS2NVP switch core scope to @agentplaneorg and update docs"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: switch core package to @agentplaneorg scope, update dependency and release docs, then push changes." }
-  - { author: "ORCHESTRATOR", body: "verified: not run (metadata/docs changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: switch core package to @agentplaneorg scope, update dependency and release docs, then push changes."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: not run (metadata/docs changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:43.727Z"
 doc_updated_by: "agentplane"
@@ -35,3 +52,8 @@ Not run (metadata/docs changes only).
 ## Rollback Plan
 
 Revert the commit for 202602020815-AS2NVP.
+
+## Plan
+
+
+## Verification

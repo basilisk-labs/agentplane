@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "recipes", "audit"]
+tags:
+  - "roadmap"
+  - "recipes"
+  - "audit"
 verify: []
-commit: { hash: "a7966005b50bf8cb886195df6a6e6c3801ecff7e", message: "✨ P4N6RJ add scenario audit report" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a7966005b50bf8cb886195df6a6e6c3801ecff7e"
+  message: "✨ P4N6RJ add scenario audit report"
 comments:
-  - { author: "CODER", body: "Start: Add scenario run audit report with redaction, update tests/docs, and verify via test:fast." }
-  - { author: "CODER", body: "Verified: Added scenario run audit report (report.json) with redacted args/env keys and git summary; bun run test:fast." }
+  -
+    author: "CODER"
+    body: "Start: Add scenario run audit report with redaction, update tests/docs, and verify via test:fast."
+  -
+    author: "CODER"
+    body: "Verified: Added scenario run audit report (report.json) with redacted args/env keys and git summary; bun run test:fast."
 doc_version: 2
 doc_updated_at: "2026-02-05T15:49:18.637Z"
 doc_updated_by: "CODER"
@@ -46,3 +65,5 @@ Pending.
 ## Rollback Plan
 
 - Revert report.json generation and related test updates.
+
+## Plan

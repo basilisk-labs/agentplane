@@ -5,9 +5,25 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["redmine", "backend", "docs"]
-verify: ["echo docs-only"]
-commit: { hash: "095a9428549afe10ccf9d4e078cdc6c48d78b0f9", message: "🧩 8DGWPT redmine doc metadata" }
+tags:
+  - "redmine"
+  - "backend"
+  - "docs"
+verify:
+  - "echo docs-only"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "095a9428549afe10ccf9d4e078cdc6c48d78b0f9"
+  message: "🧩 8DGWPT redmine doc metadata"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -38,3 +54,8 @@ description: "Add doc metadata storage via custom field, enforce valid task_id o
 ## Rollback Plan
 
 - Revert the commit and remove the Redmine `doc` custom field mapping if needed.
+
+## Plan
+
+
+## Verification

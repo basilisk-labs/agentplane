@@ -5,9 +5,24 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["ui", "tasks", "viewer"]
+tags:
+  - "ui"
+  - "tasks"
+  - "viewer"
 verify: []
-commit: { hash: "968b221a08b4b7a7832f87404f1b6db5195351d2", message: "✨ 202601191459-ZG4320 show priority icons in viewer" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "968b221a08b4b7a7832f87404f1b6db5195351d2"
+  message: "✨ 202601191459-ZG4320 show priority icons in viewer"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -37,3 +52,8 @@ Run ./viewer.sh, open the viewer, and confirm priority renders as icons in kanba
 ## Rollback Plan
 
 Revert the changes in .agent-plane/viewer/tasks.html and reload the viewer.
+
+## Plan
+
+
+## Verification

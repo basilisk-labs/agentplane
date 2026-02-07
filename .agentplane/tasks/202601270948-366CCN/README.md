@@ -5,13 +5,36 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["nodejs", "core", "roadmap", "tasks"]
-verify: ["bun run ci"]
-commit: { hash: "d34da21cd7ae4b50a29a845e0fc6a1b787637c3d", message: "✨ 366CCN AP-008: stable task README frontmatter" }
+tags:
+  - "nodejs"
+  - "core"
+  - "roadmap"
+  - "tasks"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d34da21cd7ae4b50a29a845e0fc6a1b787637c3d"
+  message: "✨ 366CCN AP-008: stable task README frontmatter"
 comments:
-  - { author: "CODER", body: "Start: AP-008 implement task README YAML frontmatter parser/writer with byte-stable rendering." }
-  - { author: "CODER", body: "Start: implementing core frontmatter parsing and stable task README frontmatter renderer." }
-  - { author: "CODER", body: "verified: bun run ci passed | details: task README frontmatter parse/render roundtrip is stable." }
+  -
+    author: "CODER"
+    body: "Start: AP-008 implement task README YAML frontmatter parser/writer with byte-stable rendering."
+  -
+    author: "CODER"
+    body: "Start: implementing core frontmatter parsing and stable task README frontmatter renderer."
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: task README frontmatter parse/render roundtrip is stable."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:06.399Z"
 doc_updated_by: "agentplane"
@@ -41,3 +64,8 @@ Implement AP-008: parse YAML frontmatter from task README.md and render it back 
 
 - Revert commits; remove the new core frontmatter module and tests
 - No data migrations are performed in this task
+
+## Plan
+
+
+## Verification

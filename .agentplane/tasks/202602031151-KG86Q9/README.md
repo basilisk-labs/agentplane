@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["tasks"]
+tags:
+  - "tasks"
 verify: []
-commit: { hash: "47e7e9c2e503d2ac7b90019802689cf55bd60a4a", message: "🧹 KG86Q9 dedupe task README headings" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "47e7e9c2e503d2ac7b90019802689cf55bd60a4a"
+  message: "🧹 KG86Q9 dedupe task README headings"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: scanning task READMEs for duplicate section headings and normalizing docs via agentplane task doc set." }
-  - { author: "ORCHESTRATOR", body: "Verified: re-scanned task READMEs for duplicate headings; none remain." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: scanning task READMEs for duplicate section headings and normalizing docs via agentplane task doc set."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: re-scanned task READMEs for duplicate headings; none remain."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:54.358Z"
 doc_updated_by: "agentplane"
@@ -36,3 +53,8 @@ Doc normalization might drop unusual formatting; mitigated by preserving section
 ## Rollback Plan
 
 Revert the task README updates.
+
+## Plan
+
+
+## Verification

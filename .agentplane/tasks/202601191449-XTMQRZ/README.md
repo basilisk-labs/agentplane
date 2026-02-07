@@ -4,12 +4,29 @@ title: "Set priority for retrospective tasks"
 status: "DONE"
 priority: "normal"
 owner: "PLANNER"
-depends_on: ["202601191449-YN9FWW"]
-tags: ["tasks", "backlog"]
+depends_on:
+  - "202601191449-YN9FWW"
+tags:
+  - "tasks"
+  - "backlog"
 verify: []
-commit: { hash: "872134c71b4267716ff48a35bccd34c9b9825c53", message: "✨ XTMQRZ normalize task priorities to low/normal/high" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "872134c71b4267716ff48a35bccd34c9b9825c53"
+  message: "✨ XTMQRZ normalize task priorities to low/normal/high"
 comments:
-  - { author: "PLANNER", body: "verified: task priorities normalized to low/normal/high across metadata." }
+  -
+    author: "PLANNER"
+    body: "verified: task priorities normalized to low/normal/high across metadata."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:53.656Z"
 doc_updated_by: "agentplane"
@@ -43,3 +60,8 @@ Priorities were mixed between med/Нормальный and needed a single schem
 ## Notes
 
 - Priorities now appear only as low/normal/high in task metadata.
+
+## Plan
+
+
+## Verification

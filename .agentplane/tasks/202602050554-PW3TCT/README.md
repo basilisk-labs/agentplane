@@ -5,11 +5,28 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["roadmap", "epic", "cli"]
+tags:
+  - "roadmap"
+  - "epic"
+  - "cli"
 verify: []
-commit: { hash: "d5cc9c9f0ffb52d13a535c4245c95aeec8e31604", message: "🧾 49X946 record finish metadata" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d5cc9c9f0ffb52d13a535c4245c95aeec8e31604"
+  message: "🧾 49X946 record finish metadata"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: Epic B completed via AP-010a/010b/010c; update-check cache and integration done." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Epic B completed via AP-010a/010b/010c; update-check cache and integration done."
 doc_version: 2
 doc_updated_at: "2026-02-05T06:07:29.623Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -35,3 +52,8 @@ Confirm AP-010a/AP-010b/AP-010c are DONE and hooks/tests passed.
 ## Rollback Plan
 
 Revert the Epic B commits in order to restore previous update-check behavior.
+
+## Plan
+
+
+## Verification

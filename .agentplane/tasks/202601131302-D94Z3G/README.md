@@ -5,11 +5,26 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl"]
+tags:
+  - "agentctl"
 verify: []
-commit: { hash: "6e20f08a17a9cc114c8f2d43270fe2375623544d", message: "✨ D94Z3G add agentctl role command" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "6e20f08a17a9cc114c8f2d43270fe2375623544d"
+  message: "✨ D94Z3G add agentctl role command"
 comments:
-  - { author: "CODER", body: "Verified: Added agentctl role <ROLE> command; updated role headings and docs. Manual check: python .agent-plane/agentctl.py role CODER" }
+  -
+    author: "CODER"
+    body: "Verified: Added agentctl role <ROLE> command; updated role headings and docs. Manual check: python .agent-plane/agentctl.py role CODER"
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:45.740Z"
 doc_updated_by: "agentplane"
@@ -42,3 +57,8 @@ Revert the command and doc heading changes.
 ## Notes
 
 Verified locally with: python .agent-plane/agentctl.py role CODER
+
+## Plan
+
+
+## Verification

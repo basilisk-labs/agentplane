@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "git", "workflow"]
+tags:
+  - "agentctl"
+  - "git"
+  - "workflow"
 verify: []
-commit: { hash: "737b83169856fc0f118399f08b062bcf8fcd55fe", message: "✨ 6Y8R1F add opt-in git hooks installer + hook checks + docs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "737b83169856fc0f118399f08b062bcf8fcd55fe"
+  message: "✨ 6Y8R1F add opt-in git hooks installer + hook checks + docs"
 comments:
-  - { author: "CODER", body: "Verified: manual review only; no automated tests run; hooks install/uninstall and enforcement changes reviewed." }
+  -
+    author: "CODER"
+    body: "Verified: manual review only; no automated tests run; hooks install/uninstall and enforcement changes reviewed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:42.208Z"
 doc_updated_by: "agentplane"
@@ -45,3 +62,8 @@ Revert the agentctl hook commands and remove any installed git hooks via `agentc
 ## Notes
 
 Hooks are opt-in; installer never runs automatically.
+
+## Plan
+
+
+## Verification

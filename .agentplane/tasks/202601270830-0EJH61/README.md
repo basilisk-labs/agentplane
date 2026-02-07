@@ -5,12 +5,31 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "roadmap", "nodejs"]
+tags:
+  - "docs"
+  - "roadmap"
+  - "nodejs"
 verify: []
-commit: { hash: "bd9044d5bba0e4862ad39e2caccbbe964c78ace2", message: "✨ 0EJH61 roadmap: restore canonical Node.js migration plan" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "bd9044d5bba0e4862ad39e2caccbbe964c78ace2"
+  message: "✨ 0EJH61 roadmap: restore canonical Node.js migration plan"
 comments:
-  - { author: "DOCS", body: "Start: committing corrected ROADMAP.md to reflect the Node.js migration plan and v1 constraints." }
-  - { author: "DOCS", body: "verified: ROADMAP.md restored to the canonical Node.js migration roadmap (v1 constraints, milestones, AP-001..AP-044)." }
+  -
+    author: "DOCS"
+    body: "Start: committing corrected ROADMAP.md to reflect the Node.js migration plan and v1 constraints."
+  -
+    author: "DOCS"
+    body: "verified: ROADMAP.md restored to the canonical Node.js migration roadmap (v1 constraints, milestones, AP-001..AP-044)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:04.277Z"
 doc_updated_by: "agentplane"
@@ -36,3 +55,8 @@ Commit the corrected ROADMAP.md and keep it as the canonical Node.js migration p
 ## Rollback Plan
 
 - Revert the ROADMAP.md commit.
+
+## Plan
+
+
+## Verification

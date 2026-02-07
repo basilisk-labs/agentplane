@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release", "versioning", "docs", "git"]
+tags:
+  - "release"
+  - "versioning"
+  - "docs"
+  - "git"
 verify: []
-commit: { hash: "8d8fc83cc866475eb469c1a3f8709e0600f4584d", message: "🚀 BQ8HRK release" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8d8fc83cc866475eb469c1a3f8709e0600f4584d"
+  message: "🚀 BQ8HRK release"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: Prepare and publish release v0.1.7 (release notes, version bumps, verification), create git tag v0.1.7 on the release commit, and push main+tag to origin for GitHub Actions publish." }
-  - { author: "ORCHESTRATOR", body: "Verified: agentplane verify passed (2026-02-06); release commit 8d8fc83cc866. Bumped core+cli to 0.1.7, added docs/releases/v0.1.7.md, updated versioned tests." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Prepare and publish release v0.1.7 (release notes, version bumps, verification), create git tag v0.1.7 on the release commit, and push main+tag to origin for GitHub Actions publish."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: agentplane verify passed (2026-02-06); release commit 8d8fc83cc866. Bumped core+cli to 0.1.7, added docs/releases/v0.1.7.md, updated versioned tests."
 doc_version: 2
 doc_updated_at: "2026-02-06T06:19:39.341Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -45,3 +65,5 @@ Verified: 2026-02-06 13:18:08 +0700
 ## Rollback Plan
 
 - Delete local tag v0.1.7 if created: git tag -d v0.1.7.\n- If tag pushed, delete remote tag (requires explicit decision): git push origin :refs/tags/v0.1.7.\n- Revert the release commit(s) via git revert and re-run verification.\n- Re-cut the release with corrected notes/versions.
+
+## Plan

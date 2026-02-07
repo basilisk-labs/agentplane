@@ -4,13 +4,37 @@ title: "AP-039: Redmine backend parity + enable recipe"
 status: "DONE"
 priority: "high"
 owner: "REDMINE"
-depends_on: ["202601271008-63G26Q", "202601290713-TACT48", "202601290714-VWQMR5"]
-tags: ["roadmap", "nodejs", "redmine", "backend"]
-verify: ["bun run ci"]
-commit: { hash: "6ba183351f98c0f2931deaf3084f19d34c608007", message: "✨ 46R6VZ normalize redmine priority" }
+depends_on:
+  - "202601271008-63G26Q"
+  - "202601290713-TACT48"
+  - "202601290714-VWQMR5"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "redmine"
+  - "backend"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "6ba183351f98c0f2931deaf3084f19d34c608007"
+  message: "✨ 46R6VZ normalize redmine priority"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: implement Redmine backend parity in Node + enable recipe." }
-  - { author: "REDMINE", body: "verified: Redmine backend parity and recipe enablement completed | details: CI agentplane, build, and full sandbox Redmine flow (new/list/show/doc/start/block/verify/finish/push/pull) passed; full bun run ci currently fails on coverage thresholds." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: implement Redmine backend parity in Node + enable recipe."
+  -
+    author: "REDMINE"
+    body: "verified: Redmine backend parity and recipe enablement completed | details: CI agentplane, build, and full sandbox Redmine flow (new/list/show/doc/start/block/verify/finish/push/pull) passed; full bun run ci currently fails on coverage thresholds."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:20.148Z"
 doc_updated_by: "agentplane"
@@ -50,3 +74,8 @@ Implemented Node.js Redmine backend parity, backend sync routing, and Redmine re
 ## Notes
 
 Redmine sandbox smoke tasks created: 202601291651-9D0NT9 (push test), 202601291655-EKSR2G (full flow).
+
+## Plan
+
+
+## Verification

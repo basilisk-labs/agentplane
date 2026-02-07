@@ -5,11 +5,28 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["recipes", "docs", "workflow"]
+tags:
+  - "recipes"
+  - "docs"
+  - "workflow"
 verify: []
-commit: { hash: "c9a7cc449afd4d8f56423535f19143588714f0d1", message: "✨ BP0RD5 document recipe mini-cli contract and backend strategy" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c9a7cc449afd4d8f56423535f19143588714f0d1"
+  message: "✨ BP0RD5 document recipe mini-cli contract and backend strategy"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: close: mini-cli contract and backend strategy documented." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: close: mini-cli contract and backend strategy documented."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:59.980Z"
 doc_updated_by: "agentplane"
@@ -42,3 +59,8 @@ Revert commit c9a7cc449afd to remove the documentation updates.
 ## Notes
 
 Mini-CLI JSON output format is now documented in RECIPES.md and should be used for new recipe tools.
+
+## Plan
+
+
+## Verification

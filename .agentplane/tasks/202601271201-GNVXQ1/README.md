@@ -4,13 +4,35 @@ title: "AP-019: start/block/finish parity (direct)"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601271201-1PF9KF"]
-tags: ["nodejs", "roadmap", "workflow", "direct"]
-verify: ["bun run ci"]
-commit: { hash: "1385dbb3d412718022c0578bf0e8d4ed3d03c10a", message: "✨ GNVXQ1 AP-019: direct start/block/finish parity" }
+depends_on:
+  - "202601271201-1PF9KF"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "workflow"
+  - "direct"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "1385dbb3d412718022c0578bf0e8d4ed3d03c10a"
+  message: "✨ GNVXQ1 AP-019: direct start/block/finish parity"
 comments:
-  - { author: "CODER", body: "Start: implement direct start/block/finish parity with comments, commit metadata, and export lint flow." }
-  - { author: "CODER", body: "verified: bun run ci passed (format, typecheck, lint, coverage)." }
+  -
+    author: "CODER"
+    body: "Start: implement direct start/block/finish parity with comments, commit metadata, and export lint flow."
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed (format, typecheck, lint, coverage)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:11.588Z"
 doc_updated_by: "agentplane"
@@ -35,3 +57,8 @@ bun run ci
 ## Rollback Plan
 
 git revert 1385dbb3d412
+
+## Plan
+
+
+## Verification

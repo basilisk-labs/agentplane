@@ -4,13 +4,33 @@ title: "AP-031: recipe list-remote + cache"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601290714-GGRDKD"]
-tags: ["roadmap", "nodejs", "recipes"]
+depends_on:
+  - "202601290714-GGRDKD"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "recipes"
 verify: []
-commit: { hash: "514c356cf71b32dfba920b4f7d4afd5d23d353fe", message: "feat: ZPPQFE list-remote cache" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "514c356cf71b32dfba920b4f7d4afd5d23d353fe"
+  message: "feat: ZPPQFE list-remote cache"
 comments:
-  - { author: "CODER", body: "Start: implement recipe list-remote with cached index fetching." }
-  - { author: "CODER", body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: list-remote with cached index and refresh flag." }
+  -
+    author: "CODER"
+    body: "Start: implement recipe list-remote with cached index fetching."
+  -
+    author: "CODER"
+    body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: list-remote with cached index and refresh flag."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:19.405Z"
 doc_updated_by: "agentplane"
@@ -35,3 +55,8 @@ Add recipe list-remote with cached index loading and optional refresh.
 ## Rollback Plan
 
 - Revert the task commit(s) to remove list-remote and cache handling.
+
+## Plan
+
+
+## Verification

@@ -4,12 +4,29 @@ title: "Phase 3 migration: core cleanup"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601200657-VNFXH3"]
-tags: ["recipes", "workflow"]
+depends_on:
+  - "202601200657-VNFXH3"
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "9f8eb3a1329f8bced6da9e19ce9bf7162082b1c7", message: "✅ VNFXH3 verified: added QA plan, release checklist, and docs scaffold recipes | details: inventory refreshed." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "9f8eb3a1329f8bced6da9e19ce9bf7162082b1c7"
+  message: "✅ VNFXH3 verified: added QA plan, release checklist, and docs scaffold recipes | details: inventory refreshed."
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: Phase 2 migration complete | details: no additional core cleanup changes required at this stage." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: Phase 2 migration complete | details: no additional core cleanup changes required at this stage."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:59.636Z"
 doc_updated_by: "agentplane"
@@ -34,3 +51,8 @@ description: "Trim the core framework to the minimum runtime after recipe migrat
 ## Rollback Plan
 
 - Reopen the task if core cleanup items are identified.\n- Apply targeted removals with a follow-up commit.
+
+## Plan
+
+
+## Verification

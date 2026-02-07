@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "security", "archive", "integration"]
+tags:
+  - "roadmap"
+  - "security"
+  - "archive"
+  - "integration"
 verify: []
-commit: { hash: "2fb1d40dfd753b14b92d9a02e31f44380c8e27f9", message: "🧩 MT8GF4 integrate safe archive checks" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2fb1d40dfd753b14b92d9a02e31f44380c8e27f9"
+  message: "🧩 MT8GF4 integrate safe archive checks"
 comments:
-  - { author: "CODER", body: "Start: integrate safe archive validation into CLI and add tests/fixtures." }
-  - { author: "CODER", body: "Verified: safe archive checks integrated with CLI; traversal tests added; pre-commit hooks passed." }
+  -
+    author: "CODER"
+    body: "Start: integrate safe archive validation into CLI and add tests/fixtures."
+  -
+    author: "CODER"
+    body: "Verified: safe archive checks integrated with CLI; traversal tests added; pre-commit hooks passed."
 doc_version: 2
 doc_updated_at: "2026-02-05T06:17:29.489Z"
 doc_updated_by: "CODER"
@@ -36,3 +56,8 @@ Run CLI tests covering archive extraction failures for traversal/symlinks; ensur
 ## Rollback Plan
 
 Revert integration commit to restore original extractArchive behavior.
+
+## Plan
+
+
+## Verification

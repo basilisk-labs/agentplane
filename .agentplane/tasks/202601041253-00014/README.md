@@ -5,11 +5,28 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["docs", "workflow", "formatting"]
+tags:
+  - "docs"
+  - "workflow"
+  - "formatting"
 verify: []
-commit: { hash: "463a8853f38d3b9f3ebd9f6a191f3f7c81db0aa7", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "463a8853f38d3b9f3ebd9f6a191f3f7c81db0aa7"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "reviewer", body: "Confirmed the summary section is now a table with playful emoji notes and the `_Status` italic text stays intact." }
+  -
+    author: "reviewer"
+    body: "Confirmed the summary section is now a table with playful emoji notes and the `_Status` italic text stays intact."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:16.436Z"
 doc_updated_by: "agentplane"
@@ -29,3 +46,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

@@ -5,14 +5,43 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["redmine"]
+tags:
+  - "redmine"
 verify: []
-commit: { hash: "7cafeace14cd6f307a5137f3ae94eb74080afcd0", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7cafeace14cd6f307a5137f3ae94eb74080afcd0"
+  message: "Legacy completion (backfill)"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-11T08:06:07+00:00"
 doc_updated_by: "agentctl"
 description: "Implement Redmine backend with custom field mappings, auto offline fallback to local cache, and diff-based conflict handling."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Risks
+
+
+## Verification
+
+
+## Rollback Plan

@@ -4,13 +4,32 @@ title: "AP-005: Project discovery + path resolver for .agentplane"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601270756-B8J0CW"]
-tags: ["nodejs", "core"]
+depends_on:
+  - "202601270756-B8J0CW"
+tags:
+  - "nodejs"
+  - "core"
 verify: []
-commit: { hash: "9696dd28c368c87392c199a4f58a2716e3368d01", message: "✨ RMNY59 core: add git root discovery and .agentplane resolver" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "9696dd28c368c87392c199a4f58a2716e3368d01"
+  message: "✨ RMNY59 core: add git root discovery and .agentplane resolver"
 comments:
-  - { author: "CODER", body: "Start: implementing git-root discovery + .agentplane path resolver with unit tests under packages/core." }
-  - { author: "CODER", body: "verified: implemented findGitRoot/resolveProject in @agentplane/core with TS unit tests (run via npm after installing deps)." }
+  -
+    author: "CODER"
+    body: "Start: implementing git-root discovery + .agentplane path resolver with unit tests under packages/core."
+  -
+    author: "CODER"
+    body: "verified: implemented findGitRoot/resolveProject in @agentplane/core with TS unit tests (run via npm after installing deps)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:03.631Z"
 doc_updated_by: "agentplane"
@@ -41,3 +60,8 @@ Implement project discovery (git root) and `.agentplane` path resolution from an
 ## Rollback Plan
 
 - Revert resolver changes; keep CLI limited to running from repo root temporarily.
+
+## Plan
+
+
+## Verification

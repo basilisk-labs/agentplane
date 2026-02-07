@@ -5,12 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["git", "recipes"]
+tags:
+  - "git"
+  - "recipes"
 verify: []
-commit: { hash: "03ea920539c25dd926344d51524087a5d36b2210", message: "✨ J773F8 add recipes submodule" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "03ea920539c25dd926344d51524087a5d36b2210"
+  message: "✨ J773F8 add recipes submodule"
 comments:
-  - { author: "CODER", body: "Start: add agentplane-recipes submodule at repo root." }
-  - { author: "CODER", body: "verified: submodule added at agentplane-recipes/ and lint ignores updated." }
+  -
+    author: "CODER"
+    body: "Start: add agentplane-recipes submodule at repo root."
+  -
+    author: "CODER"
+    body: "verified: submodule added at agentplane-recipes/ and lint ignores updated."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:24.057Z"
 doc_updated_by: "agentplane"
@@ -35,3 +53,8 @@ Add agentplane-recipes as a git submodule in the repo root.
 ## Rollback Plan
 
 - Remove submodule and restore ignore rule
+
+## Plan
+
+
+## Verification

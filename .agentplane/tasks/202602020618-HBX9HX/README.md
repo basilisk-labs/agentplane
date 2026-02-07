@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["npm"]
+tags:
+  - "npm"
 verify: []
-commit: { hash: "84362d7bd0aee1c9567aedb28130a28331bc608e", message: "🔧 HBX9HX fix cli version: 0.1.0 and publish metadata" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "84362d7bd0aee1c9567aedb28130a28331bc608e"
+  message: "🔧 HBX9HX fix cli version: 0.1.0 and publish metadata"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: align agentplane --version with 0.1.0 and fill npm publish metadata across package manifests; verify CLI output and build." }
-  - { author: "ORCHESTRATOR", body: "verified: bun run --filter=agentplane build | details: node packages/agentplane/bin/agentplane.js --version (0.1.0); pre-commit hooks (format/lint/test-fast) passed." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: align agentplane --version with 0.1.0 and fill npm publish metadata across package manifests; verify CLI output and build."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run --filter=agentplane build | details: node packages/agentplane/bin/agentplane.js --version (0.1.0); pre-commit hooks (format/lint/test-fast) passed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:41.978Z"
 doc_updated_by: "agentplane"
@@ -35,3 +52,8 @@ bun run --filter=agentplane build\nnode packages/agentplane/bin/agentplane.js --
 ## Rollback Plan
 
 Revert version and package metadata changes, then restore tests to the previous expected version.
+
+## Plan
+
+
+## Verification

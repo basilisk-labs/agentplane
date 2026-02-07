@@ -5,13 +5,33 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "ux"]
+tags:
+  - "agentctl"
+  - "ux"
 verify: []
-commit: { hash: "6b7b0c6182cf7dd1f0833e4044300db6b32fe3cd", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "6b7b0c6182cf7dd1f0833e4044300db6b32fe3cd"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: batch writes, caching, JSON errors, lazy lint, and logging flags implemented." }
-  - { author: "INTEGRATOR", body: "Verified: documentation updated for lint/flags and agent guidance." }
-  - { author: "INTEGRATOR", body: "Verified: agentctl.md now documents flags, JSON errors, normalize, lint behavior, and batch writes." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: batch writes, caching, JSON errors, lazy lint, and logging flags implemented."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: documentation updated for lint/flags and agent guidance."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: agentctl.md now documents flags, JSON errors, normalize, lint behavior, and batch writes."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:33.048Z"
 doc_updated_by: "agentplane"
@@ -50,6 +70,11 @@ dirty: false
 ## Rollback Plan
 
 - Restore `.agent-plane/agentctl.py` and backend files from git history.
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

@@ -4,12 +4,33 @@ title: "AP-011: Export .agentplane/tasks.json + checksum"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601271008-63G26Q", "202601270756-KREHV4"]
-tags: ["nodejs", "roadmap", "tasks", "export"]
-verify: ["bun run ci"]
-commit: { hash: "bdc536afb9202d2dcd3e2cfebeed47643ae06448", message: "✨ A6D5EF AP-011: task export (tasks.json + sha256)" }
+depends_on:
+  - "202601271008-63G26Q"
+  - "202601270756-KREHV4"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "tasks"
+  - "export"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "bdc536afb9202d2dcd3e2cfebeed47643ae06448"
+  message: "✨ A6D5EF AP-011: task export (tasks.json + sha256)"
 comments:
-  - { author: "CODER", body: "verified: bun run ci passed | details: details: agentplane task export writes .agentplane/tasks.json with sha256 checksum (python-canonical parity) and stable ordering; tests added." }
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: details: agentplane task export writes .agentplane/tasks.json with sha256 checksum (python-canonical parity) and stable ordering; tests added."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:07.656Z"
 doc_updated_by: "agentplane"
@@ -37,3 +58,8 @@ bun run ci
 ## Rollback Plan
 
 git revert bdc536afb920
+
+## Plan
+
+
+## Verification

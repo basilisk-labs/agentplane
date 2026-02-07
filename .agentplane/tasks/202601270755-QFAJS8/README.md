@@ -5,11 +5,28 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["nodejs", "roadmap", "m0"]
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "m0"
 verify: []
-commit: { hash: "0e80893fb17c6903d0cca8a56b0b7d32e10e5bb2", message: "✨ QFAJS8 roadmap: record M0 implementation landing points" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "0e80893fb17c6903d0cca8a56b0b7d32e10e5bb2"
+  message: "✨ QFAJS8 roadmap: record M0 implementation landing points"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: M0 tasks AP-001..AP-006 completed (CLI contract, specs, recipes spec, Node workspace scaffold, project resolver, config show | details: set). Builds/tests require npm install." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: M0 tasks AP-001..AP-006 completed (CLI contract, specs, recipes spec, Node workspace scaffold, project resolver, config show | details: set). Builds/tests require npm install."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:02.378Z"
 doc_updated_by: "agentplane"
@@ -44,3 +61,8 @@ Ship M0 of the Node.js migration: define contracts/specs and bootstrap the Node.
 
 - Revert commits created for AP-001..AP-006.
 - Keep existing Python framework unchanged; do not switch any projects to `.agentplane` until M7.
+
+## Plan
+
+
+## Verification

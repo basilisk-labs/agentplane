@@ -4,13 +4,36 @@ title: "Config/init: require verify confirmation + add Verification section"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202602051201-F8YMCF"]
-tags: ["workflow", "config", "init", "docs", "frontend"]
-verify: ["bun run test:fast"]
-commit: { hash: "6a587632ce9708997b47079cec39dcadf582040b", message: "✨ 695YXF add verify approval config/init" }
+depends_on:
+  - "202602051201-F8YMCF"
+tags:
+  - "workflow"
+  - "config"
+  - "init"
+  - "docs"
+  - "frontend"
+verify:
+  - "bun run test:fast"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "6a587632ce9708997b47079cec39dcadf582040b"
+  message: "✨ 695YXF add verify approval config/init"
 comments:
-  - { author: "CODER", body: "Start: add Verification doc section to config/schema/templates and add verify approval setting to init/config." }
-  - { author: "CODER", body: "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify (Verification section updated)." }
+  -
+    author: "CODER"
+    body: "Start: add Verification doc section to config/schema/templates and add verify approval setting to init/config."
+  -
+    author: "CODER"
+    body: "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify (Verification section updated)."
 doc_version: 2
 doc_updated_at: "2026-02-05T12:50:42.459Z"
 doc_updated_by: "CODER"
@@ -42,3 +65,5 @@ Revert commits for config/init and docs changes; reset config schema/example to 
 ## Verification
 
 Pending: execute verify after implementation.
+
+## Plan

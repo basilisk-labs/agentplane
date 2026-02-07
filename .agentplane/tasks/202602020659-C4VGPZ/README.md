@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["init"]
+tags:
+  - "init"
 verify: []
-commit: { hash: "86d665eb390b8b3b70fc912275f06b942ce2f4d8", message: "🐛 C4VGPZ fix init ide selection; scope ide sync to chosen target; update tests and docs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "86d665eb390b8b3b70fc912275f06b942ce2f4d8"
+  message: "🐛 C4VGPZ fix init ide selection; scope ide sync to chosen target; update tests and docs"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: restrict init IDE prompt to Codex CLI default and ensure only selected IDE rules are installed (no cursor/windsurf leakage)." }
-  - { author: "ORCHESTRATOR", body: "verified: bun run test:cli:core | details: pre-commit hooks ran format/lint/test-fast; all passing." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: restrict init IDE prompt to Codex CLI default and ensure only selected IDE rules are installed (no cursor/windsurf leakage)."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run test:cli:core | details: pre-commit hooks ran format/lint/test-fast; all passing."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:42.316Z"
 doc_updated_by: "agentplane"
@@ -35,3 +52,8 @@ bun run test:cli:core
 ## Rollback Plan
 
 Revert the commit for 202602020659-C4VGPZ.
+
+## Plan
+
+
+## Verification

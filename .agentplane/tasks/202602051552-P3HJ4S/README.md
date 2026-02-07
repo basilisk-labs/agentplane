@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "io", "safety"]
+tags:
+  - "roadmap"
+  - "io"
+  - "safety"
 verify: []
-commit: { hash: "6be1bdeba4542081f0ef13ea4f82694ea74b8f85", message: "✨ P3HJ4S atomic writes for critical files" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "6be1bdeba4542081f0ef13ea4f82694ea74b8f85"
+  message: "✨ P3HJ4S atomic writes for critical files"
 comments:
-  - { author: "CODER", body: "Start: Implement atomic writes for critical files and update tests/docs." }
-  - { author: "CODER", body: "Verified: format:check, lint, test:fast passed; atomic writes cover tasks export and task docs; documentation updated." }
+  -
+    author: "CODER"
+    body: "Start: Implement atomic writes for critical files and update tests/docs."
+  -
+    author: "CODER"
+    body: "Verified: format:check, lint, test:fast passed; atomic writes cover tasks export and task docs; documentation updated."
 doc_version: 2
 doc_updated_at: "2026-02-05T16:38:20.461Z"
 doc_updated_by: "CODER"
@@ -44,3 +63,5 @@ Ensure critical files are written atomically to avoid partial writes.
 ## Rollback Plan
 
 - Revert atomic write helper and restore direct writes.
+
+## Plan

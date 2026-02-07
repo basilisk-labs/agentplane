@@ -5,11 +5,26 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["config"]
+tags:
+  - "config"
 verify: []
-commit: { hash: "208b8f601a53d4164a225ffc4e72fbb2bbc5b46f", message: "✨ 20Z43B docs: mark task obsolete and update roadmap" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "208b8f601a53d4164a225ffc4e72fbb2bbc5b46f"
+  message: "✨ 20Z43B docs: mark task obsolete and update roadmap"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: closed as obsolete per user request; no execution performed; no verify steps run." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: closed as obsolete per user request; no execution performed; no verify steps run."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:43.568Z"
 doc_updated_by: "agentplane"
@@ -44,6 +59,11 @@ description: "Scan the repo for hard-coded workflow settings and propose which o
 ## Notes
 
 - Reopen with a new task if analysis becomes necessary.
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

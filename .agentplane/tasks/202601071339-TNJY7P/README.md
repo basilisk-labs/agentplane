@@ -5,11 +5,26 @@ status: "DONE"
 priority: "normal"
 owner: "PLANNER"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "918e384d381c85c237c936bde01954fa7a193268", message: "🪄 TNJY7P normalize diagram wording: update export label in README sequence diagram; align task export phrasing" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "918e384d381c85c237c936bde01954fa7a193268"
+  message: "🪄 TNJY7P normalize diagram wording: update export label in README sequence diagram; align task export phrasing"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: not run; doc/instruction edits only, no runtime impact." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: not run; doc/instruction edits only, no runtime impact."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:35.187Z"
 doc_updated_by: "agentplane"
@@ -38,3 +53,8 @@ description: "Align README diagrams and badges with 'task export' wording, ensur
 ## Rollback Plan
 
 - Revert commit `918e384d381c`.
+
+## Plan
+
+
+## Verification

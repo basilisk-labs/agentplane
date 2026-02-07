@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "CREATOR"
 depends_on: []
-tags: ["agents", "workflow"]
+tags:
+  - "agents"
+  - "workflow"
 verify: []
-commit: { hash: "f58936f62dc99a48a59dc6481ee2477602267672", message: "✨ DAS67K tidy deps" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f58936f62dc99a48a59dc6481ee2477602267672"
+  message: "✨ DAS67K tidy deps"
 comments:
-  - { author: "CREATOR", body: "verified: Documented the UPGRADER agent lifecycle, triggers, and config expectations for automation readiness." }
+  -
+    author: "CREATOR"
+    body: "verified: Documented the UPGRADER agent lifecycle, triggers, and config expectations for automation readiness."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:51.092Z"
 doc_updated_by: "agentplane"
@@ -50,3 +66,8 @@ description: "Review agentctl layout and specify UPGRADER responsibilities for a
 ## Notes
 
 - Downstream tasks cover the actual CLI implementation (`202601160958-NV8M5V`) and regression tests (`202601160958-AM3G42`), so keep this spec in sync with those artifacts.
+
+## Plan
+
+
+## Verification

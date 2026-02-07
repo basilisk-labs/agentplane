@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["epic-e", "refactor", "coverage", "warnings"]
+tags:
+  - "epic-e"
+  - "refactor"
+  - "coverage"
+  - "warnings"
 verify: []
-commit: { hash: "b33cf73f8ff6426b3a3ee1633377d9716be15447", message: "✨ W39G86 schema-driven config validation" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b33cf73f8ff6426b3a3ee1633377d9716be15447"
+  message: "✨ W39G86 schema-driven config validation"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: coverage check, warnings cleanup, package restructure, Epic E implementation." }
-  - { author: "ORCHESTRATOR", body: "Verified: Ran tsc (tsconfig.eslint), bun run lint, bun run test:fast, and lefthook pre-commit. Epic E schema/validation changes and docs are complete." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: coverage check, warnings cleanup, package restructure, Epic E implementation."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Ran tsc (tsconfig.eslint), bun run lint, bun run test:fast, and lefthook pre-commit. Epic E schema/validation changes and docs are complete."
 doc_version: 2
 doc_updated_at: "2026-02-05T11:43:52.060Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -36,3 +56,8 @@ Config validation behavior now applies defaults during validation; downstream to
 ## Rollback Plan
 
 Revert the Epic E commit(s) to restore previous config validation and schema draft.
+
+## Plan
+
+
+## Verification

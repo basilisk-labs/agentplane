@@ -5,11 +5,26 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["workflow"]
+tags:
+  - "workflow"
 verify: []
-commit: { hash: "c27e131f3f69296a51441fa6a138de2fdf1f3ac5", message: "✨ NV8M5V automate upgrade" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c27e131f3f69296a51441fa6a138de2fdf1f3ac5"
+  message: "✨ NV8M5V automate upgrade"
 comments:
-  - { author: "CODER", body: "verified: Confirmed agentctl upgrade helpers, CLI documentation, and config metadata align with the new framework refresh flow." }
+  -
+    author: "CODER"
+    body: "verified: Confirmed agentctl upgrade helpers, CLI documentation, and config metadata align with the new framework refresh flow."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:51.429Z"
 doc_updated_by: "agentplane"
@@ -49,3 +64,8 @@ description: "Extend agentctl to track last framework update date in config, com
 ## Notes
 
 - This task feeds directly into the regression tests covered by `202601160958-AM3G42` so keep any future changes synchronized with that suite.
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["release", "packaging"]
+tags:
+  - "release"
+  - "packaging"
 verify: []
-commit: { hash: "e95d20cb5ea9adf2f9b20e90eb6a70d49ac2d16b", message: "🛠 QSGBDX ship core config schema" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "e95d20cb5ea9adf2f9b20e90eb6a70d49ac2d16b"
+  message: "🛠 QSGBDX ship core config schema"
 comments:
-  - { author: "CODER", body: "Start: ensure core schema is packaged and runtime loads it from core package." }
-  - { author: "CODER", body: "Verified: core schema shipped under packages/core/schemas and path updated in config loader." }
+  -
+    author: "CODER"
+    body: "Start: ensure core schema is packaged and runtime loads it from core package."
+  -
+    author: "CODER"
+    body: "Verified: core schema shipped under packages/core/schemas and path updated in config loader."
 doc_version: 2
 doc_updated_at: "2026-02-05T18:08:57.448Z"
 doc_updated_by: "CODER"
@@ -40,3 +58,5 @@ Added core schema file, updated schema path, and included schemas in package fil
 ## Rollback Plan
 
 Revert schema path and packaging changes.
+
+## Plan

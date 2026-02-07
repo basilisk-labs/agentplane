@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["refactor", "cli"]
+tags:
+  - "refactor"
+  - "cli"
 verify: []
-commit: { hash: "94cedb4c3e5e0f5cd5da01284e19a7b54c6e6e5c", message: "🧩 EHBPD9 refactor" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "94cedb4c3e5e0f5cd5da01284e19a7b54c6e6e5c"
+  message: "🧩 EHBPD9 refactor"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: Split commands/task/index.ts by individual commands (new/add/update/comment/set-status/doc/finish/verify/etc.) while keeping index.ts as explicit re-export entrypoint; run typecheck/lint/cli unit tests and agentplane verify." }
-  - { author: "ORCHESTRATOR", body: "Verified: agentplane verify passed (2026-02-06); commit 94cedb4c3e5e. Split commands/task/index.ts into per-command modules; ran typecheck, lint, and test:cli:unit." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Split commands/task/index.ts by individual commands (new/add/update/comment/set-status/doc/finish/verify/etc.) while keeping index.ts as explicit re-export entrypoint; run typecheck/lint/cli unit tests and agentplane verify."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: agentplane verify passed (2026-02-06); commit 94cedb4c3e5e. Split commands/task/index.ts into per-command modules; ran typecheck, lint, and test:cli:unit."
 doc_version: 2
 doc_updated_at: "2026-02-06T06:04:47.956Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -46,3 +64,5 @@ Verified: 2026-02-06 13:03:01 +0700
 ## Rollback Plan
 
 - Revert the task commit(s) created via agentplane.\n- Re-run: bun run typecheck && bun run lint && bun run test:cli:unit (and agentplane verify).\n- If needed, temporarily restore the monolithic task/index.ts from mainline.
+
+## Plan

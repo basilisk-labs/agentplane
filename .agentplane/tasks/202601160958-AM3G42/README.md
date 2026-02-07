@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "TESTER"
 depends_on: []
-tags: ["workflow", "testing"]
+tags:
+  - "workflow"
+  - "testing"
 verify: []
-commit: { hash: "65d3ce2af2cd46f83c8dfd3adb09fa18189464be", message: "✨ AM3G42 add upgrade tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "65d3ce2af2cd46f83c8dfd3adb09fa18189464be"
+  message: "✨ AM3G42 add upgrade tests"
 comments:
-  - { author: "TESTER", body: "verified: Ran python3 -m unittest tests.test_framework_upgrade to cover the staleness math before finalizing the workflow." }
+  -
+    author: "TESTER"
+    body: "verified: Ran python3 -m unittest tests.test_framework_upgrade to cover the staleness math before finalizing the workflow."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:50.775Z"
 doc_updated_by: "agentplane"
@@ -43,3 +59,8 @@ description: "Add regression coverage for the 10-day staleness threshold and for
 ## Notes
 
 - Future end-to-end coverage may run `agentctl upgrade` in a sandbox, but for now this unit suite provides confidence that the helpers behave.
+
+## Plan
+
+
+## Verification

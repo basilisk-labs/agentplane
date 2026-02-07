@@ -4,10 +4,26 @@ title: "Add GitHub sync recipe"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601290715-46R6VZ"]
-tags: ["recipes", "github", "sync"]
+depends_on:
+  - "202601290715-46R6VZ"
+tags:
+  - "recipes"
+  - "github"
+  - "sync"
 verify: []
-commit: { hash: "acdc0e8f58aee85f03189caee3b228c2b082dbbd", message: "✨ 202601291715-FW4RHR 202601291715-KJ12XA add github-sync and dokploy recipes" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "acdc0e8f58aee85f03189caee3b228c2b082dbbd"
+  message: "✨ 202601291715-FW4RHR 202601291715-KJ12XA add github-sync and dokploy recipes"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-30T03:08:45+00:00"
@@ -45,3 +61,8 @@ This recipe packages the existing GitHub Issues/Projects sync workflow and scrip
 ## Notes
 
 The install tool reads owner/repo/project values from .env and substitutes placeholders in the workflow.
+
+## Plan
+
+
+## Verification

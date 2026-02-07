@@ -5,12 +5,29 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["workflow"]
+tags:
+  - "workflow"
 verify: []
-commit: { hash: "9d4a383c6d1e8a08933180886aba7db8287c30e4", message: "✨ PT7RCE align roadmap workflow: update AGENTS.md orchestration flow; sync ORCHESTRATOR/PLANNER specs; add umbrella-task tracking" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "9d4a383c6d1e8a08933180886aba7db8287c30e4"
+  message: "✨ PT7RCE align roadmap workflow: update AGENTS.md orchestration flow; sync ORCHESTRATOR/PLANNER specs; add umbrella-task tracking"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: sync ORCHESTRATOR/PLANNER agent specs with AGENTS.md roadmap and top-level task rules." }
-  - { author: "ORCHESTRATOR", body: "Verified: closing as unnecessary; roadmap flow was superseded by BK0QY5 top-level plan + task prompt." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: sync ORCHESTRATOR/PLANNER agent specs with AGENTS.md roadmap and top-level task rules."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: closing as unnecessary; roadmap flow was superseded by BK0QY5 top-level plan + task prompt."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:43.857Z"
 doc_updated_by: "agentplane"
@@ -39,3 +56,8 @@ No tests (spec changes only).
 ## Rollback Plan
 
 Revert the commit to restore the previous agent specs.
+
+## Plan
+
+
+## Verification

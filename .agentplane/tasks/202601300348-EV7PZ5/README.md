@@ -4,10 +4,26 @@ title: "Release and push recipe updates"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601300348-WETHGB"]
-tags: ["recipes", "release", "git"]
+depends_on:
+  - "202601300348-WETHGB"
+tags:
+  - "recipes"
+  - "release"
+  - "git"
 verify: []
-commit: { hash: "a4cc96465b18d02bbf6182c8d18d4962ddbf6ddd", message: "✨ 202601300348-EV7PZ5 update recipes release index" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a4cc96465b18d02bbf6182c8d18d4962ddbf6ddd"
+  message: "✨ 202601300348-EV7PZ5 update recipes release index"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-30T04:06:05+00:00"
@@ -43,3 +59,8 @@ Release metadata in agentplane-recipes is generated from recipe manifests and mu
 ## Notes
 
 Release artifacts are in agentplane-recipes/dist for upload.
+
+## Plan
+
+
+## Verification

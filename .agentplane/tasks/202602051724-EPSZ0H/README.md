@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release", "git"]
+tags:
+  - "release"
+  - "git"
 verify: []
-commit: { hash: "b80aa9c1fd6b5a74d3e4ad4ca592585c382455d5", message: "📝 PFN0KP record task metadata" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b80aa9c1fd6b5a74d3e4ad4ca592585c382455d5"
+  message: "📝 PFN0KP record task metadata"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: prepare tag v0.1.5 and push main + tag to origin." }
-  - { author: "ORCHESTRATOR", body: "Verified: main and v0.1.5 pushed; tag points to release commit." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: prepare tag v0.1.5 and push main + tag to origin."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: main and v0.1.5 pushed; tag points to release commit."
 doc_version: 2
 doc_updated_at: "2026-02-05T17:44:08.655Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -40,3 +58,5 @@ Confirmed tag v0.1.5 points to commit b80aa9c1fd6b; push main and v0.1.5 succeed
 ## Rollback Plan
 
 Delete tag v0.1.5 locally/remotely and reset to prior state if needed.
+
+## Plan

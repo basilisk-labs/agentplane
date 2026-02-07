@@ -5,13 +5,35 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["python", "lint", "quality", "tooling"]
+tags:
+  - "python"
+  - "lint"
+  - "quality"
+  - "tooling"
 verify: []
-commit: { hash: "bf1955ebe79ce7ce7324980587969a0d72385247", message: "✨ 4HQ6XY Add strict ruff/mypy configs and dev deps; update Python modules for lint/type checks; clean new lint caches." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "bf1955ebe79ce7ce7324980587969a0d72385247"
+  message: "✨ 4HQ6XY Add strict ruff/mypy configs and dev deps; update Python modules for lint/type checks; clean new lint caches."
 comments:
-  - { author: "CODER", body: "Start: Add strict Python lint/format/type-check configs, update code to pass them, and clean new artifacts." }
-  - { author: "CODER", body: "Add strict ruff/mypy configs and dev deps; update Python modules for lint/type checks; clean new lint caches." }
-  - { author: "CODER", body: "Verified: ran .venv/bin/ruff format ., .venv/bin/ruff check ., and .venv/bin/mypy; all passed. Added strict ruff/mypy configs, cleaned lint cache artifacts, and updated Python code for compliance." }
+  -
+    author: "CODER"
+    body: "Start: Add strict Python lint/format/type-check configs, update code to pass them, and clean new artifacts."
+  -
+    author: "CODER"
+    body: "Add strict ruff/mypy configs and dev deps; update Python modules for lint/type checks; clean new lint caches."
+  -
+    author: "CODER"
+    body: "Verified: ran .venv/bin/ruff format ., .venv/bin/ruff check ., and .venv/bin/mypy; all passed. Added strict ruff/mypy configs, cleaned lint cache artifacts, and updated Python code for compliance."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:40.515Z"
 doc_updated_by: "agentplane"
@@ -46,3 +68,8 @@ Revert lint config files, clean script changes, and any code edits; remove lint 
 ## Notes
 
 Aim for strict linting while scoping unavoidable exceptions (e.g., CLI subprocess usage).
+
+## Plan
+
+
+## Verification

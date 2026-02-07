@@ -5,11 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "REVIEWER"
 depends_on: []
-tags: ["workflow", "agents", "git"]
-verify: ["python scripts/agentctl.py task lint", "python scripts/agentctl.py agents"]
-commit: { hash: "dca6297f9226447c57df14fb9f6090a679b535f3", message: "Legacy completion (backfill)" }
+tags:
+  - "workflow"
+  - "agents"
+  - "git"
+verify:
+  - "python scripts/agentctl.py task lint"
+  - "python scripts/agentctl.py agents"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "dca6297f9226447c57df14fb9f6090a679b535f3"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "REVIEWER", body: "Verified: AGENTS.md and REVIEWER workflow now require explicit user approval before the final task-closing commit; task lint and agents registry checks pass." }
+  -
+    author: "REVIEWER"
+    body: "Verified: AGENTS.md and REVIEWER workflow now require explicit user approval before the final task-closing commit; task lint and agents registry checks pass."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:22.898Z"
 doc_updated_by: "agentplane"
@@ -29,3 +48,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

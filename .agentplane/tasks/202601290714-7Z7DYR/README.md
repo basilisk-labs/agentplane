@@ -4,13 +4,35 @@ title: "AP-038: viewer recipe (optional)"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601290714-VWQMR5", "202601290714-TZBJ1M"]
-tags: ["roadmap", "nodejs", "recipes", "viewer"]
+depends_on:
+  - "202601290714-VWQMR5"
+  - "202601290714-TZBJ1M"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "recipes"
+  - "viewer"
 verify: []
-commit: { hash: "45f3f303c2991e05506b44986bf3c0706688f5d5", message: "✨ 7Z7DYR viewer recipe" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "45f3f303c2991e05506b44986bf3c0706688f5d5"
+  message: "✨ 7Z7DYR viewer recipe"
 comments:
-  - { author: "CODER", body: "Start: package viewer recipe with assets, tool, and scenario." }
-  - { author: "CODER", body: "verified: viewer recipe added in external repo agentplane-recipes (commit db18c1b) | details: tests not run." }
+  -
+    author: "CODER"
+    body: "Start: package viewer recipe with assets, tool, and scenario."
+  -
+    author: "CODER"
+    body: "verified: viewer recipe added in external repo agentplane-recipes (commit db18c1b) | details: tests not run."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:17.144Z"
 doc_updated_by: "agentplane"
@@ -39,3 +61,8 @@ Add viewer recipe with tasks.html asset, viewer-server tool, and scenario.
 ## Notes
 
 Work committed in external repo: agentplane-recipes (commit db18c1b).
+
+## Plan
+
+
+## Verification

@@ -5,15 +5,40 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agents", "docs", "agentctl"]
+tags:
+  - "agents"
+  - "docs"
+  - "agentctl"
 verify: []
-commit: { hash: "56784335a5f6585a0d8cdd34dfb579aa79a6ac1b", message: "✅ TNM8G3 close: record finish status for prod-v1.0 policy update" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "56784335a5f6585a0d8cdd34dfb579aa79a6ac1b"
+  message: "✅ TNM8G3 close: record finish status for prod-v1.0 policy update"
 comments:
-  - { author: "CODER", body: "Start: deduplicate shared guidance in agent JSON files and add batch task add/finish guidance in docs." }
-  - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
-  - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
-  - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
-  - { author: "ORCHESTRATOR", body: "verified: task deemed not актуальна | details: closing without changes." }
+  -
+    author: "CODER"
+    body: "Start: deduplicate shared guidance in agent JSON files and add batch task add/finish guidance in docs."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: task deemed not актуальна | details: closing without changes."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: task deemed not актуальна | details: closing without changes."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: task deemed not актуальна | details: closing without changes."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: task deemed not актуальна | details: closing without changes."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:42.878Z"
 doc_updated_by: "agentplane"
@@ -46,3 +71,8 @@ Agent JSON files repeated common workflow rules; centralizing shared guidance in
 ## Notes
 
 Documentation-only change; no runtime behavior updates.
+
+## Plan
+
+
+## Verification

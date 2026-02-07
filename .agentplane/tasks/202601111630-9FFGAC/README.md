@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["workflow", "agentctl", "git"]
+tags:
+  - "workflow"
+  - "agentctl"
+  - "git"
 verify: []
-commit: { hash: "7d1a7ea8188819b501f932d6cbb0db32a5c04fbb", message: "🚧 9FFGAC Start: Implement comment-driven agentctl commits; forbid direct git in agents/docs; document new flags." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7d1a7ea8188819b501f932d6cbb0db32a5c04fbb"
+  message: "🚧 9FFGAC Start: Implement comment-driven agentctl commits; forbid direct git in agents/docs; document new flags."
 comments:
-  - { author: "CODER", body: "Start: Implement comment-driven agentctl commits; forbid direct git in agents/docs; document new flags." }
-  - { author: "CODER", body: "Verified: Ran python -m py_compile .agent-plane/agentctl.py; python .agent-plane/agentctl.py task lint." }
+  -
+    author: "CODER"
+    body: "Start: Implement comment-driven agentctl commits; forbid direct git in agents/docs; document new flags."
+  -
+    author: "CODER"
+    body: "Verified: Ran python -m py_compile .agent-plane/agentctl.py; python .agent-plane/agentctl.py task lint."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:40.254Z"
 doc_updated_by: "agentplane"
@@ -43,3 +62,8 @@ Restore .agent-plane/agentctl.py, AGENTS.md, and the updated agent JSON files to
 ## Notes
 
 Comment-driven commit flags auto-derive allowlists when 202601041253-00001 are provided; start/block/set-status default to staging tasks changes, and finish enables the status commit automatically when --commit-from-comment is used.
+
+## Plan
+
+
+## Verification

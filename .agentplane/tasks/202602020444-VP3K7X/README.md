@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "fc6557ca73317553383da185034a99d79e6a1cd8", message: "📝 VP3K7X task doc: record summary, scope, risks, verify, rollback for docs cleanup" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "fc6557ca73317553383da185034a99d79e6a1cd8"
+  message: "📝 VP3K7X task doc: record summary, scope, risks, verify, rollback for docs cleanup"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: update docs to remove first-version mentions; align Node.js as 1.0; restructure docs index for clearer reading order." }
-  - { author: "ORCHESTRATOR", body: "verified: rg scan for v1/first-version phrasing returned no matches in docs/ROADMAP.md/README.md | details: doc changes already on HEAD and task doc commit created. Hooks skipped for status commit due to unrelated lint errors in other files." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: update docs to remove first-version mentions; align Node.js as 1.0; restructure docs index for clearer reading order."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: rg scan for v1/first-version phrasing returned no matches in docs/ROADMAP.md/README.md | details: doc changes already on HEAD and task doc commit created. Hooks skipped for status commit due to unrelated lint errors in other files."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:41.053Z"
 doc_updated_by: "agentplane"
@@ -35,3 +52,8 @@ Risk of missed phrasing in docs outside current set or unintended meaning change
 ## Rollback Plan
 
 Revert docs changes via git checkout or reset to prior commit; restore previous wording and index order if needed.
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs", "devguide"]
+tags:
+  - "docs"
+  - "devguide"
 verify: []
-commit: { hash: "cbf4320e2b4c5b19edfcaefc25c0734a1513126b", message: "✅ KX2SMH close: record task doc" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "cbf4320e2b4c5b19edfcaefc25c0734a1513126b"
+  message: "✅ KX2SMH close: record task doc"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: audit docs and redesign developer documentation structure." }
-  - { author: "ORCHESTRATOR", body: "verified: docs restructured with new developer guide sections and navigation updated." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: audit docs and redesign developer documentation structure."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: docs restructured with new developer guide sections and navigation updated."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:32.953Z"
 doc_updated_by: "agentplane"
@@ -35,3 +53,8 @@ description: "Audit current docs, design a more detailed structure, and rewrite 
 ## Rollback Plan
 
 - Revert docs/ and docs/docs.json changes if needed.
+
+## Plan
+
+
+## Verification

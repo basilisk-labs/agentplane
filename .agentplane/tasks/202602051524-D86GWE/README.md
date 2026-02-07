@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "recipes", "security"]
+tags:
+  - "roadmap"
+  - "recipes"
+  - "security"
 verify: []
-commit: { hash: "de8eaeb3cca9a840ed47be975afc1d80b8fcb5d5", message: "✨ D86GWE sign recipes index verification" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "de8eaeb3cca9a840ed47be975afc1d80b8fcb5d5"
+  message: "✨ D86GWE sign recipes index verification"
 comments:
-  - { author: "CODER", body: "Start: Implement signed recipes index validation, update recipes repo, and add tests/docs per scope." }
-  - { author: "CODER", body: "Verified: Implemented signed recipes index verification and published index.json.sig; bun run test:fast. Signature failure/success validated via recipes tests." }
+  -
+    author: "CODER"
+    body: "Start: Implement signed recipes index validation, update recipes repo, and add tests/docs per scope."
+  -
+    author: "CODER"
+    body: "Verified: Implemented signed recipes index verification and published index.json.sig; bun run test:fast. Signature failure/success validated via recipes tests."
 doc_version: 2
 doc_updated_at: "2026-02-05T15:44:10.341Z"
 doc_updated_by: "CODER"
@@ -49,3 +68,5 @@ Pending.
 
 - Revert CLI signature verification changes.
 - Remove index.json.sig from recipes repo if needed.
+
+## Plan

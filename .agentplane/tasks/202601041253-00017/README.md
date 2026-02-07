@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["automation", "cleanup"]
+tags:
+  - "automation"
+  - "cleanup"
 verify: []
-commit: { hash: "25d2b916ec4f2fbdf3caa0553c6271974acffdab", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "25d2b916ec4f2fbdf3caa0553c6271974acffdab"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "docs", body: "clean.sh now removes CONTRIBUTING.md and deletes itself after repository cleanup." }
+  -
+    author: "docs"
+    body: "clean.sh now removes CONTRIBUTING.md and deletes itself after repository cleanup."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:17.488Z"
 doc_updated_by: "agentplane"
@@ -29,3 +45,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

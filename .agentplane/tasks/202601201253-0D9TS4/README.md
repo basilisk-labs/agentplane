@@ -5,9 +5,23 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agents", "workflow"]
+tags:
+  - "agents"
+  - "workflow"
 verify: []
-commit: { hash: "50d8ca97ab3fbd10d3a49bc149523701321904b9", message: "✨ 0D9TS4 normalize task doc headings" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "50d8ca97ab3fbd10d3a49bc149523701321904b9"
+  message: "✨ 0D9TS4 normalize task doc headings"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T12:55:13+00:00"
@@ -43,3 +57,8 @@ Current guidance can treat unexpected files as blockers, causing agents to stop 
 ## Notes
 
 - No code behavior changes; documentation-only.
+
+## Plan
+
+
+## Verification

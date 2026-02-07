@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "tasks", "cache", "performance"]
+tags:
+  - "roadmap"
+  - "tasks"
+  - "cache"
+  - "performance"
 verify: []
-commit: { hash: "bacd2e6a7645a3a326772c374678fa8e9f8bd74f", message: "✨ KZ9ZRX add task index cache helpers" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "bacd2e6a7645a3a326772c374678fa8e9f8bd74f"
+  message: "✨ KZ9ZRX add task index cache helpers"
 comments:
-  - { author: "CODER", body: "Start: design and implement task index cache model and incremental updater." }
-  - { author: "CODER", body: "Verified: ran bun run lint, bun run test:fast, and pre-commit hooks; task index helpers added." }
+  -
+    author: "CODER"
+    body: "Start: design and implement task index cache model and incremental updater."
+  -
+    author: "CODER"
+    body: "Verified: ran bun run lint, bun run test:fast, and pre-commit hooks; task index helpers added."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:08:23.360Z"
 doc_updated_by: "CODER"
@@ -40,3 +60,5 @@ Verified on 2026-02-05: bun run lint; bun run test:fast; node packages/agentplan
 ## Rollback Plan
 
 Remove task index module and revert local backend listTasks to always parse README files.
+
+## Plan

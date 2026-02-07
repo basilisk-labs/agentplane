@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["rename", "docs", "workflow"]
+tags:
+  - "rename"
+  - "docs"
+  - "workflow"
 verify: []
-commit: { hash: "65258ddd032cfd6abb586ecce6bc66b6de3fcfb9", message: "✨ 5V4S0G rename: migrate framework paths and branding to Agent Plane" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "65258ddd032cfd6abb586ecce6bc66b6de3fcfb9"
+  message: "✨ 5V4S0G rename: migrate framework paths and branding to Agent Plane"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: rg -n --hidden --glob '!.git/*' --glob '!**/.agent-plane/tasks/**' old-name patterns returned no matches | details: python .agent-plane/agentctl.py config show OK." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: rg -n --hidden --glob '!.git/*' --glob '!**/.agent-plane/tasks/**' old-name patterns returned no matches | details: python .agent-plane/agentctl.py config show OK."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:01.650Z"
 doc_updated_by: "agentplane"
@@ -49,3 +66,8 @@ description: "Rename all project references and paths to Agent Plane, including 
 ## Notes
 
 - Repo root already uses the agentplane name; no on-disk rename was required.
+
+## Plan
+
+
+## Verification

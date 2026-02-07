@@ -5,9 +5,23 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["ui", "tasks"]
+tags:
+  - "ui"
+  - "tasks"
 verify: []
-commit: { hash: "b9555c09a8e4e4da350a2a5752e7ca30e92abee2", message: "✨ 0M7XWG refresh tasks viewer" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b9555c09a8e4e4da350a2a5752e7ca30e92abee2"
+  message: "✨ 0M7XWG refresh tasks viewer"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -38,3 +52,8 @@ Revert the viewer changes in `.agent-plane/viewer/tasks.html` and `.agent-plane/
 ## Notes
 
 No additional dependencies or migrations.
+
+## Plan
+
+
+## Verification

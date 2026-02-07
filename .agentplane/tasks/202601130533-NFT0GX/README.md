@@ -5,12 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "workflow"]
+tags:
+  - "agentctl"
+  - "workflow"
 verify: []
-commit: { hash: "2d71622384eaef83a3e4180c474c8f8b80f3aa2b", message: "✨ NFT0GX Verified: status_commit_policy guardrails + confirm flag; docs/config updates; check: unittest run (temp test removed)." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2d71622384eaef83a3e4180c474c8f8b80f3aa2b"
+  message: "✨ NFT0GX Verified: status_commit_policy guardrails + confirm flag; docs/config updates; check: unittest run (temp test removed)."
 comments:
-  - { author: "CODER", body: "Start: add status_commit_policy enforcement and unit tests for comment-driven commits." }
-  - { author: "CODER", body: "Verified: status_commit_policy guardrails + confirm flag; docs/config updates; check: unittest run (temp test removed)." }
+  -
+    author: "CODER"
+    body: "Start: add status_commit_policy enforcement and unit tests for comment-driven commits."
+  -
+    author: "CODER"
+    body: "Verified: status_commit_policy guardrails + confirm flag; docs/config updates; check: unittest run (temp test removed)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:41.843Z"
 doc_updated_by: "agentplane"
@@ -43,3 +61,8 @@ Revert the commit and remove status_commit_policy from config plus the enforceme
 ## Notes
 
 Ran a temporary unittest for status_commit_policy enforcement before removing the test file per request.
+
+## Plan
+
+
+## Verification

@@ -4,10 +4,27 @@ title: "Global recipes bundle with context"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601200917-MMT18V", "202601200917-3FGMJZ", "202601200917-FQRW89"]
-tags: ["recipes", "workflow"]
+depends_on:
+  - "202601200917-MMT18V"
+  - "202601200917-3FGMJZ"
+  - "202601200917-FQRW89"
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "36dea396b5c5d9e3c99d19c2782c6941c987cb6d", message: "✅ FQRW89 orchestrator: refresh global recipes bundle" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "36dea396b5c5d9e3c99d19c2782c6941c987cb6d"
+  message: "✅ FQRW89 orchestrator: refresh global recipes bundle"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T09:18:20+00:00"
@@ -43,3 +60,8 @@ Revert code and docs changes.
 ## Notes
 
 Subtasks: 202601200917-MMT18V, 202601200917-3FGMJZ, 202601200917-FQRW89.
+
+## Plan
+
+
+## Verification

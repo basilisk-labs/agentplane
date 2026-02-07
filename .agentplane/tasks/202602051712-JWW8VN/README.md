@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "91fe55412646f6a05c879367b54d772855535cad", message: "✨ JWW8VN remove ROADMAP.md" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "91fe55412646f6a05c879367b54d772855535cad"
+  message: "✨ JWW8VN remove ROADMAP.md"
 comments:
-  - { author: "DOCS", body: "Start: remove ROADMAP.md after completion." }
-  - { author: "DOCS", body: "Verified: ROADMAP.md removed after completion; repository no longer tracks the roadmap file." }
+  -
+    author: "DOCS"
+    body: "Start: remove ROADMAP.md after completion."
+  -
+    author: "DOCS"
+    body: "Verified: ROADMAP.md removed after completion; repository no longer tracks the roadmap file."
 doc_version: 2
 doc_updated_at: "2026-02-05T17:14:10.430Z"
 doc_updated_by: "DOCS"
@@ -39,3 +56,5 @@ Remove ROADMAP.md after completion.
 ## Rollback Plan
 
 - Restore ROADMAP.md from git history if needed.
+
+## Plan

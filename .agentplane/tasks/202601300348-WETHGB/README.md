@@ -5,9 +5,24 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["recipes", "testing", "cli"]
+tags:
+  - "recipes"
+  - "testing"
+  - "cli"
 verify: []
-commit: { hash: "c18aac3d05c99734f94a00345f38a8a4b01022e0", message: "✨ 202601300348-KG2R32 document recipes usage, built-ins, and authoring" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c18aac3d05c99734f94a00345f38a8a4b01022e0"
+  message: "✨ 202601300348-KG2R32 document recipes usage, built-ins, and authoring"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-30T04:05:44+00:00"
@@ -51,3 +66,8 @@ Recipe execution depends on environment variables for external services; this ch
 ## Notes
 
 Dokploy tools require DOKPLOY_API_ENDPOINTS (or DOKPLOY_API_BASE) and DOKPLOY_API_KEY to be exported in the shell for scenario runs.
+
+## Plan
+
+
+## Verification

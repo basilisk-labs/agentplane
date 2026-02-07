@@ -5,11 +5,27 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["tasks", "core"]
+tags:
+  - "tasks"
+  - "core"
 verify: []
-commit: { hash: "45c5f8bf291f7cfc07cad4e2e16206ed554effc5", message: "✨ P7BCC2 strip duplicate frontmatter blocks" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "45c5f8bf291f7cfc07cad4e2e16206ed554effc5"
+  message: "✨ P7BCC2 strip duplicate frontmatter blocks"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: bun run test:core; frontmatter scan on task READMEs" }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: bun run test:core; frontmatter scan on task READMEs"
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:49.698Z"
 doc_updated_by: "agentplane"
@@ -37,3 +53,8 @@ Run relevant tests (task-readme, task-backend) and re-scan task READMEs for dupl
 ## Rollback Plan
 
 Revert parsing changes; regenerate task READMEs via previous commits if needed.
+
+## Plan
+
+
+## Verification

@@ -4,13 +4,36 @@ title: "AP-021: PR artifacts commands"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601271400-XBPTD6", "202601270756-KREHV4"]
-tags: ["nodejs", "roadmap", "workflow", "branch_pr"]
-verify: ["bun run ci"]
-commit: { hash: "3c22686b4a7fb80ad57aeb0d1b0e32f28426d5b4", message: "SPPJSC AP-021: implement PR artifacts commands" }
+depends_on:
+  - "202601271400-XBPTD6"
+  - "202601270756-KREHV4"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "workflow"
+  - "branch_pr"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3c22686b4a7fb80ad57aeb0d1b0e32f28426d5b4"
+  message: "SPPJSC AP-021: implement PR artifacts commands"
 comments:
-  - { author: "CODER", body: "Start: implement PR artifact commands (open/update/check/note) for branch_pr workflow." }
-  - { author: "CODER", body: "verified: bun run ci (format/typecheck/lint/coverage) passed on 2026-01-27." }
+  -
+    author: "CODER"
+    body: "Start: implement PR artifact commands (open/update/check/note) for branch_pr workflow."
+  -
+    author: "CODER"
+    body: "verified: bun run ci (format/typecheck/lint/coverage) passed on 2026-01-27."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:12.577Z"
 doc_updated_by: "agentplane"
@@ -35,3 +58,8 @@ bun run ci
 ## Rollback Plan
 
 Revert the AP-021 commit; no data migrations.
+
+## Plan
+
+
+## Verification

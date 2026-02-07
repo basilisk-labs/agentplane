@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "05f17e8b944fc2b8c9cf77a03c5e7af4650bb742", message: "📝 HJSYDT docs cleanup: remove external file references; keep docs self-contained" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "05f17e8b944fc2b8c9cf77a03c5e7af4650bb742"
+  message: "📝 HJSYDT docs cleanup: remove external file references; keep docs self-contained"
 comments:
-  - { author: "DOCS", body: "verified: removed external file references from docs | details: replaced with self-contained wording and internal links; no functional changes." }
-  - { author: "DOCS", body: "verified: removed external file references from docs | details: replaced with self-contained wording and internal links; no functional changes." }
+  -
+    author: "DOCS"
+    body: "verified: removed external file references from docs | details: replaced with self-contained wording and internal links; no functional changes."
+  -
+    author: "DOCS"
+    body: "verified: removed external file references from docs | details: replaced with self-contained wording and internal links; no functional changes."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:39.295Z"
 doc_updated_by: "agentplane"
@@ -35,3 +52,8 @@ Search docs for ROADMAP.md/AGENTS.md/packages/spec references; review key pages 
 ## Rollback Plan
 
 Revert the doc edits to restore external file references.
+
+## Plan
+
+
+## Verification

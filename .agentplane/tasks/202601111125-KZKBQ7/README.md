@@ -5,11 +5,27 @@ status: "DONE"
 priority: "low"
 owner: "CODER"
 depends_on: []
-tags: ["redmine", "ownership"]
+tags:
+  - "redmine"
+  - "ownership"
 verify: []
-commit: { hash: "06b37cfa276ad12ffb3b691248f750a2f873dbb2", message: "♻️ KZKBQ7 fill task doc sections" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "06b37cfa276ad12ffb3b691248f750a2f873dbb2"
+  message: "♻️ KZKBQ7 fill task doc sections"
 comments:
-  - { author: "CODER", body: "Verified: owner mapping now uses configured agent (default REDMINE); updated six tasks to REDMINE owner; ran python -m py_compile .agent-plane/backends/redmine/backend.py." }
+  -
+    author: "CODER"
+    body: "Verified: owner mapping now uses configured agent (default REDMINE); updated six tasks to REDMINE owner; ran python -m py_compile .agent-plane/backends/redmine/backend.py."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:39.905Z"
 doc_updated_by: "agentplane"
@@ -43,3 +59,8 @@ Ensure Redmine tasks map owner to configured agent (default REDMINE) and clean e
 ## Rollback Plan
 
 - Revert .agent-plane/backends/redmine/backend.py and the adjusted task READMEs.
+
+## Plan
+
+
+## Verification

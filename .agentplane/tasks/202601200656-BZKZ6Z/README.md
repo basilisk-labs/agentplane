@@ -5,13 +5,33 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["recipes", "workflow"]
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "7fef79d699df3ff52ab0cd6053234aca0deea2b7", message: "✅ TA55C1 verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7fef79d699df3ff52ab0cd6053234aca0deea2b7"
+  message: "✅ TA55C1 verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker."
 comments:
-  - { author: "ORCHESTRATOR", body: "Subtasks: 202601200656-J6NW39 (core minimum + permissions), 202601200657-E52CV8 (migration plan), 202601200657-W1Y6ND (phase 1), 202601200657-VNFXH3 (phase 2), 202601200657-Y0P8RY (phase 3 cleanup)." }
-  - { author: "ORCHESTRATOR", body: "Start: audit core vs recipes and plan simplification moves." }
-  - { author: "ORCHESTRATOR", body: "verified: core minimum and migration plan tasks are complete | details: phase execution is tracked separately." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Subtasks: 202601200656-J6NW39 (core minimum + permissions), 202601200657-E52CV8 (migration plan), 202601200657-W1Y6ND (phase 1), 202601200657-VNFXH3 (phase 2), 202601200657-Y0P8RY (phase 3 cleanup)."
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: audit core vs recipes and plan simplification moves."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: core minimum and migration plan tasks are complete | details: phase execution is tracked separately."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:58.064Z"
 doc_updated_by: "agentplane"
@@ -36,3 +56,8 @@ description: "Define the minimal core agent/task workflow, allow recipe tool/age
 ## Rollback Plan
 
 - Reopen this task if core boundaries or migration scope change.\n- Update the phase tasks to reflect the corrected plan.
+
+## Plan
+
+
+## Verification

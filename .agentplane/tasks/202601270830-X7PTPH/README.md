@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "nodejs", "agentplane"]
+tags:
+  - "docs"
+  - "nodejs"
+  - "agentplane"
 verify: []
-commit: { hash: "af8ab3405e3ef684210ac2e5e346b29ef4c83fa3", message: "✨ X7PTPH docs: rewrite docs to Node.js agentplane-first (cli/specs/paths)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "af8ab3405e3ef684210ac2e5e346b29ef4c83fa3"
+  message: "✨ X7PTPH docs: rewrite docs to Node.js agentplane-first (cli/specs/paths)"
 comments:
-  - { author: "DOCS", body: "Start: updating README.md and docs/* to be Node.js agentplane-first (offline-first, .agentplane, recipes, CLI namespaces)." }
-  - { author: "DOCS", body: "verified: updated README.md and docs/* to describe the Node.js agentplane v1 (offline-first, .agentplane layout, CLI contract, recipes spec, schemas)." }
+  -
+    author: "DOCS"
+    body: "Start: updating README.md and docs/* to be Node.js agentplane-first (offline-first, .agentplane, recipes, CLI namespaces)."
+  -
+    author: "DOCS"
+    body: "verified: updated README.md and docs/* to describe the Node.js agentplane v1 (offline-first, .agentplane layout, CLI contract, recipes spec, schemas)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:04.607Z"
 doc_updated_by: "agentplane"
@@ -40,3 +59,8 @@ Update all user-facing docs to describe the Node.js `agentplane` CLI and `.agent
 ## Rollback Plan
 
 - Revert the documentation update commit(s).
+
+## Plan
+
+
+## Verification

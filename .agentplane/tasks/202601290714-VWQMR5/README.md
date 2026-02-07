@@ -4,13 +4,35 @@ title: "AP-033: bundled offline recipes catalog for init"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601290714-GGRDKD", "202601290713-51T41E"]
-tags: ["roadmap", "nodejs", "recipes", "init"]
+depends_on:
+  - "202601290714-GGRDKD"
+  - "202601290713-51T41E"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "recipes"
+  - "init"
 verify: []
-commit: { hash: "3eda90d1ff88a4170a5ad81999b49cd2c26b5423", message: "feat: VWQMR5 bundled recipes" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3eda90d1ff88a4170a5ad81999b49cd2c26b5423"
+  message: "feat: VWQMR5 bundled recipes"
 comments:
-  - { author: "CODER", body: "Start: add bundled offline recipes catalog and init selection validation." }
-  - { author: "CODER", body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: bundled recipes catalog used for init selection." }
+  -
+    author: "CODER"
+    body: "Start: add bundled offline recipes catalog and init selection validation."
+  -
+    author: "CODER"
+    body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: bundled recipes catalog used for init selection."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:19.064Z"
 doc_updated_by: "agentplane"
@@ -35,3 +57,8 @@ Bundle an offline recipes catalog for init and validate selected recipes against
 ## Rollback Plan
 
 - Revert the task commit(s) and remove bundled catalog usage in init.
+
+## Plan
+
+
+## Verification

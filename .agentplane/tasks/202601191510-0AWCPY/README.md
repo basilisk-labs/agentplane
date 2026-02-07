@@ -4,12 +4,29 @@ title: "Implement recipes CLI and bundle compiler"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601191510-QN0W0P"]
-tags: ["recipes", "cli"]
+depends_on:
+  - "202601191510-QN0W0P"
+tags:
+  - "recipes"
+  - "cli"
 verify: []
-commit: { hash: "b5d407ce6f52d57fc1103f2be5f3e9ebde18fbc8", message: "✨ 0AWCPY implement recipes CLI: add scan/show/compile/explain and bundle compiler" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b5d407ce6f52d57fc1103f2be5f3e9ebde18fbc8"
+  message: "✨ 0AWCPY implement recipes CLI: add scan/show/compile/explain and bundle compiler"
 comments:
-  - { author: "CODER", body: "verified: ran python .agent-plane/recipes.py --help to confirm CLI wiring and subcommand registration." }
+  -
+    author: "CODER"
+    body: "verified: ran python .agent-plane/recipes.py --help to confirm CLI wiring and subcommand registration."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:54.620Z"
 doc_updated_by: "agentplane"
@@ -42,3 +59,8 @@ Revert commit b5d407ce6f52 to remove the recipes CLI and related ignore rules.
 ## Notes
 
 CLI remains non-executing (scan/show/compile/explain only) and enforces no-network, no-task-writes behavior.
+
+## Plan
+
+
+## Verification

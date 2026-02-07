@@ -5,13 +5,35 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["nodejs", "packaging", "npm"]
-verify: ["bun run ci"]
-commit: { hash: "4216dbc965593e84b35a8f9e5245566dfd0308e4", message: "✨ Z5B9P9 prepare npm publish" }
+tags:
+  - "nodejs"
+  - "packaging"
+  - "npm"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4216dbc965593e84b35a8f9e5245566dfd0308e4"
+  message: "✨ Z5B9P9 prepare npm publish"
 comments:
-  - { author: "CODER", body: "Start: preparing agentplane packages for npm publish (bin shim, files whitelist, metadata)." }
-  - { author: "CODER", body: "Start: implementing npm publish readiness for agentplane CLI (bin shim, files, metadata, npm pack checks)." }
-  - { author: "CODER", body: "verified: bun run ci passed | details: npm pack 202601041253-00001 produces clean tarballs for agentplane and @agentplane/core." }
+  -
+    author: "CODER"
+    body: "Start: preparing agentplane packages for npm publish (bin shim, files whitelist, metadata)."
+  -
+    author: "CODER"
+    body: "Start: implementing npm publish readiness for agentplane CLI (bin shim, files, metadata, npm pack checks)."
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: npm pack 202601041253-00001 produces clean tarballs for agentplane and @agentplane/core."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:06.703Z"
 doc_updated_by: "agentplane"
@@ -42,3 +64,8 @@ Prepare the repository for npm publication: make the agentplane CLI package publ
 
 - Revert commits; restore package.json privacy flags and bin entries
 - Remove `bin/` shims and package READMEs
+
+## Plan
+
+
+## Verification

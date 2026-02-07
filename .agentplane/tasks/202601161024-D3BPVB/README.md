@@ -5,11 +5,26 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["workflow"]
+tags:
+  - "workflow"
 verify: []
-commit: { hash: "05bc03f42fffec8f445cd18289fa47cae633874f", message: "✨ D3BPVB remove upgrade tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "05bc03f42fffec8f445cd18289fa47cae633874f"
+  message: "✨ D3BPVB remove upgrade tests"
 comments:
-  - { author: "CODER", body: "verified: Removed the unused upgrade regression tests and documented their removal." }
+  -
+    author: "CODER"
+    body: "verified: Removed the unused upgrade regression tests and documented their removal."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:52.078Z"
 doc_updated_by: "agentplane"
@@ -43,3 +58,8 @@ description: "Delete tests/test_framework_upgrade.py and update documentation no
 ## Notes
 
 - There are no other references to `tests/test_framework_upgrade.py` once the file and doc updates are committed.
+
+## Plan
+
+
+## Verification

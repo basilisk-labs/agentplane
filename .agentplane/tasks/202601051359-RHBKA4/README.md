@@ -5,9 +5,23 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["github", "docs"]
+tags:
+  - "github"
+  - "docs"
 verify: []
-commit: { hash: "a91551597ef49af43b45d2fe57814a0b378450b9", message: "🛠️ RHBKA4 fix github sync parsing" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a91551597ef49af43b45d2fe57814a0b378450b9"
+  message: "🛠️ RHBKA4 fix github sync parsing"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-11T08:06:07+00:00"
@@ -35,3 +49,8 @@ description: "Handle commit fields stored as strings in sync_tasks.py and fix th
 ## Rollback Plan
 
 - Revert the commit and re-run sync if needed.
+
+## Plan
+
+
+## Verification

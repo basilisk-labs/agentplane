@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agentctl", "agents"]
+tags:
+  - "agentctl"
+  - "agents"
 verify: []
-commit: { hash: "bc30c58e49fae183e38567424944e97a2e8fe2ab", message: "✨ DT22CM map agentctl commands by role and phase" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "bc30c58e49fae183e38567424944e97a2e8fe2ab"
+  message: "✨ DT22CM map agentctl commands by role and phase"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: Docs-only change; updated agentctl role/phase mapping and task artifact; no runtime impact." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Docs-only change; updated agentctl role/phase mapping and task artifact; no runtime impact."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:45.104Z"
 doc_updated_by: "agentplane"
@@ -42,3 +58,8 @@ Revert the doc change and task artifacts.
 ## Notes
 
 Commands listed align with .agent-plane/agents/*.json and current agentctl.md examples.
+
+## Plan
+
+
+## Verification

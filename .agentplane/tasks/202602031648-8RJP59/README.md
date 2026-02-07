@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "9d7c87d5dde59d6c2c810fd6944cfbde473887f6", message: "📝 8RJP59 align agent CLI references" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "9d7c87d5dde59d6c2c810fd6944cfbde473887f6"
+  message: "📝 8RJP59 align agent CLI references"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: Align agent CLI references: repo-local for root AGENTS.md and .agentplane/agents; system agentplane for packages/agentplane/assets templates." }
-  - { author: "ORCHESTRATOR", body: "Verified: pre-commit hook ran prettier, eslint, and vitest (test-fast) during commit; agentplane verify reported no configured commands." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Align agent CLI references: repo-local for root AGENTS.md and .agentplane/agents; system agentplane for packages/agentplane/assets templates."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: pre-commit hook ran prettier, eslint, and vitest (test-fast) during commit; agentplane verify reported no configured commands."
 doc_version: 2
 doc_updated_at: "2026-02-03T16:56:09.825Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -36,3 +53,8 @@ Will rely on pre-commit hooks (prettier/eslint/vitest) during commit.
 ## Rollback Plan
 
 Revert the modified AGENTS templates, installed agents, and tests to the previous CLI reference scheme.
+
+## Plan
+
+
+## Verification

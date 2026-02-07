@@ -5,14 +5,38 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["nodejs", "init", "agents", "docs"]
+tags:
+  - "nodejs"
+  - "init"
+  - "agents"
+  - "docs"
 verify: []
-commit: { hash: "d506b7aa682f2df5a86a9859c9c4ede6ac3b4fe4", message: "✨ ADEJXV tighten init prompt typing for IDE choices" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d506b7aa682f2df5a86a9859c9c4ede6ac3b4fe4"
+  message: "✨ ADEJXV tighten init prompt typing for IDE choices"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
-  - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
-  - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
-  - { author: "ORCHESTRATOR", body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts" }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts"
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts"
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts"
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run test -- packages/agentplane/src/agents-template.test.ts | details: bun run test -- packages/agentplane/src/run-cli.test.ts"
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:37.819Z"
 doc_updated_by: "agentplane"
@@ -43,3 +67,8 @@ Bundle AGENTS.md and agent templates with agentplane and generate workflow-filte
 
 - Revert the commit for this task (or remove the new assets and helper module)
 - Restore prior init behavior and tests
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,29 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release"]
+tags:
+  - "release"
 verify: []
-commit: { hash: "5e10b452d70be5b65b9cc2360ac155d7628be189", message: "🚀 8P1KGB enforce release notes for publish" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "5e10b452d70be5b65b9cc2360ac155d7628be189"
+  message: "🚀 8P1KGB enforce release notes for publish"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: add enforced English release notes for auto-publish and make release trigger robust to tag type, plus pre-push guard for release tags." }
-  - { author: "ORCHESTRATOR", body: "Verified: not run; pre-commit hooks fail on unrelated lint in packages/agentplane/src/run-cli.ts. Changes reviewed manually and scoped to workflow/docs/scripts/lefthook." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: add enforced English release notes for auto-publish and make release trigger robust to tag type, plus pre-push guard for release tags."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: not run; pre-commit hooks fail on unrelated lint in packages/agentplane/src/run-cli.ts. Changes reviewed manually and scoped to workflow/docs/scripts/lefthook."
 doc_version: 2
 doc_updated_at: "2026-02-03T15:31:08.747Z"
 doc_updated_by: "agentplane"
@@ -36,3 +53,8 @@ Workflow will block publishing if notes are missing or not in the tagged commit;
 ## Rollback Plan
 
 Revert the workflow, hook, and script commits to restore prior release behavior.
+
+## Plan
+
+
+## Verification

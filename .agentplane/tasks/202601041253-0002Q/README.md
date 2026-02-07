@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "human"
 depends_on: []
-tags: ["workflow", "git", "branching"]
+tags:
+  - "workflow"
+  - "git"
+  - "branching"
 verify: []
-commit: { hash: "4f93b993ecca14b9a7d9a464711cc9a75d5d5a2d", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4f93b993ecca14b9a7d9a464711cc9a75d5d5a2d"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: Base branch now pins to local git config (agentplane.baseBranch); integrate/guard/cleanup use it; no-op integrates fail fast." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Base branch now pins to local git config (agentplane.baseBranch); integrate/guard/cleanup use it; no-op integrates fail fast."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:28.918Z"
 doc_updated_by: "agentplane"
@@ -29,3 +46,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["nodejs", "tooling", "quality"]
+tags:
+  - "nodejs"
+  - "tooling"
+  - "quality"
 verify: []
-commit: { hash: "80f68e162a6963667157f14a1b739ed8d6a3f22d", message: "✨ 8V7XF4 quality gates + bun" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "80f68e162a6963667157f14a1b739ed8d6a3f22d"
+  message: "✨ 8V7XF4 quality gates + bun"
 comments:
-  - { author: "CODER", body: "Start: defining quality gates (lint/format/typecheck/tests/coverage) and switching workspace tooling/docs to bun." }
-  - { author: "CODER", body: "verified: 8V7XF4 bun run ci passed (format:check, lint, typecheck, coverage thresholds)." }
+  -
+    author: "CODER"
+    body: "Start: defining quality gates (lint/format/typecheck/tests/coverage) and switching workspace tooling/docs to bun."
+  -
+    author: "CODER"
+    body: "verified: 8V7XF4 bun run ci passed (format:check, lint, typecheck, coverage thresholds)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:05.289Z"
 doc_updated_by: "agentplane"
@@ -42,3 +61,8 @@ Define and enforce code quality gates (lint/format/typecheck/tests/coverage) and
 ## Rollback Plan
 
 - Revert commits; restore npm-based scripts and lockfile if needed.
+
+## Plan
+
+
+## Verification

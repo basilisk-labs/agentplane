@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["workflow", "verify", "security"]
+tags:
+  - "workflow"
+  - "verify"
+  - "security"
 verify: []
-commit: { hash: "af6dcf09e151333d0dab44cf25e11f8fceddb525", message: "📝 MNK3HD epic task doc" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "af6dcf09e151333d0dab44cf25e11f8fceddb525"
+  message: "📝 MNK3HD epic task doc"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: coordinating zip validation via yauzl and README-driven verify workflow across sub-tasks." }
-  - { author: "ORCHESTRATOR", body: "Verified: sub-tasks completed (8C5SHH, F8YMCF, 7KW7RP, 695YXF); lint/test/hooks executed; verify sections updated." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: coordinating zip validation via yauzl and README-driven verify workflow across sub-tasks."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: sub-tasks completed (8C5SHH, F8YMCF, 7KW7RP, 695YXF); lint/test/hooks executed; verify sections updated."
 doc_version: 2
 doc_updated_at: "2026-02-05T12:52:16.338Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -46,3 +65,5 @@ Details: bun run lint; bun run test:fast; hooks pre-commit; verify tasks 695YXF 
 ## Rollback Plan
 
 Revert task commits for verify workflow and yauzl integration; restore previous config sections and remove require_verify.
+
+## Plan

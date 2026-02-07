@@ -5,11 +5,27 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["recipes", "workflow"]
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "ec30cb74b634231a4b8b3b5bc27b72537f056ad8", message: "✅ H5S8KV orchestrator: refresh recipe bundle.json at run start" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ec30cb74b634231a4b8b3b5bc27b72537f056ad8"
+  message: "✅ H5S8KV orchestrator: refresh recipe bundle.json at run start"
 comments:
-  - { author: "ORCHESTRATOR", body: "Subtasks: 202601200752-GSWYEG (docs routing), 202601200752-H5S8KV (orchestrator bundle refresh)." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Subtasks: 202601200752-GSWYEG (docs routing), 202601200752-H5S8KV (orchestrator bundle refresh)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:01.271Z"
 doc_updated_by: "agentplane"
@@ -43,3 +59,8 @@ Revert the documentation and workflow changes.
 ## Notes
 
 No code execution changes beyond documentation updates.
+
+## Plan
+
+
+## Verification

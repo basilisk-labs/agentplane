@@ -4,12 +4,29 @@ title: "Phase 2 migration: QA, release, and docs recipes"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601200657-W1Y6ND"]
-tags: ["recipes", "workflow"]
+depends_on:
+  - "202601200657-W1Y6ND"
+tags:
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "09dcb1df2d4dafdc243fd542e8e33245aa53e9e5", message: "✨ VNFXH3 add phase 2 QA/release/docs recipes" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "09dcb1df2d4dafdc243fd542e8e33245aa53e9e5"
+  message: "✨ VNFXH3 add phase 2 QA/release/docs recipes"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: added QA plan, release checklist, and docs scaffold recipes | details: inventory refreshed." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: added QA plan, release checklist, and docs scaffold recipes | details: inventory refreshed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:58.948Z"
 doc_updated_by: "agentplane"
@@ -34,3 +51,8 @@ description: "Move QA/test planning, release checklists, and docs scaffolding in
 ## Rollback Plan
 
 - Revert the new recipe folders and inventory update.\n- Remove the recipes from docs/recipes-inventory.json.
+
+## Plan
+
+
+## Verification

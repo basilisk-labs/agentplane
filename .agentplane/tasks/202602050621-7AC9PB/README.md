@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "refactor", "cli"]
+tags:
+  - "roadmap"
+  - "refactor"
+  - "cli"
 verify: []
-commit: { hash: "547c3fc3827e97eeb07052f871306c348a5b202f", message: "✨ 7AC9PB extract workflow namespaces" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "547c3fc3827e97eeb07052f871306c348a5b202f"
+  message: "✨ 7AC9PB extract workflow namespaces"
 comments:
-  - { author: "CODER", body: "Start: extract task/work/pr/branch/guard/commit/hooks into commands/workflow.ts and backend sync into commands/backend.ts." }
-  - { author: "CODER", body: "Verified: bun run lint; bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit." }
+  -
+    author: "CODER"
+    body: "Start: extract task/work/pr/branch/guard/commit/hooks into commands/workflow.ts and backend sync into commands/backend.ts."
+  -
+    author: "CODER"
+    body: "Verified: bun run lint; bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit."
 doc_version: 2
 doc_updated_at: "2026-02-05T07:36:52.301Z"
 doc_updated_by: "CODER"
@@ -46,3 +65,8 @@ bun run lint\nbun run test:cli:unit\nbun run test:cli:scenario
 Revert the namespace extraction commits to restore monolithic run-cli.ts.
 
 Revert the AP-030c commit(s) to restore the monolithic run-cli implementation.
+
+## Plan
+
+
+## Verification

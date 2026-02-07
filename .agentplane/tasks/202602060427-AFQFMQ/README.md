@@ -5,13 +5,34 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["refactor", "cli", "testing"]
+tags:
+  - "refactor"
+  - "cli"
+  - "testing"
 verify: []
-commit: { hash: "53f2c70644c22d930ee5d401890f1d64d1f904c4", message: "🧩 AFQFMQ refactor" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "53f2c70644c22d930ee5d401890f1d64d1f904c4"
+  message: "🧩 AFQFMQ refactor"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: Split commands/workflow.ts and run-cli.core.test.ts into smaller domain/scenario modules; keep CLI API stable; run full CLI test suite and agentplane verify before finish." }
-  - { author: "VERIFY", body: "Verify failed: Verify command failed: bun run typecheck\\ncmd: bun run lint\\ncmd: bun run test:cli:core\\ncmd: bun run test:cli:unit\\ncmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ (command: bun run typecheck\\ncmd: bun run lint\\ncmd: bun run test:cli:core\\ncmd: bun run test:cli:unit\\ncmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ)" }
-  - { author: "ORCHESTRATOR", body: "Verified: agentplane verify passed (2026-02-06); commit 53f2c70644c2. Ran typecheck, lint, and test:cli:unit." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Split commands/workflow.ts and run-cli.core.test.ts into smaller domain/scenario modules; keep CLI API stable; run full CLI test suite and agentplane verify before finish."
+  -
+    author: "VERIFY"
+    body: "Verify failed: Verify command failed: bun run typecheck\\ncmd: bun run lint\\ncmd: bun run test:cli:core\\ncmd: bun run test:cli:unit\\ncmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ (command: bun run typecheck\\ncmd: bun run lint\\ncmd: bun run test:cli:core\\ncmd: bun run test:cli:unit\\ncmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ)"
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: agentplane verify passed (2026-02-06); commit 53f2c70644c2. Ran typecheck, lint, and test:cli:unit."
 doc_version: 2
 doc_updated_at: "2026-02-06T05:37:07.671Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -48,3 +69,5 @@ Verified: 2026-02-06 12:33:19 +0700
 ## Rollback Plan
 
 - Revert the task commit created via agentplane (single commit expected): git revert <sha>.\n- Re-run: bun run typecheck && bun run lint && bun run test:cli:unit (and agentplane verify if required).\n- If rollback is urgent, temporarily restore the previous monolithic files from mainline and re-run the same verification steps.
+
+## Plan

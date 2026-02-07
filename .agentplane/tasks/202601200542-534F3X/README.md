@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
-tags: ["recipes"]
+tags:
+  - "recipes"
 verify: []
-commit: { hash: "cdb841383165163e845dc4204580b8f052c3d08c", message: "✨ 202601200542-534F3X implement roadmap recipe runner" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "cdb841383165163e845dc4204580b8f052c3d08c"
+  message: "✨ 202601200542-534F3X implement roadmap recipe runner"
 comments:
-  - { author: "CODER", body: "verified: close: roadmap runner generates roadmap, plan, and task draft | details: manifest outputs updated; recipe inventory refreshed." }
+  -
+    author: "CODER"
+    body: "verified: close: roadmap runner generates roadmap, plan, and task draft | details: manifest outputs updated; recipe inventory refreshed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:56.724Z"
 doc_updated_by: "agentplane"
@@ -42,3 +57,8 @@ Revert commit cdb841383165 to restore the previous runner, manifest, and invento
 ## Notes
 
 Runner remains local-only and deterministic with no network access.
+
+## Plan
+
+
+## Verification

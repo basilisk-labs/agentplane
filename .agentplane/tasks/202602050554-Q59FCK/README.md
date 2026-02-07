@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "cli", "update-check", "network"]
+tags:
+  - "roadmap"
+  - "cli"
+  - "update-check"
+  - "network"
 verify: []
-commit: { hash: "46de5d2c1ec6441840f234b0e445923a154cae93", message: "🧩 Q59FCK update-check fetch with ETag" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "46de5d2c1ec6441840f234b0e445923a154cae93"
+  message: "🧩 Q59FCK update-check fetch with ETag"
 comments:
-  - { author: "CODER", body: "Start: add update-check fetch + ETag handling and tests." }
-  - { author: "CODER", body: "Verified: update-check fetch/ETag handling added and tests pass under pre-commit hooks." }
+  -
+    author: "CODER"
+    body: "Start: add update-check fetch + ETag handling and tests."
+  -
+    author: "CODER"
+    body: "Verified: update-check fetch/ETag handling added and tests pass under pre-commit hooks."
 doc_version: 2
 doc_updated_at: "2026-02-05T06:02:39.769Z"
 doc_updated_by: "CODER"
@@ -36,3 +56,8 @@ Run update-check fetch tests covering 200/304/error paths and ETag handling.
 ## Rollback Plan
 
 Revert the fetch/ETag commit and retain prior update-check network behavior.
+
+## Plan
+
+
+## Verification

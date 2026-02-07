@@ -5,16 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["git", "workflow"]
+tags:
+  - "git"
+  - "workflow"
 verify: []
-commit: { hash: "ea9ed7a50d1789d452abb61c00987e0925c76ecb", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ea9ed7a50d1789d452abb61c00987e0925c76ecb"
+  message: "Legacy completion (backfill)"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Fix local backend frontmatter parsing to prevent over-escaped strings, normalize existing task files, and allow short commit id suffixes in commit subject checks/docs."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 # 202601041311-D7Q7D: Fix frontmatter parsing and commit id rules
 
@@ -45,6 +59,11 @@ id_source: "custom"
 ## Rollback Plan
 
 - Restore `.agent-plane/backends/local/backend.py` and task READMEs from git history.
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

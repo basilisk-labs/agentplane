@@ -5,13 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release"]
+tags:
+  - "release"
 verify: []
-commit: { hash: "8954f5a6c0717366338cd31f34efbd9da40f82fa", message: "🛠️ 49FW1H bump npm for trusted publishing" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8954f5a6c0717366338cd31f34efbd9da40f82fa"
+  message: "🛠️ 49FW1H bump npm for trusted publishing"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: Investigate GitHub Actions publish auth/token sources, fix workflow/npmrc so trusted publishing uses OIDC only, and rerun publish." }
-  - { author: "ORCHESTRATOR", body: "Blocked: GitHub Actions publish now runs without auth and fails with ENEEDAUTH. This indicates npm trusted publishing is not configured for @agentplaneorg; enable trusted publishing in npm or provide an NPM_TOKEN secret." }
-  - { author: "ORCHESTRATOR", body: "Verified: Updated publish workflow to install npm@11.5.1 so GitHub Actions trusted publishing works. Reran Publish to npm (run 21625449544); publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with provenance." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Investigate GitHub Actions publish auth/token sources, fix workflow/npmrc so trusted publishing uses OIDC only, and rerun publish."
+  -
+    author: "ORCHESTRATOR"
+    body: "Blocked: GitHub Actions publish now runs without auth and fails with ENEEDAUTH. This indicates npm trusted publishing is not configured for @agentplaneorg; enable trusted publishing in npm or provide an NPM_TOKEN secret."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Updated publish workflow to install npm@11.5.1 so GitHub Actions trusted publishing works. Reran Publish to npm (run 21625449544); publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with provenance."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:51.294Z"
 doc_updated_by: "agentplane"
@@ -45,3 +64,8 @@ Revert .github/workflows/publish.yml to the previous version and rerun publish i
 Triggered Publish to npm workflow on main (runs 21624946114, 21625026006). After removing auth tokens, npm publish fails with ENEEDAUTH, indicating npm trusted publishing is not configured for @agentplaneorg.
 
 Added npm@11.5.1 install to publish workflow. Workflow run 21625449544 completed successfully; publish succeeded for @agentplaneorg/core@0.1.2 and agentplane@0.1.2 with OIDC provenance.
+
+## Plan
+
+
+## Verification

@@ -4,14 +4,36 @@ title: "AP-034: agentplane-recipes repo + release pipeline"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601270756-779J2V"]
-tags: ["roadmap", "recipes", "infra"]
+depends_on:
+  - "202601270756-779J2V"
+tags:
+  - "roadmap"
+  - "recipes"
+  - "infra"
 verify: []
-commit: { hash: "36c163f37f4e467675d22b70e33bef6f67b9428f", message: "chore: 76XDR6 recipes repo scaffold" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "36c163f37f4e467675d22b70e33bef6f67b9428f"
+  message: "chore: 76XDR6 recipes repo scaffold"
 comments:
-  - { author: "CODER", body: "Start: scaffold agentplane-recipes repo structure, schemas, index, and release script." }
-  - { author: "ORCHESTRATOR", body: "verified: manual review (2026-01-29). | details: Scope: scaffolded agentplane-recipes repo and release pipeline." }
-  - { author: "ORCHESTRATOR", body: "verified: manual review (2026-01-29). | details: Scope: scaffolded agentplane-recipes repo and release pipeline." }
+  -
+    author: "CODER"
+    body: "Start: scaffold agentplane-recipes repo structure, schemas, index, and release script."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: manual review (2026-01-29). | details: Scope: scaffolded agentplane-recipes repo and release pipeline."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: manual review (2026-01-29). | details: Scope: scaffolded agentplane-recipes repo and release pipeline."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:16.777Z"
 doc_updated_by: "agentplane"
@@ -40,3 +62,8 @@ Scaffold agentplane-recipes repo with schemas, manifests, index, and a release b
 ## Notes
 
 Work committed in external repo: agentplane-recipes (commit fd82dc9).
+
+## Plan
+
+
+## Verification

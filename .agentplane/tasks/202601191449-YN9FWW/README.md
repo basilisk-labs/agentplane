@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs", "tasks", "workflow"]
+tags:
+  - "docs"
+  - "tasks"
+  - "workflow"
 verify: []
-commit: { hash: "f72d05f1fd746c863a8e97171f24019448684567", message: "✨ XTMQRZ normalize priority reference in task notes" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f72d05f1fd746c863a8e97171f24019448684567"
+  message: "✨ XTMQRZ normalize priority reference in task notes"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: status wording aligned and priorities normalized to standard labels." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: status wording aligned and priorities normalized to standard labels."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:53.949Z"
 doc_updated_by: "agentplane"
@@ -43,3 +60,8 @@ Priority indicators were inconsistent (med/Нормальный) and docs used m
 ## Notes
 
 - No task status changes were made; only labels were normalized.
+
+## Plan
+
+
+## Verification

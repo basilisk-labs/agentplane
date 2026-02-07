@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["git", "workflow", "ui"]
+tags:
+  - "git"
+  - "workflow"
+  - "ui"
 verify: []
-commit: { hash: "d4adf93a7f4cf03ffa85195579824cf51837b277", message: "✨ K6PMW1 AGENTS_SPEC v0.2: add viewer.sh to init commit; include AGENTS_SPEC in init commit message" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d4adf93a7f4cf03ffa85195579824cf51837b277"
+  message: "✨ K6PMW1 AGENTS_SPEC v0.2: add viewer.sh to init commit; include AGENTS_SPEC in init commit message"
 comments:
-  - { author: "CODER", body: "Verified: not run; changes reviewed in clean.sh and clean.ps1 only, no automated tests executed." }
+  -
+    author: "CODER"
+    body: "Verified: not run; changes reviewed in clean.sh and clean.ps1 only, no automated tests executed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:43.224Z"
 doc_updated_by: "agentplane"
@@ -44,3 +61,8 @@ Revert clean.sh and clean.ps1 to the previous staging list and commit message lo
 ## Notes
 
 Commit message uses the AGENTS_SPEC header value when present.
+
+## Plan
+
+
+## Verification

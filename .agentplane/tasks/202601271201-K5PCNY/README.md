@@ -4,12 +4,32 @@ title: "AP-017: commit wrapper"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601271201-64SSC0"]
-tags: ["nodejs", "roadmap", "git", "commit"]
-verify: ["bun run ci"]
-commit: { hash: "386fa3b046c756b7dbef3ab8bb426a61de00791e", message: "✨ K5PCNY AP-017: commit wrapper" }
+depends_on:
+  - "202601271201-64SSC0"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "git"
+  - "commit"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "386fa3b046c756b7dbef3ab8bb426a61de00791e"
+  message: "✨ K5PCNY AP-017: commit wrapper"
 comments:
-  - { author: "CODER", body: "verified: bun run ci (format, typecheck, lint, coverage). | details: Added commit wrapper tests." }
+  -
+    author: "CODER"
+    body: "verified: bun run ci (format, typecheck, lint, coverage). | details: Added commit wrapper tests."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:11.983Z"
 doc_updated_by: "agentplane"
@@ -34,3 +54,8 @@ bun run ci
 ## Rollback Plan
 
 git revert <commit>
+
+## Plan
+
+
+## Verification

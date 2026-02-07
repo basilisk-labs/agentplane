@@ -5,9 +5,23 @@ status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
-tags: ["recipes", "cli"]
+tags:
+  - "recipes"
+  - "cli"
 verify: []
-commit: { hash: "eae47d31c3f9fde6a8d986b6f416b4238868b944", message: "✅ 9GKTY9 recipes: add bundle refresh command" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "eae47d31c3f9fde6a8d986b6f416b4238868b944"
+  message: "✅ 9GKTY9 recipes: add bundle refresh command"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T08:29:53+00:00"
@@ -43,3 +57,8 @@ Revert recipes.py changes.
 ## Notes
 
 No changes to recipe manifests.
+
+## Plan
+
+
+## Verification

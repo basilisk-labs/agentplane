@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "8a6366f4f6f77478361cc682bd3de8d8cff008de", message: "📝 F0G9Q7 redmine setup checklist" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8a6366f4f6f77478361cc682bd3de8d8cff008de"
+  message: "📝 F0G9Q7 redmine setup checklist"
 comments:
-  - { author: "DOCS", body: "Verified: Redmine doc includes setup checklist, sources for IDs and API key, and env var list with sources." }
+  -
+    author: "DOCS"
+    body: "Verified: Redmine doc includes setup checklist, sources for IDs and API key, and env var list with sources."
 doc_version: 2
 doc_updated_at: "2026-02-05T15:15:18.393Z"
 doc_updated_by: "DOCS"
@@ -46,3 +61,5 @@ Pending.
 ## Rollback Plan
 
 - Revert docs/user/backends/redmine.mdx changes.
+
+## Plan

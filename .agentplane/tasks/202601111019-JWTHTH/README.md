@@ -5,17 +5,33 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["redmine", "sync"]
+tags:
+  - "redmine"
+  - "sync"
 verify: []
-commit: { hash: "3a95b500f57d6dce289ac269f2f525c47ea96ca5", message: "✨ JWTHTH add redmine sync batching/backoff and return to local backend" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3a95b500f57d6dce289ac269f2f525c47ea96ca5"
+  message: "✨ JWTHTH add redmine sync batching/backoff and return to local backend"
 comments:
-  - { author: "CODER", body: "Verified: python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py; redmine backend now batches writes with pauses (write_tasks, sync push, migrate); config returned to local backend." }
+  -
+    author: "CODER"
+    body: "Verified: python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py; redmine backend now batches writes with pauses (write_tasks, sync push, migrate); config returned to local backend."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:39.290Z"
 doc_updated_by: "agentplane"
 description: "Add batch-friendly sync/migration with pauses to avoid Redmine timeouts; restore local backend after tests."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -49,3 +65,8 @@ Add batch-friendly Redmine sync/migration with pauses to avoid API timeouts, the
 
 - Revert redmine/backend.py and .agent-plane/config.json to previous versions.
 - Remove any partially migrated issues from the Redmine sandbox if needed.
+
+## Plan
+
+
+## Verification

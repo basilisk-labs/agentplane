@@ -4,13 +4,33 @@ title: "AP-030: generate .agentplane/RECIPES.md"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601290714-GGRDKD"]
-tags: ["roadmap", "nodejs", "recipes"]
+depends_on:
+  - "202601290714-GGRDKD"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "recipes"
 verify: []
-commit: { hash: "0c9aaf4c9339acadaf7444e5cc8a08c803c90ad5", message: "feat: 208EQK sync recipes index" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "0c9aaf4c9339acadaf7444e5cc8a08c803c90ad5"
+  message: "feat: 208EQK sync recipes index"
 comments:
-  - { author: "CODER", body: "Start: generate RECIPES.md index and keep it in sync with recipe list output." }
-  - { author: "CODER", body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: RECIPES.md index synced with recipe list output." }
+  -
+    author: "CODER"
+    body: "Start: generate RECIPES.md index and keep it in sync with recipe list output."
+  -
+    author: "CODER"
+    body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: RECIPES.md index synced with recipe list output."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:16.492Z"
 doc_updated_by: "agentplane"
@@ -35,3 +55,8 @@ Keep .agentplane/RECIPES.md in sync with recipe list output by centralizing inde
 ## Rollback Plan
 
 - Revert the task commit(s) to restore previous recipe list/index behavior.
+
+## Plan
+
+
+## Verification

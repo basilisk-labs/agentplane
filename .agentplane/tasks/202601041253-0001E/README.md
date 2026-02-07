@@ -5,11 +5,28 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["automation", "project", "sync"]
+tags:
+  - "automation"
+  - "project"
+  - "sync"
 verify: []
-commit: { hash: "ef12528c6ce74b53ca93b8f83a872ede49b81e26", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ef12528c6ce74b53ca93b8f83a872ede49b81e26"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "docs", body: "ProjectV2 integration is wired up, and the workflow now provides the project number." }
+  -
+    author: "docs"
+    body: "ProjectV2 integration is wired up, and the workflow now provides the project number."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:19.663Z"
 doc_updated_by: "agentplane"
@@ -29,3 +46,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,33 @@ status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on: []
-tags: ["roadmap", "backend", "docs"]
-verify: ["bun run lint", "bun run test:fast"]
-commit: { hash: "f51118d0e7df71f0e94a0d1ee84149e17f7efa4b", message: "📝 V40XE1 update backend docs and init tests" }
+tags:
+  - "roadmap"
+  - "backend"
+  - "docs"
+verify:
+  - "bun run lint"
+  - "bun run test:fast"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f51118d0e7df71f0e94a0d1ee84149e17f7efa4b"
+  message: "📝 V40XE1 update backend docs and init tests"
 comments:
-  - { author: "TESTER", body: "Start: update backend docs and add init tests for backend selection." }
-  - { author: "TESTER", body: "Verified: bun run lint/test:fast; docs and init tests updated for backend selection." }
+  -
+    author: "TESTER"
+    body: "Start: update backend docs and add init tests for backend selection."
+  -
+    author: "TESTER"
+    body: "Verified: bun run lint/test:fast; docs and init tests updated for backend selection."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:21:24.946Z"
 doc_updated_by: "TESTER"
@@ -40,3 +61,5 @@ Verified on 2026-02-05: bun run lint, bun run test:fast; init tests and backend 
 ## Rollback Plan
 
 Revert docs and tests for backend selection changes.
+
+## Plan

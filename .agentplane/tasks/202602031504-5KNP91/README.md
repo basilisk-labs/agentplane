@@ -5,12 +5,29 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release"]
+tags:
+  - "release"
 verify: []
-commit: { hash: "574678b50ddcf26d1045fc22cff5fd20d82d6a66", message: "📦 5KNP91 release 0.1.3" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "574678b50ddcf26d1045fc22cff5fd20d82d6a66"
+  message: "📦 5KNP91 release 0.1.3"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: bump versions to 0.1.3 and publish via GitHub Actions trusted publishing." }
-  - { author: "ORCHESTRATOR", body: "Verified: git push origin v0.1.3 triggered pre-push test-full (vitest) and completed successfully; release tag v0.1.3 created." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: bump versions to 0.1.3 and publish via GitHub Actions trusted publishing."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: git push origin v0.1.3 triggered pre-push test-full (vitest) and completed successfully; release tag v0.1.3 created."
 doc_version: 2
 doc_updated_at: "2026-02-03T15:40:38.617Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -36,3 +53,8 @@ rg "0.1.2" packages/core packages/agentplane
 ## Rollback Plan
 
 Revert the release commit and delete tag v0.1.3 if it was pushed.
+
+## Plan
+
+
+## Verification

@@ -4,13 +4,33 @@ title: "AP-035: apply recipe assets/agents/scenarios"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601290714-GGRDKD"]
-tags: ["roadmap", "nodejs", "recipes"]
+depends_on:
+  - "202601290714-GGRDKD"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "recipes"
 verify: []
-commit: { hash: "d7452c06dbd2bddae01a9452f5babca7bb059aac", message: "✨ QE3NNN apply recipe install" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d7452c06dbd2bddae01a9452f5babca7bb059aac"
+  message: "✨ QE3NNN apply recipe install"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: implement recipe apply for agents/assets/scenarios with deterministic conflict handling." }
-  - { author: "ORCHESTRATOR", body: "verified: manual review | details: tests not run (suggest bun test packages/agentplane/src/run-cli.test.ts)." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: implement recipe apply for agents/assets/scenarios with deterministic conflict handling."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: manual review | details: tests not run (suggest bun test packages/agentplane/src/run-cli.test.ts)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:18.123Z"
 doc_updated_by: "agentplane"
@@ -35,3 +55,8 @@ Apply recipe agents/scenarios during install, with deterministic conflict handli
 ## Rollback Plan
 
 - Revert the AP-035 commits to restore prior recipe install behavior
+
+## Plan
+
+
+## Verification

@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "mintlify"]
+tags:
+  - "docs"
+  - "mintlify"
 verify: []
-commit: { hash: "8f308f4e0d0cb84223b3238874668095466cecf2", message: "✨ RPFM9M mintlify: add colors + minimal design settings" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8f308f4e0d0cb84223b3238874668095466cecf2"
+  message: "✨ RPFM9M mintlify: add colors + minimal design settings"
 comments:
-  - { author: "DOCS", body: "Start: Update Mintlify docs/docs.json (colors, navigation schema, minimal theme assets)." }
-  - { author: "DOCS", body: "verified: docs/docs.json now has required colors.primary + schema-compliant navigation.groups | details: logo/favicon added; bun run ci passed (pre-commit)." }
+  -
+    author: "DOCS"
+    body: "Start: Update Mintlify docs/docs.json (colors, navigation schema, minimal theme assets)."
+  -
+    author: "DOCS"
+    body: "verified: docs/docs.json now has required colors.primary + schema-compliant navigation.groups | details: logo/favicon added; bun run ci passed (pre-commit)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:08.960Z"
 doc_updated_by: "agentplane"
@@ -40,3 +58,8 @@ Make Mintlify docs/docs.json pass schema validation (colors + navigation schema)
 ## Rollback Plan
 
 - Revert the commit for this task to restore the previous docs/docs.json and remove docs/assets SVGs.
+
+## Plan
+
+
+## Verification

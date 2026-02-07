@@ -5,12 +5,32 @@ status: "DONE"
 priority: "normal"
 owner: "CREATOR"
 depends_on: []
-tags: ["agents", "testing"]
-verify: ["python scripts/agentctl.py agents", "python scripts/agentctl.py task lint"]
-commit: { hash: "cc0a0a73dd2d3864f6d2cb9619d8837465046887", message: "Legacy completion (backfill)" }
+tags:
+  - "agents"
+  - "testing"
+verify:
+  - "python scripts/agentctl.py agents"
+  - "python scripts/agentctl.py task lint"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "cc0a0a73dd2d3864f6d2cb9619d8837465046887"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "CREATOR", body: "Start: add TESTER agent JSON + update CODER/AGENTS/README to enforce post-CODER test coverage." }
-  - { author: "REVIEWER", body: "Verified: agent registry lists TESTER, JSON prompts validate, and tasks.json lints clean (workflow now defaults to CODER -> TESTER -> REVIEWER for dev work)." }
+  -
+    author: "CREATOR"
+    body: "Start: add TESTER agent JSON + update CODER/AGENTS/README to enforce post-CODER test coverage."
+  -
+    author: "REVIEWER"
+    body: "Verified: agent registry lists TESTER, JSON prompts validate, and tasks.json lints clean (workflow now defaults to CODER -> TESTER -> REVIEWER for dev work)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:21.646Z"
 doc_updated_by: "agentplane"
@@ -30,3 +50,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

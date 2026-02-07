@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["epic-e", "config", "schema", "tests"]
+tags:
+  - "epic-e"
+  - "config"
+  - "schema"
+  - "tests"
 verify: []
-commit: { hash: "ffa7a7a5094a85afae04d91110d5c2c61b3d48f3", message: "✨ 6RYAY0 align schema defaults and validate example" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ffa7a7a5094a85afae04d91110d5c2c61b3d48f3"
+  message: "✨ 6RYAY0 align schema defaults and validate example"
 comments:
-  - { author: "CODER", body: "Start: align schema defaults for tasks.doc and add runtime test for spec example config." }
-  - { author: "CODER", body: "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify --yes --quiet." }
+  -
+    author: "CODER"
+    body: "Start: align schema defaults for tasks.doc and add runtime test for spec example config."
+  -
+    author: "CODER"
+    body: "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify --yes --quiet."
 doc_version: 2
 doc_updated_at: "2026-02-05T13:14:35.589Z"
 doc_updated_by: "CODER"
@@ -51,3 +71,5 @@ Commands:
 ## Rollback Plan
 
 Revert schema default and config test changes.
+
+## Plan

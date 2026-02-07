@@ -4,12 +4,29 @@ title: "Optimize AGENTS and agent JSON instructions"
 status: "DONE"
 priority: "normal"
 owner: "DOCS"
-depends_on: ["202601131304-D4ZA6S", "202601131304-7JXJF7"]
-tags: ["agents"]
+depends_on:
+  - "202601131304-D4ZA6S"
+  - "202601131304-7JXJF7"
+tags:
+  - "agents"
 verify: []
-commit: { hash: "af6584106ff4d2f06a3bface18236931e53a5c66", message: "✨ E1625C align AGENTS guidance with config-driven rules" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "af6584106ff4d2f06a3bface18236931e53a5c66"
+  message: "✨ E1625C align AGENTS guidance with config-driven rules"
 comments:
-  - { author: "DOCS", body: "Verified: ran rg checks for config references in AGENTS.md and agent JSONs; changes align guidance to config-driven branch/worktree rules." }
+  -
+    author: "DOCS"
+    body: "Verified: ran rg checks for config references in AGENTS.md and agent JSONs; changes align guidance to config-driven branch/worktree rules."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:46.966Z"
 doc_updated_by: "agentplane"
@@ -42,3 +59,8 @@ Revert changes in AGENTS.md and the updated agent JSON files.
 ## Notes
 
 UPDATER audit focus: replace hardcoded branch/worktree strings with placeholders and add config CLI guidance.
+
+## Plan
+
+
+## Verification

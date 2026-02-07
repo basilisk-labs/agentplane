@@ -4,12 +4,29 @@ title: "Document recipes prompts and wire into AGENTS"
 status: "DONE"
 priority: "med"
 owner: "DOCS"
-depends_on: ["202601191510-0AWCPY"]
-tags: ["recipes", "docs"]
+depends_on:
+  - "202601191510-0AWCPY"
+tags:
+  - "recipes"
+  - "docs"
 verify: []
-commit: { hash: "154970d7be5a455048d1fc55b85ff7f922f9a9bd", message: "✨ 6ZKD5S update recipes prompt rules: add outputs guidance" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "154970d7be5a455048d1fc55b85ff7f922f9a9bd"
+  message: "✨ 6ZKD5S update recipes prompt rules: add outputs guidance"
 comments:
-  - { author: "DOCS", body: "verified: updated RECIPES.md outputs guidance and reviewed recipes doc references for consistency." }
+  -
+    author: "DOCS"
+    body: "verified: updated RECIPES.md outputs guidance and reviewed recipes doc references for consistency."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:54.902Z"
 doc_updated_by: "agentplane"
@@ -42,3 +59,8 @@ Revert the documentation commit for this task if the recipes guidance needs to b
 ## Notes
 
 RECIPES.md now includes outputs/artifacts guidance plus explicit bundle usage rules.
+
+## Plan
+
+
+## Verification

@@ -4,12 +4,30 @@ title: "Automate framework upgrades"
 status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
-depends_on: ["202601160958-DAS67K", "202601160958-NV8M5V", "202601160958-AM3G42"]
-tags: ["automation"]
+depends_on:
+  - "202601160958-DAS67K"
+  - "202601160958-NV8M5V"
+  - "202601160958-AM3G42"
+tags:
+  - "automation"
 verify: []
-commit: { hash: "333785394330d48ae8d409304af1bdd0040a19cd", message: "✨ QQ4CT3 document automation" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "333785394330d48ae8d409304af1bdd0040a19cd"
+  message: "✨ QQ4CT3 document automation"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: Automated framework upgrade plan, related docs, and regression tests are complete so the workflow can self-update." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: Automated framework upgrade plan, related docs, and regression tests are complete so the workflow can self-update."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:51.778Z"
 doc_updated_by: "agentplane"
@@ -47,3 +65,8 @@ description: "Track last update date, add automatic refresh from https://github.
 ## Notes
 
 - Task PR artifacts under `.agent-plane/tasks/<task-id>/pr/` will record the last verify log and diff whenever these tasks go through the usual branch_pr workflow.
+
+## Plan
+
+
+## Verification

@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "DOCS"
 depends_on: []
-tags: ["readme", "docs"]
+tags:
+  - "readme"
+  - "docs"
 verify: []
-commit: { hash: "4ad33b9b0ba39aa9c2380b935f012af3b03a0d83", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4ad33b9b0ba39aa9c2380b935f012af3b03a0d83"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: docs-only changes; manual review only (no automated checks)." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: docs-only changes; manual review only (no automated checks)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:31.044Z"
 doc_updated_by: "agentplane"
@@ -29,3 +45,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

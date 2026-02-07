@@ -5,11 +5,28 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["roadmap", "epic", "performance"]
+tags:
+  - "roadmap"
+  - "epic"
+  - "performance"
 verify: []
-commit: { hash: "394f1cdf40d4e9aa9eb33c4b74bd7927e381de3c", message: "📝 JD7PBE document task index cache" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "394f1cdf40d4e9aa9eb33c4b74bd7927e381de3c"
+  message: "📝 JD7PBE document task index cache"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: index cache implemented, list/search optimized, tests and docs updated." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: index cache implemented, list/search optimized, tests and docs updated."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:09:16.373Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -78,3 +95,5 @@ Verified on 2026-02-05: tasks index implemented, list/search uses cache, tests a
 ## Rollback Plan
 
 Remove task index cache code and restore full README scans in list/search.
+
+## Plan

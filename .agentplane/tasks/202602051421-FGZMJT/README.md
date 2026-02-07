@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "roadmap"]
+tags:
+  - "docs"
+  - "roadmap"
 verify: []
-commit: { hash: "12fc4bc6e5da39c36f9f12725e20fe3a4fda06b3", message: "📝 FGZMJT update roadmap Epic H status" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "12fc4bc6e5da39c36f9f12725e20fe3a4fda06b3"
+  message: "📝 FGZMJT update roadmap Epic H status"
 comments:
-  - { author: "DOCS", body: "Start: update ROADMAP Epic H/AP-070 status." }
-  - { author: "DOCS", body: "Verified: ROADMAP.md updated with Epic H/AP-070 DONE status lines." }
+  -
+    author: "DOCS"
+    body: "Start: update ROADMAP Epic H/AP-070 status."
+  -
+    author: "DOCS"
+    body: "Verified: ROADMAP.md updated with Epic H/AP-070 DONE status lines."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:23:34.514Z"
 doc_updated_by: "DOCS"
@@ -40,3 +58,5 @@ Verified on 2026-02-05: ROADMAP.md updated with Epic H/AP-070 DONE status lines.
 ## Rollback Plan
 
 Revert ROADMAP.md status lines for Epic H/AP-070.
+
+## Plan

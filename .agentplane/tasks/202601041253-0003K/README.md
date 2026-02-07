@@ -5,16 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "tasks"]
+tags:
+  - "agentctl"
+  - "tasks"
 verify: []
-commit: { hash: "3d8cd6dd2137ee90f303f6ca13d2f0f13cd412a6", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3d8cd6dd2137ee90f303f6ca13d2f0f13cd412a6"
+  message: "Legacy completion (backfill)"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Add a migration/export command to seed .agent-plane/tasks from tasks.json and set tasks_backend.config_path to the local backend."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 # 202601041253-0003K: agentctl: migrate tasks.json to local backend
 
@@ -46,6 +60,11 @@ id_source: "custom"
 ## Rollback Plan
 
 - Revert `.agent-plane/config.json` and remove the migrate command.
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "a314a01990e73aec91a8ac6c4ee897a27a86ffc2", message: "📝 XDYC0T redmine setup docs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a314a01990e73aec91a8ac6c4ee897a27a86ffc2"
+  message: "📝 XDYC0T redmine setup docs"
 comments:
-  - { author: "DOCS", body: "Verified: Redmine setup section added with required custom fields, .env keys, and backend config example." }
+  -
+    author: "DOCS"
+    body: "Verified: Redmine setup section added with required custom fields, .env keys, and backend config example."
 doc_version: 2
 doc_updated_at: "2026-02-05T15:00:28.732Z"
 doc_updated_by: "DOCS"
@@ -47,3 +62,5 @@ Pending.
 
 - Revert docs/user/backends.mdx changes.
 - Update task doc Verification with rollback note if needed.
+
+## Plan

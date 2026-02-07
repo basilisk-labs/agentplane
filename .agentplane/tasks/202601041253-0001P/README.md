@@ -5,12 +5,32 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["cleanup", "workflow"]
-verify: ["bash -n clean.sh", "python scripts/agentctl.py task lint"]
-commit: { hash: "b1ff627216f332cc34652d0a2968c78e89c68d2d", message: "Legacy completion (backfill)" }
+tags:
+  - "cleanup"
+  - "workflow"
+verify:
+  - "bash -n clean.sh"
+  - "python scripts/agentctl.py task lint"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b1ff627216f332cc34652d0a2968c78e89c68d2d"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "CODER", body: "Start: extend clean.sh to remove framework dev artifacts (including docs) while keeping cleanup idempotent and repo-root scoped." }
-  - { author: "REVIEWER", body: "Verified: clean.sh now removes docs/ and other framework-development artifacts (tasks.html, .DS_Store) during cleanup; script syntax checks pass and tasks.json lints clean." }
+  -
+    author: "CODER"
+    body: "Start: extend clean.sh to remove framework dev artifacts (including docs) while keeping cleanup idempotent and repo-root scoped."
+  -
+    author: "REVIEWER"
+    body: "Verified: clean.sh now removes docs/ and other framework-development artifacts (tasks.html, .DS_Store) during cleanup; script syntax checks pass and tasks.json lints clean."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:21.951Z"
 doc_updated_by: "agentplane"
@@ -30,3 +50,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

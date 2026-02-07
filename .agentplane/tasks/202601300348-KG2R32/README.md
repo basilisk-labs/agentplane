@@ -5,9 +5,23 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs", "recipes"]
+tags:
+  - "docs"
+  - "recipes"
 verify: []
-commit: { hash: "c18aac3d05c99734f94a00345f38a8a4b01022e0", message: "✨ 202601300348-KG2R32 document recipes usage, built-ins, and authoring" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c18aac3d05c99734f94a00345f38a8a4b01022e0"
+  message: "✨ 202601300348-KG2R32 document recipes usage, built-ins, and authoring"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-30T04:05:54+00:00"
@@ -43,3 +57,8 @@ The main docs needed a consolidated explanation of how recipes work, what is bun
 ## Notes
 
 Docs updated in docs/recipes-spec.mdx.
+
+## Plan
+
+
+## Verification

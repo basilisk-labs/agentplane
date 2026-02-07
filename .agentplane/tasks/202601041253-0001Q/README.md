@@ -5,12 +5,33 @@ status: "DONE"
 priority: "normal"
 owner: "CREATOR"
 depends_on: []
-tags: ["workflow", "git", "agents"]
-verify: ["python scripts/agentctl.py task lint", "python scripts/agentctl.py agents"]
-commit: { hash: "20b580ff017d997987112ec3bd46597cd7efe8db", message: "Legacy completion (backfill)" }
+tags:
+  - "workflow"
+  - "git"
+  - "agents"
+verify:
+  - "python scripts/agentctl.py task lint"
+  - "python scripts/agentctl.py agents"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "20b580ff017d997987112ec3bd46597cd7efe8db"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "CREATOR", body: "Start: align agent prompts and commit workflow to a default 3-phase commit cadence (plan/docs, implementation, verification/finish) and avoid extra start/status commits." }
-  - { author: "REVIEWER", body: "Verified: agent workflows now target a minimal 3-phase commit cadence (plan+artifact, implementation, verification/closure) and avoid extra status-only commits; agent registry and tasks lint pass." }
+  -
+    author: "CREATOR"
+    body: "Start: align agent prompts and commit workflow to a default 3-phase commit cadence (plan/docs, implementation, verification/finish) and avoid extra start/status commits."
+  -
+    author: "REVIEWER"
+    body: "Verified: agent workflows now target a minimal 3-phase commit cadence (plan+artifact, implementation, verification/closure) and avoid extra status-only commits; agent registry and tasks lint pass."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:22.260Z"
 doc_updated_by: "agentplane"
@@ -30,3 +51,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

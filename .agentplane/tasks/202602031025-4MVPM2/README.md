@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["tasks"]
+tags:
+  - "tasks"
 verify: []
-commit: { hash: "8ed26fc5114c2675d68708835a32922470d13cd0", message: "✨ 4MVPM2 dedupe task doc sections" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8ed26fc5114c2675d68708835a32922470d13cd0"
+  message: "✨ 4MVPM2 dedupe task doc sections"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: bun run test:cli:core; bun run test:core. Note: commit used LEFTHOOK=0 to bypass hooks due to unrelated README formatting issues." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run test:cli:core; bun run test:core. Note: commit used LEFTHOOK=0 to bypass hooks due to unrelated README formatting issues."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:52.579Z"
 doc_updated_by: "agentplane"
@@ -35,3 +50,8 @@ Low risk: doc normalization may slightly reflow whitespace; verified via unit te
 ## Rollback Plan
 
 Revert changes in run-cli/task-store doc normalization and tests.
+
+## Plan
+
+
+## Verification

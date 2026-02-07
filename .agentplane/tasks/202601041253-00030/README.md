@@ -5,11 +5,26 @@ status: "DONE"
 priority: "normal"
 owner: "DOCS"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "7eb0068599e887d0ceda3f427e413b1a7505d6dc", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7eb0068599e887d0ceda3f427e413b1a7505d6dc"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: docs-only update in agentctl.md and agent JSONs; no tests required." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: docs-only update in agentctl.md and agent JSONs; no tests required."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:32.261Z"
 doc_updated_by: "agentplane"
@@ -29,3 +44,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

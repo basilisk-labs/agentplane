@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
-tags: ["roadmap", "epic-d"]
+tags:
+  - "roadmap"
+  - "epic-d"
 verify: []
-commit: { hash: "a21b8aeb9bcd55bae600ad3479bacecc38579b2e", message: "🧾 E9QMJN roadmap" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a21b8aeb9bcd55bae600ad3479bacecc38579b2e"
+  message: "🧾 E9QMJN roadmap"
 comments:
-  - { author: "DOCS", body: "Start: update ROADMAP done markers and finalize Epic D status." }
-  - { author: "DOCS", body: "Verified: bun run format:check; bun run lint; bun run test:fast. Commit: a21b8aeb9bcd." }
+  -
+    author: "DOCS"
+    body: "Start: update ROADMAP done markers and finalize Epic D status."
+  -
+    author: "DOCS"
+    body: "Verified: bun run format:check; bun run lint; bun run test:fast. Commit: a21b8aeb9bcd."
 doc_version: 2
 doc_updated_at: "2026-02-05T10:02:13.688Z"
 doc_updated_by: "DOCS"
@@ -36,3 +54,8 @@ bun run format:check\nbun run lint\nbun run test:fast
 ## Rollback Plan
 
 Revert commit a21b8aeb9bcd to remove ROADMAP status markers.
+
+## Plan
+
+
+## Verification

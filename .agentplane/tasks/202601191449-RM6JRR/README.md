@@ -4,12 +4,29 @@ title: "Normalize status indicators in docs"
 status: "DONE"
 priority: "normal"
 owner: "DOCS"
-depends_on: ["202601191449-YN9FWW"]
-tags: ["docs", "workflow"]
+depends_on:
+  - "202601191449-YN9FWW"
+tags:
+  - "docs"
+  - "workflow"
 verify: []
-commit: { hash: "8e1f29d9eff0ec9608ba8f7826ee08c14dfe1633", message: "✨ YN9FWW plan status normalization and retro priority tasks" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8e1f29d9eff0ec9608ba8f7826ee08c14dfe1633"
+  message: "✨ YN9FWW plan status normalization and retro priority tasks"
 comments:
-  - { author: "DOCS", body: "verified: status wording aligned and priorities standardized in docs." }
+  -
+    author: "DOCS"
+    body: "verified: status wording aligned and priorities standardized in docs."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:53.047Z"
 doc_updated_by: "agentplane"
@@ -43,3 +60,8 @@ The repo had mixed priority labels (med/Нормальный) that needed normal
 ## Notes
 
 - Status wording in README/agentctl docs now references TODO instead of Backlog.
+
+## Plan
+
+
+## Verification

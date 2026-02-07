@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "ux"]
+tags:
+  - "agentctl"
+  - "ux"
 verify: []
-commit: { hash: "d2ccccc10fb8e9e1ddf4324d6e58bfc60dac34bf", message: "✨ ABC7XZ add status footer to agentctl; broaden command_path; refresh task doc" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d2ccccc10fb8e9e1ddf4324d6e58bfc60dac34bf"
+  message: "✨ ABC7XZ add status footer to agentctl; broaden command_path; refresh task doc"
 comments:
-  - { author: "CODER", body: "Verified: ran python -m compileall .agent-plane/agentctl.py and python .agent-plane/agentctl.py task lint; status footer behavior now emits success lines for non-quiet/non-json runs; no regressions observed." }
+  -
+    author: "CODER"
+    body: "Verified: ran python -m compileall .agent-plane/agentctl.py and python .agent-plane/agentctl.py task lint; status footer behavior now emits success lines for non-quiet/non-json runs; no regressions observed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:38.376Z"
 doc_updated_by: "agentplane"
@@ -44,3 +60,8 @@ Emit a consistent status line for successful agentctl commands so automation can
 
 - Revert the status-footer commit and restore agentctl.py.
 - Rerun python -m compileall .agent-plane/agentctl.py and python .agent-plane/agentctl.py task lint to confirm a clean state.
+
+## Plan
+
+
+## Verification

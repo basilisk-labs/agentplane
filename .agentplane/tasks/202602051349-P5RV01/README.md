@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "roadmap"]
+tags:
+  - "docs"
+  - "roadmap"
 verify: []
-commit: { hash: "189dce339c86ff5a887ef32cc7febe332575f1f3", message: "📝 P5RV01 update roadmap Epic F status" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "189dce339c86ff5a887ef32cc7febe332575f1f3"
+  message: "📝 P5RV01 update roadmap Epic F status"
 comments:
-  - { author: "DOCS", body: "Start: update ROADMAP Epic F status and tasks completion notes." }
-  - { author: "DOCS", body: "Verified: ROADMAP.md updated with Epic F/AP-050/AP-051 DONE status lines." }
+  -
+    author: "DOCS"
+    body: "Start: update ROADMAP Epic F status and tasks completion notes."
+  -
+    author: "DOCS"
+    body: "Verified: ROADMAP.md updated with Epic F/AP-050/AP-051 DONE status lines."
 doc_version: 2
 doc_updated_at: "2026-02-05T13:51:56.277Z"
 doc_updated_by: "DOCS"
@@ -40,3 +58,5 @@ Verified on 2026-02-05: ROADMAP.md shows Epic F/AP-050/AP-051 marked DONE with c
 ## Rollback Plan
 
 Revert ROADMAP.md status lines for Epic F/AP-050/AP-051.
+
+## Plan

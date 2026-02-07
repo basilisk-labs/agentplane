@@ -4,12 +4,29 @@ title: "Plan migration of extensions to recipes"
 status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
-depends_on: ["202601200656-J6NW39"]
-tags: ["recipes", "planning"]
+depends_on:
+  - "202601200656-J6NW39"
+tags:
+  - "recipes"
+  - "planning"
 verify: []
-commit: { hash: "5826e825cf6f8399b6dd8d946dcf261ca84ddc00", message: "✅ J6NW39 verified: close: core minimum defined | details: tools allowed by default; recipe agentctl usage permitted under guardrails." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "5826e825cf6f8399b6dd8d946dcf261ca84ddc00"
+  message: "✅ J6NW39 verified: close: core minimum defined | details: tools allowed by default; recipe agentctl usage permitted under guardrails."
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: close: migration plan defined | details: phases and dependencies recorded." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: close: migration plan defined | details: phases and dependencies recorded."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:58.671Z"
 doc_updated_by: "agentplane"
@@ -42,3 +59,8 @@ Do not remove core behaviors until recipe replacements are validated; revert any
 ## Notes
 
 Dependencies are strictly sequential: J6NW39 -> E52CV8 -> W1Y6ND -> VNFXH3 -> Y0P8RY.
+
+## Plan
+
+
+## Verification

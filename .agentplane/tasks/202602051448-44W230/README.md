@@ -5,11 +5,27 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["redmine", "testing"]
+tags:
+  - "redmine"
+  - "testing"
 verify: []
-commit: { hash: "869f46a7e953004bf3c7bfc248c30323b1a9cc45", message: "🧪 44W230 redmine smoke test" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "869f46a7e953004bf3c7bfc248c30323b1a9cc45"
+  message: "🧪 44W230 redmine smoke test"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: redmine pull/push ok; created task 202602051450-6Z591S. Title/description stored; tags empty; priority coerced to med; owner REDMINE. Local task shows full fields." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: redmine pull/push ok; created task 202602051450-6Z591S. Title/description stored; tags empty; priority coerced to med; owner REDMINE. Local task shows full fields."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:53:54.662Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -53,3 +69,5 @@ Pending.
 
 - Reset tasks_backend.config_path to .agentplane/backends/local/backend.json.
 - Discard any local changes if accidentally created.
+
+## Plan

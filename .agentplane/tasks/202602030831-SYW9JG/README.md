@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "5a485148dcfd807d893199d5e6900001d9003008", message: "🧾 SYW9JG normalize task readme sections" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "5a485148dcfd807d893199d5e6900001d9003008"
+  message: "🧾 SYW9JG normalize task readme sections"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: duplicate section scan across .agentplane/tasks/*/README.md (no duplicates)" }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: duplicate section scan across .agentplane/tasks/*/README.md (no duplicates)"
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:49.333Z"
 doc_updated_by: "agentplane"
@@ -37,3 +52,8 @@ Re-scan task READMEs for duplicate section headers.
 ## Rollback Plan
 
 Restore prior task README versions from git history if needed.
+
+## Plan
+
+
+## Verification

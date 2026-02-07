@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["tasks", "refactor"]
+tags:
+  - "tasks"
+  - "refactor"
 verify: []
-commit: { hash: "f84ae1546f3077d674c659dce3ce9bf690160894", message: "Legacy completion (backfill)" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f84ae1546f3077d674c659dce3ce9bf690160894"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: python3 .agent-plane/agentctl.py task list --quiet; ids migrated." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: python3 .agent-plane/agentctl.py task list --quiet; ids migrated."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:32.705Z"
 doc_updated_by: "agentplane"
@@ -46,6 +62,11 @@ dirty: false
 ## Rollback Plan
 
 - Restore `.agent-plane/tasks/` and `.agent-plane/tasks.json` from git history.
+
+## Plan
+
+
+## Verification
 
 ## Changes Summary (auto)
 

@@ -5,11 +5,27 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["roadmap", "epic"]
+tags:
+  - "roadmap"
+  - "epic"
 verify: []
-commit: { hash: "f51118d0e7df71f0e94a0d1ee84149e17f7efa4b", message: "📝 V40XE1 update backend docs and init tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "f51118d0e7df71f0e94a0d1ee84149e17f7efa4b"
+  message: "📝 V40XE1 update backend docs and init tests"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: backend selection at init and first-class backend docs/tests complete." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: backend selection at init and first-class backend docs/tests complete."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:21:38.479Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -39,3 +55,5 @@ Verified on 2026-02-05: init backend selection implemented, docs/tests updated, 
 ## Rollback Plan
 
 Revert init/backend changes and restore previous backend config defaults.
+
+## Plan

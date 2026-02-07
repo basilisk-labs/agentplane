@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["cleanup", "workflow"]
+tags:
+  - "cleanup"
+  - "workflow"
 verify: []
-commit: { hash: "4ad5ab8018fe75d23a7611035a807391e89f3609", message: "✨ H75K4M update clean scripts for hook prompt + init commit" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4ad5ab8018fe75d23a7611035a807391e89f3609"
+  message: "✨ H75K4M update clean scripts for hook prompt + init commit"
 comments:
-  - { author: "CODER", body: "Verified: manual checks only; clean.sh/clean.ps1 prompt appears after init commit; no automated tests run." }
+  -
+    author: "CODER"
+    body: "Verified: manual checks only; clean.sh/clean.ps1 prompt appears after init commit; no automated tests run."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:42.554Z"
 doc_updated_by: "agentplane"
@@ -44,3 +60,8 @@ Revert the clean script changes and restore the previous commit message and no-h
 ## Notes
 
 Hooks remain opt-in; prompt appears only on interactive runs.
+
+## Plan
+
+
+## Verification

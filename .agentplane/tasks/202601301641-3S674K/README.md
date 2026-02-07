@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs", "devguide"]
+tags:
+  - "docs"
+  - "devguide"
 verify: []
-commit: { hash: "c46e04789e2c69a6a17ae0a6edab6b94a2a4d9f7", message: "✅ 3S674K close: record task doc" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c46e04789e2c69a6a17ae0a6edab6b94a2a4d9f7"
+  message: "✅ 3S674K close: record task doc"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: expand core docs depth and add new developer guide pages." }
-  - { author: "ORCHESTRATOR", body: "verified: expanded core docs pages and added contributing/design/backends/recipes safety guides | details: navigation updated." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: expand core docs depth and add new developer guide pages."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: expanded core docs pages and added contributing/design/backends/recipes safety guides | details: navigation updated."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:33.306Z"
 doc_updated_by: "agentplane"
@@ -35,3 +53,8 @@ description: "Deepen core docs pages, add contributing/design principles, and ad
 ## Rollback Plan
 
 - Revert doc changes and navigation updates.
+
+## Plan
+
+
+## Verification

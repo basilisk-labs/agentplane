@@ -5,11 +5,27 @@ status: "DONE"
 priority: "normal"
 owner: "PLANNER"
 depends_on: []
-tags: ["docs", "cleanup"]
+tags:
+  - "docs"
+  - "cleanup"
 verify: []
-commit: { hash: "c8cc07f9a2424f20a7f2d062494519761f7bf2a5", message: "🧹 WRD9N1 reduce snapshot wording in docs: switch snapshot phrasing to export/view; update viewer and export descriptions; keep tasks.json references only where needed" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c8cc07f9a2424f20a7f2d062494519761f7bf2a5"
+  message: "🧹 WRD9N1 reduce snapshot wording in docs: switch snapshot phrasing to export/view; update viewer and export descriptions; keep tasks.json references only where needed"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: not run; doc/instruction edits only, no runtime impact." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: not run; doc/instruction edits only, no runtime impact."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:34.908Z"
 doc_updated_by: "agentplane"
@@ -47,3 +63,8 @@ description: "Update README, docs, and CONTRIBUTING to minimize repeated 'snapsh
 ## Rollback Plan
 
 - Revert commit `c8cc07f9a242`.
+
+## Plan
+
+
+## Verification

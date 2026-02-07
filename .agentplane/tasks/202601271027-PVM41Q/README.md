@@ -4,12 +4,32 @@ title: "AP-012: task lint invariants"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601271027-A6D5EF"]
-tags: ["nodejs", "roadmap", "tasks", "lint"]
-verify: ["bun run ci"]
-commit: { hash: "d78c21e6561cda03a773366deece046326cc7320", message: "✨ PVM41Q AP-012: task lint invariants" }
+depends_on:
+  - "202601271027-A6D5EF"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "tasks"
+  - "lint"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d78c21e6561cda03a773366deece046326cc7320"
+  message: "✨ PVM41Q AP-012: task lint invariants"
 comments:
-  - { author: "CODER", body: "verified: bun run ci passed | details: added task lint core+CLI coverage and validation tests." }
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: added task lint core+CLI coverage and validation tests."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:08.303Z"
 doc_updated_by: "agentplane"
@@ -34,3 +54,8 @@ bun run ci
 ## Rollback Plan
 
 Revert commit d78c21e6561c.
+
+## Plan
+
+
+## Verification

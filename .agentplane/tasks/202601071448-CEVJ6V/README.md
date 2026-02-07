@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["agentctl", "cli", "tasks"]
+tags:
+  - "agentctl"
+  - "cli"
+  - "tasks"
 verify: []
-commit: { hash: "8628d112da0784da7ee3bc4acb52ffac72e7221f", message: "✨ CEVJ6V enrich agentctl task outputs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "8628d112da0784da7ee3bc4acb52ffac72e7221f"
+  message: "✨ CEVJ6V enrich agentctl task outputs"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: not run (output-only changes). Context expanded for agent consumption." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: not run (output-only changes). Context expanded for agent consumption."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:36.166Z"
 doc_updated_by: "agentplane"
@@ -46,3 +63,8 @@ Updated task list/show/ready/start/block/finish outputs to include deps/readines
 ## Changes Summary
 
 - Added dependency/owner/priority/tag/verify info to task list/search/next output lines.\n- Expanded task show output with readiness, doc metadata, verify commands, and comment counts.\n- Added richer summaries for ready/start/block/finish commands.
+
+## Plan
+
+
+## Verification

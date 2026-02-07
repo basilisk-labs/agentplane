@@ -5,9 +5,23 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "recipes"]
+tags:
+  - "docs"
+  - "recipes"
 verify: []
-commit: { hash: "eb7726cde89b054b7a86c61486e1f2bf161fc263", message: "✅ 3FGMJZ docs: document global recipes bundle" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "eb7726cde89b054b7a86c61486e1f2bf161fc263"
+  message: "✅ 3FGMJZ docs: document global recipes bundle"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-20T09:18:05+00:00"
@@ -38,3 +52,8 @@ Review RECIPES.md for accuracy and English-only wording.
 ## Rollback Plan
 
 Revert RECIPES.md changes.
+
+## Plan
+
+
+## Verification

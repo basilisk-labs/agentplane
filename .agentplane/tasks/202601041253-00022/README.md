@@ -5,11 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["workflow", "git", "agentctl"]
-verify: ["python scripts/agentctl.py task lint", "python -m compileall scripts/agentctl.py"]
-commit: { hash: "9fd7273c23ae3490637588e158ff485627d93e4a", message: "Legacy completion (backfill)" }
+tags:
+  - "workflow"
+  - "git"
+  - "agentctl"
+verify:
+  - "python scripts/agentctl.py task lint"
+  - "python -m compileall scripts/agentctl.py"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "9fd7273c23ae3490637588e158ff485627d93e4a"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: Ran python scripts/agentctl.py task lint; python -m compileall scripts/agentctl.py; checked agentctl branch/pr/integrate help output." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Ran python scripts/agentctl.py task lint; python -m compileall scripts/agentctl.py; checked agentctl branch/pr/integrate help output."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:24.586Z"
 doc_updated_by: "agentplane"
@@ -29,3 +48,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

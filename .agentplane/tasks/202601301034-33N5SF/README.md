@@ -5,11 +5,28 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs", "agents", "workflow"]
+tags:
+  - "docs"
+  - "agents"
+  - "workflow"
 verify: []
-commit: { hash: "d505ce92dc8090ac3c01e0a08e093f3d59b6b95f", message: "✨ 33N5SF docs: clarify AGENTS.md wording" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "d505ce92dc8090ac3c01e0a08e093f3d59b6b95f"
+  message: "✨ 33N5SF docs: clarify AGENTS.md wording"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: documentation-only update | details: no tests required; pre-commit hooks ran prettier/eslint during commit." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: documentation-only update | details: no tests required; pre-commit hooks ran prettier/eslint during commit."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:27.109Z"
 doc_updated_by: "agentplane"
@@ -43,3 +60,8 @@ Revert the AGENTS.md commit for this task.
 ## Notes
 
 Task created from the 2026-01-30 request.
+
+## Plan
+
+
+## Verification

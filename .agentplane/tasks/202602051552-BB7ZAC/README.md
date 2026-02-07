@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["roadmap", "env", "compatibility"]
+tags:
+  - "roadmap"
+  - "env"
+  - "compatibility"
 verify: []
-commit: { hash: "c14a215c1917cb4dc5d1caf70dc80068831f482e", message: "✨ BB7ZAC normalize env vars" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c14a215c1917cb4dc5d1caf70dc80068831f482e"
+  message: "✨ BB7ZAC normalize env vars"
 comments:
-  - { author: "CODER", body: "Start: Normalize env variable names to AGENTPLANE_* and update docs/tests (no alias compatibility)." }
-  - { author: "CODER", body: "Verified: format:check, lint, test:fast passed; env vars normalized to AGENTPLANE_* across code, tests, docs, and .env.example." }
+  -
+    author: "CODER"
+    body: "Start: Normalize env variable names to AGENTPLANE_* and update docs/tests (no alias compatibility)."
+  -
+    author: "CODER"
+    body: "Verified: format:check, lint, test:fast passed; env vars normalized to AGENTPLANE_* across code, tests, docs, and .env.example."
 doc_version: 2
 doc_updated_at: "2026-02-05T16:49:39.811Z"
 doc_updated_by: "CODER"
@@ -46,3 +65,5 @@ Normalize environment variable names to the AGENTPLANE_ prefix (no legacy aliase
 ## Rollback Plan
 
 - Revert to previous env names and restore docs/tests if needed.
+
+## Plan

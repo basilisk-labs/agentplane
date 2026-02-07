@@ -5,12 +5,32 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["backend", "docs"]
-verify: ["bun run lint", "bun run test:fast"]
-commit: { hash: "bed62fcdb343c1d09b00839a0206a7da84f383ac", message: "✨ 202602051439-H7JERJ standardize backend config" }
+tags:
+  - "backend"
+  - "docs"
+verify:
+  - "bun run lint"
+  - "bun run test:fast"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "bed62fcdb343c1d09b00839a0206a7da84f383ac"
+  message: "✨ 202602051439-H7JERJ standardize backend config"
 comments:
-  - { author: "CODER", body: "Start: standardize backend config format, ignore legacy module/class, update docs/tests." }
-  - { author: "ORCHESTRATOR", body: "Verified: bun run lint; bun run test:fast; agentplane verify 202602051439-H7JERJ. Summary: standardized backend config shape and docs; legacy module/class ignored." }
+  -
+    author: "CODER"
+    body: "Start: standardize backend config format, ignore legacy module/class, update docs/tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run lint; bun run test:fast; agentplane verify 202602051439-H7JERJ. Summary: standardized backend config shape and docs; legacy module/class ignored."
 doc_version: 2
 doc_updated_at: "2026-02-05T14:43:18.238Z"
 doc_updated_by: "ORCHESTRATOR"
@@ -53,3 +73,5 @@ Manual steps:
 ## Rollback Plan
 
 Revert backend config validation and docs changes if compatibility issues appear.
+
+## Plan

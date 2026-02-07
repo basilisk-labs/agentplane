@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["init"]
+tags:
+  - "init"
 verify: []
-commit: { hash: "296d43fa2eecc20229fd66a0ed58b7b176da3358", message: "✨ 0CN7SM init git bootstrap and install commit; pin base branch; update hooks to system agentplane; add tests/docs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "296d43fa2eecc20229fd66a0ed58b7b176da3358"
+  message: "✨ 0CN7SM init git bootstrap and install commit; pin base branch; update hooks to system agentplane; add tests/docs"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: update agentplane init to bootstrap git when missing, set base branch when present, and commit install with version." }
-  - { author: "ORCHESTRATOR", body: "verified: bun run test:full | details: pre-commit ran format:check, lint, and test-fast; init bootstrap and hook changes validated." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: update agentplane init to bootstrap git when missing, set base branch when present, and commit install with version."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: bun run test:full | details: pre-commit ran format:check, lint, and test-fast; init bootstrap and hook changes validated."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:41.631Z"
 doc_updated_by: "agentplane"
@@ -35,3 +52,8 @@ bun run test:full
 ## Rollback Plan
 
 Revert the init/git bootstrap changes and hook script updates; rerun tests.
+
+## Plan
+
+
+## Verification

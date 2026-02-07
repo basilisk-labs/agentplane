@@ -5,12 +5,30 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "mintlify"]
+tags:
+  - "docs"
+  - "mintlify"
 verify: []
-commit: { hash: "3b2e5c64642f138018b80646ba5a21a42a843cc9", message: "🐛 1NGG54 mintlify: set valid docs.json theme" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3b2e5c64642f138018b80646ba5a21a42a843cc9"
+  message: "🐛 1NGG54 mintlify: set valid docs.json theme"
 comments:
-  - { author: "DOCS", body: "Start: Fix Mintlify docs/docs.json theme discriminator validation error." }
-  - { author: "DOCS", body: "verified: Mintlify docs/docs.json uses a valid theme discriminator value | details: Mintlify schema validation should pass." }
+  -
+    author: "DOCS"
+    body: "Start: Fix Mintlify docs/docs.json theme discriminator validation error."
+  -
+    author: "DOCS"
+    body: "verified: Mintlify docs/docs.json uses a valid theme discriminator value | details: Mintlify schema validation should pass."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:08.653Z"
 doc_updated_by: "agentplane"
@@ -35,3 +53,8 @@ Fix Mintlify docs/docs.json validation by setting a supported theme value.
 ## Rollback Plan
 
 - Revert commit 3b2e5c64642f
+
+## Plan
+
+
+## Verification

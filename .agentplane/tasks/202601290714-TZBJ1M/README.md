@@ -4,14 +4,36 @@ title: "AP-037: tool runner for scenarios"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601290714-QE3NNN"]
-tags: ["roadmap", "nodejs", "recipes"]
+depends_on:
+  - "202601290714-QE3NNN"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "recipes"
 verify: []
-commit: { hash: "068662b0d2243b855f42e5c7c92d91b8d6b5e02a", message: "✨ TZBJ1M scenario tool runner" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "068662b0d2243b855f42e5c7c92d91b8d6b5e02a"
+  message: "✨ TZBJ1M scenario tool runner"
 comments:
-  - { author: "CODER", body: "Start: implement scenario tool runner (node/bash) with run artifacts." }
-  - { author: "CODER", body: "verified: manual review only | details: tests not run (known failing run-cli.test.ts expectation for invalid meta.json)." }
-  - { author: "CODER", body: "verified: manual review only | details: tests not run (known failing run-cli.test.ts expectation for invalid meta.json)." }
+  -
+    author: "CODER"
+    body: "Start: implement scenario tool runner (node/bash) with run artifacts."
+  -
+    author: "CODER"
+    body: "verified: manual review only | details: tests not run (known failing run-cli.test.ts expectation for invalid meta.json)."
+  -
+    author: "CODER"
+    body: "verified: manual review only | details: tests not run (known failing run-cli.test.ts expectation for invalid meta.json)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:18.738Z"
 doc_updated_by: "agentplane"
@@ -36,3 +58,8 @@ Add minimal scenario runner to execute recipe tools and store run artifacts.
 ## Rollback Plan
 
 - Revert the AP-037 commits to remove scenario runner
+
+## Plan
+
+
+## Verification

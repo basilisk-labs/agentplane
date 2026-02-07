@@ -5,12 +5,29 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release"]
+tags:
+  - "release"
 verify: []
-commit: { hash: "eb5903253b0f98cf919595d76001105ea0392f7b", message: "🚀 K6D6MA bump versions to 0.1.2" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "eb5903253b0f98cf919595d76001105ea0392f7b"
+  message: "🚀 K6D6MA bump versions to 0.1.2"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: bump versions to 0.1.2, tag release, push to trigger GitHub Actions publish." }
-  - { author: "ORCHESTRATOR", body: "Verified: version bump committed (0.1.2), tag v0.1.2 pushed to trigger GitHub Actions publish." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: bump versions to 0.1.2, tag release, push to trigger GitHub Actions publish."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: version bump committed (0.1.2), tag v0.1.2 pushed to trigger GitHub Actions publish."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:50.445Z"
 doc_updated_by: "agentplane"
@@ -38,3 +55,8 @@ Low; release tag will trigger GitHub Actions publishing.
 ## Rollback Plan
 
 Delete the tag and revert the version bump commit if publish fails.
+
+## Plan
+
+
+## Verification

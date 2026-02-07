@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["workflow", "cli", "verify"]
+tags:
+  - "workflow"
+  - "cli"
+  - "verify"
 verify: []
-commit: { hash: "ba0d0169052e7badfff05d93d91c4caa92ba5255", message: "✨ 60QJWK add --yes to verify" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ba0d0169052e7badfff05d93d91c4caa92ba5255"
+  message: "✨ 60QJWK add --yes to verify"
 comments:
-  - { author: "CODER", body: "Start: add --yes for verify approval, update usage/help, and extend tests." }
-  - { author: "CODER", body: "Verified: bun run lint; bun run test:fast; bun run build; hooks pre-commit; agentplane verify --yes --quiet." }
+  -
+    author: "CODER"
+    body: "Start: add --yes for verify approval, update usage/help, and extend tests."
+  -
+    author: "CODER"
+    body: "Verified: bun run lint; bun run test:fast; bun run build; hooks pre-commit; agentplane verify --yes --quiet."
 doc_version: 2
 doc_updated_at: "2026-02-05T13:05:30.023Z"
 doc_updated_by: "CODER"
@@ -51,3 +70,5 @@ Commands:
 ## Rollback Plan
 
 Revert verify flag changes, restore previous approval flow, and drop docs updates.
+
+## Plan

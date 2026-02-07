@@ -5,11 +5,29 @@ status: "DONE"
 priority: "normal"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["workflow", "docs", "agents"]
-verify: ["python scripts/agentctl.py task lint"]
-commit: { hash: "2b93d6297c22494b1cbc0805952a6f81b3461153", message: "Legacy completion (backfill)" }
+tags:
+  - "workflow"
+  - "docs"
+  - "agents"
+verify:
+  - "python scripts/agentctl.py task lint"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2b93d6297c22494b1cbc0805952a6f81b3461153"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/T-086/pr." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/T-086/pr."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:28.513Z"
 doc_updated_by: "agentplane"
@@ -29,3 +47,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

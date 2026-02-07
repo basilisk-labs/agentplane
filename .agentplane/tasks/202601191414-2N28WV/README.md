@@ -5,9 +5,23 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["ui", "tasks"]
+tags:
+  - "ui"
+  - "tasks"
 verify: []
-commit: { hash: "3fb91cf7aaed42142d8e706dbda629c54a13b089", message: "✨ 2N28WV J99M5D add dashboard UI and aggregation" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3fb91cf7aaed42142d8e706dbda629c54a13b089"
+  message: "✨ 2N28WV J99M5D add dashboard UI and aggregation"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:17+00:00"
@@ -44,3 +58,8 @@ Revert dashboard UI changes in `.agent-plane/viewer/tasks.html`.
 ## Notes
 
 Keep CSS aligned with existing cyberpunk palette and typography.
+
+## Plan
+
+
+## Verification

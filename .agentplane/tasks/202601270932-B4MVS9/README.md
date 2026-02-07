@@ -5,13 +5,36 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
-tags: ["nodejs", "tooling", "quality", "ci"]
-verify: ["bun run ci"]
-commit: { hash: "4fa3ff495bc81a2a18c5ab9232f8df0a8d951cc3", message: "✨ B4MVS9 enforce quality via hooks + CI" }
+tags:
+  - "nodejs"
+  - "tooling"
+  - "quality"
+  - "ci"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "4fa3ff495bc81a2a18c5ab9232f8df0a8d951cc3"
+  message: "✨ B4MVS9 enforce quality via hooks + CI"
 comments:
-  - { author: "CODER", body: "Start: adding git hooks + GitHub Actions to enforce bun run ci for all changes." }
-  - { author: "CODER", body: "Start: implementing lefthook pre-commit hook and GitHub Actions CI to enforce bun run ci." }
-  - { author: "CODER", body: "verified: bun run ci passed | details: lefthook + GitHub Actions CI enforce quality gates." }
+  -
+    author: "CODER"
+    body: "Start: adding git hooks + GitHub Actions to enforce bun run ci for all changes."
+  -
+    author: "CODER"
+    body: "Start: implementing lefthook pre-commit hook and GitHub Actions CI to enforce bun run ci."
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: lefthook + GitHub Actions CI enforce quality gates."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:05.824Z"
 doc_updated_by: "agentplane"
@@ -44,3 +67,8 @@ Enforce bun-based quality gates by adding local git hooks (lefthook) and CI (Git
 - Remove `lefthook.yml` and the `lefthook` dependency
 - Remove `postinstall` / `hooks:install` scripts from `package.json`
 - Remove `.github/workflows/ci.yml`
+
+## Plan
+
+
+## Verification

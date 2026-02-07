@@ -5,12 +5,31 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["npm", "packaging", "metadata"]
+tags:
+  - "npm"
+  - "packaging"
+  - "metadata"
 verify: []
-commit: { hash: "860540aad6688af1fac836f40449465e58d5f788", message: "✅ GQ3W6F close: record task doc" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "860540aad6688af1fac836f40449465e58d5f788"
+  message: "✅ GQ3W6F close: record task doc"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: add npm metadata across packages for publish readiness." }
-  - { author: "ORCHESTRATOR", body: "verified: metadata added for npm packages | details: ready for publish without changing private flags." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: add npm metadata across packages for publish readiness."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: metadata added for npm packages | details: ready for publish without changing private flags."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:31.853Z"
 doc_updated_by: "agentplane"
@@ -35,3 +54,8 @@ description: "Populate package metadata (description/keywords/etc.) for npm disp
 ## Rollback Plan
 
 - Revert package.json metadata changes if needed.
+
+## Plan
+
+
+## Verification

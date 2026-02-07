@@ -5,12 +5,29 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "2b89660dd3ef1aa3e7bed44a5d43401c7ecd1cee", message: "🧾 V8A8XC record task metadata" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2b89660dd3ef1aa3e7bed44a5d43401c7ecd1cee"
+  message: "🧾 V8A8XC record task metadata"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: reviewing package READMEs and drafting npm-friendly replacements." }
-  - { author: "ORCHESTRATOR", body: "Verified: Updated package READMEs for agentplane and core with npm-friendly structure, install/usage, and links. Manual review only." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: reviewing package READMEs and drafting npm-friendly replacements."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Updated package READMEs for agentplane and core with npm-friendly structure, install/usage, and links. Manual review only."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:52.880Z"
 doc_updated_by: "agentplane"
@@ -36,3 +53,8 @@ Open both READMEs and confirm formatting, links, and referenced commands are val
 ## Rollback Plan
 
 Revert packages/agentplane/README.md and packages/core/README.md to the previous versions.
+
+## Plan
+
+
+## Verification

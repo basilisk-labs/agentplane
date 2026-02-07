@@ -5,12 +5,31 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["nodejs", "docs", "cli"]
+tags:
+  - "nodejs"
+  - "docs"
+  - "cli"
 verify: []
-commit: { hash: "ad1df19a2048d65a874a02b921ebfdc4e861e76f", message: "✨ M1Q50F cli contract: define v1 command surface, exit codes, json errors" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ad1df19a2048d65a874a02b921ebfdc4e861e76f"
+  message: "✨ M1Q50F cli contract: define v1 command surface, exit codes, json errors"
 comments:
-  - { author: "DOCS", body: "Start: drafting v1 CLI contract doc (commands, exit codes, --json error format) for Node.js agentplane." }
-  - { author: "DOCS", body: "verified: added docs/cli-contract.md covering v1 namespaces, exit codes, and --json error output contract." }
+  -
+    author: "DOCS"
+    body: "Start: drafting v1 CLI contract doc (commands, exit codes, --json error format) for Node.js agentplane."
+  -
+    author: "DOCS"
+    body: "verified: added docs/cli-contract.md covering v1 namespaces, exit codes, and --json error output contract."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:02.029Z"
 doc_updated_by: "agentplane"
@@ -39,3 +58,8 @@ Define the stable public CLI contract for `agentplane` v1 (commands, flags, alia
 ## Rollback Plan
 
 - Revert the commit that introduces/changes `docs/cli-contract.md`.
+
+## Plan
+
+
+## Verification

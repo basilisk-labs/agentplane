@@ -4,12 +4,32 @@ title: "agentctl: add work start (branch+pr+scaffold)"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601041253-0002A"]
-tags: ["agentctl", "workflow", "ergonomics"]
-verify: ["python -m compileall scripts/agentctl.py", "python scripts/agentctl.py task lint"]
-commit: { hash: "2a76efc28ea31c69c13e9c13e2494036db931d6c", message: "Legacy completion (backfill)" }
+depends_on:
+  - "202601041253-0002A"
+tags:
+  - "agentctl"
+  - "workflow"
+  - "ergonomics"
+verify:
+  - "python -m compileall scripts/agentctl.py"
+  - "python scripts/agentctl.py task lint"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2a76efc28ea31c69c13e9c13e2494036db931d6c"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: Squash-merged task/T-075/work-start; verify will be recorded via agentctl verify log in this closure; PR artifacts + README updated." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Squash-merged task/T-075/work-start; verify will be recorded via agentctl verify log in this closure; PR artifacts + README updated."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:26.086Z"
 doc_updated_by: "agentplane"
@@ -29,3 +49,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

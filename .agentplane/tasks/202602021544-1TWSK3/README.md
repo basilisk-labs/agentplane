@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["release", "ci"]
+tags:
+  - "release"
+  - "ci"
 verify: []
-commit: { hash: "a8c85b65b4d353469c9f8d9a0a944ff370c4be93", message: "🛠️ 1TWSK3 fix publish imports and workflow" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a8c85b65b4d353469c9f8d9a0a944ff370c4be93"
+  message: "🛠️ 1TWSK3 fix publish imports and workflow"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: fix package import scope mismatches and TS typing error to unblock publish workflow." }
-  - { author: "ORCHESTRATOR", body: "Verified: bun run --filter=@agentplaneorg/core build and bun run --filter=agentplane build." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: fix package import scope mismatches and TS typing error to unblock publish workflow."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run --filter=@agentplaneorg/core build and bun run --filter=agentplane build."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:45.534Z"
 doc_updated_by: "agentplane"
@@ -30,3 +48,9 @@ id_source: "generated"
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification

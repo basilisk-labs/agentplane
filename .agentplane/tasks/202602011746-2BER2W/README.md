@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
-tags: ["testing"]
+tags:
+  - "testing"
 verify: []
-commit: { hash: "edce441b3d5c3f65c01265fa365b89ee2c94b06a", message: "⚡ 1KSBF8 2BER2W Z5WV9G BJRJ61 speed up tests: add fast/full/cli scripts; update hooks; document workflow" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "edce441b3d5c3f65c01265fa365b89ee2c94b06a"
+  message: "⚡ 1KSBF8 2BER2W Z5WV9G BJRJ61 speed up tests: add fast/full/cli scripts; update hooks; document workflow"
 comments:
-  - { author: "CODER", body: "Start: audit current test tooling, locate slow suites/timeouts, and propose fast vs full split; will avoid touching unrelated docs changes." }
+  -
+    author: "CODER"
+    body: "Start: audit current test tooling, locate slow suites/timeouts, and propose fast vs full split; will avoid touching unrelated docs changes."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:38.491Z"
 doc_updated_by: "agentplane"
@@ -34,3 +49,8 @@ bun run test:fast
 ## Rollback Plan
 
 Revert test script and hook changes to restore the previous single-suite workflow.
+
+## Plan
+
+
+## Verification

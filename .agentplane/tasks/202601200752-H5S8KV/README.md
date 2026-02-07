@@ -5,9 +5,24 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agents", "recipes", "workflow"]
+tags:
+  - "agents"
+  - "recipes"
+  - "workflow"
 verify: []
-commit: { hash: "ec30cb74b634231a4b8b3b5bc27b72537f056ad8", message: "✅ H5S8KV orchestrator: refresh recipe bundle.json at run start" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "ec30cb74b634231a4b8b3b5bc27b72537f056ad8"
+  message: "✅ H5S8KV orchestrator: refresh recipe bundle.json at run start"
 comments: []
 doc_version: 2
 doc_updated_at: "2026-01-24T18:16:18+00:00"
@@ -42,3 +57,8 @@ Revert the JSON change.
 ## Notes
 
 No runtime behavior changes implemented in code.
+
+## Plan
+
+
+## Verification

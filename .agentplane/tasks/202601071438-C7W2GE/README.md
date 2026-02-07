@@ -5,11 +5,29 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["redmine", "backend", "docs"]
-verify: ["echo docs-only"]
-commit: { hash: "a31d27a72cba9e89cd51ea3e90533df52bac35d4", message: "✨ C7W2GE update redmine custom field IDs in docs" }
+tags:
+  - "redmine"
+  - "backend"
+  - "docs"
+verify:
+  - "echo docs-only"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a31d27a72cba9e89cd51ea3e90533df52bac35d4"
+  message: "✨ C7W2GE update redmine custom field IDs in docs"
 comments:
-  - { author: "INTEGRATOR", body: "Verified: not run (docs-only update). Redmine IDs assumed sequential 1-8." }
+  -
+    author: "INTEGRATOR"
+    body: "Verified: not run (docs-only update). Redmine IDs assumed sequential 1-8."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:35.818Z"
 doc_updated_by: "agentplane"
@@ -48,3 +66,8 @@ Backend config already uses IDs 1-8; only docs needed updates.
 ## Changes Summary
 
 - Updated Redmine docs examples to match sequential custom field IDs 1-8.
+
+## Plan
+
+
+## Verification

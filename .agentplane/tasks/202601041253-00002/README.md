@@ -5,17 +5,32 @@ status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
-tags: ["agents"]
+tags:
+  - "agents"
 verify: []
-commit: { hash: "b086a09a601ccc90ba7c91fda3bb1317e3485419", message: "✅ Y0P8RY verified: Phase 2 migration complete | details: no additional core cleanup changes required at this stage." }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "b086a09a601ccc90ba7c91fda3bb1317e3485419"
+  message: "✅ Y0P8RY verified: Phase 2 migration complete | details: no additional core cleanup changes required at this stage."
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: agent registry is already JSON under .agent-plane/agents | details: closing legacy backfill." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: agent registry is already JSON under .agent-plane/agents | details: closing legacy backfill."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:14.649Z"
 doc_updated_by: "agentplane"
 description: "Split every reusable agent prompt into a dedicated JSON file under .AGENTS for easier maintenance."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -36,3 +51,8 @@ id_source: "custom"
 ## Rollback Plan
 
 - Reopen the task if agent registry needs restructuring.\n- Audit agent files and update docs accordingly.
+
+## Plan
+
+
+## Verification

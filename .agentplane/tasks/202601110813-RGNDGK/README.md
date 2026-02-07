@@ -5,17 +5,35 @@ status: "DONE"
 priority: "normal"
 owner: "REDMINE"
 depends_on: []
-tags: ["agents", "redmine", "backend"]
-verify: ["python -m py_compile .agent-plane/backends/redmine/backend.py"]
-commit: { hash: "1a5d38264519ada0bf7042c57b11a4b3464d8cad", message: "✨ RGNDGK harden redmine backend and add agent" }
+tags:
+  - "agents"
+  - "redmine"
+  - "backend"
+verify:
+  - "python -m py_compile .agent-plane/backends/redmine/backend.py"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "1a5d38264519ada0bf7042c57b11a4b3464d8cad"
+  message: "✨ RGNDGK harden redmine backend and add agent"
 comments:
-  - { author: "CODER", body: "Verified: py_compile redmine backend; lint clean (owner warnings only). Added retries/cache/targeted lookup, skip invalid IDs, avoid reassignment, and created REDMINE agent." }
+  -
+    author: "CODER"
+    body: "Verified: py_compile redmine backend; lint clean (owner warnings only). Added retries/cache/targeted lookup, skip invalid IDs, avoid reassignment, and created REDMINE agent."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:37.813Z"
 doc_updated_by: "agentplane"
 description: "Improve Redmine connector (no legacy mutations, retries, targeted lookup, safe assignee) and introduce REDMINE agent with backend-aware policies."
-dirty: false
 id_source: "custom"
+dirty: false
 ---
 ## Summary
 
@@ -50,3 +68,8 @@ Redmine connector still does full scans per lookup, mutates missing task_id fiel
 ## Notes
 
 - Keep behavior backend-agnostic for other agents; REDMINE agent documents backend expectations.
+
+## Plan
+
+
+## Verification

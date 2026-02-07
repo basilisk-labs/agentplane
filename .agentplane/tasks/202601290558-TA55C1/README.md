@@ -5,14 +5,36 @@ status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["roadmap", "execution"]
+tags:
+  - "roadmap"
+  - "execution"
 verify: []
-commit: { hash: "3cb4ec44d20499e1dc3480b7e456892b9d5cd177", message: "✨ Z6B0HA update AGENTS policy: add purpose, preflight runbook, approvals definitions, commit modes, config patch note" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "3cb4ec44d20499e1dc3480b7e456892b9d5cd177"
+  message: "✨ Z6B0HA update AGENTS policy: add purpose, preflight runbook, approvals definitions, commit modes, config patch note"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker." }
-  - { author: "ORCHESTRATOR", body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker." }
-  - { author: "ORCHESTRATOR", body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker." }
-  - { author: "ORCHESTRATOR", body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:14.474Z"
 doc_updated_by: "agentplane"
@@ -37,3 +59,8 @@ description: "Track and sequence closure of remaining AP-* roadmap tasks; execut
 ## Rollback Plan
 
 - Reopen the task if any AP roadmap item is not DONE.\n- Re-run the verification steps after updates.
+
+## Plan
+
+
+## Verification

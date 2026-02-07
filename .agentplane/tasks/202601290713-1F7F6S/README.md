@@ -4,13 +4,33 @@ title: "AP-027: conflict-safe init (force/backup/conflicts)"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601290713-51T41E"]
-tags: ["roadmap", "nodejs", "init"]
+depends_on:
+  - "202601290713-51T41E"
+tags:
+  - "roadmap"
+  - "nodejs"
+  - "init"
 verify: []
-commit: { hash: "cfaba4a6da06359749d41beccd03d80171b6f1da", message: "feat: 1F7F6S conflict-safe init" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "cfaba4a6da06359749d41beccd03d80171b6f1da"
+  message: "feat: 1F7F6S conflict-safe init"
 comments:
-  - { author: "CODER", body: "Start: implement conflict-safe init flags (--force/--backup) and conflict handling." }
-  - { author: "CODER", body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: conflict-safe init with --force/--backup and tests." }
+  -
+    author: "CODER"
+    body: "Start: implement conflict-safe init flags (--force/--backup) and conflict handling."
+  -
+    author: "CODER"
+    body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: conflict-safe init with --force/--backup and tests."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:14.786Z"
 doc_updated_by: "agentplane"
@@ -35,3 +55,8 @@ Add conflict-safe init handling: detect conflicts, list them, and support --forc
 ## Rollback Plan
 
 - Revert the task commit(s) and restore previous init behavior.
+
+## Plan
+
+
+## Verification

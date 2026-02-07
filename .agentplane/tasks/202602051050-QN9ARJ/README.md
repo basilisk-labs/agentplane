@@ -5,12 +5,30 @@ status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on: []
-tags: ["warnings", "lint"]
+tags:
+  - "warnings"
+  - "lint"
 verify: []
-commit: { hash: "7c983814dca0f4daaa477c702080ceb00c0cbd8c", message: "🧪 QN9ARJ tests" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "7c983814dca0f4daaa477c702080ceb00c0cbd8c"
+  message: "🧪 QN9ARJ tests"
 comments:
-  - { author: "TESTER", body: "Start: resolve TypeScript warnings in tests and mocks across packages." }
-  - { author: "TESTER", body: "Verified: ./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit; bun run format:check; bun run lint; bun run test:fast. Commit: 7c983814dca0." }
+  -
+    author: "TESTER"
+    body: "Start: resolve TypeScript warnings in tests and mocks across packages."
+  -
+    author: "TESTER"
+    body: "Verified: ./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit; bun run format:check; bun run lint; bun run test:fast. Commit: 7c983814dca0."
 doc_version: 2
 doc_updated_at: "2026-02-05T11:03:09.601Z"
 doc_updated_by: "TESTER"
@@ -36,3 +54,8 @@ Low risk; test-only change.
 ## Rollback Plan
 
 Revert commit 7c983814dca0 if test typing adjustments are unwanted.
+
+## Plan
+
+
+## Verification

@@ -5,13 +5,33 @@ status: "DONE"
 priority: "normal"
 owner: "DOCS"
 depends_on: []
-tags: ["docs", "tasks"]
+tags:
+  - "docs"
+  - "tasks"
 verify: []
-commit: { hash: "2c6b87235c6a1292517cb179020a4ea00e1a44fa", message: "✅ Z10Z68 enforce verify/doc readiness and safer sync" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "2c6b87235c6a1292517cb179020a4ea00e1a44fa"
+  message: "✅ Z10Z68 enforce verify/doc readiness and safer sync"
 comments:
-  - { author: "DOCS", body: "Verified: py_compile redmine backend; task lint clean; owners now CODER; README/docs split between quickstart and full reference." }
-  - { author: "DOCS", body: "Verified: py_compile agentctl/redmine; lint clean. Enforced known-agent owners in task flows/docs." }
-  - { author: "DOCS", body: "Verified: py_compile agentctl/redmine; task lint clean after verify backfill; added verify/doc gates and safer sync." }
+  -
+    author: "DOCS"
+    body: "Verified: py_compile redmine backend; task lint clean; owners now CODER; README/docs split between quickstart and full reference."
+  -
+    author: "DOCS"
+    body: "Verified: py_compile agentctl/redmine; lint clean. Enforced known-agent owners in task flows/docs."
+  -
+    author: "DOCS"
+    body: "Verified: py_compile agentctl/redmine; task lint clean after verify backfill; added verify/doc gates and safer sync."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:38.093Z"
 doc_updated_by: "agentplane"
@@ -45,3 +65,8 @@ Lint warnings came from owner=AUTOMATION; docs needed clearer split between newc
 ## Rollback Plan
 
 - Revert the owner changes and README/docs edits.
+
+## Plan
+
+
+## Verification

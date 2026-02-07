@@ -4,13 +4,33 @@ title: "AP-004: Create Node/TS monorepo + CLI build (ESM, node20)"
 status: "DONE"
 priority: "med"
 owner: "CODER"
-depends_on: ["202601270755-M1Q50F"]
-tags: ["nodejs", "monorepo", "build"]
+depends_on:
+  - "202601270755-M1Q50F"
+tags:
+  - "nodejs"
+  - "monorepo"
+  - "build"
 verify: []
-commit: { hash: "06116a797cb5bc3141cf0816bc4bfc7d3981536d", message: "✨ B8J0CW monorepo: bootstrap Node+TS workspaces and agentplane cli stub" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "06116a797cb5bc3141cf0816bc4bfc7d3981536d"
+  message: "✨ B8J0CW monorepo: bootstrap Node+TS workspaces and agentplane cli stub"
 comments:
-  - { author: "CODER", body: "Start: bootstrapping Node.js 20+ TypeScript ESM workspace with packages/agentplane CLI and placeholder core/recipes/testkit/spec packages." }
-  - { author: "CODER", body: "verified: added Node.js workspaces + TS configs and a minimal agentplane CLI stub | details: build/run requires npm install (not executed in this run)." }
+  -
+    author: "CODER"
+    body: "Start: bootstrapping Node.js 20+ TypeScript ESM workspace with packages/agentplane CLI and placeholder core/recipes/testkit/spec packages."
+  -
+    author: "CODER"
+    body: "verified: added Node.js workspaces + TS configs and a minimal agentplane CLI stub | details: build/run requires npm install (not executed in this run)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:03.052Z"
 doc_updated_by: "agentplane"
@@ -47,3 +67,8 @@ Bootstrap the Node.js 20+ ESM TypeScript monorepo and ship a runnable `agentplan
 
 - Revert monorepo bootstrap commits.
 - Keep the existing Python tooling as the supported workflow until later milestones.
+
+## Plan
+
+
+## Verification

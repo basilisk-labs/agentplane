@@ -4,14 +4,35 @@ title: "AP-044: v1 release hardening"
 status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
-depends_on: ["202601290715-0XACWT"]
-tags: ["roadmap", "release"]
+depends_on:
+  - "202601290715-0XACWT"
+tags:
+  - "roadmap"
+  - "release"
 verify: []
-commit: { hash: "be651467a8a33e45e06f85c29401bbb6812554b4", message: "✨ K6G7A0 harden errors and add CLI smoke test" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "be651467a8a33e45e06f85c29401bbb6812554b4"
+  message: "✨ K6G7A0 harden errors and add CLI smoke test"
 comments:
-  - { author: "ORCHESTRATOR", body: "Start: scoping AP-044 release hardening; will outline plan and risks." }
-  - { author: "ORCHESTRATOR", body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed." }
-  - { author: "ORCHESTRATOR", body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: scoping AP-044 release hardening; will outline plan and risks."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed."
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:20.798Z"
 doc_updated_by: "agentplane"
@@ -44,3 +65,8 @@ bun run ci:agentplane
 ## Rollback Plan
 
 Revert the AP-044 commit(s) to restore previous error formatting and remove the smoke test.
+
+## Plan
+
+
+## Verification

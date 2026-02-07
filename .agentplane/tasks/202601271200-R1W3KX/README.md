@@ -4,12 +4,32 @@ title: "AP-013: base branch pinning"
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on: ["202601270756-RMNY59"]
-tags: ["nodejs", "roadmap", "git", "branch"]
-verify: ["bun run ci"]
-commit: { hash: "9eed9c408b75b3dbf5d8ae39da33338a7a46acce", message: "✨ R1W3KX AP-013: base branch pinning" }
+depends_on:
+  - "202601270756-RMNY59"
+tags:
+  - "nodejs"
+  - "roadmap"
+  - "git"
+  - "branch"
+verify:
+  - "bun run ci"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "9eed9c408b75b3dbf5d8ae39da33338a7a46acce"
+  message: "✨ R1W3KX AP-013: base branch pinning"
 comments:
-  - { author: "CODER", body: "verified: bun run ci passed | details: base branch pinning and CLI branch base get/set implemented." }
+  -
+    author: "CODER"
+    body: "verified: bun run ci passed | details: base branch pinning and CLI branch base get/set implemented."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:10.638Z"
 doc_updated_by: "agentplane"
@@ -34,3 +54,8 @@ bun run ci
 ## Rollback Plan
 
 Revert commit after AP-013 implementation.
+
+## Plan
+
+
+## Verification

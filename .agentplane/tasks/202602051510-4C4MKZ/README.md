@@ -5,11 +5,26 @@ status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
-tags: ["docs"]
+tags:
+  - "docs"
 verify: []
-commit: { hash: "5b0f7460e0faace92f5becf9184d1ad8537e744e", message: "📝 4C4MKZ split backend docs" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "5b0f7460e0faace92f5becf9184d1ad8537e744e"
+  message: "📝 4C4MKZ split backend docs"
 comments:
-  - { author: "DOCS", body: "Verified: backends overview links to per-backend docs; local and redmine docs added with parity guidance." }
+  -
+    author: "DOCS"
+    body: "Verified: backends overview links to per-backend docs; local and redmine docs added with parity guidance."
 doc_version: 2
 doc_updated_at: "2026-02-05T15:11:55.648Z"
 doc_updated_by: "DOCS"
@@ -49,3 +64,5 @@ Pending.
 
 - Restore docs/user/backends.mdx from before the split.
 - Remove per-backend doc files if needed.
+
+## Plan

@@ -5,12 +5,32 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["init", "workflow", "git", "cli"]
+tags:
+  - "init"
+  - "workflow"
+  - "git"
+  - "cli"
 verify: []
-commit: { hash: "365842eebfe3f0d00a75fe29ba29703927f3b58c", message: "✨ XWJDAB init branch_pr base selection" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "365842eebfe3f0d00a75fe29ba29703927f3b58c"
+  message: "✨ XWJDAB init branch_pr base selection"
 comments:
-  - { author: "ORCHESTRATOR", body: "Verified: branch_pr init now prompts for base branch in existing repos, defaults to main in empty dirs; tests run (bun run test:cli:core)." }
-  - { author: "ORCHESTRATOR", body: "Verified: branch_pr init now prompts for base branch in existing repos, defaults to main in empty dirs; tests run (bun run test:cli:core)." }
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: branch_pr init now prompts for base branch in existing repos, defaults to main in empty dirs; tests run (bun run test:cli:core)."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: branch_pr init now prompts for base branch in existing repos, defaults to main in empty dirs; tests run (bun run test:cli:core)."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:54.022Z"
 doc_updated_by: "agentplane"
@@ -36,3 +56,8 @@ bun run test:cli:core -- -t "init branch_pr"
 ## Rollback Plan
 
 Revert the promptInitBaseBranch changes and the new init tests; restore prior resolveInitBaseBranch-only behavior.
+
+## Plan
+
+
+## Verification

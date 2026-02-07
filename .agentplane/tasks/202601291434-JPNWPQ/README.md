@@ -5,12 +5,30 @@ status: "DONE"
 priority: "normal"
 owner: "CODER"
 depends_on: []
-tags: ["testing", "lint"]
+tags:
+  - "testing"
+  - "lint"
 verify: []
-commit: { hash: "a585b879ee2e09ed57e45821dbbda00c096c004a", message: "✨ JPNWPQ fix pr check test" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "a585b879ee2e09ed57e45821dbbda00c096c004a"
+  message: "✨ JPNWPQ fix pr check test"
 comments:
-  - { author: "CODER", body: "Start: adjust failing pr check test assertion for JSON parse errors." }
-  - { author: "CODER", body: "verified: manual review only | details: test assertion updated to stable JSON parse error prefix." }
+  -
+    author: "CODER"
+    body: "Start: adjust failing pr check test assertion for JSON parse errors."
+  -
+    author: "CODER"
+    body: "verified: manual review only | details: test assertion updated to stable JSON parse error prefix."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:23.737Z"
 doc_updated_by: "agentplane"
@@ -35,3 +53,8 @@ Update the failing pr check test to accept the current JSON parse error message.
 ## Rollback Plan
 
 - Revert the commit if the assertion becomes too loose
+
+## Plan
+
+
+## Verification

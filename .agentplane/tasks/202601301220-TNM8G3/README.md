@@ -5,11 +5,27 @@ status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
-tags: ["agents", "docs"]
+tags:
+  - "agents"
+  - "docs"
 verify: []
-commit: { hash: "1938f40cf250468cc7e839df8ecf160a35d6cc6b", message: "✨ TNM8G3 replace AGENTS policy with prod-v1.0" }
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "1938f40cf250468cc7e839df8ecf160a35d6cc6b"
+  message: "✨ TNM8G3 replace AGENTS policy with prod-v1.0"
 comments:
-  - { author: "ORCHESTRATOR", body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit format/lint hooks; AGENTS.md formatted with Prettier." }
+  -
+    author: "ORCHESTRATOR"
+    body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit format/lint hooks; AGENTS.md formatted with Prettier."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:09:27.937Z"
 doc_updated_by: "agentplane"
@@ -42,3 +58,8 @@ User provided a full replacement policy block for AGENTS.md and requested a comp
 ## Notes
 
 No config changes applied; policy document only.
+
+## Plan
+
+
+## Verification

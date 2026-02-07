@@ -5,11 +5,29 @@ status: "DONE"
 priority: "normal"
 owner: "PLANNER"
 depends_on: []
-tags: ["agentctl", "agents"]
-verify: ["python scripts/agentctl.py task lint", "python scripts/agentctl.py agents"]
-commit: { hash: "c735c4c5202296b00105c46e73cc23ddd9b7d203", message: "Legacy completion (backfill)" }
+tags:
+  - "agentctl"
+  - "agents"
+verify:
+  - "python scripts/agentctl.py task lint"
+  - "python scripts/agentctl.py agents"
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit:
+  hash: "c735c4c5202296b00105c46e73cc23ddd9b7d203"
+  message: "Legacy completion (backfill)"
 comments:
-  - { author: "REVIEWER", body: "Verified: Ran python scripts/agentctl.py task lint and python scripts/agentctl.py agents; confirmed .AGENTS workflows now start with python scripts/agentctl.py quickstart and reference docs/agentctl.md and helper commands." }
+  -
+    author: "REVIEWER"
+    body: "Verified: Ran python scripts/agentctl.py task lint and python scripts/agentctl.py agents; confirmed .AGENTS workflows now start with python scripts/agentctl.py quickstart and reference docs/agentctl.md and helper commands."
 doc_version: 2
 doc_updated_at: "2026-02-03T12:08:22.610Z"
 doc_updated_by: "agentplane"
@@ -29,3 +47,9 @@ dirty: false
 
 
 ## Rollback Plan
+
+
+## Plan
+
+
+## Verification
