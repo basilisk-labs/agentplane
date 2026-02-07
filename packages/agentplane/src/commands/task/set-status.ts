@@ -5,7 +5,13 @@ import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
 import { commitFromComment } from "../guard/index.js";
-import { loadBackendTask, resolveDocUpdatedBy } from "../shared/task-backend.js";
+import {
+  listTasksMemo,
+  loadCommandContext,
+  loadTaskFromContext,
+  resolveDocUpdatedBy,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import {
   appendTaskEvent,
@@ -19,6 +25,7 @@ import {
 } from "./shared.js";
 
 export async function cmdTaskSetStatus(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -53,11 +60,13 @@ export async function cmdTaskSetStatus(opts: {
   }
 
   try {
-    const { backend, task, config, resolved } = await loadBackendTask({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      taskId: opts.taskId,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const config = ctx.config;
+    const resolved = ctx.resolvedProject;
+    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
     if (opts.commitFromComment) {
       enforceStatusCommitPolicy({
         policy: config.status_commit_policy,
@@ -77,7 +86,7 @@ export async function cmdTaskSetStatus(opts: {
     }
 
     if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
-      const allTasks = await backend.listTasks();
+      const allTasks = await listTasksMemo(ctx);
       const depState = buildDependencyState(allTasks);
       const dep = depState.get(task.id);
       if (dep && (dep.missing.length > 0 || dep.incomplete.length > 0)) {

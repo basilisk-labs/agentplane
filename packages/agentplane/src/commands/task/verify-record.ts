@@ -6,7 +6,11 @@ import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, missingValueMessage, usageMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { loadBackendTask } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import { appendTaskEvent, nowIso } from "./shared.js";
 
@@ -164,6 +168,7 @@ function parseVerifyRecordFlags(args: string[]): VerifyRecordFlags {
 }
 
 async function recordVerificationResult(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -173,11 +178,13 @@ async function recordVerificationResult(opts: {
   details?: string | null;
   quiet: boolean;
 }): Promise<void> {
-  const { backend, config, resolved, task } = await loadBackendTask({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
-    taskId: opts.taskId,
-  });
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const backend = ctx.taskBackend;
+  const config = ctx.config;
+  const resolved = ctx.resolvedProject;
+  const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
   if (!backend.getTaskDoc || !backend.writeTask) {
     throw new CliError({
       exitCode: 2,
@@ -233,6 +240,7 @@ async function recordVerificationResult(opts: {
 }
 
 export async function cmdTaskVerify(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
@@ -274,6 +282,7 @@ export async function cmdTaskVerify(opts: {
 
   try {
     await recordVerificationResult({
+      ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId,
@@ -291,6 +300,7 @@ export async function cmdTaskVerify(opts: {
 }
 
 export async function cmdVerify(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -327,6 +337,7 @@ export async function cmdVerify(opts: {
 
   try {
     await recordVerificationResult({
+      ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,

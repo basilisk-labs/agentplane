@@ -5,7 +5,11 @@ import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
 import { commitFromComment } from "../guard/index.js";
-import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import {
   appendTaskEvent,
@@ -21,6 +25,7 @@ export const BLOCK_USAGE_EXAMPLE =
   'agentplane block 202602030608-F1Q8AB --author CODER --body "Blocked: ..."';
 
 export async function cmdBlock(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -37,10 +42,9 @@ export async function cmdBlock(opts: {
   quiet: boolean;
 }): Promise<number> {
   try {
-    const ctx = await loadCommandContext({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
 
     if (opts.commitFromComment) {
       enforceStatusCommitPolicy({
@@ -95,7 +99,7 @@ export async function cmdBlock(opts: {
       doc_updated_by: opts.author,
     };
 
-    await ctx.backend.writeTask(nextTask);
+    await ctx.taskBackend.writeTask(nextTask);
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {

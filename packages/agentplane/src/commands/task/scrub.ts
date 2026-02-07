@@ -1,4 +1,4 @@
-import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import {
   infoMessage,
@@ -7,6 +7,7 @@ import {
   usageMessage,
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 export const TASK_SCRUB_USAGE =
   "Usage: agentplane task scrub --find <text> --replace <text> [flags]";
@@ -76,6 +77,7 @@ function scrubValue(value: unknown, find: string, replace: string): unknown {
 }
 
 export async function cmdTaskScrub(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
@@ -89,11 +91,10 @@ export async function cmdTaskScrub(opts: {
     });
   }
   try {
-    const { backend } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const tasks = await backend.listTasks();
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const tasks = await ctx.taskBackend.listTasks();
     const updated: TaskData[] = [];
     const changedIds = new Set<string>();
     for (const task of tasks) {
@@ -119,11 +120,11 @@ export async function cmdTaskScrub(opts: {
       }
       return 0;
     }
-    if (backend.writeTasks) {
-      await backend.writeTasks(updated);
+    if (ctx.taskBackend.writeTasks) {
+      await ctx.taskBackend.writeTasks(updated);
     } else {
       for (const task of updated) {
-        await backend.writeTask(task);
+        await ctx.taskBackend.writeTask(task);
       }
     }
     if (!flags.quiet) {

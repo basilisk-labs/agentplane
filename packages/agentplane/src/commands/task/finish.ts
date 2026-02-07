@@ -5,7 +5,11 @@ import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
 import { commitFromComment } from "../guard/index.js";
-import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import {
   appendTaskEvent,
@@ -24,6 +28,7 @@ export const FINISH_USAGE_EXAMPLE =
   'agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: ..."';
 
 export async function cmdFinish(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskIds: string[];
@@ -51,10 +56,9 @@ export async function cmdFinish(opts: {
     if (opts.noRequireTaskIdInCommit) {
       // Parity flag (commit subject checks are not enforced in node CLI).
     }
-    const ctx = await loadCommandContext({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.verified;
     requireStructuredComment(opts.body, prefix, minChars);
     if (opts.commitFromComment || opts.statusCommit) {
@@ -81,9 +85,10 @@ export async function cmdFinish(opts: {
       });
     }
 
+    const gitRoot = ctx.resolvedProject.gitRoot;
     const commitInfo = opts.commit
-      ? await readCommitInfo(ctx.resolved.gitRoot, opts.commit)
-      : await readHeadCommit(ctx.resolved.gitRoot);
+      ? await readCommitInfo(gitRoot, opts.commit)
+      : await readHeadCommit(gitRoot);
 
     let primaryStatusFrom: string | null = null;
     for (const taskId of opts.taskIds) {
@@ -135,7 +140,7 @@ export async function cmdFinish(opts: {
         doc_updated_at: at,
         doc_updated_by: opts.author,
       };
-      await ctx.backend.writeTask(nextTask);
+      await ctx.taskBackend.writeTask(nextTask);
     }
 
     if (!opts.skipVerify) {

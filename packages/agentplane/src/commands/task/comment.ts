@@ -2,10 +2,15 @@ import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 
-import { loadBackendTask } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { appendTaskEvent, nowIso } from "./shared.js";
 
 export async function cmdTaskComment(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -13,11 +18,11 @@ export async function cmdTaskComment(opts: {
   body: string;
 }): Promise<number> {
   try {
-    const { backend, task } = await loadBackendTask({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      taskId: opts.taskId,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const existing = Array.isArray(task.comments)
       ? task.comments.filter(
           (item): item is { author: string; body: string } =>

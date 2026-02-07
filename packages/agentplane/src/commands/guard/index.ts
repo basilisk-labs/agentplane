@@ -2,9 +2,9 @@ import {
   extractTaskSuffix,
   getStagedFiles,
   getUnstagedTrackedFiles,
-  loadConfig,
   resolveBaseBranch,
   resolveProject,
+  type AgentplaneConfig,
   validateCommitSubject,
 } from "@agentplaneorg/core";
 
@@ -16,13 +16,14 @@ import {
   normalizeCommentBodyForCommit,
 } from "../../shared/comment-format.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
-import { execFileAsync } from "../shared/git.js";
+import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
 import {
   getProtectedPathOverride,
   protectedPathKindForFile,
 } from "../../shared/protected-paths.js";
 import { parseGitLogHashSubject } from "../../shared/git-log.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 function parseNullSeparatedPaths(stdout: Buffer | string): string[] {
   const text = Buffer.isBuffer(stdout) ? stdout.toString("utf8") : stdout;
@@ -30,6 +31,25 @@ function parseNullSeparatedPaths(stdout: Buffer | string): string[] {
     .split("\0")
     .map((entry) => entry.trim())
     .filter((entry) => entry.length > 0);
+}
+
+async function gitNullSeparatedPaths(cwd: string, args: string[]): Promise<string[]> {
+  const { stdout } = await execFileAsync("git", args, {
+    cwd,
+    env: gitEnv(),
+    encoding: "buffer",
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  return parseNullSeparatedPaths(stdout);
+}
+
+async function getStagedFilesFromGitRoot(gitRoot: string): Promise<string[]> {
+  return await gitNullSeparatedPaths(gitRoot, ["diff", "--name-only", "--cached", "-z"]);
+}
+
+async function getUnstagedTrackedFilesFromGitRoot(gitRoot: string): Promise<string[]> {
+  const unstaged = await gitNullSeparatedPaths(gitRoot, ["diff", "--name-only", "-z"]);
+  return [...new Set(unstaged)].toSorted((a, b) => a.localeCompare(b));
 }
 
 export function buildGitCommitEnv(opts: {
@@ -73,6 +93,7 @@ export const COMMIT_USAGE_EXAMPLE =
   'agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard"';
 
 type GuardCommitOptions = {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -89,21 +110,19 @@ type GuardCommitOptions = {
 };
 
 async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
-  const resolved = await resolveProject({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-  });
-  const loaded = await loadConfig(resolved.agentplaneDir);
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const policy = validateCommitSubject({
     subject: opts.message,
     taskId: opts.taskId,
-    genericTokens: loaded.config.commit.generic_tokens,
+    genericTokens: ctx.config.commit.generic_tokens,
   });
   if (!policy.ok) {
     throw new CliError({ exitCode: 5, code: "E_GIT", message: policy.errors.join("\n") });
   }
 
-  const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  const staged = await getStagedFilesFromGitRoot(ctx.resolvedProject.gitRoot);
   if (staged.length === 0) {
     throw new CliError({
       exitCode: 5,
@@ -120,25 +139,22 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
   }
 
   const allow = opts.allow.map((prefix) => normalizeGitPathPrefix(prefix));
-  const tasksPath = loaded.config.paths.tasks_path;
+  const tasksPath = ctx.config.paths.tasks_path;
 
   if (opts.requireClean) {
     // Policy-defined "clean" ignores untracked files.
-    const unstaged = await getUnstagedTrackedFiles({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const unstaged = await getUnstagedTrackedFilesFromGitRoot(ctx.resolvedProject.gitRoot);
     if (unstaged.length > 0) {
       throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree is dirty" });
     }
   }
 
-  if (loaded.config.workflow_mode === "branch_pr") {
+  if (ctx.config.workflow_mode === "branch_pr") {
     const baseBranch = await resolveBaseBranch({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
       cliBaseOpt: null,
-      mode: loaded.config.workflow_mode,
+      mode: ctx.config.workflow_mode,
     });
     if (!baseBranch) {
       throw new CliError({
@@ -147,7 +163,7 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
         message: "Base branch could not be resolved (use `agentplane branch base set`).",
       });
     }
-    const currentBranch = await gitCurrentBranch(resolved.gitRoot);
+    const currentBranch = await gitCurrentBranch(ctx.resolvedProject.gitRoot);
     const tasksStaged = staged.includes(tasksPath);
     const nonTasks = staged.filter((entry) => entry !== tasksPath);
     if (tasksStaged && currentBranch !== baseBranch) {
@@ -300,7 +316,7 @@ function deriveCommitMessageFromComment(opts: {
   body: string;
   emoji: string;
   formattedComment?: string | null;
-  config: Awaited<ReturnType<typeof loadConfig>>["config"];
+  config: AgentplaneConfig;
 }): string {
   const raw = (opts.formattedComment ?? formatCommentBodyForCommit(opts.body, opts.config))
     .trim()
@@ -372,7 +388,7 @@ export async function commitFromComment(opts: {
   allowTasks: boolean;
   requireClean: boolean;
   quiet: boolean;
-  config: Awaited<ReturnType<typeof loadConfig>>["config"];
+  config: AgentplaneConfig;
 }): Promise<{ hash: string; message: string; staged: string[] }> {
   let allowPrefixes = opts.allow.map((prefix) => prefix.trim()).filter(Boolean);
   if (opts.autoAllow && allowPrefixes.length === 0) {
@@ -534,6 +550,7 @@ export async function cmdGuardCommit(opts: GuardCommitOptions): Promise<number> 
 }
 
 export async function cmdCommit(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -552,10 +569,10 @@ export async function cmdCommit(opts: {
   try {
     let allow = opts.allow;
     if (opts.autoAllow && allow.length === 0) {
-      const staged = await getStagedFiles({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride ?? null,
-      });
+      const ctx =
+        opts.ctx ??
+        (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+      const staged = await getStagedFilesFromGitRoot(ctx.resolvedProject.gitRoot);
       const prefixes = suggestAllowPrefixes(staged);
       if (prefixes.length === 0) {
         throw new CliError({
@@ -568,6 +585,7 @@ export async function cmdCommit(opts: {
     }
 
     await guardCommitCheck({
+      ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
@@ -583,10 +601,9 @@ export async function cmdCommit(opts: {
       quiet: opts.quiet,
     });
 
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const env = buildGitCommitEnv({
       taskId: opts.taskId,
       allowTasks: opts.allowTasks,
@@ -596,11 +613,14 @@ export async function cmdCommit(opts: {
       allowHooks: opts.allowHooks,
       allowCI: opts.allowCI,
     });
-    await execFileAsync("git", ["commit", "-m", opts.message], { cwd: resolved.gitRoot, env });
+    await execFileAsync("git", ["commit", "-m", opts.message], {
+      cwd: ctx.resolvedProject.gitRoot,
+      env,
+    });
 
     if (!opts.quiet) {
       const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], {
-        cwd: resolved.gitRoot,
+        cwd: ctx.resolvedProject.gitRoot,
       });
       const { hash, subject } = parseGitLogHashSubject(stdout);
       process.stdout.write(

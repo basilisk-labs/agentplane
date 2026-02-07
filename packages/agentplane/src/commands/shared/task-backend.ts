@@ -3,12 +3,24 @@ import path from "node:path";
 import { CliError } from "../../shared/errors.js";
 import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
 
+export type CommandMemo = {
+  taskList?: Promise<TaskData[]>;
+  changedPaths?: Promise<string[]>;
+  headCommit?: Promise<string>;
+};
+
 export type CommandContext = {
-  backend: Awaited<ReturnType<typeof loadTaskBackend>>["backend"];
+  resolvedProject: Awaited<ReturnType<typeof loadTaskBackend>>["resolved"];
+  config: Awaited<ReturnType<typeof loadTaskBackend>>["config"];
+  taskBackend: Awaited<ReturnType<typeof loadTaskBackend>>["backend"];
   backendId: string;
   backendConfigPath: string;
-  resolved: Awaited<ReturnType<typeof loadTaskBackend>>["resolved"];
-  config: Awaited<ReturnType<typeof loadTaskBackend>>["config"];
+
+  memo: CommandMemo;
+
+  // Back-compat aliases while refactors are in flight.
+  resolved: CommandContext["resolvedProject"];
+  backend: CommandContext["taskBackend"];
 };
 
 function normalizeDocUpdatedBy(value?: string): string {
@@ -63,16 +75,28 @@ export async function loadCommandContext(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
   });
-  return { backend, backendId, backendConfigPath, resolved, config };
+  return {
+    resolvedProject: resolved,
+    config,
+    taskBackend: backend,
+    backendId,
+    backendConfigPath,
+    memo: {},
+    resolved,
+    backend,
+  };
 }
 
 export async function loadTaskFromContext(opts: {
   ctx: CommandContext;
   taskId: string;
 }): Promise<TaskData> {
-  const task = await opts.ctx.backend.getTask(opts.taskId);
+  const task = await opts.ctx.taskBackend.getTask(opts.taskId);
   if (!task) {
-    const tasksDir = path.join(opts.ctx.resolved.gitRoot, opts.ctx.config.paths.workflow_dir);
+    const tasksDir = path.join(
+      opts.ctx.resolvedProject.gitRoot,
+      opts.ctx.config.paths.workflow_dir,
+    );
     const readmePath = path.join(tasksDir, opts.taskId, "README.md");
     throw new CliError({
       exitCode: 4,
@@ -84,18 +108,33 @@ export async function loadTaskFromContext(opts: {
 }
 
 export async function loadBackendTask(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string | null;
   taskId: string;
 }): Promise<{
-  backend: CommandContext["backend"];
+  backend: CommandContext["taskBackend"];
   backendId: string;
   backendConfigPath: string;
-  resolved: CommandContext["resolved"];
+  resolved: CommandContext["resolvedProject"];
   config: CommandContext["config"];
   task: TaskData;
 }> {
-  const ctx = await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
-  return { ...ctx, task };
+  return {
+    backend: ctx.taskBackend,
+    backendId: ctx.backendId,
+    backendConfigPath: ctx.backendConfigPath,
+    resolved: ctx.resolvedProject,
+    config: ctx.config,
+    task,
+  };
+}
+
+export async function listTasksMemo(ctx: CommandContext): Promise<TaskData[]> {
+  ctx.memo.taskList ??= ctx.taskBackend.listTasks();
+  return await ctx.memo.taskList;
 }

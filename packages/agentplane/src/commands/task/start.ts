@@ -5,7 +5,12 @@ import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
 import { commitFromComment } from "../guard/index.js";
-import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
+import {
+  listTasksMemo,
+  loadCommandContext,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import {
   appendTaskEvent,
@@ -22,6 +27,7 @@ export const START_USAGE_EXAMPLE =
   'agentplane start 202602030608-F1Q8AB --author CODER --body "Start: ..."';
 
 export async function cmdStart(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -38,10 +44,9 @@ export async function cmdStart(opts: {
   quiet: boolean;
 }): Promise<number> {
   try {
-    const ctx = await loadCommandContext({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
 
     if (opts.commitFromComment) {
       enforceStatusCommitPolicy({
@@ -69,7 +74,7 @@ export async function cmdStart(opts: {
     }
 
     if (!opts.force) {
-      const allTasks = await ctx.backend.listTasks();
+      const allTasks = await listTasksMemo(ctx);
       const depState = buildDependencyState(allTasks);
       const dep = depState.get(task.id);
       if (dep && (dep.missing.length > 0 || dep.incomplete.length > 0)) {
@@ -125,7 +130,7 @@ export async function cmdStart(opts: {
       doc_updated_by: opts.author,
     };
 
-    await ctx.backend.writeTask(nextTask);
+    await ctx.taskBackend.writeTask(nextTask);
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {

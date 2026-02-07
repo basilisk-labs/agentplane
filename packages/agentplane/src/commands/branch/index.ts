@@ -11,7 +11,6 @@ import {
   setPinnedBaseBranch,
 } from "@agentplaneorg/core";
 
-import { loadTaskBackend } from "../../backends/task-backend.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import {
@@ -31,7 +30,11 @@ import {
   parseTaskIdFromBranch,
 } from "../shared/git-worktree.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
-import { loadBackendTask } from "../shared/task-backend.js";
+import {
+  loadBackendTask,
+  loadCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { ensurePlanApprovedIfRequired } from "../task/shared.js";
 
 export {
@@ -110,6 +113,7 @@ async function archivePrArtifacts(taskDir: string): Promise<string | null> {
 }
 
 export async function cmdWorkStart(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -121,12 +125,12 @@ export async function cmdWorkStart(opts: {
     validateWorkAgent(opts.agent);
     validateWorkSlug(opts.slug);
 
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const loaded = await loadConfig(resolved.agentplaneDir);
-    const mode = loaded.config.workflow_mode;
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const resolved = ctx.resolvedProject;
+    const config = ctx.config;
+    const mode = config.workflow_mode;
     if (mode !== "branch_pr" && opts.worktree) {
       throw new CliError({
         exitCode: 2,
@@ -148,11 +152,12 @@ export async function cmdWorkStart(opts: {
     }
 
     const { task } = await loadBackendTask({
+      ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
-    ensurePlanApprovedIfRequired(task, loaded.config);
+    ensurePlanApprovedIfRequired(task, config);
 
     const currentBranch = await gitCurrentBranch(resolved.gitRoot);
     let baseRef = currentBranch;
@@ -180,13 +185,13 @@ export async function cmdWorkStart(opts: {
       baseRef = baseBranch;
     }
 
-    const prefix = loaded.config.branch.task_prefix;
+    const prefix = config.branch.task_prefix;
     const branchName = `${prefix}/${opts.taskId}/${opts.slug.trim()}`;
 
     const branchExists = await gitBranchExists(resolved.gitRoot, branchName);
     let worktreePath = "";
     if (opts.worktree) {
-      const worktreesDir = path.resolve(resolved.gitRoot, loaded.config.paths.worktrees_dir);
+      const worktreesDir = path.resolve(resolved.gitRoot, config.paths.worktrees_dir);
       if (!isPathWithin(resolved.gitRoot, worktreesDir)) {
         throw new CliError({
           exitCode: 5,
@@ -239,6 +244,7 @@ export async function cmdWorkStart(opts: {
 }
 
 export async function cmdCleanupMerged(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   base?: string;
@@ -247,16 +253,16 @@ export async function cmdCleanupMerged(opts: {
   quiet: boolean;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const loaded = await loadConfig(resolved.agentplaneDir);
-    if (loaded.config.workflow_mode !== "branch_pr") {
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const resolved = ctx.resolvedProject;
+    const config = ctx.config;
+    if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: workflowModeMessage(loaded.config.workflow_mode, "branch_pr"),
+        message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
     }
 
@@ -266,7 +272,7 @@ export async function cmdCleanupMerged(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
       cliBaseOpt: opts.base ?? null,
-      mode: loaded.config.workflow_mode,
+      mode: config.workflow_mode,
     });
     if (!baseBranch) {
       throw new CliError({
@@ -294,13 +300,9 @@ export async function cmdCleanupMerged(opts: {
 
     const repoRoot = await resolvePathFallback(resolved.gitRoot);
 
-    const { backend } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const tasks = await backend.listTasks();
+    const tasks = await ctx.taskBackend.listTasks();
     const tasksById = new Map(tasks.map((task) => [task.id, task]));
-    const prefix = loaded.config.branch.task_prefix;
+    const prefix = config.branch.task_prefix;
     const branches = await gitListTaskBranches(resolved.gitRoot, prefix);
 
     const candidates: { taskId: string; branch: string; worktreePath: string | null }[] = [];
@@ -361,7 +363,7 @@ export async function cmdCleanupMerged(opts: {
       }
 
       if (opts.archive) {
-        const taskDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir, item.taskId);
+        const taskDir = path.join(resolved.gitRoot, config.paths.workflow_dir, item.taskId);
         await archivePrArtifacts(taskDir);
       }
 

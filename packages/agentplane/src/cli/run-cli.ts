@@ -50,6 +50,7 @@ import {
 import { loadDotEnv } from "../shared/env.js";
 import { CliError, formatJsonError } from "../shared/errors.js";
 import { writeTextIfChanged } from "../shared/write-if-changed.js";
+import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { getVersion } from "../meta/version.js";
 import { cmdUpgrade } from "../commands/upgrade.js";
 import {
@@ -1110,6 +1111,15 @@ export async function runCli(argv: string[]): Promise<number> {
     });
 
     const [namespace, command, ...args] = rest;
+    let ctxPromise: Promise<CommandContext> | null = null;
+    const getCtx = async (commandForErrorContext: string): Promise<CommandContext> => {
+      ctxPromise ??= loadCommandContext({ cwd, rootOverride: globals.root ?? null });
+      try {
+        return await ctxPromise;
+      } catch (err) {
+        throw mapCoreError(err, { command: commandForErrorContext, root: globals.root ?? null });
+      }
+    };
 
     if (namespace === "init") {
       const initArgs = command ? [command, ...args] : [];
@@ -1205,7 +1215,12 @@ export async function runCli(argv: string[]): Promise<number> {
           message: usageMessage(READY_USAGE, READY_USAGE_EXAMPLE),
         });
       }
-      return await cmdReady({ cwd: process.cwd(), rootOverride: globals.root, taskId: command });
+      return await cmdReady({
+        ctx: await getCtx("ready"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId: command,
+      });
     }
 
     if (namespace === "ide") {
@@ -1220,19 +1235,39 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "task" && command === "new") {
-      return await cmdTaskNew({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskNew({
+        ctx: await getCtx("task new"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "add") {
-      return await cmdTaskAdd({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskAdd({
+        ctx: await getCtx("task add"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "update") {
-      return await cmdTaskUpdate({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskUpdate({
+        ctx: await getCtx("task update"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "scrub") {
-      return await cmdTaskScrub({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskScrub({
+        ctx: await getCtx("task scrub"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "show") {
@@ -1244,15 +1279,30 @@ export async function runCli(argv: string[]): Promise<number> {
           message: usageMessage(TASK_SHOW_USAGE, TASK_SHOW_USAGE_EXAMPLE),
         });
       }
-      return await cmdTaskShow({ cwd: process.cwd(), rootOverride: globals.root, taskId });
+      return await cmdTaskShow({
+        ctx: await getCtx("task show"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+      });
     }
 
     if (namespace === "task" && command === "list") {
-      return await cmdTaskList({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskList({
+        ctx: await getCtx("task list"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "next") {
-      return await cmdTaskNext({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskNext({
+        ctx: await getCtx("task next"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "search") {
@@ -1265,6 +1315,7 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdTaskSearch({
+        ctx: await getCtx("task search"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         query,
@@ -1273,15 +1324,30 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "task" && command === "scaffold") {
-      return await cmdTaskScaffold({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskScaffold({
+        ctx: await getCtx("task scaffold"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "normalize") {
-      return await cmdTaskNormalize({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskNormalize({
+        ctx: await getCtx("task normalize"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "migrate") {
-      return await cmdTaskMigrate({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskMigrate({
+        ctx: await getCtx("task migrate"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "migrate-doc") {
@@ -1289,7 +1355,11 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "task" && command === "export") {
-      return await cmdTaskExport({ cwd: process.cwd(), rootOverride: globals.root });
+      return await cmdTaskExport({
+        ctx: await getCtx("task export"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+      });
     }
 
     if (namespace === "task" && command === "lint") {
@@ -1307,6 +1377,7 @@ export async function runCli(argv: string[]): Promise<number> {
           });
         }
         return await cmdTaskDocShow({
+          ctx: await getCtx("task doc show"),
           cwd: process.cwd(),
           rootOverride: globals.root,
           taskId,
@@ -1322,6 +1393,7 @@ export async function runCli(argv: string[]): Promise<number> {
           });
         }
         return await cmdTaskDocSet({
+          ctx: await getCtx("task doc set"),
           cwd: process.cwd(),
           rootOverride: globals.root,
           taskId,
@@ -1336,11 +1408,21 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "task" && command === "plan") {
-      return await cmdTaskPlan({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskPlan({
+        ctx: await getCtx("task plan"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "verify") {
-      return await cmdTaskVerify({ cwd: process.cwd(), rootOverride: globals.root, args });
+      return await cmdTaskVerify({
+        ctx: await getCtx("task verify"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
     }
 
     if (namespace === "task" && command === "comment") {
@@ -1399,6 +1481,7 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdTaskComment({
+        ctx: await getCtx("task comment"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
@@ -1528,6 +1611,7 @@ export async function runCli(argv: string[]): Promise<number> {
         }
       }
       return await cmdTaskSetStatus({
+        ctx: await getCtx("task set-status"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
@@ -1758,6 +1842,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
 
       return await cmdWorkStart({
+        ctx: await getCtx("work start"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
@@ -1821,6 +1906,7 @@ export async function runCli(argv: string[]): Promise<number> {
           });
         }
         return await cmdPrOpen({
+          ctx: await getCtx("pr open"),
           cwd: process.cwd(),
           rootOverride: globals.root,
           taskId,
@@ -1838,6 +1924,7 @@ export async function runCli(argv: string[]): Promise<number> {
           });
         }
         return await cmdPrUpdate({
+          ctx: await getCtx("pr update"),
           cwd: process.cwd(),
           rootOverride: globals.root,
           taskId,
@@ -1853,6 +1940,7 @@ export async function runCli(argv: string[]): Promise<number> {
           });
         }
         return await cmdPrCheck({
+          ctx: await getCtx("pr check"),
           cwd: process.cwd(),
           rootOverride: globals.root,
           taskId,
@@ -1903,6 +1991,7 @@ export async function runCli(argv: string[]): Promise<number> {
           });
         }
         return await cmdPrNote({
+          ctx: await getCtx("pr note"),
           cwd: process.cwd(),
           rootOverride: globals.root,
           taskId,
@@ -2073,6 +2162,7 @@ export async function runCli(argv: string[]): Promise<number> {
         }
 
         return await cmdGuardCommit({
+          ctx: await getCtx("guard commit"),
           cwd: process.cwd(),
           rootOverride: globals.root,
           taskId,
@@ -2197,6 +2287,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
 
       return await cmdCommit({
+        ctx: await getCtx("commit"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
@@ -2339,6 +2430,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
 
       return await cmdStart({
+        ctx: await getCtx("start"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
@@ -2481,6 +2573,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
 
       return await cmdBlock({
+        ctx: await getCtx("block"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
@@ -2698,6 +2791,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
 
       return await cmdFinish({
+        ctx: await getCtx("finish"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskIds,
@@ -2740,6 +2834,7 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdVerify({
+        ctx: await getCtx("verify"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
@@ -2830,6 +2925,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
 
       return await cmdIntegrate({
+        ctx: await getCtx("integrate"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
@@ -2898,6 +2994,7 @@ export async function runCli(argv: string[]): Promise<number> {
       }
 
       return await cmdCleanupMerged({
+        ctx: await getCtx("cleanup merged"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         base,
@@ -2935,6 +3032,7 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdBackendSync({
+        ctx: await getCtx("backend sync"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         args,
@@ -2948,6 +3046,7 @@ export async function runCli(argv: string[]): Promise<number> {
         syncArgs.unshift(command, ...args);
       }
       return await cmdSync({
+        ctx: await getCtx("sync"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         args: syncArgs,

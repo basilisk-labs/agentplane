@@ -1,7 +1,8 @@
-import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { missingValueMessage, usageMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
   dedupeStrings,
   normalizeDependsOnInput,
@@ -110,6 +111,7 @@ function parseTaskAddFlags(args: string[]): TaskAddFlags {
 }
 
 export async function cmdTaskAdd(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
@@ -131,12 +133,11 @@ export async function cmdTaskAdd(opts: {
   }
 
   try {
-    const { backend, config } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const status = normalizeTaskStatus(flags.status);
-    const existing = await backend.listTasks();
+    const existing = await ctx.taskBackend.listTasks();
     const existingIds = new Set(existing.map((task) => task.id));
     for (const taskId of flags.taskIds) {
       if (existingIds.has(taskId)) {
@@ -152,7 +153,7 @@ export async function cmdTaskAdd(opts: {
     const dependsOn = dedupeStrings(flags.dependsOn);
     const verify = dedupeStrings(flags.verify);
     const docUpdatedBy = (flags.commentAuthor ?? "").trim() || flags.owner;
-    if (requiresVerify(tags, config.tasks.verify.required_tags) && verify.length === 0) {
+    if (requiresVerify(tags, ctx.config.tasks.verify.required_tags) && verify.length === 0) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
@@ -179,11 +180,11 @@ export async function cmdTaskAdd(opts: {
       doc_updated_by: docUpdatedBy,
       id_source: "explicit",
     }));
-    if (backend.writeTasks) {
-      await backend.writeTasks(tasks);
+    if (ctx.taskBackend.writeTasks) {
+      await ctx.taskBackend.writeTasks(tasks);
     } else {
       for (const task of tasks) {
-        await backend.writeTask(task);
+        await ctx.taskBackend.writeTask(task);
       }
     }
     for (const task of tasks) {

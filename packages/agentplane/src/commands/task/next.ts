@@ -1,5 +1,5 @@
-import { loadTaskBackend } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import {
   buildDependencyState,
@@ -10,17 +10,17 @@ import {
 } from "./shared.js";
 
 export async function cmdTaskNext(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
 }): Promise<number> {
   const filters = parseTaskListFilters(opts.args, { allowLimit: true });
   try {
-    const { backend } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const tasks = await backend.listTasks();
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const tasks = await ctx.taskBackend.listTasks();
     const depState = buildDependencyState(tasks);
     const statuses =
       filters.status.length > 0

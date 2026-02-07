@@ -1,4 +1,4 @@
-import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import {
   missingValueMessage,
@@ -7,6 +7,7 @@ import {
   usageMessage,
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { dedupeStrings, normalizeDependsOnInput, requiresVerify, toStringArray } from "./shared.js";
 
 export const TASK_UPDATE_USAGE = "Usage: agentplane task update <task-id> [flags]";
@@ -115,17 +116,17 @@ function parseTaskUpdateFlags(args: string[]): TaskUpdateFlags {
 }
 
 export async function cmdTaskUpdate(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
 }): Promise<number> {
   const flags = parseTaskUpdateFlags(opts.args);
   try {
-    const { backend, config } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const task = await backend.getTask(flags.taskId);
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const task = await ctx.taskBackend.getTask(flags.taskId);
     if (!task) {
       throw new CliError({
         exitCode: 2,
@@ -154,7 +155,7 @@ export async function cmdTaskUpdate(opts: {
     next.verify = mergedVerify;
 
     if (
-      requiresVerify(mergedTags, config.tasks.verify.required_tags) &&
+      requiresVerify(mergedTags, ctx.config.tasks.verify.required_tags) &&
       mergedVerify.length === 0
     ) {
       throw new CliError({
@@ -164,7 +165,7 @@ export async function cmdTaskUpdate(opts: {
       });
     }
 
-    await backend.writeTask(next);
+    await ctx.taskBackend.writeTask(next);
     process.stdout.write(`${successMessage("updated", flags.taskId)}\n`);
     return 0;
   } catch (err) {

@@ -9,7 +9,7 @@ import {
   taskReadmePath,
 } from "@agentplaneorg/core";
 
-import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import {
   missingValueMessage,
@@ -18,7 +18,11 @@ import {
   usageMessage,
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { taskDataToFrontmatter } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  taskDataToFrontmatter,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { nowIso } from "./shared.js";
 
 export const TASK_SCAFFOLD_USAGE =
@@ -81,16 +85,19 @@ function parseTaskScaffoldFlags(args: string[]): TaskScaffoldFlags {
 }
 
 export async function cmdTaskScaffold(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
 }): Promise<number> {
   const flags = parseTaskScaffoldFlags(opts.args);
   try {
-    const { backend, resolved, config } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const resolved = ctx.resolvedProject;
+    const config = ctx.config;
     const task = await backend.getTask(flags.taskId);
     if (!task && !flags.force) {
       throw new CliError({

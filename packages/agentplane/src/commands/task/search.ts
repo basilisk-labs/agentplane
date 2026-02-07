@@ -1,7 +1,8 @@
-import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { invalidValueMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 import {
   buildDependencyState,
@@ -13,6 +14,7 @@ import {
 } from "./shared.js";
 
 export async function cmdTaskSearch(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   query: string;
@@ -34,11 +36,10 @@ export async function cmdTaskSearch(opts: {
   }
   const filters = parseTaskListFilters(restArgs, { allowLimit: true });
   try {
-    const { backend } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const tasks = await backend.listTasks();
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const tasks = await ctx.taskBackend.listTasks();
     const depState = buildDependencyState(tasks);
     let filtered = tasks;
     if (filters.status.length > 0) {

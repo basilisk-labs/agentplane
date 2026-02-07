@@ -32,7 +32,11 @@ import {
   type PrMeta,
 } from "../shared/pr-meta.js";
 import { isPathWithin } from "../shared/path.js";
-import { loadBackendTask } from "../shared/task-backend.js";
+import {
+  loadBackendTask,
+  loadCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import { cmdFinish } from "../task/index.js";
 import {
   ensurePlanApprovedIfRequired,
@@ -112,6 +116,7 @@ function appendHandoffNote(review: string, note: string): string {
 }
 
 async function resolvePrPaths(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -124,16 +129,19 @@ async function resolvePrPaths(opts: {
   verifyLogPath: string;
   reviewPath: string;
 }> {
-  const resolved = await resolveProject({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-  });
-  const loaded = await loadConfig(resolved.agentplaneDir);
-  const taskDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir, opts.taskId);
+  const resolved =
+    opts.ctx?.resolvedProject ??
+    (await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  let config = opts.ctx?.config;
+  if (!config) {
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    config = loaded.config;
+  }
+  const taskDir = path.join(resolved.gitRoot, config.paths.workflow_dir, opts.taskId);
   const prDir = path.join(taskDir, "pr");
   return {
     resolved,
-    config: loaded.config,
+    config,
     prDir,
     metaPath: path.join(prDir, "meta.json"),
     diffstatPath: path.join(prDir, "diffstat.txt"),
@@ -174,6 +182,7 @@ function validateReviewContents(review: string, errors: string[]): void {
 }
 
 export async function cmdPrOpen(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -189,13 +198,17 @@ export async function cmdPrOpen(opts: {
         message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
       });
 
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const { task } = await loadBackendTask({
+      ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
     const { resolved, config, prDir, metaPath, diffstatPath, verifyLogPath, reviewPath } =
-      await resolvePrPaths(opts);
+      await resolvePrPaths({ ...opts, ctx });
 
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
@@ -250,18 +263,25 @@ export async function cmdPrOpen(opts: {
 }
 
 export async function cmdPrUpdate(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
 }): Promise<number> {
   try {
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     await loadBackendTask({
+      ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
-    const { resolved, config, prDir, metaPath, diffstatPath, reviewPath } =
-      await resolvePrPaths(opts);
+    const { resolved, config, prDir, metaPath, diffstatPath, reviewPath } = await resolvePrPaths({
+      ...opts,
+      ctx,
+    });
 
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
@@ -345,18 +365,23 @@ export async function cmdPrUpdate(opts: {
 }
 
 export async function cmdPrCheck(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
 }): Promise<number> {
   try {
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const { task } = await loadBackendTask({
+      ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
     const { resolved, config, prDir, metaPath, diffstatPath, verifyLogPath, reviewPath } =
-      await resolvePrPaths(opts);
+      await resolvePrPaths({ ...opts, ctx });
 
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
@@ -415,6 +440,7 @@ export async function cmdPrCheck(opts: {
 }
 
 export async function cmdPrNote(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -432,7 +458,10 @@ export async function cmdPrNote(opts: {
       });
     }
 
-    const { config, reviewPath, resolved } = await resolvePrPaths(opts);
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const { config, reviewPath, resolved } = await resolvePrPaths({ ...opts, ctx });
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
         exitCode: 2,
@@ -463,6 +492,7 @@ export async function cmdPrNote(opts: {
 }
 
 export async function cmdIntegrate(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -476,26 +506,27 @@ export async function cmdIntegrate(opts: {
   let tempWorktreePath: string | null = null;
   let createdTempWorktree = false;
   try {
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const { task } = await loadBackendTask({
+      ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
     });
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const loaded = await loadConfig(resolved.agentplaneDir);
-    if (loaded.config.workflow_mode !== "branch_pr") {
+    const resolved = ctx.resolvedProject;
+    const loadedConfig = ctx.config;
+    if (loadedConfig.workflow_mode !== "branch_pr") {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: workflowModeMessage(loaded.config.workflow_mode, "branch_pr"),
+        message: workflowModeMessage(loadedConfig.workflow_mode, "branch_pr"),
       });
     }
 
-    ensurePlanApprovedIfRequired(task, loaded.config);
-    ensureVerificationSatisfiedIfRequired(task, loaded.config);
+    ensurePlanApprovedIfRequired(task, loadedConfig);
+    ensureVerificationSatisfiedIfRequired(task, loadedConfig);
 
     await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
 
@@ -511,7 +542,7 @@ export async function cmdIntegrate(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
       cliBaseOpt: opts.base ?? null,
-      mode: loaded.config.workflow_mode,
+      mode: loadedConfig.workflow_mode,
     });
     if (!baseBranch) {
       throw new CliError({
@@ -530,6 +561,7 @@ export async function cmdIntegrate(opts: {
     }
 
     const { prDir, metaPath, diffstatPath, verifyLogPath } = await resolvePrPaths({
+      ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
@@ -604,7 +636,7 @@ export async function cmdIntegrate(opts: {
     }
 
     const changedPaths = await gitDiffNames(resolved.gitRoot, base, branch);
-    const tasksPath = loaded.config.paths.tasks_path;
+    const tasksPath = loadedConfig.paths.tasks_path;
     if (changedPaths.includes(tasksPath)) {
       throw new CliError({
         exitCode: 5,
@@ -657,7 +689,7 @@ export async function cmdIntegrate(opts: {
     }
 
     if (shouldRunVerify && !worktreePath) {
-      const worktreesDir = path.resolve(resolved.gitRoot, loaded.config.paths.worktrees_dir);
+      const worktreesDir = path.resolve(resolved.gitRoot, loadedConfig.paths.worktrees_dir);
       if (!isPathWithin(resolved.gitRoot, worktreesDir)) {
         throw new CliError({
           exitCode: 5,

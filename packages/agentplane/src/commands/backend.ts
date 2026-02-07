@@ -1,7 +1,7 @@
 import { backendNotSupportedMessage, usageMessage } from "../cli/output.js";
 import { mapBackendError } from "../cli/error-map.js";
 import { CliError } from "../shared/errors.js";
-import { loadTaskBackend } from "../backends/task-backend.js";
+import { loadCommandContext, type CommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
 
 export const BACKEND_SYNC_USAGE =
@@ -168,16 +168,19 @@ function parseSyncArgs(args: string[]): SyncFlags {
 }
 
 export async function cmdBackendSync(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
 }): Promise<number> {
   const flags = parseBackendSyncArgs(opts.args);
   try {
-    const { backend, backendId, config } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const backendId = ctx.backendId;
+    const config = ctx.config;
     if (flags.backendId && backendId && flags.backendId !== backendId) {
       throw new CliError({
         exitCode: 2,
@@ -213,16 +216,19 @@ export async function cmdBackendSync(opts: {
 }
 
 export async function cmdSync(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
 }): Promise<number> {
   const flags = parseSyncArgs(opts.args);
   try {
-    const { backend, backendId, config } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const backendId = ctx.backendId;
+    const config = ctx.config;
     if (flags.backendId && backendId && flags.backendId !== backendId) {
       throw new CliError({
         exitCode: 2,

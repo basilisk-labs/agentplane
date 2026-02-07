@@ -1,7 +1,7 @@
-import { loadTaskBackend } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 type TaskNormalizeFlags = { quiet: boolean; force: boolean };
 
@@ -19,6 +19,7 @@ function parseTaskNormalizeFlags(args: string[]): TaskNormalizeFlags {
 }
 
 export async function cmdTaskNormalize(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
@@ -28,15 +29,14 @@ export async function cmdTaskNormalize(opts: {
     // Force is accepted for parity; no additional checks in node CLI.
   }
   try {
-    const { backend } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const tasks = await backend.listTasks();
-    if (backend.writeTasks) {
-      await backend.writeTasks(tasks);
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const tasks = await ctx.taskBackend.listTasks();
+    if (ctx.taskBackend.writeTasks) {
+      await ctx.taskBackend.writeTasks(tasks);
     } else {
-      for (const task of tasks) await backend.writeTask(task);
+      for (const task of tasks) await ctx.taskBackend.writeTask(task);
     }
     if (!flags.quiet) {
       process.stdout.write(

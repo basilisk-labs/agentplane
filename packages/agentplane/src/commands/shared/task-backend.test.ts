@@ -25,7 +25,7 @@ describe("commands/shared/task-backend CommandContext", () => {
 
     const ctx = await loadCommandContext({ cwd: root, rootOverride: root });
     expect(ctx.backendId).toBe("local");
-    expect(ctx.resolved.gitRoot).toBe(root);
+    expect(ctx.resolvedProject.gitRoot).toBe(root);
     expect(ctx.backendConfigPath).toBe(path.join(root, ".agentplane/backends/local/backend.json"));
   });
 

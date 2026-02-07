@@ -8,7 +8,6 @@ import {
   setMarkdownSection,
 } from "@agentplaneorg/core";
 
-import { loadTaskBackend } from "../../backends/task-backend.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import {
   infoMessage,
@@ -18,6 +17,7 @@ import {
   backendNotSupportedMessage,
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 export const TASK_DOC_SET_USAGE =
   "Usage: agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)";
@@ -107,6 +107,7 @@ function parseTaskDocSetFlags(args: string[]): TaskDocSetFlags {
 }
 
 export async function cmdTaskDocSet(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -155,10 +156,12 @@ export async function cmdTaskDocSet(opts: {
   }
 
   try {
-    const { backend, resolved, config } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const resolved = ctx.resolvedProject;
+    const config = ctx.config;
     if (!backend.getTaskDoc || !backend.setTaskDoc) {
       throw new CliError({
         exitCode: 2,
@@ -214,6 +217,7 @@ export async function cmdTaskDocSet(opts: {
 }
 
 export async function cmdTaskDocShow(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -221,10 +225,10 @@ export async function cmdTaskDocShow(opts: {
 }): Promise<number> {
   const flags = parseTaskDocShowFlags(opts.args);
   try {
-    const { backend } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
     if (!backend.getTaskDoc) {
       throw new CliError({
         exitCode: 2,

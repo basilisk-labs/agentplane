@@ -3,21 +3,26 @@ import { validateTaskDocMetadata } from "@agentplaneorg/core";
 import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 
-import { loadBackendTask, taskDataToFrontmatter } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  taskDataToFrontmatter,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 export async function cmdTaskShow(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
 }): Promise<number> {
   try {
-    const { task, backendId } = await loadBackendTask({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const frontmatter = taskDataToFrontmatter(task);
-    if (backendId === "local") {
+    if (ctx.backendId === "local") {
       const metadataErrors = validateTaskDocMetadata(frontmatter);
       if (metadataErrors.length > 0) {
         throw new CliError({

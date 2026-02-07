@@ -6,7 +6,11 @@ import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, missingValueMessage, usageMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { loadBackendTask } from "../shared/task-backend.js";
+import {
+  loadCommandContext,
+  loadTaskFromContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 
 import { nowIso } from "./shared.js";
 
@@ -126,6 +130,7 @@ function parsePlanDecisionFlags(args: string[]): PlanDecisionFlags {
 }
 
 export async function cmdTaskPlan(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
@@ -140,11 +145,13 @@ export async function cmdTaskPlan(opts: {
   }
 
   try {
-    const { backend, config, resolved, task } = await loadBackendTask({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const config = ctx.config;
+    const resolved = ctx.resolvedProject;
+    const task = await loadTaskFromContext({ ctx, taskId });
     if (!backend.getTaskDoc || !backend.setTaskDoc || !backend.writeTask) {
       throw new CliError({
         exitCode: 2,

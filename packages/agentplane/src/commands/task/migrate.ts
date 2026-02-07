@@ -1,10 +1,11 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { missingValueMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 type TaskMigrateFlags = { source?: string; quiet: boolean; force: boolean };
 
@@ -42,6 +43,7 @@ function parseTaskMigrateFlags(args: string[]): TaskMigrateFlags {
 }
 
 export async function cmdTaskMigrate(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   args: string[];
@@ -51,10 +53,12 @@ export async function cmdTaskMigrate(opts: {
     // Force is accepted for parity; no additional checks in node CLI.
   }
   try {
-    const { backend, resolved, config } = await loadTaskBackend({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const resolved = ctx.resolvedProject;
+    const config = ctx.config;
     const source = flags.source ?? config.paths.tasks_path;
     const sourcePath = path.join(resolved.gitRoot, source);
     const raw = await readFile(sourcePath, "utf8");
