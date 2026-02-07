@@ -1,7 +1,7 @@
 ---
 id: "202602071927-K4AX24"
 title: "CLI2-030: Migrate init to cli2"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-07T20:08:16.884Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated init to cli2 with spec-derived parsing/help/usage and updated run-cli tests for new E_USAGE messages. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
-commit: null
+commit:
+  hash: "bccbfa377217a20bf0d579ea96cdeec62120b045"
+  message: "✅ K4AX24 cli: migrate init to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate init into cli2 registry so parsing/help/usage are spec-derived, while preserving current interactive vs non-interactive behavior and conflict handling."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: init is now cli2-routed with spec-derived parsing/help/usage; errors include compact help hint; tests updated and passing (typecheck/lint/format/test:cli:core)."
 doc_version: 2
-doc_updated_at: "2026-02-07T20:08:16.884Z"
+doc_updated_at: "2026-02-07T20:08:49.680Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Register `init` in cli2; make parsing/help/usage spec-derived; preserve behavior."
 ---
