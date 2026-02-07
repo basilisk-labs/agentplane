@@ -1,7 +1,7 @@
 ---
 id: "202602071657-365ZPK"
 title: "UX: Add command to print Verify Steps"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:37:44.753Z"
   updated_by: "CODER"
   note: "Added task verify-show command to print Verify Steps; covered by bun run test:cli:core."
-commit: null
+commit:
+  hash: "855043e1d5906f0ea827288f31d30380ff4d206d"
+  message: "✅ 365ZPK cli: add task verify-show"
 comments:
   -
     author: "CODER"
     body: "Start: add a task verify-show command to print Verify Steps for verifiers."
+  -
+    author: "CODER"
+    body: "Verified: added task verify-show shortcut to print Verify Steps for verifiers; bun run test:cli:core passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:37:44.759Z"
+doc_updated_at: "2026-02-07T17:38:35.857Z"
 doc_updated_by: "CODER"
 description: "Add a read-only command/flag to print the Verify Steps section in stdout."
 ---
