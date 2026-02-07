@@ -137,6 +137,7 @@ sequenceDiagram
 - **Two-stage verification**:
   - `## Verify Steps` is the ex-ante verification contract (criteria/protocol addressed to the verifier).
   - `## Verification` is the ex-post append-only record written by `agentplane verify ...`.
+- **Back-compat**: frontmatter `verify: string[]` remains supported as optional suggested commands; it is not required by the two-stage model.
 - **Commit policy**: commit subjects must include the task ID suffix.
 - **Docs updates**: task README sections are updated via `agentplane task doc set`.
 - **Exports**: task snapshots are updated only via `agentplane` commands.
