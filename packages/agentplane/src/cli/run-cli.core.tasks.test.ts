@@ -1642,6 +1642,15 @@ describe("runCli", () => {
       io.restore();
     }
 
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("## Verify Steps");
+    expect(readme).toContain("<!-- TODO: FILL VERIFY STEPS -->");
+    expect(readme).toContain("## Verification");
+    expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+    expect(readme).toContain("<!-- END VERIFICATION RESULTS -->");
+    expect(readme.indexOf("## Verify Steps")).toBeLessThan(readme.indexOf("## Verification"));
+
     const ioOverwrite = captureStdIO();
     try {
       const code = await runCli(["task", "scaffold", taskId, "--root", root]);
