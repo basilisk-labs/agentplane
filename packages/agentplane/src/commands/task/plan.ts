@@ -14,7 +14,13 @@ import {
 } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
-import { extractDocSection, nowIso } from "./shared.js";
+import {
+  extractDocSection,
+  isVerifyStepsFilled,
+  nowIso,
+  requiresVerify,
+  toStringArray,
+} from "./shared.js";
 
 export const TASK_PLAN_USAGE = "Usage: agentplane task plan <set|approve|reject> <task-id> [flags]";
 export const TASK_PLAN_USAGE_EXAMPLE = 'agentplane task plan set 202602030608-F1Q8AB --text "..."';
@@ -236,6 +242,23 @@ export async function cmdTaskPlan(opts: {
           code: "E_VALIDATION",
           message: `${task.id}: cannot ${subcommand} plan: ## Plan section is missing or empty`,
         });
+      }
+
+      if (subcommand === "approve") {
+        const tags = toStringArray(task.tags);
+        const verifyRequired = requiresVerify(tags, config.tasks.verify.required_tags);
+        if (verifyRequired) {
+          const verifySteps = extractDocSection(baseDoc, "Verify Steps");
+          if (!isVerifyStepsFilled(verifySteps)) {
+            throw new CliError({
+              exitCode: 3,
+              code: "E_VALIDATION",
+              message:
+                `${task.id}: cannot approve plan: ## Verify Steps section is missing/empty/unfilled ` +
+                "(fill it before approving plan)",
+            });
+          }
+        }
       }
 
       const nextTask: TaskData = {
