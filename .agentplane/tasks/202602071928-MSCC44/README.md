@@ -1,7 +1,7 @@
 ---
 id: "202602071928-MSCC44"
 title: "CLI2-050: Migrate recipes list to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-07T20:59:48.873Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated recipes list to cli2 with spec-derived parsing/help/usage and routed it via cli2 registry. Refactored recipes list implementation to accept parsed flags (cmdRecipeListParsed) and updated run-cli recipes tests for new E_USAGE output and help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:unit."
-commit: null
+commit:
+  hash: "4601863bf54fbcee3ba623f1e55bf7860b51b57a"
+  message: "✅ MSCC44 cli: migrate recipes list to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate recipes list to cli2 with spec-derived parsing/help/usage; refactor recipes list implementation to accept parsed flags (remove manual parseRecipeListArgs for this command); update run-cli recipes tests accordingly."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: recipes list is cli2-routed with spec-derived help/usage; implementation uses parsed flags entrypoint; tests passing (typecheck/lint/format/test:cli:unit)."
 doc_version: 2
-doc_updated_at: "2026-02-07T20:59:48.874Z"
+doc_updated_at: "2026-02-07T21:00:16.574Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `recipes list` flags."
 ---
