@@ -116,10 +116,84 @@ describe("runCli", () => {
     delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
     globalThis.fetch = vi.fn(() => Response.json({ version: "9.9.9" })) as unknown as typeof fetch;
     try {
-      const code = await runCli(["config", "show", "--root", root]);
+      const code = await runCli(["config", "show", "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stderr).toContain("Update available");
       expect(io.stderr).toContain("npm i -g agentplane@latest");
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalNoUpdateCheck === undefined) {
+        delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+      } else {
+        process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
+      }
+      io.restore();
+    }
+  });
+
+  it("skips update check when require_network=true and no explicit approval is present", async () => {
+    const root = await mkGitRepoRoot();
+    const cfg = defaultConfig();
+    cfg.agents ??= {
+      approvals: { require_plan: true, require_network: true, require_verify: true },
+    };
+    cfg.agents.approvals.require_network = true;
+    await writeConfig(root, cfg);
+
+    const home = getAgentplaneHome();
+    if (!home) throw new Error("agentplane home not set");
+    const cachePath = resolveUpdateCheckCachePath(home);
+    await rm(cachePath, { force: true });
+
+    const io = captureStdIO();
+    const originalFetch = globalThis.fetch;
+    const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    globalThis.fetch = vi.fn(() => {
+      throw new Error("should not fetch");
+    }) as unknown as typeof fetch;
+    try {
+      const code = await runCli(["config", "show", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Update available");
+      expect(globalThis.fetch).not.toHaveBeenCalled();
+    } finally {
+      globalThis.fetch = originalFetch;
+      if (originalNoUpdateCheck === undefined) {
+        delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+      } else {
+        process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
+      }
+      io.restore();
+    }
+  });
+
+  it("allows update check when require_network=true and --yes is present", async () => {
+    const root = await mkGitRepoRoot();
+    const cfg = defaultConfig();
+    cfg.agents ??= {
+      approvals: { require_plan: true, require_network: true, require_verify: true },
+    };
+    cfg.agents.approvals.require_network = true;
+    await writeConfig(root, cfg);
+
+    const home = getAgentplaneHome();
+    if (!home) throw new Error("agentplane home not set");
+    const cachePath = resolveUpdateCheckCachePath(home);
+    await rm(cachePath, { force: true });
+
+    const io = captureStdIO();
+    const originalFetch = globalThis.fetch;
+    const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
+    globalThis.fetch = vi.fn(() =>
+      Response.json({ version: "9999.9999.9999" }),
+    ) as unknown as typeof fetch;
+    try {
+      const code = await runCli(["config", "show", "--yes", "--root", root]);
+      expect(code).toBe(0);
+      expect(globalThis.fetch).toHaveBeenCalled();
+      expect(io.stderr).toContain("Update available");
     } finally {
       globalThis.fetch = originalFetch;
       if (originalNoUpdateCheck === undefined) {
@@ -161,7 +235,7 @@ describe("runCli", () => {
       throw new Error("should not fetch");
     }) as unknown as typeof fetch;
     try {
-      const code = await runCli(["config", "show", "--root", root]);
+      const code = await runCli(["config", "show", "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stderr).toContain("Update available");
       expect(globalThis.fetch).not.toHaveBeenCalled();
@@ -278,7 +352,7 @@ describe("runCli", () => {
     delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
     globalThis.fetch = vi.fn(() => new Response(null, { status: 304 })) as unknown as typeof fetch;
     try {
-      const code = await runCli(["config", "show", "--root", root]);
+      const code = await runCli(["config", "show", "--yes", "--root", root]);
       expect(code).toBe(0);
       expect(io.stderr).not.toContain("Update available");
       expect(globalThis.fetch).toHaveBeenCalled();

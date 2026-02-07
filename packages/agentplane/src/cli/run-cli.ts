@@ -353,22 +353,26 @@ async function maybeWarnOnUpdate(opts: {
   process.stderr.write(`${warnMessage(message)}\n`);
 }
 
-async function maybeLoadDotEnv(opts: { cwd: string; rootOverride?: string }): Promise<void> {
+type CliResolvedProject = Awaited<ReturnType<typeof resolveProject>>;
+
+async function maybeResolveProject(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<CliResolvedProject | null> {
   try {
-    const resolved = await resolveProject({
+    return await resolveProject({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    await loadDotEnv(resolved.gitRoot);
   } catch (err) {
     if (err instanceof Error && err.message.startsWith("Not a git repository")) {
-      return;
+      return null;
     }
     throw err;
   }
 }
 
-async function writeFileIfChanged(filePath: string, content: string): Promise<boolean> {
+async function writeTextIfChanged(filePath: string, content: string): Promise<boolean> {
   try {
     const existing = await readFile(filePath, "utf8");
     if (existing === content) return false;
@@ -955,7 +959,7 @@ async function cmdIdeSync(opts: {
       const cursorDir = path.join(resolved.gitRoot, ".cursor", "rules");
       await mkdir(cursorDir, { recursive: true });
       const cursorPath = path.join(cursorDir, "agentplane.mdc");
-      await writeFileIfChanged(cursorPath, content);
+      await writeTextIfChanged(cursorPath, content);
       process.stdout.write(`${path.relative(resolved.gitRoot, cursorPath)}\n`);
     }
 
@@ -963,7 +967,7 @@ async function cmdIdeSync(opts: {
       const windsurfDir = path.join(resolved.gitRoot, ".windsurf", "rules");
       await mkdir(windsurfDir, { recursive: true });
       const windsurfPath = path.join(windsurfDir, "agentplane.md");
-      await writeFileIfChanged(windsurfPath, content);
+      await writeTextIfChanged(windsurfPath, content);
       process.stdout.write(`${path.relative(resolved.gitRoot, windsurfPath)}\n`);
     }
     return 0;
@@ -1090,10 +1094,29 @@ export async function runCli(argv: string[]): Promise<number> {
       return 0;
     }
 
-    await maybeLoadDotEnv({ cwd: process.cwd(), rootOverride: globals.root });
+    const cwd = process.cwd();
+    const resolved = await maybeResolveProject({ cwd, rootOverride: globals.root });
+    if (resolved) {
+      await loadDotEnv(resolved.gitRoot);
+    }
+
+    // `require_network=true` means "no network without explicit approval".
+    // Update-check is an optional network call, so it must be gated after config load.
+    let skipUpdateCheckForPolicy = true;
+    if (resolved) {
+      try {
+        const loaded = await loadConfig(resolved.agentplaneDir);
+        const requireNetwork = loaded.config.agents?.approvals.require_network === true;
+        const explicitlyApproved = rest.includes("--yes");
+        skipUpdateCheckForPolicy = requireNetwork && !explicitlyApproved;
+      } catch {
+        // Conservative: if we can't load config, we can't prove network is allowed.
+        skipUpdateCheckForPolicy = true;
+      }
+    }
     await maybeWarnOnUpdate({
       currentVersion: getVersion(),
-      skip: globals.noUpdateCheck,
+      skip: globals.noUpdateCheck || skipUpdateCheckForPolicy,
       jsonErrors: globals.jsonErrors,
     });
 
