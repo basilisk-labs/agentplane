@@ -1,7 +1,7 @@
 ---
 id: "202602071657-ZHA9GP"
 title: "Spec: Verify Steps vs Verification semantics"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -20,14 +20,19 @@ verification:
   updated_at: "2026-02-07T17:00:48.250Z"
   updated_by: "ORCHESTRATOR"
   note: "Documented Verify Steps (ex-ante) vs Verification (ex-post) semantics; bun run test:fast."
-commit: null
+commit:
+  hash: "785dbd3375a7a25e0e02c37e5c69276781c6be40"
+  message: "✅ ZHA9GP docs: define Verify Steps vs Verification semantics"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: define canonical semantics for Verify Steps vs Verification and align user docs accordingly."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: docs updated to define Verify Steps as ex-ante and Verification as append-only ex-post; bun run test:fast."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-07T17:00:48.251Z"
+doc_updated_at: "2026-02-07T17:05:52.686Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Define canonical README semantics: Verify Steps = ex-ante contract; Verification = append-only ex-post log."
 ---
