@@ -1,28 +1,31 @@
 import { chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import {
-  getStagedFiles,
-  loadConfig,
-  resolveBaseBranch,
-  resolveProject,
-  validateCommitSubject,
-} from "@agentplaneorg/core";
+import { getStagedFiles, loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
 
+import { evaluatePolicy } from "../../policy/evaluate.js";
+import type { PolicyResult } from "../../policy/types.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import {
-  getProtectedPathOverride,
-  protectedPathKindForFile,
-} from "../../shared/protected-paths.js";
 import { gitCurrentBranch, gitRevParse } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
 
 const HOOK_MARKER = "agentplane-hook";
 const SHIM_MARKER = "agentplane-hook-shim";
 export const HOOK_NAMES = ["commit-msg", "pre-commit", "pre-push"] as const;
+
+function throwIfPolicyDenied(res: PolicyResult): void {
+  if (res.ok) return;
+  const messages = res.errors.map((e) => e.message).join("\n");
+  const chosen =
+    res.errors.find((e) => e.code === "E_INTERNAL") ??
+    res.errors.find((e) => e.code === "E_USAGE") ??
+    res.errors[0];
+  if (!chosen) return;
+  throw new CliError({ exitCode: chosen.exitCode, code: chosen.code, message: messages });
+}
 
 async function resolveGitHooksDir(cwd: string): Promise<string> {
   const repoRoot = await gitRevParse(cwd, ["--show-toplevel"]);
@@ -226,26 +229,15 @@ export async function cmdHooksRun(opts: {
       const loaded = await loadConfig(resolved.agentplaneDir);
 
       const taskId = (process.env.AGENTPLANE_TASK_ID ?? "").trim();
-      if (taskId) {
-        const policy = validateCommitSubject({
-          subject,
-          taskId,
-          genericTokens: loaded.config.commit.generic_tokens,
-        });
-        if (!policy.ok) {
-          throw new CliError({
-            exitCode: 5,
-            code: "E_GIT",
-            message: policy.errors.join("\n"),
-          });
-        }
-        return 0;
-      }
-      throw new CliError({
-        exitCode: 5,
-        code: "E_GIT",
-        message: "AGENTPLANE_TASK_ID is required (use `agentplane commit ...`)",
+      const res = evaluatePolicy({
+        action: "hook_commit_msg",
+        config: loaded.config,
+        taskId,
+        git: { stagedPaths: [] },
+        commit: { subject },
       });
+      throwIfPolicyDenied(res);
+      return 0;
     }
 
     if (opts.hook === "pre-commit") {
@@ -266,66 +258,36 @@ export async function cmdHooksRun(opts: {
         rootOverride: opts.rootOverride ?? null,
       });
       const loaded = await loadConfig(resolved.agentplaneDir);
-      const tasksPath = loaded.config.paths.tasks_path;
-      const tasksStaged = staged.includes(tasksPath);
-      const nonTasks = staged.filter((entry: string) => entry !== tasksPath);
+      const inBranchPr = loaded.config.workflow_mode === "branch_pr";
+      const baseBranch = inBranchPr
+        ? await resolveBaseBranch({
+            cwd: opts.cwd,
+            rootOverride: opts.rootOverride ?? null,
+            cliBaseOpt: null,
+            mode: loaded.config.workflow_mode,
+          })
+        : null;
+      const currentBranch = inBranchPr ? await gitCurrentBranch(resolved.gitRoot) : undefined;
 
-      if (tasksStaged && !allowTasks) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: `${tasksPath} is protected by agentplane hooks (set AGENTPLANE_ALLOW_TASKS=1 to override)`,
-        });
-      }
-
-      for (const filePath of staged) {
-        const kind = protectedPathKindForFile({ filePath, tasksPath });
-        if (!kind || kind === "tasks") continue;
-        const override = getProtectedPathOverride(kind);
-        const allowed =
-          (kind === "policy" && allowPolicy) ||
-          (kind === "config" && allowConfig) ||
-          (kind === "hooks" && allowHooks) ||
-          (kind === "ci" && allowCI);
-        if (!allowed) {
-          throw new CliError({
-            exitCode: 5,
-            code: "E_GIT",
-            message: `${filePath} is protected by agentplane hooks (set ${override.envVar}=1 to override)`,
-          });
-        }
-      }
-
-      if (loaded.config.workflow_mode === "branch_pr") {
-        const baseBranch = await resolveBaseBranch({
-          cwd: opts.cwd,
-          rootOverride: opts.rootOverride ?? null,
-          cliBaseOpt: null,
-          mode: loaded.config.workflow_mode,
-        });
-        if (!baseBranch) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: "Base branch could not be resolved (use `agentplane branch base set`).",
-          });
-        }
-        const currentBranch = await gitCurrentBranch(resolved.gitRoot);
-        if (tasksStaged && currentBranch !== baseBranch) {
-          throw new CliError({
-            exitCode: 5,
-            code: "E_GIT",
-            message: `${tasksPath} commits are allowed only on ${baseBranch} in branch_pr mode`,
-          });
-        }
-        if (nonTasks.length > 0 && currentBranch === baseBranch && !allowBase) {
-          throw new CliError({
-            exitCode: 5,
-            code: "E_GIT",
-            message: `Code commits are forbidden on ${baseBranch} in branch_pr mode`,
-          });
-        }
-      }
+      const res = evaluatePolicy({
+        action: "hook_pre_commit",
+        config: loaded.config,
+        taskId: (process.env.AGENTPLANE_TASK_ID ?? "").trim(),
+        git: {
+          stagedPaths: staged,
+          currentBranch,
+          baseBranch,
+        },
+        allow: {
+          allowTasks,
+          allowBase,
+          allowPolicy,
+          allowConfig,
+          allowHooks,
+          allowCI,
+        },
+      });
+      throwIfPolicyDenied(res);
       return 0;
     }
 
