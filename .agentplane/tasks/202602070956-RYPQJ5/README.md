@@ -1,7 +1,7 @@
 ---
 id: "202602070956-RYPQJ5"
 title: "Direct mode: легализовать task branches"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -18,11 +18,16 @@ verification:
   updated_at: "2026-02-07T10:23:56.047Z"
   updated_by: "ORCHESTRATOR"
   note: "Tests: bun run test:cli:core"
-commit: null
+commit:
+  hash: "5c5fa722b95901e1c3f797e173cf65d666960465"
+  message: "✅ RYPQJ5 workflow: allow task branches in direct mode"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Align direct-mode branch policy and CLI guidance with work start behavior; remove contradictions."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run test:cli:core passed; direct mode policy/docs aligned with work start branch checkout; direct now rejects --worktree."
 events:
   -
     type: "status"
@@ -37,8 +42,15 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Tests: bun run test:cli:core"
+  -
+    type: "status"
+    at: "2026-02-07T10:25:10.635Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run test:cli:core passed; direct mode policy/docs aligned with work start branch checkout; direct now rejects --worktree."
 doc_version: 2
-doc_updated_at: "2026-02-07T10:23:56.053Z"
+doc_updated_at: "2026-02-07T10:25:10.635Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Align AGENTS.md and CLI guidance with actual direct-mode work start behavior (branch checkout without worktree). Remove policy/code contradiction; keep semantics explicit to reduce accidental branch switching."
 id_source: "generated"
