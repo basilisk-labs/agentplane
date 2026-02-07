@@ -85,15 +85,37 @@ If approval is required, pause and ask before proceeding.
 # NON-NEGOTIABLE PIPELINE
 
 1. **Preflight** (ORCHESTRATOR, mandatory)
-2. **Plan + decomposition**
+2. **Plan + decomposition** (no execution)
 3. **Explicit user approval**
 4. **Create tracking task**
 5. **Execute tasks under mode-specific workflow**
 6. **Verify**
 7. **Finish**
-8. **Export (if enabled / required)**
+8. **Export** (if enabled / required)
 
 No step may be skipped unless the user explicitly authorizes skipping it.
+
+---
+
+# OUTPUT CONTRACTS (REASONING & EXPLAINABILITY)
+
+## Do not expose raw internal chain-of-thought
+
+Agents MUST NOT output raw internal chain-of-thought (token-level reasoning, scratchwork, discarded branches).
+
+## Use structured, inspectable reasoning artifacts
+
+Agents MUST express reasoning through explicit artifacts, as applicable:
+
+- **Preflight Summary**
+- **Plan**
+- **Assumptions**
+- **Decisions**
+- **Trade-offs**
+- **Verification criteria**
+- **Inference trace** (brief, task-relevant links between inputs -> decisions -> outputs)
+
+This is the required substitute for raw chain-of-thought.
 
 ---
 
@@ -105,15 +127,25 @@ Before any planning or execution, ORCHESTRATOR must run:
 2. `node packages/agentplane/bin/agentplane.js quickstart` (CLI instructions)
 3. `node packages/agentplane/bin/agentplane.js task list`
 4. `git status --short --untracked-files=no`
+5. `git rev-parse --abbrev-ref HEAD`
 
-Then report (in the response) only that the data was loaded:
+Then report a **Preflight Summary** (do not dump full config or quickstart text).
 
-- Config loaded
-- CLI instructions loaded
-- Task list loaded
-- Git status checked
+## Preflight Summary (required)
 
-Do not output the contents of the config or CLI instructions unless the user explicitly asks for them.
+You MUST explicitly state:
+
+- Config loaded: yes/no
+- CLI instructions loaded: yes/no
+- Task list loaded: yes/no
+- Working tree clean (tracked-only): yes/no
+- Current git branch: `<name>`
+- `workflow_mode`: `direct` / `branch_pr` / unknown
+- Approval gates:
+  - `require_network`: true/false/unknown
+  - `require_outside_repo`: true/false/unknown (if present in config; otherwise unknown)
+
+Do not output the full contents of config or quickstart unless the user explicitly asks.
 
 ---
 
@@ -129,12 +161,25 @@ Do not output the contents of the config or CLI instructions unless the user exp
 
 ## 1) Plan & decomposition (no execution)
 
-ORCHESTRATOR:
+ORCHESTRATOR MUST produce:
 
-- Produces an explicit plan (steps, risks, verify/rollback).
-- Decomposes into atomic tasks assignable to existing agents.
-- Flags whether network/outside-repo actions will be needed.
-- Requests explicit approval.
+- **Scope**
+  - In-scope paths and artifacts
+  - Out-of-scope boundaries
+- **Assumptions**
+  - Only if required; each assumption must be testable/confirmable
+- **Steps**
+  - Ordered, executable steps
+- **Decomposition**
+  - Atomic tasks assignable to existing agents
+- **Approvals**
+  - Whether network/outside-repo actions will be needed
+- **Verification criteria**
+  - What will be considered “done” + checks to run
+- **Rollback plan**
+  - How to revert safely if verification fails
+- **Drift triggers**
+  - Clear conditions that require re-approval (see Drift Policy)
 
 ## 2) After approval (tracking task is mandatory)
 
@@ -158,6 +203,7 @@ ORCHESTRATOR:
   - Trade-offs
   - Verification criteria
   - Inference trace
+- Follow **OUTPUT CONTRACTS (REASONING & EXPLAINABILITY)**: no raw chain-of-thought; use structured artifacts.
 - Code/comments/commit messages/PR artifacts should be in English.
 
 ---
