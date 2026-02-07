@@ -1,7 +1,7 @@
 ---
 id: "202602071657-NN3DSJ"
 title: "CLI: Warn on verify-required tasks about filling Verify Steps"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:29:17.514Z"
   updated_by: "CODER"
   note: "task new now warns (stderr) for verify-required tags about filling Verify Steps before plan approval; tests: bun run test:agentplane, bun run test:cli:core."
-commit: null
+commit:
+  hash: "0db45b8e64f2181257b62db5334eca9aa180da82"
+  message: "✅ NN3DSJ cli: warn on Verify Steps requirement"
 comments:
   -
     author: "CODER"
     body: "Start: add stderr warning on task new for verify-required tags about filling Verify Steps before approving plan."
+  -
+    author: "CODER"
+    body: "Verified: task new emits a warning for verify-required tags about filling Verify Steps before approving plan; tests: bun run test:agentplane, bun run test:cli:core."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:29:17.518Z"
+doc_updated_at: "2026-02-07T17:30:09.915Z"
 doc_updated_by: "CODER"
 description: "Emit stderr warning in task new when tags imply Verify Steps must be filled before plan approve."
 ---
