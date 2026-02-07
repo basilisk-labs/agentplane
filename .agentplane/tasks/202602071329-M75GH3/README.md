@@ -1,7 +1,7 @@
 ---
 id: "202602071329-M75GH3"
 title: "AP-REGRESS-01: Regression guard (guardrails + traceability)"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on:
@@ -19,18 +19,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T16:07:41.751Z"
+  updated_by: "TESTER"
+  note: "Verified: format:check, lint, test:fast, and test:cli:core passed. Added regressions covering integrate fallback commit subjects and PR meta base field; confirmed no non-English text in source/test files under packages/ and .agentplane/agents/."
+commit:
+  hash: "c6e719893254d1e7dacbec1472e8c9be2fd60102"
+  message: "✅ M75GH3 tests: add integrate subject/meta regressions"
 comments:
   -
     author: "TESTER"
     body: "Start: Add regression coverage for guardrails/traceability and enforce English-only source text."
+  -
+    author: "TESTER"
+    body: "Verified: regression coverage added for integrate commit subject compliance and PR meta base field (legacy base_branch removed). Full checks passed: format:check, lint, test:fast, test:cli:core. Source code text under packages/ and .agentplane/agents is English-only."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-07T16:04:58.655Z"
+doc_updated_at: "2026-02-07T16:07:48.215Z"
 doc_updated_by: "TESTER"
 description: "Smoke/regression: agents can write arbitrary code within the repo; guardrails (protected paths, commit subject, base branch, approvals) remain strict; traceability (task docs, start/verify/finish, commit allowlist) remains intact. Run vitest suites and add any missing coverage."
 id_source: "generated"
@@ -60,6 +65,15 @@ Risk: English-only sweeps may touch many files. Mitigation: restrict to source/t
 - bun run lint
 - bun run test:fast
 - bun run test:cli:core
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T16:07:41.751Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: format:check, lint, test:fast, and test:cli:core passed. Added regressions covering integrate fallback commit subjects and PR meta base field; confirmed no non-English text in source/test files under packages/ and .agentplane/agents/.
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
