@@ -14,7 +14,7 @@ import {
 } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
-import { nowIso } from "./shared.js";
+import { extractDocSection, nowIso } from "./shared.js";
 
 export const TASK_PLAN_USAGE = "Usage: agentplane task plan <set|approve|reject> <task-id> [flags]";
 export const TASK_PLAN_USAGE_EXAMPLE = 'agentplane task plan set 202602030608-F1Q8AB --text "..."';
@@ -43,25 +43,6 @@ type PlanDecisionFlags = {
   by?: string;
   note?: string;
 };
-
-function extractDocSection(doc: string, sectionName: string): string | null {
-  const lines = doc.replaceAll("\r\n", "\n").split("\n");
-  let capturing = false;
-  const out: string[] = [];
-
-  for (const line of lines) {
-    const match = /^##\s+(.*)$/.exec(line.trim());
-    if (match) {
-      if (capturing) break;
-      capturing = (match[1] ?? "").trim() === sectionName;
-      continue;
-    }
-    if (capturing) out.push(line);
-  }
-
-  if (!capturing) return null;
-  return out.join("\n").trimEnd();
-}
 
 function parsePlanSetFlags(args: string[]): PlanSetFlags {
   const out: PlanSetFlags = {};

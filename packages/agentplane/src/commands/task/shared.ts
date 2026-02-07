@@ -22,6 +22,34 @@ export function nowIso(): string {
   return new Date().toISOString();
 }
 
+export const VERIFY_STEPS_PLACEHOLDER = "<!-- TODO: FILL VERIFY STEPS -->";
+
+export function extractDocSection(doc: string, sectionName: string): string | null {
+  const lines = doc.replaceAll("\r\n", "\n").split("\n");
+  let capturing = false;
+  const out: string[] = [];
+
+  for (const line of lines) {
+    const match = /^##\s+(.*)$/.exec(line.trim());
+    if (match) {
+      if (capturing) break;
+      capturing = (match[1] ?? "").trim() === sectionName;
+      continue;
+    }
+    if (capturing) out.push(line);
+  }
+
+  if (!capturing) return null;
+  return out.join("\n").trimEnd();
+}
+
+export function isVerifyStepsFilled(sectionText: string | null): boolean {
+  const normalized = (sectionText ?? "").trim();
+  if (!normalized) return false;
+  if (normalized.includes(VERIFY_STEPS_PLACEHOLDER)) return false;
+  return true;
+}
+
 export function normalizeDependsOnInput(value: string): string[] {
   const trimmed = value.trim();
   if (!trimmed || trimmed === "[]") return [];

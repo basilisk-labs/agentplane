@@ -13,7 +13,7 @@ import {
 } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
-import { appendTaskEvent, nowIso } from "./shared.js";
+import { appendTaskEvent, extractDocSection, nowIso } from "./shared.js";
 
 type VerifyState = "ok" | "needs_rework";
 
@@ -39,25 +39,6 @@ type VerifyRecordFlags = {
   ok: boolean;
   rework: boolean;
 };
-
-function extractDocSection(doc: string, sectionName: string): string | null {
-  const lines = doc.replaceAll("\r\n", "\n").split("\n");
-  let capturing = false;
-  const out: string[] = [];
-
-  for (const line of lines) {
-    const match = /^##\s+(.*)$/.exec(line.trim());
-    if (match) {
-      if (capturing) break;
-      capturing = (match[1] ?? "").trim() === sectionName;
-      continue;
-    }
-    if (capturing) out.push(line);
-  }
-
-  if (!capturing) return null;
-  return out.join("\n").trimEnd();
-}
 
 function ensureVerificationResultsMarkers(sectionText: string): string {
   const normalized = sectionText.replaceAll("\r\n", "\n").trimEnd();
