@@ -37,7 +37,13 @@ export type AgentplaneConfig = {
   framework: { source: string; last_update: string | null };
   tasks: {
     id_suffix_length_default: number;
-    verify: { required_tags: string[] };
+    verify: {
+      required_tags: string[];
+      require_steps_for_tags?: string[];
+      spike_tag: string;
+      enforce_on_plan_approve: boolean;
+      enforce_on_start_when_no_plan: boolean;
+    };
     doc: { sections: string[]; required_sections: string[] };
     comments: {
       start: { prefix: string; min_chars: number };

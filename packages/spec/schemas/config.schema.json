@@ -144,14 +144,27 @@
           "type": "object",
           "additionalProperties": true,
           "required": ["required_tags"],
-          "default": { "required_tags": ["code", "backend", "frontend"] },
+          "default": {
+            "required_tags": ["code", "backend", "frontend"],
+            "spike_tag": "spike",
+            "enforce_on_plan_approve": true,
+            "enforce_on_start_when_no_plan": true
+          },
           "properties": {
             "required_tags": {
               "type": "array",
               "items": { "type": "string", "minLength": 1 },
               "uniqueItems": true,
               "default": ["code", "backend", "frontend"]
-            }
+            },
+            "require_steps_for_tags": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            },
+            "spike_tag": { "type": "string", "minLength": 1, "default": "spike" },
+            "enforce_on_plan_approve": { "type": "boolean", "default": true },
+            "enforce_on_start_when_no_plan": { "type": "boolean", "default": true }
           }
         },
         "doc": {

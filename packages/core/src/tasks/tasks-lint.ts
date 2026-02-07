@@ -73,7 +73,7 @@ function hasCycle(dependsOn: Map<string, string[]>): string[] | null {
 
 export function lintTasksSnapshot(
   snapshot: TasksExportSnapshot,
-  config: AgentplaneConfig,
+  _config: AgentplaneConfig,
 ): TasksLintResult {
   const errors: string[] = [];
 
@@ -154,15 +154,6 @@ export function lintTasksSnapshot(
         typeof t.commit.message !== "string")
     ) {
       errors.push(`${id}: DONE tasks must have commit {hash,message}`);
-    }
-
-    const requiredTags = new Set(config.tasks.verify.required_tags);
-    const tagList = Array.isArray(t.tags) ? t.tags : [];
-    const needsVerify = tagList.some((tag) => requiredTags.has(tag));
-    if (needsVerify) {
-      const verifyList = Array.isArray(t.verify) ? t.verify : [];
-      if (verifyList.length === 0)
-        errors.push(`${id}: verify is required for tags: ${[...requiredTags].join(", ")}`);
     }
   }
 

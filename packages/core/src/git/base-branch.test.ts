@@ -149,7 +149,12 @@ describe("base-branch", () => {
       framework: { source: "https://github.com/basilisk-labs/agent-plane", last_update: null },
       tasks: {
         id_suffix_length_default: 6,
-        verify: { required_tags: ["code", "backend", "frontend"] },
+        verify: {
+          required_tags: ["code", "backend", "frontend"],
+          spike_tag: "spike",
+          enforce_on_plan_approve: true,
+          enforce_on_start_when_no_plan: true,
+        },
         doc: {
           sections: [
             "Summary",

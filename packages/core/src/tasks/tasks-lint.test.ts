@@ -105,7 +105,6 @@ describe("tasks-lint", () => {
     const result = await lintTasksFile({ cwd: root, rootOverride: root });
     const joined = result.errors.join("\n");
     expect(joined).toContain("DONE tasks must have commit");
-    expect(joined).toContain("verify is required");
     expect(joined).toContain("depends_on cycle detected");
     expect(joined).toContain("owner must be non-empty");
   });
@@ -175,7 +174,6 @@ describe("tasks-lint", () => {
     expect(joined).toContain("A: dirty must be boolean");
     expect(joined).toContain("A: id_source must be non-empty");
     expect(joined).toContain("A: comments must be {author,body}[]");
-    expect(joined).toContain("A: verify is required for tags");
     expect(joined).toContain("B: verify must be a string[]");
     expect(joined).toContain("duplicate task id: B");
     expect(joined).toContain("A: depends_on references missing task: MISSING");

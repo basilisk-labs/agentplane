@@ -72,19 +72,40 @@ export async function cmdStart(opts: {
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
 
     if (ctx.config.agents?.approvals?.require_plan !== true) {
-      const tags = toStringArray(task.tags);
-      const verifyRequired = requiresVerify(tags, ctx.config.tasks.verify.required_tags);
-      if (verifyRequired) {
+      const enforce = ctx.config.tasks.verify.enforce_on_start_when_no_plan !== false;
+      if (enforce) {
+        const tags = toStringArray(task.tags);
+        const requireStepsTags =
+          ctx.config.tasks.verify.require_steps_for_tags ?? ctx.config.tasks.verify.required_tags;
+        const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+        const verifyRequired = requiresVerify(tags, requireStepsTags);
+        const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
         const doc = typeof task.doc === "string" ? task.doc : "";
-        const verifySteps = extractDocSection(doc, "Verify Steps");
-        if (!isVerifyStepsFilled(verifySteps)) {
-          throw new CliError({
-            exitCode: 3,
-            code: "E_VALIDATION",
-            message:
-              `${task.id}: cannot start work: ## Verify Steps section is missing/empty/unfilled ` +
-              "(fill it before starting work when plan approval is disabled)",
-          });
+
+        if (verifyRequired || isSpike) {
+          const verifySteps = extractDocSection(doc, "Verify Steps");
+          if (!isVerifyStepsFilled(verifySteps)) {
+            throw new CliError({
+              exitCode: 3,
+              code: "E_VALIDATION",
+              message:
+                `${task.id}: cannot start work: ## Verify Steps section is missing/empty/unfilled ` +
+                "(fill it before starting work when plan approval is disabled)",
+            });
+          }
+        }
+
+        if (isSpike) {
+          const notes = extractDocSection(doc, "Notes");
+          if (!notes || notes.trim().length === 0) {
+            throw new CliError({
+              exitCode: 3,
+              code: "E_VALIDATION",
+              message:
+                `${task.id}: cannot start spike: ## Notes section is missing or empty ` +
+                "(include Findings/Decision/Next Steps)",
+            });
+          }
         }
       }
     }

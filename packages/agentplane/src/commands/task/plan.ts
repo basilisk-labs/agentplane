@@ -245,31 +245,37 @@ export async function cmdTaskPlan(opts: {
       }
 
       if (subcommand === "approve") {
-        const tags = toStringArray(task.tags);
-        const verifyRequired = requiresVerify(tags, config.tasks.verify.required_tags);
-        const isSpike = tags.some((tag) => tag.trim().toLowerCase() === "spike");
-        if (verifyRequired || isSpike) {
-          const verifySteps = extractDocSection(baseDoc, "Verify Steps");
-          if (!isVerifyStepsFilled(verifySteps)) {
-            throw new CliError({
-              exitCode: 3,
-              code: "E_VALIDATION",
-              message:
-                `${task.id}: cannot approve plan: ## Verify Steps section is missing/empty/unfilled ` +
-                "(fill it before approving plan)",
-            });
+        const enforceVerifySteps = config.tasks.verify.enforce_on_plan_approve !== false;
+        if (enforceVerifySteps) {
+          const tags = toStringArray(task.tags);
+          const requireStepsTags =
+            config.tasks.verify.require_steps_for_tags ?? config.tasks.verify.required_tags;
+          const spikeTag = (config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+          const verifyRequired = requiresVerify(tags, requireStepsTags);
+          const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
+          if (verifyRequired || isSpike) {
+            const verifySteps = extractDocSection(baseDoc, "Verify Steps");
+            if (!isVerifyStepsFilled(verifySteps)) {
+              throw new CliError({
+                exitCode: 3,
+                code: "E_VALIDATION",
+                message:
+                  `${task.id}: cannot approve plan: ## Verify Steps section is missing/empty/unfilled ` +
+                  "(fill it before approving plan)",
+              });
+            }
           }
-        }
-        if (isSpike) {
-          const notes = extractDocSection(baseDoc, "Notes");
-          if (!notes || notes.trim().length === 0) {
-            throw new CliError({
-              exitCode: 3,
-              code: "E_VALIDATION",
-              message:
-                `${task.id}: cannot approve plan for spike: ## Notes section is missing or empty ` +
-                "(include Findings/Decision/Next Steps)",
-            });
+          if (isSpike) {
+            const notes = extractDocSection(baseDoc, "Notes");
+            if (!notes || notes.trim().length === 0) {
+              throw new CliError({
+                exitCode: 3,
+                code: "E_VALIDATION",
+                message:
+                  `${task.id}: cannot approve plan for spike: ## Notes section is missing or empty ` +
+                  "(include Findings/Decision/Next Steps)",
+              });
+            }
           }
         }
       }

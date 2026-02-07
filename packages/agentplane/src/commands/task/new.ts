@@ -131,14 +131,18 @@ export async function cmdTaskNew(opts: {
       id_source: "generated",
     };
 
-    if (requiresVerify(flags.tags, ctx.config.tasks.verify.required_tags)) {
+    const requireStepsTags =
+      ctx.config.tasks.verify.require_steps_for_tags ?? ctx.config.tasks.verify.required_tags;
+    const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+    const requiresVerifySteps = requiresVerify(flags.tags, requireStepsTags);
+    if (requiresVerifySteps) {
       process.stderr.write(
         `${warnMessage(
           `task requires ## Verify Steps in README; run \`agentplane task scaffold ${taskId}\` and fill it before approving the plan`,
         )}\n`,
       );
     }
-    const hasSpike = flags.tags.some((tag) => tag.trim().toLowerCase() === "spike");
+    const hasSpike = flags.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
     const hasImplementationTags = requiresVerify(flags.tags, ctx.config.tasks.verify.required_tags);
     if (hasSpike && hasImplementationTags) {
       process.stderr.write(

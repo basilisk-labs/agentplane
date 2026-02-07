@@ -145,7 +145,8 @@ export async function cmdTaskUpdate(opts: {
     const mergedTags = dedupeStrings([...existingTags, ...flags.tags]);
     next.tags = mergedTags;
 
-    const hasSpike = mergedTags.some((tag) => tag.trim().toLowerCase() === "spike");
+    const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+    const hasSpike = mergedTags.some((tag) => tag.trim().toLowerCase() === spikeTag);
     const hasImplementationTags = requiresVerify(mergedTags, ctx.config.tasks.verify.required_tags);
     if (hasSpike && hasImplementationTags) {
       process.stderr.write(
