@@ -25,7 +25,7 @@ const UPGRADE_USAGE =
   "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>] [--yes]";
 const UPGRADE_USAGE_EXAMPLE = "agentplane upgrade --tag v0.1.4 --dry-run";
 
-type UpgradeFlags = {
+export type UpgradeFlags = {
   source?: string;
   tag?: string;
   bundle?: string;
@@ -162,6 +162,15 @@ export async function cmdUpgrade(opts: {
   args: string[];
 }): Promise<number> {
   const flags = parseUpgradeFlags(opts.args);
+  return await cmdUpgradeParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride, flags });
+}
+
+export async function cmdUpgradeParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+  flags: UpgradeFlags;
+}): Promise<number> {
+  const flags = opts.flags;
 
   const resolved = await resolveProject({
     cwd: opts.cwd,

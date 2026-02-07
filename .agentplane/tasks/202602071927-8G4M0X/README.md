@@ -1,7 +1,7 @@
 ---
 id: "202602071927-8G4M0X"
 title: "CLI2-031: Migrate upgrade to cli2"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T20:09:42.553Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-07T20:12:16.723Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated upgrade to cli2 (spec-derived parsing/help/usage) and refactored upgrade implementation to accept parsed flags. Updated run-cli tests for new E_USAGE output. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate upgrade to cli2 (spec-derived parsing/help/usage) while preserving bundle/checksum and network-approval behavior and updating run-cli tests accordingly."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:27:57.929Z"
+doc_updated_at: "2026-02-07T20:12:16.724Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Register `upgrade` in cli2; spec-driven parsing; preserve network approval gating."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T20:12:16.723Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated upgrade to cli2 (spec-derived parsing/help/usage) and refactored upgrade implementation to accept parsed flags. Updated run-cli tests for new E_USAGE output. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:09:46.877Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -53,7 +53,6 @@ import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { getVersion } from "../meta/version.js";
 import { parseBlock, parseFinish, parseStart, parseVerify } from "./parse/lifecycle.js";
-import { cmdUpgrade } from "../commands/upgrade.js";
 import { CommandRegistry } from "../cli2/registry.js";
 import { parseCommandArgv } from "../cli2/parse.js";
 import { helpSpec, makeHelpHandler } from "../cli2/help.js";
@@ -62,6 +61,7 @@ import { usageError } from "../cli2/errors.js";
 import { taskNewSpec, makeRunTaskNewHandler } from "../commands/task/new.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import { recipesInstallSpec, runRecipesInstall } from "../commands/recipes/install.command.js";
+import { upgradeSpec, runUpgrade } from "../commands/upgrade.command.js";
 import {
   BACKEND_SYNC_USAGE,
   BACKEND_SYNC_USAGE_EXAMPLE,
@@ -1148,6 +1148,7 @@ export async function runCli(argv: string[]): Promise<number> {
       const registry = new CommandRegistry();
       const noop = () => Promise.resolve(0);
       registry.register(initSpec, noop);
+      registry.register(upgradeSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1203,6 +1204,7 @@ export async function runCli(argv: string[]): Promise<number> {
     {
       const registry = new CommandRegistry();
       registry.register(initSpec, runInit);
+      registry.register(upgradeSpec, runUpgrade);
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
@@ -1213,15 +1215,6 @@ export async function runCli(argv: string[]): Promise<number> {
         const parsed = parseCommandArgv(match.spec, tail).parsed;
         return await match.handler({ cwd, rootOverride: globals.root }, parsed);
       }
-    }
-
-    if (namespace === "upgrade") {
-      const upgradeArgs = command ? [command, ...args] : [];
-      return await cmdUpgrade({
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args: upgradeArgs,
-      });
     }
 
     if (namespace === "config" && command === "show") {

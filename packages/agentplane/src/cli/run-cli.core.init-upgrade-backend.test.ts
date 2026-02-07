@@ -820,11 +820,11 @@ describe("runCli", () => {
     const cases = [
       {
         args: ["upgrade", "--bundle", bundlePath, "--root", root],
-        msg: "Usage: agentplane upgrade",
+        msg: "Options --bundle and --checksum must be provided together",
       },
       {
         args: ["upgrade", "--checksum", checksumPath, "--root", root],
-        msg: "Usage: agentplane upgrade",
+        msg: "Options --bundle and --checksum must be provided together",
       },
     ];
 
@@ -834,6 +834,9 @@ describe("runCli", () => {
         const code = await runCli(entry.args);
         expect(code).toBe(2);
         expect(io.stderr).toContain(entry.msg);
+        expect(io.stderr).toContain("Usage:");
+        expect(io.stderr).toContain("agentplane upgrade");
+        expect(io.stderr).toContain("agentplane help upgrade --compact");
       } finally {
         io.restore();
       }
@@ -1038,7 +1041,9 @@ describe("runCli", () => {
     try {
       const code = await runCli(["upgrade", "extra"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane upgrade");
+      expect(io.stderr).toContain("Unexpected argument: extra");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane upgrade");
     } finally {
       io.restore();
     }
