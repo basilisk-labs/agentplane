@@ -1,7 +1,7 @@
 ---
 id: "202602070812-TFAPHD"
 title: "P1: Align required task doc sections in AGENTS.md with config"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -20,11 +20,16 @@ verification:
   updated_at: "2026-02-07T08:16:38.225Z"
   updated_by: "ORCHESTRATOR"
   note: "Updated AGENTS.md required task doc sections list to match config tasks.doc.required_sections."
-commit: null
+commit:
+  hash: "26032cabd0ed0614b09836e531236c8587df094a"
+  message: "✨ TFAPHD policy: align required task doc sections with config"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Fix AGENTS.md required task doc sections list to match config tasks.doc.required_sections (avoid drift)."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: AGENTS.md required task doc sections now match config tasks.doc.required_sections; agentplane task lint OK."
 events:
   -
     type: "status"
@@ -39,8 +44,15 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Updated AGENTS.md required task doc sections list to match config tasks.doc.required_sections."
+  -
+    type: "status"
+    at: "2026-02-07T08:21:08.459Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: AGENTS.md required task doc sections now match config tasks.doc.required_sections; agentplane task lint OK."
 doc_version: 2
-doc_updated_at: "2026-02-07T08:16:38.238Z"
+doc_updated_at: "2026-02-07T08:21:08.459Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "AGENTS.md required task doc sections diverge from .agentplane/config.json tasks.doc.required_sections, causing ambiguity and potential tooling mismatch. Update AGENTS.md list to match required_sections 1:1."
 ---
