@@ -1,7 +1,7 @@
 ---
 id: "202602070828-GB29KB"
 title: "P1: Align framework AGENTS.md asset required sections with config"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -20,11 +20,16 @@ verification:
   updated_at: "2026-02-07T08:29:16.351Z"
   updated_by: "ORCHESTRATOR"
   note: "Updated packages/agentplane/assets/AGENTS.md required sections list to match config tasks.doc.required_sections."
-commit: null
+commit:
+  hash: "fcc6a1af151d36c5727e877738c6dc79e4c84611"
+  message: "✨ GB29KB framework: align AGENTS.md asset required sections"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Update framework AGENTS.md asset required doc sections list to match config tasks.doc.required_sections."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: packages/agentplane/assets/AGENTS.md required task doc sections now match config tasks.doc.required_sections; agentplane task lint OK."
 events:
   -
     type: "status"
@@ -39,8 +44,15 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Updated packages/agentplane/assets/AGENTS.md required sections list to match config tasks.doc.required_sections."
+  -
+    type: "status"
+    at: "2026-02-07T08:32:07.710Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: packages/agentplane/assets/AGENTS.md required task doc sections now match config tasks.doc.required_sections; agentplane task lint OK."
 doc_version: 2
-doc_updated_at: "2026-02-07T08:29:16.359Z"
+doc_updated_at: "2026-02-07T08:32:07.710Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "packages/agentplane/assets/AGENTS.md is used as the framework install/init template and currently diverges from tasks.doc.required_sections. Update the required task doc sections list to match config 1:1."
 ---
