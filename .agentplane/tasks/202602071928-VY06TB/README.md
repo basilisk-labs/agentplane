@@ -1,7 +1,7 @@
 ---
 id: "202602071928-VY06TB"
 title: "CLI2-043: Migrate ide sync to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-07T20:55:02.520Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated ide sync to cli2 registry (spec-derived parsing/help/usage) with optional --ide choice, removed legacy dispatcher branch, and updated tests for new E_USAGE output + help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
-commit: null
+commit:
+  hash: "d0a90f73cd55564c1c631e7cdf567f0c96edf47c"
+  message: "✅ VY06TB cli: migrate ide sync to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate ide sync to cli2 registry (spec-derived parsing/help/usage), remove legacy dispatcher branch, and update tests for new E_USAGE output."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: ide sync is cli2-routed with spec-derived help/usage; legacy dispatcher removed; tests passing (typecheck/lint/format/test:cli:core)."
 doc_version: 2
-doc_updated_at: "2026-02-07T20:55:02.521Z"
+doc_updated_at: "2026-02-07T20:55:26.123Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `ide sync`."
 ---
