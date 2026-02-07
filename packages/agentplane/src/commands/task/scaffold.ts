@@ -84,6 +84,31 @@ function parseTaskScaffoldFlags(args: string[]): TaskScaffoldFlags {
   return out;
 }
 
+function insertMarkdownSectionBefore(opts: {
+  body: string;
+  section: string;
+  text: string;
+  beforeSection: string;
+}): string {
+  const normalized = opts.body.replaceAll("\r\n", "\n");
+  if (normalized.includes(`## ${opts.section}`)) {
+    return setMarkdownSection(normalized, opts.section, opts.text);
+  }
+
+  const lines = normalized.split("\n");
+  const beforeHeading = `## ${opts.beforeSection}`;
+  const beforeIdx = lines.findIndex((line) => line.trim() === beforeHeading);
+  if (beforeIdx === -1) {
+    // Fallback: append at the end if we can't find the insertion anchor.
+    return setMarkdownSection(normalized, opts.section, opts.text);
+  }
+
+  const textLines = opts.text.replaceAll("\r\n", "\n").split("\n");
+  const sectionLines = [`## ${opts.section}`, "", ...textLines, "", ""];
+  const out = [...lines.slice(0, beforeIdx), ...sectionLines, ...lines.slice(beforeIdx)];
+  return `${out.join("\n").trimEnd()}\n`;
+}
+
 export async function cmdTaskScaffold(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -154,6 +179,20 @@ export async function cmdTaskScaffold(opts: {
     }
 
     const frontmatter = taskDataToFrontmatter(baseTask);
+    const verifyStepsTemplate = [
+      "### Scope",
+      "",
+      "",
+      "### Checks",
+      "",
+      "",
+      "### Evidence / Commands",
+      "",
+      "",
+      "### Pass criteria",
+      "",
+      "",
+    ].join("\n");
     const verificationTemplate = [
       "### Plan",
       "",
@@ -165,7 +204,13 @@ export async function cmdTaskScaffold(opts: {
       "<!-- END VERIFICATION RESULTS -->",
     ].join("\n");
     const baseDoc = ensureDocSections("", config.tasks.doc.required_sections);
-    const body = setMarkdownSection(baseDoc, "Verification", verificationTemplate);
+    const withVerifySteps = insertMarkdownSectionBefore({
+      body: baseDoc,
+      section: "Verify Steps",
+      text: verifyStepsTemplate,
+      beforeSection: "Verification",
+    });
+    const body = setMarkdownSection(withVerifySteps, "Verification", verificationTemplate);
     const text = renderTaskReadme(frontmatter, body);
     await mkdir(path.dirname(readmePath), { recursive: true });
     await writeTextIfChanged(readmePath, text.endsWith("\n") ? text : `${text}\n`);
