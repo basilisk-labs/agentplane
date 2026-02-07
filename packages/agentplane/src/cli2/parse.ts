@@ -75,6 +75,13 @@ function validateOptValue(spec: CommandSpec<unknown>, opt: OptionSpec, value: st
   }
 }
 
+function normalizeForValidation(opt: OptionSpec, rawValue: string): string {
+  if (opt.kind !== "string") return rawValue;
+  if (!opt.coerce) return rawValue;
+  const coerced = opt.coerce(rawValue);
+  return typeof coerced === "string" ? coerced : rawValue;
+}
+
 export function parseCommandArgv<TParsed>(
   spec: CommandSpec<TParsed>,
   argv: readonly string[],
@@ -120,8 +127,9 @@ export function parseCommandArgv<TParsed>(
       if (value === undefined || value === null || value === "") {
         throw usageError({ spec, message: `Missing value after ${head}` });
       }
-      validateOptValue(spec, opt, String(value));
-      setOpt(raw, opt, String(value));
+      const rawValue = String(value);
+      validateOptValue(spec, opt, normalizeForValidation(opt, rawValue));
+      setOpt(raw, opt, rawValue);
       if (eq === -1) i++;
       continue;
     }
@@ -141,8 +149,9 @@ export function parseCommandArgv<TParsed>(
 
     const value = argv[i + 1];
     if (!value) throw usageError({ spec, message: `Missing value after ${tok}` });
-    validateOptValue(spec, opt, String(value));
-    setOpt(raw, opt, String(value));
+    const rawValue = String(value);
+    validateOptValue(spec, opt, normalizeForValidation(opt, rawValue));
+    setOpt(raw, opt, rawValue);
     i++;
   }
 

@@ -1,7 +1,7 @@
 ---
 id: "202602071927-K4AX24"
 title: "CLI2-030: Migrate init to cli2"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T20:04:26.052Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-07T20:08:16.884Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated init to cli2 with spec-derived parsing/help/usage and updated run-cli tests for new E_USAGE messages. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate init into cli2 registry so parsing/help/usage are spec-derived, while preserving current interactive vs non-interactive behavior and conflict handling."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:27:56.055Z"
+doc_updated_at: "2026-02-07T20:08:16.884Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Register `init` in cli2; make parsing/help/usage spec-derived; preserve behavior."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T20:08:16.884Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated init to cli2 with spec-derived parsing/help/usage and updated run-cli tests for new E_USAGE messages. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:04:30.933Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

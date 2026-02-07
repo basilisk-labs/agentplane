@@ -512,7 +512,10 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane init");
+      expect(io.stderr).toContain("Non-interactive init requires");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane init");
+      expect(io.stderr).toContain("agentplane help init --compact");
     } finally {
       io.restore();
     }
@@ -548,7 +551,9 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--yes", "--wat", "x", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Unknown flag");
+      expect(io.stderr).toContain("Unknown option: --wat");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane init");
     } finally {
       io.restore();
     }
@@ -560,7 +565,9 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "extra", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane init");
+      expect(io.stderr).toContain("Unexpected argument: extra");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane init");
     } finally {
       io.restore();
     }
@@ -572,9 +579,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--ide", "vscode", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain(
-        "Invalid value for --ide: vscode (expected codex|cursor|windsurf)",
-      );
+      expect(io.stderr).toContain("Invalid value for --ide: vscode");
+      expect(io.stderr).toContain("expected one of");
     } finally {
       io.restore();
     }
@@ -586,7 +592,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--workflow", "fast", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Invalid value for --workflow: fast (expected direct|branch_pr)");
+      expect(io.stderr).toContain("Invalid value for --workflow: fast");
+      expect(io.stderr).toContain("expected one of");
     } finally {
       io.restore();
     }

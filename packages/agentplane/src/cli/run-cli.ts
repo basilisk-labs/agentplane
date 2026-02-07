@@ -57,6 +57,8 @@ import { cmdUpgrade } from "../commands/upgrade.js";
 import { CommandRegistry } from "../cli2/registry.js";
 import { parseCommandArgv } from "../cli2/parse.js";
 import { helpSpec, makeHelpHandler } from "../cli2/help.js";
+import type { CommandHandler, CommandSpec } from "../cli2/spec.js";
+import { usageError } from "../cli2/errors.js";
 import { taskNewSpec, makeRunTaskNewHandler } from "../commands/task/new.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import { recipesInstallSpec, runRecipesInstall } from "../commands/recipes/install.command.js";
@@ -489,10 +491,6 @@ const ROLE_USAGE = "Usage: agentplane role <role>";
 const ROLE_USAGE_EXAMPLE = "agentplane role ORCHESTRATOR";
 const AGENTS_USAGE = "Usage: agentplane agents";
 const AGENTS_USAGE_EXAMPLE = "agentplane agents";
-const INIT_USAGE =
-  "Usage: agentplane init --ide <...> --workflow <...> --backend <local|redmine> --hooks <...> --require-plan-approval <...> --require-network-approval <...> --require-verify-approval <...> [--recipes <...>] [--yes] [--force|--backup]";
-const INIT_USAGE_EXAMPLE =
-  "agentplane init --ide codex --workflow direct --backend local --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes";
 const CONFIG_SET_USAGE = "Usage: agentplane config set <key> <value>";
 const CONFIG_SET_USAGE_EXAMPLE = "agentplane config set workflow_mode branch_pr";
 const MODE_SET_USAGE = "Usage: agentplane mode set <direct|branch_pr>";
@@ -520,126 +518,180 @@ const HOOKS_RUN_USAGE_EXAMPLE = "agentplane hooks run pre-commit";
 const HOOKS_INSTALL_USAGE = "Usage: agentplane hooks install|uninstall";
 const HOOKS_INSTALL_USAGE_EXAMPLE = "agentplane hooks install";
 
-function parseBooleanFlag(value: string, flag: string): boolean {
+function parseBooleanValueForInit(flag: string, value: string): boolean {
   const normalized = value.trim().toLowerCase();
   if (["1", "true", "yes", "y", "on"].includes(normalized)) return true;
   if (["0", "false", "no", "n", "off"].includes(normalized)) return false;
-  throw new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
+  throw usageError({
+    spec: initSpec,
+    command: "init",
     message: invalidValueForFlag(flag, value, "true|false"),
   });
 }
 
-function parseInitFlags(args: string[]): InitFlags {
-  const out: InitFlags = { yes: false };
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (!arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unexpected argument: ${arg}` });
-    }
-    if (arg === "--yes") {
-      out.yes = true;
-      continue;
-    }
-    if (arg === "--force") {
-      out.force = true;
-      continue;
-    }
-    if (arg === "--backup") {
-      out.backup = true;
-      continue;
-    }
-    const next = args[i + 1];
-    if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
-    }
-    switch (arg) {
-      case "--ide": {
-        const normalized = next.trim().toLowerCase();
-        if (normalized !== "codex" && normalized !== "cursor" && normalized !== "windsurf") {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: invalidValueForFlag("--ide", next, "codex|cursor|windsurf"),
-          });
-        }
-        out.ide = normalized as InitFlags["ide"];
-        break;
-      }
-      case "--workflow": {
-        if (next !== "direct" && next !== "branch_pr") {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: invalidValueForFlag("--workflow", next, "direct|branch_pr"),
-          });
-        }
-        out.workflow = next;
-        break;
-      }
-      case "--backend": {
-        const normalized = next.trim().toLowerCase();
-        if (normalized !== "local" && normalized !== "redmine") {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: invalidValueForFlag("--backend", next, "local|redmine"),
-          });
-        }
-        out.backend = normalized as InitFlags["backend"];
-        break;
-      }
-      case "--hooks": {
-        out.hooks = parseBooleanFlag(next, "--hooks");
-        break;
-      }
-      case "--require-plan-approval": {
-        out.requirePlanApproval = parseBooleanFlag(next, "--require-plan-approval");
-        break;
-      }
-      case "--require-network-approval": {
-        out.requireNetworkApproval = parseBooleanFlag(next, "--require-network-approval");
-        break;
-      }
-      case "--require-verify-approval": {
-        out.requireVerifyApproval = parseBooleanFlag(next, "--require-verify-approval");
-        break;
-      }
-      case "--recipes": {
-        const normalized = next.trim().toLowerCase();
-        out.recipes =
-          normalized === "none" || normalized === ""
-            ? []
-            : next
-                .split(",")
-                .map((item) => item.trim())
-                .filter(Boolean);
-        break;
-      }
-      default: {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
-      }
-    }
-    i++;
-  }
-  if (out.force && out.backup) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Use either --force or --backup (not both).",
-    });
-  }
-  return out;
+function parseRecipesSelectionForInit(value: string): string[] {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "none" || normalized === "") return [];
+  return value
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
+
+type InitParsed = Omit<InitFlags, "yes"> & { yes: boolean };
+
+const initSpec: CommandSpec<InitParsed> = {
+  id: ["init"],
+  group: "Setup",
+  summary: "Initialize agentplane project files under .agentplane/.",
+  description:
+    "Creates .agentplane/ config, backend stubs, and agent templates. In interactive mode it prompts for missing inputs; use --yes for non-interactive mode.",
+  options: [
+    {
+      kind: "string",
+      name: "ide",
+      valueHint: "<codex|cursor|windsurf>",
+      choices: ["codex", "cursor", "windsurf"],
+      coerce: (raw) => raw.trim().toLowerCase(),
+      description: "IDE rules integration target (default: codex).",
+    },
+    {
+      kind: "string",
+      name: "workflow",
+      valueHint: "<direct|branch_pr>",
+      choices: ["direct", "branch_pr"],
+      description: "Workflow mode (default: direct).",
+    },
+    {
+      kind: "string",
+      name: "backend",
+      valueHint: "<local|redmine>",
+      choices: ["local", "redmine"],
+      coerce: (raw) => raw.trim().toLowerCase(),
+      description: "Task backend (default: local).",
+    },
+    {
+      kind: "string",
+      name: "hooks",
+      valueHint: "<true|false>",
+      description: "Install git hooks (non-interactive requires an explicit value).",
+    },
+    {
+      kind: "string",
+      name: "require-plan-approval",
+      valueHint: "<true|false>",
+      description: "Require explicit plan approval before starting work.",
+    },
+    {
+      kind: "string",
+      name: "require-network-approval",
+      valueHint: "<true|false>",
+      description: "Require explicit approval before any network operation.",
+    },
+    {
+      kind: "string",
+      name: "require-verify-approval",
+      valueHint: "<true|false>",
+      description: "Require explicit approval before recording verification.",
+    },
+    {
+      kind: "string",
+      name: "recipes",
+      valueHint: "<none|id1,id2,...>",
+      description: "Optional bundled recipes selection (comma-separated), or 'none'.",
+    },
+    {
+      kind: "boolean",
+      name: "force",
+      default: false,
+      description: "Overwrite init conflicts by deleting existing paths.",
+    },
+    {
+      kind: "boolean",
+      name: "backup",
+      default: false,
+      description: "Backup init conflicts before overwriting.",
+    },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Non-interactive mode (do not prompt; use defaults for missing flags).",
+    },
+  ],
+  examples: [
+    {
+      cmd: "agentplane init",
+      why: "Interactive setup (prompts for missing values).",
+    },
+    {
+      cmd: "agentplane init --workflow direct --backend local --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes",
+      why: "Non-interactive setup with explicit policy flags.",
+    },
+    {
+      cmd: "agentplane init --force --yes",
+      why: "Re-initialize, overwriting conflicting paths (non-interactive).",
+    },
+  ],
+  validateRaw: (raw) => {
+    if (raw.extra.length > 0) {
+      throw usageError({
+        spec: initSpec,
+        command: "init",
+        message: `Unexpected argument: ${raw.extra[0]}`,
+      });
+    }
+  },
+  parse: (raw) => {
+    const hooksRaw = raw.opts.hooks as string | undefined;
+    const requirePlanRaw = raw.opts["require-plan-approval"] as string | undefined;
+    const requireNetworkRaw = raw.opts["require-network-approval"] as string | undefined;
+    const requireVerifyRaw = raw.opts["require-verify-approval"] as string | undefined;
+    const recipesRaw = raw.opts.recipes as string | undefined;
+
+    return {
+      ide: raw.opts.ide as InitFlags["ide"],
+      workflow: raw.opts.workflow as InitFlags["workflow"],
+      backend: raw.opts.backend as InitFlags["backend"],
+      hooks: hooksRaw === undefined ? undefined : parseBooleanValueForInit("--hooks", hooksRaw),
+      requirePlanApproval:
+        requirePlanRaw === undefined
+          ? undefined
+          : parseBooleanValueForInit("--require-plan-approval", requirePlanRaw),
+      requireNetworkApproval:
+        requireNetworkRaw === undefined
+          ? undefined
+          : parseBooleanValueForInit("--require-network-approval", requireNetworkRaw),
+      requireVerifyApproval:
+        requireVerifyRaw === undefined
+          ? undefined
+          : parseBooleanValueForInit("--require-verify-approval", requireVerifyRaw),
+      recipes: recipesRaw === undefined ? undefined : parseRecipesSelectionForInit(recipesRaw),
+      force: raw.opts.force === true,
+      backup: raw.opts.backup === true,
+      yes: raw.opts.yes === true,
+    };
+  },
+  validate: (p) => {
+    if (p.force && p.backup) {
+      throw usageError({
+        spec: initSpec,
+        command: "init",
+        message: "Use either --force or --backup (not both).",
+      });
+    }
+  },
+};
+
+const runInit: CommandHandler<InitParsed> = (ctx, flags) =>
+  cmdInit({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, flags });
 
 async function cmdInit(opts: {
   cwd: string;
   rootOverride?: string;
-  args: string[];
+  flags: InitParsed;
 }): Promise<number> {
-  const flags = parseInitFlags(opts.args);
+  const flags = opts.flags;
   type InitIde = NonNullable<InitFlags["ide"]>;
   const defaults: {
     ide: InitIde;
@@ -679,10 +731,11 @@ async function cmdInit(opts: {
       flags.requireNetworkApproval === undefined ||
       flags.requireVerifyApproval === undefined)
   ) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(INIT_USAGE, INIT_USAGE_EXAMPLE),
+    throw usageError({
+      spec: initSpec,
+      command: "init",
+      message:
+        "Non-interactive init requires --yes or explicit values for: --workflow, --hooks, --require-plan-approval, --require-network-approval, --require-verify-approval.",
     });
   }
 
@@ -1094,6 +1147,7 @@ export async function runCli(argv: string[]): Promise<number> {
     if (rest[0] === "help") {
       const registry = new CommandRegistry();
       const noop = () => Promise.resolve(0);
+      registry.register(initSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1148,6 +1202,7 @@ export async function runCli(argv: string[]): Promise<number> {
     // cli2 command routing (migrated commands only, for now).
     {
       const registry = new CommandRegistry();
+      registry.register(initSpec, runInit);
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
@@ -1158,18 +1213,6 @@ export async function runCli(argv: string[]): Promise<number> {
         const parsed = parseCommandArgv(match.spec, tail).parsed;
         return await match.handler({ cwd, rootOverride: globals.root }, parsed);
       }
-    }
-
-    if (namespace === "init") {
-      const initArgs = command ? [command, ...args] : [];
-      if (command && !command.startsWith("--")) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(INIT_USAGE, INIT_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdInit({ cwd: process.cwd(), rootOverride: globals.root, args: initArgs });
     }
 
     if (namespace === "upgrade") {
