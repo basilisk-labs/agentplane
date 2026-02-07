@@ -1,7 +1,7 @@
 ---
 id: "202602070855-5Z7C2Y"
 title: "Backend normalizeTasks: single-pass + write-if-changed"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -19,18 +19,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T12:21:39.104Z"
+  updated_by: "CODEX"
+  note: "Verified: bun run typecheck; bun run lint; bun run test:agentplane"
+commit:
+  hash: "f43b15eb15f6dd5d5bcd939bbe765ca580de738f"
+  message: "✅ 5Z7C2Y backend: add normalizeTasks single-pass + wire task normalize"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: implement backend.normalizeTasks (LocalBackend single-pass + write-if-changed) and wire task normalize to prefer it."
+  -
+    author: "CODEX"
+    body: "Verified: bun run typecheck; bun run lint; bun run test:agentplane. Summary: add TaskBackend.normalizeTasks; implement LocalBackend single-pass normalize with writeTextIfChanged; task normalize prefers backend.normalizeTasks. Implementation: f43b15eb15f6."
 doc_version: 2
-doc_updated_at: "2026-02-07T12:19:21.470Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-02-07T12:21:44.540Z"
+doc_updated_by: "CODEX"
 description: "Add backend.normalizeTasks() contract and wire local backend to single-pass read/parse/renderStable/writeIfChanged without touching updated_at when content unchanged; migrate task normalize to backend.normalizeTasks."
 id_source: "explicit"
 ---
@@ -50,6 +55,18 @@ In scope: add TaskBackend.normalizeTasks(); implement LocalBackend.normalizeTask
 
 ## Verification
 
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T12:21:39.104Z — VERIFY — ok
+
+By: CODEX
+
+Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
