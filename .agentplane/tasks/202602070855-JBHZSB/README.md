@@ -1,7 +1,7 @@
 ---
 id: "202602070855-JBHZSB"
 title: "GitContext: memoized facade + guard/commit migration"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -19,15 +19,20 @@ plan_approval:
   updated_by: "CODEX"
   note: "Approved by user in chat (2026-02-07)."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T11:51:30.329Z"
+  updated_by: "CODEX"
+  note: "bun run typecheck; bun run test:cli:core"
+commit:
+  hash: "e79d0c7eb1b717dd109ca23e4d72a7080d0911ef"
+  message: "✅ JBHZSB git: add GitContext and migrate guard/status staging"
 comments:
   -
     author: "CODEX"
     body: "start: implement GitContext facade + migrate guard/commit pipeline"
+  -
+    author: "CODEX"
+    body: "Verified: bun run typecheck; bun run test:cli:core. GitContext now uses single git status --porcelain -z -uall and invalidates memo after stage/commit."
 events:
   -
     type: "status"
@@ -36,8 +41,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "start: implement GitContext facade + migrate guard/commit pipeline"
+  -
+    type: "verify"
+    at: "2026-02-07T11:51:30.329Z"
+    author: "CODEX"
+    state: "ok"
+    note: "bun run typecheck; bun run test:cli:core"
+  -
+    type: "status"
+    at: "2026-02-07T11:51:42.188Z"
+    author: "CODEX"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run typecheck; bun run test:cli:core. GitContext now uses single git status --porcelain -z -uall and invalidates memo after stage/commit."
 doc_version: 2
-doc_updated_at: "2026-02-07T11:39:52.651Z"
+doc_updated_at: "2026-02-07T11:51:42.188Z"
 doc_updated_by: "CODEX"
 description: "Implement GitContext(statusChangedPaths via one git status --porcelain -z, headCommit memoized, stage batched, commit). Migrate guard/commit pipeline and disallow direct git exec outside GitContext."
 id_source: "explicit"
@@ -68,5 +86,17 @@ Rollback:
 
 ## Verification
 
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T11:51:30.329Z — VERIFY — ok
+
+By: CODEX
+
+Note: bun run typecheck; bun run test:cli:core
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
