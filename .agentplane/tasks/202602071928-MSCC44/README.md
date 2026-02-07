@@ -1,7 +1,7 @@
 ---
 id: "202602071928-MSCC44"
 title: "CLI2-050: Migrate recipes list to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T20:56:33.125Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-07T20:59:48.873Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated recipes list to cli2 with spec-derived parsing/help/usage and routed it via cli2 registry. Refactored recipes list implementation to accept parsed flags (cmdRecipeListParsed) and updated run-cli recipes tests for new E_USAGE output and help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:unit."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate recipes list to cli2 with spec-derived parsing/help/usage; refactor recipes list implementation to accept parsed flags (remove manual parseRecipeListArgs for this command); update run-cli recipes tests accordingly."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:04.918Z"
+doc_updated_at: "2026-02-07T20:59:48.874Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `recipes list` flags."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:recipes
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T20:59:48.873Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated recipes list to cli2 with spec-derived parsing/help/usage and routed it via cli2 registry. Refactored recipes list implementation to accept parsed flags (cmdRecipeListParsed) and updated run-cli recipes tests for new E_USAGE output and help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:unit.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:56:33.260Z, excerpt_hash=sha256:49a21b4783624e46a2b558687273ceab46dfe2bee43a66b6c9c72eba5cd63609
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

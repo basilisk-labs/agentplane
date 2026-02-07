@@ -798,6 +798,8 @@ type RecipeListFlags = {
   tag?: string;
 };
 
+export type { RecipeListFlags };
+
 function parseRecipeListArgs(args: string[]): RecipeListFlags {
   const flags: RecipeListFlags = { full: false };
   for (let i = 0; i < args.length; i++) {
@@ -1012,6 +1014,20 @@ async function cmdRecipeList(opts: {
 }): Promise<number> {
   try {
     const flags = parseRecipeListArgs(opts.args);
+    return await cmdRecipeListParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride, flags });
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "recipes list", root: opts.rootOverride ?? null });
+  }
+}
+
+export async function cmdRecipeListParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+  flags: RecipeListFlags;
+}): Promise<number> {
+  const flags = opts.flags;
+  try {
     const filePath = resolveInstalledRecipesPath();
     const installed = await readInstalledRecipesFile(filePath);
 

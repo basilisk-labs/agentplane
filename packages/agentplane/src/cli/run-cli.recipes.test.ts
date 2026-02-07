@@ -206,7 +206,10 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "list", "--tag", " ", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes");
+      expect(io.stderr).toContain("Option --tag must not be empty.");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane recipes list");
+      expect(io.stderr).toContain("agentplane help recipes list --compact");
     } finally {
       io.restore();
     }
@@ -477,8 +480,8 @@ describe("runCli recipes", () => {
         args: ["recipes", "install", "--conflict", "nope", "--path", "x"],
         msg: "Unknown option: --conflict",
       },
-      { args: ["recipes", "list", "--tag"], msg: "Usage: agentplane recipes" },
-      { args: ["recipes", "list", "--nope"], msg: "Usage: agentplane recipes" },
+      { args: ["recipes", "list", "--tag"], msg: "Missing value after --tag" },
+      { args: ["recipes", "list", "--nope"], msg: "Unknown option: --nope" },
       { args: ["recipes", "cache"], msg: "Usage: agentplane recipes cache <prune> [args]" },
       {
         args: ["recipes", "cache", "nope"],
@@ -678,7 +681,10 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "list", "extra"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes");
+      expect(io.stderr).toContain("Unexpected argument: extra");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane recipes list");
+      expect(io.stderr).toContain("agentplane help recipes list --compact");
     } finally {
       io.restore();
     }

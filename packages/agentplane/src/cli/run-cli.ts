@@ -61,6 +61,7 @@ import { usageError } from "../cli2/errors.js";
 import { taskNewSpec, makeRunTaskNewHandler } from "../commands/task/new.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import { recipesInstallSpec, runRecipesInstall } from "../commands/recipes/install.command.js";
+import { recipesListSpec, runRecipesList } from "../commands/recipes/list.command.js";
 import { upgradeSpec, runUpgrade } from "../commands/upgrade.command.js";
 import {
   BACKEND_SYNC_USAGE,
@@ -1303,6 +1304,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(modeGetSpec, noop);
       registry.register(modeSetSpec, noop);
       registry.register(ideSyncSpec, noop);
+      registry.register(recipesListSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1369,6 +1371,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(ideSyncSpec, runIdeSync);
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
+      registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);
