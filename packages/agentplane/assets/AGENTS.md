@@ -229,7 +229,9 @@ Always follow `workflow_mode` from `.agentplane/config.json`.
 Rules:
 
 - Do all work in the current checkout.
-- Do not create task branches/worktrees (agentplane should reject them).
+- Task branches are allowed in `direct` (single working directory). Note: `agentplane work start <task-id> --agent <ROLE> --slug <slug>` will create/checkout `task/<task-id>/<slug>` in-place.
+- Do not use worktrees in `direct`. `agentplane work start ... --worktree` is `branch_pr`-only.
+- If you only need artifacts/docs without switching branches, prefer `agentplane task scaffold <task-id>`.
 
 Recommended cadence:
 

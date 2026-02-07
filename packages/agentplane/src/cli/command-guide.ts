@@ -90,7 +90,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "CODER",
     lines: [
-      "- direct mode: work in the current checkout; optional `agentplane work start <task-id> --agent <ROLE> --slug <slug>` only scaffolds docs",
+      "- direct mode: work in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` creates/checks out `task/<task-id>/<slug>` in-place (no worktree). Use `agentplane task scaffold <task-id>` for docs without switching branches.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
@@ -101,7 +101,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "TESTER",
     lines: [
-      "- direct mode: work in the current checkout; optional `agentplane work start <task-id> --agent <ROLE> --slug <slug>` only scaffolds docs",
+      "- direct mode: work in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` creates/checks out `task/<task-id>/<slug>` in-place (no worktree). Use `agentplane task scaffold <task-id>` for docs without switching branches.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',

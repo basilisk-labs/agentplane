@@ -58,7 +58,7 @@ export function renderHelp(): string {
     "  agentplane branch remove [--branch <name>] [--worktree <path>] [--force] [--quiet]",
     "",
     "Work commands:",
-    "  agentplane work start <task-id> --agent <id> --slug <slug> --worktree",
+    "  agentplane work start <task-id> --agent <id> --slug <slug> [--worktree]",
     "",
     "PR commands:",
     "  agentplane pr open <task-id> --author <id> [--branch <name>]",

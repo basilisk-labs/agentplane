@@ -281,6 +281,64 @@ describe("runCli", () => {
     expect(stdout.trim()).toBe(`task/${taskId}/work-start`);
   });
 
+  it("work start rejects --worktree in direct mode", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Work start direct worktree reject",
+        "--description",
+        "Direct mode should reject --worktree",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await approveTaskPlan(root, taskId);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "work",
+        "start",
+        taskId,
+        "--agent",
+        "CODER",
+        "--slug",
+        "work-start",
+        "--worktree",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--worktree is only supported");
+      expect(io.stderr).toContain("Usage: agentplane work start");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("work start creates a branch and worktree", async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();

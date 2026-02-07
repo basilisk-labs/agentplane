@@ -127,6 +127,18 @@ export async function cmdWorkStart(opts: {
     });
     const loaded = await loadConfig(resolved.agentplaneDir);
     const mode = loaded.config.workflow_mode;
+    if (mode !== "branch_pr" && opts.worktree) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: [
+          `--worktree is only supported in workflow_mode=branch_pr (current: ${mode}).`,
+          "Switch to branch_pr or omit --worktree.",
+          "",
+          usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
+        ].join("\n"),
+      });
+    }
     if (mode === "branch_pr" && !opts.worktree) {
       throw new CliError({
         exitCode: 2,
