@@ -499,8 +499,6 @@ type InitFlags = {
 
 const READY_USAGE = "Usage: agentplane ready <task-id>";
 const READY_USAGE_EXAMPLE = "agentplane ready 202602030608-F1Q8AB";
-const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
-const IDE_SYNC_USAGE_EXAMPLE = "agentplane ide sync";
 const TASK_SHOW_USAGE = "Usage: agentplane task show <task-id>";
 const TASK_SHOW_USAGE_EXAMPLE = "agentplane task show 202602030608-F1Q8AB";
 const TASK_SEARCH_USAGE = "Usage: agentplane task search <query> [flags]";
@@ -808,6 +806,31 @@ const runModeSet: CommandHandler<ModeSetParsed> = (ctx, p) =>
     rootOverride: ctx.rootOverride,
     mode: p.mode as "direct" | "branch_pr",
   });
+
+type IdeSyncParsed = { ide?: "cursor" | "windsurf" };
+
+const ideSyncSpec: CommandSpec<IdeSyncParsed> = {
+  id: ["ide", "sync"],
+  group: "IDE",
+  summary: "Generate IDE entrypoints from AGENTS.md.",
+  options: [
+    {
+      kind: "string",
+      name: "ide",
+      valueHint: "<cursor|windsurf>",
+      choices: ["cursor", "windsurf"],
+      description: "Only generate rules for a single IDE (default: both).",
+    },
+  ],
+  examples: [
+    { cmd: "agentplane ide sync", why: "Generate Cursor + Windsurf rules." },
+    { cmd: "agentplane ide sync --ide cursor", why: "Generate Cursor rules only." },
+  ],
+  parse: (raw) => ({ ide: raw.opts.ide as IdeSyncParsed["ide"] }),
+};
+
+const runIdeSync: CommandHandler<IdeSyncParsed> = (ctx, p) =>
+  cmdIdeSync({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, ide: p.ide });
 
 async function cmdInit(opts: {
   cwd: string;
@@ -1279,6 +1302,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(configSetSpec, noop);
       registry.register(modeGetSpec, noop);
       registry.register(modeSetSpec, noop);
+      registry.register(ideSyncSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1342,6 +1366,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(configSetSpec, runConfigSet);
       registry.register(modeGetSpec, runModeGet);
       registry.register(modeSetSpec, runModeSet);
+      registry.register(ideSyncSpec, runIdeSync);
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
@@ -1368,17 +1393,6 @@ export async function runCli(argv: string[]): Promise<number> {
         rootOverride: globals.root,
         taskId: command,
       });
-    }
-
-    if (namespace === "ide") {
-      if (command !== "sync" || args.length > 0) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(IDE_SYNC_USAGE, IDE_SYNC_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdIdeSync({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "task" && command === "new") {

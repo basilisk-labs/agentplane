@@ -1,7 +1,7 @@
 ---
 id: "202602071928-VY06TB"
 title: "CLI2-043: Migrate ide sync to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T20:53:38.297Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-07T20:55:02.520Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated ide sync to cli2 registry (spec-derived parsing/help/usage) with optional --ide choice, removed legacy dispatcher branch, and updated tests for new E_USAGE output + help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate ide sync to cli2 registry (spec-derived parsing/help/usage), remove legacy dispatcher branch, and update tests for new E_USAGE output."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:03.946Z"
+doc_updated_at: "2026-02-07T20:55:02.521Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `ide sync`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T20:55:02.520Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated ide sync to cli2 registry (spec-derived parsing/help/usage) with optional --ide choice, removed legacy dispatcher branch, and updated tests for new E_USAGE output + help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:53:38.433Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

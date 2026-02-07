@@ -160,7 +160,10 @@ describe("runCli", () => {
     try {
       const code = await runCli(["ide", "sync", "extra", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane ide sync");
+      expect(io.stderr).toContain("Unexpected argument: extra");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane ide sync");
+      expect(io.stderr).toContain("agentplane help ide sync --compact");
     } finally {
       io.restore();
     }
