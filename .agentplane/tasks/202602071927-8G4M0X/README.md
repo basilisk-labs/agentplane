@@ -1,7 +1,7 @@
 ---
 id: "202602071927-8G4M0X"
 title: "CLI2-031: Migrate upgrade to cli2"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-07T20:12:16.723Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated upgrade to cli2 (spec-derived parsing/help/usage) and refactored upgrade implementation to accept parsed flags. Updated run-cli tests for new E_USAGE output. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
-commit: null
+commit:
+  hash: "d63805676bdd91bedab88ec3ba81fcb0ab20de2a"
+  message: "✅ 8G4M0X cli: migrate upgrade to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate upgrade to cli2 (spec-derived parsing/help/usage) while preserving bundle/checksum and network-approval behavior and updating run-cli tests accordingly."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: upgrade is now cli2-routed with spec-derived parsing/help/usage; upgrade implementation supports parsed flags entrypoint; run-cli tests updated and passing (typecheck/lint/format/test:cli:core)."
 doc_version: 2
-doc_updated_at: "2026-02-07T20:12:16.724Z"
+doc_updated_at: "2026-02-07T20:12:49.008Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Register `upgrade` in cli2; spec-driven parsing; preserve network approval gating."
 ---
