@@ -1,7 +1,7 @@
 ---
 id: "202602071657-KAQA47"
 title: "Verify log: Add VerifyStepsRef/hash to Verification entries"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -13,19 +13,72 @@ tags:
 verify:
   - "bun run test:agentplane"
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T17:31:19.494Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
+  state: "ok"
+  updated_at: "2026-02-07T17:33:32.465Z"
+  updated_by: "CODER"
+  note: "verify-record now appends VerifyStepsRef (doc_version/doc_updated_at + sha256) to each Verification entry; tests: bun run test:agentplane, bun run test:cli:core."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: include Verify Steps reference (doc version/mtime + sha256) in each Verification result entry."
 doc_version: 2
-doc_updated_at: "2026-02-07T16:57:25.171Z"
+doc_updated_at: "2026-02-07T17:33:32.467Z"
 doc_updated_by: "CODER"
 description: "verify-record should reference the current Verify Steps (doc_version/doc_updated_at + sha256 excerpt hash)."
-id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+1) In verify-record, compute a reference to current Verify Steps (doc_version/doc_updated_at + sha256 hash).
+2) Append the reference into each Verification entry without copying full Verify Steps text.
+3) Run bun run test:agentplane and bun run test:cli:core.
+
+## Risks
+
+
+## Verification
+
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:33:32.465Z — VERIFY — ok
+
+By: CODER
+
+Note: verify-record now appends VerifyStepsRef (doc_version/doc_updated_at + sha256) to each Verification entry; tests: bun run test:agentplane, bun run test:cli:core.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Verify Steps
+
+### Scope
+
+Enrich Verification entries with a stable reference to the Verify Steps criteria.
+
+### Checks
+
+- Each verify entry includes a VerifyStepsRef with doc_version, doc_updated_at, and sha256 hash of Verify Steps excerpt.
+
+### Evidence / Commands
+
+- bun run test:cli:core
+
+### Pass criteria
+
+- verify-record appends the ref on every entry; no full Verify Steps text duplication.

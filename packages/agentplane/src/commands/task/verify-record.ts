@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -84,6 +85,7 @@ function renderVerificationEntry(opts: {
   by: string;
   note: string;
   details?: string | null;
+  verifyStepsRef?: string | null;
 }): string {
   const lines = [
     `#### ${opts.at} — VERIFY — ${opts.state}`,
@@ -92,11 +94,19 @@ function renderVerificationEntry(opts: {
     "",
     `Note: ${opts.note}`,
   ];
+  const verifyStepsRef = (opts.verifyStepsRef ?? "").trim();
+  if (verifyStepsRef) {
+    lines.push("", `VerifyStepsRef: ${verifyStepsRef}`);
+  }
   const details = (opts.details ?? "").trim();
   if (details) {
     lines.push("", "Details:", "", details);
   }
   return `${lines.join("\n").trimEnd()}\n`;
+}
+
+function sha256Hex(text: string): string {
+  return createHash("sha256").update(text, "utf8").digest("hex");
 }
 
 function parseVerifyRecordFlags(args: string[]): VerifyRecordFlags {
@@ -184,6 +194,15 @@ async function recordVerificationResult(opts: {
     : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
   const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
   const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
+  const verifySteps = extractDocSection(baseDoc, "Verify Steps");
+  const verifyStepsHash = verifySteps
+    ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
+    : null;
+  const verifyStepsRef = [
+    `doc_version=${String(task.doc_version ?? "missing")}`,
+    `doc_updated_at=${String(task.doc_updated_at ?? "missing")}`,
+    `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
+  ].join(", ");
 
   const at = nowIso();
   const entry = renderVerificationEntry({
@@ -192,6 +211,7 @@ async function recordVerificationResult(opts: {
     by: opts.by,
     note: opts.note,
     details: opts.details ?? null,
+    verifyStepsRef,
   });
   const nextVerification = appendBetweenMarkers(verificationSection, entry);
   const nextDoc = ensureDocSections(
