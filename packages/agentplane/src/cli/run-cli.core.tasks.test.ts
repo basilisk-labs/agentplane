@@ -1714,6 +1714,83 @@ describe("runCli", () => {
     }
   });
 
+  it("task derive sets depends_on and task list shows wait deps until spike is DONE", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioSpike = captureStdIO();
+    let spikeId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Spike task",
+        "--description",
+        "Exploration",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "spike",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      spikeId = ioSpike.stdout.trim();
+      expect(spikeId).toContain("-");
+    } finally {
+      ioSpike.restore();
+    }
+
+    const ioDerive = captureStdIO();
+    let derivedId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "derive",
+        spikeId,
+        "--title",
+        "Implementation task",
+        "--description",
+        "Build the thing",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      derivedId = ioDerive.stdout.trim();
+      expect(derivedId).toContain("-");
+    } finally {
+      ioDerive.restore();
+    }
+
+    const ioShow = captureStdIO();
+    try {
+      const code = await runCli(["task", "show", derivedId, "--root", root]);
+      expect(code).toBe(0);
+      const parsed = JSON.parse(ioShow.stdout) as { depends_on?: string[] };
+      expect(parsed.depends_on ?? []).toContain(spikeId);
+    } finally {
+      ioShow.restore();
+    }
+
+    const ioList = captureStdIO();
+    try {
+      const code = await runCli(["task", "list", "--root", root]);
+      expect(code).toBe(0);
+      expect(ioList.stdout).toContain(`deps=wait:${spikeId}`);
+    } finally {
+      ioList.restore();
+    }
+  });
+
   it("task normalize and migrate support quiet/force flags", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
