@@ -231,6 +231,7 @@ export type TaskBackend = {
   id: string;
   listTasks(): Promise<TaskData[]>;
   getTask(taskId: string): Promise<TaskData | null>;
+  getTasks?(taskIds: string[]): Promise<(TaskData | null)[]>;
   writeTask(task: TaskData): Promise<void>;
   writeTasks?(tasks: TaskData[]): Promise<void>;
   normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
@@ -264,6 +265,30 @@ export class RedmineUnavailable extends BackendError {
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value.filter((v): v is string => typeof v === "string");
+}
+
+async function mapLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>,
+): Promise<R[]> {
+  const bounded = Math.max(1, Math.floor(limit));
+  const out: R[] = [];
+  out.length = items.length;
+  let nextIndex = 0;
+
+  const worker = async (): Promise<void> => {
+    for (;;) {
+      const i = nextIndex;
+      nextIndex++;
+      if (i >= items.length) return;
+      out[i] = await fn(items[i], i);
+    }
+  };
+
+  const workers = Array.from({ length: Math.min(bounded, items.length) }, () => worker());
+  await Promise.all(workers);
+  return out;
 }
 
 function normalizeDependsOn(value: unknown): string[] {
@@ -588,6 +613,11 @@ export class LocalBackend implements TaskBackend {
     return task;
   }
 
+  async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
+    // Keep ordering stable for callers; use limited parallelism to avoid IO storms.
+    return await mapLimit(taskIds, 8, async (taskId) => await this.getTask(taskId));
+  }
+
   async getTaskDoc(taskId: string): Promise<string> {
     const readme = taskReadmePath(this.root, taskId);
     const text = await readFile(readme, "utf8");
@@ -708,87 +738,93 @@ export class LocalBackend implements TaskBackend {
   }
 
   async writeTasks(tasks: TaskData[]): Promise<void> {
-    for (const task of tasks) {
+    await mapLimit(tasks, 4, async (task) => {
       await this.writeTask(task);
-    }
+      return null;
+    });
   }
 
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
     const entries = await readdir(this.root, { withFileTypes: true }).catch(() => []);
-    const seen = new Set<string>();
-    let scanned = 0;
-    let changed = 0;
+    const dirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
 
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      const readme = path.join(this.root, entry.name, "README.md");
+    const results = await mapLimit(
+      dirs,
+      8,
+      async (dirName): Promise<{ taskId: string; scanned: boolean; changed: boolean }> => {
+        const readme = path.join(this.root, dirName, "README.md");
 
-      let text = "";
-      try {
-        text = await readFile(readme, "utf8");
-      } catch {
-        continue;
-      }
-
-      let parsed;
-      try {
-        parsed = parseTaskReadme(text);
-      } catch {
-        continue;
-      }
-
-      const fm = parsed.frontmatter;
-      if (!isRecord(fm) || Object.keys(fm).length === 0) continue;
-
-      const taskId = (typeof fm.id === "string" ? fm.id : entry.name).trim();
-      if (taskId) {
-        validateTaskId(taskId);
-        if (seen.has(taskId)) {
-          throw new Error(`Duplicate task id in local backend: ${taskId}`);
+        let text = "";
+        try {
+          text = await readFile(readme, "utf8");
+        } catch {
+          return { taskId: "", scanned: false, changed: false };
         }
-        seen.add(taskId);
-      }
 
-      const task = taskRecordToData({
-        id: taskId,
-        frontmatter: fm as unknown as TaskRecord["frontmatter"],
-        body: parsed.body,
-        readmePath: readme,
-      });
-      scanned++;
+        let parsed;
+        try {
+          parsed = parseTaskReadme(text);
+        } catch {
+          return { taskId: "", scanned: false, changed: false };
+        }
 
-      // Render using the same normalization rules as writeTask, but avoid rewriting the file when the
-      // rendered output is identical (prevents mtime churn and diff-noise).
-      const payload: Record<string, unknown> = { ...task };
-      delete payload.doc;
-      for (const [key, value] of Object.entries(payload)) {
-        if (value === undefined) delete payload[key];
-      }
-      for (const key of ["doc_version", "doc_updated_at", "doc_updated_by"]) {
-        if (payload[key] === undefined && fm[key] !== undefined) payload[key] = fm[key];
-      }
-      if (payload.plan_approval === undefined && fm.plan_approval !== undefined) {
-        payload.plan_approval = fm.plan_approval;
-      }
-      if (payload.plan_approval === undefined) payload.plan_approval = defaultPlanApproval();
-      if (payload.verification === undefined && fm.verification !== undefined) {
-        payload.verification = fm.verification;
-      }
-      if (payload.verification === undefined) payload.verification = defaultVerificationResult();
+        const fm = parsed.frontmatter;
+        if (!isRecord(fm) || Object.keys(fm).length === 0) {
+          return { taskId: "", scanned: false, changed: false };
+        }
 
-      if (payload.doc_version !== DOC_VERSION) payload.doc_version = DOC_VERSION;
-      if (payload.doc_updated_at === undefined || payload.doc_updated_at === "") {
-        payload.doc_updated_at = nowIso();
-      }
-      if (payload.doc_updated_by === undefined || payload.doc_updated_by === "") {
-        payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
-      }
+        const taskId = (typeof fm.id === "string" ? fm.id : dirName).trim();
+        if (taskId) validateTaskId(taskId);
 
-      const next = renderTaskReadme(payload, parsed.body || "");
-      const didWrite = await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
-      if (didWrite) changed++;
+        const task = taskRecordToData({
+          id: taskId,
+          frontmatter: fm as unknown as TaskRecord["frontmatter"],
+          body: parsed.body,
+          readmePath: readme,
+        });
+
+        // Render using the same normalization rules as writeTask, but avoid rewriting the file when the
+        // rendered output is identical (prevents mtime churn and diff-noise).
+        const payload: Record<string, unknown> = { ...task };
+        delete payload.doc;
+        for (const [key, value] of Object.entries(payload)) {
+          if (value === undefined) delete payload[key];
+        }
+        for (const key of ["doc_version", "doc_updated_at", "doc_updated_by"]) {
+          if (payload[key] === undefined && fm[key] !== undefined) payload[key] = fm[key];
+        }
+        if (payload.plan_approval === undefined && fm.plan_approval !== undefined) {
+          payload.plan_approval = fm.plan_approval;
+        }
+        if (payload.plan_approval === undefined) payload.plan_approval = defaultPlanApproval();
+        if (payload.verification === undefined && fm.verification !== undefined) {
+          payload.verification = fm.verification;
+        }
+        if (payload.verification === undefined) payload.verification = defaultVerificationResult();
+
+        if (payload.doc_version !== DOC_VERSION) payload.doc_version = DOC_VERSION;
+        if (payload.doc_updated_at === undefined || payload.doc_updated_at === "") {
+          payload.doc_updated_at = nowIso();
+        }
+        if (payload.doc_updated_by === undefined || payload.doc_updated_by === "") {
+          payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
+        }
+
+        const next = renderTaskReadme(payload, parsed.body || "");
+        const didWrite = await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
+        return { taskId, scanned: true, changed: didWrite };
+      },
+    );
+
+    const seen = new Set<string>();
+    for (const { taskId } of results) {
+      if (!taskId) continue;
+      if (seen.has(taskId)) throw new Error(`Duplicate task id in local backend: ${taskId}`);
+      seen.add(taskId);
     }
 
+    const scanned = results.reduce((acc, r) => acc + (r.scanned ? 1 : 0), 0);
+    const changed = results.reduce((acc, r) => acc + (r.changed ? 1 : 0), 0);
     return { scanned, changed };
   }
 
@@ -921,6 +957,11 @@ export class RedmineBackend implements TaskBackend {
       }
       throw err;
     }
+  }
+
+  async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {
+    // Use limited parallelism to avoid hammering the Redmine API.
+    return await mapLimit(taskIds, this.batchSize, async (taskId) => await this.getTask(taskId));
   }
 
   async getTaskDoc(taskId: string): Promise<string> {
