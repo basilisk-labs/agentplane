@@ -157,8 +157,9 @@ Every task must have these sections in its README or task doc:
 
 - Summary
 - Scope
+- Plan
 - Risks
-- Verify Steps
+- Verification
 - Rollback Plan
 
 ## Updating task docs
