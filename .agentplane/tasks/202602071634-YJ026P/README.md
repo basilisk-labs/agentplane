@@ -1,7 +1,7 @@
 ---
 id: "202602071634-YJ026P"
 title: "AP-AGENTS-02: Require ISO timestamps in agent notes"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -16,17 +16,22 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07T16:34:46.379Z."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T16:48:35.546Z"
+  updated_by: "CODER"
+  note: "Verified: Updated local and asset agent instructions to require ISO 8601 UTC timestamps with time when writing approval and verification notes; ran bun run test:cli:core (all tests passed)."
+commit:
+  hash: "75ea474185f46c43f0282b03e264fe6886c774d9"
+  message: "✨ YJ026P agents: require ISO timestamps in notes"
 comments:
   -
     author: "CODER"
     body: "Start: Update agent instructions to require ISO 8601 UTC timestamps (with time) when writing approval and verification notes."
+  -
+    author: "CODER"
+    body: "Verified: Agent instructions now require ISO 8601 UTC timestamps with time for plan approval and verification notes, and the CLI core test suite passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T16:35:05.014Z"
+doc_updated_at: "2026-02-07T16:48:44.340Z"
 doc_updated_by: "CODER"
 description: "Update agent instruction templates and local agent definitions to require ISO 8601 UTC timestamps (with time) in plan approval and verification notes."
 id_source: "generated"
@@ -61,6 +66,15 @@ Task metadata notes sometimes used date-only strings (YYYY-MM-DD). We now normal
 
 - `bun run test:cli:core` passes.
 - `rg` confirms the ISO requirement exists in both local and asset agent definitions.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T16:48:35.546Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: Updated local and asset agent instructions to require ISO 8601 UTC timestamps with time when writing approval and verification notes; ran bun run test:cli:core (all tests passed).
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
