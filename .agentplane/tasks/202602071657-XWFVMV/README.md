@@ -1,7 +1,7 @@
 ---
 id: "202602071657-XWFVMV"
 title: "Spec: Preserve frontmatter.verify back-compat"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -20,13 +20,18 @@ verification:
   updated_at: "2026-02-07T17:07:57.504Z"
   updated_by: "ORCHESTRATOR"
   note: "Back-compat documented: frontmatter verify remains optional string[]; bun run test:fast."
-commit: null
+commit:
+  hash: "559dc0a48e82d02d8b3712f0ff684f19f45ef47b"
+  message: "✅ XWFVMV docs: preserve frontmatter.verify back-compat"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: lock in back-compat for frontmatter.verify without making it required by the new verification model."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: frontmatter verify remains supported as optional string[] for back-compat; bun run test:fast passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:07:57.508Z"
+doc_updated_at: "2026-02-07T17:08:48.915Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Confirm frontmatter.verify: string[] semantics remain unchanged; new system must not require it."
 ---
