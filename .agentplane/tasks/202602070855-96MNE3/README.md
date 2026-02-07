@@ -1,7 +1,7 @@
 ---
 id: "202602070855-96MNE3"
 title: "Tests: GitContext -z parsing + TaskStore mtime guard + writeIfChanged"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "TESTER"
 depends_on:
@@ -18,18 +18,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T12:37:16.533Z"
+  updated_by: "CODEX"
+  note: "Verified: bun run typecheck; bun run lint; bun run test:agentplane"
+commit:
+  hash: "59afd1b41654440af77eefa4193c1e841638128d"
+  message: "✅ 96MNE3 tests: GitContext -z parsing + TaskStore mtime guard"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: add coverage for GitContext -z parsing, TaskStore conflict guard, and write-if-changed."
+  -
+    author: "CODEX"
+    body: "Verified: bun run typecheck; bun run lint; bun run test:agentplane. Summary: add GitContext porcelain -z parsing tests and TaskStore.update mtime guard retry/fail tests. Implementation: 59afd1b41654."
 doc_version: 2
-doc_updated_at: "2026-02-07T12:33:18.931Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-02-07T12:37:22.937Z"
+doc_updated_by: "CODEX"
 description: "Add focused tests for GitContext.statusChangedPaths handling spaces/renames/deletes (-z), TaskStore.update conflict guard, and stable JSON write-if-changed no-diff behavior."
 id_source: "explicit"
 ---
@@ -51,6 +56,18 @@ Risk: brittle tests depending on git porcelain formatting; Risk: tests that touc
 
 ## Verification
 
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T12:37:16.533Z — VERIFY — ok
+
+By: CODEX
+
+Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
