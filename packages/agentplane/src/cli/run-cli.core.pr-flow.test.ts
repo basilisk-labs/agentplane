@@ -21,6 +21,7 @@ import {
   extractTaskSuffix,
   readTask,
   renderTaskReadme,
+  validateCommitSubject,
   type ResolvedProject,
 } from "@agentplaneorg/core";
 
@@ -1450,8 +1451,86 @@ describe("runCli", () => {
     expect(task.frontmatter.status).toBe("DONE");
 
     const metaPath = path.join(root, ".agentplane", "tasks", taskId, "pr", "meta.json");
-    const meta = await readFile(metaPath, "utf8");
-    expect(meta).toContain('"status": "MERGED"');
+    const metaText = await readFile(metaPath, "utf8");
+    expect(metaText).toContain('"status": "MERGED"');
+    const meta = JSON.parse(metaText) as Record<string, unknown>;
+    expect(meta.base).toBe("main");
+    expect(meta).not.toHaveProperty("base_branch");
+  }, 15_000);
+
+  it("integrate uses a compliant fallback commit subject when branch subject is invalid (squash)", async () => {
+    const root = await mkGitRepoRootWithBranch("main");
+    await configureGitUser(root);
+    const config = defaultConfig();
+    config.workflow_mode = "branch_pr";
+    await writeConfig(root, config);
+
+    const execFileAsync = promisify(execFile);
+    await writeFile(path.join(root, "README.md"), "base\n", "utf8");
+    await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
+    await stageGitignoreIfPresent(root);
+    await execFileAsync("git", ["add", "README.md"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+
+    let taskId = "";
+    const ioTask = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Integrate subject fallback",
+        "--description",
+        "Integration should generate a compliant subject when needed",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioTask.stdout.trim();
+    } finally {
+      ioTask.restore();
+    }
+    await approveTaskPlan(root, taskId);
+    await recordVerificationOk(root, taskId);
+    await execFileAsync("git", ["add", ".agentplane"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `chore ${taskId} scaffold`], { cwd: root });
+
+    const branch = `task/${taskId}/integrate-subject`;
+    await execFileAsync("git", ["checkout", "-b", branch], { cwd: root });
+    await writeFile(path.join(root, "feature.txt"), "feature\n", "utf8");
+    await execFileAsync("git", ["add", "feature.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "wip"], { cwd: root });
+
+    await runCliSilent(["pr", "open", taskId, "--author", "CODER", "--root", root]);
+    await execFileAsync("git", ["add", ".agentplane/tasks"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
+
+    await execFileAsync("git", ["checkout", "main"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["integrate", taskId, "--branch", branch, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const subject = subjectOut.trim();
+    const suffix = extractTaskSuffix(taskId);
+    expect(subject.startsWith(`🧩 ${suffix} integrate:`)).toBe(true);
+    expect(
+      validateCommitSubject({ subject, taskId, genericTokens: config.commit.generic_tokens }).ok,
+    ).toBe(true);
   }, 15_000);
 
   it("integrate supports dry-run", async () => {
