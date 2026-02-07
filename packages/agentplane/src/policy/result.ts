@@ -4,8 +4,16 @@ export function okResult(): PolicyResult {
   return { ok: true, errors: [], warnings: [] };
 }
 
-export function policyError(message: string): PolicyProblem {
-  return { code: "E_POLICY", message };
+export function usageError(message: string): PolicyProblem {
+  return { code: "E_USAGE", exitCode: 2, message };
+}
+
+export function gitError(message: string): PolicyProblem {
+  return { code: "E_GIT", exitCode: 5, message };
+}
+
+export function internalError(message: string): PolicyProblem {
+  return { code: "E_INTERNAL", exitCode: 1, message };
 }
 
 export function mergeResults(...items: PolicyResult[]): PolicyResult {

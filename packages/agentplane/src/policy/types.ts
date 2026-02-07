@@ -2,8 +2,11 @@ import type { AgentplaneConfig } from "@agentplaneorg/core";
 
 export type PolicyAction = "guard_commit" | "commit" | "hook_pre_commit" | "hook_commit_msg";
 
+export type PolicyProblemCode = "E_USAGE" | "E_GIT" | "E_INTERNAL";
+
 export type PolicyProblem = {
-  code: "E_POLICY";
+  code: PolicyProblemCode;
+  exitCode: number;
   message: string;
 };
 

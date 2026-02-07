@@ -3,9 +3,10 @@ import {
   resolveBaseBranch,
   resolveProject,
   type AgentplaneConfig,
-  validateCommitSubject,
 } from "@agentplaneorg/core";
 
+import { evaluatePolicy } from "../../policy/evaluate.js";
+import type { PolicyResult } from "../../policy/types.js";
 import { mapCoreError } from "../../cli/error-map.js";
 import { invalidValueMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -16,10 +17,7 @@ import {
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
 import { GitContext } from "../shared/git-context.js";
-import {
-  getProtectedPathOverride,
-  protectedPathKindForFile,
-} from "../../shared/protected-paths.js";
+import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 export function buildGitCommitEnv(opts: {
@@ -79,111 +77,61 @@ type GuardCommitOptions = {
   quiet: boolean;
 };
 
+function throwIfPolicyDenied(res: PolicyResult): void {
+  if (res.ok) return;
+  const messages = res.errors.map((e) => e.message).join("\n");
+  const chosen =
+    res.errors.find((e) => e.code === "E_INTERNAL") ??
+    res.errors.find((e) => e.code === "E_USAGE") ??
+    res.errors[0];
+  if (!chosen) return;
+  throw new CliError({ exitCode: chosen.exitCode, code: chosen.code, message: messages });
+}
+
 async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-  const policy = validateCommitSubject({
-    subject: opts.message,
-    taskId: opts.taskId,
-    genericTokens: ctx.config.commit.generic_tokens,
-  });
-  if (!policy.ok) {
-    throw new CliError({ exitCode: 5, code: "E_GIT", message: policy.errors.join("\n") });
-  }
 
   const staged = await ctx.git.statusStagedPaths();
-  if (staged.length === 0) {
-    throw new CliError({
-      exitCode: 5,
-      code: "E_GIT",
-      message: "No staged files (git index empty)",
-    });
-  }
-  if (opts.allow.length === 0) {
-    throw new CliError({
-      exitCode: 5,
-      code: "E_GIT",
-      message: "Provide at least one --allow <path> prefix",
-    });
-  }
+  const unstagedTrackedPaths = opts.requireClean ? await ctx.git.statusUnstagedTrackedPaths() : [];
 
-  const allow = opts.allow.map((prefix) => normalizeGitPathPrefix(prefix));
-  const tasksPath = ctx.config.paths.tasks_path;
+  const inBranchPr = ctx.config.workflow_mode === "branch_pr";
+  const baseBranch = inBranchPr
+    ? await resolveBaseBranch({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+        cliBaseOpt: null,
+        mode: ctx.config.workflow_mode,
+      })
+    : null;
+  const currentBranch = inBranchPr
+    ? await gitCurrentBranch(ctx.resolvedProject.gitRoot)
+    : undefined;
 
-  if (opts.requireClean) {
-    // Policy-defined "clean" ignores untracked files.
-    const unstaged = await ctx.git.statusUnstagedTrackedPaths();
-    if (unstaged.length > 0) {
-      throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree is dirty" });
-    }
-  }
-
-  if (ctx.config.workflow_mode === "branch_pr") {
-    const baseBranch = await resolveBaseBranch({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      cliBaseOpt: null,
-      mode: ctx.config.workflow_mode,
-    });
-    if (!baseBranch) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: "Base branch could not be resolved (use `agentplane branch base set`).",
-      });
-    }
-    const currentBranch = await gitCurrentBranch(ctx.resolvedProject.gitRoot);
-    const tasksStaged = staged.includes(tasksPath);
-    const nonTasks = staged.filter((entry) => entry !== tasksPath);
-    if (tasksStaged && currentBranch !== baseBranch) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_GIT",
-        message: `${tasksPath} commits are allowed only on ${baseBranch} in branch_pr mode`,
-      });
-    }
-    if (nonTasks.length > 0 && currentBranch === baseBranch && !opts.allowBase) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_GIT",
-        message: `Code commits are forbidden on ${baseBranch} in branch_pr mode`,
-      });
-    }
-  }
-
-  for (const filePath of staged) {
-    const kind = protectedPathKindForFile({ filePath, tasksPath });
-    if (kind === "tasks" && !opts.allowTasks) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_GIT",
-        message: `Staged file is forbidden by default: ${filePath} (use --allow-tasks to override)`,
-      });
-    }
-    if (kind && kind !== "tasks") {
-      const override = getProtectedPathOverride(kind);
-      const allowed =
-        (kind === "policy" && opts.allowPolicy) ||
-        (kind === "config" && opts.allowConfig) ||
-        (kind === "hooks" && opts.allowHooks) ||
-        (kind === "ci" && opts.allowCI);
-      if (!allowed) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: `Staged file is protected by default: ${filePath} (use ${override.cliFlag} to override)`,
-        });
-      }
-    }
-    if (!allow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) {
-      throw new CliError({
-        exitCode: 5,
-        code: "E_GIT",
-        message: `Staged file is outside allowlist: ${filePath}`,
-      });
-    }
-  }
+  const res = evaluatePolicy({
+    action: "guard_commit",
+    config: ctx.config,
+    taskId: opts.taskId,
+    git: {
+      stagedPaths: staged,
+      unstagedTrackedPaths: unstagedTrackedPaths,
+      currentBranch,
+      baseBranch,
+    },
+    commit: { subject: opts.message },
+    allow: {
+      prefixes: opts.allow,
+      allowTasks: opts.allowTasks,
+      allowBase: opts.allowBase,
+      allowPolicy: opts.allowPolicy,
+      allowConfig: opts.allowConfig,
+      allowHooks: opts.allowHooks,
+      allowCI: opts.allowCI,
+    },
+    requireClean: opts.requireClean,
+  });
+  throwIfPolicyDenied(res);
 }
 
 export async function gitStatusChangedPaths(opts: {

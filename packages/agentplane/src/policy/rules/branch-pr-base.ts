@@ -1,4 +1,4 @@
-import { okResult, policyError } from "../result.js";
+import { gitError, internalError, okResult, usageError } from "../result.js";
 import type { PolicyContext, PolicyResult } from "../types.js";
 
 export function branchPrBaseRule(ctx: PolicyContext): PolicyResult {
@@ -12,16 +12,14 @@ export function branchPrBaseRule(ctx: PolicyContext): PolicyResult {
   if (!baseBranch) {
     return {
       ok: false,
-      errors: [
-        policyError("Base branch could not be resolved (use `agentplane branch base set`)."),
-      ],
+      errors: [usageError("Base branch could not be resolved (use `agentplane branch base set`).")],
       warnings: [],
     };
   }
   if (!currentBranch) {
     return {
       ok: false,
-      errors: [policyError("Internal error: current branch is required in branch_pr mode")],
+      errors: [internalError("Internal error: current branch is required in branch_pr mode")],
       warnings: [],
     };
   }
@@ -34,7 +32,7 @@ export function branchPrBaseRule(ctx: PolicyContext): PolicyResult {
     return {
       ok: false,
       errors: [
-        policyError(`${tasksPath} commits are allowed only on ${baseBranch} in branch_pr mode`),
+        gitError(`${tasksPath} commits are allowed only on ${baseBranch} in branch_pr mode`),
       ],
       warnings: [],
     };
@@ -42,7 +40,7 @@ export function branchPrBaseRule(ctx: PolicyContext): PolicyResult {
   if (nonTasks.length > 0 && currentBranch === baseBranch && !allowBase) {
     return {
       ok: false,
-      errors: [policyError(`Code commits are forbidden on ${baseBranch} in branch_pr mode`)],
+      errors: [gitError(`Code commits are forbidden on ${baseBranch} in branch_pr mode`)],
       warnings: [],
     };
   }

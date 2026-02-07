@@ -39,7 +39,7 @@ describe("policy/evaluatePolicy", () => {
   it("rejects missing allowlist prefixes for commit actions", () => {
     const res = evaluatePolicy(makeCtx({ allow: { prefixes: [] } }));
     expect(res.ok).toBe(false);
-    expect(res.errors.map((e) => e.message).join("\n")).toContain("Provide at least one allowlist");
+    expect(res.errors.map((e) => e.message).join("\n")).toContain("--allow");
   });
 
   it("rejects protected policy paths without override", () => {

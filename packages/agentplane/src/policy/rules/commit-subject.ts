@@ -1,19 +1,25 @@
 import { validateCommitSubject } from "@agentplaneorg/core";
 
-import { okResult, policyError } from "../result.js";
+import { gitError, okResult } from "../result.js";
 import type { PolicyContext, PolicyResult } from "../types.js";
 
 export function commitSubjectRule(ctx: PolicyContext): PolicyResult {
   const subject = (ctx.commit?.subject ?? "").trim();
   if (!subject) {
-    return { ok: false, errors: [policyError("Commit message subject is empty")], warnings: [] };
+    return { ok: false, errors: [gitError("Commit message subject is empty")], warnings: [] };
   }
 
   const taskId = (ctx.taskId ?? "").trim();
   if (!taskId) {
     return {
       ok: false,
-      errors: [policyError("Task id is required for commit subject validation")],
+      errors: [
+        gitError(
+          ctx.action === "hook_commit_msg"
+            ? "AGENTPLANE_TASK_ID is required (use `agentplane commit ...`)"
+            : "Task id is required for commit subject validation",
+        ),
+      ],
       warnings: [],
     };
   }
@@ -26,7 +32,7 @@ export function commitSubjectRule(ctx: PolicyContext): PolicyResult {
   if (!policy.ok) {
     return {
       ok: false,
-      errors: policy.errors.map((msg) => policyError(msg)),
+      errors: policy.errors.map((msg) => gitError(msg)),
       warnings: [],
     };
   }

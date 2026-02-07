@@ -1,6 +1,6 @@
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
 
-import { okResult, policyError } from "../result.js";
+import { gitError, okResult } from "../result.js";
 import type { PolicyContext, PolicyResult } from "../types.js";
 
 export function allowlistRule(ctx: PolicyContext): PolicyResult {
@@ -8,12 +8,16 @@ export function allowlistRule(ctx: PolicyContext): PolicyResult {
   const staged = ctx.git.stagedPaths ?? [];
 
   if (staged.length === 0) {
-    return { ok: false, errors: [policyError("No staged files (git index empty)")], warnings: [] };
+    return { ok: false, errors: [gitError("No staged files (git index empty)")], warnings: [] };
   }
   if (allowRaw.length === 0) {
+    const message =
+      ctx.action === "guard_commit" || ctx.action === "commit"
+        ? "Provide at least one --allow <path> prefix"
+        : "Provide at least one allowlist prefix";
     return {
       ok: false,
-      errors: [policyError("Provide at least one allowlist prefix")],
+      errors: [gitError(message)],
       warnings: [],
     };
   }
@@ -27,7 +31,7 @@ export function allowlistRule(ctx: PolicyContext): PolicyResult {
     }
   }
   if (errors.length > 0) {
-    return { ok: false, errors: errors.map((msg) => policyError(msg)), warnings: [] };
+    return { ok: false, errors: errors.map((msg) => gitError(msg)), warnings: [] };
   }
   return okResult();
 }

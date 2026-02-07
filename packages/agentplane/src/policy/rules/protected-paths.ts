@@ -3,7 +3,7 @@ import {
   protectedPathKindForFile,
 } from "../../shared/protected-paths.js";
 
-import { okResult, policyError } from "../result.js";
+import { gitError, okResult } from "../result.js";
 import type { PolicyAction, PolicyContext, PolicyResult } from "../types.js";
 
 function renderProtectedMessage(opts: {
@@ -63,7 +63,7 @@ export function protectedPathsRule(ctx: PolicyContext): PolicyResult {
   }
 
   if (errors.length > 0) {
-    return { ok: false, errors: errors.map((msg) => policyError(msg)), warnings: [] };
+    return { ok: false, errors: errors.map((msg) => gitError(msg)), warnings: [] };
   }
   return okResult();
 }
