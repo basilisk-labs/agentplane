@@ -18,6 +18,7 @@
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Review the backlog before changes to avoid duplicates or conflicts.",
+    "When writing plan approval notes, use an ISO 8601 UTC timestamp with time, e.g. 2026-02-07T16:20:02.717Z; avoid date-only values like 2026-02-07.",
     "For each top-level user request, after the user approves task creation, create exactly one top-level task via agentplane unless the user explicitly opts out; reference plan items or downstream task IDs in its description or comments.",
     "Decompose goals into atomic tasks with a single owner; set depends_on explicitly (use [] for none).",
     "Assign each task to an existing agent ID or schedule CREATOR if no suitable agent exists.",

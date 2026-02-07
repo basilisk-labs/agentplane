@@ -352,6 +352,8 @@ describe("runCli", () => {
     await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+
     let taskId = "";
     const ioTask = captureStdIO();
     try {
@@ -1437,6 +1439,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -1512,6 +1515,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -1587,6 +1591,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const { stdout: headBefore } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: root,
     });
@@ -1666,6 +1671,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -1738,6 +1744,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     await writeFile(path.join(root, "base.txt"), "base\n", "utf8");
     await execFileAsync("git", ["add", "base.txt"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base update"], { cwd: root });
@@ -1777,6 +1784,7 @@ describe("runCli", () => {
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await execFileAsync("git", ["add", "README.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const verifyCmd = `cd "${root}" && echo bump >> bump.txt && git add bump.txt && git commit -m "chore bump"`;
 
@@ -1863,6 +1871,7 @@ describe("runCli", () => {
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await execFileAsync("git", ["add", "README.md"], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "chore base"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
     const ioTask = captureStdIO();
@@ -1984,6 +1993,7 @@ describe("runCli", () => {
     await execFileAsync("git", ["commit", "-m", `${taskId} add pr artifacts`], { cwd: root });
 
     await execFileAsync("git", ["checkout", "main"], { cwd: root });
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
     const prDir = path.join(root, ".agentplane", "tasks", taskId, "pr");
     const hookPath = path.join(root, ".git", "hooks", "post-merge");
     const hookBody = `#!/bin/sh\nrm -rf "${prDir}"\n`;
@@ -2228,6 +2238,7 @@ describe("runCli", () => {
 
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await commitAll(root, "chore base");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -2248,6 +2259,7 @@ describe("runCli", () => {
 
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await commitAll(root, "chore base");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     const io = captureStdIO();
     try {
@@ -2297,6 +2309,7 @@ describe("runCli", () => {
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
     await commitAll(root, "chore base");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
     const ioTask = captureStdIO();
@@ -2367,6 +2380,7 @@ describe("runCli", () => {
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
     await commitAll(root, "chore base");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
     const ioTask = captureStdIO();
@@ -2445,6 +2459,7 @@ describe("runCli", () => {
     await writeFile(path.join(root, "README.md"), "base\n", "utf8");
     await writeFile(path.join(root, ".gitignore"), ".agentplane/worktrees\n", "utf8");
     await commitAll(root, "chore base");
+    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
     let taskId = "";
     const ioTask = captureStdIO();

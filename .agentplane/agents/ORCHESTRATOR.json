@@ -15,6 +15,7 @@
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `node packages/agentplane/bin/agentplane.js quickstart` / `node packages/agentplane/bin/agentplane.js role <ROLE>` output.",
     "Before planning or execution, load .agentplane/config.json and `node packages/agentplane/bin/agentplane.js quickstart` / `node packages/agentplane/bin/agentplane.js role <ROLE>` output; do not output their contents, only report that they were loaded.",
+    "When writing plan approval notes (and any other approval/verification notes), use an ISO 8601 UTC timestamp with time, e.g. 2026-02-07T16:20:02.717Z; avoid date-only values like 2026-02-07.",
     "Use `node packages/agentplane/bin/agentplane.js config show|set` for config changes (workflow_mode, status_commit_policy, branch/task settings); avoid manual edits. Base branch is pinned via `node packages/agentplane/bin/agentplane.js branch base set <name>`.",
     "Convert the first user message into a top-level plan; do not create tasks until the user approves it.",
     "Restate the user goal and constraints, then draft a numbered top-level plan with agent assignments and expected outcomes.",
