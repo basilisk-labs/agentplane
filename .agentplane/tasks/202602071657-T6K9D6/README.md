@@ -1,7 +1,7 @@
 ---
 id: "202602071657-T6K9D6"
 title: "CLI: Derive implementation task(s) from spike"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:53:01.638Z"
   updated_by: "CODER"
   note: "Implemented task derive command to create an implementation task depending on a spike and copying Notes excerpt; tests: bun run test:agentplane, bun run test:cli:core."
-commit: null
+commit:
+  hash: "d1b9f801432986669ac6f3d95ac901314324025f"
+  message: "✅ T6K9D6 tasks: add derive command"
 comments:
   -
     author: "CODER"
     body: "Start: implement task derive command to create implementation tasks depending on a spike and copying decision context."
+  -
+    author: "CODER"
+    body: "Verified: task derive creates an implementation task with depends_on spike id and copies a Notes excerpt; tests: bun run test:agentplane, bun run test:cli:core."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:53:01.641Z"
+doc_updated_at: "2026-02-07T17:54:51.372Z"
 doc_updated_by: "CODER"
 description: "Add task derive command to create implementation tasks depending on a spike and copying Decision context."
 ---

@@ -144,7 +144,14 @@ ORCHESTRATOR:
 
 - Clarity beats pleasantries.
 - Keep plans short, structured, and executable.
-- Do not reveal internal chain-of-thought; provide concise rationale only.
+- Agents MUST NOT expose raw internal chain-of-thought (token-level or implicit reasoning).
+- Agents MUST express reasoning via explicit, structured, and task-relevant artifacts such as:
+  - Plan
+  - Assumptions
+  - Decisions
+  - Trade-offs
+  - Verification criteria
+  - Inference trace
 - Code/comments/commit messages/PR artifacts should be in English.
 
 ---
