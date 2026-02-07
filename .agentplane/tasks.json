@@ -12445,9 +12445,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-07T05:42:24.539Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nChecked branch_pr init in empty repo; install commit and base branch are created successfully.\n\n## Scope\n\nUpdate init flow to initialize git and base branch before enforcing commit guard in empty directories; add regression tests for empty-repo branch_pr init and ensure non-empty repos still enforce main-branch guard.\n\n## Risks\n\nInit could allow commits on an unintended branch or skip guard checks if bootstrap order is wrong.\n\n## Verify Steps\n\nbun run test:cli:core -- -t \"init branch_pr\"\n\n## Rollback Plan\n\nNo code changes required; no rollback needed.\n\n## Plan\n\n1) Reproduce branch_pr init in empty repo and identify commit guard failure.\n2) Implement guard ordering fix and add regression tests.\n3) Verify init behavior in empty and non-empty repos.\n\n## Verification\n\n- Ran init in a temporary empty repo with branch_pr and confirmed install commit and pinned base branch are created.\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:42:00.603Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: Init branch_pr in empty repo produces install commit and pinned base branch.\n\n<!-- END VERIFICATION RESULTS -->"
+      "doc": "## Summary\n\nChecked branch_pr init in empty repo; install commit and base branch are created successfully.\n\n## Scope\n\nUpdate init flow to initialize git and base branch before enforcing commit guard in empty directories; add regression tests for empty-repo branch_pr init and ensure non-empty repos still enforce main-branch guard.\n\n## Risks\n\nInit could allow commits on an unintended branch or skip guard checks if bootstrap order is wrong.\n\n## Verify Steps\n\nbun run test:cli:core -- -t \"init branch_pr\"\n\n## Rollback Plan\n\nNo code changes required; no rollback needed.\n\n## Plan\n\n1) Reproduce branch_pr init in empty repo and identify commit guard failure.\n2) Implement guard ordering fix and add regression tests.\n3) Verify init behavior in empty and non-empty repos.\n\n## Verification\n\n- Ran init in a temporary empty repo with branch_pr and confirmed install commit and pinned base branch are created.\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:42:00.603Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: Init branch_pr in empty repo produces install commit and pinned base branch.\n\n<!-- END VERIFICATION RESULTS -->",
+      "dirty": false
     },
     {
       "id": "202602031123-GNAF6S",
@@ -12658,9 +12658,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-07T05:42:24.579Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nValidated that duplicate README sections are not present and doc_updated_by attribution is correct.\n\n## Scope\n\n\n## Plan\n\n1) Confirm whether duplicate README sections and doc_updated_by attribution are already fixed.\n2) If gaps remain, implement fixes and add/adjust tests.\n3) Verify behavior and record results.\n\n## Risks\n\n\n## Verification\n\n- Scanned .agentplane/tasks README files for duplicate standard sections; none found.\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:42:00.602Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: No duplicate standard README sections detected; doc_updated_by attribution is correct.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nNo code changes required; no rollback needed."
+      "doc": "## Summary\n\nValidated that duplicate README sections are not present and doc_updated_by attribution is correct.\n\n## Scope\n\n\n## Plan\n\n1) Confirm whether duplicate README sections and doc_updated_by attribution are already fixed.\n2) If gaps remain, implement fixes and add/adjust tests.\n3) Verify behavior and record results.\n\n## Risks\n\n\n## Verification\n\n- Scanned .agentplane/tasks README files for duplicate standard sections; none found.\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:42:00.602Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: No duplicate standard README sections detected; doc_updated_by attribution is correct.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nNo code changes required; no rollback needed.",
+      "dirty": false
     },
     {
       "id": "202602031525-8P1KGB",
@@ -14967,9 +14967,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-07T05:43:53.869Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nEpic J tracking closed after confirming AP-090/091/092 are complete.\n\n## Scope\n\nVerify completion status and evidence for AP-090/091/092; no new code changes.\n\n## Plan\n\n1) Verify AP-090/091/092 completion status and evidence.\n2) Update Epic J documentation to reflect completion.\n3) Verify and finish epic tracking.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:43:48.747Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: AP-090/091/092 are DONE with commits and verification notes.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nNo code changes; no rollback required."
+      "doc": "## Summary\n\nEpic J tracking closed after confirming AP-090/091/092 are complete.\n\n## Scope\n\nVerify completion status and evidence for AP-090/091/092; no new code changes.\n\n## Plan\n\n1) Verify AP-090/091/092 completion status and evidence.\n2) Update Epic J documentation to reflect completion.\n3) Verify and finish epic tracking.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:43:48.747Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: AP-090/091/092 are DONE with commits and verification notes.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan\n\nNo code changes; no rollback required.",
+      "dirty": false
     },
     {
       "id": "202602051552-BB7ZAC",
@@ -15729,9 +15729,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-07T05:49:29.661Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nStabilized task README formatting by adding deterministic rendering for append-only events and optional export behavior.\n\n## Scope\n\nCore task README rendering and export formatting; docs mention append-only events.\n\n## Plan\n\n1) Audit task README formatting noise and current renderer.\n2) Implement stable formatting in core (frontmatter order/newlines/sections) with tests.\n3) Update docs if needed and verify.\n\n## Risks\n\nLow; events remain optional to avoid breaking older tasks.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:47:43.319Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: bun run test:core and bun run test:agentplane passed; event rendering/export covered.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan"
+      "doc": "## Summary\n\nStabilized task README formatting by adding deterministic rendering for append-only events and optional export behavior.\n\n## Scope\n\nCore task README rendering and export formatting; docs mention append-only events.\n\n## Plan\n\n1) Audit task README formatting noise and current renderer.\n2) Implement stable formatting in core (frontmatter order/newlines/sections) with tests.\n3) Update docs if needed and verify.\n\n## Risks\n\nLow; events remain optional to avoid breaking older tasks.\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:47:43.319Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: bun run test:core and bun run test:agentplane passed; event rendering/export covered.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
     },
     {
       "id": "202602060332-4Q9MSM",
@@ -15840,9 +15840,9 @@
       "doc_version": 2,
       "doc_updated_at": "2026-02-07T05:49:29.649Z",
       "doc_updated_by": "ORCHESTRATOR",
-      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\nImplemented append-only task events for status, comments, and verification.\n\n## Scope\n\n\n## Plan\n\n1) Define append-only task event model and required README rendering changes.\n2) Implement event storage + renderer updates with tests.\n3) Update docs and verify.\n\n## Risks\n\n\n## Verification\n\n- Added unit tests for event rendering and export.\n- Verified CLI writes append events on status/comment/verify updates.\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:47:43.322Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: bun run test:core and bun run test:agentplane passed; CLI event recording verified.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan"
+      "doc": "## Summary\n\nImplemented append-only task events for status, comments, and verification.\n\n## Scope\n\n\n## Plan\n\n1) Define append-only task event model and required README rendering changes.\n2) Implement event storage + renderer updates with tests.\n3) Update docs and verify.\n\n## Risks\n\n\n## Verification\n\n- Added unit tests for event rendering and export.\n- Verified CLI writes append events on status/comment/verify updates.\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:47:43.322Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: bun run test:core and bun run test:agentplane passed; CLI event recording verified.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "dirty": false
     },
     {
       "id": "202602060332-MWKYQ4",
@@ -17590,7 +17590,7 @@
       "id": "202602070515-FWH57M",
       "title": "Close outstanding tasks, run full verify, release 0.1.9",
       "description": "Resolve all non-DONE tasks by completing required work and finishing via agentplane. Then run full verification pipeline and prepare/push release 0.1.9.",
-      "status": "TODO",
+      "status": "DONE",
       "priority": "high",
       "owner": "ORCHESTRATOR",
       "depends_on": [],
@@ -17605,25 +17605,50 @@
         "note": "Approve execution order: finish outstanding tasks, run full verify, then release 0.1.9."
       },
       "verification": {
-        "state": "pending",
-        "updated_at": null,
-        "updated_by": null,
-        "note": null
+        "state": "ok",
+        "updated_at": "2026-02-07T05:53:16.150Z",
+        "updated_by": "ORCHESTRATOR",
+        "note": "bun run ci passed; release notes and version bumps for v0.1.9 are in place."
       },
-      "commit": null,
-      "comments": [],
+      "commit": {
+        "hash": "86ce16c0f115080928f7e9e12cfd26b52bd4e52e",
+        "message": "✨ FWH57M release: bump to 0.1.9"
+      },
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: backlog cleanup done, full CI passed, and release 0.1.9 prepared (notes + versions)."
+        }
+      ],
+      "events": [
+        {
+          "type": "verify",
+          "at": "2026-02-07T05:53:16.150Z",
+          "author": "ORCHESTRATOR",
+          "state": "ok",
+          "note": "bun run ci passed; release notes and version bumps for v0.1.9 are in place."
+        },
+        {
+          "type": "status",
+          "at": "2026-02-07T05:53:29.843Z",
+          "author": "ORCHESTRATOR",
+          "from": "TODO",
+          "to": "DONE",
+          "note": "Verified: backlog cleanup done, full CI passed, and release 0.1.9 prepared (notes + versions)."
+        }
+      ],
       "doc_version": 2,
-      "doc_updated_at": "2026-02-07T05:17:20.863Z",
+      "doc_updated_at": "2026-02-07T05:53:29.843Z",
       "doc_updated_by": "ORCHESTRATOR",
+      "dirty": false,
       "id_source": "generated",
-      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Inventory all non-DONE tasks and determine concrete missing work.\n2) Complete each task via required workflow (plan approval, implementation, verify, finish).\n3) Run full verification for the repo.\n4) Prepare and push release 0.1.9.\n\n## Risks\n\n\n## Verification\n\n\n## Rollback Plan",
-      "dirty": false
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Inventory all non-DONE tasks and determine concrete missing work.\n2) Complete each task via required workflow (plan approval, implementation, verify, finish).\n3) Run full verification for the repo.\n4) Prepare and push release 0.1.9.\n\n## Risks\n\nRelease tagging/push requires manual confirmation due to policy; ensure tags and notes match.\n\n## Verification\n\n- bun run ci passed (format, typecheck, lint, coverage, full test suite).\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T05:53:16.150Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: bun run ci passed; release notes and version bumps for v0.1.9 are in place.\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan"
     }
   ],
   "meta": {
     "schema_version": 1,
     "managed_by": "agentplane",
     "checksum_algo": "sha256",
-    "checksum": "3154febe2463ab798828710ee4131c6e06d10224620bb55c49c4e4d158c0935a"
+    "checksum": "a772f08e2d66fd49acafb4e87f611808c392cbe05f462fc6f2c9a12d7f313e7f"
   }
 }
