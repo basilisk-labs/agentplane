@@ -18,6 +18,7 @@ import {
   workflowModeMessage,
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { writeJsonStableIfChanged, writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { ensureGitClean } from "../guard/index.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitDiffNames, gitDiffStat, gitShowFile, toGitPath } from "../shared/git-diff.js";
@@ -231,10 +232,10 @@ export async function cmdPrOpen(opts: {
       last_verified_at: meta?.last_verified_at ?? null,
       verify: meta?.verify ?? { status: "skipped" },
     };
-    await atomicWriteFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
+    await writeJsonStableIfChanged(metaPath, nextMeta);
 
-    if (!(await fileExists(diffstatPath))) await atomicWriteFile(diffstatPath, "", "utf8");
-    if (!(await fileExists(verifyLogPath))) await atomicWriteFile(verifyLogPath, "", "utf8");
+    await writeTextIfChanged(diffstatPath, "");
+    await writeTextIfChanged(verifyLogPath, "");
     if (!(await fileExists(reviewPath))) {
       const review = renderPrReviewTemplate({ author, createdAt, branch });
       await atomicWriteFile(reviewPath, review, "utf8");
@@ -302,7 +303,7 @@ export async function cmdPrUpdate(opts: {
       { cwd: resolved.gitRoot, env: gitEnv() },
     );
     const diffstat = diffStatOut.trimEnd();
-    await atomicWriteFile(diffstatPath, diffstat ? `${diffstat}\n` : "", "utf8");
+    await writeTextIfChanged(diffstatPath, diffstat ? `${diffstat}\n` : "");
 
     const { stdout: headOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
       cwd: resolved.gitRoot,
@@ -320,7 +321,7 @@ export async function cmdPrUpdate(opts: {
     ];
     const reviewText = await readFile(reviewPath, "utf8");
     const nextReview = updateAutoSummaryBlock(reviewText, summaryLines.join("\n"));
-    await atomicWriteFile(reviewPath, nextReview, "utf8");
+    await writeTextIfChanged(reviewPath, nextReview);
 
     const rawMeta = await readFile(metaPath, "utf8");
     const meta = parsePrMeta(rawMeta, opts.taskId);
@@ -331,7 +332,7 @@ export async function cmdPrUpdate(opts: {
       last_verified_sha: meta.last_verified_sha ?? null,
       last_verified_at: meta.last_verified_at ?? null,
     };
-    await atomicWriteFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
+    await writeJsonStableIfChanged(metaPath, nextMeta);
 
     process.stdout.write(
       `${successMessage("pr update", path.relative(resolved.gitRoot, prDir))}\n`,
@@ -924,10 +925,10 @@ export async function cmdIntegrate(opts: {
         ? { ...mergedMeta.verify, status: "pass" }
         : { status: "pass", command: verifyCommands.join(" && ") };
     }
-    await atomicWriteFile(metaPath, `${JSON.stringify(nextMeta, null, 2)}\n`, "utf8");
+    await writeJsonStableIfChanged(metaPath, nextMeta);
 
     const diffstat = await gitDiffStat(resolved.gitRoot, baseShaBeforeMerge, branch);
-    await atomicWriteFile(diffstatPath, diffstat ? `${diffstat}\n` : "", "utf8");
+    await writeTextIfChanged(diffstatPath, diffstat ? `${diffstat}\n` : "");
 
     const verifyDesc =
       verifyCommands.length === 0

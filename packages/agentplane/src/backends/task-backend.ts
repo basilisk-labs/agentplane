@@ -22,6 +22,7 @@ import {
 
 import { loadDotEnv } from "../shared/env.js";
 import { isRecord } from "../shared/guards.js";
+import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 import {
   buildTaskIndexEntry,
   loadTaskIndex,
@@ -456,7 +457,7 @@ export async function writeTasksExportFromTasks(opts: {
 }): Promise<void> {
   const snapshot = buildTasksExportSnapshotFromTasks(opts.tasks);
   await mkdir(path.dirname(opts.outputPath), { recursive: true });
-  await atomicWriteFile(opts.outputPath, `${JSON.stringify(snapshot, null, 2)}\n`);
+  await writeJsonStableIfChanged(opts.outputPath, snapshot);
 }
 
 export class LocalBackend implements TaskBackend {

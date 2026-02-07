@@ -49,6 +49,7 @@ import {
 } from "./update-check.js";
 import { loadDotEnv } from "../shared/env.js";
 import { CliError, formatJsonError } from "../shared/errors.js";
+import { writeTextIfChanged } from "../shared/write-if-changed.js";
 import { getVersion } from "../meta/version.js";
 import { cmdUpgrade } from "../commands/upgrade.js";
 import {
@@ -370,18 +371,6 @@ async function maybeResolveProject(opts: {
     }
     throw err;
   }
-}
-
-async function writeTextIfChanged(filePath: string, content: string): Promise<boolean> {
-  try {
-    const existing = await readFile(filePath, "utf8");
-    if (existing === content) return false;
-  } catch (err) {
-    const code = (err as { code?: string } | null)?.code;
-    if (code !== "ENOENT") throw err;
-  }
-  await atomicWriteFile(filePath, content, "utf8");
-  return true;
 }
 
 async function cmdConfigShow(opts: { cwd: string; rootOverride?: string }): Promise<number> {

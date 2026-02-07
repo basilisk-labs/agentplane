@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { atomicWriteFile } from "@agentplaneorg/core";
+import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 
 import type { TaskData } from "./task-backend.js";
 
@@ -73,7 +73,7 @@ export async function loadTaskIndex(indexPath: string): Promise<TaskIndexFile | 
 }
 
 export async function saveTaskIndex(indexPath: string, index: TaskIndexFile): Promise<void> {
-  await atomicWriteFile(indexPath, `${JSON.stringify(index, null, 2)}\n`, "utf8");
+  await writeJsonStableIfChanged(indexPath, index);
 }
 
 export function buildTaskIndexEntry(

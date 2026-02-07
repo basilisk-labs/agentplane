@@ -3,7 +3,7 @@ import { cp, mkdir, mkdtemp, readdir, readFile, rename, rm } from "node:fs/promi
 import os from "node:os";
 import path from "node:path";
 
-import { atomicWriteFile, defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
+import { defaultConfig, loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import { extractArchive } from "../cli/archive.js";
 import { sha256File } from "../cli/checksum.js";
@@ -24,6 +24,7 @@ import {
 import { isRecord } from "../shared/guards.js";
 import { CliError } from "../shared/errors.js";
 import { dedupeStrings } from "../shared/strings.js";
+import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
 import { resolvePathFallback } from "./shared/path.js";
 
@@ -590,7 +591,7 @@ async function writeInstalledRecipesFile(
     updated_at: new Date().toISOString(),
   });
   await mkdir(path.dirname(filePath), { recursive: true });
-  await atomicWriteFile(filePath, `${JSON.stringify(sorted, null, 2)}\n`, "utf8");
+  await writeJsonStableIfChanged(filePath, sorted);
 }
 
 export async function readRecipeManifest(manifestPath: string): Promise<RecipeManifest> {
@@ -913,7 +914,7 @@ async function applyRecipeAgents(opts: {
     }
 
     rawAgent.id = targetId;
-    await atomicWriteFile(targetPath, `${JSON.stringify(rawAgent, null, 2)}\n`, "utf8");
+    await writeJsonStableIfChanged(targetPath, rawAgent);
   }
 }
 
@@ -945,7 +946,7 @@ async function applyRecipeScenarios(opts: {
   }
 
   if (payload.scenarios.length === 0) return;
-  await atomicWriteFile(scenariosIndexPath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  await writeJsonStableIfChanged(scenariosIndexPath, payload);
 }
 
 function isHttpUrl(value: string): boolean {
@@ -989,8 +990,8 @@ async function loadRecipesRemoteIndex(opts: {
     verifyRecipesIndexSignature(indexText, signature);
     rawIndex = JSON.parse(indexText) as unknown;
     await mkdir(cacheDir, { recursive: true });
-    await atomicWriteFile(cachePath, indexText, "utf8");
-    await atomicWriteFile(cacheSigPath, `${JSON.stringify(signature, null, 2)}\n`, "utf8");
+    await writeTextIfChanged(cachePath, indexText);
+    await writeJsonStableIfChanged(cacheSigPath, signature);
   } else {
     const [indexText, sigText] = await Promise.all([
       readFile(cachePath, "utf8"),
