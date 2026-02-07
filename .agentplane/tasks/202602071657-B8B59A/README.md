@@ -1,7 +1,7 @@
 ---
 id: "202602071657-B8B59A"
 title: "Warn: spike + code/backend/frontend tags"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-07T17:47:58.684Z"
   updated_by: "CODER"
   note: "Warn on spike+code/backend/frontend tags in task new and task update; tests: bun run test:agentplane, bun run test:cli:core."
-commit: null
+commit:
+  hash: "b1fe7e40ca02e8b89fa0fbfe4625866bba29f19a"
+  message: "✅ B8B59A workflow: warn on spike + implementation tags"
 comments:
   -
     author: "CODER"
     body: "Start: warn when spike is combined with code/backend/frontend tags to prevent accidental implementation."
+  -
+    author: "CODER"
+    body: "Verified: task new/update emit warnings when spike is combined with code/backend/frontend tags; tests: bun run test:agentplane, bun run test:cli:core."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:47:58.686Z"
+doc_updated_at: "2026-02-07T17:48:44.807Z"
 doc_updated_by: "CODER"
 description: "Warn (or gate via config later) when spike is combined with implementation tags."
 ---
