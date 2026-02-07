@@ -1,7 +1,7 @@
 ---
 id: "202602071657-HC5CYR"
 title: "Gate: Enforce Verify Steps on plan approve (verify-required tags)"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:18:53.234Z"
   updated_by: "CODER"
   note: "Plan approve now enforces filled Verify Steps for verify-required tags; bun run test:agentplane."
-commit: null
+commit:
+  hash: "b22cff0e0d277715e8920db100e7b4019749685d"
+  message: "✅ HC5CYR workflow: gate plan approve on Verify Steps"
 comments:
   -
     author: "CODER"
     body: "Start: enforce filled Verify Steps on plan approval for verify-required tasks."
+  -
+    author: "CODER"
+    body: "Verified: plan approval now blocks verify-required tasks unless Verify Steps is filled (no placeholder); bun run test:agentplane passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:18:53.236Z"
+doc_updated_at: "2026-02-07T17:19:49.310Z"
 doc_updated_by: "CODER"
 description: "Block task plan approve when Verify Steps is missing/empty/placeholder for verify-required tasks."
 ---
