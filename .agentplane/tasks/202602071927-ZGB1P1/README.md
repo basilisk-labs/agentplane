@@ -1,7 +1,7 @@
 ---
 id: "202602071927-ZGB1P1"
 title: "CLI2-032: Migrate quickstart/role/agents to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-07T20:15:30.192Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated quickstart/role/agents to cli2 registry with spec-derived parsing/help/usage. Removed legacy dispatcher branches and updated cmdRole to use usageError. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
-commit: null
+commit:
+  hash: "198035a48b1932c643b03926e121f7d6a5c5b9d4"
+  message: "✅ ZGB1P1 cli: migrate quickstart role agents to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate quickstart/role/agents to cli2 so help/usage/parsing are spec-derived; preserve output and error mapping; update run-cli tests for new E_USAGE messages."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: quickstart/role/agents are cli2-routed with spec-derived help/usage; legacy dispatcher branches removed; tests passing (typecheck/lint/format/test:cli:core)."
 doc_version: 2
-doc_updated_at: "2026-02-07T20:15:30.192Z"
+doc_updated_at: "2026-02-07T20:15:56.414Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Register `quickstart`, `role`, `agents` in cli2 with spec-derived help."
 ---
