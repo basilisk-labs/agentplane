@@ -134,6 +134,9 @@ sequenceDiagram
 
 - **Approvals**: plan, network, and verification approvals are enforced via config (`agents.approvals.*`).
 - **Status comments**: start/block/finish require structured text (Start/Blocked/Verified).
+- **Two-stage verification**:
+  - `## Verify Steps` is the ex-ante verification contract (criteria/protocol addressed to the verifier).
+  - `## Verification` is the ex-post append-only record written by `agentplane verify ...`.
 - **Commit policy**: commit subjects must include the task ID suffix.
 - **Docs updates**: task README sections are updated via `agentplane task doc set`.
 - **Exports**: task snapshots are updated only via `agentplane` commands.

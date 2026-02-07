@@ -8,8 +8,13 @@ description: "How tasks are stored and how backends are configured."
 Tasks are stored under `.agentplane/tasks/` as README files with frontmatter. Each task includes:
 
 - Status, owner, priority, tags.
-- Structured doc sections (Summary, Scope, Risks, Verify Steps, Rollback Plan).
+- Structured doc sections (Summary, Scope, Plan, Risks, Verify Steps, Verification, Rollback Plan, Notes).
 - Append-only events for status changes, comments, and verification (when recorded by CLI).
+
+Semantics:
+
+- `## Verify Steps`: ex-ante verification contract (criteria/protocol addressed to the verifier).
+- `## Verification`: ex-post append-only log written by `agentplane verify ...`.
 
 See [Task lifecycle](task-lifecycle) for how these files are created and finalized.
 
