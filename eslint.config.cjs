@@ -118,4 +118,29 @@ module.exports = [
       "@typescript-eslint/no-floating-promises": "off",
     },
   },
+
+  // Policy code must be pure: facts are injected via contexts.
+  {
+    files: ["packages/agentplane/src/policy/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: ["node:*"],
+          paths: [
+            { name: "child_process", message: "Policy code must not execute subprocesses." },
+            { name: "fs", message: "Policy code must not read or write the filesystem." },
+            { name: "fs/promises", message: "Policy code must not read or write the filesystem." },
+            { name: "path", message: "Policy code must not depend on OS paths." },
+          ],
+        },
+      ],
+      "no-restricted-globals": ["error", "process"],
+      "no-restricted-properties": [
+        "error",
+        { object: "process", property: "env", message: "Use injected context instead of env." },
+        { object: "process", property: "cwd", message: "Use injected context instead of cwd." },
+      ],
+    },
+  },
 ];
