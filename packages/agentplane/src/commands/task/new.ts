@@ -10,11 +10,11 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { normalizeDependsOnInput, nowIso, requiresVerify } from "./shared.js";
 
-type TaskNewFlags = {
-  title?: string;
-  description?: string;
-  owner?: string;
-  priority?: "low" | "normal" | "med" | "high";
+export type TaskNewParsed = {
+  title: string;
+  description: string;
+  owner: string;
+  priority: "low" | "normal" | "med" | "high";
   tags: string[];
   dependsOn: string[];
   verify: string[];
@@ -25,8 +25,14 @@ export const TASK_NEW_USAGE =
 export const TASK_NEW_USAGE_EXAMPLE =
   'agentplane task new --title "Refactor CLI" --description "Improve CLI output" --priority med --owner CODER --tag cli';
 
-function parseTaskNewFlags(args: string[]): TaskNewFlags {
-  const out: TaskNewFlags = { tags: [], dependsOn: [], verify: [] };
+function parseTaskNewFlags(
+  args: string[],
+): Partial<TaskNewParsed> & Pick<TaskNewParsed, "tags" | "dependsOn" | "verify"> {
+  const out: Partial<TaskNewParsed> & Pick<TaskNewParsed, "tags" | "dependsOn" | "verify"> = {
+    tags: [],
+    dependsOn: [],
+    verify: [],
+  };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
@@ -58,7 +64,7 @@ function parseTaskNewFlags(args: string[]): TaskNewFlags {
         break;
       }
       case "--priority": {
-        out.priority = next as TaskNewFlags["priority"];
+        out.priority = next as TaskNewParsed["priority"];
         break;
       }
       case "--tag": {
@@ -84,23 +90,13 @@ function parseTaskNewFlags(args: string[]): TaskNewFlags {
   return out;
 }
 
-export async function cmdTaskNew(opts: {
+export async function runTaskNewParsed(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
-  args: string[];
+  parsed: TaskNewParsed;
 }): Promise<number> {
-  const flags = parseTaskNewFlags(opts.args);
-  const priority = flags.priority ?? "med";
-
-  if (!flags.title || !flags.description || !flags.owner || flags.tags.length === 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_NEW_USAGE, TASK_NEW_USAGE_EXAMPLE),
-    });
-  }
-
+  const p = opts.parsed;
   try {
     const ctx =
       opts.ctx ??
@@ -116,25 +112,25 @@ export async function cmdTaskNew(opts: {
     const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });
     const task: TaskData = {
       id: taskId,
-      title: flags.title,
-      description: flags.description,
+      title: p.title,
+      description: p.description,
       status: "TODO",
-      priority,
-      owner: flags.owner,
-      tags: flags.tags,
-      depends_on: flags.dependsOn,
-      verify: flags.verify,
+      priority: p.priority,
+      owner: p.owner,
+      tags: p.tags,
+      depends_on: p.dependsOn,
+      verify: p.verify,
       comments: [],
       doc_version: 2,
       doc_updated_at: nowIso(),
-      doc_updated_by: flags.owner,
+      doc_updated_by: p.owner,
       id_source: "generated",
     };
 
     const requireStepsTags =
       ctx.config.tasks.verify.require_steps_for_tags ?? ctx.config.tasks.verify.required_tags;
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
-    const requiresVerifySteps = requiresVerify(flags.tags, requireStepsTags);
+    const requiresVerifySteps = requiresVerify(p.tags, requireStepsTags);
     if (requiresVerifySteps) {
       process.stderr.write(
         `${warnMessage(
@@ -142,8 +138,8 @@ export async function cmdTaskNew(opts: {
         )}\n`,
       );
     }
-    const hasSpike = flags.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
-    const hasImplementationTags = requiresVerify(flags.tags, ctx.config.tasks.verify.required_tags);
+    const hasSpike = p.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
+    const hasImplementationTags = requiresVerify(p.tags, ctx.config.tasks.verify.required_tags);
     if (hasSpike && hasImplementationTags) {
       process.stderr.write(
         `${warnMessage(
@@ -158,4 +154,39 @@ export async function cmdTaskNew(opts: {
   } catch (err) {
     throw mapBackendError(err, { command: "task new", root: opts.rootOverride ?? null });
   }
+}
+
+export async function cmdTaskNew(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  args: string[];
+}): Promise<number> {
+  const flags = parseTaskNewFlags(opts.args);
+
+  const priority = flags.priority ?? "med";
+  if (!flags.title || !flags.description || !flags.owner || flags.tags.length === 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(TASK_NEW_USAGE, TASK_NEW_USAGE_EXAMPLE),
+    });
+  }
+
+  const parsed: TaskNewParsed = {
+    title: flags.title,
+    description: flags.description,
+    owner: flags.owner,
+    priority,
+    tags: flags.tags,
+    dependsOn: flags.dependsOn,
+    verify: flags.verify,
+  };
+
+  return await runTaskNewParsed({
+    ctx: opts.ctx,
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride,
+    parsed,
+  });
 }

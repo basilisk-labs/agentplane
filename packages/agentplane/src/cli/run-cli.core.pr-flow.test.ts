@@ -126,7 +126,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["work", "start", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane work start");
+      expect(io.stderr).toContain("agentplane work start");
     } finally {
       io.restore();
     }
@@ -148,7 +148,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane work start");
+      expect(io.stderr).toContain("agentplane work start");
     } finally {
       io.restore();
     }
@@ -167,7 +167,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane work start");
+      expect(io.stderr).toContain("agentplane work start");
     } finally {
       io.restore();
     }
@@ -193,7 +193,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane work start");
+      expect(io.stderr).toContain("agentplane work start");
     } finally {
       io.restore();
     }
@@ -217,7 +217,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane work start");
+      expect(io.stderr).toContain("agentplane work start");
     } finally {
       io.restore();
     }

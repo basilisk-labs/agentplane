@@ -1,0 +1,124 @@
+---
+title: "CLI Help JSON Contract (cli2)"
+description: "The machine-readable JSON schema for `agentplane help --json` and `agentplane help <cmd...> --json`."
+---
+
+This document specifies the JSON output contract for the cli2 help system.
+
+Scope:
+
+- `agentplane help --json` (registry-level help export)
+- `agentplane help <cmd...> --json` (command-level help export)
+
+Non-goals:
+
+- JSON error output (covered by `docs/developer/cli-contract.mdx`)
+- Shell completion (not part of cli2 v1)
+
+## 1) Output modes
+
+### 1.1 Registry-level
+
+Command:
+
+```bash
+agentplane help --json
+```
+
+Output: a single JSON array of `HelpJson` objects, one per registered command in the cli2 registry.
+
+### 1.2 Command-level
+
+Command:
+
+```bash
+agentplane help <cmd...> --json
+```
+
+Output: a single `HelpJson` object.
+
+## 2) Schema (`HelpJson`)
+
+The JSON schema is stable and intentionally minimal to reduce token usage and ambiguity for automated consumers.
+
+```ts
+type HelpJson = {
+  id: string[]; // command id segments, e.g. ["task","new"]
+  group: string; // help grouping label, e.g. "Task"
+  summary: string; // one-line summary
+  description?: string; // optional short description
+
+  usage: string[]; // one or more usage lines (multi-synopsis supported)
+
+  args: {
+    name: string;
+    required: boolean;
+    variadic?: boolean;
+    valueHint?: string;
+    description?: string;
+  }[];
+
+  options: {
+    name: string; // long name without dashes
+    kind: "boolean" | "string";
+    short?: string; // short option letter (without dash)
+    description: string;
+    hidden?: boolean;
+    deprecated?: string;
+
+    required?: boolean; // only for kind="string"
+    repeatable?: boolean; // only for kind="string"
+    minCount?: number; // only for repeatable options
+    valueHint?: string; // only for kind="string"
+    default?: unknown;
+    choices?: string[]; // enum
+    patternHint?: string; // human-readable format hint
+  }[];
+
+  examples: { cmd: string; why?: string }[];
+  notes: string[];
+};
+```
+
+Rules:
+
+- `usage[]` MUST be deterministic and MUST reflect the current spec.
+- Ordering MUST be deterministic:
+  - `usage[]`: as declared by spec (or auto-generated single entry)
+  - `args[]`: as declared by spec
+  - `options[]`: as declared by spec
+  - `examples[]`: as declared by spec
+  - `notes[]`: as declared by spec
+
+## 3) Examples
+
+### 3.1 Simple command (task new)
+
+```json
+{
+  "id": ["task", "new"],
+  "group": "Task",
+  "summary": "Create a new task (prints the generated task id).",
+  "usage": ["agentplane task new --title <text> --description <text> --owner <id> [options]"],
+  "args": [],
+  "options": [
+    {
+      "name": "title",
+      "kind": "string",
+      "required": true,
+      "valueHint": "<text>",
+      "description": "Task title."
+    }
+  ],
+  "examples": [],
+  "notes": []
+}
+```
+
+### 3.2 Multi-synopsis command (recipes install)
+
+`usage[]` contains multiple forms to avoid ambiguity between mutually exclusive sources.
+
+### 3.3 Positional + options (work start)
+
+`args[]` describes positional arguments and `options[]` describes required flags such as `--agent` and `--slug`.

@@ -461,21 +461,21 @@ describe("runCli recipes", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const cases: { args: string[]; msg: string }[] = [
-      { args: ["recipes", "install"], msg: "Usage: agentplane recipes install" },
-      { args: ["recipes", "install", "--name"], msg: "Usage: agentplane recipes install" },
-      { args: ["recipes", "install", "--path"], msg: "Usage: agentplane recipes install" },
-      { args: ["recipes", "install", "--url"], msg: "Usage: agentplane recipes install" },
+      { args: ["recipes", "install"], msg: "Exactly one source is required" },
+      { args: ["recipes", "install", "--name"], msg: "Missing value after --name" },
+      { args: ["recipes", "install", "--path"], msg: "Missing value after --path" },
+      { args: ["recipes", "install", "--url"], msg: "Missing value after --url" },
       {
         args: ["recipes", "install", "--name", "x", "--path", "y"],
-        msg: "Usage: agentplane recipes install",
+        msg: "Exactly one source is required",
       },
       {
         args: ["recipes", "install", "--path", "x", "extra"],
-        msg: "Usage: agentplane recipes install",
+        msg: "Exactly one source is required",
       },
       {
         args: ["recipes", "install", "--conflict", "nope", "--path", "x"],
-        msg: "Usage: agentplane recipes install",
+        msg: "Unknown option: --conflict",
       },
       { args: ["recipes", "list", "--tag"], msg: "Usage: agentplane recipes" },
       { args: ["recipes", "list", "--nope"], msg: "Usage: agentplane recipes" },
@@ -743,7 +743,7 @@ describe("runCli recipes", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes install");
+      expect(io.stderr).toContain("Exactly one source is required");
     } finally {
       io.restore();
     }

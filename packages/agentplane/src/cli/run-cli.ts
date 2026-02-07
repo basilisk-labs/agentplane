@@ -54,6 +54,12 @@ import { loadCommandContext, type CommandContext } from "../commands/shared/task
 import { getVersion } from "../meta/version.js";
 import { parseBlock, parseFinish, parseStart, parseVerify } from "./parse/lifecycle.js";
 import { cmdUpgrade } from "../commands/upgrade.js";
+import { CommandRegistry } from "../cli2/registry.js";
+import { parseCommandArgv } from "../cli2/parse.js";
+import { helpSpec, makeHelpHandler } from "../cli2/help.js";
+import { taskNewSpec, makeRunTaskNewHandler } from "../commands/task/new.command.js";
+import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
+import { recipesInstallSpec, runRecipesInstall } from "../commands/recipes/install.command.js";
 import {
   BACKEND_SYNC_USAGE,
   BACKEND_SYNC_USAGE_EXAMPLE,
@@ -186,7 +192,13 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
       continue;
     }
     if (arg === "--json") {
-      jsonErrors = true;
+      // Scoped global: only treat `--json` as "JSON errors" if it appears
+      // before the command id. This allows per-command `--json` (e.g. `help`).
+      if (rest.length === 0) {
+        jsonErrors = true;
+        continue;
+      }
+      rest.push(arg);
       continue;
     }
     if (arg === "--root") {
@@ -233,7 +245,7 @@ function resolveAgentplaneHome(): string {
 
 function renderErrorHint(err: CliError): string | undefined {
   const command = typeof err.context?.command === "string" ? err.context.command : undefined;
-  const usage = command ? `agentplane ${command} --help` : "agentplane --help";
+  const usage = command ? `agentplane help ${command} --compact` : "agentplane help";
   switch (err.code) {
     case "E_USAGE": {
       return `See \`${usage}\` for usage.`;
@@ -1063,7 +1075,7 @@ async function cmdAgents(opts: { cwd: string; rootOverride?: string }): Promise<
 }
 
 export async function runCli(argv: string[]): Promise<number> {
-  let jsonErrors = argv.includes("--json");
+  let jsonErrors = false;
   try {
     const { globals, rest } = parseGlobalArgs(argv);
     jsonErrors = globals.jsonErrors;
@@ -1076,6 +1088,24 @@ export async function runCli(argv: string[]): Promise<number> {
     if (globals.help || rest.length === 0) {
       process.stdout.write(`${renderHelp()}\n`);
       return 0;
+    }
+
+    // cli2: `agentplane help ...` should be fast and not require project resolution.
+    if (rest[0] === "help") {
+      const registry = new CommandRegistry();
+      const noop = () => Promise.resolve(0);
+      registry.register(taskNewSpec, noop);
+      registry.register(workStartSpec, noop);
+      registry.register(recipesInstallSpec, noop);
+      registry.register(helpSpec, makeHelpHandler(registry));
+
+      const match = registry.match(rest);
+      if (!match) {
+        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Unknown command: help" });
+      }
+      const tail = rest.slice(match.consumed);
+      const parsed = parseCommandArgv(match.spec, tail).parsed;
+      return await match.handler({ cwd: process.cwd(), rootOverride: globals.root }, parsed);
     }
 
     const cwd = process.cwd();
@@ -1114,6 +1144,21 @@ export async function runCli(argv: string[]): Promise<number> {
         throw mapCoreError(err, { command: commandForErrorContext, root: globals.root ?? null });
       }
     };
+
+    // cli2 command routing (migrated commands only, for now).
+    {
+      const registry = new CommandRegistry();
+      registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
+      registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
+      registry.register(recipesInstallSpec, runRecipesInstall);
+
+      const match = registry.match(rest);
+      if (match) {
+        const tail = rest.slice(match.consumed);
+        const parsed = parseCommandArgv(match.spec, tail).parsed;
+        return await match.handler({ cwd, rootOverride: globals.root }, parsed);
+      }
+    }
 
     if (namespace === "init") {
       const initArgs = command ? [command, ...args] : [];

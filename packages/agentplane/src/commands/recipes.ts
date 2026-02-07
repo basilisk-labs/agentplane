@@ -47,7 +47,7 @@ type RecipeManifest = {
   scenarios?: { id?: string; summary?: string }[];
 };
 
-type RecipeConflictMode = "fail" | "rename" | "overwrite";
+export type RecipeConflictMode = "fail" | "rename" | "overwrite";
 
 type InstalledRecipeEntry = {
   id: string;
@@ -640,7 +640,7 @@ export function resolveProjectRecipesCacheDir(resolved: { agentplaneDir: string 
   return path.join(resolved.agentplaneDir, PROJECT_RECIPES_CACHE_DIR_NAME);
 }
 
-type RecipeInstallSource =
+export type RecipeInstallSource =
   | { type: "name"; value: string }
   | { type: "path"; value: string }
   | { type: "url"; value: string }
@@ -1246,7 +1246,7 @@ async function cmdRecipeExplain(opts: {
   }
 }
 
-async function cmdRecipeInstall(opts: {
+export async function cmdRecipeInstall(opts: {
   cwd: string;
   rootOverride?: string;
   source: RecipeInstallSource;

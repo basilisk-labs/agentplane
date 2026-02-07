@@ -168,7 +168,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Missing value for --tag");
+      expect(io.stderr).toContain("Missing value after --tag");
     } finally {
       io.restore();
     }

@@ -15,7 +15,14 @@ agentplane [--root <path>] [--json] <command> [options]
 ```
 
 - `--root <path>`: treat `<path>` as the project root (used for project discovery/path resolution).
-- `--json`: machine-readable output for errors (and where explicitly documented, for successful output).
+- `--json`: machine-readable output for errors (global). Some commands may also support `--json` for success output; see command docs.
+
+### 1.1 Global flag scoping (cli2)
+
+Global flags are only recognized before the command id. For example:
+
+- `agentplane --json task list ...` enables JSON error output.
+- `agentplane help --json` emits JSON help (success output) and does not enable JSON error output.
 
 ## 2) Exit codes
 
@@ -143,3 +150,14 @@ Minimum subcommands (1.0):
 
 - Node.js 1.0 uses `.agentplane/` as the project directory name.
 - The command surface is designed to be stable for tooling integrations, but output text is not guaranteed to match verbatim (except where schemas/specs require byte stability).
+
+## 7) Help (cli2)
+
+The cli2 help system is spec-driven for migrated commands:
+
+- `agentplane help` prints a grouped command list (cli2 registry only).
+- `agentplane help <cmd...>` prints command help.
+- `--compact` prints minimal help (usage + options).
+- `--json` emits machine-readable JSON help.
+
+The JSON contract is specified in `docs/developer/cli-help-json.mdx`.

@@ -630,7 +630,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["config", "set"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("See `agentplane --help` for usage.");
+      expect(io.stderr).toContain("See `agentplane help");
     } finally {
       io.restore();
     }

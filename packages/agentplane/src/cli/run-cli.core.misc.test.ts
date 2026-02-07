@@ -289,7 +289,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane task new");
+      expect(io.stderr).toContain("agentplane task new");
     } finally {
       io.restore();
     }
@@ -316,7 +316,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Unknown flag");
+      expect(io.stderr).toContain("Unknown option");
     } finally {
       io.restore();
     }
