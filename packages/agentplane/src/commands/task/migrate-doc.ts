@@ -89,6 +89,42 @@ function ensureVerificationFrontmatter(frontmatter: Record<string, unknown>): vo
   };
 }
 
+const DATE_ONLY_ON_RE = /\bon (\d{4}-\d{2}-\d{2})(?!T)\b/g;
+
+function isIsoTimestamp(value: string): boolean {
+  if (!value.includes("T") || !value.endsWith("Z")) return false;
+  const ms = Date.parse(value);
+  return Number.isFinite(ms);
+}
+
+function normalizeNoteTimestamp(opts: { note: string; updatedAt: string }): string {
+  if (!isIsoTimestamp(opts.updatedAt)) return opts.note;
+  const updatedDate = opts.updatedAt.slice(0, 10);
+  return opts.note.replaceAll(DATE_ONLY_ON_RE, (match, date: string) => {
+    if (date !== updatedDate) return match;
+    return `on ${opts.updatedAt}`;
+  });
+}
+
+function normalizeFrontmatterNoteTimestamps(frontmatter: Record<string, unknown>): void {
+  const plan = frontmatter.plan_approval;
+  if (isRecord(plan) && typeof plan.note === "string" && typeof plan.updated_at === "string") {
+    plan.note = normalizeNoteTimestamp({ note: plan.note, updatedAt: plan.updated_at });
+  }
+
+  const verification = frontmatter.verification;
+  if (
+    isRecord(verification) &&
+    typeof verification.note === "string" &&
+    typeof verification.updated_at === "string"
+  ) {
+    verification.note = normalizeNoteTimestamp({
+      note: verification.note,
+      updatedAt: verification.updated_at,
+    });
+  }
+}
+
 async function migrateTaskReadmeDoc(opts: {
   readmePath: string;
   config: AgentplaneConfig;
@@ -100,6 +136,7 @@ async function migrateTaskReadmeDoc(opts: {
   const frontmatter = { ...parsed.frontmatter };
   ensurePlanApprovalFrontmatter(frontmatter);
   ensureVerificationFrontmatter(frontmatter);
+  normalizeFrontmatterNoteTimestamps(frontmatter);
 
   const required = opts.config.tasks.doc.required_sections;
   const extracted = extractTaskDoc(parsed.body);

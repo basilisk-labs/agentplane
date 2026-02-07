@@ -14,12 +14,12 @@ plan_approval:
   state: "approved"
   updated_at: "2026-02-06T20:31:56.265Z"
   updated_by: "USER"
-  note: "Approved by user in chat on 2026-02-06; proceed with test additions."
+  note: "Approved by user in chat on 2026-02-06T20:31:56.265Z; proceed with test additions."
 verification:
   state: "ok"
   updated_at: "2026-02-06T20:34:00.707Z"
   updated_by: "TESTER"
-  note: "Verified locally on 2026-02-06: added CommandContext tests and commit-from-comment body assertions; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli pass."
+  note: "Verified locally on 2026-02-06T20:34:00.707Z: added CommandContext tests and commit-from-comment body assertions; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli pass."
 commit:
   hash: "7cc58952be547760015df1cda806e66d8827a04b"
   message: "✨ D3QVVY test: cover CommandContext and commit bodies"

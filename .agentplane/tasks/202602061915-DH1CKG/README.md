@@ -15,12 +15,12 @@ plan_approval:
   state: "approved"
   updated_at: "2026-02-06T19:41:25.123Z"
   updated_by: "USER"
-  note: "Approved by user on 2026-02-06: implement new commit message standard; no backward compatibility required."
+  note: "Approved by user on 2026-02-06T19:41:25.123Z: implement new commit message standard; no backward compatibility required."
 verification:
   state: "ok"
   updated_at: "2026-02-06T19:58:30.972Z"
   updated_by: "TESTER"
-  note: "Verified locally on 2026-02-06: bun run test:core and bun run test:cli both pass (vitest)."
+  note: "Verified locally on 2026-02-06T19:58:30.972Z: bun run test:core and bun run test:cli both pass (vitest)."
 commit:
   hash: "b7f74c7c3f9e97e0dccef6a8a9f9547a140442af"
   message: "✨ DH1CKG commit"

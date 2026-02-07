@@ -15,12 +15,12 @@ plan_approval:
   state: "approved"
   updated_at: "2026-02-06T20:36:00.372Z"
   updated_by: "USER"
-  note: "Approved by user in chat on 2026-02-06."
+  note: "Approved by user in chat on 2026-02-06T20:36:00.372Z."
 verification:
   state: "ok"
   updated_at: "2026-02-06T20:36:11.296Z"
   updated_by: "TESTER"
-  note: "Verified locally on 2026-02-06: FIX2.md work completed via subtasks; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli are green."
+  note: "Verified locally on 2026-02-06T20:36:11.296Z: FIX2.md work completed via subtasks; bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli are green."
 commit:
   hash: "c8d553f5c49aff674b71db71f96d5d9c352bb2c4"
   message: "✅ D3QVVY close: record verification and closure"

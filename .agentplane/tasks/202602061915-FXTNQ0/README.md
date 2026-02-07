@@ -13,12 +13,12 @@ plan_approval:
   state: "approved"
   updated_at: "2026-02-06T20:09:20.440Z"
   updated_by: "USER"
-  note: "Approved by user in chat on 2026-02-06; proceed without backward compatibility."
+  note: "Approved by user in chat on 2026-02-06T20:09:20.440Z; proceed without backward compatibility."
 verification:
   state: "ok"
   updated_at: "2026-02-06T20:12:47.220Z"
   updated_by: "TESTER"
-  note: "Verified locally on 2026-02-06: dedupe refactor in recipes.ts; bun run lint and bun run test:cli pass."
+  note: "Verified locally on 2026-02-06T20:12:47.220Z: dedupe refactor in recipes.ts; bun run lint and bun run test:cli pass."
 commit:
   hash: "7a2d76c247220cbb6bc94d3e00330d8a8ba69f68"
   message: "✨ FXTNQ0 refactor"

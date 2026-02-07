@@ -13,12 +13,12 @@ plan_approval:
   state: "approved"
   updated_at: "2026-02-06T20:16:13.129Z"
   updated_by: "USER"
-  note: "Approved by user in chat on 2026-02-06; proceed with refactors, no backward compatibility required."
+  note: "Approved by user in chat on 2026-02-06T20:16:13.129Z; proceed with refactors, no backward compatibility required."
 verification:
   state: "ok"
   updated_at: "2026-02-06T20:27:58.516Z"
   updated_by: "TESTER"
-  note: "Verified locally on 2026-02-06: scenario command extracted to its own module, git log hash/subject parsing made colon-safe; bun run lint, bun run test:agentplane, and bun run test:cli pass."
+  note: "Verified locally on 2026-02-06T20:27:58.516Z: scenario command extracted to its own module, git log hash/subject parsing made colon-safe; bun run lint, bun run test:agentplane, and bun run test:cli pass."
 commit:
   hash: "44068eea70533c28c83b8aa859dde0fc86f28b98"
   message: "✨ KNHP1Y refactor"

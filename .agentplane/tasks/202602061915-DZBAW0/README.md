@@ -15,7 +15,7 @@ plan_approval:
   state: "approved"
   updated_at: "2026-02-06T19:31:09.086Z"
   updated_by: "USER"
-  note: "Approved by user on 2026-02-06: unify guard/hooks policy; can drop backward-compat and avoid backend/network in hooks."
+  note: "Approved by user on 2026-02-06T19:31:09.086Z: unify guard/hooks policy; can drop backward-compat and avoid backend/network in hooks."
 verification:
   state: "ok"
   updated_at: "2026-02-06T19:37:41.003Z"

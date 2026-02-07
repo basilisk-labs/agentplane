@@ -16,7 +16,7 @@ plan_approval:
   state: "approved"
   updated_at: "2026-02-07T13:31:55.444Z"
   updated_by: "USER"
-  note: "Approved in chat on 2026-02-07."
+  note: "Approved in chat on 2026-02-07T13:31:55.444Z."
 verification:
   state: "ok"
   updated_at: "2026-02-07T13:45:55.109Z"

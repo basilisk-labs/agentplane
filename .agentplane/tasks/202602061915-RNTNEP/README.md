@@ -14,7 +14,7 @@ plan_approval:
   state: "approved"
   updated_at: "2026-02-06T19:17:32.421Z"
   updated_by: "USER"
-  note: "Approved by user on 2026-02-06: proceed with FIX2.md implementation; no backward-compat required."
+  note: "Approved by user on 2026-02-06T19:17:32.421Z: proceed with FIX2.md implementation; no backward-compat required."
 verification:
   state: "ok"
   updated_at: "2026-02-06T19:19:26.497Z"
