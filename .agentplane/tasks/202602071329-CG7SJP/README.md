@@ -1,7 +1,7 @@
 ---
 id: "202602071329-CG7SJP"
 title: "AP-CLEAN-01: Remove legacy commit-policy orchestration and duplicates"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -19,18 +19,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T15:59:01.534Z"
+  updated_by: "CODER"
+  note: "Verified: removed legacy parity/no-op flags and duplicate policy-deny plumbing; removed deprecated base_branch from config and PR meta; updated integrate commit subjects to comply with commit subject policy. format:check, lint, and test:cli:core passed."
+commit:
+  hash: "0e8ca2d47265de7248bdc9b5f9b6fbb613b8fa0d"
+  message: "✅ CG7SJP cleanup: remove legacy parity flags and prune duplicates"
 comments:
   -
     author: "CODER"
     body: "Start: Remove legacy commit-policy orchestration and duplicate validations now superseded by evaluatePolicy."
+  -
+    author: "CODER"
+    body: "Verified: legacy commit-policy/parity code removed (no-op finish flags, deprecated base_branch config/meta). Guard/hooks share a single policy engine and a shared deny helper. Integrate now produces commit subjects compliant with the enforced template. format:check, lint, and test:cli:core passed."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-07T15:47:14.786Z"
+doc_updated_at: "2026-02-07T15:59:09.236Z"
 doc_updated_by: "CODER"
 description: "After migrating to evaluatePolicy, delete old entry points/helpers for commit-policy and other legacy code that duplicates domain logic. Prune dependencies and align package structure to the domain layout."
 id_source: "generated"
@@ -60,6 +65,15 @@ Risk: removing legacy code may break undocumented invocations. Mitigation: rely 
 - bun run format:check
 - bun run lint
 - bun run test:cli:core
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T15:59:01.534Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: removed legacy parity/no-op flags and duplicate policy-deny plumbing; removed deprecated base_branch from config and PR meta; updated integrate commit subjects to comply with commit subject policy. format:check, lint, and test:cli:core passed.
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
