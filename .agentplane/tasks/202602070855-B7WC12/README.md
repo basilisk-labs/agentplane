@@ -1,7 +1,7 @@
 ---
 id: "202602070855-B7WC12"
 title: "TaskStore: cached get/update/list + migrate status commands"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -19,15 +19,20 @@ plan_approval:
   updated_by: "CODEX"
   note: "Approved by user in chat (2026-02-07)."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T12:15:44.581Z"
+  updated_by: "CODEX"
+  note: "Verified: bun run typecheck; bun run lint; bun run test:agentplane"
+commit:
+  hash: "45d5e4dfc4b626b164f225ff21a4818419cf163e"
+  message: "✅ B7WC12 tasks: use TaskStore.update for status/doc/plan/verify"
 comments:
   -
     author: "CODEX"
     body: "start: add TaskStore cache layer and migrate status commands to update()"
+  -
+    author: "CODEX"
+    body: "Verified: bun run typecheck; bun run lint; bun run test:agentplane. Summary: migrate task status/doc/plan/verify writes to TaskStore.update (cached read/parse + write-if-changed). Implementation: 45d5e4dfc4b6."
 events:
   -
     type: "status"
@@ -37,7 +42,7 @@ events:
     to: "DOING"
     note: "start: add TaskStore cache layer and migrate status commands to update()"
 doc_version: 2
-doc_updated_at: "2026-02-07T11:53:32.523Z"
+doc_updated_at: "2026-02-07T12:16:15.482Z"
 doc_updated_by: "CODEX"
 description: "Add TaskStore layer per command to avoid read/parse/write duplication; implement update(taskId, updater) with mtime guard + writeIfChanged; migrate start/block/finish/verify/doc ops to TaskStore.update."
 id_source: "explicit"
@@ -70,5 +75,17 @@ Rollback:
 
 ## Verification
 
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T12:15:44.581Z — VERIFY — ok
+
+By: CODEX
+
+Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
