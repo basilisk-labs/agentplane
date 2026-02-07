@@ -15,5 +15,6 @@ coverage
 *.tsbuildinfo
 .agentplane/worktrees
 .agentplane/cache
+.agentplane/recipes-cache
 .agentplane/tasks.json
 # Keep the external recipes repo out of the main repo index.
