@@ -1,7 +1,7 @@
 ---
 id: "202602071329-PYB8DV"
 title: "AP-UX-01: Improve help banner (version + release date)"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -17,18 +17,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T13:45:54.959Z"
+  updated_by: "CODER"
+  note: "Help banner now shows version and release commit date in this repo; help remains usable without tags."
+commit:
+  hash: "e71a31c97ca36005bd5f550329a2727f9ccd7a47"
+  message: "✅ 7H5M54 git: ignore and untrack .agentplane/tasks.json"
 comments:
   -
     author: "CODER"
     body: "Start: Update CLI help banner to show version and release date."
+  -
+    author: "CODER"
+    body: "Verified: Help banner now reports CLI version and the v<version> tag commit date; tagline is concise and English-only."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-07T13:35:32.112Z"
+doc_updated_at: "2026-02-07T13:46:02.880Z"
 doc_updated_by: "CODER"
 description: "Replace 'agentplane (v1 prototype)' in help with: current version from packages/agentplane/package.json + release commit date for tag v<version> + a short, more informative tagline."
 id_source: "generated"
@@ -52,5 +57,17 @@ id_source: "generated"
 
 ## Verification
 
+### Plan
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T13:45:54.959Z — VERIFY — ok
+
+By: CODER
+
+Note: Help banner now shows version and release commit date in this repo; help remains usable without tags.
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
