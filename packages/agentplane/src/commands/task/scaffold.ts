@@ -180,6 +180,8 @@ export async function cmdTaskScaffold(opts: {
 
     const frontmatter = taskDataToFrontmatter(baseTask);
     const verifyStepsTemplate = [
+      "<!-- TODO: FILL VERIFY STEPS -->",
+      "",
       "### Scope",
       "",
       "",
