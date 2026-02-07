@@ -51,6 +51,24 @@
         "updated_by": { "type": ["string", "null"] },
         "note": { "type": ["string", "null"] }
       }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["type", "at", "author"],
+        "properties": {
+          "type": { "type": "string", "enum": ["status", "comment", "verify"] },
+          "at": { "type": "string", "format": "date-time" },
+          "author": { "type": "string", "minLength": 1 },
+          "from": { "type": "string" },
+          "to": { "type": "string" },
+          "state": { "type": "string" },
+          "note": { "type": "string" },
+          "body": { "type": "string" }
+        }
+      }
     }
   }
 }

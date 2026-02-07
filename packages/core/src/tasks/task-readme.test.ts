@@ -74,4 +74,37 @@ Hello world.
       /Unsupported scalar type/,
     );
   });
+
+  it("renders append-only events in deterministic order", () => {
+    const parsed = parseTaskReadme(sample);
+    const withEvents = {
+      ...parsed.frontmatter,
+      events: [
+        {
+          type: "status",
+          at: "2026-02-07T10:00:00.000Z",
+          author: "CODER",
+          from: "TODO",
+          to: "DOING",
+          note: "Start: work in progress.",
+        },
+        {
+          type: "verify",
+          at: "2026-02-07T12:00:00.000Z",
+          author: "TESTER",
+          state: "ok",
+          note: "Looks good.",
+        },
+      ],
+    };
+
+    const rendered = renderTaskReadme(withEvents as Record<string, unknown>, parsed.body);
+    expect(rendered).toContain("events:");
+    expect(rendered).toContain('type: "status"');
+    expect(rendered).toContain('at: "2026-02-07T10:00:00.000Z"');
+    expect(rendered).toContain('author: "CODER"');
+    expect(rendered).toContain('from: "TODO"');
+    expect(rendered).toContain('to: "DOING"');
+    expect(rendered).toContain('note: "Start: work in progress."');
+  });
 });

@@ -8,6 +8,7 @@ import { commitFromComment } from "../guard/index.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 
 import {
+  appendTaskEvent,
   buildDependencyState,
   ensurePlanApprovedIfRequired,
   enforceStatusCommitPolicy,
@@ -106,12 +107,21 @@ export async function cmdStart(opts: {
       { author: opts.author, body: commentBody },
     ];
 
+    const at = nowIso();
     const nextTask: TaskData = {
       ...task,
       status: "DOING",
       comments: commentsValue,
+      events: appendTaskEvent(task, {
+        type: "status",
+        at,
+        author: opts.author,
+        from: currentStatus,
+        to: "DOING",
+        note: commentBody,
+      }),
       doc_version: 2,
-      doc_updated_at: nowIso(),
+      doc_updated_at: at,
       doc_updated_by: opts.author,
     };
 

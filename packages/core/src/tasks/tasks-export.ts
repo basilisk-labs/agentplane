@@ -42,6 +42,16 @@ export type TasksExportTask = {
   verify: string[];
   commit: { hash: string; message: string } | null;
   comments: { author: string; body: string }[];
+  events?: {
+    type: string;
+    at: string;
+    author: string;
+    from?: string;
+    to?: string;
+    state?: string;
+    note?: string;
+    body?: string;
+  }[];
   doc_version: 2;
   doc_updated_at: string;
   doc_updated_by: string;
@@ -103,8 +113,39 @@ export async function buildTasksExportSnapshot(opts: {
           )
           .map((c) => ({ author: c.author, body: c.body }))
       : [];
+    const events = Array.isArray(fm.events)
+      ? fm.events
+          .filter((event) => isRecord(event))
+          .filter(
+            (
+              event,
+            ): event is {
+              type: string;
+              at: string;
+              author: string;
+              from?: string;
+              to?: string;
+              state?: string;
+              note?: string;
+              body?: string;
+            } =>
+              typeof event.type === "string" &&
+              typeof event.at === "string" &&
+              typeof event.author === "string",
+          )
+          .map((event) => ({
+            type: event.type,
+            at: event.at,
+            author: event.author,
+            from: typeof event.from === "string" ? event.from : undefined,
+            to: typeof event.to === "string" ? event.to : undefined,
+            state: typeof event.state === "string" ? event.state : undefined,
+            note: typeof event.note === "string" ? event.note : undefined,
+            body: typeof event.body === "string" ? event.body : undefined,
+          }))
+      : [];
 
-    return {
+    const base = {
       id: typeof fm.id === "string" ? fm.id : t.id,
       title: typeof fm.title === "string" ? fm.title : "",
       status: typeof fm.status === "string" ? fm.status : "",
@@ -121,7 +162,12 @@ export async function buildTasksExportSnapshot(opts: {
       description: typeof fm.description === "string" ? fm.description : "",
       dirty: false,
       id_source: "generated",
-    };
+    } satisfies TasksExportTask;
+
+    if (events.length > 0) {
+      return { ...base, events };
+    }
+    return base;
   });
 
   const sorted = exportTasks.toSorted((a, b) => a.id.localeCompare(b.id));

@@ -12,6 +12,17 @@ import { generateTaskId } from "./task-id.js";
 export type TaskStatus = "TODO" | "DOING" | "DONE" | "BLOCKED";
 export type TaskPriority = "low" | "normal" | "med" | "high";
 
+export type TaskEvent = {
+  type: "status" | "comment" | "verify";
+  at: string;
+  author: string;
+  from?: string;
+  to?: string;
+  state?: string;
+  note?: string;
+  body?: string;
+};
+
 export type TaskFrontmatter = {
   id: string;
   title: string;
@@ -34,6 +45,7 @@ export type TaskFrontmatter = {
     note: string | null;
   };
   comments: { author: string; body: string }[];
+  events?: TaskEvent[];
   doc_version: 2;
   doc_updated_at: string;
   doc_updated_by: string;
@@ -224,6 +236,7 @@ export async function createTask(opts: {
       note: null,
     },
     comments: [],
+    events: [],
     doc_version: 2,
     doc_updated_at: nowIso(),
     doc_updated_by: opts.owner,

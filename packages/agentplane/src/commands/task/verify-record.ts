@@ -8,7 +8,7 @@ import { backendNotSupportedMessage, missingValueMessage, usageMessage } from ".
 import { CliError } from "../../shared/errors.js";
 import { loadBackendTask } from "../shared/task-backend.js";
 
-import { nowIso } from "./shared.js";
+import { appendTaskEvent, nowIso } from "./shared.js";
 
 type VerifyState = "ok" | "needs_rework";
 
@@ -211,6 +211,13 @@ async function recordVerificationResult(opts: {
     commit: opts.state === "needs_rework" ? null : (task.commit ?? null),
     doc: nextDoc,
     doc_updated_by: opts.by,
+    events: appendTaskEvent(task, {
+      type: "verify",
+      at,
+      author: opts.by,
+      state: opts.state,
+      note: opts.note,
+    }),
     verification: {
       state: opts.state,
       updated_at: at,

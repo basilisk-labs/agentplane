@@ -50,6 +50,18 @@ export type VerificationResult = {
   note: string | null;
 };
 
+export type TaskEventType = "status" | "comment" | "verify";
+export type TaskEvent = {
+  type: TaskEventType;
+  at: string;
+  author: string;
+  from?: string;
+  to?: string;
+  state?: string;
+  note?: string;
+  body?: string;
+};
+
 type AtomicWriteFile = (
   filePath: string,
   contents: string | Buffer,
@@ -203,6 +215,7 @@ export type TaskData = {
   verification?: VerificationResult;
   commit?: { hash: string; message: string } | null;
   comments?: { author: string; body: string }[];
+  events?: TaskEvent[];
   doc?: string;
   doc_version?: number;
   doc_updated_at?: string;
@@ -302,6 +315,32 @@ function normalizeVerificationResult(value: unknown): VerificationResult | null 
   return { state, updated_at: updatedAt, updated_by: updatedBy, note };
 }
 
+const TASK_EVENT_TYPES = new Set<TaskEventType>(["status", "comment", "verify"]);
+
+function normalizeEvents(value: unknown): TaskEvent[] {
+  if (!Array.isArray(value)) return [];
+  const events: TaskEvent[] = [];
+  for (const entry of value) {
+    if (!isRecord(entry)) continue;
+    const type = typeof entry.type === "string" ? entry.type : "";
+    if (!TASK_EVENT_TYPES.has(type as TaskEventType)) continue;
+    const at = typeof entry.at === "string" ? entry.at : "";
+    const author = typeof entry.author === "string" ? entry.author : "";
+    if (!at.trim() || !author.trim()) continue;
+    events.push({
+      type: type as TaskEventType,
+      at,
+      author,
+      from: typeof entry.from === "string" ? entry.from : undefined,
+      to: typeof entry.to === "string" ? entry.to : undefined,
+      state: typeof entry.state === "string" ? entry.state : undefined,
+      note: typeof entry.note === "string" ? entry.note : undefined,
+      body: typeof entry.body === "string" ? entry.body : undefined,
+    });
+  }
+  return events;
+}
+
 export function taskRecordToData(record: TaskRecord): TaskData {
   const fm = record.frontmatter as unknown as Record<string, unknown>;
   const comments = Array.isArray(fm.comments)
@@ -319,6 +358,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     typeof fm.commit.message === "string"
       ? { hash: fm.commit.hash, message: fm.commit.message }
       : null;
+  const events = normalizeEvents(fm.events);
   const planApproval = normalizePlanApproval(fm.plan_approval);
   const verification = normalizeVerificationResult(fm.verification);
 
@@ -337,6 +377,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     verification: verification ?? undefined,
     commit,
     comments,
+    events,
     doc_version: typeof fm.doc_version === "number" ? fm.doc_version : undefined,
     doc_updated_at: typeof fm.doc_updated_at === "string" ? fm.doc_updated_at : undefined,
     doc_updated_by: typeof fm.doc_updated_by === "string" ? fm.doc_updated_by : undefined,
@@ -351,7 +392,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
 }
 
 function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_source: string } {
-  return {
+  const base = {
     ...task,
     id: task.id,
     title: task.title ?? "",
@@ -375,6 +416,19 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
     dirty: Boolean(task.dirty),
     id_source: task.id_source ?? "generated",
   };
+
+  const events = Array.isArray(task.events)
+    ? task.events.filter(
+        (event): event is TaskEvent =>
+          !!event &&
+          typeof event.type === "string" &&
+          typeof event.at === "string" &&
+          typeof event.author === "string",
+      )
+    : [];
+
+  if (events.length > 0) return { ...base, events };
+  return base;
 }
 
 export function buildTasksExportSnapshotFromTasks(tasks: TaskData[]): {

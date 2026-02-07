@@ -8,6 +8,7 @@ import { commitFromComment } from "../guard/index.js";
 import { loadBackendTask, resolveDocUpdatedBy } from "../shared/task-backend.js";
 
 import {
+  appendTaskEvent,
   buildDependencyState,
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
@@ -105,20 +106,31 @@ export async function cmdTaskSetStatus(opts: {
         )
       : [];
     let comments = existingComments;
+    let commentBody: string | undefined;
     if (opts.author && opts.body) {
-      const commentBody = opts.commitFromComment
+      commentBody = opts.commitFromComment
         ? formatCommentBodyForCommit(opts.body, config)
         : opts.body;
       comments = [...existingComments, { author: opts.author, body: commentBody }];
     }
 
+    const at = nowIso();
+    const eventAuthor = resolveDocUpdatedBy(task, opts.author);
     const next: TaskData = {
       ...task,
       status: nextStatus,
       comments,
+      events: appendTaskEvent(task, {
+        type: "status",
+        at,
+        author: eventAuthor,
+        from: currentStatus,
+        to: nextStatus,
+        note: commentBody,
+      }),
       doc_version: 2,
-      doc_updated_at: nowIso(),
-      doc_updated_by: resolveDocUpdatedBy(task, opts.author),
+      doc_updated_at: at,
+      doc_updated_by: eventAuthor,
     };
     if (opts.commit) {
       const commitInfo = await readCommitInfo(resolved.gitRoot, opts.commit);

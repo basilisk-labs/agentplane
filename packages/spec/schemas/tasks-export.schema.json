@@ -73,6 +73,24 @@
             }
           }
         },
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "required": ["type", "at", "author"],
+            "properties": {
+              "type": { "type": "string", "enum": ["status", "comment", "verify"] },
+              "at": { "type": "string", "format": "date-time" },
+              "author": { "type": "string", "minLength": 1 },
+              "from": { "type": "string" },
+              "to": { "type": "string" },
+              "state": { "type": "string" },
+              "note": { "type": "string" },
+              "body": { "type": "string" }
+            }
+          }
+        },
         "doc_version": { "type": "integer", "const": 2 },
         "doc_updated_at": { "type": "string", "format": "date-time" },
         "doc_updated_by": { "type": "string", "minLength": 1 },

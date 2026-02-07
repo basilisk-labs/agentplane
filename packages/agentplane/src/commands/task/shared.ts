@@ -9,7 +9,7 @@ import {
   missingValueMessage,
   warnMessage,
 } from "../../cli/output.js";
-import { type TaskData } from "../../backends/task-backend.js";
+import { type TaskData, type TaskEvent } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { dedupeStrings } from "../../shared/strings.js";
 import { parseGitLogHashSubject } from "../../shared/git-log.js";
@@ -57,6 +57,19 @@ export function requiresVerify(tags: string[], requiredTags: string[]): boolean 
   const required = new Set(requiredTags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
   if (required.size === 0) return false;
   return tags.some((tag) => required.has(tag.trim().toLowerCase()));
+}
+
+export function appendTaskEvent(task: TaskData, event: TaskEvent): TaskEvent[] {
+  const existing = Array.isArray(task.events)
+    ? task.events.filter(
+        (entry): entry is TaskEvent =>
+          !!entry &&
+          typeof entry.type === "string" &&
+          typeof entry.at === "string" &&
+          typeof entry.author === "string",
+      )
+    : [];
+  return [...existing, event];
 }
 
 export function ensurePlanApprovedIfRequired(task: TaskData, config: AgentplaneConfig): void {

@@ -8,6 +8,7 @@ import { commitFromComment } from "../guard/index.js";
 import { loadCommandContext, loadTaskFromContext } from "../shared/task-backend.js";
 
 import {
+  appendTaskEvent,
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
   isTransitionAllowed,
@@ -76,12 +77,21 @@ export async function cmdBlock(opts: {
         )
       : [];
     const commentsValue = [...existingComments, { author: opts.author, body: commentBody }];
+    const at = nowIso();
     const nextTask: TaskData = {
       ...task,
       status: "BLOCKED",
       comments: commentsValue,
+      events: appendTaskEvent(task, {
+        type: "status",
+        at,
+        author: opts.author,
+        from: currentStatus,
+        to: "BLOCKED",
+        note: commentBody,
+      }),
       doc_version: 2,
-      doc_updated_at: nowIso(),
+      doc_updated_at: at,
       doc_updated_by: opts.author,
     };
 

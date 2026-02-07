@@ -133,4 +133,41 @@ describe("tasks-export", () => {
     expect(exported?.title).toBe("");
     expect(exported?.description).toBe("");
   });
+
+  it("exports append-only events when present", async () => {
+    const root = await mkGitRepoRoot();
+
+    const taskId = "202602070900-ABCDE";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      [
+        "---",
+        `id: "${taskId}"`,
+        `title: "Events task"`,
+        "status: DOING",
+        "priority: med",
+        "owner: CODER",
+        "depends_on: []",
+        "tags: []",
+        "verify: []",
+        "comments: []",
+        "events:",
+        '  - { type: "status", at: "2026-02-07T10:00:00.000Z", author: "CODER", from: "TODO", to: "DOING" }',
+        "doc_version: 2",
+        `doc_updated_at: "${new Date().toISOString()}"`,
+        "doc_updated_by: CODER",
+        'description: "Event tracking"',
+        "---",
+        "## Summary",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const exported = snapshot.tasks.find((t) => t.id === taskId);
+    expect(exported?.events?.length).toBe(1);
+    expect(exported?.events?.[0]?.type).toBe("status");
+  });
 });

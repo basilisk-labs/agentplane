@@ -58,6 +58,7 @@ export function parseTaskReadme(markdown: string): ParsedTaskReadme {
 }
 
 function renderScalar(value: unknown): string {
+  if (value === undefined) return "null";
   if (value === null) return "null";
   if (typeof value === "string") return JSON.stringify(value);
   if (typeof value === "number") return String(value);
@@ -66,14 +67,17 @@ function renderScalar(value: unknown): string {
 }
 
 function renderFlowSeq(value: unknown[]): string {
-  const parts = value.map((v) => {
-    if (Array.isArray(v)) return renderFlowSeq(v);
-    if (isRecord(v))
-      return `{ ${orderedKeys(v, null)
-        .map((k) => `${k}: ${renderScalar(v[k])}`)
-        .join(", ")} }`;
-    return renderScalar(v);
-  });
+  const parts = value
+    .filter((v) => v !== undefined)
+    .map((v) => {
+      if (Array.isArray(v)) return renderFlowSeq(v);
+      if (isRecord(v))
+        return `{ ${orderedKeys(v, null)
+          .filter((k) => v[k] !== undefined)
+          .map((k) => `${k}: ${renderScalar(v[k])}`)
+          .join(", ")} }`;
+      return renderScalar(v);
+    });
   return `[${parts.join(", ")}]`;
 }
 
@@ -86,6 +90,7 @@ function renderMapLines(
   const lines: string[] = [];
   for (const k of keys) {
     const v = value[k];
+    if (v === undefined) continue;
     lines.push(...renderValueLines(k, v, indent));
   }
   return lines;
@@ -96,6 +101,7 @@ function isStringArray(value: unknown[]): value is string[] {
 }
 
 function renderValueLines(key: string, value: unknown, indent: string): string[] {
+  if (value === undefined) return [];
   if (Array.isArray(value)) {
     if (value.length === 0) return [`${indent}${key}: []`];
 
@@ -110,7 +116,12 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
       `${indent}${key}:`,
       ...value.flatMap((item) => {
         if (!isRecord(item)) throw new TypeError("Expected an object item in YAML sequence");
-        const preferred = key === "comments" ? (["author", "body"] as const) : null;
+        const preferred =
+          key === "comments"
+            ? (["author", "body"] as const)
+            : key === "events"
+              ? (["type", "at", "author", "from", "to", "state", "note", "body"] as const)
+              : null;
         const itemLines = renderMapLines(item, `${indent}    `, preferred);
         if (itemLines.length === 0) return [`${indent}  - {}`];
         return [`${indent}  -`, ...itemLines];
@@ -154,6 +165,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
     "verification",
     "commit",
     "comments",
+    "events",
     "doc_version",
     "doc_updated_at",
     "doc_updated_by",
@@ -166,7 +178,9 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
 
   const lines: string[] = [];
   for (const k of ordered) {
-    lines.push(...renderValueLines(k, frontmatter[k], ""));
+    const value = frontmatter[k];
+    if (value === undefined) continue;
+    lines.push(...renderValueLines(k, value, ""));
   }
 
   return `---\n${lines.join("\n")}\n---\n`;
