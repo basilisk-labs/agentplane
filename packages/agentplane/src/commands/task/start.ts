@@ -18,9 +18,13 @@ import {
   buildDependencyState,
   ensurePlanApprovedIfRequired,
   enforceStatusCommitPolicy,
+  extractDocSection,
+  isVerifyStepsFilled,
   isTransitionAllowed,
   nowIso,
+  requiresVerify,
   requireStructuredComment,
+  toStringArray,
 } from "./shared.js";
 
 export const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text> [flags]";
@@ -66,6 +70,24 @@ export async function cmdStart(opts: {
     const task = useStore
       ? await store!.get(opts.taskId)
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
+
+    if (ctx.config.agents?.approvals?.require_plan !== true) {
+      const tags = toStringArray(task.tags);
+      const verifyRequired = requiresVerify(tags, ctx.config.tasks.verify.required_tags);
+      if (verifyRequired) {
+        const doc = typeof task.doc === "string" ? task.doc : "";
+        const verifySteps = extractDocSection(doc, "Verify Steps");
+        if (!isVerifyStepsFilled(verifySteps)) {
+          throw new CliError({
+            exitCode: 3,
+            code: "E_VALIDATION",
+            message:
+              `${task.id}: cannot start work: ## Verify Steps section is missing/empty/unfilled ` +
+              "(fill it before starting work when plan approval is disabled)",
+          });
+        }
+      }
+    }
 
     ensurePlanApprovedIfRequired(task, ctx.config);
 
