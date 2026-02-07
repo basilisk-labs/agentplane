@@ -22,8 +22,8 @@ verification:
   updated_by: "CODER"
   note: "Help banner now shows version and release commit date in this repo; help remains usable without tags."
 commit:
-  hash: "e71a31c97ca36005bd5f550329a2727f9ccd7a47"
-  message: "✅ 7H5M54 git: ignore and untrack .agentplane/tasks.json"
+  hash: "78c210a7dada6716ce211ce9e9e6deaca7c9cdfa"
+  message: "✅ PYB8DV cli: improve help banner with version and release date"
 comments:
   -
     author: "CODER"
@@ -31,9 +31,12 @@ comments:
   -
     author: "CODER"
     body: "Verified: Help banner now reports CLI version and the v<version> tag commit date; tagline is concise and English-only."
+  -
+    author: "CODER"
+    body: "Verified: Correct commit pointer to the implementation commit that introduced the new help banner."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-07T13:46:02.880Z"
+doc_updated_at: "2026-02-07T13:54:56.322Z"
 doc_updated_by: "CODER"
 description: "Replace 'agentplane (v1 prototype)' in help with: current version from packages/agentplane/package.json + release commit date for tag v<version> + a short, more informative tagline."
 id_source: "generated"
