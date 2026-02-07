@@ -11,6 +11,7 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import {
   appendTaskEvent,
@@ -60,7 +61,11 @@ export async function cmdStart(opts: {
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.start;
     requireStructuredComment(opts.body, prefix, minChars);
 
-    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+    const useStore = backendIsLocalFileBackend(ctx);
+    const store = useStore ? getTaskStore(ctx) : null;
+    const task = useStore
+      ? await store!.get(opts.taskId)
+      : await loadTaskFromContext({ ctx, taskId: opts.taskId });
 
     ensurePlanApprovedIfRequired(task, ctx.config);
 
@@ -129,8 +134,9 @@ export async function cmdStart(opts: {
       doc_updated_at: at,
       doc_updated_by: opts.author,
     };
-
-    await ctx.taskBackend.writeTask(nextTask);
+    await (useStore
+      ? store!.update(opts.taskId, () => nextTask)
+      : ctx.taskBackend.writeTask(nextTask));
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {

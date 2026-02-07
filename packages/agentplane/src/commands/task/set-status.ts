@@ -12,6 +12,7 @@ import {
   resolveDocUpdatedBy,
   type CommandContext,
 } from "../shared/task-backend.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import {
   appendTaskEvent,
@@ -63,10 +64,13 @@ export async function cmdTaskSetStatus(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const backend = ctx.taskBackend;
     const config = ctx.config;
     const resolved = ctx.resolvedProject;
-    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+    const useStore = backendIsLocalFileBackend(ctx);
+    const store = useStore ? getTaskStore(ctx) : null;
+    const task = useStore
+      ? await store!.get(opts.taskId)
+      : await loadTaskFromContext({ ctx, taskId: opts.taskId });
     if (opts.commitFromComment) {
       enforceStatusCommitPolicy({
         policy: config.status_commit_policy,
@@ -145,7 +149,7 @@ export async function cmdTaskSetStatus(opts: {
       const commitInfo = await readCommitInfo(resolved.gitRoot, opts.commit);
       next.commit = { hash: commitInfo.hash, message: commitInfo.message };
     }
-    await backend.writeTask(next);
+    await (useStore ? store!.update(opts.taskId, () => next) : ctx.taskBackend.writeTask(next));
 
     // tasks.json is export-only; generated via `agentplane task export`.
 

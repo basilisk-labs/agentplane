@@ -5,12 +5,14 @@ import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, missingValueMessage, usageMessage } from "../../cli/output.js";
+import type { PlanApprovalState, TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import { nowIso } from "./shared.js";
 
@@ -151,8 +153,10 @@ export async function cmdTaskPlan(opts: {
     const backend = ctx.taskBackend;
     const config = ctx.config;
     const resolved = ctx.resolvedProject;
-    const task = await loadTaskFromContext({ ctx, taskId });
-    if (!backend.getTaskDoc || !backend.setTaskDoc || !backend.writeTask) {
+    const useStore = backendIsLocalFileBackend(ctx);
+    const store = useStore ? getTaskStore(ctx) : null;
+    const task = useStore ? await store!.get(taskId) : await loadTaskFromContext({ ctx, taskId });
+    if (!backend.getTaskDoc || !backend.writeTask) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
@@ -193,20 +197,22 @@ export async function cmdTaskPlan(opts: {
         }
       }
 
-      const existingDoc =
-        (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+      const existingDoc = useStore
+        ? String(task.doc ?? "")
+        : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
       const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
       const nextDoc = ensureDocSections(
         setMarkdownSection(baseDoc, "Plan", text),
         config.tasks.doc.required_sections,
       );
 
-      await backend.writeTask({
+      const nextTask: TaskData = {
         ...task,
         doc: nextDoc,
         plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
         ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
-      });
+      };
+      await (useStore ? store!.update(taskId, () => nextTask) : backend.writeTask(nextTask));
 
       const readmePath = path.join(
         resolved.gitRoot,
@@ -238,8 +244,9 @@ export async function cmdTaskPlan(opts: {
         });
       }
 
-      const existingDoc =
-        (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+      const existingDoc = useStore
+        ? String(task.doc ?? "")
+        : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
       const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
       const plan = extractDocSection(baseDoc, "Plan");
       if (!plan || plan.trim().length === 0) {
@@ -250,15 +257,16 @@ export async function cmdTaskPlan(opts: {
         });
       }
 
-      await backend.writeTask({
+      const nextTask: TaskData = {
         ...task,
         plan_approval: {
-          state: subcommand === "approve" ? "approved" : "rejected",
+          state: (subcommand === "approve" ? "approved" : "rejected") as PlanApprovalState,
           updated_at: nowIso(),
           updated_by: by,
           note: note || null,
         },
-      });
+      };
+      await (useStore ? store!.update(taskId, () => nextTask) : backend.writeTask(nextTask));
 
       return 0;
     }

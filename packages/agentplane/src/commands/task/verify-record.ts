@@ -11,6 +11,7 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import { appendTaskEvent, nowIso } from "./shared.js";
 
@@ -184,7 +185,6 @@ async function recordVerificationResult(opts: {
   const backend = ctx.taskBackend;
   const config = ctx.config;
   const resolved = ctx.resolvedProject;
-  const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
   if (!backend.getTaskDoc || !backend.writeTask) {
     throw new CliError({
       exitCode: 2,
@@ -193,8 +193,14 @@ async function recordVerificationResult(opts: {
     });
   }
 
-  const existingDoc =
-    (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+  const useStore = backendIsLocalFileBackend(ctx);
+  const store = useStore ? getTaskStore(ctx) : null;
+  const task = useStore
+    ? await store!.get(opts.taskId)
+    : await loadTaskFromContext({ ctx, taskId: opts.taskId });
+  const existingDoc = useStore
+    ? String(task.doc ?? "")
+    : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
   const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
   const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
 
@@ -212,7 +218,7 @@ async function recordVerificationResult(opts: {
     config.tasks.doc.required_sections,
   );
 
-  await backend.writeTask({
+  const nextTask = {
     ...task,
     status: opts.state === "needs_rework" ? "DOING" : task.status,
     commit: opts.state === "needs_rework" ? null : (task.commit ?? null),
@@ -231,7 +237,8 @@ async function recordVerificationResult(opts: {
       updated_by: opts.by,
       note: opts.note,
     },
-  });
+  };
+  await (useStore ? store!.update(opts.taskId, () => nextTask) : backend.writeTask(nextTask));
 
   if (!opts.quiet) {
     const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");

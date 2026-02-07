@@ -18,6 +18,7 @@ import {
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 export const TASK_DOC_SET_USAGE =
   "Usage: agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)";
@@ -169,6 +170,8 @@ export async function cmdTaskDocSet(opts: {
         message: backendNotSupportedMessage("task docs"),
       });
     }
+    const useStore = backendIsLocalFileBackend(ctx);
+    const store = useStore ? getTaskStore(ctx) : null;
     const allowed = config.tasks.doc.sections;
     if (!allowed.includes(flags.section)) {
       throw new CliError({
@@ -186,11 +189,20 @@ export async function cmdTaskDocSet(opts: {
       const key = normalizeDocSectionName(match[1] ?? "");
       if (key && normalizedAllowed.has(key)) headingKeys.add(key);
     }
-    const existing = await backend.getTaskDoc(opts.taskId);
-    const baseDoc = ensureDocSections(existing ?? "", config.tasks.doc.required_sections);
+    const storeTask = useStore ? await store!.get(opts.taskId) : null;
+    const baseDocRaw = useStore
+      ? String(storeTask!.doc ?? "")
+      : ((await backend.getTaskDoc(opts.taskId)) ?? "");
+    const baseDoc = ensureDocSections(baseDocRaw, config.tasks.doc.required_sections);
     if (headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))) {
       const fullDoc = ensureDocSections(text, config.tasks.doc.required_sections);
-      await backend.setTaskDoc(opts.taskId, fullDoc, updatedBy);
+      await (useStore
+        ? store!.update(opts.taskId, (current) => ({
+            ...current,
+            doc: fullDoc,
+            ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
+          }))
+        : backend.setTaskDoc(opts.taskId, fullDoc, updatedBy));
     } else {
       let nextText = text;
       if (headingKeys.size > 0 && headingKeys.has(targetKey)) {
@@ -205,7 +217,13 @@ export async function cmdTaskDocSet(opts: {
       }
       const nextDoc = setMarkdownSection(baseDoc, flags.section, nextText);
       const normalized = ensureDocSections(nextDoc, config.tasks.doc.required_sections);
-      await backend.setTaskDoc(opts.taskId, normalized, updatedBy);
+      await (useStore
+        ? store!.update(opts.taskId, (current) => ({
+            ...current,
+            doc: normalized,
+            ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
+          }))
+        : backend.setTaskDoc(opts.taskId, normalized, updatedBy));
     }
     const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
     process.stdout.write(`${path.join(tasksDir, opts.taskId, "README.md")}\n`);
@@ -236,7 +254,11 @@ export async function cmdTaskDocShow(opts: {
         message: backendNotSupportedMessage("task docs"),
       });
     }
-    const doc = (await backend.getTaskDoc(opts.taskId)) ?? "";
+    const useStore = backendIsLocalFileBackend(ctx);
+    const storeTask = useStore ? await getTaskStore(ctx).get(opts.taskId) : null;
+    const doc = useStore
+      ? String(storeTask!.doc ?? "")
+      : ((await backend.getTaskDoc(opts.taskId)) ?? "");
     if (flags.section) {
       const sectionKey = normalizeDocSectionName(flags.section);
       const { sections } = parseDocSections(doc);

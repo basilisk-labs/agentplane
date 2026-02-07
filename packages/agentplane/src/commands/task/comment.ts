@@ -7,6 +7,7 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 import { appendTaskEvent, nowIso } from "./shared.js";
 
 export async function cmdTaskComment(opts: {
@@ -21,8 +22,11 @@ export async function cmdTaskComment(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const backend = ctx.taskBackend;
-    const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+    const useStore = backendIsLocalFileBackend(ctx);
+    const store = useStore ? getTaskStore(ctx) : null;
+    const task = useStore
+      ? await store!.get(opts.taskId)
+      : await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const existing = Array.isArray(task.comments)
       ? task.comments.filter(
           (item): item is { author: string; body: string } =>
@@ -43,7 +47,7 @@ export async function cmdTaskComment(opts: {
       doc_updated_at: at,
       doc_updated_by: opts.author,
     };
-    await backend.writeTask(next);
+    await (useStore ? store!.update(opts.taskId, () => next) : ctx.taskBackend.writeTask(next));
     process.stdout.write(`${successMessage("commented", opts.taskId)}\n`);
     return 0;
   } catch (err) {

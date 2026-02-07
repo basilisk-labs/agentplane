@@ -10,6 +10,7 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
+import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import {
   appendTaskEvent,
@@ -90,9 +91,11 @@ export async function cmdFinish(opts: {
       ? await readCommitInfo(gitRoot, opts.commit)
       : await readHeadCommit(gitRoot);
 
+    const useStore = backendIsLocalFileBackend(ctx);
+    const store = useStore ? getTaskStore(ctx) : null;
     let primaryStatusFrom: string | null = null;
     for (const taskId of opts.taskIds) {
-      const task = await loadTaskFromContext({ ctx, taskId });
+      const task = useStore ? await store!.get(taskId) : await loadTaskFromContext({ ctx, taskId });
 
       if (!opts.force) {
         const currentStatus = String(task.status || "TODO").toUpperCase();
@@ -140,7 +143,9 @@ export async function cmdFinish(opts: {
         doc_updated_at: at,
         doc_updated_by: opts.author,
       };
-      await ctx.taskBackend.writeTask(nextTask);
+      await (useStore
+        ? store!.update(taskId, () => nextTask)
+        : ctx.taskBackend.writeTask(nextTask));
     }
 
     if (!opts.skipVerify) {
