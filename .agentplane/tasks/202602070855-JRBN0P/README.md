@@ -1,7 +1,7 @@
 ---
 id: "202602070855-JRBN0P"
 title: "Batch backend APIs + controlled parallelism"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -19,18 +19,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T12:27:16.008Z"
+  updated_by: "CODEX"
+  note: "Verified: bun run typecheck; bun run lint; bun run test:agentplane"
+commit:
+  hash: "f201792381172165c4f5808fb654cc813d7f33e1"
+  message: "✅ JRBN0P backend: add getTasks + bounded parallelism"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: add batch backend APIs and bounded parallelism for multi-task operations."
+  -
+    author: "CODEX"
+    body: "Verified: bun run typecheck; bun run lint; bun run test:agentplane. Summary: add TaskBackend.getTasks and internal mapLimit; use bounded parallelism in LocalBackend getTasks/writeTasks/normalizeTasks and RedmineBackend.getTasks. Implementation: f20179238117."
 doc_version: 2
-doc_updated_at: "2026-02-07T12:26:40.505Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-02-07T12:27:20.914Z"
+doc_updated_by: "CODEX"
 description: "Add backend batch methods (getTasks/updateTasks or writeTasks) with concurrency limits; use controlled parallelism for list/normalize/finish style operations to avoid IO storms."
 id_source: "generated"
 ---
@@ -53,5 +58,14 @@ Risk: too much concurrency causing filesystem or API load; Risk: nondeterminism 
 ## Verification
 
 - bun run typecheck\n- bun run lint\n- bun run test:agentplane
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T12:27:16.008Z — VERIFY — ok
+
+By: CODEX
+
+Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
