@@ -52,6 +52,7 @@ import { CliError, formatJsonError } from "../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { getVersion } from "../meta/version.js";
+import { parseBlock, parseFinish, parseStart, parseVerify } from "./parse/lifecycle.js";
 import { cmdUpgrade } from "../commands/upgrade.js";
 import {
   BACKEND_SYNC_USAGE,
@@ -2045,7 +2046,6 @@ export async function runCli(argv: string[]): Promise<number> {
         let allowConfig = false;
         let allowHooks = false;
         let allowCI = false;
-        let allowDirty = false;
         let requireClean = false;
         let quiet = false;
 
@@ -2104,10 +2104,6 @@ export async function runCli(argv: string[]): Promise<number> {
             autoAllow = true;
             continue;
           }
-          if (arg === "--allow-dirty") {
-            allowDirty = true;
-            continue;
-          }
           if (arg === "--require-clean") {
             requireClean = true;
             continue;
@@ -2147,10 +2143,6 @@ export async function runCli(argv: string[]): Promise<number> {
             });
           }
           allow.push(...prefixes);
-        }
-
-        if (allowDirty) {
-          // Deprecated no-op retained for compatibility.
         }
 
         return await cmdGuardCommit({
@@ -2298,539 +2290,100 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "start") {
-      let taskId = command;
-      let startArgs = args;
-      if (!taskId || taskId.startsWith("-")) {
-        if (taskId?.startsWith("-")) {
-          startArgs = [taskId, ...args];
-        }
-        taskId = process.env.AGENTPLANE_TASK_ID ?? "";
-      }
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
-        });
-      }
-      let author = "";
-      let body = "";
-      let commitFromComment = false;
-      let commitEmoji: string | undefined;
-      const commitAllow: string[] = [];
-      let commitAutoAllow = false;
-      let commitAllowTasks = true;
-      let commitRequireClean = false;
-      let confirmStatusCommit = false;
-      let force = false;
-      let quiet = false;
-
-      for (let i = 0; i < startArgs.length; i++) {
-        const arg = startArgs[i];
-        if (!arg) continue;
-        if (arg === "--author") {
-          const next = startArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
-            });
-          author = next;
-          i++;
-          continue;
-        }
-        if (arg === "--body") {
-          const next = startArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
-            });
-          body = next;
-          i++;
-          continue;
-        }
-        if (arg === "--commit-from-comment") {
-          commitFromComment = true;
-          continue;
-        }
-        if (arg === "--commit-emoji") {
-          const next = startArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
-            });
-          commitEmoji = next;
-          i++;
-          continue;
-        }
-        if (arg === "--commit-allow") {
-          const next = startArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
-            });
-          commitAllow.push(next);
-          i++;
-          continue;
-        }
-        if (arg === "--commit-auto-allow") {
-          commitAutoAllow = true;
-          continue;
-        }
-        if (arg === "--commit-allow-tasks") {
-          commitAllowTasks = true;
-          continue;
-        }
-        if (arg === "--commit-require-clean") {
-          commitRequireClean = true;
-          continue;
-        }
-        if (arg === "--confirm-status-commit") {
-          confirmStatusCommit = true;
-          continue;
-        }
-        if (arg === "--force") {
-          force = true;
-          continue;
-        }
-        if (arg === "--quiet") {
-          quiet = true;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
-          });
-        }
-      }
-
-      if (!author || !body) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(START_USAGE, START_USAGE_EXAMPLE),
-        });
-      }
-
+      const parsed = parseStart({
+        taskIdToken: command,
+        args,
+        usage: { usage: START_USAGE, example: START_USAGE_EXAMPLE },
+      });
       return await cmdStart({
         ctx: await getCtx("start"),
         cwd: process.cwd(),
         rootOverride: globals.root,
-        taskId,
-        author,
-        body,
-        commitFromComment,
-        commitEmoji,
-        commitAllow,
-        commitAutoAllow,
-        commitAllowTasks,
-        commitRequireClean,
-        confirmStatusCommit,
-        force,
-        quiet,
+        taskId: parsed.taskId,
+        author: parsed.author,
+        body: parsed.body,
+        commitFromComment: parsed.commitFromComment,
+        commitEmoji: parsed.commitEmoji,
+        commitAllow: parsed.commitAllow,
+        commitAutoAllow: parsed.commitAutoAllow,
+        commitAllowTasks: parsed.commitAllowTasks,
+        commitRequireClean: parsed.commitRequireClean,
+        confirmStatusCommit: parsed.confirmStatusCommit,
+        force: parsed.force,
+        quiet: parsed.quiet,
       });
     }
 
     if (namespace === "block") {
-      let taskId = command;
-      let blockArgs = args;
-      if (!taskId || taskId.startsWith("-")) {
-        if (taskId?.startsWith("-")) {
-          blockArgs = [taskId, ...args];
-        }
-        taskId = process.env.AGENTPLANE_TASK_ID ?? "";
-      }
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
-        });
-      }
-
-      let author = "";
-      let body = "";
-      let commitFromComment = false;
-      let commitEmoji: string | undefined;
-      const commitAllow: string[] = [];
-      let commitAutoAllow = false;
-      let commitAllowTasks = true;
-      let commitRequireClean = false;
-      let confirmStatusCommit = false;
-      let force = false;
-      let quiet = false;
-      for (let i = 0; i < blockArgs.length; i++) {
-        const arg = blockArgs[i];
-        if (!arg) continue;
-        if (arg === "--author") {
-          const next = blockArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
-            });
-          author = next;
-          i++;
-          continue;
-        }
-        if (arg === "--body") {
-          const next = blockArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
-            });
-          body = next;
-          i++;
-          continue;
-        }
-        if (arg === "--commit-from-comment") {
-          commitFromComment = true;
-          continue;
-        }
-        if (arg === "--commit-emoji") {
-          const next = blockArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
-            });
-          commitEmoji = next;
-          i++;
-          continue;
-        }
-        if (arg === "--commit-allow") {
-          const next = blockArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
-            });
-          commitAllow.push(next);
-          i++;
-          continue;
-        }
-        if (arg === "--commit-auto-allow") {
-          commitAutoAllow = true;
-          continue;
-        }
-        if (arg === "--commit-allow-tasks") {
-          commitAllowTasks = true;
-          continue;
-        }
-        if (arg === "--commit-require-clean") {
-          commitRequireClean = true;
-          continue;
-        }
-        if (arg === "--confirm-status-commit") {
-          confirmStatusCommit = true;
-          continue;
-        }
-        if (arg === "--force") {
-          force = true;
-          continue;
-        }
-        if (arg === "--quiet") {
-          quiet = true;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
-          });
-        }
-      }
-
-      if (!author || !body) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(BLOCK_USAGE, BLOCK_USAGE_EXAMPLE),
-        });
-      }
-
+      const parsed = parseBlock({
+        taskIdToken: command,
+        args,
+        usage: { usage: BLOCK_USAGE, example: BLOCK_USAGE_EXAMPLE },
+      });
       return await cmdBlock({
         ctx: await getCtx("block"),
         cwd: process.cwd(),
         rootOverride: globals.root,
-        taskId,
-        author,
-        body,
-        commitFromComment,
-        commitEmoji,
-        commitAllow,
-        commitAutoAllow,
-        commitAllowTasks,
-        commitRequireClean,
-        confirmStatusCommit,
-        force,
-        quiet,
+        taskId: parsed.taskId,
+        author: parsed.author,
+        body: parsed.body,
+        commitFromComment: parsed.commitFromComment,
+        commitEmoji: parsed.commitEmoji,
+        commitAllow: parsed.commitAllow,
+        commitAutoAllow: parsed.commitAutoAllow,
+        commitAllowTasks: parsed.commitAllowTasks,
+        commitRequireClean: parsed.commitRequireClean,
+        confirmStatusCommit: parsed.confirmStatusCommit,
+        force: parsed.force,
+        quiet: parsed.quiet,
       });
     }
 
     if (namespace === "finish") {
-      let finishArgs = args;
-      const taskIds: string[] = [];
-      if (command && !command.startsWith("--")) {
-        taskIds.push(command);
-      } else if (command?.startsWith("-")) {
-        finishArgs = [command, ...args];
-      }
-      let argIndex = 0;
-      while (argIndex < finishArgs.length) {
-        const arg = finishArgs[argIndex];
-        if (!arg || arg.startsWith("--")) break;
-        taskIds.push(arg);
-        argIndex += 1;
-      }
-      const flagArgs = finishArgs.slice(argIndex);
-      if (taskIds.length === 0) {
-        const envTaskId = process.env.AGENTPLANE_TASK_ID ?? "";
-        if (envTaskId) taskIds.push(envTaskId);
-      }
-      if (taskIds.length === 0) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-        });
-      }
-
-      let author = "";
-      let body = "";
-      let commit: string | undefined;
-      let skipVerify = false;
-      let force = false;
-      let noRequireTaskIdInCommit = false;
-      let commitFromComment = false;
-      let commitEmoji: string | undefined;
-      const commitAllow: string[] = [];
-      let commitAutoAllow = false;
-      let commitAllowTasks = true;
-      let commitRequireClean = false;
-      let statusCommit = false;
-      let statusCommitEmoji: string | undefined;
-      const statusCommitAllow: string[] = [];
-      let statusCommitAutoAllow = false;
-      let statusCommitRequireClean = false;
-      let confirmStatusCommit = false;
-      let quiet = false;
-      for (let i = 0; i < flagArgs.length; i++) {
-        const arg = flagArgs[i];
-        if (!arg) continue;
-        if (arg === "--author") {
-          const next = flagArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-            });
-          author = next;
-          i++;
-          continue;
-        }
-        if (arg === "--body") {
-          const next = flagArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-            });
-          body = next;
-          i++;
-          continue;
-        }
-        if (arg === "--commit") {
-          const next = flagArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-            });
-          commit = next;
-          i++;
-          continue;
-        }
-        if (arg === "--skip-verify") {
-          skipVerify = true;
-          continue;
-        }
-        if (arg === "--quiet") {
-          quiet = true;
-          continue;
-        }
-        if (arg === "--force") {
-          force = true;
-          continue;
-        }
-        if (arg === "--no-require-task-id-in-commit") {
-          noRequireTaskIdInCommit = true;
-          continue;
-        }
-        if (arg === "--commit-from-comment") {
-          commitFromComment = true;
-          continue;
-        }
-        if (arg === "--commit-emoji") {
-          const next = flagArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-            });
-          commitEmoji = next;
-          i++;
-          continue;
-        }
-        if (arg === "--commit-allow") {
-          const next = flagArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-            });
-          commitAllow.push(next);
-          i++;
-          continue;
-        }
-        if (arg === "--commit-auto-allow") {
-          commitAutoAllow = true;
-          continue;
-        }
-        if (arg === "--commit-allow-tasks") {
-          commitAllowTasks = true;
-          continue;
-        }
-        if (arg === "--commit-require-clean") {
-          commitRequireClean = true;
-          continue;
-        }
-        if (arg === "--status-commit") {
-          statusCommit = true;
-          continue;
-        }
-        if (arg === "--status-commit-emoji") {
-          const next = flagArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-            });
-          statusCommitEmoji = next;
-          i++;
-          continue;
-        }
-        if (arg === "--status-commit-allow") {
-          const next = flagArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-            });
-          statusCommitAllow.push(next);
-          i++;
-          continue;
-        }
-        if (arg === "--status-commit-auto-allow") {
-          statusCommitAutoAllow = true;
-          continue;
-        }
-        if (arg === "--status-commit-require-clean") {
-          statusCommitRequireClean = true;
-          continue;
-        }
-        if (arg === "--confirm-status-commit") {
-          confirmStatusCommit = true;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-          });
-        }
-      }
-
-      if (!author || !body) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(FINISH_USAGE, FINISH_USAGE_EXAMPLE),
-        });
-      }
-
+      const parsed = parseFinish({
+        commandToken: command,
+        args,
+        usage: { usage: FINISH_USAGE, example: FINISH_USAGE_EXAMPLE },
+      });
       return await cmdFinish({
         ctx: await getCtx("finish"),
         cwd: process.cwd(),
         rootOverride: globals.root,
-        taskIds,
-        author,
-        body,
-        commit,
-        skipVerify,
-        force,
-        noRequireTaskIdInCommit,
-        commitFromComment,
-        commitEmoji,
-        commitAllow,
-        commitAutoAllow,
-        commitAllowTasks,
-        commitRequireClean,
-        statusCommit,
-        statusCommitEmoji,
-        statusCommitAllow,
-        statusCommitAutoAllow,
-        statusCommitRequireClean,
-        confirmStatusCommit,
-        quiet,
+        taskIds: parsed.taskIds,
+        author: parsed.author,
+        body: parsed.body,
+        commit: parsed.commit,
+        skipVerify: parsed.skipVerify,
+        force: parsed.force,
+        noRequireTaskIdInCommit: parsed.noRequireTaskIdInCommit,
+        commitFromComment: parsed.commitFromComment,
+        commitEmoji: parsed.commitEmoji,
+        commitAllow: parsed.commitAllow,
+        commitAutoAllow: parsed.commitAutoAllow,
+        commitAllowTasks: parsed.commitAllowTasks,
+        commitRequireClean: parsed.commitRequireClean,
+        statusCommit: parsed.statusCommit,
+        statusCommitEmoji: parsed.statusCommitEmoji,
+        statusCommitAllow: parsed.statusCommitAllow,
+        statusCommitAutoAllow: parsed.statusCommitAutoAllow,
+        statusCommitRequireClean: parsed.statusCommitRequireClean,
+        confirmStatusCommit: parsed.confirmStatusCommit,
+        quiet: parsed.quiet,
       });
     }
 
     if (namespace === "verify") {
-      let taskId = command;
-      let verifyArgs = args;
-      if (!taskId || taskId.startsWith("-")) {
-        if (taskId?.startsWith("-")) {
-          verifyArgs = [taskId, ...args];
-        }
-        taskId = process.env.AGENTPLANE_TASK_ID ?? "";
-      }
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
-        });
-      }
+      const parsed = parseVerify({
+        taskIdToken: command,
+        args,
+        usage: { usage: VERIFY_USAGE, example: VERIFY_USAGE_EXAMPLE },
+      });
       return await cmdVerify({
         ctx: await getCtx("verify"),
         cwd: process.cwd(),
         rootOverride: globals.root,
-        taskId,
-        args: verifyArgs,
+        taskId: parsed.taskId,
+        args: parsed.args,
       });
     }
 

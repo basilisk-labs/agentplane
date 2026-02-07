@@ -121,8 +121,6 @@ describe("runCli", () => {
 
   it("start requires a task id", async () => {
     const root = await mkGitRepoRoot();
-    const previous = process.env.AGENTPLANE_TASK_ID;
-    delete process.env.AGENTPLANE_TASK_ID;
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -138,7 +136,6 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Usage: agentplane start");
     } finally {
       io.restore();
-      if (previous) process.env.AGENTPLANE_TASK_ID = previous;
     }
   });
 
@@ -213,38 +210,12 @@ describe("runCli", () => {
     }
   });
 
-  it("start uses env task id when omitted", async () => {
+  it("start does not accept missing task id (no env fallback)", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Env start task",
-        "--description",
-        "Start uses env task id",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-    await approveTaskPlan(root, taskId);
-
     const previous = process.env.AGENTPLANE_TASK_ID;
-    process.env.AGENTPLANE_TASK_ID = taskId;
+    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -252,11 +223,12 @@ describe("runCli", () => {
         "--author",
         "CODER",
         "--body",
-        "Start: use env task id for start command with required prefix and length.",
+        "Start: start should require an explicit task id.",
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane start");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -1341,37 +1313,12 @@ describe("runCli", () => {
     }
   });
 
-  it("block uses env task id when omitted", async () => {
+  it("block does not accept missing task id (no env fallback)", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Env block task",
-        "--description",
-        "Block uses env task id",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-
     const previous = process.env.AGENTPLANE_TASK_ID;
-    process.env.AGENTPLANE_TASK_ID = taskId;
+    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -1379,11 +1326,12 @@ describe("runCli", () => {
         "--author",
         "CODER",
         "--body",
-        "Blocked: waiting on upstream API response to unblock env task id flow.",
+        "Blocked: block should require an explicit task id.",
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane block");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -1529,56 +1477,13 @@ describe("runCli", () => {
     expect(tasksJson).toContain(taskId);
   });
 
-  it("finish uses env task id when omitted", async () => {
+  it("finish does not accept missing task id (no env fallback)", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
 
-    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "feat: seed"], { cwd: root });
-
-    const ioNew = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Env finish task",
-        "--description",
-        "Finish uses env task id",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioNew.stdout.trim();
-    } finally {
-      ioNew.restore();
-    }
-
-    await runCliSilent([
-      "verify",
-      taskId,
-      "--ok",
-      "--by",
-      "TESTER",
-      "--note",
-      "Ok to finish",
-      "--quiet",
-      "--root",
-      root,
-    ]);
-
     const previous = process.env.AGENTPLANE_TASK_ID;
-    process.env.AGENTPLANE_TASK_ID = taskId;
+    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -1586,11 +1491,12 @@ describe("runCli", () => {
         "--author",
         "CODER",
         "--body",
-        "Verified: finish with env task id should record commit metadata and close task.",
+        "Verified: finish should require explicit task ids (no env fallback).",
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane finish");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -2106,35 +2012,12 @@ describe("runCli", () => {
     }
   });
 
-  it("verify uses env task id when flags come first", async () => {
+  it("verify does not accept missing task id even when flags come first (no env fallback)", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    const ioTask = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Verify env",
-        "--description",
-        "Verify uses env task id",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-
     const previous = process.env.AGENTPLANE_TASK_ID;
-    process.env.AGENTPLANE_TASK_ID = taskId;
+    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -2148,8 +2031,8 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      expect(io.stdout.trim()).toBe("");
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage: agentplane verify");
     } finally {
       io.restore();
       if (previous === undefined) delete process.env.AGENTPLANE_TASK_ID;
