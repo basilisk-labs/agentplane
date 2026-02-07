@@ -1,9 +1,14 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import { missingValueMessage, usageMessage, backendNotSupportedMessage } from "../../cli/output.js";
+import {
+  backendNotSupportedMessage,
+  missingValueMessage,
+  usageMessage,
+  warnMessage,
+} from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { normalizeDependsOnInput, nowIso } from "./shared.js";
+import { normalizeDependsOnInput, nowIso, requiresVerify } from "./shared.js";
 
 type TaskNewFlags = {
   title?: string;
@@ -125,6 +130,15 @@ export async function cmdTaskNew(opts: {
       doc_updated_by: flags.owner,
       id_source: "generated",
     };
+
+    if (requiresVerify(flags.tags, ctx.config.tasks.verify.required_tags)) {
+      process.stderr.write(
+        `${warnMessage(
+          `task requires ## Verify Steps in README; run \`agentplane task scaffold ${taskId}\` and fill it before approving the plan`,
+        )}\n`,
+      );
+    }
+
     await ctx.taskBackend.writeTask(task);
     process.stdout.write(`${taskId}\n`);
     return 0;
