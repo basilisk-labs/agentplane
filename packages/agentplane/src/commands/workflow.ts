@@ -4,6 +4,8 @@ export const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
 export const IDE_SYNC_USAGE_EXAMPLE = "agentplane ide sync";
 
 export {
+  TASK_DERIVE_USAGE,
+  TASK_DERIVE_USAGE_EXAMPLE,
   TASK_NEW_USAGE,
   TASK_NEW_USAGE_EXAMPLE,
   TASK_ADD_USAGE,
@@ -39,6 +41,7 @@ export {
   TASK_VERIFY_USAGE,
   TASK_VERIFY_USAGE_EXAMPLE,
   dedupeStrings,
+  cmdTaskDerive,
   cmdTaskNew,
   cmdTaskAdd,
   cmdTaskUpdate,

@@ -127,6 +127,7 @@ import {
   cmdTaskComment,
   cmdTaskDocSet,
   cmdTaskDocShow,
+  cmdTaskDerive,
   cmdTaskExport,
   cmdTaskLint,
   cmdTaskMigrate,
@@ -1230,6 +1231,15 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "task" && command === "new") {
       return await cmdTaskNew({
         ctx: await getCtx("task new"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        args,
+      });
+    }
+
+    if (namespace === "task" && command === "derive") {
+      return await cmdTaskDerive({
+        ctx: await getCtx("task derive"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         args,
