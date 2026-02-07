@@ -1223,6 +1223,63 @@ describe("runCli", () => {
     }
   });
 
+  it("task verify-show prints Verify Steps", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Verify show",
+          "--description",
+          "Has verify steps",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "doc",
+          "set",
+          taskId,
+          "--section",
+          "Verify Steps",
+          "--text",
+          "Verifier instructions",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "verify-show", taskId, "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Verifier instructions");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task doc show supports quiet when section is missing", async () => {
     const root = await mkGitRepoRoot();
     let taskId = "";

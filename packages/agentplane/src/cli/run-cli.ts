@@ -1359,6 +1359,37 @@ export async function runCli(argv: string[]): Promise<number> {
       return await cmdTaskLint({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
+    if (namespace === "task" && command === "verify-show") {
+      const [taskId, ...restArgs] = args;
+      if (!taskId) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(
+            "Usage: agentplane task verify-show <task-id> [--quiet]",
+            "agentplane task verify-show 202602030608-F1Q8AB",
+          ),
+        });
+      }
+      if (restArgs.includes("--section")) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: usageMessage(
+            "Usage: agentplane task verify-show <task-id> [--quiet]",
+            "agentplane task verify-show 202602030608-F1Q8AB",
+          ),
+        });
+      }
+      return await cmdTaskDocShow({
+        ctx: await getCtx("task verify-show"),
+        cwd: process.cwd(),
+        rootOverride: globals.root,
+        taskId,
+        args: ["--section", "Verify Steps", ...restArgs],
+      });
+    }
+
     if (namespace === "task" && command === "doc") {
       const [subcommand, taskId, ...restArgs] = args;
       if (subcommand === "show") {
