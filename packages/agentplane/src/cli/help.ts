@@ -1,6 +1,15 @@
+import { getReleaseCommitDate } from "../meta/release.js";
+import { getVersion } from "../meta/version.js";
+
 export function renderHelp(): string {
+  const version = getVersion();
+  const releaseDate = getReleaseCommitDate();
+  const banner = releaseDate
+    ? `agentplane v${version} (released ${releaseDate}) - Task workflows with guardrails and traceability.`
+    : `agentplane v${version} - Task workflows with guardrails and traceability.`;
+
   return [
-    "agentplane (v1 prototype)",
+    banner,
     "",
     "Usage:",
     "  agentplane [--root <path>] [--json] [--no-update-check] <namespace> <command> [options]",
