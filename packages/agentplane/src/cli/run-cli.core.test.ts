@@ -116,7 +116,7 @@ describe("runCli", () => {
     delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
     globalThis.fetch = vi.fn(() => Response.json({ version: "9.9.9" })) as unknown as typeof fetch;
     try {
-      const code = await runCli(["config", "show", "--yes", "--root", root]);
+      const code = await runCli(["--allow-network", "config", "show", "--root", root]);
       expect(code).toBe(0);
       expect(io.stderr).toContain("Update available");
       expect(io.stderr).toContain("npm i -g agentplane@latest");
@@ -168,7 +168,7 @@ describe("runCli", () => {
     }
   });
 
-  it("allows update check when require_network=true and --yes is present", async () => {
+  it("allows update check when require_network=true and --allow-network is present", async () => {
     const root = await mkGitRepoRoot();
     const cfg = defaultConfig();
     cfg.agents ??= {
@@ -190,7 +190,7 @@ describe("runCli", () => {
       Response.json({ version: "9999.9999.9999" }),
     ) as unknown as typeof fetch;
     try {
-      const code = await runCli(["config", "show", "--yes", "--root", root]);
+      const code = await runCli(["--allow-network", "config", "show", "--root", root]);
       expect(code).toBe(0);
       expect(globalThis.fetch).toHaveBeenCalled();
       expect(io.stderr).toContain("Update available");
@@ -235,7 +235,7 @@ describe("runCli", () => {
       throw new Error("should not fetch");
     }) as unknown as typeof fetch;
     try {
-      const code = await runCli(["config", "show", "--yes", "--root", root]);
+      const code = await runCli(["--allow-network", "config", "show", "--root", root]);
       expect(code).toBe(0);
       expect(io.stderr).toContain("Update available");
       expect(globalThis.fetch).not.toHaveBeenCalled();
@@ -352,7 +352,7 @@ describe("runCli", () => {
     delete process.env.AGENTPLANE_NO_UPDATE_CHECK;
     globalThis.fetch = vi.fn(() => new Response(null, { status: 304 })) as unknown as typeof fetch;
     try {
-      const code = await runCli(["config", "show", "--yes", "--root", root]);
+      const code = await runCli(["--allow-network", "config", "show", "--root", root]);
       expect(code).toBe(0);
       expect(io.stderr).not.toContain("Update available");
       expect(globalThis.fetch).toHaveBeenCalled();
@@ -407,7 +407,10 @@ describe("runCli", () => {
     try {
       const code = await runCli(["config", "set", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane config set");
+      expect(io.stderr).toContain("Missing required argument");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane config set");
+      expect(io.stderr).toContain("agentplane help config set --compact");
     } finally {
       io.restore();
     }

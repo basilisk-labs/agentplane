@@ -10,12 +10,13 @@ Scope: command namespaces, subcommands, global flags, exit codes, and `--json` e
 ## 1) Invocation model
 
 ```
-agentplane [--root <path>] [--json] <namespace> <command> [options]
-agentplane [--root <path>] [--json] <command> [options]
+agentplane [--root <path>] [--json] [--allow-network] <namespace> <command> [options]
+agentplane [--root <path>] [--json] [--allow-network] <command> [options]
 ```
 
 - `--root <path>`: treat `<path>` as the project root (used for project discovery/path resolution).
 - `--json`: machine-readable output for errors (global). Some commands may also support `--json` for success output; see command docs.
+- `--allow-network`: allow optional network operations that would otherwise be skipped when `config.agents.approvals.require_network=true` (currently used for update-check).
 
 ### 1.1 Global flag scoping (cli2)
 
@@ -23,6 +24,7 @@ Global flags are only recognized before the command id. For example:
 
 - `agentplane --json task list ...` enables JSON error output.
 - `agentplane help --json` emits JSON help (success output) and does not enable JSON error output.
+- `agentplane --allow-network config show` allows the update-check network request (when required by config).
 
 ## 2) Exit codes
 

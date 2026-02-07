@@ -1,7 +1,7 @@
 ---
 id: "202602071928-1K6HFQ"
 title: "CLI2-041: Migrate config set to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T20:46:51.961Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-07T20:49:57.859Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated config set to cli2 registry (spec-derived parsing/help/usage) and removed legacy dispatcher branch. Tightened semantics: removed cli2 parser exception for unknown --yes (command-scoped only) and introduced global --allow-network for update-check approval; updated tests and CLI contract docs. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate config set to cli2 with spec-derived parsing/help/usage; remove legacy dispatcher branch; and tighten semantics by making --yes command-scoped only and introducing a dedicated global network-approval flag for update-check (docs+tests updated)."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:01.963Z"
+doc_updated_at: "2026-02-07T20:49:57.860Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `config set <key> <value>` (dotted keys; JSON values)."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T20:49:57.859Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated config set to cli2 registry (spec-derived parsing/help/usage) and removed legacy dispatcher branch. Tightened semantics: removed cli2 parser exception for unknown --yes (command-scoped only) and introduced global --allow-network for update-check approval; updated tests and CLI contract docs. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:46:52.098Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

@@ -168,6 +168,7 @@ type ParsedArgs = {
   noUpdateCheck: boolean;
   root?: string;
   jsonErrors: boolean;
+  allowNetwork: boolean;
 };
 
 function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] } {
@@ -176,6 +177,7 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
   let noUpdateCheck = false;
   let jsonErrors = false;
   let root: string | undefined;
+  let allowNetwork = false;
 
   const rest: string[] = [];
   for (let i = 0; i < argv.length; i++) {
@@ -191,6 +193,16 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
     }
     if (arg === "--no-update-check") {
       noUpdateCheck = true;
+      continue;
+    }
+    if (arg === "--allow-network") {
+      // Scoped global: only treat `--allow-network` as a global approval if it appears
+      // before the command id. This avoids accidental capture of command-specific flags.
+      if (rest.length === 0) {
+        allowNetwork = true;
+        continue;
+      }
+      rest.push(arg);
       continue;
     }
     if (arg === "--json") {
@@ -217,7 +229,7 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
     }
     rest.push(arg);
   }
-  return { globals: { help, version, noUpdateCheck, root, jsonErrors }, rest };
+  return { globals: { help, version, noUpdateCheck, root, jsonErrors, allowNetwork }, rest };
 }
 
 function writeError(err: CliError, jsonErrors: boolean): void {
@@ -487,8 +499,6 @@ type InitFlags = {
 
 const READY_USAGE = "Usage: agentplane ready <task-id>";
 const READY_USAGE_EXAMPLE = "agentplane ready 202602030608-F1Q8AB";
-const CONFIG_SET_USAGE = "Usage: agentplane config set <key> <value>";
-const CONFIG_SET_USAGE_EXAMPLE = "agentplane config set workflow_mode branch_pr";
 const MODE_SET_USAGE = "Usage: agentplane mode set <direct|branch_pr>";
 const MODE_SET_USAGE_EXAMPLE = "agentplane mode set direct";
 const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
@@ -737,6 +747,29 @@ const configShowSpec: CommandSpec<ConfigShowParsed> = {
 
 const runConfigShow: CommandHandler<ConfigShowParsed> = (ctx) =>
   cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
+
+type ConfigSetParsed = { key: string; value: string };
+
+const configSetSpec: CommandSpec<ConfigSetParsed> = {
+  id: ["config", "set"],
+  group: "Config",
+  summary: "Update project config (dotted keys).",
+  args: [
+    { name: "key", required: true, valueHint: "<key>" },
+    { name: "value", required: true, valueHint: "<value>" },
+  ],
+  examples: [
+    { cmd: "agentplane config set workflow_mode direct", why: "Set workflow mode." },
+    {
+      cmd: 'agentplane config set tasks.verify.required_tags \'["code","backend"]\'',
+      why: "Set a JSON list value (pass JSON as a string).",
+    },
+  ],
+  parse: (raw) => ({ key: String(raw.args.key ?? ""), value: String(raw.args.value ?? "") }),
+};
+
+const runConfigSet: CommandHandler<ConfigSetParsed> = (ctx, p) =>
+  cmdConfigSet({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, key: p.key, value: p.value });
 
 async function cmdInit(opts: {
   cwd: string;
@@ -1205,6 +1238,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(roleSpec, noop);
       registry.register(agentsSpec, noop);
       registry.register(configShowSpec, noop);
+      registry.register(configSetSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1232,7 +1266,7 @@ export async function runCli(argv: string[]): Promise<number> {
       try {
         const loaded = await loadConfig(resolved.agentplaneDir);
         const requireNetwork = loaded.config.agents?.approvals.require_network === true;
-        const explicitlyApproved = rest.includes("--yes");
+        const explicitlyApproved = globals.allowNetwork;
         skipUpdateCheckForPolicy = requireNetwork && !explicitlyApproved;
       } catch {
         // Conservative: if we can't load config, we can't prove network is allowed.
@@ -1265,6 +1299,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(roleSpec, runRole);
       registry.register(agentsSpec, runAgents);
       registry.register(configShowSpec, runConfigShow);
+      registry.register(configSetSpec, runConfigSet);
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
@@ -1275,18 +1310,6 @@ export async function runCli(argv: string[]): Promise<number> {
         const parsed = parseCommandArgv(match.spec, tail).parsed;
         return await match.handler({ cwd, rootOverride: globals.root }, parsed);
       }
-    }
-
-    if (namespace === "config" && command === "set") {
-      const [key, value] = args;
-      if (!key || value === undefined) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(CONFIG_SET_USAGE, CONFIG_SET_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdConfigSet({ cwd: process.cwd(), rootOverride: globals.root, key, value });
     }
 
     if (namespace === "mode" && command === "get") {
