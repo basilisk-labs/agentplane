@@ -1,7 +1,7 @@
 ---
 id: "202602071329-V0SPSH"
 title: "AP-CLI-01: Clean up CLI layer (parsing vs execution, remove legacy)"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -17,18 +17,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T15:46:11.484Z"
+  updated_by: "CODER"
+  note: "Verified: lifecycle command parsing moved into cli/parse helpers; removed implicit AGENTPLANE_TASK_ID fallback for start/block/finish/verify; removed deprecated allow-dirty no-op. format:check, lint, and test:cli:core passed."
+commit:
+  hash: "e3017c6e3a1ea3baa6f829284b52a10ceaacb7ae"
+  message: "✅ V0SPSH cli: extract lifecycle parsing and remove implicit task id fallback"
 comments:
   -
     author: "CODER"
     body: "Start: Refactor CLI into a thin runner with dedicated parsing helpers; remove implicit/legacy flags and require explicit behavior."
+  -
+    author: "CODER"
+    body: "Verified: CLI lifecycle parsing is now modular (cli/parse) and explicit; start/block/finish/verify require task ids (no env fallback). Deprecated allow-dirty no-op removed from guard commit parsing. format:check, lint, and test:cli:core passed."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-07T15:45:09.694Z"
+doc_updated_at: "2026-02-07T15:46:11.705Z"
 doc_updated_by: "CODER"
 description: "Split CLI parsing from execution: parsing in dedicated functions/modules, the runner only wires commands and contexts. Remove deprecated/implicit flags and modes; all behavior must be explicit."
 id_source: "generated"
@@ -59,6 +64,15 @@ Behavior break: scripts relying on implicit AGENTPLANE_TASK_ID fallback for star
 - bun run format:check
 - bun run lint
 - bun run test:cli:core
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T15:46:11.484Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: lifecycle command parsing moved into cli/parse helpers; removed implicit AGENTPLANE_TASK_ID fallback for start/block/finish/verify; removed deprecated allow-dirty no-op. format:check, lint, and test:cli:core passed.
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
