@@ -1,7 +1,7 @@
 ---
 id: "202602071657-E834SD"
 title: "UX: Ensure deps summary reflects derive flow"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:57:20.216Z"
   updated_by: "CODER"
   note: "Deps UX already shows wait:<dep-id> for incomplete depends_on, which supports spike->implementation derive flow; bun run test:agentplane."
-commit: null
+commit:
+  hash: "fe630d56e14c3b936b087ab98af8b7d83b12a3e4"
+  message: "✅ E834SD ux: confirm derive deps appear in task list"
 comments:
   -
     author: "CODER"
     body: "Start: validate deps UX for derive flow (wait:<spike-id> in task list) and make improvements only if needed."
+  -
+    author: "CODER"
+    body: "Verified: dependency summary already reports wait:<dep-id> for incomplete deps, which supports derive flow; bun run test:agentplane passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:57:20.219Z"
+doc_updated_at: "2026-02-07T17:58:08.621Z"
 doc_updated_by: "CODER"
 description: "Confirm derived tasks show wait:<spike-id> until spike DONE; improve deps UX if needed."
 ---
