@@ -1,7 +1,7 @@
 ---
 id: "202602071625-VEKQTJ"
 title: "AP-TASKDOC-02: Normalize metadata note timestamps to ISO"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -16,17 +16,22 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07T16:26:40.729Z."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T16:32:09.916Z"
+  updated_by: "CODER"
+  note: "Verified: Updated task migrate-doc to normalize date-only timestamps in plan_approval.note and verification.note to ISO updated_at when the dates match; ran bun run test:agentplane, agentplane task migrate-doc --all, and agentplane task lint (OK)."
+commit:
+  hash: "f502d0caffd759e03cec42bef193aed7587e243b"
+  message: "✨ VEKQTJ tasks: normalize metadata note timestamps"
 comments:
   -
     author: "CODER"
     body: "Start: Update task migrate-doc to normalize date-only timestamps in metadata notes to ISO updated_at when safe."
+  -
+    author: "CODER"
+    body: "Verified: Task doc migration now rewrites date-only timestamps inside metadata notes to the canonical ISO updated_at when safe; tests and task lint passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T16:26:49.043Z"
+doc_updated_at: "2026-02-07T16:32:15.623Z"
 doc_updated_by: "CODER"
 description: "Ensure plan_approval.note and verification.note use ISO timestamps when they refer to dates; keep semantics by only rewriting when the note date matches updated_at."
 id_source: "generated"
@@ -66,6 +71,15 @@ Some task READMEs contain date-only strings inside YAML frontmatter notes (for e
 - `agentplane task migrate-doc --all` reports expected `changed` count.
 - `agentplane task lint` returns `OK`.
 - `bun run test:cli:core` passes.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T16:32:09.916Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: Updated task migrate-doc to normalize date-only timestamps in plan_approval.note and verification.note to ISO updated_at when the dates match; ran bun run test:agentplane, agentplane task migrate-doc --all, and agentplane task lint (OK).
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
