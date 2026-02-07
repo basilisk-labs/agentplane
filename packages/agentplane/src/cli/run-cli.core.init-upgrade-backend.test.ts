@@ -121,7 +121,10 @@ describe("runCli", () => {
     try {
       const code = await runCli(["mode", "set", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane mode set");
+      expect(io.stderr).toContain("Invalid value for mode");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane mode set");
+      expect(io.stderr).toContain("agentplane help mode set --compact");
     } finally {
       io.restore();
     }

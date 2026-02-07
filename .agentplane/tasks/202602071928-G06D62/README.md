@@ -1,7 +1,7 @@
 ---
 id: "202602071928-G06D62"
 title: "CLI2-042: Migrate mode get/set to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T20:51:11.477Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-07T20:52:24.719Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated mode get/set to cli2 registry (spec-derived help/usage) and removed legacy dispatcher branches. Updated tests for new E_USAGE output and compact help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate mode get/set to cli2 registry (spec-derived help/usage) and remove legacy dispatcher branches; update tests for new E_USAGE output."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:02.940Z"
+doc_updated_at: "2026-02-07T20:52:24.720Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `mode get` and `mode set`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T20:52:24.719Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated mode get/set to cli2 registry (spec-derived help/usage) and removed legacy dispatcher branches. Updated tests for new E_USAGE output and compact help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:51:11.616Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

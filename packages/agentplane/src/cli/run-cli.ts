@@ -499,8 +499,6 @@ type InitFlags = {
 
 const READY_USAGE = "Usage: agentplane ready <task-id>";
 const READY_USAGE_EXAMPLE = "agentplane ready 202602030608-F1Q8AB";
-const MODE_SET_USAGE = "Usage: agentplane mode set <direct|branch_pr>";
-const MODE_SET_USAGE_EXAMPLE = "agentplane mode set direct";
 const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
 const IDE_SYNC_USAGE_EXAMPLE = "agentplane ide sync";
 const TASK_SHOW_USAGE = "Usage: agentplane task show <task-id>";
@@ -770,6 +768,46 @@ const configSetSpec: CommandSpec<ConfigSetParsed> = {
 
 const runConfigSet: CommandHandler<ConfigSetParsed> = (ctx, p) =>
   cmdConfigSet({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, key: p.key, value: p.value });
+
+type ModeGetParsed = Record<string, never>;
+
+const modeGetSpec: CommandSpec<ModeGetParsed> = {
+  id: ["mode", "get"],
+  group: "Config",
+  summary: "Print workflow mode.",
+  examples: [{ cmd: "agentplane mode get", why: "Print workflow_mode (direct|branch_pr)." }],
+  parse: () => ({}),
+};
+
+const runModeGet: CommandHandler<ModeGetParsed> = (ctx) =>
+  cmdModeGet({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
+
+type ModeSetParsed = { mode: string };
+
+const modeSetSpec: CommandSpec<ModeSetParsed> = {
+  id: ["mode", "set"],
+  group: "Config",
+  summary: "Set workflow mode.",
+  args: [{ name: "mode", required: true, valueHint: "<direct|branch_pr>" }],
+  examples: [{ cmd: "agentplane mode set branch_pr", why: "Switch to branch_pr mode." }],
+  parse: (raw) => ({ mode: String(raw.args.mode ?? "") }),
+  validate: (p) => {
+    if (p.mode !== "direct" && p.mode !== "branch_pr") {
+      throw usageError({
+        spec: modeSetSpec,
+        command: "mode set",
+        message: `Invalid value for mode: ${p.mode} (expected: direct|branch_pr)`,
+      });
+    }
+  },
+};
+
+const runModeSet: CommandHandler<ModeSetParsed> = (ctx, p) =>
+  cmdModeSet({
+    cwd: ctx.cwd,
+    rootOverride: ctx.rootOverride,
+    mode: p.mode as "direct" | "branch_pr",
+  });
 
 async function cmdInit(opts: {
   cwd: string;
@@ -1239,6 +1277,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(agentsSpec, noop);
       registry.register(configShowSpec, noop);
       registry.register(configSetSpec, noop);
+      registry.register(modeGetSpec, noop);
+      registry.register(modeSetSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1300,6 +1340,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(agentsSpec, runAgents);
       registry.register(configShowSpec, runConfigShow);
       registry.register(configSetSpec, runConfigSet);
+      registry.register(modeGetSpec, runModeGet);
+      registry.register(modeSetSpec, runModeSet);
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
@@ -1310,22 +1352,6 @@ export async function runCli(argv: string[]): Promise<number> {
         const parsed = parseCommandArgv(match.spec, tail).parsed;
         return await match.handler({ cwd, rootOverride: globals.root }, parsed);
       }
-    }
-
-    if (namespace === "mode" && command === "get") {
-      return await cmdModeGet({ cwd: process.cwd(), rootOverride: globals.root });
-    }
-
-    if (namespace === "mode" && command === "set") {
-      const [mode] = args;
-      if (mode !== "direct" && mode !== "branch_pr") {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(MODE_SET_USAGE, MODE_SET_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdModeSet({ cwd: process.cwd(), rootOverride: globals.root, mode });
     }
 
     if (namespace === "ready") {
