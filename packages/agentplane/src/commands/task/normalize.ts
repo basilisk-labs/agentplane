@@ -32,12 +32,22 @@ export async function cmdTaskNormalize(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const tasks = await ctx.taskBackend.listTasks();
-    if (ctx.taskBackend.writeTasks) {
-      await ctx.taskBackend.writeTasks(tasks);
-    } else {
-      for (const task of tasks) await ctx.taskBackend.writeTask(task);
+    if (ctx.taskBackend.normalizeTasks) {
+      const result = await ctx.taskBackend.normalizeTasks();
+      if (!flags.quiet) {
+        process.stdout.write(
+          `${successMessage("normalized tasks", undefined, `scanned=${result.scanned} changed=${result.changed}`)}\n`,
+        );
+      }
+      return 0;
     }
+
+    const tasks = await ctx.taskBackend.listTasks();
+    await (ctx.taskBackend.writeTasks
+      ? ctx.taskBackend.writeTasks(tasks)
+      : (async () => {
+          for (const task of tasks) await ctx.taskBackend.writeTask(task);
+        })());
     if (!flags.quiet) {
       process.stdout.write(
         `${successMessage("normalized tasks", undefined, `count=${tasks.length}`)}\n`,

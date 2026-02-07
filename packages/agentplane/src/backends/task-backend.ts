@@ -22,7 +22,7 @@ import {
 
 import { loadDotEnv } from "../shared/env.js";
 import { isRecord } from "../shared/guards.js";
-import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
+import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import {
   buildTaskIndexEntry,
   loadTaskIndex,
@@ -233,6 +233,7 @@ export type TaskBackend = {
   getTask(taskId: string): Promise<TaskData | null>;
   writeTask(task: TaskData): Promise<void>;
   writeTasks?(tasks: TaskData[]): Promise<void>;
+  normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
   exportTasksJson?(outputPath: string): Promise<void>;
   getTaskDoc?(taskId: string): Promise<string>;
   setTaskDoc?(taskId: string, doc: string, updatedBy?: string): Promise<void>;
@@ -712,6 +713,85 @@ export class LocalBackend implements TaskBackend {
     }
   }
 
+  async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
+    const entries = await readdir(this.root, { withFileTypes: true }).catch(() => []);
+    const seen = new Set<string>();
+    let scanned = 0;
+    let changed = 0;
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const readme = path.join(this.root, entry.name, "README.md");
+
+      let text = "";
+      try {
+        text = await readFile(readme, "utf8");
+      } catch {
+        continue;
+      }
+
+      let parsed;
+      try {
+        parsed = parseTaskReadme(text);
+      } catch {
+        continue;
+      }
+
+      const fm = parsed.frontmatter;
+      if (!isRecord(fm) || Object.keys(fm).length === 0) continue;
+
+      const taskId = (typeof fm.id === "string" ? fm.id : entry.name).trim();
+      if (taskId) {
+        validateTaskId(taskId);
+        if (seen.has(taskId)) {
+          throw new Error(`Duplicate task id in local backend: ${taskId}`);
+        }
+        seen.add(taskId);
+      }
+
+      const task = taskRecordToData({
+        id: taskId,
+        frontmatter: fm as unknown as TaskRecord["frontmatter"],
+        body: parsed.body,
+        readmePath: readme,
+      });
+      scanned++;
+
+      // Render using the same normalization rules as writeTask, but avoid rewriting the file when the
+      // rendered output is identical (prevents mtime churn and diff-noise).
+      const payload: Record<string, unknown> = { ...task };
+      delete payload.doc;
+      for (const [key, value] of Object.entries(payload)) {
+        if (value === undefined) delete payload[key];
+      }
+      for (const key of ["doc_version", "doc_updated_at", "doc_updated_by"]) {
+        if (payload[key] === undefined && fm[key] !== undefined) payload[key] = fm[key];
+      }
+      if (payload.plan_approval === undefined && fm.plan_approval !== undefined) {
+        payload.plan_approval = fm.plan_approval;
+      }
+      if (payload.plan_approval === undefined) payload.plan_approval = defaultPlanApproval();
+      if (payload.verification === undefined && fm.verification !== undefined) {
+        payload.verification = fm.verification;
+      }
+      if (payload.verification === undefined) payload.verification = defaultVerificationResult();
+
+      if (payload.doc_version !== DOC_VERSION) payload.doc_version = DOC_VERSION;
+      if (payload.doc_updated_at === undefined || payload.doc_updated_at === "") {
+        payload.doc_updated_at = nowIso();
+      }
+      if (payload.doc_updated_by === undefined || payload.doc_updated_by === "") {
+        payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
+      }
+
+      const next = renderTaskReadme(payload, parsed.body || "");
+      const didWrite = await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
+      if (didWrite) changed++;
+    }
+
+    return { scanned, changed };
+  }
+
   async exportTasksJson(outputPath: string): Promise<void> {
     const tasks = await this.listTasks();
     await writeTasksExportFromTasks({ outputPath, tasks });
@@ -818,6 +898,12 @@ export class RedmineBackend implements TaskBackend {
   async exportTasksJson(outputPath: string): Promise<void> {
     const tasks = await this.listTasks();
     await writeTasksExportFromTasks({ outputPath, tasks });
+  }
+
+  async normalizeTasks(): Promise<{ scanned: number; changed: number }> {
+    // Remote backends should avoid expensive downloads; best-effort normalize the local cache if present.
+    if (this.cache?.normalizeTasks) return await this.cache.normalizeTasks();
+    return { scanned: 0, changed: 0 };
   }
 
   async getTask(taskId: string): Promise<TaskData | null> {
