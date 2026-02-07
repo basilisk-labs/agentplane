@@ -1,7 +1,7 @@
 ---
 id: "202602071915-Y81PM2"
 title: "Spec-driven CLI (cli2) tracking"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -19,10 +19,15 @@ verification:
   updated_at: "2026-02-07T19:46:26.633Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: created a sequential CLI2 migration task chain and implemented the initial cli2 core + help and migrated 3 commands (task new/work start/recipes install) with tests and docs updates."
-commit: null
-comments: []
+commit:
+  hash: "00989e076ce8d5edacd3acfb594949ece6c1b974"
+  message: "✅ Y81PM2 cli: add cli2 spec parsing + help + initial migrations"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: cli2 core (spec/parse/registry/help-render), cli2 help command + JSON contract docs, and run-cli integration migrating task new/work start/recipes install with full test coverage and updated error hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:46:26.634Z"
+doc_updated_at: "2026-02-07T19:59:57.017Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Introduce spec-driven CLI framework (cli2) to eliminate help/usage drift and reduce per-command manual parsing."
 ---

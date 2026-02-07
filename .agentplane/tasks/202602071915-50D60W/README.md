@@ -1,7 +1,7 @@
 ---
 id: "202602071915-50D60W"
 title: "CLI2: help JSON contract + docs"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -20,13 +20,18 @@ verification:
   updated_at: "2026-02-07T19:46:20.563Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: documented cli2 help behavior, global flag scoping for --json, and the help JSON schema contract with examples."
-commit: null
+commit:
+  hash: "00989e076ce8d5edacd3acfb594949ece6c1b974"
+  message: "✅ Y81PM2 cli: add cli2 spec parsing + help + initial migrations"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: define JSON help contract and update CLI contract docs for cli2 help + global flag scoping."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: cli2 core (spec/parse/registry/help-render), cli2 help command + JSON contract docs, and run-cli integration migrating task new/work start/recipes install with full test coverage and updated error hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:46:20.564Z"
+doc_updated_at: "2026-02-07T19:59:57.010Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Define JSON help contract and document CLI2 contract decisions (globals vs per-command flags, help formats)."
 ---

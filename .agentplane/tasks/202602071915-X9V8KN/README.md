@@ -1,7 +1,7 @@
 ---
 id: "202602071915-X9V8KN"
 title: "CLI2: integrate into run-cli + migrate task new/work start/recipes install"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -20,13 +20,18 @@ verification:
   updated_at: "2026-02-07T19:45:31.348Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: cli2 integrated into run-cli for agentplane help and for migrated commands (task new/work start/recipes install). Global flag --json is scoped before the command id. Updated E_USAGE hints to point to: agentplane help <cmd...> --compact."
-commit: null
+commit:
+  hash: "00989e076ce8d5edacd3acfb594949ece6c1b974"
+  message: "✅ Y81PM2 cli: add cli2 spec parsing + help + initial migrations"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: integrate cli2 into run-cli routing and migrate task new/work start/recipes install to spec-driven parsing and help."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: cli2 core (spec/parse/registry/help-render), cli2 help command + JSON contract docs, and run-cli integration migrating task new/work start/recipes install with full test coverage and updated error hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:45:31.349Z"
+doc_updated_at: "2026-02-07T19:59:57.015Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Wire cli2 into cli/run-cli.ts (help routing + spec-driven parsing for selected commands) and migrate 3 commands to spec-driven entrypoints to remove current help/usage drift."
 ---

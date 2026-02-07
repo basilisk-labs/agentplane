@@ -1,7 +1,7 @@
 ---
 id: "202602071915-78ANFC"
 title: "CLI2: core spec/parse/registry/help-render"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -20,13 +20,18 @@ verification:
   updated_at: "2026-02-07T19:45:13.185Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: cli2 core modules implemented (spec/registry/parse/help-render/suggest/errors) with unit tests; typecheck passes; cli2 unit suite passes."
-commit: null
+commit:
+  hash: "00989e076ce8d5edacd3acfb594949ece6c1b974"
+  message: "✅ Y81PM2 cli: add cli2 spec parsing + help + initial migrations"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: implement cli2 spec types, argv parser with validation/suggestions, registry match, and help renderers with unit tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: cli2 core (spec/parse/registry/help-render), cli2 help command + JSON contract docs, and run-cli integration migrating task new/work start/recipes install with full test coverage and updated error hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:45:13.186Z"
+doc_updated_at: "2026-02-07T19:59:57.013Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement cli2 microframework: CommandSpec types, argv parser w/ validation, command registry (longest prefix), did-you-mean suggestions, and help renderer (text/compact/json) with tests."
 ---
