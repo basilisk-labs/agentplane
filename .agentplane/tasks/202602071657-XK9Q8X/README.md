@@ -1,7 +1,7 @@
 ---
 id: "202602071657-XK9Q8X"
 title: "Scaffold: Add Verify Steps placeholder marker"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:13:19.654Z"
   updated_by: "CODER"
   note: "Scaffold Verify Steps now includes a strict placeholder marker; bun run test:agentplane."
-commit: null
+commit:
+  hash: "4436854647ecd10bb8ff325c105e4cd5e6cf96f2"
+  message: "✅ XK9Q8X tasks: add Verify Steps placeholder marker"
 comments:
   -
     author: "CODER"
     body: "Start: add a strict placeholder marker to scaffolded Verify Steps so gates can detect unfilled templates."
+  -
+    author: "CODER"
+    body: "Verified: scaffolded Verify Steps now includes a strict placeholder marker for filled/unfilled gating; bun run test:agentplane passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:13:19.657Z"
+doc_updated_at: "2026-02-07T17:14:02.936Z"
 doc_updated_by: "CODER"
 description: "Ensure new scaffold includes a strict placeholder marker to detect unfilled Verify Steps."
 ---
