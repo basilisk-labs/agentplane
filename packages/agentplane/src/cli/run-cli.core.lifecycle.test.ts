@@ -210,6 +210,177 @@ describe("runCli", () => {
     }
   });
 
+  it("task plan approve rejects verify-required tasks with missing Verify Steps", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Plan gate task",
+        "--description",
+        "Verify Steps gate should block approve",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const codeSet = await runCli([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "1) Do the work\n2) Verify the work",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    expect(codeSet).toBe(0);
+
+    const ioApprove = captureStdIO();
+    try {
+      const codeApprove = await runCli([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "USER",
+        "--note",
+        "OK",
+        "--root",
+        root,
+      ]);
+      expect(codeApprove).toBe(3);
+      expect(ioApprove.stderr).toContain("cannot approve plan");
+      expect(ioApprove.stderr).toContain("Verify Steps");
+    } finally {
+      ioApprove.restore();
+    }
+
+    const codeFill = await runCli([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "Run bun run test:cli:core; expect exit 0.",
+      "--root",
+      root,
+    ]);
+    expect(codeFill).toBe(0);
+
+    const codeApprove2 = await runCli([
+      "task",
+      "plan",
+      "approve",
+      taskId,
+      "--by",
+      "USER",
+      "--note",
+      "OK",
+      "--root",
+      root,
+    ]);
+    expect(codeApprove2).toBe(0);
+  });
+
+  it("start blocks verify-required tasks when plan approval is disabled and Verify Steps is missing", async () => {
+    const root = await mkGitRepoRoot();
+
+    const cfg = defaultConfig();
+    cfg.agents.approvals.require_plan = false;
+    await writeConfig(root, cfg);
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Start gate task",
+        "--description",
+        "Verify Steps gate should block start when require_plan=false",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const ioStart = captureStdIO();
+    try {
+      const codeStart = await runCli([
+        "start",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: this comment is long enough to satisfy the min_chars requirement.",
+        "--root",
+        root,
+      ]);
+      expect(codeStart).toBe(3);
+      expect(ioStart.stderr).toContain("cannot start work");
+      expect(ioStart.stderr).toContain("Verify Steps");
+    } finally {
+      ioStart.restore();
+    }
+
+    const codeFill = await runCli([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "Exit criteria: start must succeed when plan approval is disabled.",
+      "--root",
+      root,
+    ]);
+    expect(codeFill).toBe(0);
+
+    const codeStart2 = await runCli([
+      "start",
+      taskId,
+      "--author",
+      "CODER",
+      "--body",
+      "Start: this comment is long enough to satisfy the min_chars requirement.",
+      "--root",
+      root,
+    ]);
+    expect(codeStart2).toBe(0);
+  });
+
   it("start does not accept missing task id (no env fallback)", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
