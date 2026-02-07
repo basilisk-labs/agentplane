@@ -43,3 +43,11 @@ agentplane verify <task-id>
 ```
 
 Use `--skip-if-unchanged` to avoid re-running checks for the same commit.
+
+## Spike tasks
+
+Use tag `spike` to mark a research-only task (no schema changes required). A spike should end with:
+
+- A clear decision and findings in the task README.
+- Explicit exit criteria in `## Verify Steps`.
+- One or more implementation tasks derived from the spike (typically `depends_on: [<spike-id>]`).
