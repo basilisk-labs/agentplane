@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "workflow_mode": "direct",
-  "status_commit_policy": "warn",
-  "finish_auto_status_commit": true,
+  "status_commit_policy": "confirm",
+  "finish_auto_status_commit": false,
   "agents": {
     "approvals": {
       "require_plan": true,
