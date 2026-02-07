@@ -23,15 +23,18 @@ verification:
   updated_by: "USER"
   note: "Decomposition captured and approved; tracking task can be closed."
 commit:
-  hash: "3f331697cc154d230f07faa3843b1469aa60ed8d"
-  message: "✅ 06Z3G9 close: epic done"
+  hash: "3d8d1beb53818ba0d1352e5df5b910eedd99768c"
+  message: "✅ RDATF2 tasks: decompose roadmap into atomic tasks"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Tracking task closed after decomposition; implementation continues in dependent tasks."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Correct commit pointer to the decomposition commit that added the atomic tasks."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-07T13:35:21.969Z"
+doc_updated_at: "2026-02-07T13:54:56.318Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Decompose and implement redesign: explicit contexts (Git/Policy/Command), a single policy engine, centralized git facts, thin guard/hooks, and removal of legacy duplication. Also: update help banner (version + release commit date) and clean up .agentplane gitignore/commits (ignore only tasks.json snapshots and caches)."
 id_source: "generated"
