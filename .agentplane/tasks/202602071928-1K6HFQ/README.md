@@ -1,7 +1,7 @@
 ---
 id: "202602071928-1K6HFQ"
 title: "CLI2-041: Migrate config set to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-07T20:49:57.859Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated config set to cli2 registry (spec-derived parsing/help/usage) and removed legacy dispatcher branch. Tightened semantics: removed cli2 parser exception for unknown --yes (command-scoped only) and introduced global --allow-network for update-check approval; updated tests and CLI contract docs. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
-commit: null
+commit:
+  hash: "3f5321abf5b62c0b83e801a3e5c08668e583dbe2"
+  message: "✅ 1K6HFQ cli: migrate config set + tighten global approvals"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate config set to cli2 with spec-derived parsing/help/usage; remove legacy dispatcher branch; and tighten semantics by making --yes command-scoped only and introducing a dedicated global network-approval flag for update-check (docs+tests updated)."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: config set is cli2-routed with spec-derived help/usage; legacy dispatcher removed. Semantic cleanup: --yes is command-scoped only (no parser exception); update-check approval uses global --allow-network. Docs/tests updated; checks passing (typecheck/lint/format/test:cli:core)."
 doc_version: 2
-doc_updated_at: "2026-02-07T20:49:57.860Z"
+doc_updated_at: "2026-02-07T20:50:24.367Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `config set <key> <value>` (dotted keys; JSON values)."
 ---
