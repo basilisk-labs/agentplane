@@ -1,7 +1,7 @@
 ---
 id: "202602071928-G06D62"
 title: "CLI2-042: Migrate mode get/set to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-07T20:52:24.719Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated mode get/set to cli2 registry (spec-derived help/usage) and removed legacy dispatcher branches. Updated tests for new E_USAGE output and compact help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
-commit: null
+commit:
+  hash: "4d29c74157ba164e1664e9d5aecd79b10dc5468a"
+  message: "✅ G06D62 cli: migrate mode get/set to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate mode get/set to cli2 registry (spec-derived help/usage) and remove legacy dispatcher branches; update tests for new E_USAGE output."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: mode get/set are cli2-routed with spec-derived help/usage; legacy dispatcher removed; tests passing (typecheck/lint/format/test:cli:core)."
 doc_version: 2
-doc_updated_at: "2026-02-07T20:52:24.720Z"
+doc_updated_at: "2026-02-07T20:52:49.404Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `mode get` and `mode set`."
 ---
