@@ -1,7 +1,7 @@
 ---
 id: "202602071928-RTVTMJ"
 title: "CLI2-040: Migrate config show to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-07T20:18:34.442Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated config show to cli2 registry with spec-derived help/usage and removed legacy dispatcher branch. Updated cli2 parser to accept global --yes for commands that do not declare it (preserves legacy update-check approval patterns); tests passing (typecheck/lint/format/test:cli:core)."
-commit: null
+commit:
+  hash: "4f4bd7cb775bec7fe7edade4a3dca72196545474"
+  message: "✅ RTVTMJ cli: migrate config show to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate config show to cli2 (spec-derived parsing/help/usage), remove legacy dispatcher branch, and keep output stable."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: config show is cli2-routed with spec-derived help/usage; legacy branch removed; cli2 parsing tolerates global --yes for approval patterns; tests passing (typecheck/lint/format/test:cli:core)."
 doc_version: 2
-doc_updated_at: "2026-02-07T20:18:34.443Z"
+doc_updated_at: "2026-02-07T20:19:02.758Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `config show`."
 ---
