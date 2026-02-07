@@ -1,7 +1,7 @@
 ---
 id: "202602070855-G8K609"
 title: "Stable ordering + replace always-write with writeIfChanged"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -19,18 +19,23 @@ plan_approval:
   updated_by: "USER"
   note: "Approved in chat on 2026-02-07."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-07T12:32:21.519Z"
+  updated_by: "CODEX"
+  note: "Verified: bun run typecheck; bun run lint; bun run test:agentplane"
+commit:
+  hash: "9011be7e8306aa6cecffa3e1585eb0ed2b19ddc2"
+  message: "✅ G8K609 io: write-if-changed for task README + stable backend.json"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: replace unconditional writes with write-if-changed and ensure stable serialization/ordering."
+  -
+    author: "CODEX"
+    body: "Verified: bun run typecheck; bun run lint; bun run test:agentplane. Summary: replace unconditional task README writes with writeTextIfChanged; init backend.json uses canonical stable writer. Implementation: 9011be7e8306."
 doc_version: 2
-doc_updated_at: "2026-02-07T12:29:44.915Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-02-07T12:32:26.986Z"
+doc_updated_by: "CODEX"
 description: "Stabilize ordering in JSON/YAML/README rendering; ensure deterministic task sorting; replace unconditional writes with writeIfChanged across config/meta/cache/export/normalize."
 id_source: "explicit"
 ---
@@ -53,6 +58,15 @@ Risk: changing write behavior could mask bugs if callers rely on mtime changes; 
 ## Verification
 
 - bun run typecheck\n- bun run lint\n- bun run test:agentplane
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T12:32:21.519Z — VERIFY — ok
+
+By: CODEX
+
+Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
