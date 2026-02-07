@@ -1,7 +1,7 @@
 ---
 id: "202602071657-X6KPJS"
 title: "Gate: Enforce Verify Steps on start when require_plan=false"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:21:45.846Z"
   updated_by: "CODER"
   note: "start now enforces filled Verify Steps when require_plan=false for verify-required tags; bun run test:agentplane."
-commit: null
+commit:
+  hash: "2853392c4b9e0f8eb1c9ca995c13a8b0f9793387"
+  message: "✅ X6KPJS workflow: gate start on Verify Steps when no plan"
 comments:
   -
     author: "CODER"
     body: "Start: add Verify Steps enforcement in start when plan approval is disabled."
+  -
+    author: "CODER"
+    body: "Verified: start fails fast for verify-required tasks when require_plan=false and Verify Steps is unfilled; bun run test:agentplane passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:21:45.847Z"
+doc_updated_at: "2026-02-07T17:22:28.227Z"
 doc_updated_by: "CODER"
 description: "Add fail-fast check in start for verify-required tasks when plan approval is disabled."
 ---
