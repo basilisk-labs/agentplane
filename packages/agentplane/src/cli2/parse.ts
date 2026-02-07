@@ -110,6 +110,16 @@ export function parseCommandArgv<TParsed>(
       const head = eq === -1 ? tok : tok.slice(0, eq);
       const opt = byLong.get(head);
       if (!opt) {
+        // Global approval flag: allow `--yes` on any command to preserve legacy behavior
+        // where `--yes` can be used to satisfy network-approval gating even for commands
+        // that do not explicitly declare it.
+        if (head === "--yes") {
+          if (eq !== -1) {
+            throw usageError({ spec, message: "Option --yes does not take a value" });
+          }
+          raw.opts.yes = true;
+          continue;
+        }
         const sugg = suggestOne(head, candidates);
         const suffix = sugg ? ` Did you mean ${sugg}?` : "";
         throw usageError({ spec, message: `Unknown option: ${head}.${suffix}` });

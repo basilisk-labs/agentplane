@@ -725,6 +725,19 @@ const agentsSpec: CommandSpec<AgentsParsed> = {
 const runAgents: CommandHandler<AgentsParsed> = (ctx) =>
   cmdAgents({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
 
+type ConfigShowParsed = Record<string, never>;
+
+const configShowSpec: CommandSpec<ConfigShowParsed> = {
+  id: ["config", "show"],
+  group: "Config",
+  summary: "Print resolved config JSON.",
+  examples: [{ cmd: "agentplane config show", why: "Show the active config." }],
+  parse: () => ({}),
+};
+
+const runConfigShow: CommandHandler<ConfigShowParsed> = (ctx) =>
+  cmdConfigShow({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
+
 async function cmdInit(opts: {
   cwd: string;
   rootOverride?: string;
@@ -1191,6 +1204,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(quickstartSpec, noop);
       registry.register(roleSpec, noop);
       registry.register(agentsSpec, noop);
+      registry.register(configShowSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1250,6 +1264,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(quickstartSpec, runQuickstart);
       registry.register(roleSpec, runRole);
       registry.register(agentsSpec, runAgents);
+      registry.register(configShowSpec, runConfigShow);
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
@@ -1260,10 +1275,6 @@ export async function runCli(argv: string[]): Promise<number> {
         const parsed = parseCommandArgv(match.spec, tail).parsed;
         return await match.handler({ cwd, rootOverride: globals.root }, parsed);
       }
-    }
-
-    if (namespace === "config" && command === "show") {
-      return await cmdConfigShow({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "config" && command === "set") {

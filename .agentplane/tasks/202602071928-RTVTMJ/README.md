@@ -1,7 +1,7 @@
 ---
 id: "202602071928-RTVTMJ"
 title: "CLI2-040: Migrate config show to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T20:16:38.865Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-07T20:18:34.442Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated config show to cli2 registry with spec-derived help/usage and removed legacy dispatcher branch. Updated cli2 parser to accept global --yes for commands that do not declare it (preserves legacy update-check approval patterns); tests passing (typecheck/lint/format/test:cli:core)."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate config show to cli2 (spec-derived parsing/help/usage), remove legacy dispatcher branch, and keep output stable."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:01.015Z"
+doc_updated_at: "2026-02-07T20:18:34.443Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `config show`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T20:18:34.442Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated config show to cli2 registry with spec-derived help/usage and removed legacy dispatcher branch. Updated cli2 parser to accept global --yes for commands that do not declare it (preserves legacy update-check approval patterns); tests passing (typecheck/lint/format/test:cli:core).
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:16:38.999Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
