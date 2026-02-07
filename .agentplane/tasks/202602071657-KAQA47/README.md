@@ -1,7 +1,7 @@
 ---
 id: "202602071657-KAQA47"
 title: "Verify log: Add VerifyStepsRef/hash to Verification entries"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:33:32.465Z"
   updated_by: "CODER"
   note: "verify-record now appends VerifyStepsRef (doc_version/doc_updated_at + sha256) to each Verification entry; tests: bun run test:agentplane, bun run test:cli:core."
-commit: null
+commit:
+  hash: "7f0eac518345338b5b8d3f856fc1d403b29b4fa0"
+  message: "✅ KAQA47 verify: record VerifyStepsRef in Verification"
 comments:
   -
     author: "CODER"
     body: "Start: include Verify Steps reference (doc version/mtime + sha256) in each Verification result entry."
+  -
+    author: "CODER"
+    body: "Verified: verification entries now include VerifyStepsRef with doc_version/doc_updated_at and sha256 hash; tests: bun run test:agentplane, bun run test:cli:core."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:33:32.467Z"
+doc_updated_at: "2026-02-07T17:34:14.453Z"
 doc_updated_by: "CODER"
 description: "verify-record should reference the current Verify Steps (doc_version/doc_updated_at + sha256 excerpt hash)."
 ---
