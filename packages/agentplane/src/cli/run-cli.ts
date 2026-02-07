@@ -487,16 +487,10 @@ type InitFlags = {
 
 const READY_USAGE = "Usage: agentplane ready <task-id>";
 const READY_USAGE_EXAMPLE = "agentplane ready 202602030608-F1Q8AB";
-const ROLE_USAGE = "Usage: agentplane role <role>";
-const ROLE_USAGE_EXAMPLE = "agentplane role ORCHESTRATOR";
-const AGENTS_USAGE = "Usage: agentplane agents";
-const AGENTS_USAGE_EXAMPLE = "agentplane agents";
 const CONFIG_SET_USAGE = "Usage: agentplane config set <key> <value>";
 const CONFIG_SET_USAGE_EXAMPLE = "agentplane config set workflow_mode branch_pr";
 const MODE_SET_USAGE = "Usage: agentplane mode set <direct|branch_pr>";
 const MODE_SET_USAGE_EXAMPLE = "agentplane mode set direct";
-const QUICKSTART_USAGE = "Usage: agentplane quickstart";
-const QUICKSTART_USAGE_EXAMPLE = "agentplane quickstart";
 const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
 const IDE_SYNC_USAGE_EXAMPLE = "agentplane ide sync";
 const TASK_SHOW_USAGE = "Usage: agentplane task show <task-id>";
@@ -685,6 +679,51 @@ const initSpec: CommandSpec<InitParsed> = {
 
 const runInit: CommandHandler<InitParsed> = (ctx, flags) =>
   cmdInit({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, flags });
+
+type QuickstartParsed = Record<string, never>;
+
+const quickstartSpec: CommandSpec<QuickstartParsed> = {
+  id: ["quickstart"],
+  group: "Core",
+  summary: "Print CLI quickstart and command cheat sheet.",
+  options: [],
+  examples: [{ cmd: "agentplane quickstart", why: "Show quickstart." }],
+  parse: () => ({}),
+};
+
+const runQuickstart: CommandHandler<QuickstartParsed> = (ctx) => {
+  cmdQuickstart({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
+  return Promise.resolve(0);
+};
+
+type RoleParsed = { role: string };
+
+const roleSpec: CommandSpec<RoleParsed> = {
+  id: ["role"],
+  group: "Core",
+  summary: "Show role-specific workflow guidance.",
+  args: [{ name: "role", required: true, valueHint: "<role>" }],
+  examples: [{ cmd: "agentplane role ORCHESTRATOR", why: "Show ORCHESTRATOR guide." }],
+  parse: (raw) => ({ role: String(raw.args.role ?? "") }),
+};
+
+const runRole: CommandHandler<RoleParsed> = (ctx, p) => {
+  cmdRole({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, role: p.role });
+  return Promise.resolve(0);
+};
+
+type AgentsParsed = Record<string, never>;
+
+const agentsSpec: CommandSpec<AgentsParsed> = {
+  id: ["agents"],
+  group: "Core",
+  summary: "List agent definitions under .agentplane/agents.",
+  examples: [{ cmd: "agentplane agents", why: "Print available agent ids and roles." }],
+  parse: () => ({}),
+};
+
+const runAgents: CommandHandler<AgentsParsed> = (ctx) =>
+  cmdAgents({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
 
 async function cmdInit(opts: {
   cwd: string;
@@ -1029,20 +1068,20 @@ function cmdRole(opts: { cwd: string; rootOverride?: string; role: string }): nu
   try {
     const roleRaw = opts.role.trim();
     if (!roleRaw) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(ROLE_USAGE, ROLE_USAGE_EXAMPLE),
+      throw usageError({
+        spec: roleSpec,
+        command: "role",
+        message: "Missing required argument: role",
       });
     }
     const guide = renderRole(roleRaw);
     if (!guide) {
       const roles = listRoles();
       const available = roles.length > 0 ? `\nAvailable roles: ${roles.join(", ")}` : "";
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(`${ROLE_USAGE}${available}`, ROLE_USAGE_EXAMPLE),
+      throw usageError({
+        spec: roleSpec,
+        command: "role",
+        message: `Unknown role: ${roleRaw}.${available}`,
       });
     }
     process.stdout.write(`${guide}\n`);
@@ -1149,6 +1188,9 @@ export async function runCli(argv: string[]): Promise<number> {
       const noop = () => Promise.resolve(0);
       registry.register(initSpec, noop);
       registry.register(upgradeSpec, noop);
+      registry.register(quickstartSpec, noop);
+      registry.register(roleSpec, noop);
+      registry.register(agentsSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1205,6 +1247,9 @@ export async function runCli(argv: string[]): Promise<number> {
       const registry = new CommandRegistry();
       registry.register(initSpec, runInit);
       registry.register(upgradeSpec, runUpgrade);
+      registry.register(quickstartSpec, runQuickstart);
+      registry.register(roleSpec, runRole);
+      registry.register(agentsSpec, runAgents);
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
@@ -1247,39 +1292,6 @@ export async function runCli(argv: string[]): Promise<number> {
         });
       }
       return await cmdModeSet({ cwd: process.cwd(), rootOverride: globals.root, mode });
-    }
-
-    if (namespace === "quickstart") {
-      if (command) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(QUICKSTART_USAGE, QUICKSTART_USAGE_EXAMPLE),
-        });
-      }
-      return cmdQuickstart({ cwd: process.cwd(), rootOverride: globals.root });
-    }
-
-    if (namespace === "role") {
-      if (!command || command.startsWith("--") || args.length > 0) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(ROLE_USAGE, ROLE_USAGE_EXAMPLE),
-        });
-      }
-      return cmdRole({ cwd: process.cwd(), rootOverride: globals.root, role: command });
-    }
-
-    if (namespace === "agents") {
-      if (command) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(AGENTS_USAGE, AGENTS_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdAgents({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "ready") {

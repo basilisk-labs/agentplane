@@ -1,7 +1,7 @@
 ---
 id: "202602071927-ZGB1P1"
 title: "CLI2-032: Migrate quickstart/role/agents to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-07T20:13:34.902Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-07T20:15:30.192Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated quickstart/role/agents to cli2 registry with spec-derived parsing/help/usage. Removed legacy dispatcher branches and updated cmdRole to use usageError. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate quickstart/role/agents to cli2 so help/usage/parsing are spec-derived; preserve output and error mapping; update run-cli tests for new E_USAGE messages."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:27:59.772Z"
+doc_updated_at: "2026-02-07T20:15:30.192Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Register `quickstart`, `role`, `agents` in cli2 with spec-derived help."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T20:15:30.192Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated quickstart/role/agents to cli2 registry with spec-derived parsing/help/usage. Removed legacy dispatcher branches and updated cmdRole to use usageError. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:core.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:13:35.047Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
