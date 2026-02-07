@@ -3,7 +3,6 @@ import path from "node:path";
 
 import {
   clearPinnedBaseBranch,
-  getBaseBranch,
   getPinnedBaseBranch,
   loadConfig,
   resolveBaseBranch,
@@ -396,10 +395,21 @@ export async function cmdBranchBaseGet(opts: {
   rootOverride?: string;
 }): Promise<number> {
   try {
-    const value = await getBaseBranch({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
-    process.stdout.write(`${value}\n`);
+    const pinned = await getPinnedBaseBranch({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    if (!pinned) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Base branch is not pinned (use `agentplane branch base set`).",
+      });
+    }
+    process.stdout.write(`${pinned}\n`);
     return 0;
   } catch (err) {
+    if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "branch base get", root: opts.rootOverride ?? null });
   }
 }

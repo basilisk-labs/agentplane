@@ -24,10 +24,11 @@ async function mkGitRepoRoot(): Promise<string> {
 }
 
 describe("base-branch", () => {
-  it("returns default base branch when not pinned", async () => {
+  it("getBaseBranch rejects when base branch is not pinned", async () => {
     const root = await mkGitRepoRoot();
-    const base = await getBaseBranch({ cwd: root, rootOverride: root });
-    expect(base).toBe("main");
+    await expect(getBaseBranch({ cwd: root, rootOverride: root })).rejects.toThrow(
+      "base branch is not pinned",
+    );
   });
 
   it("reads pinned base branch from git config", async () => {
@@ -81,7 +82,7 @@ describe("base-branch", () => {
     expect(base).toBeNull();
   });
 
-  it("resolveBaseBranch prefers main when present in branch_pr mode and unpinned", async () => {
+  it("resolveBaseBranch returns null in branch_pr mode when unpinned (no defaults)", async () => {
     const root = await mkGitRepoRoot();
     await execFileAsync("git", ["checkout", "-q", "-b", "main"], { cwd: root });
     await writeFile(path.join(root, "file.txt"), "x", "utf8");
@@ -98,7 +99,7 @@ describe("base-branch", () => {
       cliBaseOpt: null,
       mode: "branch_pr",
     });
-    expect(base).toBe("main");
+    expect(base).toBeNull();
   });
 
   it("resolveBaseBranch returns null for direct mode without explicit base", async () => {

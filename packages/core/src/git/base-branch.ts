@@ -6,9 +6,7 @@ import type { WorkflowMode } from "../config/config.js";
 
 const execFileAsync = promisify(execFile);
 
-const DEFAULT_BASE_BRANCH = "main";
 const GIT_CONFIG_BASE_BRANCH_KEY = "agentplane.baseBranch";
-const LEGACY_DEFAULT_BASE_BRANCH = "master";
 
 async function gitConfigGet(cwd: string, key: string): Promise<string | null> {
   try {
@@ -37,19 +35,6 @@ async function gitConfigUnset(cwd: string, key: string): Promise<boolean> {
   }
 }
 
-async function gitLocalBranchExists(cwd: string, branch: string): Promise<boolean> {
-  try {
-    await execFileAsync("git", ["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], {
-      cwd,
-    });
-    return true;
-  } catch (err) {
-    const code = (err as { code?: number | string } | null)?.code;
-    if (code === 1) return false;
-    throw err;
-  }
-}
-
 export async function getPinnedBaseBranch(opts: {
   cwd: string;
   rootOverride?: string | null;
@@ -63,7 +48,8 @@ export async function getBaseBranch(opts: {
   rootOverride?: string | null;
 }): Promise<string> {
   const pinned = await getPinnedBaseBranch(opts);
-  return pinned ?? DEFAULT_BASE_BRANCH;
+  if (pinned) return pinned;
+  throw new Error("base branch is not pinned");
 }
 
 export async function setPinnedBaseBranch(opts: {
@@ -99,17 +85,5 @@ export async function resolveBaseBranch(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   if (pinned) return pinned;
-  if (opts.mode === "branch_pr") {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    if (await gitLocalBranchExists(resolved.gitRoot, DEFAULT_BASE_BRANCH))
-      return DEFAULT_BASE_BRANCH;
-    if (await gitLocalBranchExists(resolved.gitRoot, LEGACY_DEFAULT_BASE_BRANCH))
-      return LEGACY_DEFAULT_BASE_BRANCH;
-    // No safe default: require pinning to avoid silently treating feature branches as base.
-    return null;
-  }
   return null;
 }

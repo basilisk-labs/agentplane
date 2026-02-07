@@ -77,13 +77,13 @@ function stubTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBacke
 }
 
 describe("runCli", () => {
-  it("branch base get returns default when not pinned", async () => {
+  it("branch base get fails when base branch is not pinned", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
     try {
       const code = await runCli(["branch", "base", "get", "--root", root]);
-      expect(code).toBe(0);
-      expect(io.stdout.trim()).toBe("main");
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Base branch is not pinned");
     } finally {
       io.restore();
     }
@@ -159,8 +159,8 @@ describe("runCli", () => {
     const io2 = captureStdIO();
     try {
       const code2 = await runCli(["branch", "base", "get", "--root", root]);
-      expect(code2).toBe(0);
-      expect(io2.stdout.trim()).toBe("main");
+      expect(code2).toBe(2);
+      expect(io2.stderr).toContain("Base branch is not pinned");
     } finally {
       io2.restore();
     }
