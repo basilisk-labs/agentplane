@@ -3,7 +3,6 @@ import { mkdir, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  atomicWriteFile as atomicWriteFileCore,
   canonicalizeJson,
   docChanged,
   extractTaskDoc as extractTaskDocCore,
@@ -63,11 +62,6 @@ export type TaskEvent = {
   body?: string;
 };
 
-type AtomicWriteFile = (
-  filePath: string,
-  contents: string | Buffer,
-  encoding?: BufferEncoding,
-) => Promise<void>;
 type ExtractTaskDoc = (body: string) => string;
 type MergeTaskDoc = (body: string, doc: string) => string;
 type GenerateTaskId = (opts: {
@@ -77,7 +71,6 @@ type GenerateTaskId = (opts: {
   date?: Date;
 }) => Promise<string>;
 
-const atomicWriteFile: AtomicWriteFile = atomicWriteFileCore;
 const extractTaskDoc: ExtractTaskDoc = extractTaskDocCore;
 const mergeTaskDoc: MergeTaskDoc = mergeTaskDocCore;
 const generateTaskId: GenerateTaskId = generateTaskIdCore;
@@ -695,7 +688,7 @@ export class LocalBackend implements TaskBackend {
 
     await mkdir(path.dirname(readme), { recursive: true });
     const text = renderTaskReadme(payload, body || "");
-    await atomicWriteFile(readme, text.endsWith("\n") ? text : `${text}\n`);
+    await writeTextIfChanged(readme, text.endsWith("\n") ? text : `${text}\n`);
   }
 
   async setTaskDoc(taskId: string, doc: string, updatedBy?: string): Promise<void> {
@@ -718,7 +711,7 @@ export class LocalBackend implements TaskBackend {
       frontmatter.doc_version = DOC_VERSION;
     }
     const next = renderTaskReadme(frontmatter, body);
-    await atomicWriteFile(readme, next.endsWith("\n") ? next : `${next}\n`);
+    await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
 
   async touchTaskDocMetadata(taskId: string, updatedBy?: string): Promise<void> {
@@ -734,7 +727,7 @@ export class LocalBackend implements TaskBackend {
       this.updatedBy,
     );
     const next = renderTaskReadme(frontmatter, parsed.body || "");
-    await atomicWriteFile(readme, next.endsWith("\n") ? next : `${next}\n`);
+    await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
 
   async writeTasks(tasks: TaskData[]): Promise<void> {

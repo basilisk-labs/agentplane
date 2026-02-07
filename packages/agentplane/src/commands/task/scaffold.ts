@@ -2,7 +2,6 @@ import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  atomicWriteFile,
   ensureDocSections,
   renderTaskReadme,
   setMarkdownSection,
@@ -23,6 +22,7 @@ import {
   taskDataToFrontmatter,
   type CommandContext,
 } from "../shared/task-backend.js";
+import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { nowIso } from "./shared.js";
 
 export const TASK_SCAFFOLD_USAGE =
@@ -168,7 +168,7 @@ export async function cmdTaskScaffold(opts: {
     const body = setMarkdownSection(baseDoc, "Verification", verificationTemplate);
     const text = renderTaskReadme(frontmatter, body);
     await mkdir(path.dirname(readmePath), { recursive: true });
-    await atomicWriteFile(readmePath, text.endsWith("\n") ? text : `${text}\n`);
+    await writeTextIfChanged(readmePath, text.endsWith("\n") ? text : `${text}\n`);
     if (!flags.quiet) {
       process.stdout.write(
         `${successMessage("wrote", path.relative(resolved.gitRoot, readmePath))}\n`,

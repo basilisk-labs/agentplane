@@ -49,7 +49,7 @@ import {
 } from "./update-check.js";
 import { loadDotEnv } from "../shared/env.js";
 import { CliError, formatJsonError } from "../shared/errors.js";
-import { writeTextIfChanged } from "../shared/write-if-changed.js";
+import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { getVersion } from "../meta/version.js";
 import { cmdUpgrade } from "../commands/upgrade.js";
@@ -838,16 +838,8 @@ async function cmdInit(opts: {
         custom_fields: { task_id: 1 },
       },
     };
-    await atomicWriteFile(
-      localBackendPath,
-      `${JSON.stringify(localBackendPayload, null, 2)}\n`,
-      "utf8",
-    );
-    await atomicWriteFile(
-      redmineBackendPath,
-      `${JSON.stringify(redmineBackendPayload, null, 2)}\n`,
-      "utf8",
-    );
+    await writeJsonStableIfChanged(localBackendPath, localBackendPayload);
+    await writeJsonStableIfChanged(redmineBackendPath, redmineBackendPayload);
 
     const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
     const installPaths: string[] = [
