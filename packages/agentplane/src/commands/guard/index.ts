@@ -1,7 +1,7 @@
 import {
   extractTaskSuffix,
   getStagedFiles,
-  getUnstagedFiles,
+  getUnstagedTrackedFiles,
   loadConfig,
   resolveBaseBranch,
   resolveProject,
@@ -123,7 +123,8 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
   const tasksPath = loaded.config.paths.tasks_path;
 
   if (opts.requireClean) {
-    const unstaged = await getUnstagedFiles({
+    // Policy-defined "clean" ignores untracked files.
+    const unstaged = await getUnstagedTrackedFiles({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
@@ -232,7 +233,8 @@ export async function ensureGitClean(opts: { cwd: string; rootOverride?: string 
   if (staged.length > 0) {
     throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree has staged changes" });
   }
-  const unstaged = await getUnstagedFiles({
+  // Policy-defined "clean" ignores untracked files.
+  const unstaged = await getUnstagedTrackedFiles({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
   });

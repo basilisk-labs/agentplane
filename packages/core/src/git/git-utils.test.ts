@@ -5,7 +5,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { getStagedFiles, getUnstagedFiles } from "../index.js";
+import { getStagedFiles, getUnstagedFiles, getUnstagedTrackedFiles } from "../index.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -51,6 +51,16 @@ describe("git-utils", () => {
     await execFileAsync("git", ["add", "file.txt"], { cwd: root });
     const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
     expect(unstaged).toEqual([]);
+  });
+
+  it("lists unstaged tracked files only (ignores untracked)", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "tracked.txt"), "x", "utf8");
+    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root });
+    await writeFile(path.join(root, "untracked.txt"), "y", "utf8");
+
+    const tracked = await getUnstagedTrackedFiles({ cwd: root, rootOverride: root });
+    expect(tracked).toEqual([]);
   });
 
   it("includes renamed files when modified after rename", async () => {

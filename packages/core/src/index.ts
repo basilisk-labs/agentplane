@@ -91,4 +91,4 @@ export {
   type CommitPolicyResult,
 } from "./commit/commit-policy.js";
 
-export { getStagedFiles, getUnstagedFiles } from "./git/git-utils.js";
+export { getStagedFiles, getUnstagedFiles, getUnstagedTrackedFiles } from "./git/git-utils.js";

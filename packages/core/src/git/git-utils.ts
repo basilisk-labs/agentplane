@@ -37,3 +37,13 @@ export async function getUnstagedFiles(opts: {
   ]);
   return [...new Set([...unstaged, ...untracked])].toSorted((a, b) => a.localeCompare(b));
 }
+
+// Tracked-only dirty check (ignores untracked files). This matches the repo policy
+// definition of "clean" used by guardrails: `git status --short --untracked-files=no`.
+export async function getUnstagedTrackedFiles(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+}): Promise<string[]> {
+  const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  return await gitNullSeparatedPaths(resolved.gitRoot, ["diff", "--name-only", "-z"]);
+}

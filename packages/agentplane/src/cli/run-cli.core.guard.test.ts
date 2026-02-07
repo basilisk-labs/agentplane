@@ -378,7 +378,8 @@ describe("runCli", () => {
     await writeFile(path.join(root, "file.txt"), "x", "utf8");
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-    await writeFile(path.join(root, "other.txt"), "y", "utf8");
+    // Modify a tracked file after staging to create unstaged tracked changes.
+    await writeFile(path.join(root, "file.txt"), "y", "utf8");
 
     const io = captureStdIO();
     try {
@@ -396,6 +397,34 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(5);
       expect(io.stderr).toContain("Working tree is dirty");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit ignores untracked files with --require-clean", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await writeFile(path.join(root, "untracked.txt"), "y", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF guard: tracked-only clean",
+        "--allow",
+        ".",
+        "--require-clean",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stderr).not.toContain("Working tree is dirty");
     } finally {
       io.restore();
     }
@@ -668,6 +697,8 @@ describe("runCli", () => {
     await writeFile(path.join(root, "base.txt"), "x", "utf8");
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", "base.txt"], { cwd: root });
+    // Unstaged tracked changes should block --require-clean.
+    await writeFile(path.join(root, "base.txt"), "y", "utf8");
 
     const io = captureStdIO();
     try {
