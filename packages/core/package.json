@@ -1,6 +1,6 @@
 {
   "name": "@agentplaneorg/core",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Core utilities and models for the Agent Plane CLI.",
   "keywords": [
     "agentplane",
