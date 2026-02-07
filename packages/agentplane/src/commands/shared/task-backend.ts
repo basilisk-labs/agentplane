@@ -2,6 +2,7 @@ import path from "node:path";
 
 import { CliError } from "../../shared/errors.js";
 import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
+import { GitContext } from "./git-context.js";
 
 export type CommandMemo = {
   taskList?: Promise<TaskData[]>;
@@ -15,6 +16,7 @@ export type CommandContext = {
   taskBackend: Awaited<ReturnType<typeof loadTaskBackend>>["backend"];
   backendId: string;
   backendConfigPath: string;
+  git: GitContext;
 
   memo: CommandMemo;
 
@@ -81,6 +83,7 @@ export async function loadCommandContext(opts: {
     taskBackend: backend,
     backendId,
     backendConfigPath,
+    git: new GitContext({ gitRoot: resolved.gitRoot }),
     memo: {},
     resolved,
     backend,

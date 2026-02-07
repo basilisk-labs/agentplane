@@ -158,6 +158,7 @@ export async function cmdTaskSetStatus(opts: {
         });
       }
       await commitFromComment({
+        ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,

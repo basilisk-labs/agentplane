@@ -151,6 +151,7 @@ export async function cmdFinish(opts: {
 
     if (opts.commitFromComment) {
       await commitFromComment({
+        ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
@@ -171,6 +172,7 @@ export async function cmdFinish(opts: {
 
     if (opts.statusCommit) {
       await commitFromComment({
+        ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,

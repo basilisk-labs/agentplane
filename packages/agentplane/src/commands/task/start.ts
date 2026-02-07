@@ -135,6 +135,7 @@ export async function cmdStart(opts: {
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
       commitInfo = await commitFromComment({
+        ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,

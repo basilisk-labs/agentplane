@@ -1,7 +1,5 @@
 import {
   extractTaskSuffix,
-  getStagedFiles,
-  getUnstagedTrackedFiles,
   resolveBaseBranch,
   resolveProject,
   type AgentplaneConfig,
@@ -16,41 +14,13 @@ import {
   normalizeCommentBodyForCommit,
 } from "../../shared/comment-format.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
-import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitCurrentBranch } from "../shared/git-ops.js";
+import { GitContext } from "../shared/git-context.js";
 import {
   getProtectedPathOverride,
   protectedPathKindForFile,
 } from "../../shared/protected-paths.js";
-import { parseGitLogHashSubject } from "../../shared/git-log.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-
-function parseNullSeparatedPaths(stdout: Buffer | string): string[] {
-  const text = Buffer.isBuffer(stdout) ? stdout.toString("utf8") : stdout;
-  return text
-    .split("\0")
-    .map((entry) => entry.trim())
-    .filter((entry) => entry.length > 0);
-}
-
-async function gitNullSeparatedPaths(cwd: string, args: string[]): Promise<string[]> {
-  const { stdout } = await execFileAsync("git", args, {
-    cwd,
-    env: gitEnv(),
-    encoding: "buffer",
-    maxBuffer: 10 * 1024 * 1024,
-  });
-  return parseNullSeparatedPaths(stdout);
-}
-
-async function getStagedFilesFromGitRoot(gitRoot: string): Promise<string[]> {
-  return await gitNullSeparatedPaths(gitRoot, ["diff", "--name-only", "--cached", "-z"]);
-}
-
-async function getUnstagedTrackedFilesFromGitRoot(gitRoot: string): Promise<string[]> {
-  const unstaged = await gitNullSeparatedPaths(gitRoot, ["diff", "--name-only", "-z"]);
-  return [...new Set(unstaged)].toSorted((a, b) => a.localeCompare(b));
-}
 
 export function buildGitCommitEnv(opts: {
   taskId: string;
@@ -122,7 +92,7 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
     throw new CliError({ exitCode: 5, code: "E_GIT", message: policy.errors.join("\n") });
   }
 
-  const staged = await getStagedFilesFromGitRoot(ctx.resolvedProject.gitRoot);
+  const staged = await ctx.git.statusStagedPaths();
   if (staged.length === 0) {
     throw new CliError({
       exitCode: 5,
@@ -143,7 +113,7 @@ async function guardCommitCheck(opts: GuardCommitOptions): Promise<void> {
 
   if (opts.requireClean) {
     // Policy-defined "clean" ignores untracked files.
-    const unstaged = await getUnstagedTrackedFilesFromGitRoot(ctx.resolvedProject.gitRoot);
+    const unstaged = await ctx.git.statusUnstagedTrackedPaths();
     if (unstaged.length > 0) {
       throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree is dirty" });
     }
@@ -224,36 +194,24 @@ export async function gitStatusChangedPaths(opts: {
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
   });
-
-  const optsExec = {
-    cwd: resolved.gitRoot,
-    encoding: "buffer" as const,
-    maxBuffer: 10 * 1024 * 1024,
-  };
-  const [unstaged, staged, untracked] = await Promise.all([
-    execFileAsync("git", ["diff", "--name-only", "-z"], optsExec),
-    execFileAsync("git", ["diff", "--name-only", "--cached", "-z"], optsExec),
-    execFileAsync("git", ["ls-files", "--others", "--exclude-standard", "-z"], optsExec),
-  ]);
-
-  const files = [
-    ...parseNullSeparatedPaths(unstaged.stdout),
-    ...parseNullSeparatedPaths(staged.stdout),
-    ...parseNullSeparatedPaths(untracked.stdout),
-  ];
-  return [...new Set(files)].toSorted((a, b) => a.localeCompare(b));
+  const git = new GitContext({ gitRoot: resolved.gitRoot });
+  return await git.statusChangedPaths();
 }
 
-export async function ensureGitClean(opts: { cwd: string; rootOverride?: string }): Promise<void> {
-  const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+export async function ensureGitClean(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+}): Promise<void> {
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  const staged = await ctx.git.statusStagedPaths();
   if (staged.length > 0) {
     throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree has staged changes" });
   }
   // Policy-defined "clean" ignores untracked files.
-  const unstaged = await getUnstagedTrackedFiles({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-  });
+  const unstaged = await ctx.git.statusUnstagedTrackedPaths();
   if (unstaged.length > 0) {
     throw new CliError({
       exitCode: 5,
@@ -264,17 +222,12 @@ export async function ensureGitClean(opts: { cwd: string; rootOverride?: string 
 }
 
 async function stageAllowlist(opts: {
-  cwd: string;
-  rootOverride?: string;
+  ctx: CommandContext;
   allow: string[];
   allowTasks: boolean;
   tasksPath: string;
 }): Promise<string[]> {
-  const resolved = await resolveProject({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-  });
-  const changed = await gitStatusChangedPaths({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+  const changed = await opts.ctx.git.statusChangedPaths();
   if (changed.length === 0) {
     throw new CliError({
       exitCode: 2,
@@ -307,7 +260,7 @@ async function stageAllowlist(opts: {
 
   // `git add <pathspec>` is not reliable for staging deletes/renames across versions/configs.
   // `-A -- <pathspec...>` makes the allowlist staging semantics deterministic.
-  await execFileAsync("git", ["add", "-A", "--", ...unique], { cwd: resolved.gitRoot });
+  await opts.ctx.git.stage(unique);
   return unique;
 }
 
@@ -374,6 +327,7 @@ function deriveCommitBodyFromComment(opts: {
 }
 
 export async function commitFromComment(opts: {
+  ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
@@ -390,9 +344,12 @@ export async function commitFromComment(opts: {
   quiet: boolean;
   config: AgentplaneConfig;
 }): Promise<{ hash: string; message: string; staged: string[] }> {
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   let allowPrefixes = opts.allow.map((prefix) => prefix.trim()).filter(Boolean);
   if (opts.autoAllow && allowPrefixes.length === 0) {
-    const changed = await gitStatusChangedPaths({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    const changed = await ctx.git.statusChangedPaths();
     const tasksPath = opts.config.paths.tasks_path;
     // Auto-allow is for ergonomic status commits. It must never silently
     // broaden into policy/config/CI changes (those require explicit intent).
@@ -413,8 +370,7 @@ export async function commitFromComment(opts: {
   }
 
   const staged = await stageAllowlist({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
+    ctx,
     allow: allowPrefixes,
     allowTasks: opts.allowTasks,
     tasksPath: opts.config.paths.tasks_path,
@@ -439,6 +395,7 @@ export async function commitFromComment(opts: {
   });
 
   await guardCommitCheck({
+    ctx,
     cwd: opts.cwd,
     rootOverride: opts.rootOverride,
     taskId: opts.taskId,
@@ -454,10 +411,6 @@ export async function commitFromComment(opts: {
     quiet: opts.quiet,
   });
 
-  const resolved = await resolveProject({
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride ?? null,
-  });
   // Never allow base-branch code commits implicitly from comment-driven commits.
   // Base overrides must be explicit via the `commit` command's --allow-base flag.
   const env = buildGitCommitEnv({
@@ -469,12 +422,9 @@ export async function commitFromComment(opts: {
     allowHooks: false,
     allowCI: false,
   });
-  await execFileAsync("git", ["commit", "-m", message, "-m", body], { cwd: resolved.gitRoot, env });
+  await ctx.git.commit({ message, body, env });
 
-  const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], {
-    cwd: resolved.gitRoot,
-  });
-  const { hash, subject } = parseGitLogHashSubject(stdout);
+  const { hash, subject } = await ctx.git.headHashSubject();
   if (!opts.quiet) {
     process.stdout.write(
       `${successMessage(
@@ -493,7 +443,11 @@ export async function cmdGuardClean(opts: {
   quiet: boolean;
 }): Promise<number> {
   try {
-    const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const ctx = await loadCommandContext({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const staged = await ctx.git.statusStagedPaths();
     if (staged.length > 0) {
       throw new CliError({
         exitCode: 5,
@@ -517,7 +471,11 @@ export async function cmdGuardSuggestAllow(opts: {
   format: "lines" | "args";
 }): Promise<number> {
   try {
-    const staged = await getStagedFiles({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+    const ctx = await loadCommandContext({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const staged = await ctx.git.statusStagedPaths();
     if (staged.length === 0) {
       throw new CliError({
         exitCode: 2,
@@ -572,7 +530,7 @@ export async function cmdCommit(opts: {
       const ctx =
         opts.ctx ??
         (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-      const staged = await getStagedFilesFromGitRoot(ctx.resolvedProject.gitRoot);
+      const staged = await ctx.git.statusStagedPaths();
       const prefixes = suggestAllowPrefixes(staged);
       if (prefixes.length === 0) {
         throw new CliError({
@@ -613,16 +571,10 @@ export async function cmdCommit(opts: {
       allowHooks: opts.allowHooks,
       allowCI: opts.allowCI,
     });
-    await execFileAsync("git", ["commit", "-m", opts.message], {
-      cwd: ctx.resolvedProject.gitRoot,
-      env,
-    });
+    await ctx.git.commit({ message: opts.message, env });
 
     if (!opts.quiet) {
-      const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], {
-        cwd: ctx.resolvedProject.gitRoot,
-      });
-      const { hash, subject } = parseGitLogHashSubject(stdout);
+      const { hash, subject } = await ctx.git.headHashSubject();
       process.stdout.write(
         `${successMessage("committed", `${hash?.slice(0, 12) ?? ""} ${subject ?? ""}`.trim())}\n`,
       );
