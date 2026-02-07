@@ -1,7 +1,7 @@
 ---
 id: "202602071657-4JSPP2"
 title: "Gate: Spike rules (Plan + Verify Steps exit criteria + Notes)"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-07T17:43:45.803Z"
   updated_by: "CODER"
   note: "Plan approval now enforces spike tasks have filled Verify Steps and non-empty Notes; bun run test:agentplane."
-commit: null
+commit:
+  hash: "a09ad85e1a0e0316893971da972b3c5fabc696e4"
+  message: "✅ 4JSPP2 workflow: gate spike plan approval"
 comments:
   -
     author: "CODER"
     body: "Start: enforce spike-specific plan approval gates (Verify Steps exit criteria, Notes findings)."
+  -
+    author: "CODER"
+    body: "Verified: spike-tagged tasks require filled Verify Steps and non-empty Notes before plan approval; bun run test:agentplane passed."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:43:45.806Z"
+doc_updated_at: "2026-02-07T17:45:02.472Z"
 doc_updated_by: "CODER"
 description: "Define/enforce spike-specific doc expectations; Verify Steps acts as exit criteria."
 ---
