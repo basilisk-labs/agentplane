@@ -175,6 +175,20 @@ Every task must have these sections in its README or task doc:
 - Verification
 - Rollback Plan
 
+## Two-stage verification (Verify Steps -> Verification)
+
+- `## Verify Steps` is the **ex-ante verification contract**: instructions and pass criteria addressed to the verifier.
+- `## Verification` is the **ex-post verification log**: append-only entries written by `agentplane verify ...`.
+- Do not hand-edit `## Verification` entries. Treat them as audit records.
+- For tasks with verify-required tags (default: `code`, `backend`, `frontend`), `agentplane task plan approve` and (when `require_plan=false`) `agentplane start` will block until `## Verify Steps` is filled (the placeholder `<!-- TODO: FILL VERIFY STEPS -->` is treated as empty).
+- Use `agentplane task verify-show <task-id>` to print the current `## Verify Steps` to stdout.
+
+## Spike -> implementation convention
+
+- A spike task is identified by tag `spike` (schema-free).
+- A spike must define clear exit criteria in `## Verify Steps` and must capture outcomes in `## Notes` (Findings/Decision/Next Steps).
+- `agentplane task derive <spike-id> ...` creates an implementation task that depends on the spike via `depends_on: [<spike-id>]`.
+
 ## Updating task docs
 
 - Workflow/task artifacts (task READMEs, PR artifacts, task exports) must be updated via `agentplane` commands, not manual edits.

@@ -14,9 +14,14 @@ const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
     command: "`agentplane task list` / `agentplane task show <task-id>`",
   },
   {
+    operation: "PLANNER: set/approve/reject plan",
+    command:
+      '`agentplane task plan set <task-id> --text "..." --updated-by <id>` / `agentplane task plan approve <task-id> --by <id> --note "OK"`',
+  },
+  {
     operation: "PLANNER: create task (auto ID)",
     command:
-      '`agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag>`',
+      '`agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag> [--depends-on <task-id|json>]`',
   },
   {
     operation: "PLANNER: add/update task",
@@ -25,6 +30,11 @@ const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
   {
     operation: "PLANNER: scaffold artifact",
     command: "`agentplane task scaffold <task-id>`",
+  },
+  {
+    operation: "PLANNER: derive implementation from spike",
+    command:
+      '`agentplane task derive <spike-id> --title "..." --description "..." --priority med --owner CODER --tag code`',
   },
   {
     operation: "Config: show/set",
@@ -46,6 +56,10 @@ const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
     operation: "CODER/TESTER: verify task",
     command:
       '`agentplane verify <task-id> --ok|--rework --by <id> --note "..."` (record-only; appends to README)',
+  },
+  {
+    operation: "CODER/TESTER: print Verify Steps",
+    command: "`agentplane task verify-show <task-id>`",
   },
   {
     operation: "REVIEWER: check PR artifacts",
@@ -75,6 +89,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- Plan intake: `agentplane task list` / `agentplane task show <task-id>`",
       '- After plan approval (unless the user opts out): `agentplane task new --title "..." --description "..." --priority med --owner ORCHESTRATOR --depends-on "[]" --tag <tag>`',
       "- Optional scaffold: `agentplane task scaffold <task-id>`",
+      "- Two-stage verification: `## Verify Steps` is the ex-ante contract; `agentplane verify ...` appends an ex-post entry into `## Verification`.",
     ],
   },
   {
@@ -84,6 +99,8 @@ const ROLE_GUIDES: RoleGuide[] = [
       '- Create tasks: `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --depends-on "[]" --tag <tag>` (tags are required; use `task add` only for imported IDs)',
       '- Update tasks: `agentplane task update <task-id> --title "..." --description "..." --priority med --owner <ROLE> --depends-on <task-id>`',
       "- Scaffold artifacts: `agentplane task scaffold <task-id>`",
+      '- Plan lifecycle: `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>` -> `agentplane task plan approve <task-id> --by <id>`',
+      "- Verify Steps discipline: if a task has verify-required tags (default: code/backend/frontend), fill `## Verify Steps` before plan approval.",
       '- Task docs (when planning needs it): `agentplane task doc set <task-id> --section Summary --text "..."`',
     ],
   },
@@ -93,6 +110,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- direct mode: work in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` creates/checks out `task/<task-id>/<slug>` in-place (no worktree). Use `agentplane task scaffold <task-id>` for docs without switching branches.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
+      "- Verify Steps: `agentplane task verify-show <task-id>` (use as the verification contract before recording results).",
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
       '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>`',
@@ -104,6 +122,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- direct mode: work in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` creates/checks out `task/<task-id>/<slug>` in-place (no worktree). Use `agentplane task scaffold <task-id>` for docs without switching branches.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
+      "- Verify Steps: `agentplane task verify-show <task-id>` (treat as the verification contract).",
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
       '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>`',
