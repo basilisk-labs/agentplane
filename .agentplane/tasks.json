@@ -1,6 +1,6 @@
 {
   "meta": {
-    "checksum": "dd170c80f1ec9f55cfe1407d44e14d7f2ce3482dcc91989fdca2ae4f9e0572d4",
+    "checksum": "31aefb18e5f221152a79b6da6f95b9133bfb73eced2ab008ad6aa3caaf6b9285",
     "checksum_algo": "sha256",
     "managed_by": "agentplane",
     "schema_version": 1
@@ -18915,6 +18915,76 @@
         "note": "Tests: bun run test:cli:core",
         "state": "ok",
         "updated_at": "2026-02-07T10:23:56.047Z",
+        "updated_by": "ORCHESTRATOR"
+      },
+      "verify": []
+    },
+    {
+      "comments": [
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Start: Align --require-clean semantics with AGENTS.md clean definition; rebuild dist to keep repo-local CLI output consistent."
+        },
+        {
+          "author": "ORCHESTRATOR",
+          "body": "Verified: bun run build + bun run test:cli:core + bun run test:core; require-clean now ignores untracked files per AGENTS.md clean definition."
+        }
+      ],
+      "commit": {
+        "hash": "79d83b850721035039a32f990950f03d8528f768",
+        "message": "✅ KBKDVP workflow: require-clean ignores untracked"
+      },
+      "depends_on": [],
+      "description": "Fix mismatch between policy definition of clean (ignores untracked) and guard/ensureGitClean behavior; rebuild TypeScript dist so repo-local CLI output matches src changes (help/quickstart/work start).",
+      "dirty": false,
+      "doc": "## Summary\n\n\n## Scope\n\n\n## Plan\n\n1) Добавить в core утилиту для “tracked-only” dirty check (без untracked).\n2) Перевести guard commit --require-clean и ensureGitClean на tracked-only проверку, чтобы соответствовать AGENTS.md (clean = без untracked).\n3) Пересобрать dist (bun run build), чтобы node packages/agentplane/bin/agentplane.js отражал изменения src (help/quickstart/work start).\n4) Прогнать тесты: bun run test:cli:core (минимум) + при необходимости test:core.\n5) Обновить Verification и закрыть задачу; экспортировать snapshot (task export) если требуется.\n\n## Risks\n\n\n## Verification\n\n### Plan\n\n### Results\n\n<!-- BEGIN VERIFICATION RESULTS -->\n#### 2026-02-07T10:45:48.804Z — VERIFY — ok\n\nBy: ORCHESTRATOR\n\nNote: Tests + dist build\n\nDetails:\n\n- bun run build (tsc -b)\\n- bun run test:cli:core: PASS\\n- bun run test:core: PASS\\n- CLI help now shows: work start ... [--worktree]\n\n<!-- END VERIFICATION RESULTS -->\n\n## Rollback Plan",
+      "doc_updated_at": "2026-02-07T10:47:39.272Z",
+      "doc_updated_by": "ORCHESTRATOR",
+      "doc_version": 2,
+      "events": [
+        {
+          "at": "2026-02-07T10:40:59.652Z",
+          "author": "ORCHESTRATOR",
+          "from": "TODO",
+          "note": "Start: Align --require-clean semantics with AGENTS.md clean definition; rebuild dist to keep repo-local CLI output consistent.",
+          "to": "DOING",
+          "type": "status"
+        },
+        {
+          "at": "2026-02-07T10:45:48.804Z",
+          "author": "ORCHESTRATOR",
+          "note": "Tests + dist build",
+          "state": "ok",
+          "type": "verify"
+        },
+        {
+          "at": "2026-02-07T10:47:39.272Z",
+          "author": "ORCHESTRATOR",
+          "from": "DOING",
+          "note": "Verified: bun run build + bun run test:cli:core + bun run test:core; require-clean now ignores untracked files per AGENTS.md clean definition.",
+          "to": "DONE",
+          "type": "status"
+        }
+      ],
+      "id": "202602071040-KBKDVP",
+      "id_source": "generated",
+      "owner": "ORCHESTRATOR",
+      "plan_approval": {
+        "note": "Approved by USER in chat (2026-02-07).",
+        "state": "approved",
+        "updated_at": "2026-02-07T10:40:55.112Z",
+        "updated_by": "ORCHESTRATOR"
+      },
+      "priority": "high",
+      "status": "DONE",
+      "tags": [
+        "workflow"
+      ],
+      "title": "Guard --require-clean: ignore untracked + rebuild dist",
+      "verification": {
+        "note": "Tests + dist build",
+        "state": "ok",
+        "updated_at": "2026-02-07T10:45:48.804Z",
         "updated_by": "ORCHESTRATOR"
       },
       "verify": []

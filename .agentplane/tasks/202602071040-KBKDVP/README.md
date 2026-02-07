@@ -1,7 +1,7 @@
 ---
 id: "202602071040-KBKDVP"
 title: "Guard --require-clean: ignore untracked + rebuild dist"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -18,11 +18,16 @@ verification:
   updated_at: "2026-02-07T10:45:48.804Z"
   updated_by: "ORCHESTRATOR"
   note: "Tests + dist build"
-commit: null
+commit:
+  hash: "79d83b850721035039a32f990950f03d8528f768"
+  message: "✅ KBKDVP workflow: require-clean ignores untracked"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Align --require-clean semantics with AGENTS.md clean definition; rebuild dist to keep repo-local CLI output consistent."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run build + bun run test:cli:core + bun run test:core; require-clean now ignores untracked files per AGENTS.md clean definition."
 events:
   -
     type: "status"
@@ -37,8 +42,15 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Tests + dist build"
+  -
+    type: "status"
+    at: "2026-02-07T10:47:39.272Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run build + bun run test:cli:core + bun run test:core; require-clean now ignores untracked files per AGENTS.md clean definition."
 doc_version: 2
-doc_updated_at: "2026-02-07T10:45:48.807Z"
+doc_updated_at: "2026-02-07T10:47:39.272Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Fix mismatch between policy definition of clean (ignores untracked) and guard/ensureGitClean behavior; rebuild TypeScript dist so repo-local CLI output matches src changes (help/quickstart/work start)."
 id_source: "generated"
