@@ -138,6 +138,15 @@ export async function cmdTaskNew(opts: {
         )}\n`,
       );
     }
+    const hasSpike = flags.tags.some((tag) => tag.trim().toLowerCase() === "spike");
+    const hasImplementationTags = requiresVerify(flags.tags, ctx.config.tasks.verify.required_tags);
+    if (hasSpike && hasImplementationTags) {
+      process.stderr.write(
+        `${warnMessage(
+          "spike is combined with code/backend/frontend tags; consider splitting spike vs implementation tasks",
+        )}\n`,
+      );
+    }
 
     await ctx.taskBackend.writeTask(task);
     process.stdout.write(`${taskId}\n`);

@@ -5,10 +5,11 @@ import {
   successMessage,
   unknownEntityMessage,
   usageMessage,
+  warnMessage,
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { dedupeStrings, normalizeDependsOnInput, toStringArray } from "./shared.js";
+import { dedupeStrings, normalizeDependsOnInput, requiresVerify, toStringArray } from "./shared.js";
 
 export const TASK_UPDATE_USAGE = "Usage: agentplane task update <task-id> [flags]";
 export const TASK_UPDATE_USAGE_EXAMPLE =
@@ -143,6 +144,16 @@ export async function cmdTaskUpdate(opts: {
     const existingTags = flags.replaceTags ? [] : dedupeStrings(toStringArray(next.tags));
     const mergedTags = dedupeStrings([...existingTags, ...flags.tags]);
     next.tags = mergedTags;
+
+    const hasSpike = mergedTags.some((tag) => tag.trim().toLowerCase() === "spike");
+    const hasImplementationTags = requiresVerify(mergedTags, ctx.config.tasks.verify.required_tags);
+    if (hasSpike && hasImplementationTags) {
+      process.stderr.write(
+        `${warnMessage(
+          "spike is combined with code/backend/frontend tags; consider splitting spike vs implementation tasks",
+        )}\n`,
+      );
+    }
 
     const existingDepends = flags.replaceDependsOn
       ? []
