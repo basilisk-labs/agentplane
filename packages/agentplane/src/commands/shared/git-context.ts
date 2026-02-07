@@ -145,6 +145,8 @@ export class GitContext {
     await execFileAsync("git", args, {
       cwd: this.gitRoot,
       env: opts.env ?? gitEnv(),
+      // Commit hooks can produce large output (lint/test logs).
+      maxBuffer: 50 * 1024 * 1024,
     });
     // Invalidate memoized values: commit updates HEAD and working tree state.
     this.memo.status = undefined;
