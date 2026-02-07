@@ -412,31 +412,13 @@ describe("commands/workflow", () => {
     expect(rejected).toContain('note: "Nope"');
   });
 
-  it("task new enforces verify requirements and writes tasks", async () => {
+  it("task new writes tasks without requiring verify commands", async () => {
     const root = await makeRepo();
-    await expect(
-      cmdTaskNew({
-        cwd: root,
-        args: ["--title", "Title", "--description", "Desc", "--owner", "CODER", "--tag", "backend"],
-      }),
-    ).rejects.toMatchObject({ code: "E_IO" });
-
     const io = captureStdIO();
     try {
       const code = await cmdTaskNew({
         cwd: root,
-        args: [
-          "--title",
-          "Title",
-          "--description",
-          "Desc",
-          "--owner",
-          "CODER",
-          "--tag",
-          "backend",
-          "--verify",
-          "bun run test",
-        ],
+        args: ["--title", "Title", "--description", "Desc", "--owner", "CODER", "--tag", "backend"],
       });
       expect(code).toBe(0);
       expect(io.stdout.trim()).toMatch(/^\d{12}-[A-Z0-9]{4,}$/);
@@ -470,29 +452,35 @@ describe("commands/workflow", () => {
     spy.mockRestore();
   });
 
-  it("task add rejects duplicates and missing verify for required tags", async () => {
+  it("task add rejects duplicates", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-X1Y2";
     await addTask(root, taskId);
 
-    await expect(
-      cmdTaskAdd({
-        cwd: root,
-        args: [
-          "202602050900-X1Y3",
-          "--title",
-          "Task",
-          "--description",
-          "Desc",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "backend",
-        ],
-      }),
-    ).rejects.toMatchObject({ code: "E_IO" });
+    {
+      const io = captureStdIO();
+      try {
+        const code = await cmdTaskAdd({
+          cwd: root,
+          args: [
+            "202602050900-X1Y3",
+            "--title",
+            "Task",
+            "--description",
+            "Desc",
+            "--priority",
+            "med",
+            "--owner",
+            "CODER",
+            "--tag",
+            "backend",
+          ],
+        });
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
 
     await expect(
       cmdTaskAdd({
@@ -558,17 +546,23 @@ describe("commands/workflow", () => {
     spy.mockRestore();
   });
 
-  it("task update replaces tags/depends/verify and validates verify requirement", async () => {
+  it("task update replaces tags/depends/verify", async () => {
     const root = await makeRepo();
     const taskId = "202602050900-Q1R2";
     await addTask(root, taskId);
 
-    await expect(
-      cmdTaskUpdate({
-        cwd: root,
-        args: [taskId, "--replace-tags", "--tag", "backend"],
-      }),
-    ).rejects.toMatchObject({ code: "E_IO" });
+    {
+      const io = captureStdIO();
+      try {
+        const code = await cmdTaskUpdate({
+          cwd: root,
+          args: [taskId, "--replace-tags", "--tag", "backend"],
+        });
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
 
     const io = captureStdIO();
     try {

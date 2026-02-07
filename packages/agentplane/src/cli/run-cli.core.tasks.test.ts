@@ -644,7 +644,7 @@ describe("runCli", () => {
     expect(task.frontmatter.verify).toEqual(["bun run test"]);
   });
 
-  it("task update requires verify commands for code tags", async () => {
+  it("task update allows code tags without verify commands", async () => {
     const root = await mkGitRepoRoot();
     const ioNew = captureStdIO();
     let taskId = "";
@@ -672,11 +672,14 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["task", "update", taskId, "--tag", "code", "--root", root]);
-      expect(code).toBe(4);
-      expect(io.stderr).toContain("verify commands are required");
+      expect(code).toBe(0);
     } finally {
       io.restore();
     }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.tags).toEqual(["docs", "code"]);
+    expect(task.frontmatter.verify).toEqual([]);
   });
 
   it("task update rejects missing and unknown flags", async () => {

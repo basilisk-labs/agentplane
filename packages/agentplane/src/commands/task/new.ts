@@ -3,7 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { missingValueMessage, usageMessage, backendNotSupportedMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { normalizeDependsOnInput, nowIso, requiresVerify } from "./shared.js";
+import { normalizeDependsOnInput, nowIso } from "./shared.js";
 
 type TaskNewFlags = {
   title?: string;
@@ -125,16 +125,6 @@ export async function cmdTaskNew(opts: {
       doc_updated_by: flags.owner,
       id_source: "generated",
     };
-    if (
-      requiresVerify(flags.tags, ctx.config.tasks.verify.required_tags) &&
-      flags.verify.length === 0
-    ) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: "Missing verify commands for tasks with code/backend/frontend tags (use --verify)",
-      });
-    }
     await ctx.taskBackend.writeTask(task);
     process.stdout.write(`${taskId}\n`);
     return 0;

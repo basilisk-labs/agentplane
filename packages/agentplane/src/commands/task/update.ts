@@ -8,7 +8,7 @@ import {
 } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { dedupeStrings, normalizeDependsOnInput, requiresVerify, toStringArray } from "./shared.js";
+import { dedupeStrings, normalizeDependsOnInput, toStringArray } from "./shared.js";
 
 export const TASK_UPDATE_USAGE = "Usage: agentplane task update <task-id> [flags]";
 export const TASK_UPDATE_USAGE_EXAMPLE =
@@ -153,17 +153,6 @@ export async function cmdTaskUpdate(opts: {
     const existingVerify = flags.replaceVerify ? [] : dedupeStrings(toStringArray(next.verify));
     const mergedVerify = dedupeStrings([...existingVerify, ...flags.verify]);
     next.verify = mergedVerify;
-
-    if (
-      requiresVerify(mergedTags, ctx.config.tasks.verify.required_tags) &&
-      mergedVerify.length === 0
-    ) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: "verify commands are required for tasks with code/backend/frontend tags",
-      });
-    }
 
     await ctx.taskBackend.writeTask(next);
     process.stdout.write(`${successMessage("updated", flags.taskId)}\n`);

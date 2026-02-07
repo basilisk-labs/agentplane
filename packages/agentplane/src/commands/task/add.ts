@@ -3,13 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { missingValueMessage, usageMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import {
-  dedupeStrings,
-  normalizeDependsOnInput,
-  normalizeTaskStatus,
-  nowIso,
-  requiresVerify,
-} from "./shared.js";
+import { dedupeStrings, normalizeDependsOnInput, normalizeTaskStatus, nowIso } from "./shared.js";
 
 export const TASK_ADD_USAGE =
   "Usage: agentplane task add <task-id> [<task-id> ...] --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]";
@@ -153,13 +147,6 @@ export async function cmdTaskAdd(opts: {
     const dependsOn = dedupeStrings(flags.dependsOn);
     const verify = dedupeStrings(flags.verify);
     const docUpdatedBy = (flags.commentAuthor ?? "").trim() || flags.owner;
-    if (requiresVerify(tags, ctx.config.tasks.verify.required_tags) && verify.length === 0) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: "verify commands are required for tasks with code/backend/frontend tags",
-      });
-    }
 
     const tasks: TaskData[] = flags.taskIds.map((taskId) => ({
       id: taskId,
