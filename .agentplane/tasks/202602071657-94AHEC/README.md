@@ -1,7 +1,7 @@
 ---
 id: "202602071657-94AHEC"
 title: "CLI: task new should not require --verify for code tags"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-07T17:26:37.449Z"
   updated_by: "CODER"
   note: "task new/add/update no longer require verify commands for code/backend/frontend tags; bun run test:agentplane + bun run test:cli:core."
-commit: null
+commit:
+  hash: "c9c18c20623d1dca7de36ea04557ae6b7cc55f3b"
+  message: "✅ 94AHEC cli: make verify commands optional"
 comments:
   -
     author: "CODER"
     body: "Start: relax task new/add/update so code-tag tasks do not require --verify commands."
+  -
+    author: "CODER"
+    body: "Verified: task new/add/update no longer require verify commands for code/backend/frontend tags; tests: bun run test:agentplane, bun run test:cli:core."
 doc_version: 2
-doc_updated_at: "2026-02-07T17:26:37.451Z"
+doc_updated_at: "2026-02-07T17:27:24.421Z"
 doc_updated_by: "CODER"
 description: "Relax task new validation: --verify remains optional; do not hard-require it by tags."
 ---
