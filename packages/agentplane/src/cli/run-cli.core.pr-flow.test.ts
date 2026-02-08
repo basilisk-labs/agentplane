@@ -1266,7 +1266,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["integrate"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane integrate");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane integrate");
     } finally {
       io.restore();
     }
@@ -1308,7 +1309,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["integrate", taskId, "--merge-strategy", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane integrate");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane integrate");
     } finally {
       io.restore();
     }
@@ -1319,7 +1321,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["integrate", "202601010101-ABCDEF", "extra"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane integrate");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane integrate");
     } finally {
       io.restore();
     }
@@ -1330,7 +1333,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["integrate", "202601010101-ABCDEF", "--nope"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane integrate");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane integrate");
     } finally {
       io.restore();
     }

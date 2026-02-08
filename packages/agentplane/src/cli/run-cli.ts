@@ -112,6 +112,7 @@ import {
   prSpec,
   prUpdateSpec,
 } from "../commands/pr/pr.command.js";
+import { integrateSpec, makeRunIntegrateHandler } from "../commands/integrate.command.js";
 import {
   BLOCK_USAGE,
   BLOCK_USAGE_EXAMPLE,
@@ -126,8 +127,6 @@ import {
   GUARD_COMMIT_USAGE,
   GUARD_COMMIT_USAGE_EXAMPLE,
   HOOK_NAMES,
-  INTEGRATE_USAGE,
-  INTEGRATE_USAGE_EXAMPLE,
   START_USAGE,
   START_USAGE_EXAMPLE,
   TASK_DOC_SET_USAGE,
@@ -148,7 +147,6 @@ import {
   cmdHooksInstall,
   cmdHooksRun,
   cmdHooksUninstall,
-  cmdIntegrate,
   cmdReady,
   cmdStart,
   cmdTaskAdd,
@@ -1345,6 +1343,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prUpdateSpec, noop);
       registry.register(prCheckSpec, noop);
       registry.register(prNoteSpec, noop);
+      registry.register(integrateSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1435,6 +1434,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prUpdateSpec, makeRunPrUpdateHandler(getCtx));
       registry.register(prCheckSpec, makeRunPrCheckHandler(getCtx));
       registry.register(prNoteSpec, makeRunPrNoteHandler(getCtx));
+      registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);
@@ -2358,102 +2358,6 @@ export async function runCli(argv: string[]): Promise<number> {
         rootOverride: globals.root,
         taskId: parsed.taskId,
         args: parsed.args,
-      });
-    }
-
-    if (namespace === "integrate") {
-      const taskId = command;
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
-        });
-      }
-      let branch: string | undefined;
-      let base: string | undefined;
-      let mergeStrategy: "squash" | "merge" | "rebase" = "squash";
-      let runVerify = false;
-      let dryRun = false;
-      let quiet = false;
-
-      for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
-        if (!arg) continue;
-        if (arg === "--branch") {
-          const next = args[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
-            });
-          branch = next;
-          i++;
-          continue;
-        }
-        if (arg === "--base") {
-          const next = args[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
-            });
-          base = next;
-          i++;
-          continue;
-        }
-        if (arg === "--merge-strategy") {
-          const next = args[i + 1];
-          if (next !== "squash" && next !== "merge" && next !== "rebase") {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
-            });
-          }
-          mergeStrategy = next;
-          i++;
-          continue;
-        }
-        if (arg === "--run-verify") {
-          runVerify = true;
-          continue;
-        }
-        if (arg === "--dry-run") {
-          dryRun = true;
-          continue;
-        }
-        if (arg === "--quiet") {
-          quiet = true;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
-          });
-        }
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(INTEGRATE_USAGE, INTEGRATE_USAGE_EXAMPLE),
-        });
-      }
-
-      return await cmdIntegrate({
-        ctx: await getCtx("integrate"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId,
-        branch,
-        base,
-        mergeStrategy,
-        runVerify,
-        dryRun,
-        quiet,
       });
     }
 
