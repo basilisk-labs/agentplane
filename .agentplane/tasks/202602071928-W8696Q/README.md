@@ -1,7 +1,7 @@
 ---
 id: "202602071928-W8696Q"
 title: "CLI2-055: Migrate scenario list/info/run to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:10:53.885Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:12:50.251Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated scenario list/info/run to cli2 with spec-derived parsing/help/usage and routed via cli2 registry. Refactored scenario implementation to accept parsed ids (cmdScenarioListParsed/cmdScenarioInfoParsed/cmdScenarioRunParsed) and updated run-cli scenario tests for new E_USAGE output/help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate scenario list/info/run to cli2 with spec-derived parsing/help/usage; refactor scenario implementations to accept parsed ids; update run-cli scenario tests for new E_USAGE output/help hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:08.789Z"
+doc_updated_at: "2026-02-08T04:12:50.252Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `scenario list/info/run`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:recipes
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:12:50.251Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated scenario list/info/run to cli2 with spec-derived parsing/help/usage and routed via cli2 registry. Refactored scenario implementation to accept parsed ids (cmdScenarioListParsed/cmdScenarioInfoParsed/cmdScenarioRunParsed) and updated run-cli scenario tests for new E_USAGE output/help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:10:54.023Z, excerpt_hash=sha256:49a21b4783624e46a2b558687273ceab46dfe2bee43a66b6c9c72eba5cd63609
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

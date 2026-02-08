@@ -245,7 +245,10 @@ describe("runCli scenario", () => {
     try {
       const code = await runCli(["scenario", "list", "extra"]);
       expect(code).toBe(2);
-      expect(ioExtra.stderr).toContain("Usage: agentplane scenario");
+      expect(ioExtra.stderr).toContain("Unexpected argument: extra");
+      expect(ioExtra.stderr).toContain("Usage:");
+      expect(ioExtra.stderr).toContain("agentplane scenario list");
+      expect(ioExtra.stderr).toContain("agentplane help scenario list --compact");
     } finally {
       ioExtra.restore();
     }
@@ -258,7 +261,10 @@ describe("runCli scenario", () => {
     try {
       const code = await runCli(["scenario", "info", "--root", root]);
       expect(code).toBe(2);
-      expect(ioInfo.stderr).toContain("Usage: agentplane scenario info");
+      expect(ioInfo.stderr).toContain("Missing required argument");
+      expect(ioInfo.stderr).toContain("Usage:");
+      expect(ioInfo.stderr).toContain("agentplane scenario info");
+      expect(ioInfo.stderr).toContain("agentplane help scenario info --compact");
     } finally {
       ioInfo.restore();
     }
@@ -267,7 +273,10 @@ describe("runCli scenario", () => {
     try {
       const code = await runCli(["scenario", "run", "--root", root]);
       expect(code).toBe(2);
-      expect(ioRun.stderr).toContain("Usage: agentplane scenario run");
+      expect(ioRun.stderr).toContain("Missing required argument");
+      expect(ioRun.stderr).toContain("Usage:");
+      expect(ioRun.stderr).toContain("agentplane scenario run");
+      expect(ioRun.stderr).toContain("agentplane help scenario run --compact");
     } finally {
       ioRun.restore();
     }

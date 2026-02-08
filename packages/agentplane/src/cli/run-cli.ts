@@ -82,6 +82,9 @@ import {
 } from "../commands/backend.js";
 import { cmdRecipes } from "../commands/recipes.js";
 import { cmdScenario } from "../commands/scenario.js";
+import { scenarioListSpec, runScenarioList } from "../commands/scenario/list.command.js";
+import { scenarioInfoSpec, runScenarioInfo } from "../commands/scenario/info.command.js";
+import { scenarioRunSpec, runScenarioRun } from "../commands/scenario/run.command.js";
 import {
   BLOCK_USAGE,
   BLOCK_USAGE_EXAMPLE,
@@ -1321,6 +1324,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(recipesExplainSpec, noop);
       registry.register(recipesRemoveSpec, noop);
       registry.register(recipesCachePruneSpec, noop);
+      registry.register(scenarioListSpec, noop);
+      registry.register(scenarioInfoSpec, noop);
+      registry.register(scenarioRunSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1393,6 +1399,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(recipesExplainSpec, runRecipesExplain);
       registry.register(recipesRemoveSpec, runRecipesRemove);
       registry.register(recipesCachePruneSpec, runRecipesCachePrune);
+      registry.register(scenarioListSpec, runScenarioList);
+      registry.register(scenarioInfoSpec, runScenarioInfo);
+      registry.register(scenarioRunSpec, runScenarioRun);
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);

@@ -172,6 +172,13 @@ async function writeScenarioReport(opts: {
 }
 
 async function cmdScenarioList(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  return await cmdScenarioListParsed(opts);
+}
+
+export async function cmdScenarioListParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<number> {
   try {
     const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const entries: { recipeId: string; scenarioId: string; summary?: string }[] = [];
@@ -239,6 +246,26 @@ async function cmdScenarioInfo(opts: {
         message: usageMessage(SCENARIO_INFO_USAGE, SCENARIO_INFO_USAGE_EXAMPLE),
       });
     }
+    return await cmdScenarioInfoParsed({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      recipeId,
+      scenarioId,
+    });
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "scenario info", root: opts.rootOverride ?? null });
+  }
+}
+
+export async function cmdScenarioInfoParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+  recipeId: string;
+  scenarioId: string;
+}): Promise<number> {
+  const { recipeId, scenarioId } = opts;
+  try {
     const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
     if (!entry) {
@@ -356,6 +383,34 @@ async function cmdScenarioRun(opts: {
         message: usageMessage(SCENARIO_RUN_USAGE, SCENARIO_RUN_USAGE_EXAMPLE),
       });
     }
+    return await cmdScenarioRunParsed({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      recipeId,
+      scenarioId,
+      resolved,
+    });
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapCoreError(err, { command: "scenario run", root: opts.rootOverride ?? null });
+  }
+}
+
+export async function cmdScenarioRunParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+  recipeId: string;
+  scenarioId: string;
+  resolved?: Awaited<ReturnType<typeof resolveProject>>;
+}): Promise<number> {
+  const resolved =
+    opts.resolved ??
+    (await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    }));
+  const { recipeId, scenarioId } = opts;
+  try {
     const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
     if (!entry) {
