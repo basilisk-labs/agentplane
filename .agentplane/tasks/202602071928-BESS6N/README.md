@@ -1,7 +1,7 @@
 ---
 id: "202602071928-BESS6N"
 title: "CLI2-056: Migrate backend sync + sync alias to cli2"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:24:23.690Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: Migrated backend sync + sync alias to cli2 specs; ran bun run typecheck, bun run lint, bun run test:cli, and bun run test."
-commit: null
+commit:
+  hash: "3c170c6c31ad6197a138a23fa7e768df845b3c25"
+  message: "✅ BESS6N cli: migrate backend sync + sync alias to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate backend sync and sync alias to cli2 with spec-derived parsing/help/usage; refactor backend commands to accept parsed flags entrypoints; update run-cli tests accordingly."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated backend sync + sync alias to cli2 specs; removed manual argv parsing; updated run-cli routing and added sync alias coverage. Evidence: bun run typecheck, bun run lint, bun run test:cli, bun run test."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:24:23.691Z"
+doc_updated_at: "2026-02-08T04:26:47.875Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `backend sync` and top-level `sync` alias."
 ---
