@@ -23,6 +23,7 @@ import { parseCommandArgv } from "./spec/parse.js";
 import { helpSpec } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
+import { COMMANDS } from "./run-cli/command-catalog.js";
 
 type ParsedArgs = {
   help: boolean;
@@ -126,6 +127,28 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
     rest.push(arg);
   }
   return { globals: { help, version, noUpdateCheck, root, jsonErrors, allowNetwork }, rest };
+}
+
+type CatalogMatch = { entry: (typeof COMMANDS)[number]; consumed: number };
+
+function matchCommandCatalog(tokens: readonly string[]): CatalogMatch | null {
+  let best: CatalogMatch | null = null;
+  for (const entry of COMMANDS) {
+    const id = entry.spec.id;
+    if (tokens.length < id.length) continue;
+    let ok = true;
+    for (const [i, seg] of id.entries()) {
+      if (tokens[i] !== seg) {
+        ok = false;
+        break;
+      }
+    }
+    if (!ok) continue;
+    if (!best || id.length > best.consumed) {
+      best = { entry, consumed: id.length };
+    }
+  }
+  return best;
 }
 
 function writeError(err: CliError, jsonErrors: boolean): void {
@@ -339,8 +362,13 @@ export async function runCli(argv: string[]): Promise<number> {
       return await runCli2HelpFast(rest);
     }
 
+    const matched = matchCommandCatalog(rest);
+
     const cwd = process.cwd();
-    const resolved = await maybeResolveProject({ cwd, rootOverride: globals.root });
+    const resolved =
+      matched?.entry.needsProject === false
+        ? null
+        : await maybeResolveProject({ cwd, rootOverride: globals.root });
     if (resolved) {
       await loadDotEnv(resolved.gitRoot);
     }
@@ -348,7 +376,7 @@ export async function runCli(argv: string[]): Promise<number> {
     // `require_network=true` means "no network without explicit approval".
     // Update-check is an optional network call, so it must be gated after config load.
     let skipUpdateCheckForPolicy = true;
-    if (resolved) {
+    if (resolved && matched?.entry.needsConfig !== false) {
       try {
         const loaded = await loadConfig(resolved.agentplaneDir);
         const requireNetwork = loaded.config.agents?.approvals.require_network === true;
@@ -361,7 +389,8 @@ export async function runCli(argv: string[]): Promise<number> {
     }
     await maybeWarnOnUpdate({
       currentVersion: getVersion(),
-      skip: globals.noUpdateCheck || skipUpdateCheckForPolicy,
+      skip:
+        globals.noUpdateCheck || skipUpdateCheckForPolicy || matched?.entry.needsConfig === false,
       jsonErrors: globals.jsonErrors,
     });
 
@@ -374,10 +403,20 @@ export async function runCli(argv: string[]): Promise<number> {
         throw mapCoreError(err, { command: commandForErrorContext, root: globals.root ?? null });
       }
     };
+    const getCtxOrThrow = async (commandForErrorContext: string): Promise<CommandContext> => {
+      if (matched?.entry.needsTaskContext === false) {
+        throw new CliError({
+          exitCode: 1,
+          code: "E_INTERNAL",
+          message: `Internal error: command does not require task context but attempted to load it: ${commandForErrorContext}`,
+        });
+      }
+      return await getCtx(commandForErrorContext);
+    };
 
     // cli2 command routing (single router).
     const { buildRegistry } = await import("./run-cli/registry.run.js");
-    const registry = buildRegistry(getCtx);
+    const registry = buildRegistry(getCtxOrThrow);
 
     const match = registry.match(rest);
     if (match) {

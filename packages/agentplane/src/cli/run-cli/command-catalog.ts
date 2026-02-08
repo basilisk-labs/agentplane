@@ -101,29 +101,76 @@ export type RunDeps = {
 export type CommandEntry = {
   spec: CommandSpec<unknown>;
   load: (deps: RunDeps) => Promise<CommandHandler<unknown>>;
+  needsProject: boolean;
+  needsConfig: boolean;
+  needsTaskContext: boolean;
 };
 
 function entry<TParsed>(
   spec: CommandSpec<TParsed>,
   load: (deps: RunDeps) => Promise<CommandHandler<TParsed>>,
+  meta?: Partial<Pick<CommandEntry, "needsProject" | "needsConfig" | "needsTaskContext">>,
 ): CommandEntry {
   return {
     spec: spec as CommandSpec<unknown>,
     load: (deps) => load(deps) as Promise<CommandHandler<unknown>>,
+    needsProject: meta?.needsProject ?? true,
+    needsConfig: meta?.needsConfig ?? meta?.needsProject ?? true,
+    needsTaskContext: meta?.needsTaskContext ?? true,
   };
 }
 
 export const COMMANDS = [
-  entry(initSpec, () => import("./commands/init.js").then((m) => m.runInit)),
-  entry(upgradeSpec, () => import("../../commands/upgrade.command.js").then((m) => m.runUpgrade)),
-  entry(quickstartSpec, () => import("./commands/core.js").then((m) => m.runQuickstart)),
-  entry(roleSpec, () => import("./commands/core.js").then((m) => m.runRole)),
-  entry(agentsSpec, () => import("./commands/core.js").then((m) => m.runAgents)),
-  entry(configShowSpec, () => import("./commands/config.js").then((m) => m.runConfigShow)),
-  entry(configSetSpec, () => import("./commands/config.js").then((m) => m.runConfigSet)),
-  entry(modeGetSpec, () => import("./commands/config.js").then((m) => m.runModeGet)),
-  entry(modeSetSpec, () => import("./commands/config.js").then((m) => m.runModeSet)),
-  entry(ideSyncSpec, () => import("./commands/ide.js").then((m) => m.runIdeSync)),
+  entry(initSpec, () => import("./commands/init.js").then((m) => m.runInit), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(upgradeSpec, () => import("../../commands/upgrade.command.js").then((m) => m.runUpgrade), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(quickstartSpec, () => import("./commands/core.js").then((m) => m.runQuickstart), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(roleSpec, () => import("./commands/core.js").then((m) => m.runRole), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(agentsSpec, () => import("./commands/core.js").then((m) => m.runAgents), {
+    needsProject: true,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(configShowSpec, () => import("./commands/config.js").then((m) => m.runConfigShow), {
+    needsProject: true,
+    needsConfig: true,
+    needsTaskContext: false,
+  }),
+  entry(configSetSpec, () => import("./commands/config.js").then((m) => m.runConfigSet), {
+    needsProject: true,
+    needsConfig: true,
+    needsTaskContext: false,
+  }),
+  entry(modeGetSpec, () => import("./commands/config.js").then((m) => m.runModeGet), {
+    needsProject: true,
+    needsConfig: true,
+    needsTaskContext: false,
+  }),
+  entry(modeSetSpec, () => import("./commands/config.js").then((m) => m.runModeSet), {
+    needsProject: true,
+    needsConfig: true,
+    needsTaskContext: false,
+  }),
+  entry(ideSyncSpec, () => import("./commands/ide.js").then((m) => m.runIdeSync), {
+    needsProject: true,
+    needsConfig: true,
+    needsTaskContext: false,
+  }),
 
   entry(taskListSpec, (deps) =>
     import("../../commands/task/list.command.js").then((m) =>
