@@ -1,7 +1,7 @@
 ---
 id: "202602081437-XJXVKN"
 title: "MONO2: Decompose cli/run-cli/commands/init.ts"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-08T14:53:59.124Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: bun run typecheck PASS; bun run lint PASS; bun run test:full PASS (vitest, 704 tests). Refactor-only: split init command core into cli/run-cli/commands/init/* modules; preserved outputs and init-related tests."
-commit: null
+commit:
+  hash: "f54f9237551a4399c84ae90cabd07fdfc268769d"
+  message: "✨ XJXVKN cli: decompose init command core"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: split init command implementation into smaller modules under cli/run-cli/commands/init/ and keep behavior stable."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run typecheck PASS; bun run lint PASS; bun run test:full PASS (vitest, 704 tests). Refactor-only: extracted init command helpers into cli/run-cli/commands/init/* and kept init.ts as a thin orchestrator; behavior and init-related tests preserved."
 doc_version: 2
-doc_updated_at: "2026-02-08T14:53:59.125Z"
+doc_updated_at: "2026-02-08T14:55:48.161Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split cli/run-cli/commands/init.ts into smaller internal modules (prompts, file writes, git bootstrap, hooks, recipes validation) while preserving behavior and keeping init-related tests green."
 id_source: "generated"
