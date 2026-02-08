@@ -1,7 +1,7 @@
 ---
 id: "202602081238-XJ2RJJ"
 title: "Decompose backends/task-backend.ts"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-08T13:10:15.528Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: decomposed backends/task-backend.ts into task-backend/* modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
-commit: null
+commit:
+  hash: "88b20a69e766c001afdfd61ba00891408365db46"
+  message: "✨ XJ2RJJ backend: decompose task-backend.ts into modules"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose backends/task-backend.ts into modules while preserving the public API and keeping bun run test:full green."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: split backends/task-backend.ts into task-backend/* modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T13:10:15.530Z"
+doc_updated_at: "2026-02-08T13:12:15.017Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split packages/agentplane/src/backends/task-backend.ts into smaller modules (interfaces, local backend, redmine backend, shared validation/IO) with tests."
 id_source: "generated"
