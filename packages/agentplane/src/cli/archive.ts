@@ -6,7 +6,6 @@ import yauzl from "yauzl";
 
 import { CliError } from "../shared/errors.js";
 import { exitCodeForError } from "./exit-codes.js";
-import { usageMessage } from "./output.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -47,15 +46,13 @@ export function detectArchiveType(filePath: string): ArchiveType | null {
 export async function extractArchive(opts: {
   archivePath: string;
   destDir: string;
-  usage: string;
-  example?: string;
 }): Promise<void> {
   const archiveType = detectArchiveType(opts.archivePath);
   if (!archiveType) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: usageMessage(opts.usage, opts.example),
+      message: `Unsupported archive type: ${opts.archivePath} (expected .tar.gz, .tgz, or .zip)`,
     });
   }
   const issues = await validateArchive(opts.archivePath, archiveType);

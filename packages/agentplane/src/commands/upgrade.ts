@@ -8,22 +8,13 @@ import { backupPath, fileExists, getPathKind } from "../cli/fs-utils.js";
 import { downloadToFile, fetchJson } from "../cli/http.js";
 import { parseSha256Text, sha256File } from "../cli/checksum.js";
 import { extractArchive } from "../cli/archive.js";
-import {
-  invalidFieldMessage,
-  invalidValueMessage,
-  missingValueMessage,
-  requiredFieldMessage,
-  usageMessage,
-} from "../cli/output.js";
+import { invalidFieldMessage, invalidValueMessage, requiredFieldMessage } from "../cli/output.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
 import { CliError } from "../shared/errors.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
 
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
 const DEFAULT_UPGRADE_CHECKSUM_ASSET = "agentplane-upgrade.tar.gz.sha256";
-const UPGRADE_USAGE =
-  "Usage: agentplane upgrade [--tag <tag>] [--dry-run] [--no-backup] [--source <repo-url>] [--bundle <path|url>] [--checksum <path|url>] [--yes]";
-const UPGRADE_USAGE_EXAMPLE = "agentplane upgrade --tag v0.1.4 --dry-run";
 
 export type UpgradeFlags = {
   source?: string;
@@ -36,79 +27,6 @@ export type UpgradeFlags = {
   backup: boolean;
   yes: boolean;
 };
-
-function parseUpgradeFlags(args: string[]): UpgradeFlags {
-  const out: UpgradeFlags = { dryRun: false, backup: true, yes: false };
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (!arg.startsWith("--")) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(UPGRADE_USAGE, UPGRADE_USAGE_EXAMPLE),
-      });
-    }
-    if (arg === "--dry-run") {
-      out.dryRun = true;
-      continue;
-    }
-    if (arg === "--no-backup") {
-      out.backup = false;
-      continue;
-    }
-    if (arg === "--yes") {
-      out.yes = true;
-      continue;
-    }
-    const next = args[i + 1];
-    if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
-    }
-    switch (arg) {
-      case "--source": {
-        out.source = next;
-        break;
-      }
-      case "--tag": {
-        out.tag = next;
-        break;
-      }
-      case "--bundle": {
-        out.bundle = next;
-        break;
-      }
-      case "--checksum": {
-        out.checksum = next;
-        break;
-      }
-      case "--asset": {
-        out.asset = next;
-        break;
-      }
-      case "--checksum-asset": {
-        out.checksumAsset = next;
-        break;
-      }
-      default: {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(UPGRADE_USAGE, UPGRADE_USAGE_EXAMPLE),
-        });
-      }
-    }
-    i++;
-  }
-  if ((out.bundle && !out.checksum) || (!out.bundle && out.checksum)) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(UPGRADE_USAGE, UPGRADE_USAGE_EXAMPLE),
-    });
-  }
-  return out;
-}
 
 function parseGitHubRepo(source: string): { owner: string; repo: string } {
   const trimmed = source.trim();
@@ -156,21 +74,21 @@ function isAllowedUpgradePath(relPath: string): boolean {
   return relPath.startsWith(".agentplane/");
 }
 
-export async function cmdUpgrade(opts: {
-  cwd: string;
-  rootOverride?: string;
-  args: string[];
-}): Promise<number> {
-  const flags = parseUpgradeFlags(opts.args);
-  return await cmdUpgradeParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride, flags });
-}
-
 export async function cmdUpgradeParsed(opts: {
   cwd: string;
   rootOverride?: string;
   flags: UpgradeFlags;
 }): Promise<number> {
   const flags = opts.flags;
+  if ((flags.bundle && !flags.checksum) || (!flags.bundle && flags.checksum)) {
+    // Defensive: cli2 spec validate should prevent this, but keep invariant enforcement
+    // for any non-CLI callers.
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Options --bundle and --checksum must be provided together (or omitted together).",
+    });
+  }
 
   const resolved = await resolveProject({
     cwd: opts.cwd,
@@ -260,8 +178,6 @@ export async function cmdUpgradeParsed(opts: {
     await extractArchive({
       archivePath: bundlePath,
       destDir: extractRoot,
-      usage: UPGRADE_USAGE,
-      example: UPGRADE_USAGE_EXAMPLE,
     });
     const bundleRoot = await resolveUpgradeRoot(extractRoot);
 

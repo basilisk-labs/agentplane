@@ -1423,8 +1423,6 @@ export async function cmdRecipeInstall(opts: {
       await extractArchive({
         archivePath: sourcePath,
         destDir: tempRoot,
-        usage: RECIPE_INSTALL_USAGE,
-        example: RECIPE_INSTALL_USAGE_EXAMPLE,
       });
       const recipeRoot = await resolveRecipeRoot(tempRoot);
       const manifest = await readRecipeManifest(path.join(recipeRoot, "manifest.json"));
