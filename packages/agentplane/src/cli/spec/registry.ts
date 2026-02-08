@@ -1,5 +1,7 @@
 import type { CommandHandler, CommandId, CommandSpec, MatchResult } from "./spec.js";
 
+import { CliError } from "../../shared/errors.js";
+
 export class CommandRegistry {
   private readonly entries: {
     id: CommandId;
@@ -8,6 +10,14 @@ export class CommandRegistry {
   }[] = [];
 
   register<TParsed>(spec: CommandSpec<TParsed>, handler: CommandHandler<TParsed>) {
+    const key = formatCommandId(spec.id);
+    if (this.entries.some((e) => formatCommandId(e.id) === key)) {
+      throw new CliError({
+        exitCode: 1,
+        code: "E_INTERNAL",
+        message: `Duplicate command id registered: ${key}`,
+      });
+    }
     this.entries.push({
       id: spec.id,
       spec: spec as CommandSpec<unknown>,
