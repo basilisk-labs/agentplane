@@ -12,7 +12,14 @@ export function buildRegistry(
   const registry = new CommandRegistry();
   const getHelpJsonForDocs = () => makeHelpJsonFromSpecs(registry.list().map((e) => e.spec));
   const deps: RunDeps = { getCtx, getHelpJsonForDocs };
-  for (const entry of COMMANDS) registry.register(entry.spec, entry.run(deps));
+  for (const entry of COMMANDS) {
+    let loaded: ReturnType<(typeof entry)["load"]> | null = null;
+    registry.register(entry.spec, async (ctx, parsed) => {
+      loaded ??= entry.load(deps);
+      const handler = await loaded;
+      return await handler(ctx, parsed);
+    });
+  }
   registry.register(helpSpec, makeHelpHandler(registry));
   return registry;
 }

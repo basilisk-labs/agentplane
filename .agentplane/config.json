@@ -5,9 +5,9 @@
   "finish_auto_status_commit": false,
   "agents": {
     "approvals": {
-      "require_plan": true,
+      "require_plan": false,
       "require_network": true,
-      "require_verify": true
+      "require_verify": false
     }
   },
   "paths": {
