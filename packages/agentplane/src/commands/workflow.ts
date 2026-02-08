@@ -88,23 +88,7 @@ export {
   cmdBranchRemove,
 } from "./branch/index.js";
 
-export {
-  PR_OPEN_USAGE,
-  PR_OPEN_USAGE_EXAMPLE,
-  PR_UPDATE_USAGE,
-  PR_UPDATE_USAGE_EXAMPLE,
-  PR_CHECK_USAGE,
-  PR_CHECK_USAGE_EXAMPLE,
-  PR_NOTE_USAGE,
-  PR_NOTE_USAGE_EXAMPLE,
-  INTEGRATE_USAGE,
-  INTEGRATE_USAGE_EXAMPLE,
-  cmdPrOpen,
-  cmdPrUpdate,
-  cmdPrCheck,
-  cmdPrNote,
-  cmdIntegrate,
-} from "./pr/index.js";
+export { cmdPrOpen, cmdPrUpdate, cmdPrCheck, cmdPrNote, cmdIntegrate } from "./pr/index.js";
 
 export {
   GUARD_COMMIT_USAGE,
