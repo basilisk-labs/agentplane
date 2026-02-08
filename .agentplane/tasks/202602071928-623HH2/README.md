@@ -1,7 +1,7 @@
 ---
 id: "202602071928-623HH2"
 title: "CLI2-089: Migrate task plan lifecycle to cli2"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,27 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T07:12:06.067Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
+  state: "ok"
+  updated_at: "2026-02-08T07:14:41.993Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Ran: bun run typecheck; bun run test:cli:core."
+commit:
+  hash: "1a4a33eb73159b79a0f0f0355ed481bd49900298"
+  message: "🚧 623HH2 cli: migrate task plan lifecycle to cli2"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrating task plan set/approve/reject to cli2 specs, removing legacy parsing/dispatch, and aligning workflow + run-cli core tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated task plan set/approve/reject to cli2 specs, refactored plan logic to structured inputs, removed legacy task plan dispatch, and verified via typecheck + cli core tests."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:29.496Z"
+doc_updated_at: "2026-02-08T07:16:46.575Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task plan set/approve/reject` (leaf-level specs)."
 ---
@@ -82,6 +90,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T07:14:41.993Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Ran: bun run typecheck; bun run test:cli:core.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T07:12:25.393Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
