@@ -113,7 +113,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["start", "202601010101-ABCDEF", "--body", "x", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane start");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane start");
     } finally {
       io.restore();
     }
@@ -133,7 +134,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane start");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane start");
     } finally {
       io.restore();
     }
@@ -155,7 +157,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane start");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane start");
     } finally {
       io.restore();
     }
@@ -399,7 +402,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane start");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane start");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -1502,7 +1506,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane block");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane block");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -1516,7 +1521,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["block", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane block");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane block");
     } finally {
       io.restore();
     }
@@ -1538,7 +1544,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane block");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane block");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -1561,7 +1568,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane block");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane block");
     } finally {
       io.restore();
     }

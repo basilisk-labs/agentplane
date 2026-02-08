@@ -45,7 +45,7 @@ import { CliError, formatJsonError } from "../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { getVersion } from "../meta/version.js";
-import { parseBlock, parseFinish, parseStart, parseVerify } from "./parse/lifecycle.js";
+import { parseFinish, parseVerify } from "./parse/lifecycle.js";
 import { CommandRegistry } from "../cli2/registry.js";
 import { parseCommandArgv } from "../cli2/parse.js";
 import { helpSpec, makeHelpHandler } from "../cli2/help.js";
@@ -153,6 +153,8 @@ import {
 } from "../commands/pr/pr.command.js";
 import { integrateSpec, makeRunIntegrateHandler } from "../commands/integrate.command.js";
 import { commitSpec, makeRunCommitHandler } from "../commands/commit.command.js";
+import { startSpec, makeRunStartHandler } from "../commands/start.command.js";
+import { blockSpec, makeRunBlockHandler } from "../commands/block.command.js";
 import { hooksSpec, runHooks } from "../commands/hooks/hooks.command.js";
 import { hooksInstallSpec, runHooksInstall } from "../commands/hooks/install.command.js";
 import { hooksUninstallSpec, runHooksUninstall } from "../commands/hooks/uninstall.command.js";
@@ -171,23 +173,17 @@ import {
 } from "../commands/guard/suggest-allow.command.js";
 import { guardCommitSpec, makeRunGuardCommitHandler } from "../commands/guard/commit.command.js";
 import {
-  BLOCK_USAGE,
-  BLOCK_USAGE_EXAMPLE,
   BRANCH_BASE_USAGE,
   BRANCH_BASE_USAGE_EXAMPLE,
   FINISH_USAGE,
   FINISH_USAGE_EXAMPLE,
-  START_USAGE,
-  START_USAGE_EXAMPLE,
   VERIFY_USAGE,
   VERIFY_USAGE_EXAMPLE,
   WORK_START_USAGE,
   WORK_START_USAGE_EXAMPLE,
-  cmdBlock,
   cmdFinish,
   cmdHooksInstall,
   cmdReady,
-  cmdStart,
   cmdTaskDerive,
   cmdTaskNew,
   cmdVerify,
@@ -1348,6 +1344,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prNoteSpec, noop);
       registry.register(integrateSpec, noop);
       registry.register(commitSpec, noop);
+      registry.register(startSpec, noop);
+      registry.register(blockSpec, noop);
       registry.register(hooksSpec, noop);
       registry.register(hooksInstallSpec, noop);
       registry.register(hooksUninstallSpec, noop);
@@ -1500,6 +1498,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prNoteSpec, makeRunPrNoteHandler(getCtx));
       registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
       registry.register(commitSpec, makeRunCommitHandler(getCtx));
+      registry.register(startSpec, makeRunStartHandler(getCtx));
+      registry.register(blockSpec, makeRunBlockHandler(getCtx));
       registry.register(hooksSpec, runHooks);
       registry.register(hooksInstallSpec, runHooksInstall);
       registry.register(hooksUninstallSpec, runHooksUninstall);
@@ -1629,56 +1629,6 @@ export async function runCli(argv: string[]): Promise<number> {
         agent,
         slug,
         worktree,
-      });
-    }
-
-    if (namespace === "start") {
-      const parsed = parseStart({
-        taskIdToken: command,
-        args,
-        usage: { usage: START_USAGE, example: START_USAGE_EXAMPLE },
-      });
-      return await cmdStart({
-        ctx: await getCtx("start"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId: parsed.taskId,
-        author: parsed.author,
-        body: parsed.body,
-        commitFromComment: parsed.commitFromComment,
-        commitEmoji: parsed.commitEmoji,
-        commitAllow: parsed.commitAllow,
-        commitAutoAllow: parsed.commitAutoAllow,
-        commitAllowTasks: parsed.commitAllowTasks,
-        commitRequireClean: parsed.commitRequireClean,
-        confirmStatusCommit: parsed.confirmStatusCommit,
-        force: parsed.force,
-        quiet: parsed.quiet,
-      });
-    }
-
-    if (namespace === "block") {
-      const parsed = parseBlock({
-        taskIdToken: command,
-        args,
-        usage: { usage: BLOCK_USAGE, example: BLOCK_USAGE_EXAMPLE },
-      });
-      return await cmdBlock({
-        ctx: await getCtx("block"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId: parsed.taskId,
-        author: parsed.author,
-        body: parsed.body,
-        commitFromComment: parsed.commitFromComment,
-        commitEmoji: parsed.commitEmoji,
-        commitAllow: parsed.commitAllow,
-        commitAutoAllow: parsed.commitAutoAllow,
-        commitAllowTasks: parsed.commitAllowTasks,
-        commitRequireClean: parsed.commitRequireClean,
-        confirmStatusCommit: parsed.confirmStatusCommit,
-        force: parsed.force,
-        quiet: parsed.quiet,
       });
     }
 
