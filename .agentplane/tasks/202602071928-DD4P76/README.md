@@ -1,7 +1,7 @@
 ---
 id: "202602071928-DD4P76"
 title: "CLI2-052: Migrate recipes info/explain to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T02:49:21.776Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated recipes info/explain to cli2 with spec-derived parsing/help/usage and routed via cli2 registry. Refactored implementations to accept parsed args (cmdRecipeInfoParsed/cmdRecipeExplainParsed) and updated run-cli recipes tests for new E_USAGE output/help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:unit."
-commit: null
+commit:
+  hash: "cac38c27624eb9ea7025778cbb033a6527e957d7"
+  message: "✅ DD4P76 cli: migrate recipes info/explain to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate recipes info/explain to cli2 with spec-derived parsing/help/usage; refactor implementations to accept parsed args; update run-cli recipes tests accordingly."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: recipes info/explain are cli2-routed with spec-derived help/usage; implementations accept parsed args entrypoints; tests passing (typecheck/lint/format/test:cli:unit)."
 doc_version: 2
-doc_updated_at: "2026-02-08T02:49:21.777Z"
+doc_updated_at: "2026-02-08T02:49:49.028Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `recipes info` / `recipes explain`."
 ---
