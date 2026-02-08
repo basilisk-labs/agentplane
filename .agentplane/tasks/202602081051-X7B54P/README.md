@@ -1,7 +1,7 @@
 ---
 id: "202602081051-X7B54P"
 title: "CLI2-FULL-020: Decompose recipes monolith and remove legacy routing"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T11:17:35.962Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: removed recipes legacy CLI dispatch/parsers (cmdRecipes and parseRecipe* helpers), updated recipes tests to use cli2 specs + parsed command functions, and confirmed typecheck + cli core + fast tests pass."
-commit: null
+commit:
+  hash: "4301f76e5d24318cff758e2518c4b862be9f66ea"
+  message: "✨ X7B54P cli: remove recipes legacy parsing"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose commands/recipes.ts into focused modules, remove remaining legacy CLI routing/parsers, and keep behavior stable via tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: removed recipes legacy argv parsing/dispatch; deleted stale usage constants; recipes tests now parse via cli2 specs and call parsed impls; typecheck, lint, test:fast, and cli core tests all pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T11:17:35.963Z"
+doc_updated_at: "2026-02-08T11:23:20.007Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split commands/recipes.ts into per-command impl modules; remove remaining legacy CLI dispatch/parsers; keep behavior stable."
 id_source: "generated"
