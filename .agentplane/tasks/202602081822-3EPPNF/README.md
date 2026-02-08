@@ -1,7 +1,8 @@
 ---
 id: "202602081822-3EPPNF"
 title: "CLI: forbid duplicate command ids in CommandRegistry"
-status: "DOING"
+result_summary: "Reject duplicate CommandSpec ids"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-08T18:34:51.820Z"
   updated_by: "TESTER"
   note: "bun run lint; bun run test:agentplane; bun run typecheck"
-commit: null
+commit:
+  hash: "ff422a7237d1f145817d1633676d7ebe123abad3"
+  message: "✨ 3EPPNF cli: reject duplicate command ids"
 comments:
   -
     author: "CODER"
     body: "Start: Add duplicate-id guard to CommandRegistry.register and a unit test to prevent ambiguous routing/behavior."
+  -
+    author: "CODER"
+    body: "Verified: CommandRegistry.register now throws on duplicate command ids and a unit test covers it; lint, test:agentplane, and typecheck pass."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run lint; bun run test:agentplane; bun run typecheck"
+  -
+    type: "status"
+    at: "2026-02-08T18:36:36.780Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: CommandRegistry.register now throws on duplicate command ids and a unit test covers it; lint, test:agentplane, and typecheck pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T18:34:51.822Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-08T18:36:36.780Z"
+doc_updated_by: "CODER"
 description: "Add runtime guard in CommandRegistry.register() to reject duplicate spec.id; add unit test."
 id_source: "generated"
 ---
