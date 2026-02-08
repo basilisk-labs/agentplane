@@ -1,7 +1,7 @@
 ---
 id: "202602071928-HJ833H"
 title: "CLI2-084: Migrate task comment + set-status to cli2"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,27 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T06:01:02.473Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
+  state: "ok"
+  updated_at: "2026-02-08T06:05:26.389Z"
+  updated_by: "ORCHESTRATOR"
+  note: "typecheck: bun run typecheck\\ncli core: bun run test:cli:core\\nfast suite: bun run test:fast\\nResult: OK"
+commit:
+  hash: "361c40852799e1d13bc6fe55040bb7e869679d1f"
+  message: "🚧 HJ833H cli: migrate task comment/set-status to cli2"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrating task comment and task set-status to cli2 (spec-driven parsing + help). Will refactor implementations to take structured inputs and update run-cli core tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: task comment and task set-status migrated to cli2 spec-driven parsing/help; bun run typecheck; bun run test:cli:core; bun run test:fast; bun run lint."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:24.577Z"
+doc_updated_at: "2026-02-08T06:07:40.535Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task comment` and `task set-status`."
 ---
@@ -44,13 +52,7 @@ Out of scope:
 
 ## Plan
 
-1. Add a `CommandSpec` for the command (args/options/examples/notes).
-2. Wire it into the cli2 registry.
-3. Route execution to existing business logic (no argv parsing in command logic).
-4. Delete or bypass legacy parse helpers for this command.
-5. Update tests to assert:
-- spec-derived help includes all options
-- parse errors produce E_USAGE with compact usage
+Plan:\n1. Add cli2 specs for task comment and task set-status (args/options, including commit flags and policy toggles).\n2. Refactor command implementations to accept structured inputs (no argv parsing).\n3. Wire specs into cli2 registry and remove legacy dispatcher branches.\n4. Update unit tests for both direct command functions and run-cli core suites (including error wording changes from cli2 parser).\n5. Run bun run typecheck and bun run test:cli:core (plus bun run test:fast for hook parity).\n6. Record verification, commit implementation, finish task, and commit closure README.
 
 ## Risks
 
@@ -82,6 +84,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T06:05:26.389Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: typecheck: bun run typecheck\ncli core: bun run test:cli:core\nfast suite: bun run test:fast\nResult: OK
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T06:01:08.967Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
