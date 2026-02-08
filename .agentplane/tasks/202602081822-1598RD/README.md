@@ -1,7 +1,8 @@
 ---
 id: "202602081822-1598RD"
 title: "CLI: simplify/remove help-fast registry after lazy handlers"
-status: "DOING"
+result_summary: "Remove help-fast registry"
+status: "DONE"
 priority: "low"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-08T19:06:25.169Z"
   updated_by: "TESTER"
   note: "bun run lint; bun run test:cli:core; bun run typecheck"
-commit: null
+commit:
+  hash: "19c94a9ad15fef37608a526a49eb239e3c85a006"
+  message: "✨ 1598RD cli: drop help-fast registry"
 comments:
   -
     author: "CODER"
     body: "Start: Remove dedicated help-fast registry module now that handlers are lazy; route help through main registry without loading command context."
+  -
+    author: "CODER"
+    body: "Verified: Removed dedicated help-fast registry module; help path now routes through main registry with stub getCtx; updated contract test to assert registry covers command catalog; lint, cli core tests, and typecheck pass."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run lint; bun run test:cli:core; bun run typecheck"
+  -
+    type: "status"
+    at: "2026-02-08T19:07:01.911Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Removed dedicated help-fast registry module; help path now routes through main registry with stub getCtx; updated contract test to assert registry covers command catalog; lint, cli core tests, and typecheck pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T19:06:25.170Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-08T19:07:01.911Z"
+doc_updated_by: "CODER"
 description: "After lazy loading is in place, remove or simplify buildHelpFastRegistry (or keep it auto-generated) so there is no second manual registry list."
 id_source: "generated"
 ---
