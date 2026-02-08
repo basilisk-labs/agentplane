@@ -112,6 +112,7 @@ import {
   prUpdateSpec,
 } from "../commands/pr/pr.command.js";
 import { integrateSpec, makeRunIntegrateHandler } from "../commands/integrate.command.js";
+import { commitSpec, makeRunCommitHandler } from "../commands/commit.command.js";
 import {
   cleanupMergedSpec,
   cleanupSpec,
@@ -130,8 +131,6 @@ import {
   BLOCK_USAGE_EXAMPLE,
   BRANCH_BASE_USAGE,
   BRANCH_BASE_USAGE_EXAMPLE,
-  COMMIT_USAGE,
-  COMMIT_USAGE_EXAMPLE,
   FINISH_USAGE,
   FINISH_USAGE_EXAMPLE,
   HOOK_NAMES,
@@ -146,7 +145,6 @@ import {
   WORK_START_USAGE,
   WORK_START_USAGE_EXAMPLE,
   cmdBlock,
-  cmdCommit,
   cmdFinish,
   cmdHooksInstall,
   cmdHooksRun,
@@ -1344,6 +1342,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prCheckSpec, noop);
       registry.register(prNoteSpec, noop);
       registry.register(integrateSpec, noop);
+      registry.register(commitSpec, noop);
       registry.register(cleanupSpec, noop);
       registry.register(cleanupMergedSpec, noop);
       registry.register(guardSpec, noop);
@@ -1441,6 +1440,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prCheckSpec, makeRunPrCheckHandler(getCtx));
       registry.register(prNoteSpec, makeRunPrNoteHandler(getCtx));
       registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
+      registry.register(commitSpec, makeRunCommitHandler(getCtx));
       registry.register(cleanupSpec, runCleanup);
       registry.register(cleanupMergedSpec, makeRunCleanupMergedHandler(getCtx));
       registry.register(guardSpec, runGuard);
@@ -1985,126 +1985,6 @@ export async function runCli(argv: string[]): Promise<number> {
         agent,
         slug,
         worktree,
-      });
-    }
-
-    if (namespace === "commit") {
-      const taskId = command;
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
-        });
-      }
-      const allow: string[] = [];
-      let message = "";
-      let autoAllow = false;
-      let allowTasks = false;
-      let allowBase = false;
-      let allowPolicy = false;
-      let allowConfig = false;
-      let allowHooks = false;
-      let allowCI = false;
-      let requireClean = false;
-      let quiet = false;
-
-      for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
-        if (!arg) continue;
-        if (arg === "--allow") {
-          const next = args[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
-            });
-          allow.push(next);
-          i++;
-          continue;
-        }
-        if (arg === "-m" || arg === "--message") {
-          const next = args[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
-            });
-          message = next;
-          i++;
-          continue;
-        }
-        if (arg === "--auto-allow") {
-          autoAllow = true;
-          continue;
-        }
-        if (arg === "--allow-tasks") {
-          allowTasks = true;
-          continue;
-        }
-        if (arg === "--allow-base") {
-          allowBase = true;
-          continue;
-        }
-        if (arg === "--allow-policy") {
-          allowPolicy = true;
-          continue;
-        }
-        if (arg === "--allow-config") {
-          allowConfig = true;
-          continue;
-        }
-        if (arg === "--allow-hooks") {
-          allowHooks = true;
-          continue;
-        }
-        if (arg === "--allow-ci") {
-          allowCI = true;
-          continue;
-        }
-        if (arg === "--require-clean") {
-          requireClean = true;
-          continue;
-        }
-        if (arg === "--quiet") {
-          quiet = true;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
-          });
-        }
-      }
-
-      if (!message) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(COMMIT_USAGE, COMMIT_USAGE_EXAMPLE),
-        });
-      }
-
-      return await cmdCommit({
-        ctx: await getCtx("commit"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId,
-        message,
-        allow,
-        autoAllow,
-        allowTasks,
-        allowBase,
-        allowPolicy,
-        allowConfig,
-        allowHooks,
-        allowCI,
-        requireClean,
-        quiet,
       });
     }
 

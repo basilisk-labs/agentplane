@@ -759,7 +759,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["commit", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane commit");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane commit");
     } finally {
       io.restore();
     }
@@ -771,7 +772,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["commit", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane commit");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane commit");
     } finally {
       io.restore();
     }
@@ -791,7 +793,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane commit");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane commit");
     } finally {
       io.restore();
     }
