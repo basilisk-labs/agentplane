@@ -29,7 +29,7 @@ branch to the current branch and commits the install artifacts it creates.
 Non-interactive:
 
 ```bash
-agentplane init --yes --require-plan-approval yes --require-network-approval no
+agentplane init --workflow direct --backend local --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes
 ```
 
 ## Config
@@ -52,8 +52,8 @@ agentplane task doc set <task-id> --section Summary --text "..."
 
 ```bash
 agentplane start <task-id> --author CODER --body "Start: ..."
-agentplane verify <task-id>
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..."
+agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome"
 ```
 
 ## Branching (branch_pr)
@@ -80,3 +80,9 @@ agentplane recipes explain <id>
 agentplane scenario list
 agentplane scenario run <recipe:scenario>
 ```
+
+## CLI reference (generated)
+
+For the full, up-to-date command surface derived from the cli2 registry/spec, see:
+
+- [CLI reference (generated)](cli-reference.generated)

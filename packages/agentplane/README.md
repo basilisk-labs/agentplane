@@ -28,8 +28,8 @@ Create your first task and run the workflow:
 
 ```bash
 agentplane task new --title "First task" --description "Describe the change" --priority med --owner ORCHESTRATOR --tag docs
-agentplane verify <task-id>
-agentplane finish <task-id>
+agentplane verify <task-id> --ok --by ORCHESTRATOR --note "Verified"
+agentplane finish <task-id> --author ORCHESTRATOR --body "Verified: done" --result "First task completed"
 ```
 
 Prefer `npx` instead of a global install?
@@ -90,8 +90,8 @@ agentplane quickstart
 agentplane config show
 agentplane task list
 agentplane task new --title "..." --description "..." --priority med --owner ORCHESTRATOR --tag docs
-agentplane verify <task-id>
-agentplane finish <task-id>
+agentplane verify <task-id> --ok --by ORCHESTRATOR --note "Verified"
+agentplane finish <task-id> --author ORCHESTRATOR --body "Verified: done" --result "Task completed"
 agentplane recipes list
 ```
 

@@ -29,7 +29,10 @@ Config switch that chooses between `direct` and `branch_pr` workflows.
 
 ## Verify
 
-Running declared checks for a task via `agentplane`.
+Recording (and optionally executing) verification for a task.
+
+- `agentplane verify ...` records a verification outcome in the task README (`## Verification`).
+- In `branch_pr`, `agentplane integrate --run-verify` executes frontmatter `verify:` commands and appends output to `pr/verify.log`.
 
 ## Guard
 

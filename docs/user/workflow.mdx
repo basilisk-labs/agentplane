@@ -7,7 +7,7 @@ description: "How work moves from plan to completion in Agent Plane."
 
 1. **Plan**: create tasks and dependencies.
 2. **Start**: mark a task DOING with a structured comment.
-3. **Verify**: run required checks.
+3. **Verify**: run checks (if any) and record a verification outcome.
 4. **Finish**: mark DONE and attach commit metadata.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
@@ -21,14 +21,14 @@ For the full end-to-end story (intake to export) across both modes, see [Task li
 
 - One task per branch/worktree.
 - PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
-- Integration requires PR checks and verify logs.
+- Integration requires PR checks and PR artifacts (including `pr/verify.log`).
 
 ## Status transitions
 
 ```bash
 agentplane start <task-id> --author CODER --body "Start: ..."
 agentplane block <task-id> --author CODER --body "Blocked: ..."
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..."
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome"
 ```
 
 ## Commit guardrails
@@ -39,10 +39,13 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..."
 ## Verification
 
 ```bash
-agentplane verify <task-id>
+agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 ```
 
-Use `--skip-if-unchanged` to avoid re-running checks for the same commit.
+Notes:
+
+- `agentplane verify` is **record-only**: it does not execute any commands. It appends an entry to the task `## Verification` section.
+- In `branch_pr`, `agentplane integrate --run-verify` executes the task frontmatter `verify:` commands (if configured) and appends output to `pr/verify.log`.
 
 ## Spike tasks
 

@@ -12,7 +12,7 @@ A task moves through the same core stages in both modes:
 3. **Create**: PLANNER creates the task, assigns ownership, and sets dependencies.
 4. **Start**: the executor marks the task DOING with a structured comment.
 5. **Implement**: code, docs, and artifacts are produced.
-6. **Verify**: required checks run and logs are stored.
+6. **Verify**: checks are run (if configured) and a verification outcome is recorded.
 7. **Commit**: changes are committed with the task ID suffix.
 8. **Finish**: the task is closed with a Verified note and commit metadata.
 9. **Export**: task snapshots are updated for integrations.
@@ -29,7 +29,7 @@ flowchart TD
   C -- Yes --> D[Create task: PLANNER assigns owner + deps]
   D --> E[Start: executor sets DOING + Start comment]
   E --> F[Implement changes + docs]
-  F --> G[Verify checks + logs]
+  F --> G[Verify: run checks (optional) + record outcome]
   G --> H[Commit with task suffix]
   H --> I[Finish: Verified comment + commit metadata]
   I --> J[Export snapshot + update docs]
@@ -44,7 +44,7 @@ flowchart TD
 **Key artifacts:**
 
 - Task README and status updates are written directly in the repo.
-- Verify logs live under the task artifact directory.
+- Verification records are appended to the task README under `## Verification` via `agentplane verify ...`.
 - Optional PR artifacts are allowed but not required.
 
 ### Sequence diagram (direct)
@@ -69,11 +69,11 @@ sequenceDiagram
   E->>CLI: start <task-id>
   CLI->>B: Update task status + comment
   E->>G: Implement changes
-  E->>CLI: verify <task-id>
-  CLI->>B: Append verify log
+  E->>CLI: verify <task-id> --ok --by <id> --note <text>
+  CLI->>B: Append verification record
   E->>CLI: guard commit / commit
   CLI->>G: Create commit
-  E->>CLI: finish <task-id>
+  E->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata
   CLI->>B: Update snapshot export
 ```
@@ -117,15 +117,15 @@ sequenceDiagram
   E->>CLI: start <task-id>
   CLI->>B: Update task status + comment
   E->>G: Implement changes
-  E->>CLI: verify <task-id>
-  CLI->>B: Append verify log
+  E->>CLI: verify <task-id> --ok --by <id> --note <text>
+  CLI->>B: Append verification record
   E->>G: Commit changes
   E->>CLI: pr update / note
   CLI->>B: Update PR artifacts + handoff notes
   I->>CLI: pr check / integrate
   CLI->>G: Merge to base (squash)
   CLI->>B: Refresh diffstat + README summary
-  I->>CLI: finish <task-id>
+  I->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata
   CLI->>B: Update snapshot export
 ```
@@ -137,6 +137,7 @@ sequenceDiagram
 - **Two-stage verification**:
   - `## Verify Steps` is the ex-ante verification contract (criteria/protocol addressed to the verifier).
   - `## Verification` is the ex-post append-only record written by `agentplane verify ...`.
+- **branch_pr verify logs**: `agentplane integrate --run-verify` executes frontmatter `verify:` commands and appends output to `.agentplane/tasks/<task-id>/pr/verify.log`.
 - **Back-compat**: frontmatter `verify: string[]` remains supported as optional suggested commands; it is not required by the two-stage model.
 - **Commit policy**: commit subjects must include the task ID suffix.
 - **Docs updates**: task README sections are updated via `agentplane task doc set`.

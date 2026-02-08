@@ -30,14 +30,25 @@ description: "Common problems and how to fix them quickly."
 - Use `agentplane task show <task-id>` to see dependencies.
 - Finish dependencies first or use `--force` if you have explicit approval.
 
-## Verify skipped unexpectedly
+## `agentplane verify` fails with E_USAGE
 
-**Symptom:** `agentplane verify` does nothing.
+**Symptom:** `agentplane verify` prints an `E_USAGE` error.
 
 **Fix:**
 
-- Ensure the task has verify commands in its metadata.
-- Use `--require` to fail if verify is missing.
+- `agentplane verify` is record-only and requires an explicit outcome and metadata, for example:
+  - `agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"`
+  - `agentplane verify <task-id> --rework --by REVIEWER --note "Needs changes" --details "Missing tests"`
+- Use `agentplane help verify --compact` to see the required flags.
+
+## `pr check` / `integrate` fails due to missing `verify.log`
+
+**Symptom:** `agentplane pr check` or `agentplane integrate` reports a missing `.agentplane/tasks/<task-id>/pr/verify.log`.
+
+**Fix:**
+
+- Ensure PR artifacts exist: run `agentplane pr open <task-id> ...` (creates `pr/verify.log` as an empty file).
+- If you want to execute declared verification commands in `branch_pr`, run `agentplane integrate <task-id> --run-verify` (appends command output to `pr/verify.log`).
 
 ## Branch/worktree errors
 
