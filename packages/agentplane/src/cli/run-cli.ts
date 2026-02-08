@@ -156,6 +156,11 @@ import { blockSpec, makeRunBlockHandler } from "../commands/block.command.js";
 import { verifySpec, makeRunVerifyHandler } from "../commands/verify.command.js";
 import { finishSpec, makeRunFinishHandler } from "../commands/finish.command.js";
 import { readySpec, makeRunReadyHandler } from "../commands/ready.command.js";
+import {
+  docsCliSpec,
+  makeHelpJsonFromSpecs,
+  makeRunDocsCliHandler,
+} from "../commands/docs/cli.command.js";
 import { hooksSpec, runHooks } from "../commands/hooks/hooks.command.js";
 import { hooksInstallSpec, runHooksInstall } from "../commands/hooks/install.command.js";
 import { hooksUninstallSpec, runHooksUninstall } from "../commands/hooks/uninstall.command.js";
@@ -1327,6 +1332,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(verifySpec, noop);
       registry.register(finishSpec, noop);
       registry.register(readySpec, noop);
+      registry.register(docsCliSpec, noop);
       registry.register(hooksSpec, noop);
       registry.register(hooksInstallSpec, noop);
       registry.register(hooksUninstallSpec, noop);
@@ -1430,6 +1436,7 @@ export async function runCli(argv: string[]): Promise<number> {
 
     // cli2 command routing (single router).
     const registry = new CommandRegistry();
+    const getHelpJsonForDocs = () => makeHelpJsonFromSpecs(registry.list().map((e) => e.spec));
     registry.register(initSpec, runInit);
     registry.register(upgradeSpec, runUpgrade);
     registry.register(quickstartSpec, runQuickstart);
@@ -1500,6 +1507,7 @@ export async function runCli(argv: string[]): Promise<number> {
     registry.register(verifySpec, makeRunVerifyHandler(getCtx));
     registry.register(finishSpec, makeRunFinishHandler(getCtx));
     registry.register(readySpec, makeRunReadyHandler(getCtx));
+    registry.register(docsCliSpec, makeRunDocsCliHandler(getHelpJsonForDocs));
     registry.register(hooksSpec, runHooks);
     registry.register(hooksInstallSpec, runHooksInstall);
     registry.register(hooksUninstallSpec, runHooksUninstall);
@@ -1510,6 +1518,7 @@ export async function runCli(argv: string[]): Promise<number> {
     registry.register(guardCleanSpec, runGuardClean);
     registry.register(guardSuggestAllowSpec, runGuardSuggestAllow);
     registry.register(guardCommitSpec, makeRunGuardCommitHandler(getCtx));
+    registry.register(helpSpec, makeHelpHandler(registry));
 
     const match = registry.match(rest);
     if (match) {

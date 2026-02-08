@@ -1,7 +1,7 @@
 ---
 id: "202602071928-J3VR6C"
 title: "CLI2-113: Generate docs from registry/spec (optional)"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli docs code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T08:23:46.004Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T08:38:03.441Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: bun run typecheck, bun run test:cli:core, and bun run test:fast all pass; docs cli writes deterministic MDX derived from cli2 specs."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: implement a cli2 registry/spec docs generator (docs cli) with deterministic MDX output and coverage."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:37.339Z"
+doc_updated_at: "2026-02-08T08:38:03.443Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add a generator to render registry/spec to Markdown/MDX and keep docs in sync."
 ---
@@ -59,21 +62,15 @@ Out of scope:
 
 ## Verify Steps
 
-### Scope
-Validate that the migrated command parses via cli2 spec, renders correct help (text/compact/json where applicable), and preserves runtime behavior.
-
-### Checks
-- TypeScript build
-- Targeted CLI suites
-
-### Evidence / Commands
-bun run typecheck
-bun run test:cli:core
+### Commands
+- `bun run typecheck`
+- `bun run test:cli:core`
+- `bun run test:fast`
 
 ### Pass criteria
+- `agentplane docs cli --out <path>` writes a deterministic MDX file derived from cli2 specs.
+- The generated output includes core command groups and key migrated commands (e.g. `task new`).
 - All commands above succeed.
-- Help output for the command reflects the spec (no missing/extra options).
-- Invalid inputs fail with E_USAGE and include compact usage.
 
 ## Verification
 
@@ -82,6 +79,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T08:38:03.441Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: bun run typecheck, bun run test:cli:core, and bun run test:fast all pass; docs cli writes deterministic MDX derived from cli2 specs.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T08:37:51.179Z, excerpt_hash=sha256:065736de9b141364216f092dc216321131625b196ca7ab7f02907896cffdbcc5
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

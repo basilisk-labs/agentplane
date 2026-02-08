@@ -29,6 +29,8 @@ Commands:
     help  Show help for a command.
     quickstart  Print CLI quickstart and command cheat sheet.
     role  Show role-specific workflow guidance.
+  Docs:
+    docs cli  Generate an MDX CLI reference from the current cli2 registry/spec.
   Guard:
     commit  Create a git commit after validating policy and allowlist against staged changes.
     guard  Guard commands (commit checks, git hygiene, and allowlist helpers).
