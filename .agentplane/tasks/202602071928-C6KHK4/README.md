@@ -1,7 +1,7 @@
 ---
 id: "202602071928-C6KHK4"
 title: "CLI2-066: Migrate cleanup merged to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:53:55.508Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: Migrated cleanup merged to cli2 specs + handlers; removed legacy dispatcher; updated PR-flow cleanup tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli."
-commit: null
+commit:
+  hash: "fbc056f4fecac5695b9bf9206d958565637c1718"
+  message: "✅ C6KHK4 cli: migrate cleanup merged to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Add cli2 spec + handler for cleanup merged; register in help fast-path and main registry; remove legacy dispatcher; update tests for spec-derived usage/hints."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated cleanup merged to cli2 specs + handlers and registered for help; removed legacy parsing/dispatch; updated PR-flow cleanup tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:53:55.509Z"
+doc_updated_at: "2026-02-08T04:54:31.371Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `cleanup merged`."
 ---
