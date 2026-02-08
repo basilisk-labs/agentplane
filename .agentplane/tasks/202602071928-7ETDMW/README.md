@@ -1,7 +1,7 @@
 ---
 id: "202602071928-7ETDMW"
 title: "CLI2-112: Tests for help + spec contract"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,27 @@ tags:
   - "cli testing code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T08:19:26.913Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
+  state: "ok"
+  updated_at: "2026-02-08T08:21:25.457Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Ran: bun run typecheck; bun run test:cli:core; bun run test:fast. Added help snapshots and a JSON-registry contract test for unique ids/options."
+commit:
+  hash: "b822577431eb40038a8bd69b357ad22211a3ec99"
+  message: "🚧 7ETDMW test: add cli2 help snapshots and contract"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: add snapshot tests for cli2 help output and invariant/property tests for registry/spec to prevent help drift."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run typecheck; bun run test:cli:core; bun run test:fast. Added stable help snapshots and JSON-registry contract tests to prevent CLI help drift."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:36.340Z"
+doc_updated_at: "2026-02-08T08:22:10.606Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add help snapshots and spec/registry invariant tests."
 ---
@@ -44,13 +52,7 @@ Out of scope:
 
 ## Plan
 
-1. Add a `CommandSpec` for the command (args/options/examples/notes).
-2. Wire it into the cli2 registry.
-3. Route execution to existing business logic (no argv parsing in command logic).
-4. Delete or bypass legacy parse helpers for this command.
-5. Update tests to assert:
-- spec-derived help includes all options
-- parse errors produce E_USAGE with compact usage
+Scope: add tests that lock cli2 help output and validate spec/registry invariants to prevent drift.\n\nPlan:\n1) Add snapshot tests for agentplane help (text), and for selected commands in --compact and --json modes.\n2) Add registry/spec invariant tests: unique command ids; unique option names/shorts within a command; no longest-prefix ambiguities.\n3) Ensure tests are deterministic (stable ordering).\n\nVerification: bun run typecheck; bun run test:cli:core; bun run test:fast.
 
 ## Risks
 
@@ -59,21 +61,7 @@ Out of scope:
 
 ## Verify Steps
 
-### Scope
-Validate that the migrated command parses via cli2 spec, renders correct help (text/compact/json where applicable), and preserves runtime behavior.
-
-### Checks
-- TypeScript build
-- Targeted CLI suites
-
-### Evidence / Commands
-bun run typecheck
-bun run test:cli:unit
-
-### Pass criteria
-- All commands above succeed.
-- Help output for the command reflects the spec (no missing/extra options).
-- Invalid inputs fail with E_USAGE and include compact usage.
+Run:\n- bun run typecheck\n- bun run test:cli:core\n- bun run test:fast\n\nPass criteria:\n- new snapshots are stable\n- invariants tests fail on duplicate ids/options\n- all tests above pass.
 
 ## Verification
 
@@ -82,6 +70,14 @@ bun run test:cli:unit
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T08:21:25.457Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Ran: bun run typecheck; bun run test:cli:core; bun run test:fast. Added help snapshots and a JSON-registry contract test for unique ids/options.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T08:19:27.200Z, excerpt_hash=sha256:ee3b9b20520150b5f3afde36b22aa6a9b86dfa0efffc783cd8374071d9d52ef3
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
