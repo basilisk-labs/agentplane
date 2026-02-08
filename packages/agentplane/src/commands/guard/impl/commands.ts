@@ -2,8 +2,10 @@ import { mapCoreError } from "../../../cli/error-map.js";
 import { successMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
+import { loadTaskFromContext } from "../../shared/task-backend.js";
 
 import { suggestAllowPrefixes } from "./allow.js";
+import { buildCloseCommitMessage, taskReadmePathForTask } from "./close-message.js";
 import { buildGitCommitEnv } from "./env.js";
 import { guardCommitCheck, type GuardCommitOptions } from "./policy.js";
 
@@ -83,6 +85,7 @@ export async function cmdCommit(opts: {
   rootOverride?: string;
   taskId: string;
   message: string;
+  close: boolean;
   allow: string[];
   autoAllow: boolean;
   allowTasks: boolean;
@@ -95,6 +98,73 @@ export async function cmdCommit(opts: {
   quiet: boolean;
 }): Promise<number> {
   try {
+    if (opts.close) {
+      const ctx =
+        opts.ctx ??
+        (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+
+      // Make the close commit deterministic: require empty index, then stage only the task README.
+      const staged = await ctx.git.statusStagedPaths();
+      if (staged.length > 0) {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message: "Staged files exist (close commit requires an empty index)",
+        });
+      }
+
+      const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
+      const msg = await buildCloseCommitMessage({ gitRoot: ctx.resolvedProject.gitRoot, task });
+      const readmeAbs = taskReadmePathForTask({
+        gitRoot: ctx.resolvedProject.gitRoot,
+        workflowDir: ctx.config.paths.workflow_dir,
+        taskId: opts.taskId,
+      });
+      const readmeRel = readmeAbs.startsWith(ctx.resolvedProject.gitRoot)
+        ? readmeAbs.slice(ctx.resolvedProject.gitRoot.length + 1)
+        : readmeAbs;
+      await ctx.git.stage([readmeRel]);
+
+      // Close commits should not require manual --allow flags:
+      // the command stages exactly one task README under workflow_dir.
+      const allow = [ctx.config.paths.workflow_dir];
+      await guardCommitCheck({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: opts.taskId,
+        message: msg.subject,
+        allow,
+        allowBase: false,
+        allowTasks: true,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: true,
+        quiet: opts.quiet,
+      });
+
+      const env = buildGitCommitEnv({
+        taskId: opts.taskId,
+        allowTasks: true,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+      });
+      await ctx.git.commit({ message: msg.subject, body: msg.body, env });
+
+      if (!opts.quiet) {
+        const { hash, subject } = await ctx.git.headHashSubject();
+        process.stdout.write(
+          `${successMessage("committed", `${hash?.slice(0, 12) ?? ""} ${subject ?? ""}`.trim())}\n`,
+        );
+      }
+      return 0;
+    }
+
     let allow = opts.allow;
     if (opts.autoAllow && allow.length === 0) {
       const ctx =

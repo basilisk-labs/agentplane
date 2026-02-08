@@ -6,7 +6,8 @@ import { cmdCommit } from "./guard/index.js";
 
 export type CommitParsed = {
   taskId: string;
-  message: string;
+  message?: string;
+  close: boolean;
   allow: string[];
   autoAllow: boolean;
   allowTasks: boolean;
@@ -30,8 +31,14 @@ export const commitSpec: CommandSpec<CommitParsed> = {
       name: "message",
       short: "m",
       valueHint: "<message>",
-      required: true,
-      description: "Commit subject (must follow policy).",
+      description: "Commit subject (must follow policy). Required unless --close is used.",
+    },
+    {
+      kind: "boolean",
+      name: "close",
+      default: false,
+      description:
+        "Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages only the task README.",
     },
     {
       kind: "string",
@@ -85,11 +92,28 @@ export const commitSpec: CommandSpec<CommitParsed> = {
       cmd: 'agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --auto-allow',
       why: "Infer allowlist prefixes from staged paths.",
     },
+    {
+      cmd: "agentplane commit 202602030608-F1Q8AB --close",
+      why: "Create a close commit for the task README using a deterministic message builder.",
+    },
   ],
   validateRaw: (raw) => {
+    const close = raw.opts.close === true;
     const msg = typeof raw.opts.message === "string" ? raw.opts.message.trim() : "";
+    if (!close && !msg) {
+      throw usageError({
+        spec: commitSpec,
+        message: "Missing required --message (or use --close).",
+      });
+    }
     if (raw.opts.message !== undefined && !msg) {
       throw usageError({ spec: commitSpec, message: "Invalid value for --message: empty." });
+    }
+    if (close && raw.opts.message !== undefined) {
+      throw usageError({
+        spec: commitSpec,
+        message: "Use either --message or --close (not both).",
+      });
     }
     const allow = raw.opts.allow;
     if (Array.isArray(allow) && allow.some((s) => typeof s === "string" && s.trim() === "")) {
@@ -98,7 +122,8 @@ export const commitSpec: CommandSpec<CommitParsed> = {
   },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
-    message: String(raw.opts.message),
+    message: typeof raw.opts.message === "string" ? String(raw.opts.message) : undefined,
+    close: raw.opts.close === true,
     allow: Array.isArray(raw.opts.allow)
       ? (raw.opts.allow as string[])
       : typeof raw.opts.allow === "string"
@@ -123,7 +148,8 @@ export function makeRunCommitHandler(getCtx: (cmd: string) => Promise<CommandCon
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
-      message: p.message,
+      message: p.message ?? "",
+      close: p.close,
       allow: p.allow,
       autoAllow: p.autoAllow,
       allowTasks: p.allowTasks,
