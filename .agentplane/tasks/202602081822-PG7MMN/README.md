@@ -1,7 +1,8 @@
 ---
 id: "202602081822-PG7MMN"
 title: "CLI: introduce command-catalog single source of truth"
-status: "DOING"
+result_summary: "Introduce command catalog"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-08T18:42:58.836Z"
   updated_by: "TESTER"
   note: "bun run lint; bun run test:cli:core; bun run typecheck"
-commit: null
+commit:
+  hash: "67c7c7fb7a766f188d9acbff0bcd58173b1e7cb0"
+  message: "✨ PG7MMN cli: derive registries from command catalog"
 comments:
   -
     author: "CODER"
     body: "Start: Create a command catalog and refactor help/run registries to be derived from it, eliminating duplicated command lists."
+  -
+    author: "CODER"
+    body: "Verified: Added command-catalog.ts as single source of truth for registry wiring; help-fast and run registries now iterate catalog; lint, cli core tests, and typecheck pass."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run lint; bun run test:cli:core; bun run typecheck"
+  -
+    type: "status"
+    at: "2026-02-08T18:44:50.485Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Added command-catalog.ts as single source of truth for registry wiring; help-fast and run registries now iterate catalog; lint, cli core tests, and typecheck pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T18:42:58.838Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-08T18:44:50.485Z"
+doc_updated_by: "CODER"
 description: "Add command-catalog.ts and refactor buildRegistry/buildHelpFastRegistry to derive registrations from it."
 id_source: "generated"
 ---
