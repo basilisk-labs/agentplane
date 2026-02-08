@@ -1,7 +1,7 @@
 ---
 id: "202602071928-V6RZ8Z"
 title: "CLI2-087: Migrate task export/lint/normalize to cli2"
-status: "TODO"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,27 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T06:49:56.836Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
+  state: "ok"
+  updated_at: "2026-02-08T06:53:53.711Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Ran: bun run typecheck; bun run test:cli:core."
+commit:
+  hash: "a089cb5f7b69959b87a96ba4bc7c65191586446d"
+  message: "🚧 V6RZ8Z cli: migrate task export/lint/normalize to cli2"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrating task export/lint/normalize to cli2 specs, removing legacy parsing/dispatch, and updating run-cli core tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated task export/lint/normalize to cli2 specs, removed legacy run-cli dispatch, moved normalize flag parsing into spec-driven parser, and verified via typecheck + run-cli core tests."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:27.533Z"
+doc_updated_at: "2026-02-08T06:54:46.386Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task export/lint/normalize`."
 ---
@@ -44,13 +52,13 @@ Out of scope:
 
 ## Plan
 
-1. Add a `CommandSpec` for the command (args/options/examples/notes).
-2. Wire it into the cli2 registry.
-3. Route execution to existing business logic (no argv parsing in command logic).
-4. Delete or bypass legacy parse helpers for this command.
-5. Update tests to assert:
-- spec-derived help includes all options
-- parse errors produce E_USAGE with compact usage
+Plan:
+1. Add cli2 CommandSpec + handlers for: task export, task lint, task normalize.
+2. Refactor implementations to accept structured inputs (no argv parsing inside command modules).
+3. Register specs in cli2 registry and remove legacy dispatcher branches in run-cli.
+4. Update/extend run-cli core tests to match cli2 parse error wording for these commands.
+5. Run verification: bun run typecheck; bun run test:cli:core.
+6. Record verification, commit changes, finish task, and create closure commit.
 
 ## Risks
 
@@ -82,6 +90,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T06:53:53.711Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Ran: bun run typecheck; bun run test:cli:core.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T06:50:01.745Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
