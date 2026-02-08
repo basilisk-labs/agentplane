@@ -1,7 +1,7 @@
 ---
 id: "202602071928-FWTFRR"
 title: "CLI2-065: Migrate integrate to cli2"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:50:09.304Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: Migrated integrate to cli2 spec + handler; removed legacy dispatcher; updated PR-flow tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli."
-commit: null
+commit:
+  hash: "c4efd8f52c4c0d6eaf5dcf04d9efe16097ef4ff6"
+  message: "✅ FWTFRR cli: migrate integrate to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Add cli2 spec + handler for integrate; wire into help fast-path + main registry; remove legacy parsing/dispatch; update PR-flow tests to assert spec-derived usage/hints."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated integrate to cli2 spec + handler and registered for help; removed legacy parsing/dispatch; updated PR-flow tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:50:09.305Z"
+doc_updated_at: "2026-02-08T04:50:36.263Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `integrate`."
 ---
