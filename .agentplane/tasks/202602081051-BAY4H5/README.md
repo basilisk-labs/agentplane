@@ -1,7 +1,7 @@
 ---
 id: "202602081051-BAY4H5"
 title: "CLI2-FULL-010: Remove legacy argv parsing from upgrade"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -20,14 +20,19 @@ verification:
   updated_at: "2026-02-08T10:56:54.350Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: removed legacy upgrade argv parsing (parseUpgradeFlags/usage constants/cmdUpgrade wrapper), updated extractArchive API, and confirmed typecheck + cli core + fast tests pass."
-commit: null
+commit:
+  hash: "05fcbdbe46dfe2a9cf68ed7e982a1ca1eb989e5f"
+  message: "✨ BAY4H5 cli: remove legacy upgrade argv parsing"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: remove legacy upgrade argv parsing and usage constants, migrate unit tests to parsed-only API, and keep CLI behavior spec-driven."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: upgrade is fully spec-driven (no legacy argv parser/usage constants), archive extraction no longer depends on usage strings, and typecheck + cli core + fast tests pass."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-08T10:56:54.351Z"
+doc_updated_at: "2026-02-08T10:58:01.631Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Delete parseUpgradeFlags/usage constants and legacy argv entrypoints; migrate tests to spec-driven/parsed APIs."
 id_source: "generated"
