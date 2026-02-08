@@ -178,6 +178,8 @@ type RecipeListRemoteFlags = {
   yes: boolean;
 };
 
+export type { RecipeListRemoteFlags };
+
 function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
   const out: RecipeListRemoteFlags = { refresh: false, yes: false };
   for (let i = 0; i < args.length; i++) {
@@ -1079,6 +1081,15 @@ async function cmdRecipeListRemote(opts: {
   args: string[];
 }): Promise<number> {
   const flags = parseRecipeListRemoteFlags(opts.args);
+  return await cmdRecipeListRemoteParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride, flags });
+}
+
+export async function cmdRecipeListRemoteParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+  flags: RecipeListRemoteFlags;
+}): Promise<number> {
+  const flags = opts.flags;
   try {
     const project = await maybeResolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride });
     let config = defaultConfig();

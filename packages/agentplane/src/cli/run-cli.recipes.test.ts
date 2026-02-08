@@ -493,11 +493,11 @@ describe("runCli recipes", () => {
       },
       {
         args: ["recipes", "list-remote", "--index"],
-        msg: "Missing value for --index (expected value after flag)",
+        msg: "Missing value after --index",
       },
       {
         args: ["recipes", "list-remote", "--wat"],
-        msg: "Missing value for --wat (expected value after flag)",
+        msg: "Unknown option: --wat",
       },
     ];
 
