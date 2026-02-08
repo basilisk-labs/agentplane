@@ -1131,6 +1131,14 @@ async function cmdRecipeInfo(opts: {
   rootOverride?: string;
   id: string;
 }): Promise<number> {
+  return await cmdRecipeInfoParsed(opts);
+}
+
+export async function cmdRecipeInfoParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
   try {
     const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
@@ -1187,6 +1195,14 @@ async function cmdRecipeInfo(opts: {
 }
 
 async function cmdRecipeExplain(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
+  return await cmdRecipeExplainParsed(opts);
+}
+
+export async function cmdRecipeExplainParsed(opts: {
   cwd: string;
   rootOverride?: string;
   id: string;

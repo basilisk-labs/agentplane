@@ -695,7 +695,10 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "info"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes info");
+      expect(io.stderr).toContain("Missing required argument");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane recipes info");
+      expect(io.stderr).toContain("agentplane help recipes info --compact");
     } finally {
       io.restore();
     }
@@ -706,7 +709,10 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "explain"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes explain");
+      expect(io.stderr).toContain("Missing required argument");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane recipes explain");
+      expect(io.stderr).toContain("agentplane help recipes explain --compact");
     } finally {
       io.restore();
     }

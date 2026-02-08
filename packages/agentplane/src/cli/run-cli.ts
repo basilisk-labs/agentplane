@@ -66,6 +66,8 @@ import {
   recipesListRemoteSpec,
   runRecipesListRemote,
 } from "../commands/recipes/list-remote.command.js";
+import { recipesInfoSpec, runRecipesInfo } from "../commands/recipes/info.command.js";
+import { recipesExplainSpec, runRecipesExplain } from "../commands/recipes/explain.command.js";
 import { upgradeSpec, runUpgrade } from "../commands/upgrade.command.js";
 import {
   BACKEND_SYNC_USAGE,
@@ -1310,6 +1312,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(ideSyncSpec, noop);
       registry.register(recipesListSpec, noop);
       registry.register(recipesListRemoteSpec, noop);
+      registry.register(recipesInfoSpec, noop);
+      registry.register(recipesExplainSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1378,6 +1382,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
+      registry.register(recipesInfoSpec, runRecipesInfo);
+      registry.register(recipesExplainSpec, runRecipesExplain);
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);
