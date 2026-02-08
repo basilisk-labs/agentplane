@@ -1,7 +1,7 @@
 ---
 id: "202602071928-C6KHK4"
 title: "CLI2-066: Migrate cleanup merged to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:51:26.419Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK: migrate cleanup merged to cli2 spec + handler; remove legacy parsing; keep behavior and tests."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:53:55.508Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: Migrated cleanup merged to cli2 specs + handlers; removed legacy dispatcher; updated PR-flow cleanup tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Add cli2 spec + handler for cleanup merged; register in help fast-path and main registry; remove legacy dispatcher; update tests for spec-derived usage/hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:16.570Z"
+doc_updated_at: "2026-02-08T04:53:55.509Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `cleanup merged`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:53:55.508Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: Migrated cleanup merged to cli2 specs + handlers; removed legacy dispatcher; updated PR-flow cleanup tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:51:32.335Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

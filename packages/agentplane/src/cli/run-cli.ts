@@ -114,12 +114,16 @@ import {
 } from "../commands/pr/pr.command.js";
 import { integrateSpec, makeRunIntegrateHandler } from "../commands/integrate.command.js";
 import {
+  cleanupMergedSpec,
+  cleanupSpec,
+  makeRunCleanupMergedHandler,
+  runCleanup,
+} from "../commands/cleanup/merged.command.js";
+import {
   BLOCK_USAGE,
   BLOCK_USAGE_EXAMPLE,
   BRANCH_BASE_USAGE,
   BRANCH_BASE_USAGE_EXAMPLE,
-  CLEANUP_MERGED_USAGE,
-  CLEANUP_MERGED_USAGE_EXAMPLE,
   COMMIT_USAGE,
   COMMIT_USAGE_EXAMPLE,
   FINISH_USAGE,
@@ -138,7 +142,6 @@ import {
   WORK_START_USAGE,
   WORK_START_USAGE_EXAMPLE,
   cmdBlock,
-  cmdCleanupMerged,
   cmdCommit,
   cmdFinish,
   cmdGuardClean,
@@ -1344,6 +1347,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prCheckSpec, noop);
       registry.register(prNoteSpec, noop);
       registry.register(integrateSpec, noop);
+      registry.register(cleanupSpec, noop);
+      registry.register(cleanupMergedSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1435,6 +1440,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prCheckSpec, makeRunPrCheckHandler(getCtx));
       registry.register(prNoteSpec, makeRunPrNoteHandler(getCtx));
       registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
+      registry.register(cleanupSpec, runCleanup);
+      registry.register(cleanupMergedSpec, makeRunCleanupMergedHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);
@@ -2358,72 +2365,6 @@ export async function runCli(argv: string[]): Promise<number> {
         rootOverride: globals.root,
         taskId: parsed.taskId,
         args: parsed.args,
-      });
-    }
-
-    if (namespace === "cleanup") {
-      const subcommand = command;
-      if (subcommand !== "merged") {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
-        });
-      }
-      let base: string | undefined;
-      let yes = false;
-      let archive = false;
-      let quiet = false;
-
-      for (let i = 0; i < args.length; i++) {
-        const arg = args[i];
-        if (!arg) continue;
-        if (arg === "--base") {
-          const next = args[i + 1];
-          if (!next || next.trim().length === 0)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
-            });
-          base = next;
-          i++;
-          continue;
-        }
-        if (arg === "--yes") {
-          yes = true;
-          continue;
-        }
-        if (arg === "--archive") {
-          archive = true;
-          continue;
-        }
-        if (arg === "--quiet") {
-          quiet = true;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
-          });
-        }
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(CLEANUP_MERGED_USAGE, CLEANUP_MERGED_USAGE_EXAMPLE),
-        });
-      }
-
-      return await cmdCleanupMerged({
-        ctx: await getCtx("cleanup merged"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        base,
-        yes,
-        archive,
-        quiet,
       });
     }
 

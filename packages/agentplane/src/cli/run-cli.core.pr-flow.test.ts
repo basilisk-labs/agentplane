@@ -2166,7 +2166,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["cleanup", "merged", "--base", " ", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane cleanup merged");
     } finally {
       io.restore();
     }
@@ -2196,7 +2197,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["cleanup", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane cleanup <merged>");
     } finally {
       io.restore();
     }
@@ -2208,7 +2210,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["cleanup", "merged", "--base", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane cleanup merged");
     } finally {
       io.restore();
     }
@@ -2220,7 +2223,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["cleanup", "merged", "--nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane cleanup merged");
     } finally {
       io.restore();
     }
@@ -2232,7 +2236,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["cleanup", "merged", "extra", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane cleanup merged");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane cleanup merged");
     } finally {
       io.restore();
     }
