@@ -1,9 +1,9 @@
 ---
-title: "CLI Help JSON Contract (cli2)"
+title: "CLI Help JSON Contract (spec-driven CLI)"
 description: "The machine-readable JSON schema for `agentplane help --json` and `agentplane help <cmd...> --json`."
 ---
 
-This document specifies the JSON output contract for the cli2 help system.
+This document specifies the JSON output contract for the spec-driven help system implemented under `packages/agentplane/src/cli/spec`.
 
 Scope:
 
@@ -13,7 +13,7 @@ Scope:
 Non-goals:
 
 - JSON error output (covered by `docs/developer/cli-contract.mdx`)
-- Shell completion (not part of cli2 v1)
+- Shell completion (not part of this spec)
 
 ## 1) Output modes
 
@@ -25,7 +25,8 @@ Command:
 agentplane help --json
 ```
 
-Output: a single JSON array of `HelpJson` objects, one per registered command in the cli2 registry.
+Output: a single JSON array of `HelpJson` objects, one per registered command in the spec-driven registry.
+Output: a single JSON array of `HelpJson` objects, one per registered command in the spec-driven registry.
 
 ### 1.2 Command-level
 

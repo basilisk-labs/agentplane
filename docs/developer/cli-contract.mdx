@@ -18,7 +18,7 @@ agentplane [--root <path>] [--json] [--allow-network] <command> [options]
 - `--json`: machine-readable output for errors (global). Some commands may also support `--json` for success output; see command docs.
 - `--allow-network`: allow optional network operations that would otherwise be skipped when `config.agents.approvals.require_network=true` (currently used for update-check).
 
-### 1.1 Global flag scoping (cli2)
+### 1.1 Global flag scoping (spec-driven CLI)
 
 Global flags are only recognized before the command id. For example:
 
@@ -153,11 +153,11 @@ Minimum subcommands (1.0):
 - Node.js 1.0 uses `.agentplane/` as the project directory name.
 - The command surface is designed to be stable for tooling integrations, but output text is not guaranteed to match verbatim (except where schemas/specs require byte stability).
 
-## 7) Help (cli2)
+## 7) Help (spec-driven)
 
-The cli2 help system is spec-driven for migrated commands:
+The help system is spec-driven for migrated commands (implemented under `packages/agentplane/src/cli/spec`):
 
-- `agentplane help` prints a grouped command list (cli2 registry only).
+- `agentplane help` prints a grouped command list (spec-driven registry only).
 - `agentplane help <cmd...>` prints command help.
 - `--compact` prints minimal help (usage + options).
 - `--json` emits machine-readable JSON help.
