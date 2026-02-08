@@ -1,7 +1,7 @@
 ---
 id: "202602071928-85JRJD"
 title: "CLI2-061: Migrate branch status to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:32:26.841Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK: migrate branch status to cli2 spec and remove legacy parsing branch."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:34:09.433Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: Migrated branch status to cli2 spec; removed legacy parsing; ran bun run typecheck, bun run lint, bun run test:cli (core suites included)."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Add cli2 spec + handler for branch status; wire into help fast-path + main registry, delete legacy parsing for branch status, and update CLI tests to expect spec-derived usage/hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:12.442Z"
+doc_updated_at: "2026-02-08T04:34:09.434Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `branch status`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:34:09.433Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: Migrated branch status to cli2 spec; removed legacy parsing; ran bun run typecheck, bun run lint, bun run test:cli (core suites included).
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:32:31.453Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

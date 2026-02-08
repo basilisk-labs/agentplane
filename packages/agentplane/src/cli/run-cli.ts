@@ -72,6 +72,7 @@ import {
   runBranchBaseGet,
   runBranchBaseSet,
 } from "../commands/branch/base.command.js";
+import { branchStatusSpec, runBranchStatus } from "../commands/branch/status.command.js";
 import { recipesInstallSpec, runRecipesInstall } from "../commands/recipes/install.command.js";
 import { recipesListSpec, runRecipesList } from "../commands/recipes/list.command.js";
 import {
@@ -105,8 +106,6 @@ import {
   BRANCH_BASE_USAGE_EXAMPLE,
   BRANCH_REMOVE_USAGE,
   BRANCH_REMOVE_USAGE_EXAMPLE,
-  BRANCH_STATUS_USAGE,
-  BRANCH_STATUS_USAGE_EXAMPLE,
   CLEANUP_MERGED_USAGE,
   CLEANUP_MERGED_USAGE_EXAMPLE,
   COMMIT_USAGE,
@@ -138,7 +137,6 @@ import {
   WORK_START_USAGE_EXAMPLE,
   cmdBlock,
   cmdBranchRemove,
-  cmdBranchStatus,
   cmdCleanupMerged,
   cmdCommit,
   cmdFinish,
@@ -1341,6 +1339,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(branchBaseSetSpec, noop);
       registry.register(branchBaseClearSpec, noop);
       registry.register(branchBaseExplainSpec, noop);
+      registry.register(branchStatusSpec, noop);
       registry.register(backendSpec, noop);
       registry.register(backendSyncSpec, noop);
       registry.register(syncSpec, noop);
@@ -1424,6 +1423,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(branchBaseSetSpec, runBranchBaseSet);
       registry.register(branchBaseClearSpec, runBranchBaseClear);
       registry.register(branchBaseExplainSpec, runBranchBaseExplain);
+      registry.register(branchStatusSpec, runBranchStatus);
       registry.register(backendSpec, makeRunBackendHandler(getCtx));
       registry.register(backendSyncSpec, makeRunBackendSyncHandler(getCtx));
       registry.register(syncSpec, makeRunSyncHandler(getCtx));
@@ -1891,51 +1891,6 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "branch") {
-      if (command === "status") {
-        let branch: string | undefined;
-        let base: string | undefined;
-        for (let i = 0; i < args.length; i++) {
-          const arg = args[i];
-          if (!arg) continue;
-          if (arg === "--branch") {
-            const next = args[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(BRANCH_STATUS_USAGE, BRANCH_STATUS_USAGE_EXAMPLE),
-              });
-            branch = next;
-            i++;
-            continue;
-          }
-          if (arg === "--base") {
-            const next = args[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(BRANCH_STATUS_USAGE, BRANCH_STATUS_USAGE_EXAMPLE),
-              });
-            base = next;
-            i++;
-            continue;
-          }
-          if (arg.startsWith("--")) {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(BRANCH_STATUS_USAGE, BRANCH_STATUS_USAGE_EXAMPLE),
-            });
-          }
-        }
-        return await cmdBranchStatus({
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          branch,
-          base,
-        });
-      }
       if (command === "remove") {
         let branch: string | undefined;
         let worktree: string | undefined;
