@@ -12,7 +12,6 @@ import {
   cmdTaskLint,
   cmdTaskListWithFilters,
   cmdTaskMigrate,
-  cmdTaskNew,
   cmdTaskNext,
   cmdTaskSearch,
   cmdTaskPlanSet,
@@ -43,12 +42,16 @@ import { defaultConfig } from "@agentplaneorg/core";
 import * as taskBackend from "../backends/task-backend.js";
 import type { TaskData } from "../backends/task-backend.js";
 import * as prompts from "../cli/prompts.js";
+import { parseCommandArgv } from "../cli2/parse.js";
 import {
   captureStdIO,
   mkGitRepoRoot,
   silenceStdIO,
   writeDefaultConfig,
 } from "../cli/run-cli.test-helpers.js";
+import { taskNewSpec } from "./task/new.command.js";
+import { runTaskNewParsed } from "./task/new.js";
+import { loadCommandContext } from "./shared/task-backend.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -104,13 +107,8 @@ describe("commands/workflow", () => {
     restoreStdIO = null;
   });
 
-  it("rejects task new with missing flags", async () => {
-    await expect(
-      cmdTaskNew({
-        cwd: process.cwd(),
-        args: [],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
+  it("task new spec rejects missing required options", () => {
+    expect(() => parseCommandArgv(taskNewSpec, [])).toThrow();
   });
 
   it("dedupes and trims strings", () => {
@@ -316,9 +314,20 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     const io = captureStdIO();
     try {
-      const code = await cmdTaskNew({
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+      const code = await runTaskNewParsed({
+        ctx,
         cwd: root,
-        args: ["--title", "Title", "--description", "Desc", "--owner", "CODER", "--tag", "backend"],
+        rootOverride: undefined,
+        parsed: {
+          title: "Title",
+          description: "Desc",
+          owner: "CODER",
+          priority: "med",
+          tags: ["backend"],
+          dependsOn: [],
+          verify: [],
+        },
       });
       expect(code).toBe(0);
       expect(io.stdout.trim()).toMatch(/^\d{12}-[A-Z0-9]{4,}$/);
@@ -344,10 +353,23 @@ describe("commands/workflow", () => {
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
     });
     await expect(
-      cmdTaskNew({
-        cwd: root,
-        args: ["--title", "Title", "--description", "Desc", "--owner", "CODER", "--tag", "docs"],
-      }),
+      (async () => {
+        const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+        return await runTaskNewParsed({
+          ctx,
+          cwd: root,
+          rootOverride: undefined,
+          parsed: {
+            title: "Title",
+            description: "Desc",
+            owner: "CODER",
+            priority: "med",
+            tags: ["docs"],
+            dependsOn: [],
+            verify: [],
+          },
+        });
+      })(),
     ).rejects.toMatchObject({ code: "E_IO" });
     spy.mockRestore();
   });

@@ -1,4 +1,5 @@
-export { TASK_NEW_USAGE, TASK_NEW_USAGE_EXAMPLE, cmdTaskNew } from "./new.js";
+export type { TaskNewParsed } from "./new.js";
+export { runTaskNewParsed } from "./new.js";
 export { TASK_ADD_USAGE, TASK_ADD_USAGE_EXAMPLE, cmdTaskAdd } from "./add.js";
 export { TASK_UPDATE_USAGE, TASK_UPDATE_USAGE_EXAMPLE, cmdTaskUpdate } from "./update.js";
 export { TASK_SCRUB_USAGE, TASK_SCRUB_USAGE_EXAMPLE, cmdTaskScrub } from "./scrub.js";

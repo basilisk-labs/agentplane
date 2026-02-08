@@ -1,14 +1,9 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import {
-  backendNotSupportedMessage,
-  missingValueMessage,
-  usageMessage,
-  warnMessage,
-} from "../../cli/output.js";
+import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { normalizeDependsOnInput, nowIso, requiresVerify } from "./shared.js";
+import { nowIso, requiresVerify } from "./shared.js";
 
 export type TaskNewParsed = {
   title: string;
@@ -19,76 +14,6 @@ export type TaskNewParsed = {
   dependsOn: string[];
   verify: string[];
 };
-
-export const TASK_NEW_USAGE =
-  "Usage: agentplane task new --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]";
-export const TASK_NEW_USAGE_EXAMPLE =
-  'agentplane task new --title "Refactor CLI" --description "Improve CLI output" --priority med --owner CODER --tag cli';
-
-function parseTaskNewFlags(
-  args: string[],
-): Partial<TaskNewParsed> & Pick<TaskNewParsed, "tags" | "dependsOn" | "verify"> {
-  const out: Partial<TaskNewParsed> & Pick<TaskNewParsed, "tags" | "dependsOn" | "verify"> = {
-    tags: [],
-    dependsOn: [],
-    verify: [],
-  };
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (!arg.startsWith("--")) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Unexpected argument: ${arg}`,
-      });
-    }
-
-    const next = args[i + 1];
-    if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
-    }
-
-    switch (arg) {
-      case "--title": {
-        out.title = next;
-        break;
-      }
-      case "--description": {
-        out.description = next;
-        break;
-      }
-      case "--owner": {
-        out.owner = next;
-        break;
-      }
-      case "--priority": {
-        out.priority = next as TaskNewParsed["priority"];
-        break;
-      }
-      case "--tag": {
-        out.tags.push(next);
-        break;
-      }
-      case "--depends-on": {
-        out.dependsOn.push(...normalizeDependsOnInput(next));
-        break;
-      }
-      case "--verify": {
-        out.verify.push(next);
-        break;
-      }
-      default: {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
-      }
-    }
-
-    i++;
-  }
-
-  return out;
-}
 
 export async function runTaskNewParsed(opts: {
   ctx?: CommandContext;
@@ -154,39 +79,4 @@ export async function runTaskNewParsed(opts: {
   } catch (err) {
     throw mapBackendError(err, { command: "task new", root: opts.rootOverride ?? null });
   }
-}
-
-export async function cmdTaskNew(opts: {
-  ctx?: CommandContext;
-  cwd: string;
-  rootOverride?: string;
-  args: string[];
-}): Promise<number> {
-  const flags = parseTaskNewFlags(opts.args);
-
-  const priority = flags.priority ?? "med";
-  if (!flags.title || !flags.description || !flags.owner || flags.tags.length === 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_NEW_USAGE, TASK_NEW_USAGE_EXAMPLE),
-    });
-  }
-
-  const parsed: TaskNewParsed = {
-    title: flags.title,
-    description: flags.description,
-    owner: flags.owner,
-    priority,
-    tags: flags.tags,
-    dependsOn: flags.dependsOn,
-    verify: flags.verify,
-  };
-
-  return await runTaskNewParsed({
-    ctx: opts.ctx,
-    cwd: opts.cwd,
-    rootOverride: opts.rootOverride,
-    parsed,
-  });
 }
