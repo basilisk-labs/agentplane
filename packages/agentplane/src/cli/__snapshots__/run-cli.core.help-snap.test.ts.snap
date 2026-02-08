@@ -57,6 +57,8 @@ Commands:
     pr open  Create PR artifacts for a task.
     pr update  Update PR artifacts (diffstat and auto summary).
   Recipes:
+    recipes  Recipe management commands.
+    recipes cache  Manage recipes cache.
     recipes cache prune  Prune global recipe cache entries.
     recipes explain  Show detailed info for an installed recipe.
     recipes info  Show installed recipe metadata.
@@ -65,6 +67,7 @@ Commands:
     recipes list-remote  List recipes from the remote index (or cache).
     recipes remove  Remove an installed recipe.
   Scenario:
+    scenario  Recipe scenario commands.
     scenario info  Show scenario details (goal/inputs/outputs/steps).
     scenario list  List scenarios available from installed recipes.
     scenario run  Run a scenario toolchain from an installed recipe.

@@ -120,6 +120,8 @@ import {
   recipesCachePruneSpec,
   runRecipesCachePrune,
 } from "../commands/recipes/cache-prune.command.js";
+import { recipesSpec, runRecipes } from "../commands/recipes/recipes.command.js";
+import { recipesCacheSpec, runRecipesCache } from "../commands/recipes/cache.command.js";
 import { upgradeSpec, runUpgrade } from "../commands/upgrade.command.js";
 import {
   backendSpec,
@@ -131,6 +133,7 @@ import { syncSpec, makeRunSyncHandler } from "../commands/sync.command.js";
 import { scenarioListSpec, runScenarioList } from "../commands/scenario/list.command.js";
 import { scenarioInfoSpec, runScenarioInfo } from "../commands/scenario/info.command.js";
 import { scenarioRunSpec, runScenarioRun } from "../commands/scenario/run.command.js";
+import { scenarioSpec, runScenario } from "../commands/scenario/scenario.command.js";
 import {
   makeRunPrCheckHandler,
   makeRunPrHandler,
@@ -437,6 +440,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(modeGetSpec, noop);
       registry.register(modeSetSpec, noop);
       registry.register(ideSyncSpec, noop);
+      registry.register(recipesSpec, noop);
+      registry.register(recipesCacheSpec, noop);
       registry.register(recipesListSpec, noop);
       registry.register(recipesListRemoteSpec, noop);
       registry.register(recipesInfoSpec, noop);
@@ -446,6 +451,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(scenarioListSpec, noop);
       registry.register(scenarioInfoSpec, noop);
       registry.register(scenarioRunSpec, noop);
+      registry.register(scenarioSpec, noop);
       registry.register(branchBaseSpec, noop);
       registry.register(branchBaseGetSpec, noop);
       registry.register(branchBaseSetSpec, noop);
@@ -611,6 +617,8 @@ export async function runCli(argv: string[]): Promise<number> {
     registry.register(taskVerifyReworkSpec, makeRunTaskVerifyReworkHandler(getCtx));
     registry.register(taskVerifyShowSpec, makeRunTaskVerifyShowHandler(getCtx));
     registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
+    registry.register(recipesSpec, runRecipes);
+    registry.register(recipesCacheSpec, runRecipesCache);
     registry.register(recipesListSpec, runRecipesList);
     registry.register(recipesListRemoteSpec, runRecipesListRemote);
     registry.register(recipesInfoSpec, runRecipesInfo);
@@ -618,6 +626,7 @@ export async function runCli(argv: string[]): Promise<number> {
     registry.register(recipesRemoveSpec, runRecipesRemove);
     registry.register(recipesCachePruneSpec, runRecipesCachePrune);
     registry.register(recipesInstallSpec, runRecipesInstall);
+    registry.register(scenarioSpec, runScenario);
     registry.register(scenarioListSpec, runScenarioList);
     registry.register(scenarioInfoSpec, runScenarioInfo);
     registry.register(scenarioRunSpec, runScenarioRun);

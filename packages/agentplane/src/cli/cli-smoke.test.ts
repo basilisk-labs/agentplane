@@ -186,13 +186,13 @@ describe("agentplane CLI smoke", () => {
 
       const recipe = await makeRecipeArchive();
       try {
-        const install = await runCliWithOutput(root, ["recipe", "install", recipe.archivePath]);
+        const install = await runCliWithOutput(root, ["recipes", "install", recipe.archivePath]);
         expect(install.code).toBe(0);
       } finally {
         await recipe.cleanup();
       }
 
-      const list = await runCliWithOutput(root, ["recipe", "list"]);
+      const list = await runCliWithOutput(root, ["recipes", "list"]);
       expect(list.code).toBe(0);
       expect(list.stdout).toContain("viewer@0.0.0");
 

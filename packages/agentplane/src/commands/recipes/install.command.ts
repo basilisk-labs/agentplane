@@ -1,5 +1,6 @@
 import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli2/spec.js";
 import { usageError } from "../../cli2/errors.js";
+import { CliError } from "../../shared/errors.js";
 
 import { cmdRecipeInstall, type RecipeConflictMode, type RecipeInstallSource } from "../recipes.js";
 
@@ -154,8 +155,21 @@ export const recipesInstallSpec: CommandSpec<RecipesInstallParsed> = {
 };
 
 export const runRecipesInstall: CommandHandler<RecipesInstallParsed> = (ctx: CommandCtx, p) =>
-  cmdRecipeInstall({
-    cwd: ctx.cwd,
-    rootOverride: ctx.rootOverride,
-    ...p,
-  });
+  (async () => {
+    try {
+      return await cmdRecipeInstall({
+        cwd: ctx.cwd,
+        rootOverride: ctx.rootOverride,
+        ...p,
+      });
+    } catch (err) {
+      if (err instanceof CliError && err.code === "E_USAGE") {
+        throw usageError({
+          spec: recipesInstallSpec,
+          command: "recipes install",
+          message: err.message,
+        });
+      }
+      throw err;
+    }
+  })();

@@ -482,10 +482,10 @@ describe("runCli recipes", () => {
       },
       { args: ["recipes", "list", "--tag"], msg: "Missing value after --tag" },
       { args: ["recipes", "list", "--nope"], msg: "Unknown option: --nope" },
-      { args: ["recipes", "cache"], msg: "Usage: agentplane recipes cache <prune> [args]" },
+      { args: ["recipes", "cache"], msg: "Missing recipes cache subcommand" },
       {
         args: ["recipes", "cache", "nope"],
-        msg: "Usage: agentplane recipes cache <prune> [args]",
+        msg: "Unknown recipes cache subcommand",
       },
       {
         args: ["recipes", "cache", "prune", "--wat"],
@@ -670,7 +670,8 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "install", "--path", filePath, "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes install");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane recipes install");
     } finally {
       io.restore();
     }
@@ -723,7 +724,10 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes");
+      expect(io.stderr).toContain("Missing recipes subcommand");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane recipes");
+      expect(io.stderr).toContain("agentplane help recipes --compact");
     } finally {
       io.restore();
     }
@@ -734,7 +738,10 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "noop"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes");
+      expect(io.stderr).toContain("Unknown recipes subcommand");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane recipes");
+      expect(io.stderr).toContain("agentplane help recipes --compact");
     } finally {
       io.restore();
     }

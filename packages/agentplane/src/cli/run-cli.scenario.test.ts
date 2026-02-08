@@ -225,7 +225,10 @@ describe("runCli scenario", () => {
     try {
       const code = await runCli(["scenario", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane scenario");
+      expect(io.stderr).toContain("Unknown scenario subcommand");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane scenario");
+      expect(io.stderr).toContain("agentplane help scenario --compact");
     } finally {
       io.restore();
     }
@@ -236,7 +239,10 @@ describe("runCli scenario", () => {
     try {
       const code = await runCli(["scenario"]);
       expect(code).toBe(2);
-      expect(ioMissing.stderr).toContain("Usage: agentplane scenario");
+      expect(ioMissing.stderr).toContain("Missing scenario subcommand");
+      expect(ioMissing.stderr).toContain("Usage:");
+      expect(ioMissing.stderr).toContain("agentplane scenario");
+      expect(ioMissing.stderr).toContain("agentplane help scenario --compact");
     } finally {
       ioMissing.restore();
     }
