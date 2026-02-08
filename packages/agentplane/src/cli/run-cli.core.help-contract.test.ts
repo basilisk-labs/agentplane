@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
 import { captureStdIO, silenceStdIO } from "./run-cli.test-helpers.js";
-import { buildHelpFastRegistry, buildRegistry } from "./run-cli/registry.js";
+import { buildHelpFastRegistry } from "./run-cli/registry.help.js";
+import { buildRegistry } from "./run-cli/registry.run.js";
 import type { CommandContext } from "../commands/shared/task-backend.js";
 
 type HelpJson = {

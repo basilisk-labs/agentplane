@@ -6,15 +6,6 @@ import { COMMANDS, type RunDeps } from "./command-catalog.js";
 
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 
-const helpNoop = () => Promise.resolve(0);
-
-export function buildHelpFastRegistry(): CommandRegistry {
-  const registry = new CommandRegistry();
-  for (const entry of COMMANDS) registry.register(entry.spec, helpNoop);
-  registry.register(helpSpec, makeHelpHandler(registry));
-  return registry;
-}
-
 export function buildRegistry(
   getCtx: (commandForErrorContext: string) => Promise<CommandContext>,
 ): CommandRegistry {

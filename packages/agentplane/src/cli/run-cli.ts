@@ -23,7 +23,6 @@ import { parseCommandArgv } from "./spec/parse.js";
 import { helpSpec } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
-import { buildHelpFastRegistry, buildRegistry } from "./run-cli/registry.js";
 
 type ParsedArgs = {
   help: boolean;
@@ -311,6 +310,7 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
+      const { buildHelpFastRegistry } = await import("./run-cli/registry.help.js");
       const registry = buildHelpFastRegistry();
 
       const match = registry.match(helpArgv);
@@ -374,6 +374,7 @@ export async function runCli(argv: string[]): Promise<number> {
     };
 
     // cli2 command routing (single router).
+    const { buildRegistry } = await import("./run-cli/registry.run.js");
     const registry = buildRegistry(getCtx);
 
     const match = registry.match(rest);
