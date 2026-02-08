@@ -73,6 +73,7 @@ import {
   runBranchBaseSet,
 } from "../commands/branch/base.command.js";
 import { branchStatusSpec, runBranchStatus } from "../commands/branch/status.command.js";
+import { branchRemoveSpec, runBranchRemove } from "../commands/branch/remove.command.js";
 import { recipesInstallSpec, runRecipesInstall } from "../commands/recipes/install.command.js";
 import { recipesListSpec, runRecipesList } from "../commands/recipes/list.command.js";
 import {
@@ -104,8 +105,6 @@ import {
   BLOCK_USAGE_EXAMPLE,
   BRANCH_BASE_USAGE,
   BRANCH_BASE_USAGE_EXAMPLE,
-  BRANCH_REMOVE_USAGE,
-  BRANCH_REMOVE_USAGE_EXAMPLE,
   CLEANUP_MERGED_USAGE,
   CLEANUP_MERGED_USAGE_EXAMPLE,
   COMMIT_USAGE,
@@ -136,7 +135,6 @@ import {
   WORK_START_USAGE,
   WORK_START_USAGE_EXAMPLE,
   cmdBlock,
-  cmdBranchRemove,
   cmdCleanupMerged,
   cmdCommit,
   cmdFinish,
@@ -1340,6 +1338,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(branchBaseClearSpec, noop);
       registry.register(branchBaseExplainSpec, noop);
       registry.register(branchStatusSpec, noop);
+      registry.register(branchRemoveSpec, noop);
       registry.register(backendSpec, noop);
       registry.register(backendSyncSpec, noop);
       registry.register(syncSpec, noop);
@@ -1424,6 +1423,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(branchBaseClearSpec, runBranchBaseClear);
       registry.register(branchBaseExplainSpec, runBranchBaseExplain);
       registry.register(branchStatusSpec, runBranchStatus);
+      registry.register(branchRemoveSpec, runBranchRemove);
       registry.register(backendSpec, makeRunBackendHandler(getCtx));
       registry.register(backendSyncSpec, makeRunBackendSyncHandler(getCtx));
       registry.register(syncSpec, makeRunSyncHandler(getCtx));
@@ -1891,63 +1891,6 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "branch") {
-      if (command === "remove") {
-        let branch: string | undefined;
-        let worktree: string | undefined;
-        let force = false;
-        let quiet = false;
-        for (let i = 0; i < args.length; i++) {
-          const arg = args[i];
-          if (!arg) continue;
-          if (arg === "--branch") {
-            const next = args[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(BRANCH_REMOVE_USAGE, BRANCH_REMOVE_USAGE_EXAMPLE),
-              });
-            branch = next;
-            i++;
-            continue;
-          }
-          if (arg === "--worktree") {
-            const next = args[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(BRANCH_REMOVE_USAGE, BRANCH_REMOVE_USAGE_EXAMPLE),
-              });
-            worktree = next;
-            i++;
-            continue;
-          }
-          if (arg === "--force") {
-            force = true;
-            continue;
-          }
-          if (arg === "--quiet") {
-            quiet = true;
-            continue;
-          }
-          if (arg.startsWith("--")) {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(BRANCH_REMOVE_USAGE, BRANCH_REMOVE_USAGE_EXAMPLE),
-            });
-          }
-        }
-        return await cmdBranchRemove({
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          branch,
-          worktree,
-          force,
-          quiet,
-        });
-      }
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",

@@ -1,7 +1,7 @@
 ---
 id: "202602071928-6NGY6P"
 title: "CLI2-062: Migrate branch remove to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:37:50.505Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK: migrate branch remove to cli2 spec + handler; remove legacy dispatcher and keep runtime behavior."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:39:49.455Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: Migrated branch remove to cli2 spec + handler; removed legacy parsing; ran bun run typecheck, bun run lint, bun run test:cli (core suites included)."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Add cli2 spec + handler for branch remove; wire into help fast-path + main registry, remove legacy parsing, and update core CLI tests to expect spec-derived usage/hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:13.601Z"
+doc_updated_at: "2026-02-08T04:39:49.456Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `branch remove`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:39:49.455Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: Migrated branch remove to cli2 spec + handler; removed legacy parsing; ran bun run typecheck, bun run lint, bun run test:cli (core suites included).
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:37:56.809Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
