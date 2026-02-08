@@ -8,6 +8,9 @@ export type FinishParsed = {
   taskIds: string[];
   author: string;
   body: string;
+  result?: string;
+  risk?: "low" | "med" | "high";
+  breaking: boolean;
   commit?: string;
   force: boolean;
   commitFromComment: boolean;
@@ -58,6 +61,26 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       valueHint: "<text>",
       required: true,
       description: "Structured comment body (must match the configured Verified: prefix).",
+    },
+    {
+      kind: "string",
+      name: "result",
+      valueHint: "<one-line>",
+      description:
+        "One-line result summary stored in task metadata (required for non-spike tasks when finishing a single task).",
+    },
+    {
+      kind: "string",
+      name: "risk",
+      valueHint: "<low|med|high>",
+      choices: ["low", "med", "high"],
+      description: "Optional. Risk level stored in task metadata.",
+    },
+    {
+      kind: "boolean",
+      name: "breaking",
+      default: false,
+      description: "Optional. Mark the change as breaking in task metadata.",
     },
     {
       kind: "string",
@@ -172,6 +195,17 @@ export const finishSpec: CommandSpec<FinishParsed> = {
         message: "--commit-from-comment/--status-commit requires exactly one task id",
       });
     }
+    const hasMeta =
+      typeof raw.opts.result === "string" ||
+      typeof raw.opts.risk === "string" ||
+      raw.opts.breaking === true;
+    if (hasMeta && taskIds.length !== 1) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: "--result/--risk/--breaking requires exactly one task id",
+      });
+    }
   },
   parse: (raw) => ({
     taskIds: Array.isArray(raw.args["task-id"])
@@ -179,6 +213,9 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       : [],
     author: raw.opts.author as string,
     body: raw.opts.body as string,
+    result: raw.opts.result as string | undefined,
+    risk: raw.opts.risk as FinishParsed["risk"],
+    breaking: raw.opts.breaking === true,
     commit: raw.opts.commit as string | undefined,
     force: raw.opts.force === true,
     commitFromComment: raw.opts["commit-from-comment"] === true,
@@ -213,6 +250,9 @@ export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandCon
       taskIds: p.taskIds,
       author: p.author,
       body: p.body,
+      result: p.result,
+      risk: p.risk,
+      breaking: p.breaking,
       commit: p.commit,
       force: p.force,
       commitFromComment: p.commitFromComment,

@@ -29,6 +29,9 @@ export type TaskEvent = {
 export type TaskData = {
   id: string;
   title: string;
+  result_summary?: string;
+  risk_level?: "low" | "med" | "high";
+  breaking?: boolean;
   description: string;
   status: string;
   priority: string | number;

@@ -1635,6 +1635,8 @@ describe("runCli", () => {
         "CODER",
         "--body",
         "Verified: direct workflow finish updates export and lint with commit metadata present.",
+        "--result",
+        "lifecycle: finish task",
         "--commit",
         commitHash.trim(),
         "--force",

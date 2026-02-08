@@ -152,6 +152,9 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
   const preferredKeyOrder = [
     "id",
     "title",
+    "result_summary",
+    "risk_level",
+    "breaking",
     "status",
     "priority",
     "owner",

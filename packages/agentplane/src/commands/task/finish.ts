@@ -30,6 +30,9 @@ export async function cmdFinish(opts: {
   taskIds: string[];
   author: string;
   body: string;
+  result?: string;
+  risk?: "low" | "med" | "high";
+  breaking: boolean;
   commit?: string;
   force: boolean;
   commitFromComment: boolean;
@@ -83,6 +86,21 @@ export async function cmdFinish(opts: {
 
     const useStore = backendIsLocalFileBackend(ctx);
     const store = useStore ? getTaskStore(ctx) : null;
+
+    const metaTaskId = opts.taskIds.length === 1 ? (opts.taskIds[0] ?? "") : "";
+    const wantMeta =
+      typeof opts.result === "string" || typeof opts.risk === "string" || opts.breaking === true;
+    if (wantMeta && opts.taskIds.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--result/--risk/--breaking requires exactly one task id",
+      });
+    }
+    const resultSummary = typeof opts.result === "string" ? opts.result.trim() : "";
+    const riskLevel = opts.risk;
+    const breaking = opts.breaking === true;
+
     let primaryStatusFrom: string | null = null;
     for (const taskId of opts.taskIds) {
       const task = useStore ? await store!.get(taskId) : await loadTaskFromContext({ ctx, taskId });
@@ -108,6 +126,27 @@ export async function cmdFinish(opts: {
 
       ensureVerificationSatisfiedIfRequired(task, ctx.config);
 
+      if (taskId === metaTaskId) {
+        const tags = Array.isArray(task.tags)
+          ? task.tags.filter((t): t is string => typeof t === "string")
+          : [];
+        const isSpike = tags.includes("spike");
+        if (!isSpike && opts.taskIds.length === 1 && !resultSummary) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Missing required --result for non-spike tasks.",
+          });
+        }
+        if (typeof opts.result === "string" && !resultSummary) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Invalid value for --result: empty.",
+          });
+        }
+      }
+
       const existingComments = Array.isArray(task.comments)
         ? task.comments.filter(
             (item): item is { author: string; body: string } =>
@@ -129,6 +168,10 @@ export async function cmdFinish(opts: {
           to: "DONE",
           note: opts.body,
         }),
+        result_summary:
+          taskId === metaTaskId && resultSummary ? resultSummary : task.result_summary,
+        risk_level: taskId === metaTaskId && riskLevel ? riskLevel : task.risk_level,
+        breaking: taskId === metaTaskId && breaking ? true : task.breaking,
         doc_version: 2,
         doc_updated_at: at,
         doc_updated_by: opts.author,

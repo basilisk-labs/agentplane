@@ -320,6 +320,8 @@ describe("runCli", () => {
       "INTEGRATOR",
       "--body",
       "Verified: dependency completed for readiness test; checks done locally; no issues found.",
+      "--result",
+      "ready: finish dependency",
       "--root",
       root,
     ]);

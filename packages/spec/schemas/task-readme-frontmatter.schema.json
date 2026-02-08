@@ -21,6 +21,9 @@
   "properties": {
     "id": { "type": "string", "minLength": 1 },
     "title": { "type": "string", "minLength": 1 },
+    "result_summary": { "type": "string" },
+    "risk_level": { "type": "string", "enum": ["low", "med", "high"] },
+    "breaking": { "type": "boolean" },
     "status": { "type": "string", "enum": ["TODO", "DOING", "DONE", "BLOCKED"] },
     "priority": { "type": "string", "enum": ["low", "normal", "med", "high"] },
     "owner": { "type": "string", "minLength": 1 },
