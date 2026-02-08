@@ -1,0 +1,53 @@
+# TypeScript ESM Imports: Why Source Files Use `.js` Specifiers
+
+Agentplane uses TypeScript compiled to Node.js ESM. In this setup, it is **expected** that TypeScript source files import other local modules using a `.js` extension, for example:
+
+```ts
+import { runCli } from "./run-cli.js";
+```
+
+This is not a mistake and does not mean the repository contains `.js` sources.
+
+## The Runtime Rule (Node ESM)
+
+When running ESM in Node.js, module specifiers must be resolvable at runtime. Node does **not** resolve `.ts` files by default. After compilation, the emitted files are `.js`, so the runtime import must point at `.js`.
+
+If we wrote:
+
+```ts
+import { runCli } from "./run-cli.ts";
+```
+
+then the compiled output would still contain a `.ts` specifier unless a bundler rewrites it, and Node would fail at runtime.
+
+## The TypeScript Rule (NodeNext / ESM)
+
+With `moduleResolution` set to Node's ESM mode (commonly `NodeNext`), TypeScript understands that:
+
+- the source uses `.js` specifiers,
+- and those specifiers map to `.ts` sources during type-checking.
+
+So `./run-cli.js` in a TypeScript file is type-checked against `./run-cli.ts` (or `./run-cli/index.ts`, depending on layout), and the emitted import stays correct for Node runtime.
+
+## Why Your Editor Might Warn (Zed, etc.)
+
+Some editors or language-server configurations treat `.js` specifiers as "missing file" if they are not aware of the project's TypeScript ESM resolution settings.
+
+If you see warnings:
+
+- Confirm the editor is using the TypeScript language server (tsserver) and the repository `tsconfig.json`.
+- Ensure the editor is not using a Deno-style resolver or a generic JavaScript resolver.
+
+Agentplane's authoritative signal is the repository checks:
+
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:full`
+
+If these pass, `.js` specifiers are being resolved correctly in the intended toolchain.
+
+## Summary
+
+- `.js` in TypeScript imports is intentional for Node ESM runtime correctness.
+- TypeScript resolves those `.js` specifiers to `.ts` sources in Node ESM resolution mode.
+- Editor warnings usually indicate a resolver mismatch, not a repository bug.

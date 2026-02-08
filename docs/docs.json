@@ -53,6 +53,7 @@
           "developer/architecture",
           "developer/project-layout",
           "developer/cli-contract",
+          "developer/typescript-esm-imports",
           {
             "group": "Recipes",
             "pages": [
