@@ -1,0 +1,196 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`runCli help snapshots (cli2) > help (registry) snapshot 1`] = `
+"Usage:
+  agentplane help [<cmd...>] [--compact] [--json]
+
+Commands:
+  Backend:
+    backend  Backend-related operations.
+    backend sync  Sync the configured backend (push or pull).
+    sync  Sync the configured backend (alias).
+  Branch:
+    branch base  Manage the pinned base branch used in branch_pr workflow.
+    branch base clear  Clear the pinned base branch.
+    branch base explain  Explain current, pinned, and effective base branch resolution.
+    branch base get  Print the pinned base branch.
+    branch base set  Pin a base branch by name, or pin the current branch.
+    branch remove  Remove a task branch and/or its worktree.
+    branch status  Show ahead/behind status for a branch relative to a base branch.
+    cleanup  Clean up local branches/worktrees.
+    cleanup merged  Delete merged task branches/worktrees (branch_pr workflow).
+  Config:
+    config set  Update project config (dotted keys).
+    config show  Print resolved config JSON.
+    mode get  Print workflow mode.
+    mode set  Set workflow mode.
+  Core:
+    agents  List agent definitions under .agentplane/agents.
+    help  Show help for a command.
+    quickstart  Print CLI quickstart and command cheat sheet.
+    role  Show role-specific workflow guidance.
+  Guard:
+    commit  Create a git commit after validating policy and allowlist against staged changes.
+    guard  Guard commands (commit checks, git hygiene, and allowlist helpers).
+    guard clean  Ensure the git index has no staged files.
+    guard commit  Validate commit policy and allowlist for staged changes (no commit is created).
+    guard suggest-allow  Suggest minimal --allow prefixes based on staged files.
+  Hooks:
+    hooks  Manage and run git hooks installed by agentplane.
+    hooks install  Install managed git hooks and the agentplane shim.
+    hooks run  Run a managed hook (use \`--\` to pass through additional arguments).
+    hooks uninstall  Uninstall managed git hooks installed by agentplane.
+  IDE:
+    ide sync  Generate IDE entrypoints from AGENTS.md.
+  Lifecycle:
+    block  Transition a task to BLOCKED and record a structured Blocked comment.
+    finish  Mark task(s) as DONE and record a structured Verified comment.
+    start  Transition a task to DOING and record a structured Start comment.
+    verify  Record a verification outcome for a task (record-only; does not execute commands).
+  PR:
+    integrate  Integrate a task branch into the base branch (branch_pr workflow).
+    pr  Manage local PR artifacts for a task (branch_pr workflow).
+    pr check  Check that PR artifacts are present and valid.
+    pr note  Append a handoff note into PR review.md.
+    pr open  Create PR artifacts for a task.
+    pr update  Update PR artifacts (diffstat and auto summary).
+  Recipes:
+    recipes cache prune  Prune global recipe cache entries.
+    recipes explain  Show detailed info for an installed recipe.
+    recipes info  Show installed recipe metadata.
+    recipes install  Install a recipe from remote index, local archive, or URL.
+    recipes list  List installed recipes.
+    recipes list-remote  List recipes from the remote index (or cache).
+    recipes remove  Remove an installed recipe.
+  Scenario:
+    scenario info  Show scenario details (goal/inputs/outputs/steps).
+    scenario list  List scenarios available from installed recipes.
+    scenario run  Run a scenario toolchain from an installed recipe.
+  Setup:
+    init  Initialize agentplane project files under .agentplane/.
+    upgrade  Upgrade the local agentplane framework bundle in the repo.
+  Task:
+    ready  Report dependency readiness details for a task.
+    task add  Create one or more tasks with explicit ids (prints the created task ids).
+    task comment  Append a comment to a task.
+    task derive  Derive an implementation task from a spike task (adds depends_on on the spike).
+    task doc  Task doc commands (show/set).
+    task doc set  Update a task README section.
+    task doc show  Print task README content (entire doc or one section).
+    task export  Export tasks to the configured tasks export path (typically .agentplane/tasks.json).
+    task lint  Lint the exported tasks JSON file (schema + invariants).
+    task list  List tasks (optionally filtered by status/owner/tag).
+    task migrate  Import tasks from an exported JSON file into the configured backend.
+    task migrate-doc  Migrate task README docs to the current template/metadata format.
+    task new  Create a new task (prints the generated task id).
+    task next  List ready tasks (default status=TODO) with optional filters.
+    task normalize  Normalize tasks in the configured backend (stable ordering and formatting).
+    task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
+    task plan reject  Reject the current task plan (requires a note).
+    task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
+    task scaffold  Write a task README file scaffold (for the current doc template).
+    task scrub  Replace a string across all tasks (frontmatter + docs).
+    task search  Search tasks by text or regex with optional filters.
+    task set-status  Change a task status (optionally committing from the comment body).
+    task show  Print task metadata as JSON (frontmatter shape).
+    task update  Update an existing task.
+    task verify  Record verification results (ok/rework).
+    task verify ok  Record verification as OK (updates Verification section and verification frontmatter).
+    task verify rework  Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
+    task verify-show  Print the task Verify Steps section (alias for task doc show --section "Verify Steps").
+  Work:
+    work start  Create or switch to the task branch (optionally via git worktree).
+"
+`;
+
+exports[`runCli help snapshots (cli2) > help recipes install --compact snapshot 1`] = `
+"recipes install - Install a recipe from remote index, local archive, or URL.
+
+Usage:
+  agentplane recipes install <id|path|url> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --path <path> [--yes] [--on-conflict <fail|rename|overwrite>]
+  agentplane recipes install --url <url> [--yes] [--on-conflict <fail|rename|overwrite>]
+
+Options:
+  --name <id>  Install from remote index by recipe id.
+  --path <path>  Install from local recipe archive path.
+  --url <url>  Install from recipe archive URL.
+  --index <path|url>  Override recipes index location (used when installing by name / auto-name).
+  --refresh  Refresh remote index cache before installing. (default=false)
+  --yes  Auto-approve network prompts when allowed by config. (default=false)
+  --on-conflict <fail|rename|overwrite>  How to handle conflicts when applying recipe agents. (choices=fail|rename|overwrite, default=fail)
+"
+`;
+
+exports[`runCli help snapshots (cli2) > help task new --compact snapshot 1`] = `
+"task new - Create a new task (prints the generated task id).
+
+Usage:
+  agentplane task new --title <text> --description <text> --owner <id> [options]
+
+Options:
+  --title <text>  Task title. (required)
+  --description <text>  Task description. (required)
+  --owner <id>  Owner id (e.g. CODER). (required)
+  --priority <low|normal|med|high>  Task priority (default: med). (choices=low|normal|med|high, default=med)
+  --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
+  --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
+  --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
+"
+`;
+
+exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
+{
+  "args": [
+    {
+      "description": "Existing task id.",
+      "name": "task-id",
+      "required": true,
+      "valueHint": "<task-id>",
+    },
+  ],
+  "examples": [
+    {
+      "cmd": "agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli",
+      "why": "Start work by checking out / creating the branch in-place (direct mode).",
+    },
+  ],
+  "group": "Work",
+  "id": [
+    "work",
+    "start",
+  ],
+  "notes": [
+    "When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.",
+  ],
+  "options": [
+    {
+      "description": "Agent id (uppercase letters, numbers, underscore).",
+      "kind": "string",
+      "name": "agent",
+      "patternHint": "A–Z, 0–9, underscore",
+      "required": true,
+      "valueHint": "<ID>",
+    },
+    {
+      "description": "Branch slug (lowercase kebab-case).",
+      "kind": "string",
+      "name": "slug",
+      "patternHint": "lowercase kebab-case",
+      "required": true,
+      "valueHint": "<slug>",
+    },
+    {
+      "default": false,
+      "description": "Use git worktree for the task branch. Required when workflow_mode=branch_pr.",
+      "kind": "boolean",
+      "name": "worktree",
+    },
+  ],
+  "summary": "Create or switch to the task branch (optionally via git worktree).",
+  "usage": [
+    "agentplane work start <task-id> --agent <ID> --slug <slug> [options]",
+  ],
+}
+`;
