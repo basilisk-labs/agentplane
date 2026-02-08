@@ -221,7 +221,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["branch", "base", "set", "   ", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane branch base");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane branch base");
     } finally {
       io.restore();
     }
@@ -233,7 +234,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["branch", "base", "set", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane branch base");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane branch base");
     } finally {
       io.restore();
     }
@@ -245,7 +247,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["branch", "base", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane branch base");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane branch base");
     } finally {
       io.restore();
     }

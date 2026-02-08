@@ -60,6 +60,18 @@ import type { CommandHandler, CommandSpec } from "../cli2/spec.js";
 import { usageError } from "../cli2/errors.js";
 import { taskNewSpec, makeRunTaskNewHandler } from "../commands/task/new.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
+import {
+  branchBaseClearSpec,
+  branchBaseExplainSpec,
+  branchBaseGetSpec,
+  branchBaseSetSpec,
+  branchBaseSpec,
+  runBranchBase,
+  runBranchBaseClear,
+  runBranchBaseExplain,
+  runBranchBaseGet,
+  runBranchBaseSet,
+} from "../commands/branch/base.command.js";
 import { recipesInstallSpec, runRecipesInstall } from "../commands/recipes/install.command.js";
 import { recipesListSpec, runRecipesList } from "../commands/recipes/list.command.js";
 import {
@@ -125,10 +137,6 @@ import {
   WORK_START_USAGE,
   WORK_START_USAGE_EXAMPLE,
   cmdBlock,
-  cmdBranchBaseGet,
-  cmdBranchBaseClear,
-  cmdBranchBaseExplain,
-  cmdBranchBaseSet,
   cmdBranchRemove,
   cmdBranchStatus,
   cmdCleanupMerged,
@@ -1328,6 +1336,11 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(scenarioListSpec, noop);
       registry.register(scenarioInfoSpec, noop);
       registry.register(scenarioRunSpec, noop);
+      registry.register(branchBaseSpec, noop);
+      registry.register(branchBaseGetSpec, noop);
+      registry.register(branchBaseSetSpec, noop);
+      registry.register(branchBaseClearSpec, noop);
+      registry.register(branchBaseExplainSpec, noop);
       registry.register(backendSpec, noop);
       registry.register(backendSyncSpec, noop);
       registry.register(syncSpec, noop);
@@ -1406,6 +1419,11 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(scenarioListSpec, runScenarioList);
       registry.register(scenarioInfoSpec, runScenarioInfo);
       registry.register(scenarioRunSpec, runScenarioRun);
+      registry.register(branchBaseSpec, runBranchBase);
+      registry.register(branchBaseGetSpec, runBranchBaseGet);
+      registry.register(branchBaseSetSpec, runBranchBaseSet);
+      registry.register(branchBaseClearSpec, runBranchBaseClear);
+      registry.register(branchBaseExplainSpec, runBranchBaseExplain);
       registry.register(backendSpec, makeRunBackendHandler(getCtx));
       registry.register(backendSyncSpec, makeRunBackendSyncHandler(getCtx));
       registry.register(syncSpec, makeRunSyncHandler(getCtx));
@@ -1873,47 +1891,6 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     if (namespace === "branch") {
-      if (command === "base") {
-        const [subcommand, ...rest] = args;
-        if (subcommand === "get") {
-          return await cmdBranchBaseGet({ cwd: process.cwd(), rootOverride: globals.root });
-        }
-        if (subcommand === "set") {
-          const useCurrent = rest.includes("--current");
-          const value = rest.find((entry) => entry && entry !== "--current");
-          if (useCurrent && value) {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
-            });
-          }
-          if (!value && !useCurrent) {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
-            });
-          }
-          return await cmdBranchBaseSet({
-            cwd: process.cwd(),
-            rootOverride: globals.root,
-            value,
-            useCurrent,
-          });
-        }
-        if (subcommand === "clear") {
-          return await cmdBranchBaseClear({ cwd: process.cwd(), rootOverride: globals.root });
-        }
-        if (subcommand === "explain") {
-          return await cmdBranchBaseExplain({ cwd: process.cwd(), rootOverride: globals.root });
-        }
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
-        });
-      }
       if (command === "status") {
         let branch: string | undefined;
         let base: string | undefined;

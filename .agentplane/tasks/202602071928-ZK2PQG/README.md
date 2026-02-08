@@ -1,7 +1,7 @@
 ---
 id: "202602071928-ZK2PQG"
 title: "CLI2-060: Migrate branch base get/set/clear/explain to cli2"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:27:51.016Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK: migrate branch base commands to cli2 specs with parity; keep legacy behavior for now."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:31:18.029Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: Migrated branch base get/set/clear/explain to cli2 specs; ran bun run typecheck, bun run lint, bun run test:cli (includes core suites)."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Migrate branch base get/set/clear/explain into cli2 specs + handlers; wire into run-cli registry and help fast-path, then update tests to assert spec-derived usage/hints and remove legacy dispatch for these subcommands."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:10.785Z"
+doc_updated_at: "2026-02-08T04:31:18.030Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `branch base ...` subcommands."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:31:18.029Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: Migrated branch base get/set/clear/explain to cli2 specs; ran bun run typecheck, bun run lint, bun run test:cli (includes core suites).
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:27:56.917Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
