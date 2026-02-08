@@ -687,11 +687,11 @@ describe("runCli", () => {
     const cases: { args: string[]; msg: string }[] = [
       {
         args: ["task", "update", "202601010101-ABCDEF", "--title"],
-        msg: "Missing value for --title",
+        msg: "Missing value after --title",
       },
       {
         args: ["task", "update", "202601010101-ABCDEF", "--wat", "x"],
-        msg: "Unknown flag: --wat",
+        msg: "Unknown option: --wat.",
       },
     ];
 

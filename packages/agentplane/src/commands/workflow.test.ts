@@ -453,7 +453,17 @@ describe("commands/workflow", () => {
       try {
         const code = await cmdTaskUpdate({
           cwd: root,
-          args: [taskId, "--replace-tags", "--tag", "backend"],
+          taskId,
+          title: undefined,
+          description: undefined,
+          priority: undefined,
+          owner: undefined,
+          tags: ["backend"],
+          replaceTags: true,
+          dependsOn: [],
+          replaceDependsOn: false,
+          verify: [],
+          replaceVerify: false,
         });
         expect(code).toBe(0);
       } finally {
@@ -465,18 +475,17 @@ describe("commands/workflow", () => {
     try {
       const code = await cmdTaskUpdate({
         cwd: root,
-        args: [
-          taskId,
-          "--replace-tags",
-          "--tag",
-          "backend",
-          "--replace-verify",
-          "--verify",
-          "bun run test",
-          "--replace-depends-on",
-          "--depends-on",
-          "202602050900-Q1R3",
-        ],
+        taskId,
+        title: undefined,
+        description: undefined,
+        priority: undefined,
+        owner: undefined,
+        tags: ["backend"],
+        replaceTags: true,
+        dependsOn: ["202602050900-Q1R3"],
+        replaceDependsOn: true,
+        verify: ["bun run test"],
+        replaceVerify: true,
       });
       expect(code).toBe(0);
     } finally {
@@ -780,7 +789,17 @@ describe("commands/workflow", () => {
 
     await cmdTaskUpdate({
       cwd: root,
-      args: [taskId, "--depends-on", "202602050900-Z9Y8"],
+      taskId,
+      title: undefined,
+      description: undefined,
+      priority: undefined,
+      owner: undefined,
+      tags: [],
+      replaceTags: false,
+      dependsOn: ["202602050900-Z9Y8"],
+      replaceDependsOn: false,
+      verify: [],
+      replaceVerify: false,
     });
 
     await expect(
