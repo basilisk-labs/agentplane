@@ -1,7 +1,7 @@
 ---
 id: "202602071928-PX2SCJ"
 title: "CLI2-054: Migrate recipes remove/cache prune to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:08:52.607Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated recipes remove and recipes cache prune to cli2 with spec-derived parsing/help/usage and routed via cli2 registry. Refactored implementations to accept parsed args/flags (cmdRecipeRemoveParsed/cmdRecipeCachePruneParsed) and updated run-cli recipes tests for new E_USAGE output/help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:unit."
-commit: null
+commit:
+  hash: "53bf73c1c57e91cf3b2d4da6d8e98dfefa6e0577"
+  message: "✅ PX2SCJ cli: migrate recipes remove/cache prune to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate recipes remove and recipes cache prune to cli2 with spec-derived parsing/help/usage; refactor implementations to accept parsed args/flags; update run-cli recipes tests accordingly."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: recipes remove and recipes cache prune are cli2-routed with spec-derived help/usage; implementations accept parsed entrypoints; tests passing (typecheck/lint/format/test:cli:unit)."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:08:52.608Z"
+doc_updated_at: "2026-02-08T04:09:19.998Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `recipes remove` and `recipes cache prune`."
 ---
