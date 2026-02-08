@@ -1,7 +1,7 @@
 ---
 id: "202602081344-Q67G9W"
 title: "Decompose CLI entrypoint run-cli.ts"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -22,14 +22,19 @@ verification:
   updated_at: "2026-02-08T14:10:15.355Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: split cli/run-cli.ts by extracting the command registry builder into cli/run-cli/registry.ts; bun run typecheck, bun run lint, and bun run test:full all pass."
-commit: null
+commit:
+  hash: "286582edc8d984cce86caa51eb0acdd4c09af562"
+  message: "✨ Q67G9W cli: decompose run-cli entrypoint"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: split cli/run-cli.ts into focused modules and keep help/error behavior and the full test suite stable."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: cli/run-cli.ts now delegates registry construction to cli/run-cli/registry.ts; bun run typecheck, bun run lint, and bun run test:full all pass."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-08T14:10:15.357Z"
+doc_updated_at: "2026-02-08T14:11:09.554Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split cli/run-cli.ts into smaller modules (globals parsing, command routing, error/help plumbing) while preserving behavior and keeping full test suite green."
 ---
