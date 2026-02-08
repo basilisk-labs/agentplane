@@ -1885,8 +1885,8 @@ describe("runCli", () => {
 
     const cases: { args: string[]; msg: string }[] = [
       { args: ["task", "normalize", "--nope"], msg: "Unknown option: --nope." },
-      { args: ["task", "migrate", "--source"], msg: "Missing value for --source" },
-      { args: ["task", "migrate", "--nope"], msg: "Unknown flag" },
+      { args: ["task", "migrate", "--source"], msg: "Missing value after --source" },
+      { args: ["task", "migrate", "--nope"], msg: "Unknown option: --nope." },
     ];
 
     for (const entry of cases) {

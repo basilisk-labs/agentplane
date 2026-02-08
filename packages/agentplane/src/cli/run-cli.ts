@@ -74,6 +74,8 @@ import {
 } from "../commands/task/normalize.command.js";
 import { taskExportSpec, makeRunTaskExportHandler } from "../commands/task/export.command.js";
 import { taskLintSpec, runTaskLint } from "../commands/task/lint.command.js";
+import { taskMigrateSpec, makeRunTaskMigrateHandler } from "../commands/task/migrate.command.js";
+import { taskMigrateDocSpec, runTaskMigrateDoc } from "../commands/task/migrate-doc.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -166,8 +168,6 @@ import {
   cmdStart,
   cmdTaskDocShow,
   cmdTaskDerive,
-  cmdTaskMigrate,
-  cmdTaskMigrateDoc,
   cmdTaskNew,
   cmdTaskPlan,
   cmdVerify,
@@ -1356,6 +1356,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskNormalizeSpec, noop);
       registry.register(taskExportSpec, noop);
       registry.register(taskLintSpec, noop);
+      registry.register(taskMigrateSpec, noop);
+      registry.register(taskMigrateDocSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
@@ -1436,6 +1438,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskNormalizeSpec, makeRunTaskNormalizeHandler(getCtx));
       registry.register(taskExportSpec, makeRunTaskExportHandler(getCtx));
       registry.register(taskLintSpec, runTaskLint);
+      registry.register(taskMigrateSpec, makeRunTaskMigrateHandler(getCtx));
+      registry.register(taskMigrateDocSpec, runTaskMigrateDoc);
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
@@ -1515,19 +1519,6 @@ export async function runCli(argv: string[]): Promise<number> {
         rootOverride: globals.root,
         args,
       });
-    }
-
-    if (namespace === "task" && command === "migrate") {
-      return await cmdTaskMigrate({
-        ctx: await getCtx("task migrate"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "task" && command === "migrate-doc") {
-      return await cmdTaskMigrateDoc({ cwd: process.cwd(), rootOverride: globals.root, args });
     }
 
     if (namespace === "task" && command === "verify-show") {

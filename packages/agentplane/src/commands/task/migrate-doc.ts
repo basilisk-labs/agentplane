@@ -16,52 +16,14 @@ import {
 
 import { mapCoreError } from "../../cli/error-map.js";
 import { fileExists, getPathKind } from "../../cli/fs-utils.js";
-import { successMessage, usageMessage } from "../../cli/output.js";
+import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 
 export const TASK_MIGRATE_DOC_USAGE =
   "Usage: agentplane task migrate-doc [<task-id> ...] [--all] [--quiet]";
 export const TASK_MIGRATE_DOC_USAGE_EXAMPLE = "agentplane task migrate-doc --all";
 
-type TaskMigrateDocFlags = { all: boolean; quiet: boolean; taskIds: string[] };
-
-function parseTaskMigrateDocFlags(args: string[]): TaskMigrateDocFlags {
-  const out: TaskMigrateDocFlags = { all: false, quiet: false, taskIds: [] };
-  for (const arg of args) {
-    if (!arg) continue;
-    if (arg === "--all") {
-      out.all = true;
-      continue;
-    }
-    if (arg === "--quiet") {
-      out.quiet = true;
-      continue;
-    }
-    if (arg.startsWith("--")) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(TASK_MIGRATE_DOC_USAGE, TASK_MIGRATE_DOC_USAGE_EXAMPLE),
-      });
-    }
-    out.taskIds.push(arg);
-  }
-  if (!out.all && out.taskIds.length === 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_MIGRATE_DOC_USAGE, TASK_MIGRATE_DOC_USAGE_EXAMPLE),
-    });
-  }
-  if (out.all && out.taskIds.length > 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_MIGRATE_DOC_USAGE, TASK_MIGRATE_DOC_USAGE_EXAMPLE),
-    });
-  }
-  return out;
-}
+type TaskMigrateDocParams = { all: boolean; quiet: boolean; taskIds: string[] };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -154,10 +116,10 @@ async function migrateTaskReadmeDoc(opts: {
 
 async function resolveReadmePaths(opts: {
   tasksDir: string;
-  flags: TaskMigrateDocFlags;
+  params: TaskMigrateDocParams;
 }): Promise<string[]> {
-  if (!opts.flags.all) {
-    return opts.flags.taskIds.map((taskId) => path.join(opts.tasksDir, taskId, "README.md"));
+  if (!opts.params.all) {
+    return opts.params.taskIds.map((taskId) => path.join(opts.tasksDir, taskId, "README.md"));
   }
   if ((await getPathKind(opts.tasksDir)) !== "dir") return [];
   const entries = await readdir(opts.tasksDir, { withFileTypes: true });
@@ -173,9 +135,11 @@ async function resolveReadmePaths(opts: {
 export async function cmdTaskMigrateDoc(opts: {
   cwd: string;
   rootOverride?: string;
-  args: string[];
+  all: boolean;
+  quiet: boolean;
+  taskIds: string[];
 }): Promise<number> {
-  const flags = parseTaskMigrateDocFlags(opts.args);
+  const params: TaskMigrateDocParams = { all: opts.all, quiet: opts.quiet, taskIds: opts.taskIds };
   try {
     const resolved = await resolveProject({
       cwd: opts.cwd,
@@ -184,8 +148,8 @@ export async function cmdTaskMigrateDoc(opts: {
     const loaded = await loadConfig(resolved.agentplaneDir);
     const tasksDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir);
 
-    const readmePaths = await resolveReadmePaths({ tasksDir, flags });
-    if (!flags.all) {
+    const readmePaths = await resolveReadmePaths({ tasksDir, params });
+    if (!params.all) {
       for (const readmePath of readmePaths) {
         if (!(await fileExists(readmePath))) {
           const taskId = path.basename(path.dirname(readmePath));
@@ -204,7 +168,7 @@ export async function cmdTaskMigrateDoc(opts: {
       if (res.changed) changed += 1;
     }
 
-    if (!flags.quiet) {
+    if (!params.quiet) {
       process.stdout.write(
         `${successMessage("migrated task docs", undefined, `changed=${changed}`)}\n`,
       );

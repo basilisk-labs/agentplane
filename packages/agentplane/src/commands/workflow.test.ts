@@ -1357,16 +1357,8 @@ describe("commands/workflow", () => {
     const tasksPath = path.join(root, "tasks.json");
     await writeFile(tasksPath, "{not-json", "utf8");
 
-    await expect(cmdTaskMigrate({ cwd: root, args: ["--source"] })).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
-
-    await expect(cmdTaskMigrate({ cwd: root, args: ["--nope"] })).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
-
     await expect(
-      cmdTaskMigrate({ cwd: root, args: ["--source", "tasks.json"] }),
+      cmdTaskMigrate({ cwd: root, source: "tasks.json", quiet: false, force: false }),
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
 
     const writeTasks = vi.fn();
@@ -1390,7 +1382,12 @@ describe("commands/workflow", () => {
     );
     const io = captureStdIO();
     try {
-      const code = await cmdTaskMigrate({ cwd: root, args: ["--source", "tasks.json"] });
+      const code = await cmdTaskMigrate({
+        cwd: root,
+        source: "tasks.json",
+        quiet: false,
+        force: false,
+      });
       expect(code).toBe(0);
       expect(writeTasks).toHaveBeenCalledOnce();
     } finally {

@@ -43,7 +43,13 @@ Keep scope.
 
     await writeFile(readmePath, legacy, "utf8");
 
-    const code = await cmdTaskMigrateDoc({ cwd: root, rootOverride: root, args: [taskId] });
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
     expect(code).toBe(0);
 
     const migrated = await readFile(readmePath, "utf8");
@@ -54,7 +60,13 @@ Keep scope.
     expect(migrated).toContain("Keep me.");
     expect(migrated).toContain("Keep scope.");
 
-    const code2 = await cmdTaskMigrateDoc({ cwd: root, rootOverride: root, args: [taskId] });
+    const code2 = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
     expect(code2).toBe(0);
     const migrated2 = await readFile(readmePath, "utf8");
     expect(migrated2).toBe(migrated);
@@ -105,7 +117,13 @@ Keep scope.
 `;
 
     await writeFile(readmePath, legacy, "utf8");
-    const code = await cmdTaskMigrateDoc({ cwd: root, rootOverride: root, args: [taskId] });
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
     expect(code).toBe(0);
 
     const migrated = await readFile(readmePath, "utf8");
@@ -155,7 +173,13 @@ Keep scope.
 `;
 
     await writeFile(readmePath, legacy, "utf8");
-    const code = await cmdTaskMigrateDoc({ cwd: root, rootOverride: root, args: [taskId] });
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
     expect(code).toBe(0);
 
     const migrated = await readFile(readmePath, "utf8");
