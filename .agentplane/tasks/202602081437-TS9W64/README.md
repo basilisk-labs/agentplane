@@ -1,7 +1,7 @@
 ---
 id: "202602081437-TS9W64"
 title: "MONO2: Decompose backends/task-backend/shared.ts"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T14:44:27.692Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: bun run typecheck PASS; bun run lint PASS; bun run test:full PASS (vitest, 704 tests). Refactor-only: split task-backend/shared.ts into backends/task-backend/shared/* and preserved existing exports."
-commit: null
+commit:
+  hash: "5a88092191d610067457692087d96ba9b385964d"
+  message: "✨ TS9W64 backend: decompose task-backend shared helpers"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: split task-backend/shared.ts into smaller modules with stable exports and keep the full test suite green."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run typecheck PASS; bun run lint PASS; bun run test:full PASS (vitest, 704 tests). Refactor-only: split task-backend/shared.ts into backends/task-backend/shared/*, kept shared.ts as stable re-export layer, and preserved behavior."
 doc_version: 2
-doc_updated_at: "2026-02-08T14:44:27.694Z"
+doc_updated_at: "2026-02-08T14:46:56.110Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split backends/task-backend/shared.ts into smaller modules (types, id/doc helpers, concurrency utils, errors) with stable exports and no behavior changes."
 id_source: "generated"
