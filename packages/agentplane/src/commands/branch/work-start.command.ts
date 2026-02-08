@@ -74,6 +74,13 @@ export function makeRunWorkStartHandler(
         command: "work start",
       });
     }
+    if (mode !== "branch_pr" && p.worktree) {
+      throw usageError({
+        spec: workStartSpec,
+        message: `--worktree is only supported when workflow_mode=branch_pr (current: ${mode})`,
+        command: "work start",
+      });
+    }
     return await cmdWorkStart({
       ctx: commandCtx,
       cwd: ctx.cwd,

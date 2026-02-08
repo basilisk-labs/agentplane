@@ -4,7 +4,6 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { cmdScenario } from "./scenario.js";
 import {
   cmdRecipeCachePruneParsed,
   cmdRecipeExplainParsed,
@@ -14,6 +13,7 @@ import {
   cmdRecipeListRemoteParsed,
   cmdRecipeRemoveParsed,
 } from "./recipes.js";
+import { cmdScenarioInfoParsed, cmdScenarioListParsed, cmdScenarioRunParsed } from "./scenario.js";
 import { CliError } from "../shared/errors.js";
 import { parseCommandArgv } from "../cli2/parse.js";
 import { recipesCachePruneSpec } from "./recipes/cache-prune.command.js";
@@ -23,6 +23,9 @@ import { recipesInstallSpec } from "./recipes/install.command.js";
 import { recipesListRemoteSpec } from "./recipes/list-remote.command.js";
 import { recipesListSpec } from "./recipes/list.command.js";
 import { recipesRemoveSpec } from "./recipes/remove.command.js";
+import { scenarioInfoSpec } from "./scenario/info.command.js";
+import { scenarioListSpec } from "./scenario/list.command.js";
+import { scenarioRunSpec } from "./scenario/run.command.js";
 import {
   captureStdIO,
   createRecipeArchive,
@@ -184,6 +187,49 @@ async function runRecipesTest(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: `Unknown recipes subcommand: ${opts.command}`,
+      });
+    }
+  }
+}
+
+async function runScenarioTest(opts: {
+  cwd: string;
+  rootOverride?: string;
+  command: string | undefined;
+  args: string[];
+}): Promise<number> {
+  if (!opts.command) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing scenario subcommand." });
+  }
+
+  switch (opts.command) {
+    case "list": {
+      parseCommandArgv(scenarioListSpec, opts.args);
+      return await cmdScenarioListParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    }
+    case "info": {
+      const parsed = parseCommandArgv(scenarioInfoSpec, opts.args).parsed;
+      return await cmdScenarioInfoParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        recipeId: parsed.recipeId,
+        scenarioId: parsed.scenarioId,
+      });
+    }
+    case "run": {
+      const parsed = parseCommandArgv(scenarioRunSpec, opts.args).parsed;
+      return await cmdScenarioRunParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        recipeId: parsed.recipeId,
+        scenarioId: parsed.scenarioId,
+      });
+    }
+    default: {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Unknown scenario subcommand: ${opts.command}`,
       });
     }
   }
@@ -529,7 +575,7 @@ describe("commands/recipes", () => {
 
     const ioList = captureStdIO();
     try {
-      const code = await cmdScenario({
+      const code = await runScenarioTest({
         cwd: projectDir,
         args: [],
         command: "list",
@@ -542,7 +588,7 @@ describe("commands/recipes", () => {
 
     const ioInfo = captureStdIO();
     try {
-      const code = await cmdScenario({
+      const code = await runScenarioTest({
         cwd: projectDir,
         args: ["viewer:RECIPE_SCENARIO"],
         command: "info",
@@ -564,28 +610,28 @@ describe("commands/recipes", () => {
     await installRecipe({ projectDir });
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: [], command: undefined }),
+      runScenarioTest({ cwd: projectDir, args: [], command: undefined }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["extra"], command: "list" }),
+      runScenarioTest({ cwd: projectDir, args: ["extra"], command: "list" }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
-
-    await expect(cmdScenario({ cwd: projectDir, args: [], command: "info" })).rejects.toMatchObject(
-      { code: "E_USAGE" },
-    );
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["viewer"], command: "info" }),
+      runScenarioTest({ cwd: projectDir, args: [], command: "info" }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
 
-    await expect(cmdScenario({ cwd: projectDir, args: [], command: "run" })).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
+    await expect(
+      runScenarioTest({ cwd: projectDir, args: ["viewer"], command: "info" }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    await expect(
+      runScenarioTest({ cwd: projectDir, args: [], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
 
     const ioRun = captureStdIO();
     try {
-      const code = await cmdScenario({
+      const code = await runScenarioTest({
         cwd: projectDir,
         args: ["viewer:RECIPE_SCENARIO"],
         command: "run",
@@ -602,24 +648,24 @@ describe("commands/recipes", () => {
     await writeDefaultConfig(projectDir);
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["missing:scenario"], command: "run" }),
+      runScenarioTest({ cwd: projectDir, args: ["missing:scenario"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_IO" });
 
     await installRecipe({ projectDir });
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["viewer"], command: "run" }),
+      runScenarioTest({ cwd: projectDir, args: ["viewer"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["viewer:UNKNOWN"], command: "run" }),
+      runScenarioTest({ cwd: projectDir, args: ["viewer:UNKNOWN"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_IO" });
 
     const scenariosDir = path.join(tempHome, "recipes", "viewer", "1.2.3", "scenarios");
     await rm(scenariosDir, { recursive: true, force: true });
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
+      runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_IO" });
   });
 
@@ -648,7 +694,7 @@ describe("commands/recipes", () => {
 
     const io = captureStdIO();
     try {
-      const code = await cmdScenario({ cwd: projectDir, args: [], command: "list" });
+      const code = await runScenarioTest({ cwd: projectDir, args: [], command: "list" });
       expect(code).toBe(0);
       expect(io.stdout).toContain("No scenarios found");
     } finally {
@@ -678,7 +724,7 @@ describe("commands/recipes", () => {
 
     const io = captureStdIO();
     try {
-      const code = await cmdScenario({
+      const code = await runScenarioTest({
         cwd: projectDir,
         args: ["viewer:beta"],
         command: "info",
@@ -704,7 +750,7 @@ describe("commands/recipes", () => {
     await writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
+      runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
 
     (manifest.tools as Record<string, unknown>[])[0].runtime = "bash";
@@ -712,7 +758,7 @@ describe("commands/recipes", () => {
     await writeFile(path.join(recipeDir, "tools", "run.sh"), "exit 2\n", "utf8");
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
+      runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_INTERNAL" });
 
     const runsRoot = path.join(projectDir, ".agentplane", "recipes", "viewer", "runs");
@@ -779,7 +825,7 @@ describe("commands/recipes", () => {
       command: "install",
     });
 
-    await cmdScenario({
+    await runScenarioTest({
       cwd: projectDir,
       args: ["viewer:AUDIT_SCENARIO"],
       command: "run",
@@ -859,7 +905,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
     try {
       await expect(
-        cmdScenario({ cwd: projectDir, args: ["viewer:WARN_SCENARIO"], command: "run" }),
+        runScenarioTest({ cwd: projectDir, args: ["viewer:WARN_SCENARIO"], command: "run" }),
       ).rejects.toMatchObject({ code: "E_IO" });
       expect(io.stdout).toContain("Warning: tool WARN_TOOL declares permissions");
     } finally {
@@ -914,7 +960,7 @@ describe("commands/recipes", () => {
     });
 
     await expect(
-      cmdScenario({ cwd: projectDir, args: ["viewer:BAD_ARGS"], command: "run" }),
+      runScenarioTest({ cwd: projectDir, args: ["viewer:BAD_ARGS"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_IO" });
   });
 
@@ -1266,7 +1312,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdScenario({
+      runScenarioTest({
         cwd: process.cwd(),
         args: [],
         command: "list",
@@ -1299,7 +1345,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdScenario({
+      runScenarioTest({
         cwd: process.cwd(),
         args: [],
         command: "list",
@@ -1312,7 +1358,7 @@ describe("commands/recipes", () => {
 
   it("rejects missing scenario subcommand", async () => {
     await expect(
-      cmdScenario({
+      runScenarioTest({
         cwd: process.cwd(),
         args: [],
         command: undefined,
@@ -1322,7 +1368,7 @@ describe("commands/recipes", () => {
 
   it("rejects scenario list with extra args", async () => {
     await expect(
-      cmdScenario({
+      runScenarioTest({
         cwd: process.cwd(),
         args: ["extra"],
         command: "list",

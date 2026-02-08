@@ -7,7 +7,7 @@ import { atomicWriteFile, resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../cli/error-map.js";
 import { fileExists, getPathKind } from "../cli/fs-utils.js";
-import { emptyStateMessage, usageMessage } from "../cli/output.js";
+import { emptyStateMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { dedupeStrings } from "../shared/strings.js";
 import {
@@ -27,12 +27,6 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-const SCENARIO_USAGE = "Usage: agentplane scenario <list|info|run> [args]";
-const SCENARIO_USAGE_EXAMPLE = "agentplane scenario list";
-const SCENARIO_INFO_USAGE = "Usage: agentplane scenario info <recipe:scenario>";
-const SCENARIO_INFO_USAGE_EXAMPLE = "agentplane scenario info viewer:demo";
-const SCENARIO_RUN_USAGE = "Usage: agentplane scenario run <recipe:scenario>";
-const SCENARIO_RUN_USAGE_EXAMPLE = "agentplane scenario run viewer:demo";
 const SCENARIO_REPORT_NAME = "report.json";
 
 type ScenarioRunGitSummary = {
@@ -171,10 +165,6 @@ async function writeScenarioReport(opts: {
   );
 }
 
-async function cmdScenarioList(opts: { cwd: string; rootOverride?: string }): Promise<number> {
-  return await cmdScenarioListParsed(opts);
-}
-
 export async function cmdScenarioListParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -229,32 +219,6 @@ export async function cmdScenarioListParsed(opts: {
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "scenario list", root: opts.rootOverride ?? null });
-  }
-}
-
-async function cmdScenarioInfo(opts: {
-  cwd: string;
-  rootOverride?: string;
-  id: string;
-}): Promise<number> {
-  try {
-    const [recipeId, scenarioId] = opts.id.split(":");
-    if (!recipeId || !scenarioId) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(SCENARIO_INFO_USAGE, SCENARIO_INFO_USAGE_EXAMPLE),
-      });
-    }
-    return await cmdScenarioInfoParsed({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      recipeId,
-      scenarioId,
-    });
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "scenario info", root: opts.rootOverride ?? null });
   }
 }
 
@@ -363,37 +327,6 @@ async function executeRecipeTool(opts: {
 
 function sanitizeRunId(value: string): string {
   return value.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
-}
-
-async function cmdScenarioRun(opts: {
-  cwd: string;
-  rootOverride?: string;
-  id: string;
-}): Promise<number> {
-  try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
-    const [recipeId, scenarioId] = opts.id.split(":");
-    if (!recipeId || !scenarioId) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(SCENARIO_RUN_USAGE, SCENARIO_RUN_USAGE_EXAMPLE),
-      });
-    }
-    return await cmdScenarioRunParsed({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      recipeId,
-      scenarioId,
-      resolved,
-    });
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "scenario run", root: opts.rootOverride ?? null });
-  }
 }
 
 export async function cmdScenarioRunParsed(opts: {
@@ -615,64 +548,4 @@ export async function cmdScenarioRunParsed(opts: {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "scenario run", root: opts.rootOverride ?? null });
   }
-}
-
-export async function cmdScenario(opts: {
-  cwd: string;
-  rootOverride?: string;
-  command?: string;
-  args: string[];
-}): Promise<number> {
-  const sub = opts.command;
-  if (!sub) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
-    });
-  }
-  if (sub === "list") {
-    if (opts.args.length > 0) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
-      });
-    }
-    return await cmdScenarioList({ cwd: opts.cwd, rootOverride: opts.rootOverride });
-  }
-  if (sub === "info") {
-    if (opts.args.length !== 1) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(SCENARIO_INFO_USAGE, SCENARIO_INFO_USAGE_EXAMPLE),
-      });
-    }
-    return await cmdScenarioInfo({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      id: opts.args[0],
-    });
-  }
-  if (sub === "run") {
-    if (opts.args.length !== 1) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(SCENARIO_RUN_USAGE, SCENARIO_RUN_USAGE_EXAMPLE),
-      });
-    }
-    return await cmdScenarioRun({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      id: opts.args[0],
-    });
-  }
-
-  throw new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
-    message: usageMessage(SCENARIO_USAGE, SCENARIO_USAGE_EXAMPLE),
-  });
 }

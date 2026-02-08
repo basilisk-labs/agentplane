@@ -334,7 +334,8 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(2);
       expect(io.stderr).toContain("--worktree is only supported");
-      expect(io.stderr).toContain("Usage: agentplane work start");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane work start");
     } finally {
       io.restore();
     }

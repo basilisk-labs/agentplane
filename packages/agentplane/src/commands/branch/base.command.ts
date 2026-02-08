@@ -74,7 +74,7 @@ export const branchBaseSetSpec: CommandSpec<BranchBaseSetParsed> = {
     { cmd: "agentplane branch base set --current", why: "Pin the current branch as base." },
   ],
   validateRaw: (raw) => {
-    const name = raw.args.name ? String(raw.args.name) : "";
+    const name = raw.args.name ? String(raw.args.name).trim() : "";
     const useCurrent = raw.opts.current === true;
     if (useCurrent && name) {
       throw usageError({
@@ -90,7 +90,7 @@ export const branchBaseSetSpec: CommandSpec<BranchBaseSetParsed> = {
     }
   },
   parse: (raw) => ({
-    value: raw.args.name ? String(raw.args.name) : null,
+    value: raw.args.name ? String(raw.args.name).trim() : null,
     useCurrent: raw.opts.current === true,
   }),
 };
