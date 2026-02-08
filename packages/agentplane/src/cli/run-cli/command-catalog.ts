@@ -22,7 +22,8 @@ import {
 } from "./commands/config.js";
 import { ideSyncSpec, runIdeSync } from "./commands/ide.js";
 
-import { taskNewSpec, makeRunTaskNewHandler } from "../../commands/task/new.command.js";
+import { taskNewSpec } from "../../commands/task/new.spec.js";
+import { makeRunTaskNewHandler } from "../../commands/task/new.command.js";
 import { taskListSpec, makeRunTaskListHandler } from "../../commands/task/list.command.js";
 import { taskNextSpec, makeRunTaskNextHandler } from "../../commands/task/next.command.js";
 import { taskSearchSpec, makeRunTaskSearchHandler } from "../../commands/task/search.command.js";
@@ -143,7 +144,8 @@ import {
 } from "../../commands/pr/pr.command.js";
 import { integrateSpec, makeRunIntegrateHandler } from "../../commands/integrate.command.js";
 
-import { commitSpec, makeRunCommitHandler } from "../../commands/commit.command.js";
+import { commitSpec } from "../../commands/commit.spec.js";
+import { makeRunCommitHandler } from "../../commands/commit.command.js";
 import { startSpec, makeRunStartHandler } from "../../commands/start.command.js";
 import { blockSpec, makeRunBlockHandler } from "../../commands/block.command.js";
 import { verifySpec, makeRunVerifyHandler } from "../../commands/verify.command.js";
