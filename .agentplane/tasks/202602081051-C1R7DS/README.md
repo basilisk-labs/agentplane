@@ -1,7 +1,7 @@
 ---
 id: "202602081051-C1R7DS"
 title: "CLI2-FULL-040: Add enforcement tests against legacy argv parsing"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T12:20:31.297Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: added vitest regression guard packages/agentplane/src/cli/legacy-cli-regressions.test.ts to prevent legacy parse*Flags/usageMessage/process.argv or exported *_USAGE constants under commands/; ran typecheck, lint, and test:fast; rg assertions are clean."
-commit: null
+commit:
+  hash: "532088b885ef754c06b21dd9a0f7f933e4c0c32f"
+  message: "✨ C1R7DS cli: add legacy regression tests"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: add vitest-based regression guards that fail when legacy parse*Flags or exported *_USAGE constants are reintroduced under packages/agentplane/src/commands."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: added repo-level vitest regression guards to prevent legacy CLI parsing/usage drift (parse*Flags, exported *_USAGE, usageMessage, process.argv) under packages/agentplane/src/commands; lint+typecheck+tests are green and rg assertions are clean."
 doc_version: 2
-doc_updated_at: "2026-02-08T12:20:31.297Z"
+doc_updated_at: "2026-02-08T12:21:31.762Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add tests that fail on parse*Flags, *_USAGE constants, or legacy argv entrypoints under commands; prevent regressions."
 id_source: "generated"
