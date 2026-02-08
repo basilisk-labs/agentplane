@@ -1,7 +1,7 @@
 ---
 id: "202602081051-G8M5DW"
 title: "CLI2-FULL-011: Remove legacy argv parsing from task new"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T11:02:37.385Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: removed legacy task new argv parsing/usage exports (TASK_NEW_USAGE/parseTaskNewFlags/cmdTaskNew), updated workflow tests to parsed-only APIs, and confirmed typecheck + cli core + fast tests pass."
-commit: null
+commit:
+  hash: "81f25e91eb462db16462233249aa9ccfaebf963b"
+  message: "✨ G8M5DW cli: remove legacy task new argv parsing"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: remove legacy task new argv parsing/usage constants, update any callers/tests to cli2 spec or parsed-only API, and keep behavior stable."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: task new no longer has a legacy argv parser or usage constants; only cli2 specs drive parsing/help, workflow tests use parsed-only APIs, and typecheck + cli core + fast tests pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T11:02:37.386Z"
+doc_updated_at: "2026-02-08T11:03:15.627Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Delete parseTaskNewFlags/usage constants and legacy argv entrypoints; ensure only cli2 spec drives parsing/help."
 id_source: "generated"
