@@ -1,7 +1,7 @@
 ---
 id: "202602071928-TNFT8R"
 title: "CLI2-051: Migrate recipes list-remote to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T02:46:57.890Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated recipes list-remote to cli2 with spec-derived parsing/help/usage and routed via cli2 registry. Refactored list-remote implementation to accept parsed flags entrypoint (cmdRecipeListRemoteParsed) and updated run-cli recipes tests for new E_USAGE output/help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:unit."
-commit: null
+commit:
+  hash: "c87152bc4c60b8186336e707d4252ed6cf6bdafe"
+  message: "✅ TNFT8R cli: migrate recipes list-remote to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate recipes list-remote to cli2 with spec-derived parsing/help/usage; refactor list-remote implementation to accept parsed flags; update run-cli recipes tests for new E_USAGE output."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: recipes list-remote is cli2-routed with spec-derived help/usage; implementation uses parsed flags entrypoint; tests passing (typecheck/lint/format/test:cli:unit)."
 doc_version: 2
-doc_updated_at: "2026-02-08T02:46:57.891Z"
+doc_updated_at: "2026-02-08T02:47:26.220Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `recipes list-remote` (refresh/index/yes)."
 ---
