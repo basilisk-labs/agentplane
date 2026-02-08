@@ -52,14 +52,6 @@ export function suggestAllowPrefixes(paths: string[]): string[] {
   return [...out].toSorted((a, b) => a.localeCompare(b));
 }
 
-export const GUARD_COMMIT_USAGE =
-  "Usage: agentplane guard commit <task-id> -m <message> --allow <path> [--allow <path>...] [--auto-allow] [--allow-tasks] [--allow-base] [--allow-policy] [--allow-config] [--allow-hooks] [--allow-ci] [--require-clean] [--quiet]";
-export const GUARD_COMMIT_USAGE_EXAMPLE =
-  'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane';
-export const COMMIT_USAGE = "Usage: agentplane commit <task-id> -m <message>";
-export const COMMIT_USAGE_EXAMPLE =
-  'agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard"';
-
 type GuardCommitOptions = {
   ctx?: CommandContext;
   cwd: string;

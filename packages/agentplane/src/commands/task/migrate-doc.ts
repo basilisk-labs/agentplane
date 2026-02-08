@@ -19,10 +19,6 @@ import { fileExists, getPathKind } from "../../cli/fs-utils.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 
-export const TASK_MIGRATE_DOC_USAGE =
-  "Usage: agentplane task migrate-doc [<task-id> ...] [--all] [--quiet]";
-export const TASK_MIGRATE_DOC_USAGE_EXAMPLE = "agentplane task migrate-doc --all";
-
 type TaskMigrateDocParams = { all: boolean; quiet: boolean; taskIds: string[] };
 
 function isRecord(value: unknown): value is Record<string, unknown> {

@@ -22,23 +22,6 @@ import {
   toStringArray,
 } from "./shared.js";
 
-export const TASK_PLAN_USAGE = "Usage: agentplane task plan <set|approve|reject> <task-id> [flags]";
-export const TASK_PLAN_USAGE_EXAMPLE = 'agentplane task plan set 202602030608-F1Q8AB --text "..."';
-
-export const TASK_PLAN_SET_USAGE =
-  "Usage: agentplane task plan set <task-id> (--text <text> | --file <path>) [--updated-by <id>]";
-export const TASK_PLAN_SET_USAGE_EXAMPLE = String.raw`agentplane task plan set 202602030608-F1Q8AB --text "1) ...\n2) ..." --updated-by ORCHESTRATOR`;
-
-export const TASK_PLAN_APPROVE_USAGE =
-  "Usage: agentplane task plan approve <task-id> --by <id> [--note <text>]";
-export const TASK_PLAN_APPROVE_USAGE_EXAMPLE =
-  'agentplane task plan approve 202602030608-F1Q8AB --by USER --note "OK"';
-
-export const TASK_PLAN_REJECT_USAGE =
-  "Usage: agentplane task plan reject <task-id> --by <id> --note <text>";
-export const TASK_PLAN_REJECT_USAGE_EXAMPLE =
-  'agentplane task plan reject 202602030608-F1Q8AB --by USER --note "Need clarification"';
-
 type PlanBackend = CommandContext["taskBackend"] & {
   getTaskDoc: NonNullable<CommandContext["taskBackend"]["getTaskDoc"]>;
   writeTask: NonNullable<CommandContext["taskBackend"]["writeTask"]>;

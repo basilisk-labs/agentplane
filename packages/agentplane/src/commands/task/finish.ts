@@ -23,11 +23,6 @@ import {
   requireStructuredComment,
 } from "./shared.js";
 
-export const FINISH_USAGE =
-  "Usage: agentplane finish <task-id> [<task-id>...] --author <id> --body <text> [flags]";
-export const FINISH_USAGE_EXAMPLE =
-  'agentplane finish 202602030608-F1Q8AB --author INTEGRATOR --body "Verified: ..."';
-
 export async function cmdFinish(opts: {
   ctx?: CommandContext;
   cwd: string;

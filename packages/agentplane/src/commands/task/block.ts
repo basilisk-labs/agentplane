@@ -21,10 +21,6 @@ import {
   requireStructuredComment,
 } from "./shared.js";
 
-export const BLOCK_USAGE = "Usage: agentplane block <task-id> --author <id> --body <text> [flags]";
-export const BLOCK_USAGE_EXAMPLE =
-  'agentplane block 202602030608-F1Q8AB --author CODER --body "Blocked: ..."';
-
 export async function cmdBlock(opts: {
   ctx?: CommandContext;
   cwd: string;

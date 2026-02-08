@@ -27,10 +27,6 @@ import {
   toStringArray,
 } from "./shared.js";
 
-export const START_USAGE = "Usage: agentplane start <task-id> --author <id> --body <text> [flags]";
-export const START_USAGE_EXAMPLE =
-  'agentplane start 202602030608-F1Q8AB --author CODER --body "Start: ..."';
-
 export async function cmdStart(opts: {
   ctx?: CommandContext;
   cwd: string;

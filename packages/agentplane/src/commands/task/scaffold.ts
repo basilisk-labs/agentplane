@@ -20,10 +20,6 @@ import {
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { nowIso } from "./shared.js";
 
-export const TASK_SCAFFOLD_USAGE =
-  "Usage: agentplane task scaffold <task-id> [--title <text>] [--overwrite] [--force]";
-export const TASK_SCAFFOLD_USAGE_EXAMPLE = "agentplane task scaffold 202602030608-F1Q8AB";
-
 function insertMarkdownSectionBefore(opts: {
   body: string;
   section: string;

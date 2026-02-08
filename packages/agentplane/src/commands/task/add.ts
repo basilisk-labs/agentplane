@@ -4,11 +4,6 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { dedupeStrings, normalizeTaskStatus, nowIso } from "./shared.js";
 
-export const TASK_ADD_USAGE =
-  "Usage: agentplane task add <task-id> [<task-id> ...] --title <text> --description <text> --priority <low|normal|med|high> --owner <id> --tag <tag> [--tag <tag>...]";
-export const TASK_ADD_USAGE_EXAMPLE =
-  'agentplane task add 202602030608-F1Q8AB --title "..." --description "..." --priority med --owner CODER --tag cli';
-
 export async function cmdTaskAdd(opts: {
   ctx?: CommandContext;
   cwd: string;

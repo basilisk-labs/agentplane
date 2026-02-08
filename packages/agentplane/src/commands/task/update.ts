@@ -5,10 +5,6 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { dedupeStrings, requiresVerify, toStringArray } from "./shared.js";
 
-export const TASK_UPDATE_USAGE = "Usage: agentplane task update <task-id> [flags]";
-export const TASK_UPDATE_USAGE_EXAMPLE =
-  'agentplane task update 202602030608-F1Q8AB --title "..." --owner CODER';
-
 export async function cmdTaskUpdate(opts: {
   ctx?: CommandContext;
   cwd: string;

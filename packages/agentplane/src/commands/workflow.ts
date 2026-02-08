@@ -1,37 +1,4 @@
-// Thin public re-export layer: keep CLI imports stable while command implementations live by domain.
-
-export const IDE_SYNC_USAGE = "Usage: agentplane ide sync";
-export const IDE_SYNC_USAGE_EXAMPLE = "agentplane ide sync";
-
 export {
-  TASK_ADD_USAGE,
-  TASK_ADD_USAGE_EXAMPLE,
-  TASK_SCRUB_USAGE,
-  TASK_SCRUB_USAGE_EXAMPLE,
-  TASK_UPDATE_USAGE,
-  TASK_UPDATE_USAGE_EXAMPLE,
-  TASK_SCAFFOLD_USAGE,
-  TASK_SCAFFOLD_USAGE_EXAMPLE,
-  TASK_MIGRATE_DOC_USAGE,
-  TASK_MIGRATE_DOC_USAGE_EXAMPLE,
-  TASK_DOC_SET_USAGE,
-  TASK_DOC_SET_USAGE_EXAMPLE,
-  TASK_DOC_SHOW_USAGE,
-  TASK_DOC_SHOW_USAGE_EXAMPLE,
-  TASK_PLAN_USAGE,
-  TASK_PLAN_USAGE_EXAMPLE,
-  TASK_PLAN_SET_USAGE,
-  TASK_PLAN_SET_USAGE_EXAMPLE,
-  TASK_PLAN_APPROVE_USAGE,
-  TASK_PLAN_APPROVE_USAGE_EXAMPLE,
-  TASK_PLAN_REJECT_USAGE,
-  TASK_PLAN_REJECT_USAGE_EXAMPLE,
-  START_USAGE,
-  START_USAGE_EXAMPLE,
-  BLOCK_USAGE,
-  BLOCK_USAGE_EXAMPLE,
-  FINISH_USAGE,
-  FINISH_USAGE_EXAMPLE,
   dedupeStrings,
   cmdTaskDerive,
   cmdTaskAdd,
@@ -81,10 +48,6 @@ export {
 export { cmdPrOpen, cmdPrUpdate, cmdPrCheck, cmdPrNote, cmdIntegrate } from "./pr/index.js";
 
 export {
-  GUARD_COMMIT_USAGE,
-  GUARD_COMMIT_USAGE_EXAMPLE,
-  COMMIT_USAGE,
-  COMMIT_USAGE_EXAMPLE,
   suggestAllowPrefixes,
   cmdGuardClean,
   cmdGuardSuggestAllow,

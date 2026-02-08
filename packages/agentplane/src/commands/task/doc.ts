@@ -14,15 +14,6 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
-export const TASK_DOC_SET_USAGE =
-  "Usage: agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>)";
-export const TASK_DOC_SET_USAGE_EXAMPLE =
-  'agentplane task doc set 202602030608-F1Q8AB --section Summary --text "..."';
-export const TASK_DOC_SHOW_USAGE =
-  "Usage: agentplane task doc show <task-id> [--section <name>] [--quiet]";
-export const TASK_DOC_SHOW_USAGE_EXAMPLE =
-  "agentplane task doc show 202602030608-F1Q8AB --section Summary";
-
 export async function cmdTaskDocSet(opts: {
   ctx?: CommandContext;
   cwd: string;

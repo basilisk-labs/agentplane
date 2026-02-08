@@ -3,11 +3,6 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
-export const TASK_SCRUB_USAGE =
-  "Usage: agentplane task scrub --find <text> --replace <text> [flags]";
-export const TASK_SCRUB_USAGE_EXAMPLE =
-  'agentplane task scrub --find "agentctl" --replace "agentplane" --dry-run';
-
 function scrubValue(value: unknown, find: string, replace: string): unknown {
   if (typeof value === "string") return value.replaceAll(find, replace);
   if (Array.isArray(value)) return value.map((item) => scrubValue(item, find, replace));
