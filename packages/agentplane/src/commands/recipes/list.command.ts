@@ -1,5 +1,5 @@
-import type { CommandHandler, CommandSpec } from "../../cli2/spec.js";
-import { usageError } from "../../cli2/errors.js";
+import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import { usageError } from "../../cli/spec/errors.js";
 import { cmdRecipeListParsed, type RecipeListFlags } from "../recipes.js";
 
 export type RecipesListParsed = RecipeListFlags;

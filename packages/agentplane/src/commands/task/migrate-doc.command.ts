@@ -1,5 +1,5 @@
-import type { CommandCtx, CommandSpec, ParsedRaw } from "../../cli2/spec.js";
-import { usageError } from "../../cli2/errors.js";
+import type { CommandCtx, CommandSpec, ParsedRaw } from "../../cli/spec/spec.js";
+import { usageError } from "../../cli/spec/errors.js";
 
 import { cmdTaskMigrateDoc } from "./migrate-doc.js";
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { CliError } from "../shared/errors.js";
+import { CliError } from "../../shared/errors.js";
 
 import type { CommandSpec } from "./spec.js";
 import { parseCommandArgv } from "./parse.js";

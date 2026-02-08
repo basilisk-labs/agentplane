@@ -7,8 +7,8 @@ import { mapCoreError } from "../../error-map.js";
 import { fileExists } from "../../fs-utils.js";
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
-import { usageError } from "../../../cli2/errors.js";
-import type { CommandHandler, CommandSpec } from "../../../cli2/spec.js";
+import { usageError } from "../../spec/errors.js";
+import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { listRoles, renderQuickstart, renderRole } from "../../command-guide.js";
 
 type QuickstartParsed = Record<string, never>;

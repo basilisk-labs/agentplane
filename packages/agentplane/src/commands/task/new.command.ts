@@ -1,4 +1,4 @@
-import type { CommandHandler, CommandCtx, CommandSpec } from "../../cli2/spec.js";
+import type { CommandHandler, CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { normalizeDependsOnInput } from "./shared.js";
 
 import type { TaskNewParsed } from "./new.js";

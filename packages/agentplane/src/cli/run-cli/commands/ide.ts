@@ -5,7 +5,7 @@ import { resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../error-map.js";
 import { writeTextIfChanged } from "../../../shared/write-if-changed.js";
-import type { CommandHandler, CommandSpec } from "../../../cli2/spec.js";
+import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 
 type IdeSyncParsed = { ide?: "cursor" | "windsurf" };
 

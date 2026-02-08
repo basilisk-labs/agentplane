@@ -3,8 +3,8 @@ import path from "node:path";
 import { loadConfig, resolveProject, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../error-map.js";
-import { usageError } from "../../../cli2/errors.js";
-import type { CommandHandler, CommandSpec } from "../../../cli2/spec.js";
+import { usageError } from "../../spec/errors.js";
+import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 
 type ConfigShowParsed = Record<string, never>;
 

@@ -1,6 +1,6 @@
-import type { CommandHandler, CommandSpec } from "../../cli2/spec.js";
-import { usageError } from "../../cli2/errors.js";
-import { suggestOne } from "../../cli2/suggest.js";
+import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import { usageError } from "../../cli/spec/errors.js";
+import { suggestOne } from "../../cli/spec/suggest.js";
 
 import {
   cmdBranchBaseClear,

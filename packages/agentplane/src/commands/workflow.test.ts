@@ -41,7 +41,7 @@ import { defaultConfig } from "@agentplaneorg/core";
 import * as taskBackend from "../backends/task-backend.js";
 import type { TaskData } from "../backends/task-backend.js";
 import * as prompts from "../cli/prompts.js";
-import { parseCommandArgv } from "../cli2/parse.js";
+import { parseCommandArgv } from "../cli/spec/parse.js";
 import {
   captureStdIO,
   mkGitRepoRoot,

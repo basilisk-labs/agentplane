@@ -1,10 +1,10 @@
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 
-import type { CommandCtx, CommandSpec } from "../../cli2/spec.js";
-import { usageError } from "../../cli2/errors.js";
-import { renderCliDocsMdx } from "../../cli2/docs-render.js";
-import { renderCommandHelpJson, type HelpJson } from "../../cli2/help-render.js";
+import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+import { usageError } from "../../cli/spec/errors.js";
+import { renderCliDocsMdx } from "../../cli/spec/docs-render.js";
+import { renderCommandHelpJson, type HelpJson } from "../../cli/spec/help-render.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 
 export type DocsCliParsed = {

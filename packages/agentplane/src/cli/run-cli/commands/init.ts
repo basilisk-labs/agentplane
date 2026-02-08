@@ -10,8 +10,8 @@ import {
   renderBundledRecipesHint,
   validateBundledRecipesSelection,
 } from "../../recipes-bundled.js";
-import { usageError } from "../../../cli2/errors.js";
-import type { CommandHandler, CommandSpec } from "../../../cli2/spec.js";
+import { usageError } from "../../spec/errors.js";
+import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { CliError } from "../../../shared/errors.js";
 import { getVersion } from "../../../meta/version.js";
 import { cmdHooksInstall, ensureInitCommit } from "../../../commands/workflow.js";

@@ -1,5 +1,5 @@
-import type { CommandCtx, CommandSpec } from "../../cli2/spec.js";
-import { usageError } from "../../cli2/errors.js";
+import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+import { usageError } from "../../cli/spec/errors.js";
 
 export type TaskVerifyParsed = {
   subcommand?: string;

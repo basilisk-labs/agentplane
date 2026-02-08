@@ -1,5 +1,5 @@
-import { CommandRegistry } from "../../cli2/registry.js";
-import { helpSpec, makeHelpHandler } from "../../cli2/help.js";
+import { CommandRegistry } from "../spec/registry.js";
+import { helpSpec, makeHelpHandler } from "../spec/help.js";
 
 import { initSpec, runInit } from "./commands/init.js";
 import {

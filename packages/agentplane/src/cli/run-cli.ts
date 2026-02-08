@@ -19,10 +19,10 @@ import { loadDotEnv } from "../shared/env.js";
 import { CliError, formatJsonError } from "../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { getVersion } from "../meta/version.js";
-import { parseCommandArgv } from "../cli2/parse.js";
-import { helpSpec } from "../cli2/help.js";
-import { usageError } from "../cli2/errors.js";
-import { suggestOne } from "../cli2/suggest.js";
+import { parseCommandArgv } from "./spec/parse.js";
+import { helpSpec } from "./spec/help.js";
+import { usageError } from "./spec/errors.js";
+import { suggestOne } from "./spec/suggest.js";
 import { buildHelpFastRegistry, buildRegistry } from "./run-cli/registry.js";
 
 type ParsedArgs = {

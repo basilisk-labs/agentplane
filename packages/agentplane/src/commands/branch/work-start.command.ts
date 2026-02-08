@@ -1,5 +1,5 @@
-import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli2/spec.js";
-import { usageError } from "../../cli2/errors.js";
+import type { CommandHandler, CommandSpec, CommandCtx } from "../../cli/spec/spec.js";
+import { usageError } from "../../cli/spec/errors.js";
 
 import type { CommandContext } from "../shared/task-backend.js";
 import { cmdWorkStart } from "./index.js";

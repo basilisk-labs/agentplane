@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseCommandArgv } from "../cli2/parse.js";
+import { parseCommandArgv } from "../cli/spec/parse.js";
 import { backendSyncSpec } from "./backend/sync.command.js";
 import { syncSpec } from "./sync.command.js";
 

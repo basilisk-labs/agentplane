@@ -15,7 +15,7 @@ import {
 } from "./recipes.js";
 import { cmdScenarioInfoParsed, cmdScenarioListParsed, cmdScenarioRunParsed } from "./scenario.js";
 import { CliError } from "../shared/errors.js";
-import { parseCommandArgv } from "../cli2/parse.js";
+import { parseCommandArgv } from "../cli/spec/parse.js";
 import { recipesCachePruneSpec } from "./recipes/cache-prune.command.js";
 import { recipesExplainSpec } from "./recipes/explain.command.js";
 import { recipesInfoSpec } from "./recipes/info.command.js";

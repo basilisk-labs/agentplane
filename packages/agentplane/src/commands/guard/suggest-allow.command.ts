@@ -1,4 +1,4 @@
-import type { CommandHandler, CommandSpec } from "../../cli2/spec.js";
+import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { cmdGuardSuggestAllow } from "./index.js";
 
 export type GuardSuggestAllowParsed = { format: "lines" | "args" };
