@@ -1,7 +1,7 @@
 ---
 id: "202602081344-5XQEDA"
 title: "Decompose Redmine task backend module"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -21,14 +21,19 @@ verification:
   updated_at: "2026-02-08T14:00:12.074Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: bun run typecheck, bun run lint, and bun run test:full (704 tests) all pass after extracting Redmine backend helpers into backends/task-backend/redmine/*."
-commit: null
+commit:
+  hash: "8b244d697974802d62a079c7efe7f032cf95ab59"
+  message: "✨ 5XQEDA backend: decompose Redmine backend helpers"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose the Redmine backend into a redmine/ impl folder with a thin facade and keep the full suite green."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: extracted Redmine backend helpers into backends/task-backend/redmine/* (client, fields, parse, mapping, remote, comments); bun run typecheck, bun run lint, and bun run test:full all pass."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-08T14:00:12.076Z"
+doc_updated_at: "2026-02-08T14:01:07.746Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split backends/task-backend/redmine-backend.ts into smaller modules (API client, mapping, CRUD operations) while preserving behavior and keeping tests green."
 ---
