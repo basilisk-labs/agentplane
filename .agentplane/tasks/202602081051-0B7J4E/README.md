@@ -1,7 +1,7 @@
 ---
 id: "202602081051-0B7J4E"
 title: "CLI2-FULL-022: Decompose branch/scenario monoliths"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T11:47:16.600Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: decomposed commands/branch/index.ts into focused modules (base/status/remove/work-start/cleanup-merged + internal helpers), removed legacy *_USAGE constants and usageMessage-based errors, removed legacy scenario dispatcher cmdScenario and usage constants, updated scenario-related tests to route via cli2 specs + parsed scenario functions, and confirmed format/lint/typecheck/test:fast + cli core tests pass."
-commit: null
+commit:
+  hash: "510a8dd92e6807a1e82036dafda49dce8c7ce0cf"
+  message: "✨ 0B7J4E cli: decompose branch and scenario"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: split branch/index.ts and scenario.ts into smaller modules, remove remaining legacy argv routing/parsers and *_USAGE constants, and preserve behavior via updated cli core tests and unit coverage."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: split branch/index.ts into focused modules and internal helpers; removed legacy *_USAGE constants and usageMessage coupling; removed legacy scenario dispatcher cmdScenario and usage constants; updated scenario-related tests to route through cli2 specs + parsed command functions; format, lint, typecheck, test:fast, and cli core suites pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T11:47:16.601Z"
+doc_updated_at: "2026-02-08T11:47:52.327Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split commands/branch/index.ts and commands/scenario.ts into focused modules; preserve behavior."
 id_source: "generated"
