@@ -52,6 +52,9 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
   return {
     id: task.id,
     title: task.title,
+    result_summary: task.result_summary,
+    risk_level: task.risk_level,
+    breaking: task.breaking,
     status: task.status,
     priority: task.priority,
     owner: task.owner,
@@ -62,10 +65,13 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     verification,
     commit: task.commit ?? null,
     comments: task.comments ?? [],
+    events: task.events ?? [],
     doc_version: task.doc_version,
     doc_updated_at: task.doc_updated_at,
     doc_updated_by: task.doc_updated_by,
     description: task.description ?? "",
+    id_source: task.id_source,
+    dirty: task.dirty,
   };
 }
 

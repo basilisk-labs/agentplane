@@ -1643,6 +1643,9 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
+      if (code !== 0) {
+        throw new Error(`finish failed (code=${code}): ${io.stderr}`);
+      }
       expect(code).toBe(0);
       expect(io.stdout).toContain("✅ finished");
     } finally {
@@ -1655,6 +1658,85 @@ describe("runCli", () => {
     await runCliSilent(["task", "export", "--root", root]);
     const tasksJson = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
     expect(tasksJson).toContain(taskId);
+  });
+
+  it("finish persists result_summary/risk_level/breaking in task README frontmatter", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Finish metadata persistence",
+        "--description",
+        "Ensure finish writes metadata into README frontmatter",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Ok to finish: verification recorded for finish metadata persistence test coverage.",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: ensure finish persists result_summary, risk_level, and breaking in frontmatter.",
+        "--result",
+        "persist finish metadata",
+        "--risk",
+        "high",
+        "--breaking",
+        "--force",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ finished");
+    } finally {
+      io.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
+    expect(task.frontmatter.result_summary).toBe("persist finish metadata");
+    expect(task.frontmatter.risk_level).toBe("high");
+    expect(task.frontmatter.breaking).toBe(true);
   });
 
   it("finish does not accept missing task id (no env fallback)", async () => {

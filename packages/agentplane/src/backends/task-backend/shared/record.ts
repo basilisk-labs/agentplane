@@ -39,6 +39,12 @@ export function taskRecordToData(record: TaskRecord): TaskData {
   const task: TaskData = {
     id: baseId.trim(),
     title: typeof fm.title === "string" ? fm.title : "",
+    result_summary: typeof fm.result_summary === "string" ? fm.result_summary : undefined,
+    risk_level:
+      fm.risk_level === "low" || fm.risk_level === "med" || fm.risk_level === "high"
+        ? fm.risk_level
+        : undefined,
+    breaking: typeof fm.breaking === "boolean" ? fm.breaking : undefined,
     description: typeof fm.description === "string" ? fm.description : "",
     status: typeof fm.status === "string" ? fm.status : "TODO",
     priority: typeof fm.priority === "string" || typeof fm.priority === "number" ? fm.priority : "",
