@@ -639,25 +639,25 @@ describe("runCli", () => {
   it("sync flag parsing rejects invalid usage", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    const cases: { args: string[]; msg: string }[] = [
-      { args: ["sync", "--direction"], msg: "Usage: agentplane sync" },
-      { args: ["sync", "--conflict"], msg: "Usage: agentplane sync" },
-      { args: ["sync", "--direction", "sideways"], msg: "Usage: agentplane sync" },
-      { args: ["sync", "--conflict", "nope"], msg: "Usage: agentplane sync" },
-      { args: ["sync", "--wat"], msg: "Usage: agentplane sync" },
-      { args: ["sync", "a", "b"], msg: "Usage: agentplane sync" },
-      { args: ["backend", "sync"], msg: "Usage: agentplane backend sync" },
+    const cases: { args: string[]; cmd: string }[] = [
+      { args: ["sync", "--direction"], cmd: "sync" },
+      { args: ["sync", "--conflict"], cmd: "sync" },
+      { args: ["sync", "--direction", "sideways"], cmd: "sync" },
+      { args: ["sync", "--conflict", "nope"], cmd: "sync" },
+      { args: ["sync", "--wat"], cmd: "sync" },
+      { args: ["sync", "a", "b"], cmd: "sync" },
+      { args: ["backend", "sync"], cmd: "backend sync" },
       {
         args: ["backend", "sync", "redmine", "--direction"],
-        msg: "Usage: agentplane backend sync",
+        cmd: "backend sync",
       },
       {
         args: ["backend", "sync", "redmine", "--direction", "noop"],
-        msg: "Usage: agentplane backend sync",
+        cmd: "backend sync",
       },
       {
         args: ["backend", "sync", "redmine", "--conflict", "nope"],
-        msg: "Usage: agentplane backend sync",
+        cmd: "backend sync",
       },
     ];
 
@@ -666,7 +666,8 @@ describe("runCli", () => {
       try {
         const code = await runCli([...entry.args, "--root", root]);
         expect(code).toBe(2);
-        expect(io.stderr).toContain(entry.msg);
+        expect(io.stderr).toContain("Usage:");
+        expect(io.stderr).toContain(`agentplane ${entry.cmd}`);
       } finally {
         io.restore();
       }

@@ -75,11 +75,12 @@ import {
 } from "../commands/recipes/cache-prune.command.js";
 import { upgradeSpec, runUpgrade } from "../commands/upgrade.command.js";
 import {
-  BACKEND_SYNC_USAGE,
-  BACKEND_SYNC_USAGE_EXAMPLE,
-  cmdBackendSync,
-  cmdSync,
-} from "../commands/backend.js";
+  backendSpec,
+  backendSyncSpec,
+  makeRunBackendHandler,
+  makeRunBackendSyncHandler,
+} from "../commands/backend/sync.command.js";
+import { syncSpec, makeRunSyncHandler } from "../commands/sync.command.js";
 import { cmdRecipes } from "../commands/recipes.js";
 import { cmdScenario } from "../commands/scenario.js";
 import { scenarioListSpec, runScenarioList } from "../commands/scenario/list.command.js";
@@ -1327,6 +1328,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(scenarioListSpec, noop);
       registry.register(scenarioInfoSpec, noop);
       registry.register(scenarioRunSpec, noop);
+      registry.register(backendSpec, noop);
+      registry.register(backendSyncSpec, noop);
+      registry.register(syncSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1402,6 +1406,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(scenarioListSpec, runScenarioList);
       registry.register(scenarioInfoSpec, runScenarioInfo);
       registry.register(scenarioRunSpec, runScenarioRun);
+      registry.register(backendSpec, makeRunBackendHandler(getCtx));
+      registry.register(backendSyncSpec, makeRunBackendSyncHandler(getCtx));
+      registry.register(syncSpec, makeRunSyncHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);
@@ -2803,37 +2810,6 @@ export async function runCli(argv: string[]): Promise<number> {
         rootOverride: globals.root,
         command,
         args,
-      });
-    }
-
-    if (namespace === "backend") {
-      const subcommand = command;
-      if (subcommand !== "sync") {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(BACKEND_SYNC_USAGE, BACKEND_SYNC_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdBackendSync({
-        ctx: await getCtx("backend sync"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "sync") {
-      const syncArgs = command ? [command, ...args] : [];
-      if (command?.startsWith("--")) {
-        syncArgs.shift();
-        syncArgs.unshift(command, ...args);
-      }
-      return await cmdSync({
-        ctx: await getCtx("sync"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args: syncArgs,
       });
     }
 

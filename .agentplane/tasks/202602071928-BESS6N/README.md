@@ -1,7 +1,7 @@
 ---
 id: "202602071928-BESS6N"
 title: "CLI2-056: Migrate backend sync + sync alias to cli2"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:14:10.634Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:24:23.690Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: Migrated backend sync + sync alias to cli2 specs; ran bun run typecheck, bun run lint, bun run test:cli, and bun run test."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate backend sync and sync alias to cli2 with spec-derived parsing/help/usage; refactor backend commands to accept parsed flags entrypoints; update run-cli tests accordingly."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:09.800Z"
+doc_updated_at: "2026-02-08T04:24:23.691Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `backend sync` and top-level `sync` alias."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:recipes
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:24:23.690Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: Migrated backend sync + sync alias to cli2 specs; ran bun run typecheck, bun run lint, bun run test:cli, and bun run test.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:14:10.770Z, excerpt_hash=sha256:49a21b4783624e46a2b558687273ceab46dfe2bee43a66b6c9c72eba5cd63609
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
