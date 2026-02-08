@@ -1,7 +1,8 @@
 ---
 id: "202602081822-B4YH3Y"
 title: "CLI: pilot split spec/handler for heavy commands"
-status: "DOING"
+result_summary: "Split spec/handler for 2 commands"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-08T18:55:14.989Z"
   updated_by: "TESTER"
   note: "bun run lint; bun run test:cli:core; bun run typecheck"
-commit: null
+commit:
+  hash: "9ae8e7fab452cbdc1bc24c08125ccd1e353d121a"
+  message: "✨ B4YH3Y cli: split commit/task-new specs"
 comments:
   -
     author: "CODER"
     body: "Start: Pilot split spec/handler for commit and task new; move specs into *.spec.ts and update catalog imports."
+  -
+    author: "CODER"
+    body: "Verified: Split commit and task new CommandSpec definitions into *.spec.ts modules and kept handlers in *.command.ts; updated command catalog imports; lint, cli core tests, and typecheck pass."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run lint; bun run test:cli:core; bun run typecheck"
+  -
+    type: "status"
+    at: "2026-02-08T18:56:00.193Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Split commit and task new CommandSpec definitions into *.spec.ts modules and kept handlers in *.command.ts; updated command catalog imports; lint, cli core tests, and typecheck pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T18:55:14.990Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-08T18:56:00.193Z"
+doc_updated_by: "CODER"
 description: "Migrate 1–2 commands (commit, task new) to split spec-only modules and handler modules; ensure catalog imports only specs."
 id_source: "generated"
 ---
