@@ -1,7 +1,7 @@
 ---
 id: "202602081238-CNP0K7"
 title: "Decompose commands/guard/index.ts"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-08T13:23:42.306Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: decomposed commands/guard/index.ts into guard/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
-commit: null
+commit:
+  hash: "e209a1be528e10018c6d58fe06e50eda28366cbe"
+  message: "✨ CNP0K7 guard: decompose guard/index.ts into impl modules"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose commands/guard/index.ts into impl modules, keep the exported API stable, and keep bun run test:full green."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: split commands/guard/index.ts into guard/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T13:23:42.308Z"
+doc_updated_at: "2026-02-08T13:24:32.143Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split packages/agentplane/src/commands/guard/index.ts into internal modules (policy eval, allowlist, git env, status commit helpers) without changing CLI2 specs."
 id_source: "generated"
