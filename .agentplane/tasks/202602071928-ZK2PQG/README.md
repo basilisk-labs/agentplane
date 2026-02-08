@@ -1,7 +1,7 @@
 ---
 id: "202602071928-ZK2PQG"
 title: "CLI2-060: Migrate branch base get/set/clear/explain to cli2"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:31:18.029Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: Migrated branch base get/set/clear/explain to cli2 specs; ran bun run typecheck, bun run lint, bun run test:cli (includes core suites)."
-commit: null
+commit:
+  hash: "dfe0a15b7e73f208e47992372016e366dfda5507"
+  message: "✅ ZK2PQG cli: migrate branch base to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Migrate branch base get/set/clear/explain into cli2 specs + handlers; wire into run-cli registry and help fast-path, then update tests to assert spec-derived usage/hints and remove legacy dispatch for these subcommands."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated branch base get/set/clear/explain to cli2 specs with subgroup help; removed legacy dispatcher for branch base; updated CLI tests for spec-derived usage format. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:31:18.030Z"
+doc_updated_at: "2026-02-08T04:31:52.971Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `branch base ...` subcommands."
 ---
