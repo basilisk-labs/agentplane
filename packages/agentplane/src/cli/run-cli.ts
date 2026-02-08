@@ -12,7 +12,6 @@ import {
   setByDottedKey,
 } from "@agentplaneorg/core";
 
-import { renderHelp } from "./help.js";
 import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
 import {
   filterAgentsByWorkflow,
@@ -1294,13 +1293,7 @@ export async function runCli(argv: string[]): Promise<number> {
       return 0;
     }
 
-    if (globals.help || rest.length === 0) {
-      process.stdout.write(`${renderHelp()}\n`);
-      return 0;
-    }
-
-    // cli2: `agentplane help ...` should be fast and not require project resolution.
-    if (rest[0] === "help") {
+    const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
       const registry = new CommandRegistry();
       const noop = () => Promise.resolve(0);
       registry.register(initSpec, noop);
@@ -1383,13 +1376,28 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
 
-      const match = registry.match(rest);
+      const match = registry.match(helpArgv);
       if (!match) {
         throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Unknown command: help" });
       }
-      const tail = rest.slice(match.consumed);
+      const tail = helpArgv.slice(match.consumed);
       const parsed = parseCommandArgv(match.spec, tail).parsed;
       return await match.handler({ cwd: process.cwd(), rootOverride: globals.root }, parsed);
+    };
+
+    // `--help` is treated as an alias for `help` and supports per-command help:
+    // - agentplane --help
+    // - agentplane <cmd...> --help [--compact|--json]
+    if (globals.help) {
+      return await runCli2HelpFast(["help", ...rest]);
+    }
+    if (rest.length === 0) {
+      return await runCli2HelpFast(["help"]);
+    }
+
+    // cli2: `agentplane help ...` should be fast and not require project resolution.
+    if (rest[0] === "help") {
+      return await runCli2HelpFast(rest);
     }
 
     const cwd = process.cwd();

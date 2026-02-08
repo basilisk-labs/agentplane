@@ -11,7 +11,7 @@ function makeCtx(partial: Partial<PolicyContext>): PolicyContext {
     action: "guard_commit",
     config: cfg,
     taskId: "202602071329-TEST01",
-    git: { stagedPaths: ["packages/agentplane/src/cli/help.ts"] },
+    git: { stagedPaths: ["packages/agentplane/src/cli/run-cli.ts"] },
     commit: { subject: "✅ TEST01 cli: test subject" },
     allow: {
       prefixes: ["packages/agentplane/src/cli"],
