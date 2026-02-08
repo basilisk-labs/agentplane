@@ -1,7 +1,7 @@
 ---
 id: "202602071928-ZJMZY4"
 title: "CLI2-070: Migrate guard clean/suggest-allow to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:57:31.373Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: Migrated guard clean and guard suggest-allow to cli2 specs + handlers without shadowing legacy guard commit; removed legacy parsing branches; ran bun run typecheck, bun run lint, bun run test:cli."
-commit: null
+commit:
+  hash: "b2d3217bae7f8b34c65951a964df1238a7c8daaa"
+  message: "✅ ZJMZY4 cli: migrate guard clean and suggest-allow to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Add cli2 specs + handlers for guard clean and guard suggest-allow; register in help fast-path and main registry without shadowing legacy guard commit; remove legacy parsing branches; update core guard tests for spec-derived usage/hints."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated guard clean and guard suggest-allow to cli2 specs + handlers (kept guard commit legacy to avoid shadowing); removed legacy parsing branches; registered for help. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:57:31.374Z"
+doc_updated_at: "2026-02-08T04:59:25.595Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `guard clean` and `guard suggest-allow`."
 ---
