@@ -1330,8 +1330,8 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     const taskId = "202602011330-DOC01";
     const cases: { args: string[]; msg: string }[] = [
-      { args: ["task", "doc", "show", taskId, "--section"], msg: "Missing value for --section" },
-      { args: ["task", "doc", "show", taskId, "--nope"], msg: "Unknown flag: --nope" },
+      { args: ["task", "doc", "show", taskId, "--section"], msg: "Missing value after --section" },
+      { args: ["task", "doc", "show", taskId, "--nope"], msg: "Unknown option: --nope." },
     ];
 
     for (const entry of cases) {
@@ -2184,7 +2184,7 @@ describe("runCli", () => {
     try {
       const code1 = await runCli(["task", "doc", "set", "X", "--root", root]);
       expect(code1).toBe(2);
-      expect(io1.stderr).toContain("Usage: agentplane task doc set");
+      expect(io1.stderr).toContain("Missing required option: --section");
     } finally {
       io1.restore();
     }
@@ -2245,7 +2245,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code4).toBe(2);
-      expect(io4.stderr).toContain("Usage: agentplane task doc set");
+      expect(io4.stderr).toContain("Exactly one of --text or --file is required.");
     } finally {
       io4.restore();
     }
@@ -2293,7 +2293,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code1).toBe(2);
-      expect(io1.stderr).toContain("Missing value for --updated-by");
+      expect(io1.stderr).toContain("Missing value after --updated-by");
     } finally {
       io1.restore();
     }
@@ -2315,7 +2315,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code2).toBe(2);
-      expect(io2.stderr).toContain("Unknown flag");
+      expect(io2.stderr).toContain("Unknown option: --nope.");
     } finally {
       io2.restore();
     }

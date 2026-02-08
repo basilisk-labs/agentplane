@@ -63,6 +63,9 @@ import {
   taskSetStatusSpec,
   makeRunTaskSetStatusHandler,
 } from "../commands/task/set-status.command.js";
+import { taskDocSpec, runTaskDoc } from "../commands/task/doc.command.js";
+import { taskDocShowSpec, makeRunTaskDocShowHandler } from "../commands/task/doc-show.command.js";
+import { taskDocSetSpec, makeRunTaskDocSetHandler } from "../commands/task/doc-set.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -144,10 +147,6 @@ import {
   FINISH_USAGE_EXAMPLE,
   START_USAGE,
   START_USAGE_EXAMPLE,
-  TASK_DOC_SET_USAGE,
-  TASK_DOC_SET_USAGE_EXAMPLE,
-  TASK_DOC_SHOW_USAGE,
-  TASK_DOC_SHOW_USAGE_EXAMPLE,
   VERIFY_USAGE,
   VERIFY_USAGE_EXAMPLE,
   WORK_START_USAGE,
@@ -157,7 +156,6 @@ import {
   cmdHooksInstall,
   cmdReady,
   cmdStart,
-  cmdTaskDocSet,
   cmdTaskDocShow,
   cmdTaskDerive,
   cmdTaskExport,
@@ -1347,6 +1345,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskUpdateSpec, noop);
       registry.register(taskCommentSpec, noop);
       registry.register(taskSetStatusSpec, noop);
+      registry.register(taskDocSpec, noop);
+      registry.register(taskDocShowSpec, noop);
+      registry.register(taskDocSetSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
@@ -1419,6 +1420,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskUpdateSpec, makeRunTaskUpdateHandler(getCtx));
       registry.register(taskCommentSpec, makeRunTaskCommentHandler(getCtx));
       registry.register(taskSetStatusSpec, makeRunTaskSetStatusHandler(getCtx));
+      registry.register(taskDocSpec, runTaskDoc);
+      registry.register(taskDocShowSpec, makeRunTaskDocShowHandler(getCtx));
+      registry.register(taskDocSetSpec, makeRunTaskDocSetHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
@@ -1564,7 +1568,9 @@ export async function runCli(argv: string[]): Promise<number> {
           ),
         });
       }
-      if (restArgs.includes("--section")) {
+      const quiet = restArgs.includes("--quiet");
+      const extra = restArgs.filter((a) => a !== "--quiet");
+      if (extra.length > 0) {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
@@ -1579,48 +1585,8 @@ export async function runCli(argv: string[]): Promise<number> {
         cwd: process.cwd(),
         rootOverride: globals.root,
         taskId,
-        args: ["--section", "Verify Steps", ...restArgs],
-      });
-    }
-
-    if (namespace === "task" && command === "doc") {
-      const [subcommand, taskId, ...restArgs] = args;
-      if (subcommand === "show") {
-        if (!taskId) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(TASK_DOC_SHOW_USAGE, TASK_DOC_SHOW_USAGE_EXAMPLE),
-          });
-        }
-        return await cmdTaskDocShow({
-          ctx: await getCtx("task doc show"),
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          taskId,
-          args: restArgs,
-        });
-      }
-      if (subcommand === "set") {
-        if (!taskId) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
-          });
-        }
-        return await cmdTaskDocSet({
-          ctx: await getCtx("task doc set"),
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          taskId,
-          args: restArgs,
-        });
-      }
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
+        section: "Verify Steps",
+        quiet,
       });
     }
 

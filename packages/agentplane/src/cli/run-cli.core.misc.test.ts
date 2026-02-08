@@ -173,7 +173,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "doc", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane task doc set");
+      expect(io.stderr).toContain("Unknown subcommand: nope");
     } finally {
       io.restore();
     }

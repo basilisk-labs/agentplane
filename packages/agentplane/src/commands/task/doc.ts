@@ -9,13 +9,7 @@ import {
 } from "@agentplaneorg/core";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
-import {
-  infoMessage,
-  missingValueMessage,
-  unknownEntityMessage,
-  usageMessage,
-  backendNotSupportedMessage,
-} from "../../cli/output.js";
+import { infoMessage, unknownEntityMessage, backendNotSupportedMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
@@ -29,114 +23,19 @@ export const TASK_DOC_SHOW_USAGE =
 export const TASK_DOC_SHOW_USAGE_EXAMPLE =
   "agentplane task doc show 202602030608-F1Q8AB --section Summary";
 
-type TaskDocSetFlags = {
-  section?: string;
-  text?: string;
-  file?: string;
-  updatedBy?: string;
-};
-
-type TaskDocShowFlags = {
-  section?: string;
-  quiet: boolean;
-};
-
-function parseTaskDocShowFlags(args: string[]): TaskDocShowFlags {
-  const out: TaskDocShowFlags = { quiet: false };
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (arg === "--quiet") {
-      out.quiet = true;
-      continue;
-    }
-    if (arg === "--section") {
-      const next = args[i + 1];
-      if (!next) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
-      }
-      out.section = next;
-      i++;
-      continue;
-    }
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
-  }
-  return out;
-}
-
-function parseTaskDocSetFlags(args: string[]): TaskDocSetFlags {
-  const out: TaskDocSetFlags = {};
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (!arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unexpected argument: ${arg}` });
-    }
-
-    const next = args[i + 1];
-    if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
-    }
-
-    switch (arg) {
-      case "--section": {
-        out.section = next;
-        break;
-      }
-      case "--text": {
-        out.text = next;
-        break;
-      }
-      case "--file": {
-        out.file = next;
-        break;
-      }
-      case "--updated-by": {
-        out.updatedBy = next;
-        break;
-      }
-      default: {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
-      }
-    }
-
-    i++;
-  }
-
-  return out;
-}
-
 export async function cmdTaskDocSet(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
   taskId: string;
-  args: string[];
+  section: string;
+  text?: string;
+  file?: string;
+  updatedBy?: string;
 }): Promise<number> {
-  const flags = parseTaskDocSetFlags(opts.args);
-
-  if (!flags.section) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
-    });
-  }
-
-  const hasText = flags.text !== undefined;
-  const hasFile = flags.file !== undefined;
-  if (hasText === hasFile) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_DOC_SET_USAGE, TASK_DOC_SET_USAGE_EXAMPLE),
-    });
-  }
-
   let updatedBy: string | undefined;
-  if (flags.updatedBy !== undefined) {
-    const trimmed = flags.updatedBy.trim();
+  if (opts.updatedBy !== undefined) {
+    const trimmed = opts.updatedBy.trim();
     if (trimmed.length === 0) {
       throw new CliError({
         exitCode: 2,
@@ -147,12 +46,22 @@ export async function cmdTaskDocSet(opts: {
     updatedBy = trimmed;
   }
 
-  let text = flags.text ?? "";
+  const hasText = opts.text !== undefined;
+  const hasFile = opts.file !== undefined;
+  if (hasText === hasFile) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Exactly one of --text or --file must be provided",
+    });
+  }
+
+  let text = opts.text ?? "";
   if (hasFile) {
     try {
-      text = await readFile(path.resolve(opts.cwd, flags.file ?? ""), "utf8");
+      text = await readFile(path.resolve(opts.cwd, opts.file ?? ""), "utf8");
     } catch (err) {
-      throw mapCoreError(err, { command: "task doc set", filePath: flags.file ?? "" });
+      throw mapCoreError(err, { command: "task doc set", filePath: opts.file ?? "" });
     }
   }
 
@@ -173,15 +82,15 @@ export async function cmdTaskDocSet(opts: {
     const useStore = backendIsLocalFileBackend(ctx);
     const store = useStore ? getTaskStore(ctx) : null;
     const allowed = config.tasks.doc.sections;
-    if (!allowed.includes(flags.section)) {
+    if (!allowed.includes(opts.section)) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: unknownEntityMessage("doc section", flags.section),
+        message: unknownEntityMessage("doc section", opts.section),
       });
     }
     const normalizedAllowed = new Set(allowed.map((section) => normalizeDocSectionName(section)));
-    const targetKey = normalizeDocSectionName(flags.section);
+    const targetKey = normalizeDocSectionName(opts.section);
     const headingKeys = new Set<string>();
     for (const line of text.replaceAll("\r\n", "\n").split("\n")) {
       const match = /^##\s+(.*)$/.exec(line.trim());
@@ -209,13 +118,13 @@ export async function cmdTaskDocSet(opts: {
         const lines = nextText.replaceAll("\r\n", "\n").split("\n");
         let firstContent = 0;
         while (firstContent < lines.length && lines[firstContent]?.trim() === "") firstContent++;
-        if ((lines[firstContent]?.trim() ?? "") === `## ${flags.section}`) {
+        if ((lines[firstContent]?.trim() ?? "") === `## ${opts.section}`) {
           lines.splice(firstContent, 1);
           if (lines[firstContent]?.trim() === "") lines.splice(firstContent, 1);
           nextText = lines.join("\n");
         }
       }
-      const nextDoc = setMarkdownSection(baseDoc, flags.section, nextText);
+      const nextDoc = setMarkdownSection(baseDoc, opts.section, nextText);
       const normalized = ensureDocSections(nextDoc, config.tasks.doc.required_sections);
       await (useStore
         ? store!.update(opts.taskId, (current) => ({
@@ -239,9 +148,9 @@ export async function cmdTaskDocShow(opts: {
   cwd: string;
   rootOverride?: string;
   taskId: string;
-  args: string[];
+  section?: string;
+  quiet: boolean;
 }): Promise<number> {
-  const flags = parseTaskDocShowFlags(opts.args);
   try {
     const ctx =
       opts.ctx ??
@@ -259,8 +168,8 @@ export async function cmdTaskDocShow(opts: {
     const doc = useStore
       ? String(storeTask!.doc ?? "")
       : ((await backend.getTaskDoc(opts.taskId)) ?? "");
-    if (flags.section) {
-      const sectionKey = normalizeDocSectionName(flags.section);
+    if (opts.section) {
+      const sectionKey = normalizeDocSectionName(opts.section);
       const { sections } = parseDocSections(doc);
       const entry = sections.get(sectionKey);
       const content = entry?.lines ?? [];
@@ -268,8 +177,8 @@ export async function cmdTaskDocShow(opts: {
         process.stdout.write(`${content.join("\n").trimEnd()}\n`);
         return 0;
       }
-      if (!flags.quiet) {
-        process.stdout.write(`${infoMessage(`section has no content: ${flags.section}`)}\n`);
+      if (!opts.quiet) {
+        process.stdout.write(`${infoMessage(`section has no content: ${opts.section}`)}\n`);
       }
       return 0;
     }
@@ -277,7 +186,7 @@ export async function cmdTaskDocShow(opts: {
       process.stdout.write(`${doc.trimEnd()}\n`);
       return 0;
     }
-    if (!flags.quiet) {
+    if (!opts.quiet) {
       process.stdout.write(`${infoMessage("task doc metadata missing")}\n`);
     }
     return 0;

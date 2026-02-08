@@ -162,33 +162,29 @@ describe("commands/workflow", () => {
     const taskId = "202602050900-A1B2";
     await addTask(root, taskId);
 
-    await expect(
-      cmdTaskDocSet({ cwd: root, taskId, args: ["--text", "Hello"] }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-
-    await expect(
-      cmdTaskDocSet({
-        cwd: root,
-        taskId,
-        args: ["--section", "Summary", "--text", "Hello", "--file", "note.txt"],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-
-    await expect(
-      cmdTaskDocSet({
-        cwd: root,
-        taskId,
-        args: ["--section", "Summary", "--text", "Hello", "--updated-by", "   "],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-
-    await expect(
-      cmdTaskDocSet({ cwd: root, taskId, args: ["--section", "Summary", "oops"] }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-
-    await expect(cmdTaskDocSet({ cwd: root, taskId, args: ["--nope"] })).rejects.toMatchObject({
+    await expect(cmdTaskDocSet({ cwd: root, taskId, section: "Summary" })).rejects.toMatchObject({
       code: "E_USAGE",
     });
+
+    await expect(
+      cmdTaskDocSet({
+        cwd: root,
+        taskId,
+        section: "Summary",
+        text: "Hello",
+        file: "note.txt",
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    await expect(
+      cmdTaskDocSet({
+        cwd: root,
+        taskId,
+        section: "Summary",
+        text: "Hello",
+        updatedBy: "   ",
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
   it("task doc set reads from files and handles missing files", async () => {
@@ -200,7 +196,8 @@ describe("commands/workflow", () => {
       cmdTaskDocSet({
         cwd: root,
         taskId,
-        args: ["--section", "Summary", "--file", "missing.txt"],
+        section: "Summary",
+        file: "missing.txt",
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
 
@@ -211,7 +208,8 @@ describe("commands/workflow", () => {
       const code = await cmdTaskDocSet({
         cwd: root,
         taskId,
-        args: ["--section", "Summary", "--file", "note.md"],
+        section: "Summary",
+        file: "note.md",
       });
       expect(code).toBe(0);
     } finally {
@@ -233,7 +231,8 @@ describe("commands/workflow", () => {
       const code = await cmdTaskDocSet({
         cwd: root,
         taskId,
-        args: ["--section", "Summary", "--text", "## Summary\n\nAlpha\n\n## Scope\n\nBeta"],
+        section: "Summary",
+        text: "## Summary\n\nAlpha\n\n## Scope\n\nBeta",
       });
       expect(code).toBe(0);
     } finally {
@@ -1130,7 +1129,8 @@ describe("commands/workflow", () => {
       const code = await cmdTaskDocShow({
         cwd: root,
         taskId,
-        args: ["--section", "Summary"],
+        section: "Summary",
+        quiet: false,
       });
       expect(code).toBe(0);
       expect(io.stdout).toContain("section has no content");
@@ -1148,7 +1148,7 @@ describe("commands/workflow", () => {
     });
     const ioEmpty = captureStdIO();
     try {
-      const code = await cmdTaskDocShow({ cwd: root, taskId, args: [] });
+      const code = await cmdTaskDocShow({ cwd: root, taskId, section: undefined, quiet: false });
       expect(code).toBe(0);
       expect(ioEmpty.stdout).toContain("task doc metadata missing");
     } finally {
@@ -1164,12 +1164,13 @@ describe("commands/workflow", () => {
     await cmdTaskDocSet({
       cwd: root,
       taskId,
-      args: ["--section", "Summary", "--text", "Hello docs"],
+      section: "Summary",
+      text: "Hello docs",
     });
 
     const io = captureStdIO();
     try {
-      const code = await cmdTaskDocShow({ cwd: root, taskId, args: ["--section", "Summary"] });
+      const code = await cmdTaskDocShow({ cwd: root, taskId, section: "Summary", quiet: false });
       expect(code).toBe(0);
       expect(io.stdout).toContain("Hello docs");
     } finally {
@@ -1181,19 +1182,14 @@ describe("commands/workflow", () => {
       const code = await cmdTaskDocShow({
         cwd: root,
         taskId,
-        args: ["--section", "Scope", "--quiet"],
+        section: "Scope",
+        quiet: true,
       });
       expect(code).toBe(0);
       expect(ioQuiet.stdout.trim()).toBe("");
     } finally {
       ioQuiet.restore();
     }
-  });
-
-  it("task doc show rejects unknown flags", async () => {
-    await expect(
-      cmdTaskDocShow({ cwd: process.cwd(), taskId: "202602050900-DOCSHOW2", args: ["--nope"] }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
   it("task scrub validates args and supports dry-run output", async () => {
