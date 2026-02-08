@@ -4,17 +4,40 @@ import { isRecord } from "../../shared/guards.js";
 
 import type { LocalBackend } from "./local-backend.js";
 import {
+  appendCommentNotes as appendCommentNotesImpl,
+  normalizeComments as normalizeCommentsImpl,
+  type TaskComment,
+} from "./redmine/comments.js";
+import { requestJson as requestRedmineJson } from "./redmine/client.js";
+import {
+  appendCustomField as appendRedmineCustomField,
+  customFieldValue as redmineCustomFieldValue,
+  setIssueCustomFieldValue as setRedmineIssueCustomFieldValue,
+} from "./redmine/fields.js";
+import {
+  doneRatioForStatus,
+  issueToTask as issueToTaskImpl,
+  startDateFromTaskId,
+  taskToIssuePayload as taskToIssuePayloadImpl,
+} from "./redmine/mapping.js";
+import {
+  coerceDocVersion as coerceRedmineDocVersion,
+  maybeParseJson as maybeParseRedmineJson,
+} from "./redmine/parse.js";
+import {
+  findIssueByTaskId as findIssueByTaskIdImpl,
+  listTasksRemote as listTasksRemoteImpl,
+} from "./redmine/remote.js";
+import {
   BackendError,
   DEFAULT_DOC_UPDATED_BY,
   DOC_VERSION,
   RedmineUnavailable,
-  TASK_ID_RE,
   ensureDocMetadata,
   firstNonEmptyString,
   generateTaskId,
   mapLimit,
   missingTaskIdMessage,
-  normalizePriority,
   nowIso,
   redmineConfigMissingMessage,
   redmineIssueIdMissingMessage,
@@ -452,72 +475,20 @@ export class RedmineBackend implements TaskBackend {
     fieldId: unknown,
     value: unknown,
   ): void {
-    const fields: unknown[] = Array.isArray(issue.custom_fields) ? issue.custom_fields : [];
-    let found = false;
-    const updated = fields.map((field) => {
-      if (isRecord(field) && field.id === fieldId) {
-        found = true;
-        return { ...field, value };
-      }
-      return field;
-    });
-    if (!found) updated.push({ id: fieldId, value });
-    issue.custom_fields = updated;
+    setRedmineIssueCustomFieldValue(issue, fieldId, value);
   }
 
   private async listTasksRemote(): Promise<TaskData[]> {
-    const tasks: TaskData[] = [];
-    const allIssues: Record<string, unknown>[] = [];
-    let offset = 0;
-    const limit = 100;
-    const taskField = this.taskIdFieldId();
-    this.issueCache.clear();
-
-    while (true) {
-      const payload = await this.requestJson("GET", "issues.json", undefined, {
-        project_id: this.projectId,
-        limit,
-        offset,
-        status_id: "*",
-      });
-      const issues = Array.isArray(payload.issues) ? payload.issues : [];
-      const pageIssues = issues.filter((issue): issue is Record<string, unknown> =>
-        isRecord(issue),
-      );
-      allIssues.push(...pageIssues);
-      const total = Number(payload.total_count ?? 0);
-      if (total === 0 || offset + limit >= total) break;
-      offset += limit;
-    }
-
-    const existingIds = new Set<string>();
-    const duplicates = new Set<string>();
-    for (const issue of allIssues) {
-      const taskId = this.customFieldValue(issue, taskField);
-      if (!taskId) continue;
-      const taskIdStr = toStringSafe(taskId);
-      if (!TASK_ID_RE.test(taskIdStr)) continue;
-      if (existingIds.has(taskIdStr)) duplicates.add(taskIdStr);
-      existingIds.add(taskIdStr);
-    }
-    if (duplicates.size > 0) {
-      const sample = [...duplicates].toSorted().slice(0, 5).join(", ");
-      throw new BackendError(`Duplicate task_id values found in Redmine: ${sample}`, "E_BACKEND");
-    }
-
-    for (const issue of allIssues) {
-      const taskId = this.customFieldValue(issue, taskField);
-      const taskIdText = toStringSafe(taskId);
-      if (!taskIdText || !TASK_ID_RE.test(taskIdText)) continue;
-      const task = this.issueToTask(issue, taskIdText);
-      if (task) {
-        const idText = toStringSafe(task.id);
-        if (idText) this.issueCache.set(idText, issue);
-        tasks.push(task);
-      }
-    }
-
-    return tasks;
+    const taskFieldId = this.taskIdFieldId();
+    return await listTasksRemoteImpl({
+      projectId: this.projectId,
+      taskFieldId,
+      issueCache: this.issueCache,
+      requestJson: async (method, reqPath, payload, params) =>
+        await this.requestJson(method, reqPath, payload, params),
+      customFieldValue: (issue, fieldId) => this.customFieldValue(issue, fieldId),
+      issueToTask: (issue, taskIdOverride) => this.issueToTask(issue, taskIdOverride),
+    });
   }
 
   private issueFromPayload(payload: Record<string, unknown>): Record<string, unknown> | null {
@@ -525,158 +496,77 @@ export class RedmineBackend implements TaskBackend {
   }
 
   private async findIssueByTaskId(taskId: string): Promise<Record<string, unknown> | null> {
-    const id = toStringSafe(taskId).trim();
-    if (!id) return null;
-    const cached = this.issueCache.get(id);
-    if (cached) return cached;
-
-    const taskField = this.taskIdFieldId();
-    const payload = await this.requestJson("GET", "issues.json", undefined, {
-      project_id: this.projectId,
-      status_id: "*",
-      [`cf_${String(taskField)}`]: id,
-      limit: 100,
+    const taskFieldId = this.taskIdFieldId();
+    return await findIssueByTaskIdImpl({
+      taskId,
+      projectId: this.projectId,
+      taskFieldId,
+      issueCache: this.issueCache,
+      requestJson: async (method, reqPath, payload, params) =>
+        await this.requestJson(method, reqPath, payload, params),
+      customFieldValue: (issue, fieldId) => this.customFieldValue(issue, fieldId),
+      refreshList: async () => {
+        await this.listTasksRemote();
+      },
     });
-    const candidates = Array.isArray(payload.issues) ? payload.issues : [];
-    for (const candidate of candidates) {
-      if (!isRecord(candidate)) continue;
-      const val = this.customFieldValue(candidate, taskField);
-      if (val && String(val) === id) {
-        this.issueCache.set(id, candidate);
-        return candidate;
-      }
-    }
-
-    await this.listTasksRemote();
-    const refreshed = this.issueCache.get(id);
-    return refreshed ?? null;
   }
 
   private issueToTask(issue: Record<string, unknown>, taskIdOverride?: string): TaskData | null {
-    const taskId = taskIdOverride ?? this.customFieldValue(issue, this.customFields.task_id);
-    if (!taskId) return null;
-    const statusVal = isRecord(issue.status) ? issue.status : null;
-    const statusId = statusVal && typeof statusVal.id === "number" ? statusVal.id : null;
-    const status =
-      statusId !== null && this.reverseStatus.has(statusId)
-        ? this.reverseStatus.get(statusId)
-        : "TODO";
-
-    const verifyVal = this.customFieldValue(issue, this.customFields.verify);
-    const commitVal = this.customFieldValue(issue, this.customFields.commit);
-    const docVal = this.customFieldValue(issue, this.customFields.doc);
-    const commentsVal = this.customFieldValue(issue, this.customFields.comments);
-    const docVersionVal = this.customFieldValue(issue, this.customFields.doc_version);
-    const docUpdatedAtVal = this.customFieldValue(issue, this.customFields.doc_updated_at);
-    const docUpdatedByVal = this.customFieldValue(issue, this.customFields.doc_updated_by);
-    const updatedOn =
-      typeof issue.updated_on === "string"
-        ? issue.updated_on
-        : typeof issue.created_on === "string"
-          ? issue.created_on
-          : null;
-
-    const priorityVal = isRecord(issue.priority) ? issue.priority : null;
-    const priorityName = normalizePriority(priorityVal?.name);
-
-    const tags: string[] = [];
-    if (Array.isArray(issue.tags)) {
-      for (const tag of issue.tags) {
-        if (isRecord(tag) && tag.name) tags.push(toStringSafe(tag.name));
-      }
-    }
-
-    const task: TaskData = {
-      id: toStringSafe(taskId),
-      title: toStringSafe(issue.subject),
-      description: toStringSafe(issue.description),
-      status: status ?? "TODO",
-      priority: priorityName,
-      owner: this.ownerAgent,
-      tags,
-      depends_on: [],
-      verify: this.maybeParseJson(verifyVal) as string[],
-      commit: this.maybeParseJson(commitVal) as TaskData["commit"],
-      comments: this.normalizeComments(this.maybeParseJson(commentsVal)),
-      id_source: "custom",
-    };
-
-    if (docVal) task.doc = toStringSafe(docVal);
-    const docVersion = this.coerceDocVersion(docVersionVal);
-    task.doc_version = docVersion ?? DOC_VERSION;
-    task.doc_updated_at = docUpdatedAtVal ? toStringSafe(docUpdatedAtVal) : (updatedOn ?? nowIso());
-    task.doc_updated_by = docUpdatedByVal ? toStringSafe(docUpdatedByVal) : this.ownerAgent;
-
-    return task;
+    return issueToTaskImpl({
+      issue,
+      taskIdOverride,
+      reverseStatus: this.reverseStatus,
+      customFields: this.customFields,
+      ownerAgent: this.ownerAgent,
+      defaultDocVersion: DOC_VERSION,
+    });
   }
 
   private taskToIssuePayload(
     task: TaskData,
     existingIssue?: Record<string, unknown>,
   ): Record<string, unknown> {
-    const status = toStringSafe(task.status).trim().toUpperCase();
-    const payload: Record<string, unknown> = {
-      subject: toStringSafe(task.title),
-      description: toStringSafe(task.description),
-    };
-
-    if (status && this.statusMap && status in this.statusMap) {
-      payload.status_id = this.statusMap[status];
-    }
-
-    if (typeof task.priority === "number") payload.priority_id = task.priority;
-
-    let existingAssignee: unknown = null;
-    if (existingIssue && isRecord(existingIssue.assigned_to)) {
-      existingAssignee = existingIssue.assigned_to.id;
-    }
-    if (this.assigneeId && !existingAssignee) payload.assigned_to_id = this.assigneeId;
-
-    const startDate = this.startDateFromTaskId(toStringSafe(task.id));
-    if (startDate) payload.start_date = startDate;
-
-    const doneRatio = this.doneRatioForStatus(status);
-    if (doneRatio !== null) payload.done_ratio = doneRatio;
-
-    const customFields: Record<string, unknown>[] = [];
-    this.ensureDocMetadata(task);
-    this.appendCustomField(customFields, "task_id", task.id);
-    this.appendCustomField(customFields, "verify", task.verify);
-    this.appendCustomField(customFields, "commit", task.commit);
-    this.appendCustomField(customFields, "comments", task.comments);
-    this.appendCustomField(customFields, "doc", task.doc);
-    this.appendCustomField(customFields, "doc_version", task.doc_version);
-    this.appendCustomField(customFields, "doc_updated_at", task.doc_updated_at);
-    this.appendCustomField(customFields, "doc_updated_by", task.doc_updated_by);
-
-    if (customFields.length > 0) payload.custom_fields = customFields;
-    return payload;
+    return taskToIssuePayloadImpl({
+      task,
+      existingIssue,
+      statusMap: this.statusMap,
+      assigneeId: this.assigneeId,
+      customFields: this.customFields,
+      appendCustomField: (fields, key, value) => this.appendCustomField(fields, key, value),
+    });
   }
 
   private appendCustomField(fields: Record<string, unknown>[], key: string, value: unknown): void {
-    const fieldId = this.customFields?.[key];
-    if (!fieldId) return;
-    let payloadValue: unknown = value;
-    if (Array.isArray(value) || isRecord(value)) {
-      payloadValue = JSON.stringify(value);
-    }
-    fields.push({ id: fieldId, value: payloadValue });
+    appendRedmineCustomField({ customFields: this.customFields, fields, key, value });
   }
 
-  private normalizeComments(value: unknown): { author: string; body: string }[] {
-    if (Array.isArray(value)) {
-      return value.filter((item): item is { author: string; body: string } =>
-        isRecord(item) ? typeof item.author === "string" && typeof item.body === "string" : false,
-      );
-    }
-    if (isRecord(value)) return [value as { author: string; body: string }];
-    if (typeof value === "string" && value.trim()) {
-      return [{ author: "redmine", body: value.trim() }];
-    }
-    return [];
+  private normalizeComments(value: unknown): TaskComment[] {
+    return normalizeCommentsImpl(value);
   }
 
-  private commentsToPairs(comments: { author: string; body: string }[]): [string, string][] {
+  private async appendCommentNotes(
+    issueId: string,
+    existingComments: TaskComment[],
+    desiredComments: TaskComment[],
+  ): Promise<void> {
+    await appendCommentNotesImpl({
+      issueId,
+      existingComments,
+      desiredComments,
+      requestJson: async (method, reqPath, payload, params) =>
+        await this.requestJson(method, reqPath, payload, params),
+    });
+  }
+
+  private startDateFromTaskId(taskId: string): string | null {
+    return startDateFromTaskId(taskId);
+  }
+
+  private doneRatioForStatus(status: string): number | null {
+    return doneRatioForStatus(status);
+  }
+
+  private commentsToPairs(comments: TaskComment[]): [string, string][] {
     const pairs: [string, string][] = [];
     for (const comment of comments) {
       const author = toStringSafe(comment.author).trim();
@@ -693,84 +583,16 @@ export class RedmineBackend implements TaskBackend {
     return `[comment] ${authorText}: ${bodyText}`.trim();
   }
 
-  private async appendCommentNotes(
-    issueId: string,
-    existingComments: { author: string; body: string }[],
-    desiredComments: { author: string; body: string }[],
-  ): Promise<void> {
-    const issueIdText = toStringSafe(issueId);
-    if (!issueIdText) return;
-    const existingPairs = this.commentsToPairs(existingComments);
-    const desiredPairs = this.commentsToPairs(desiredComments);
-    if (desiredPairs.length === 0) return;
-    if (desiredPairs.length < existingPairs.length) return;
-    if (existingPairs.length > 0) {
-      const prefix = desiredPairs.slice(0, existingPairs.length);
-      const matches =
-        prefix.length === existingPairs.length &&
-        prefix.every(
-          (pair, idx) => pair[0] === existingPairs[idx]?.[0] && pair[1] === existingPairs[idx]?.[1],
-        );
-      if (!matches) return;
-    }
-    const newPairs = desiredPairs.slice(existingPairs.length);
-    for (const [author, body] of newPairs) {
-      const note = this.formatCommentNote(author, body);
-      if (note) {
-        await this.requestJson("PUT", `issues/${issueIdText}.json`, { issue: { notes: note } });
-      }
-    }
-  }
-
-  private startDateFromTaskId(taskId: string): string | null {
-    if (!taskId.includes("-")) return null;
-    const prefix = taskId.split("-", 1)[0] ?? "";
-    if (prefix.length < 8) return null;
-    const year = prefix.slice(0, 4);
-    const month = prefix.slice(4, 6);
-    const day = prefix.slice(6, 8);
-    if (!/^\d{8}$/u.test(`${year}${month}${day}`)) return null;
-    return `${year}-${month}-${day}`;
-  }
-
-  private doneRatioForStatus(status: string): number | null {
-    if (!status) return null;
-    if (status === "DONE") return 100;
-    return 0;
-  }
-
   private customFieldValue(issue: Record<string, unknown>, fieldId: unknown): string | null {
-    if (!fieldId) return null;
-    const fields = Array.isArray(issue.custom_fields) ? issue.custom_fields : [];
-    for (const field of fields) {
-      if (isRecord(field) && field.id === fieldId) {
-        const value = field.value;
-        return value !== undefined && value !== null ? toStringSafe(value) : "";
-      }
-    }
-    return null;
+    return redmineCustomFieldValue(issue, fieldId);
   }
 
   private maybeParseJson(value: unknown): unknown {
-    if (value === null || value === undefined) return null;
-    const raw = toStringSafe(value).trim();
-    if (!raw) return null;
-    if (raw.startsWith("{") || raw.startsWith("[")) {
-      try {
-        return JSON.parse(raw);
-      } catch {
-        return raw;
-      }
-    }
-    return raw;
+    return maybeParseRedmineJson(value);
   }
 
   private coerceDocVersion(value: unknown): number | null {
-    if (value === null || value === undefined) return null;
-    if (typeof value === "number") return value;
-    const raw = toStringSafe(value).trim();
-    if (/^\d+$/u.test(raw)) return Number(raw);
-    return null;
+    return coerceRedmineDocVersion(value);
   }
 
   private async requestJson(
@@ -780,57 +602,13 @@ export class RedmineBackend implements TaskBackend {
     params?: Record<string, unknown>,
     opts?: { attempts?: number; backoff?: number },
   ): Promise<Record<string, unknown>> {
-    let url = `${this.baseUrl}/${reqPath.replace(/^\//u, "")}`;
-    if (params) {
-      const search = new URLSearchParams();
-      for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === null) continue;
-        search.append(key, toStringSafe(value));
-      }
-      const qs = search.toString();
-      if (qs) url += `?${qs}`;
-    }
-
-    const attempts = Math.max(1, opts?.attempts ?? 3);
-    const backoff = opts?.backoff ?? 0.5;
-    let lastError: unknown = null;
-
-    for (let attempt = 1; attempt <= attempts; attempt++) {
-      try {
-        const resp = await fetch(url, {
-          method,
-          headers: {
-            "Content-Type": "application/json",
-            "X-Redmine-API-Key": this.apiKey,
-          },
-          body: payload ? JSON.stringify(payload) : undefined,
-        });
-        const text = await resp.text();
-        if (!resp.ok) {
-          if ((resp.status === 429 || resp.status >= 500) && attempt < attempts) {
-            await sleep(backoff * attempt * 1000);
-            continue;
-          }
-          throw new BackendError(`Redmine API error: ${resp.status} ${text}`, "E_BACKEND");
-        }
-        if (!text) return {};
-        try {
-          const parsed = JSON.parse(text) as unknown;
-          if (isRecord(parsed)) return parsed;
-          return {};
-        } catch {
-          return {};
-        }
-      } catch (err) {
-        lastError = err;
-        if (err instanceof BackendError) throw err;
-        if (attempt >= attempts) {
-          throw new RedmineUnavailable("Redmine unavailable");
-        }
-        await sleep(backoff * attempt * 1000);
-      }
-    }
-
-    throw lastError instanceof Error ? lastError : new RedmineUnavailable("Redmine unavailable");
+    return await requestRedmineJson(
+      { baseUrl: this.baseUrl, apiKey: this.apiKey },
+      method,
+      reqPath,
+      payload,
+      params,
+      opts,
+    );
   }
 }
