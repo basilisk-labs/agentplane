@@ -26,7 +26,6 @@ import {
   cmdHooksRun,
   cmdHooksUninstall,
   cmdStart,
-  cmdVerify,
   cmdTaskVerifyOk,
   cmdTaskVerifyRework,
   cmdReady,
@@ -52,6 +51,8 @@ import {
 import { taskNewSpec } from "./task/new.command.js";
 import { runTaskNewParsed } from "./task/new.js";
 import { loadCommandContext } from "./shared/task-backend.js";
+import { verifySpec } from "./verify.command.js";
+import { cmdVerifyParsed } from "./task/verify-record.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -872,10 +873,16 @@ describe("commands/workflow", () => {
 
     await addTask(root, "202602050900-Z9Y8");
     await gitCommitFile(root, "done.txt", "chore: done");
-    await cmdVerify({
+    const verifyCtx = await loadCommandContext({ cwd: root, rootOverride: null });
+    await cmdVerifyParsed({
+      ctx: verifyCtx,
       cwd: root,
+      rootOverride: undefined,
       taskId,
-      args: ["--ok", "--by", "TESTER", "--note", "Looks good", "--quiet"],
+      state: "ok",
+      by: "TESTER",
+      note: "Looks good",
+      quiet: true,
     });
     const codeFinish = await cmdFinish({
       cwd: root,
@@ -929,22 +936,14 @@ describe("commands/workflow", () => {
     const taskId = "202602050900-V1F2";
     await addTask(root, taskId);
 
-    await expect(cmdVerify({ cwd: root, taskId, args: [] })).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
-    await expect(
-      cmdVerify({ cwd: root, taskId, args: ["--ok", "--by", "REVIEWER", "--note"] }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-    await expect(
-      cmdVerify({
-        cwd: root,
-        taskId,
-        args: ["--ok", "--rework", "--by", "REVIEWER", "--note", "x"],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-    await expect(
-      cmdVerify({ cwd: root, taskId, args: ["--ok", "--by", "REVIEWER"] }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
+    expect(() => parseCommandArgv(verifySpec, [taskId])).toThrow();
+    expect(() =>
+      parseCommandArgv(verifySpec, [taskId, "--ok", "--by", "REVIEWER", "--note"]),
+    ).toThrow();
+    expect(() =>
+      parseCommandArgv(verifySpec, [taskId, "--ok", "--rework", "--by", "REVIEWER", "--note", "x"]),
+    ).toThrow();
+    expect(() => parseCommandArgv(verifySpec, [taskId, "--ok", "--by", "REVIEWER"])).toThrow();
   });
 
   it("verify appends a result entry and updates task.verification state", async () => {
@@ -952,10 +951,16 @@ describe("commands/workflow", () => {
     const taskId = "202602050900-V1F4B";
     await addTask(root, taskId);
 
-    const code = await cmdVerify({
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const code = await cmdVerifyParsed({
+      ctx,
       cwd: root,
+      rootOverride: undefined,
       taskId,
-      args: ["--ok", "--by", "REVIEWER", "--note", "Looks good", "--quiet"],
+      state: "ok",
+      by: "REVIEWER",
+      note: "Looks good",
+      quiet: true,
     });
     expect(code).toBe(0);
 
@@ -981,10 +986,17 @@ describe("commands/workflow", () => {
     const detailsPath = path.join(root, "verify-details.txt");
     await writeFile(detailsPath, "detail-line\n", "utf8");
 
-    const code = await cmdVerify({
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    const code = await cmdVerifyParsed({
+      ctx,
       cwd: root,
+      rootOverride: undefined,
       taskId,
-      args: ["--ok", "--by", "REVIEWER", "--note", "Ok", "--file", detailsPath, "--quiet"],
+      state: "ok",
+      by: "REVIEWER",
+      note: "Ok",
+      file: detailsPath,
+      quiet: true,
     });
     expect(code).toBe(0);
 
@@ -992,24 +1004,21 @@ describe("commands/workflow", () => {
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("detail-line");
 
-    await expect(
-      cmdVerify({
-        cwd: root,
+    expect(() =>
+      parseCommandArgv(verifySpec, [
         taskId,
-        args: [
-          "--ok",
-          "--by",
-          "REVIEWER",
-          "--note",
-          "Ok",
-          "--details",
-          "inline",
-          "--file",
-          detailsPath,
-          "--quiet",
-        ],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
+        "--ok",
+        "--by",
+        "REVIEWER",
+        "--note",
+        "Ok",
+        "--details",
+        "inline",
+        "--file",
+        detailsPath,
+        "--quiet",
+      ]),
+    ).toThrow();
   });
 
   it("task verify rework resets commit and sets status to DOING", async () => {
@@ -1017,10 +1026,16 @@ describe("commands/workflow", () => {
     const taskId = "202602050900-V1F5";
     await addTask(root, taskId);
     await gitCommitFile(root, "seed.txt", "chore: seed");
-    await cmdVerify({
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    await cmdVerifyParsed({
+      ctx,
       cwd: root,
+      rootOverride: undefined,
       taskId,
-      args: ["--ok", "--by", "TESTER", "--note", "Ok to finish", "--quiet"],
+      state: "ok",
+      by: "TESTER",
+      note: "Ok to finish",
+      quiet: true,
     });
 
     const codeFinish = await cmdFinish({

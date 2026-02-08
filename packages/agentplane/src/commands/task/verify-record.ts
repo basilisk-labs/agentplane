@@ -5,7 +5,7 @@ import path from "node:path";
 import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
-import { backendNotSupportedMessage, missingValueMessage, usageMessage } from "../../cli/output.js";
+import { backendNotSupportedMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import {
   loadCommandContext,
@@ -20,26 +20,6 @@ type VerifyState = "ok" | "needs_rework";
 
 const RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 const RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
-
-export const TASK_VERIFY_USAGE =
-  "Usage: agentplane task verify <ok|rework> <task-id> --by <id> --note <text> [--details <text> | --file <path>]";
-export const TASK_VERIFY_USAGE_EXAMPLE =
-  'agentplane task verify ok 202602030608-F1Q8AB --by REVIEWER --note "Looks good"';
-
-export const VERIFY_USAGE =
-  "Usage: agentplane verify <task-id> (--ok | --rework) --by <id> --note <text> [--details <text> | --file <path>] [--quiet]";
-export const VERIFY_USAGE_EXAMPLE =
-  'agentplane verify 202602030608-F1Q8AB --ok --by REVIEWER --note "Looks good"';
-
-type VerifyRecordFlags = {
-  by?: string;
-  note?: string;
-  details?: string;
-  file?: string;
-  quiet: boolean;
-  ok: boolean;
-  rework: boolean;
-};
 
 function ensureVerificationResultsMarkers(sectionText: string): string {
   const normalized = sectionText.replaceAll("\r\n", "\n").trimEnd();
@@ -107,56 +87,6 @@ function renderVerificationEntry(opts: {
 
 function sha256Hex(text: string): string {
   return createHash("sha256").update(text, "utf8").digest("hex");
-}
-
-function parseVerifyRecordFlags(args: string[]): VerifyRecordFlags {
-  const out: VerifyRecordFlags = { quiet: false, ok: false, rework: false };
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (arg === "--ok") {
-      out.ok = true;
-      continue;
-    }
-    if (arg === "--rework") {
-      out.rework = true;
-      continue;
-    }
-    if (arg === "--quiet") {
-      out.quiet = true;
-      continue;
-    }
-    if (!arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unexpected argument: ${arg}` });
-    }
-    const next = args[i + 1];
-    if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
-    }
-    switch (arg) {
-      case "--by": {
-        out.by = next;
-        break;
-      }
-      case "--note": {
-        out.note = next;
-        break;
-      }
-      case "--details": {
-        out.details = next;
-        break;
-      }
-      case "--file": {
-        out.file = next;
-        break;
-      }
-      default: {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
-      }
-    }
-    i++;
-  }
-  return out;
 }
 
 async function recordVerificationResult(opts: {
@@ -264,14 +194,14 @@ export async function cmdTaskVerifyOk(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
+      message: "Missing required inputs: --by and --note.",
     });
   }
   if (typeof opts.details === "string" && typeof opts.file === "string") {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
+      message: "Options --details and --file are mutually exclusive.",
     });
   }
 
@@ -320,14 +250,14 @@ export async function cmdTaskVerifyRework(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
+      message: "Missing required inputs: --by and --note.",
     });
   }
   if (typeof opts.details === "string" && typeof opts.file === "string") {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
+      message: "Options --details and --file are mutually exclusive.",
     });
   }
 
@@ -377,14 +307,14 @@ export async function cmdVerifyParsed(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
+      message: "Missing required inputs: --by and --note.",
     });
   }
   if (typeof opts.details === "string" && typeof opts.file === "string") {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
+      message: "Options --details and --file are mutually exclusive.",
     });
   }
 
@@ -408,61 +338,6 @@ export async function cmdVerifyParsed(opts: {
       note,
       details,
       quiet: opts.quiet,
-    });
-    return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapBackendError(err, { command: "verify", root: opts.rootOverride ?? null });
-  }
-}
-
-export async function cmdVerify(opts: {
-  ctx?: CommandContext;
-  cwd: string;
-  rootOverride?: string;
-  taskId: string;
-  args: string[];
-}): Promise<number> {
-  const flags = parseVerifyRecordFlags(opts.args);
-  const by = (flags.by ?? "").trim();
-  const note = (flags.note ?? "").trim();
-  const ok = flags.ok;
-  const rework = flags.rework;
-  if (flags.details && flags.file) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
-    });
-  }
-  if ((ok && rework) || (!ok && !rework) || !by || !note) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
-    });
-  }
-
-  let details: string | null = flags.details ?? null;
-  if (flags.file) {
-    try {
-      details = await readFile(path.resolve(opts.cwd, flags.file), "utf8");
-    } catch (err) {
-      throw mapCoreError(err, { command: "verify", filePath: flags.file });
-    }
-  }
-
-  try {
-    await recordVerificationResult({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
-      state: ok ? "ok" : "needs_rework",
-      by,
-      note,
-      details,
-      quiet: flags.quiet,
     });
     return 0;
   } catch (err) {

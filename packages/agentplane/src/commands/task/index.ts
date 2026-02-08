@@ -43,13 +43,7 @@ export {
 export { START_USAGE, START_USAGE_EXAMPLE, cmdStart } from "./start.js";
 export { BLOCK_USAGE, BLOCK_USAGE_EXAMPLE, cmdBlock } from "./block.js";
 export { FINISH_USAGE, FINISH_USAGE_EXAMPLE, cmdFinish } from "./finish.js";
-export { VERIFY_USAGE, VERIFY_USAGE_EXAMPLE, cmdVerify } from "./verify.js";
-export {
-  TASK_VERIFY_USAGE,
-  TASK_VERIFY_USAGE_EXAMPLE,
-  cmdTaskVerifyOk,
-  cmdTaskVerifyRework,
-} from "./verify-record.js";
+export { cmdTaskVerifyOk, cmdTaskVerifyRework } from "./verify-record.js";
 
 export {
   TASK_DOC_SET_USAGE,
