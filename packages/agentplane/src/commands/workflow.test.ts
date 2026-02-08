@@ -1240,21 +1240,14 @@ describe("commands/workflow", () => {
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
     });
 
-    await expect(cmdTaskScrub({ cwd: root, args: ["--replace", "x"] })).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
-    await expect(cmdTaskScrub({ cwd: root, args: ["oops"] })).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
-    await expect(cmdTaskScrub({ cwd: root, args: ["--nope"] })).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
-
     const io = captureStdIO();
     try {
       const code = await cmdTaskScrub({
         cwd: root,
-        args: ["--find", "foo", "--replace", "baz", "--dry-run"],
+        find: "foo",
+        replace: "baz",
+        dryRun: true,
+        quiet: false,
       });
       expect(code).toBe(0);
       expect(io.stdout).toContain("dry-run: would update 1 task(s)");
@@ -1302,7 +1295,10 @@ describe("commands/workflow", () => {
     try {
       const code = await cmdTaskScrub({
         cwd: root,
-        args: ["--find", "foo", "--replace", "bar", "--quiet"],
+        find: "foo",
+        replace: "bar",
+        dryRun: false,
+        quiet: true,
       });
       expect(code).toBe(0);
       expect(writeTasks).toHaveBeenCalledOnce();
@@ -1420,13 +1416,27 @@ describe("commands/workflow", () => {
       backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
     });
 
-    await expect(cmdTaskScaffold({ cwd: root, args: [taskId] })).rejects.toMatchObject({
+    await expect(
+      cmdTaskScaffold({
+        cwd: root,
+        taskId,
+        overwrite: false,
+        force: false,
+        quiet: false,
+      }),
+    ).rejects.toMatchObject({
       code: "E_USAGE",
     });
 
     const io = captureStdIO();
     try {
-      const code = await cmdTaskScaffold({ cwd: root, args: [taskId, "--force"] });
+      const code = await cmdTaskScaffold({
+        cwd: root,
+        taskId,
+        overwrite: false,
+        force: true,
+        quiet: false,
+      });
       expect(code).toBe(0);
     } finally {
       io.restore();
@@ -1438,7 +1448,15 @@ describe("commands/workflow", () => {
 
     const fileIo = captureStdIO();
     try {
-      await expect(cmdTaskScaffold({ cwd: root, args: [taskId] })).rejects.toMatchObject({
+      await expect(
+        cmdTaskScaffold({
+          cwd: root,
+          taskId,
+          overwrite: false,
+          force: false,
+          quiet: false,
+        }),
+      ).rejects.toMatchObject({
         code: "E_USAGE",
       });
     } finally {
@@ -1482,7 +1500,13 @@ describe("commands/workflow", () => {
 
     const io = captureStdIO();
     try {
-      const code = await cmdTaskScaffold({ cwd: root, args: [taskId, "--overwrite"] });
+      const code = await cmdTaskScaffold({
+        cwd: root,
+        taskId,
+        overwrite: true,
+        force: false,
+        quiet: false,
+      });
       expect(code).toBe(0);
     } finally {
       io.restore();

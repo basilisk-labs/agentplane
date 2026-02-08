@@ -66,6 +66,8 @@ import {
 import { taskDocSpec, runTaskDoc } from "../commands/task/doc.command.js";
 import { taskDocShowSpec, makeRunTaskDocShowHandler } from "../commands/task/doc-show.command.js";
 import { taskDocSetSpec, makeRunTaskDocSetHandler } from "../commands/task/doc-set.command.js";
+import { taskScrubSpec, makeRunTaskScrubHandler } from "../commands/task/scrub.command.js";
+import { taskScaffoldSpec, makeRunTaskScaffoldHandler } from "../commands/task/scaffold.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -165,8 +167,6 @@ import {
   cmdTaskNew,
   cmdTaskNormalize,
   cmdTaskPlan,
-  cmdTaskScaffold,
-  cmdTaskScrub,
   cmdVerify,
   cmdTaskVerify,
   cmdWorkStart,
@@ -1348,6 +1348,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskDocSpec, noop);
       registry.register(taskDocShowSpec, noop);
       registry.register(taskDocSetSpec, noop);
+      registry.register(taskScrubSpec, noop);
+      registry.register(taskScaffoldSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
@@ -1423,6 +1425,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskDocSpec, runTaskDoc);
       registry.register(taskDocShowSpec, makeRunTaskDocShowHandler(getCtx));
       registry.register(taskDocSetSpec, makeRunTaskDocSetHandler(getCtx));
+      registry.register(taskScrubSpec, makeRunTaskScrubHandler(getCtx));
+      registry.register(taskScaffoldSpec, makeRunTaskScaffoldHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
@@ -1498,24 +1502,6 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "task" && command === "derive") {
       return await cmdTaskDerive({
         ctx: await getCtx("task derive"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "task" && command === "scrub") {
-      return await cmdTaskScrub({
-        ctx: await getCtx("task scrub"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "task" && command === "scaffold") {
-      return await cmdTaskScaffold({
-        ctx: await getCtx("task scaffold"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         args,

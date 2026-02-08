@@ -10,12 +10,7 @@ import {
 
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import {
-  missingValueMessage,
-  successMessage,
-  unknownEntityMessage,
-  usageMessage,
-} from "../../cli/output.js";
+import { successMessage, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import {
   loadCommandContext,
@@ -28,61 +23,6 @@ import { nowIso } from "./shared.js";
 export const TASK_SCAFFOLD_USAGE =
   "Usage: agentplane task scaffold <task-id> [--title <text>] [--overwrite] [--force]";
 export const TASK_SCAFFOLD_USAGE_EXAMPLE = "agentplane task scaffold 202602030608-F1Q8AB";
-
-type TaskScaffoldFlags = {
-  taskId: string;
-  title?: string;
-  overwrite: boolean;
-  force: boolean;
-  quiet: boolean;
-};
-
-function parseTaskScaffoldFlags(args: string[]): TaskScaffoldFlags {
-  const [taskId, ...rest] = args;
-  if (!taskId) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_SCAFFOLD_USAGE, TASK_SCAFFOLD_USAGE_EXAMPLE),
-    });
-  }
-  const out: TaskScaffoldFlags = { taskId, overwrite: false, force: false, quiet: false };
-  for (let i = 0; i < rest.length; i++) {
-    const arg = rest[i];
-    if (!arg) continue;
-    if (arg === "--overwrite") {
-      out.overwrite = true;
-      continue;
-    }
-    if (arg === "--force") {
-      out.force = true;
-      continue;
-    }
-    if (arg === "--quiet") {
-      out.quiet = true;
-      continue;
-    }
-    if (arg === "--title") {
-      const next = rest[i + 1];
-      if (!next) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: missingValueMessage("--title"),
-        });
-      }
-      out.title = next;
-      i++;
-      continue;
-    }
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: `Unknown flag: ${arg}`,
-    });
-  }
-  return out;
-}
 
 function insertMarkdownSectionBefore(opts: {
   body: string;
@@ -113,9 +53,12 @@ export async function cmdTaskScaffold(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
-  args: string[];
+  taskId: string;
+  title?: string;
+  overwrite: boolean;
+  force: boolean;
+  quiet: boolean;
 }): Promise<number> {
-  const flags = parseTaskScaffoldFlags(opts.args);
   try {
     const ctx =
       opts.ctx ??
@@ -123,21 +66,21 @@ export async function cmdTaskScaffold(opts: {
     const backend = ctx.taskBackend;
     const resolved = ctx.resolvedProject;
     const config = ctx.config;
-    const task = await backend.getTask(flags.taskId);
-    if (!task && !flags.force) {
+    const task = await backend.getTask(opts.taskId);
+    if (!task && !opts.force) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: unknownEntityMessage("task id", flags.taskId),
+        message: unknownEntityMessage("task id", opts.taskId),
       });
     }
     const readmePath = taskReadmePath(
       path.join(resolved.gitRoot, config.paths.workflow_dir),
-      flags.taskId,
+      opts.taskId,
     );
     try {
       await readFile(readmePath, "utf8");
-      if (!flags.overwrite) {
+      if (!opts.overwrite) {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
@@ -155,8 +98,8 @@ export async function cmdTaskScaffold(opts: {
     const baseTask: TaskData =
       task ??
       ({
-        id: flags.taskId,
-        title: flags.title ?? "",
+        id: opts.taskId,
+        title: opts.title ?? "",
         description: "",
         status: "TODO",
         priority: "med",
@@ -169,7 +112,7 @@ export async function cmdTaskScaffold(opts: {
         doc_updated_at: nowIso(),
         doc_updated_by: "UNKNOWN",
       } satisfies TaskData);
-    if (flags.title) baseTask.title = flags.title;
+    if (opts.title) baseTask.title = opts.title;
     if (
       typeof baseTask.doc_updated_by !== "string" ||
       baseTask.doc_updated_by.trim().length === 0 ||
@@ -216,7 +159,7 @@ export async function cmdTaskScaffold(opts: {
     const text = renderTaskReadme(frontmatter, body);
     await mkdir(path.dirname(readmePath), { recursive: true });
     await writeTextIfChanged(readmePath, text.endsWith("\n") ? text : `${text}\n`);
-    if (!flags.quiet) {
+    if (!opts.quiet) {
       process.stdout.write(
         `${successMessage("wrote", path.relative(resolved.gitRoot, readmePath))}\n`,
       );

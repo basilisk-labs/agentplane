@@ -810,10 +810,10 @@ describe("runCli", () => {
   it("task scrub rejects missing find/replace values and unknown flags", async () => {
     const root = await mkGitRepoRoot();
     const cases: { args: string[]; msg: string }[] = [
-      { args: ["task", "scrub"], msg: "Usage: agentplane task scrub --find" },
-      { args: ["task", "scrub", "--find"], msg: "Missing value for --find" },
-      { args: ["task", "scrub", "--replace"], msg: "Missing value for --replace" },
-      { args: ["task", "scrub", "--nope", "x"], msg: "Unknown flag: --nope" },
+      { args: ["task", "scrub"], msg: "Missing required option: --find" },
+      { args: ["task", "scrub", "--find"], msg: "Missing value after --find" },
+      { args: ["task", "scrub", "--replace"], msg: "Missing value after --replace" },
+      { args: ["task", "scrub", "--nope", "x"], msg: "Unknown option: --nope." },
     ];
 
     for (const entry of cases) {
@@ -1698,8 +1698,8 @@ describe("runCli", () => {
     await writeDefaultConfig(root);
     const taskId = "202602011330-SCAF03";
     const cases: { args: string[]; msg: string }[] = [
-      { args: ["task", "scaffold", taskId, "--title"], msg: "Missing value for --title" },
-      { args: ["task", "scaffold", taskId, "--nope", "x"], msg: "Unknown flag: --nope" },
+      { args: ["task", "scaffold", taskId, "--title"], msg: "Missing value after --title" },
+      { args: ["task", "scaffold", taskId, "--nope", "x"], msg: "Unknown option: --nope." },
     ];
 
     for (const entry of cases) {
