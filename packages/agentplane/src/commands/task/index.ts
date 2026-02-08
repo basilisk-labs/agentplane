@@ -34,7 +34,9 @@ export {
   TASK_PLAN_APPROVE_USAGE_EXAMPLE,
   TASK_PLAN_REJECT_USAGE,
   TASK_PLAN_REJECT_USAGE_EXAMPLE,
-  cmdTaskPlan,
+  cmdTaskPlanSet,
+  cmdTaskPlanApprove,
+  cmdTaskPlanReject,
 } from "./plan.js";
 
 export { START_USAGE, START_USAGE_EXAMPLE, cmdStart } from "./start.js";

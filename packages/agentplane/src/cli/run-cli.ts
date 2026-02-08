@@ -76,6 +76,15 @@ import { taskExportSpec, makeRunTaskExportHandler } from "../commands/task/expor
 import { taskLintSpec, runTaskLint } from "../commands/task/lint.command.js";
 import { taskMigrateSpec, makeRunTaskMigrateHandler } from "../commands/task/migrate.command.js";
 import { taskMigrateDocSpec, runTaskMigrateDoc } from "../commands/task/migrate-doc.command.js";
+import { taskPlanSetSpec, makeRunTaskPlanSetHandler } from "../commands/task/plan-set.command.js";
+import {
+  taskPlanApproveSpec,
+  makeRunTaskPlanApproveHandler,
+} from "../commands/task/plan-approve.command.js";
+import {
+  taskPlanRejectSpec,
+  makeRunTaskPlanRejectHandler,
+} from "../commands/task/plan-reject.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -169,7 +178,6 @@ import {
   cmdTaskDocShow,
   cmdTaskDerive,
   cmdTaskNew,
-  cmdTaskPlan,
   cmdVerify,
   cmdTaskVerify,
   cmdWorkStart,
@@ -1358,6 +1366,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskLintSpec, noop);
       registry.register(taskMigrateSpec, noop);
       registry.register(taskMigrateDocSpec, noop);
+      registry.register(taskPlanSetSpec, noop);
+      registry.register(taskPlanApproveSpec, noop);
+      registry.register(taskPlanRejectSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
@@ -1440,6 +1451,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskLintSpec, runTaskLint);
       registry.register(taskMigrateSpec, makeRunTaskMigrateHandler(getCtx));
       registry.register(taskMigrateDocSpec, runTaskMigrateDoc);
+      registry.register(taskPlanSetSpec, makeRunTaskPlanSetHandler(getCtx));
+      registry.register(taskPlanApproveSpec, makeRunTaskPlanApproveHandler(getCtx));
+      registry.register(taskPlanRejectSpec, makeRunTaskPlanRejectHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
@@ -1552,15 +1566,6 @@ export async function runCli(argv: string[]): Promise<number> {
         taskId,
         section: "Verify Steps",
         quiet,
-      });
-    }
-
-    if (namespace === "task" && command === "plan") {
-      return await cmdTaskPlan({
-        ctx: await getCtx("task plan"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
       });
     }
 

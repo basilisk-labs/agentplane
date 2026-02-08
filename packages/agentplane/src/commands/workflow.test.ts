@@ -15,7 +15,9 @@ import {
   cmdTaskNew,
   cmdTaskNext,
   cmdTaskSearch,
-  cmdTaskPlan,
+  cmdTaskPlanSet,
+  cmdTaskPlanApprove,
+  cmdTaskPlanReject,
   cmdTaskUpdate,
   cmdBlock,
   cmdFinish,
@@ -254,9 +256,11 @@ describe("commands/workflow", () => {
 
     const io = captureStdIO();
     try {
-      const code = await cmdTaskPlan({
+      const code = await cmdTaskPlanSet({
         cwd: root,
-        args: ["set", taskId, "--text", "Do X then Y.", "--updated-by", "ORCHESTRATOR"],
+        taskId,
+        text: "Do X then Y.",
+        updatedBy: "ORCHESTRATOR",
       });
       expect(code).toBe(0);
     } finally {
@@ -276,9 +280,7 @@ describe("commands/workflow", () => {
     const taskId = "202602060840-P1A2";
     await addTask(root, taskId);
 
-    await expect(
-      cmdTaskPlan({ cwd: root, args: ["approve", taskId, "--by", "USER"] }),
-    ).rejects.toMatchObject({
+    await expect(cmdTaskPlanApprove({ cwd: root, taskId, by: "USER" })).rejects.toMatchObject({
       code: "E_VALIDATION",
     });
   });
@@ -288,14 +290,8 @@ describe("commands/workflow", () => {
     const taskId = "202602060840-P1A3";
     await addTask(root, taskId);
 
-    await cmdTaskPlan({
-      cwd: root,
-      args: ["set", taskId, "--text", "Plan content."],
-    });
-    await cmdTaskPlan({
-      cwd: root,
-      args: ["approve", taskId, "--by", "USER", "--note", "OK"],
-    });
+    await cmdTaskPlanSet({ cwd: root, taskId, text: "Plan content." });
+    await cmdTaskPlanApprove({ cwd: root, taskId, by: "USER", note: "OK" });
 
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const approved = await readFile(readmePath, "utf8");
@@ -303,15 +299,12 @@ describe("commands/workflow", () => {
     expect(approved).toContain('updated_by: "USER"');
 
     await expect(
-      cmdTaskPlan({ cwd: root, args: ["reject", taskId, "--by", "USER"] }),
+      cmdTaskPlanReject({ cwd: root, taskId, by: "USER", note: "" }),
     ).rejects.toMatchObject({
       code: "E_USAGE",
     });
 
-    await cmdTaskPlan({
-      cwd: root,
-      args: ["reject", taskId, "--by", "USER", "--note", "Nope"],
-    });
+    await cmdTaskPlanReject({ cwd: root, taskId, by: "USER", note: "Nope" });
 
     const rejected = await readFile(readmePath, "utf8");
     expect(rejected).toContain('state: "rejected"');
@@ -766,8 +759,8 @@ describe("commands/workflow", () => {
     const taskId = "202602050900-A9B8";
     await addTask(root, taskId);
 
-    await cmdTaskPlan({ cwd: root, args: ["set", taskId, "--text", "Plan content."] });
-    await cmdTaskPlan({ cwd: root, args: ["approve", taskId, "--by", "USER"] });
+    await cmdTaskPlanSet({ cwd: root, taskId, text: "Plan content." });
+    await cmdTaskPlanApprove({ cwd: root, taskId, by: "USER" });
 
     await expect(
       cmdStart({
