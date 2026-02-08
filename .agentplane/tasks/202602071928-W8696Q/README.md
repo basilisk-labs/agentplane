@@ -1,7 +1,7 @@
 ---
 id: "202602071928-W8696Q"
 title: "CLI2-055: Migrate scenario list/info/run to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:12:50.251Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: migrated scenario list/info/run to cli2 with spec-derived parsing/help/usage and routed via cli2 registry. Refactored scenario implementation to accept parsed ids (cmdScenarioListParsed/cmdScenarioInfoParsed/cmdScenarioRunParsed) and updated run-cli scenario tests for new E_USAGE output/help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli."
-commit: null
+commit:
+  hash: "8ef01d9e96d041201ab8a8c3fac1645a1c109f64"
+  message: "✅ W8696Q cli: migrate scenario list/info/run to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: migrate scenario list/info/run to cli2 with spec-derived parsing/help/usage; refactor scenario implementations to accept parsed ids; update run-cli scenario tests for new E_USAGE output/help hints."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: scenario list/info/run are cli2-routed with spec-derived help/usage; scenario implementation accepts parsed id entrypoints; tests passing (typecheck/lint/format/test:cli)."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:12:50.252Z"
+doc_updated_at: "2026-02-08T04:13:21.076Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `scenario list/info/run`."
 ---
