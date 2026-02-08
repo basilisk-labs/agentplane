@@ -1,7 +1,7 @@
 ---
 id: "202602071928-Z82KCA"
 title: "CLI2-086: Migrate task scrub/scaffold to cli2"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,27 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T06:39:39.492Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
+  state: "ok"
+  updated_at: "2026-02-08T06:46:44.612Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Ran: bun run typecheck; bun run test:cli:core; bun run test:fast."
+commit:
+  hash: "805577ca25bbd2406a66612907b015bb46636ebf"
+  message: "🚧 Z82KCA cli: migrate task scrub/scaffold to cli2"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrating task scrub and task scaffold to cli2 (spec-driven parsing/help), removing legacy dispatch, and updating tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated task scrub/scaffold to cli2 specs, removed legacy argv parsing/dispatch, updated tests, and verified with typecheck + test:cli:core + test:fast."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:26.551Z"
+doc_updated_at: "2026-02-08T06:48:45.376Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task scrub` and `task scaffold`."
 ---
@@ -44,13 +52,13 @@ Out of scope:
 
 ## Plan
 
-1. Add a `CommandSpec` for the command (args/options/examples/notes).
-2. Wire it into the cli2 registry.
-3. Route execution to existing business logic (no argv parsing in command logic).
-4. Delete or bypass legacy parse helpers for this command.
-5. Update tests to assert:
-- spec-derived help includes all options
-- parse errors produce E_USAGE with compact usage
+Plan:
+1. Add cli2 specs for task scrub and task scaffold (args/options, quiet/dry-run/overwrite/title as applicable).
+2. Refactor implementations to accept structured inputs (no argv parsing).
+3. Wire specs into cli2 registry and remove legacy dispatcher branches.
+4. Update run-cli core tests to match cli2 error wording and ensure help includes all options.
+5. Run bun run typecheck, bun run test:cli:core, bun run test:fast.
+6. Record verification, commit, finish, and closure commit.
 
 ## Risks
 
@@ -82,6 +90,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T06:46:44.612Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Ran: bun run typecheck; bun run test:cli:core; bun run test:fast.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T06:39:44.030Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
