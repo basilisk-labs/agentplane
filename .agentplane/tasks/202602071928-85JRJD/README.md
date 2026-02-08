@@ -1,7 +1,7 @@
 ---
 id: "202602071928-85JRJD"
 title: "CLI2-061: Migrate branch status to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:34:09.433Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: Migrated branch status to cli2 spec; removed legacy parsing; ran bun run typecheck, bun run lint, bun run test:cli (core suites included)."
-commit: null
+commit:
+  hash: "6d307dc5ac180c76c0e18c8941bf2bcc5fbf0071"
+  message: "✅ 85JRJD cli: migrate branch status to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Add cli2 spec + handler for branch status; wire into help fast-path + main registry, delete legacy parsing for branch status, and update CLI tests to expect spec-derived usage/hints."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated branch status to cli2 spec + handler; removed legacy parsing; kept runtime behavior and updated routing/help. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:34:09.434Z"
+doc_updated_at: "2026-02-08T04:34:38.278Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `branch status`."
 ---
