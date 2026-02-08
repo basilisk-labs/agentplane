@@ -34,6 +34,40 @@ type ParsedArgs = {
   allowNetwork: boolean;
 };
 
+function prescanJsonErrors(argv: readonly string[]): boolean {
+  // If parseGlobalArgs throws (e.g. missing --root value), we still want to honor
+  // `--json` in the "scoped global" zone (before the command id).
+  let hasRest = false;
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (!arg) continue;
+
+    // Global flags that do not accept values.
+    if (arg === "--help" || arg === "-h") continue;
+    if (arg === "--version" || arg === "-v") continue;
+    if (arg === "--no-update-check") continue;
+    if (arg === "--allow-network") continue;
+
+    // Scoped global: only before the command id.
+    if (arg === "--json") {
+      if (!hasRest) return true;
+      continue;
+    }
+
+    // Global flags with values.
+    if (arg === "--root") {
+      // Skip the value if present; do not throw on missing value here.
+      i++;
+      continue;
+    }
+
+    // First non-global token is treated as the start of the command id.
+    hasRest = true;
+    break;
+  }
+  return false;
+}
+
 function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] } {
   let help = false;
   let version = false;
@@ -266,7 +300,7 @@ async function maybeResolveProject(opts: {
 }
 
 export async function runCli(argv: string[]): Promise<number> {
-  let jsonErrors = false;
+  let jsonErrors = prescanJsonErrors(argv);
   try {
     const { globals, rest } = parseGlobalArgs(argv);
     jsonErrors = globals.jsonErrors;

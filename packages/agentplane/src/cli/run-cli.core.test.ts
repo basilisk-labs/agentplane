@@ -402,6 +402,20 @@ describe("runCli", () => {
     }
   });
 
+  it("prints json error when --json is set and --root is missing a value", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--json", "--root"]);
+      expect(code).toBe(2);
+      expect(io.stdout).toContain('"error"');
+      expect(io.stdout).toContain('"code": "E_USAGE"');
+      expect(io.stdout).toContain("Missing value after --root (expected repository path)");
+      expect(io.stderr.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("returns usage error when config set is missing key/value", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
