@@ -1674,7 +1674,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane finish");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane finish");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -1793,7 +1794,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["finish", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane finish");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane finish");
     } finally {
       io.restore();
     }
@@ -1815,7 +1817,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane finish");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane finish");
     } finally {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
@@ -1838,7 +1841,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane finish");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane finish");
     } finally {
       io.restore();
     }
@@ -1860,7 +1864,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane finish");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane finish");
     } finally {
       io.restore();
     }
@@ -1890,7 +1895,8 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(2);
-        expect(io.stderr).toContain("Usage: agentplane finish");
+        expect(io.stderr).toContain("Usage:");
+        expect(io.stderr).toContain("agentplane finish");
       } finally {
         io.restore();
       }
