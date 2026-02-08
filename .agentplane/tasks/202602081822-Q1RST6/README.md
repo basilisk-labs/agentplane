@@ -1,7 +1,8 @@
 ---
 id: "202602081822-Q1RST6"
 title: "CLI: metadata-driven bootstrapping for project/config/context"
-status: "DOING"
+result_summary: "Metadata-driven bootstrapping"
+status: "DONE"
 priority: "low"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-08T19:11:53.606Z"
   updated_by: "TESTER"
   note: "bun run lint; bun run test:cli:core; bun run typecheck"
-commit: null
+commit:
+  hash: "f641867a20d8fc93c55203cac655ce33bdc19957"
+  message: "✨ Q1RST6 cli: metadata-driven bootstrapping"
 comments:
   -
     author: "CODER"
     body: "Start: Add command metadata (needsProject/needsConfig/needsTaskContext) and route runCli bootstrapping accordingly to avoid unnecessary resolveProject/loadConfig/loadContext."
+  -
+    author: "CODER"
+    body: "Verified: Added needsProject/needsConfig/needsTaskContext metadata in command catalog and used it in runCli to skip resolveProject/config/update-check/context when not needed; added tests ensuring quickstart/role do not call resolveProject/loadConfig; lint, cli core tests, and typecheck pass."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run lint; bun run test:cli:core; bun run typecheck"
+  -
+    type: "status"
+    at: "2026-02-08T19:12:31.131Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Added needsProject/needsConfig/needsTaskContext metadata in command catalog and used it in runCli to skip resolveProject/config/update-check/context when not needed; added tests ensuring quickstart/role do not call resolveProject/loadConfig; lint, cli core tests, and typecheck pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T19:11:53.607Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-08T19:12:31.131Z"
+doc_updated_by: "CODER"
 description: "Add needsProject/needsConfig/needsTaskContext metadata to command catalog and adjust runCli to avoid unnecessary resolveProject/loadConfig/loadTaskBackend and update-check work."
 id_source: "generated"
 ---
