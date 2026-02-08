@@ -1,7 +1,7 @@
 ---
 id: "202602081238-E47R1X"
 title: "Decompose commands/recipes.ts"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T12:53:29.731Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: bun run typecheck; bun run lint; bun run test:full (704 tests)."
-commit: null
+commit:
+  hash: "1d59d0d1a58f3fa75086c4f028d04e9cbabea2b6"
+  message: "✨ E47R1X recipes: decompose recipes.ts into impl modules"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose packages/agentplane/src/commands/recipes.ts into smaller modules under commands/recipes/ while keeping the CLI2 specs stable and all tests passing."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: split commands/recipes.ts into recipes/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T12:53:29.732Z"
+doc_updated_at: "2026-02-08T12:55:01.329Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split packages/agentplane/src/commands/recipes.ts into focused modules (index/cache, install, manifest validation, IO helpers). Keep CLI2 specs unchanged and preserve behavior; update tests as needed."
 id_source: "generated"
