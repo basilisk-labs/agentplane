@@ -1,7 +1,7 @@
 ---
 id: "202602071928-J3VR6C"
 title: "CLI2-113: Generate docs from registry/spec (optional)"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T08:38:03.441Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: bun run typecheck, bun run test:cli:core, and bun run test:fast all pass; docs cli writes deterministic MDX derived from cli2 specs."
-commit: null
+commit:
+  hash: "080ed6df43654e343f2ed5b0265afa0001ea65d7"
+  message: "🚧 J3VR6C docs: generate CLI reference from specs"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: implement a cli2 registry/spec docs generator (docs cli) with deterministic MDX output and coverage."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: docs cli renders deterministic MDX from cli2 specs; typecheck, cli core tests, and fast tests pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T08:38:03.443Z"
+doc_updated_at: "2026-02-08T08:43:58.138Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add a generator to render registry/spec to Markdown/MDX and keep docs in sync."
 ---
