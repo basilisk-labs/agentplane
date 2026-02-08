@@ -1,7 +1,8 @@
 ---
 id: "202602081822-745Q3R"
 title: "CLI: lazy handler loading via dynamic import"
-status: "DOING"
+result_summary: "Lazy-load handlers"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-08T19:02:55.269Z"
   updated_by: "TESTER"
   note: "bun run lint; bun run test:cli:core; bun run typecheck"
-commit: null
+commit:
+  hash: "57690a8eaefcca4215613baf617e589dbb2cddc2"
+  message: "✨ 745Q3R cli: lazy-load command handlers"
 comments:
   -
     author: "CODER"
     body: "Start: Implement lazy handler loading via dynamic import() in run registry; cache loaded handlers; keep help path spec-only."
+  -
+    author: "CODER"
+    body: "Verified: Run registry now registers wrapper handlers that lazy-load real handlers via dynamic import() and cache them; command catalog provides per-command load() functions; lint, cli core tests, and typecheck pass."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run lint; bun run test:cli:core; bun run typecheck"
+  -
+    type: "status"
+    at: "2026-02-08T19:03:56.161Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Run registry now registers wrapper handlers that lazy-load real handlers via dynamic import() and cache them; command catalog provides per-command load() functions; lint, cli core tests, and typecheck pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T19:02:55.270Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-08T19:03:56.161Z"
+doc_updated_by: "CODER"
 description: "Introduce LazyCommandEntry with load() using import(); run registry registers wrapper handler and caches loaded handler; help/docs use only specs."
 id_source: "generated"
 ---
