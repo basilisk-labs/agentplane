@@ -119,6 +119,11 @@ import {
   makeRunCleanupMergedHandler,
   runCleanup,
 } from "../commands/cleanup/merged.command.js";
+import { guardCleanSpec, runGuardClean } from "../commands/guard/clean.command.js";
+import {
+  guardSuggestAllowSpec,
+  runGuardSuggestAllow,
+} from "../commands/guard/suggest-allow.command.js";
 import {
   BLOCK_USAGE,
   BLOCK_USAGE_EXAMPLE,
@@ -144,9 +149,7 @@ import {
   cmdBlock,
   cmdCommit,
   cmdFinish,
-  cmdGuardClean,
   cmdGuardCommit,
-  cmdGuardSuggestAllow,
   cmdHooksInstall,
   cmdHooksRun,
   cmdHooksUninstall,
@@ -1349,6 +1352,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(integrateSpec, noop);
       registry.register(cleanupSpec, noop);
       registry.register(cleanupMergedSpec, noop);
+      registry.register(guardCleanSpec, noop);
+      registry.register(guardSuggestAllowSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1442,6 +1447,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
       registry.register(cleanupSpec, runCleanup);
       registry.register(cleanupMergedSpec, makeRunCleanupMergedHandler(getCtx));
+      registry.register(guardCleanSpec, runGuardClean);
+      registry.register(guardSuggestAllowSpec, runGuardSuggestAllow);
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);
@@ -1986,30 +1993,6 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "guard") {
       const subcommand = command;
       const restArgs = args;
-      if (subcommand === "clean") {
-        const quiet = restArgs.includes("--quiet");
-        return await cmdGuardClean({ cwd: process.cwd(), rootOverride: globals.root, quiet });
-      }
-      if (subcommand === "suggest-allow") {
-        const formatFlagIndex = restArgs.indexOf("--format");
-        let format: "lines" | "args" = "lines";
-        if (formatFlagIndex !== -1) {
-          const next = restArgs[formatFlagIndex + 1];
-          if (next !== "lines" && next !== "args") {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: invalidValueForFlag("--format", String(next), "lines|args"),
-            });
-          }
-          format = next;
-        }
-        return await cmdGuardSuggestAllow({
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          format,
-        });
-      }
       if (subcommand === "commit") {
         const taskId = restArgs[0];
         if (!taskId) {

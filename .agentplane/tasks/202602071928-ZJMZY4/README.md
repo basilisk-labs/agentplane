@@ -1,7 +1,7 @@
 ---
 id: "202602071928-ZJMZY4"
 title: "CLI2-070: Migrate guard clean/suggest-allow to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:55:39.554Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK: migrate guard clean and guard suggest-allow to cli2 specs + handlers; keep guard commit legacy until next task."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:57:31.373Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: Migrated guard clean and guard suggest-allow to cli2 specs + handlers without shadowing legacy guard commit; removed legacy parsing branches; ran bun run typecheck, bun run lint, bun run test:cli."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Add cli2 specs + handlers for guard clean and guard suggest-allow; register in help fast-path and main registry without shadowing legacy guard commit; remove legacy parsing branches; update core guard tests for spec-derived usage/hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:17.633Z"
+doc_updated_at: "2026-02-08T04:57:31.374Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `guard clean` and `guard suggest-allow`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:57:31.373Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: Migrated guard clean and guard suggest-allow to cli2 specs + handlers without shadowing legacy guard commit; removed legacy parsing branches; ran bun run typecheck, bun run lint, bun run test:cli.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:55:44.507Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
