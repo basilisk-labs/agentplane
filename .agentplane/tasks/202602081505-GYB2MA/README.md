@@ -1,7 +1,7 @@
 ---
 id: "202602081505-GYB2MA"
 title: "Finish: require --result for non-spike tasks"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -21,14 +21,19 @@ verification:
   updated_at: "2026-02-08T15:20:05.301Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: finish now supports --result/--risk/--breaking (single-task only) and requires --result for non-spike single-task finishes; result_summary is persisted in task frontmatter. bun run typecheck/lint/test:full PASS (704 tests)."
-commit: null
+commit:
+  hash: "743e43710a22c0285d5a979a10b91c4cf35e3257"
+  message: "✨ GYB2MA tasks: require finish --result and persist result_summary"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: require a one-line --result summary on finish for non-spike tasks and persist it in task metadata (frontmatter) for deterministic close commits."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: finish now requires --result for non-spike single-task finishes; result_summary persisted in task metadata; typecheck/lint/test:full pass."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-08T15:20:05.303Z"
+doc_updated_at: "2026-02-08T15:20:58.332Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add a required one-line result_summary to task finish metadata for non-spike tasks; store it in task frontmatter; keep spike tasks exempt; update tests."
 id_source: "generated"
