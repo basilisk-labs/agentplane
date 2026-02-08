@@ -1,7 +1,9 @@
 ---
 id: "202602081752-T988MD"
 title: "Policy: update AGENTS.md to prod-v1.1"
-status: "DOING"
+result_summary: "AGENTS policy updated to prod-v1.1"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -19,11 +21,16 @@ verification:
   updated_at: "2026-02-08T17:58:12.190Z"
   updated_by: "ORCHESTRATOR"
   note: "Applied prod-v1.1 policy patch to root and template"
-commit: null
+commit:
+  hash: "068c631221d0df6bad7f430ca4686554197ef301"
+  message: "✅ T988MD policy: Bump AGENTS policy to prod-v1.1"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: applying v1.1 policy patch to root and template AGENTS.md; will format with Prettier and commit."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: applied prod-v1.1 policy patch to root + template; Prettier check passed"
 events:
   -
     type: "status"
@@ -38,8 +45,15 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Applied prod-v1.1 policy patch to root and template"
+  -
+    type: "status"
+    at: "2026-02-08T17:59:09.668Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: applied prod-v1.1 policy patch to root + template; Prettier check passed"
 doc_version: 2
-doc_updated_at: "2026-02-08T17:58:12.192Z"
+doc_updated_at: "2026-02-08T17:59:09.668Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Apply Agentplane Policy v1.1 patch to root AGENTS.md and packages/agentplane/assets/AGENTS.md: add definitions/override protocol/drift policy, clarify approvals, and update CLI invocation guidance."
 id_source: "generated"
