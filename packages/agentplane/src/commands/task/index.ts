@@ -20,7 +20,7 @@ export {
 export { cmdTaskComment } from "./comment.js";
 export { cmdTaskSetStatus } from "./set-status.js";
 export { cmdTaskShow } from "./show.js";
-export { TASK_DERIVE_USAGE, TASK_DERIVE_USAGE_EXAMPLE, cmdTaskDerive } from "./derive.js";
+export { cmdTaskDerive } from "./derive.js";
 
 export { cmdTaskExport } from "./export.js";
 export { cmdTaskLint } from "./lint.js";

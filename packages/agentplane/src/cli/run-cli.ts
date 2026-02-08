@@ -27,7 +27,7 @@ import {
   validateBundledRecipesSelection,
 } from "./recipes-bundled.js";
 import { mapCoreError } from "./error-map.js";
-import { infoMessage, invalidValueForFlag, usageMessage, warnMessage } from "./output.js";
+import { infoMessage, invalidValueForFlag, warnMessage } from "./output.js";
 import {
   fetchLatestNpmVersion,
   readUpdateCheckCache,
@@ -49,6 +49,7 @@ import { parseCommandArgv } from "../cli2/parse.js";
 import { helpSpec, makeHelpHandler } from "../cli2/help.js";
 import type { CommandHandler, CommandSpec } from "../cli2/spec.js";
 import { usageError } from "../cli2/errors.js";
+import { suggestOne } from "../cli2/suggest.js";
 import { taskNewSpec, makeRunTaskNewHandler } from "../commands/task/new.command.js";
 import { taskListSpec, makeRunTaskListHandler } from "../commands/task/list.command.js";
 import { taskNextSpec, makeRunTaskNextHandler } from "../commands/task/next.command.js";
@@ -74,6 +75,7 @@ import { taskExportSpec, makeRunTaskExportHandler } from "../commands/task/expor
 import { taskLintSpec, runTaskLint } from "../commands/task/lint.command.js";
 import { taskMigrateSpec, makeRunTaskMigrateHandler } from "../commands/task/migrate.command.js";
 import { taskMigrateDocSpec, runTaskMigrateDoc } from "../commands/task/migrate-doc.command.js";
+import { taskDeriveSpec, makeRunTaskDeriveHandler } from "../commands/task/derive.command.js";
 import { taskPlanSetSpec, makeRunTaskPlanSetHandler } from "../commands/task/plan-set.command.js";
 import {
   taskPlanApproveSpec,
@@ -132,8 +134,6 @@ import {
   makeRunBackendSyncHandler,
 } from "../commands/backend/sync.command.js";
 import { syncSpec, makeRunSyncHandler } from "../commands/sync.command.js";
-import { cmdRecipes } from "../commands/recipes.js";
-import { cmdScenario } from "../commands/scenario.js";
 import { scenarioListSpec, runScenarioList } from "../commands/scenario/list.command.js";
 import { scenarioInfoSpec, runScenarioInfo } from "../commands/scenario/info.command.js";
 import { scenarioRunSpec, runScenarioRun } from "../commands/scenario/run.command.js";
@@ -155,6 +155,7 @@ import { startSpec, makeRunStartHandler } from "../commands/start.command.js";
 import { blockSpec, makeRunBlockHandler } from "../commands/block.command.js";
 import { verifySpec, makeRunVerifyHandler } from "../commands/verify.command.js";
 import { finishSpec, makeRunFinishHandler } from "../commands/finish.command.js";
+import { readySpec, makeRunReadyHandler } from "../commands/ready.command.js";
 import { hooksSpec, runHooks } from "../commands/hooks/hooks.command.js";
 import { hooksInstallSpec, runHooksInstall } from "../commands/hooks/install.command.js";
 import { hooksUninstallSpec, runHooksUninstall } from "../commands/hooks/uninstall.command.js";
@@ -173,15 +174,7 @@ import {
 } from "../commands/guard/suggest-allow.command.js";
 import { guardCommitSpec, makeRunGuardCommitHandler } from "../commands/guard/commit.command.js";
 import {
-  BRANCH_BASE_USAGE,
-  BRANCH_BASE_USAGE_EXAMPLE,
-  WORK_START_USAGE,
-  WORK_START_USAGE_EXAMPLE,
   cmdHooksInstall,
-  cmdReady,
-  cmdTaskDerive,
-  cmdTaskNew,
-  cmdWorkStart,
   dedupeStrings,
   ensureInitCommit,
   gitInitRepo,
@@ -523,9 +516,6 @@ type InitFlags = {
   backup?: boolean;
   yes: boolean;
 };
-
-const READY_USAGE = "Usage: agentplane ready <task-id>";
-const READY_USAGE_EXAMPLE = "agentplane ready 202602030608-F1Q8AB";
 
 function parseBooleanValueForInit(flag: string, value: string): boolean {
   const normalized = value.trim().toLowerCase();
@@ -1336,6 +1326,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(blockSpec, noop);
       registry.register(verifySpec, noop);
       registry.register(finishSpec, noop);
+      registry.register(readySpec, noop);
       registry.register(hooksSpec, noop);
       registry.register(hooksInstallSpec, noop);
       registry.register(hooksUninstallSpec, noop);
@@ -1351,6 +1342,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskSearchSpec, noop);
       registry.register(taskShowSpec, noop);
       registry.register(taskNewSpec, noop);
+      registry.register(taskDeriveSpec, noop);
       registry.register(taskAddSpec, noop);
       registry.register(taskUpdateSpec, noop);
       registry.register(taskCommentSpec, noop);
@@ -1426,7 +1418,6 @@ export async function runCli(argv: string[]): Promise<number> {
       jsonErrors: globals.jsonErrors,
     });
 
-    const [namespace, command, ...args] = rest;
     let ctxPromise: Promise<CommandContext> | null = null;
     const getCtx = async (commandForErrorContext: string): Promise<CommandContext> => {
       ctxPromise ??= loadCommandContext({ cwd, rootOverride: globals.root ?? null });
@@ -1437,230 +1428,104 @@ export async function runCli(argv: string[]): Promise<number> {
       }
     };
 
-    // cli2 command routing (migrated commands only, for now).
-    {
-      const registry = new CommandRegistry();
-      registry.register(initSpec, runInit);
-      registry.register(upgradeSpec, runUpgrade);
-      registry.register(quickstartSpec, runQuickstart);
-      registry.register(roleSpec, runRole);
-      registry.register(agentsSpec, runAgents);
-      registry.register(configShowSpec, runConfigShow);
-      registry.register(configSetSpec, runConfigSet);
-      registry.register(modeGetSpec, runModeGet);
-      registry.register(modeSetSpec, runModeSet);
-      registry.register(ideSyncSpec, runIdeSync);
-      registry.register(taskListSpec, makeRunTaskListHandler(getCtx));
-      registry.register(taskNextSpec, makeRunTaskNextHandler(getCtx));
-      registry.register(taskSearchSpec, makeRunTaskSearchHandler(getCtx));
-      registry.register(taskShowSpec, makeRunTaskShowHandler(getCtx));
-      registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
-      registry.register(taskAddSpec, makeRunTaskAddHandler(getCtx));
-      registry.register(taskUpdateSpec, makeRunTaskUpdateHandler(getCtx));
-      registry.register(taskCommentSpec, makeRunTaskCommentHandler(getCtx));
-      registry.register(taskSetStatusSpec, makeRunTaskSetStatusHandler(getCtx));
-      registry.register(taskDocSpec, runTaskDoc);
-      registry.register(taskDocShowSpec, makeRunTaskDocShowHandler(getCtx));
-      registry.register(taskDocSetSpec, makeRunTaskDocSetHandler(getCtx));
-      registry.register(taskScrubSpec, makeRunTaskScrubHandler(getCtx));
-      registry.register(taskScaffoldSpec, makeRunTaskScaffoldHandler(getCtx));
-      registry.register(taskNormalizeSpec, makeRunTaskNormalizeHandler(getCtx));
-      registry.register(taskExportSpec, makeRunTaskExportHandler(getCtx));
-      registry.register(taskLintSpec, runTaskLint);
-      registry.register(taskMigrateSpec, makeRunTaskMigrateHandler(getCtx));
-      registry.register(taskMigrateDocSpec, runTaskMigrateDoc);
-      registry.register(taskPlanSetSpec, makeRunTaskPlanSetHandler(getCtx));
-      registry.register(taskPlanApproveSpec, makeRunTaskPlanApproveHandler(getCtx));
-      registry.register(taskPlanRejectSpec, makeRunTaskPlanRejectHandler(getCtx));
-      registry.register(taskVerifySpec, runTaskVerify);
-      registry.register(taskVerifyOkSpec, makeRunTaskVerifyOkHandler(getCtx));
-      registry.register(taskVerifyReworkSpec, makeRunTaskVerifyReworkHandler(getCtx));
-      registry.register(taskVerifyShowSpec, makeRunTaskVerifyShowHandler(getCtx));
-      registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
-      registry.register(recipesListSpec, runRecipesList);
-      registry.register(recipesListRemoteSpec, runRecipesListRemote);
-      registry.register(recipesInfoSpec, runRecipesInfo);
-      registry.register(recipesExplainSpec, runRecipesExplain);
-      registry.register(recipesRemoveSpec, runRecipesRemove);
-      registry.register(recipesCachePruneSpec, runRecipesCachePrune);
-      registry.register(scenarioListSpec, runScenarioList);
-      registry.register(scenarioInfoSpec, runScenarioInfo);
-      registry.register(scenarioRunSpec, runScenarioRun);
-      registry.register(branchBaseSpec, runBranchBase);
-      registry.register(branchBaseGetSpec, runBranchBaseGet);
-      registry.register(branchBaseSetSpec, runBranchBaseSet);
-      registry.register(branchBaseClearSpec, runBranchBaseClear);
-      registry.register(branchBaseExplainSpec, runBranchBaseExplain);
-      registry.register(branchStatusSpec, runBranchStatus);
-      registry.register(branchRemoveSpec, runBranchRemove);
-      registry.register(backendSpec, makeRunBackendHandler(getCtx));
-      registry.register(backendSyncSpec, makeRunBackendSyncHandler(getCtx));
-      registry.register(syncSpec, makeRunSyncHandler(getCtx));
-      registry.register(prSpec, makeRunPrHandler(getCtx));
-      registry.register(prOpenSpec, makeRunPrOpenHandler(getCtx));
-      registry.register(prUpdateSpec, makeRunPrUpdateHandler(getCtx));
-      registry.register(prCheckSpec, makeRunPrCheckHandler(getCtx));
-      registry.register(prNoteSpec, makeRunPrNoteHandler(getCtx));
-      registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
-      registry.register(commitSpec, makeRunCommitHandler(getCtx));
-      registry.register(startSpec, makeRunStartHandler(getCtx));
-      registry.register(blockSpec, makeRunBlockHandler(getCtx));
-      registry.register(verifySpec, makeRunVerifyHandler(getCtx));
-      registry.register(finishSpec, makeRunFinishHandler(getCtx));
-      registry.register(hooksSpec, runHooks);
-      registry.register(hooksInstallSpec, runHooksInstall);
-      registry.register(hooksUninstallSpec, runHooksUninstall);
-      registry.register(hooksRunSpec, runHooksRun);
-      registry.register(cleanupSpec, runCleanup);
-      registry.register(cleanupMergedSpec, makeRunCleanupMergedHandler(getCtx));
-      registry.register(guardSpec, runGuard);
-      registry.register(guardCleanSpec, runGuardClean);
-      registry.register(guardSuggestAllowSpec, runGuardSuggestAllow);
-      registry.register(guardCommitSpec, makeRunGuardCommitHandler(getCtx));
-      registry.register(recipesInstallSpec, runRecipesInstall);
+    // cli2 command routing (single router).
+    const registry = new CommandRegistry();
+    registry.register(initSpec, runInit);
+    registry.register(upgradeSpec, runUpgrade);
+    registry.register(quickstartSpec, runQuickstart);
+    registry.register(roleSpec, runRole);
+    registry.register(agentsSpec, runAgents);
+    registry.register(configShowSpec, runConfigShow);
+    registry.register(configSetSpec, runConfigSet);
+    registry.register(modeGetSpec, runModeGet);
+    registry.register(modeSetSpec, runModeSet);
+    registry.register(ideSyncSpec, runIdeSync);
+    registry.register(taskListSpec, makeRunTaskListHandler(getCtx));
+    registry.register(taskNextSpec, makeRunTaskNextHandler(getCtx));
+    registry.register(taskSearchSpec, makeRunTaskSearchHandler(getCtx));
+    registry.register(taskShowSpec, makeRunTaskShowHandler(getCtx));
+    registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
+    registry.register(taskDeriveSpec, makeRunTaskDeriveHandler(getCtx));
+    registry.register(taskAddSpec, makeRunTaskAddHandler(getCtx));
+    registry.register(taskUpdateSpec, makeRunTaskUpdateHandler(getCtx));
+    registry.register(taskCommentSpec, makeRunTaskCommentHandler(getCtx));
+    registry.register(taskSetStatusSpec, makeRunTaskSetStatusHandler(getCtx));
+    registry.register(taskDocSpec, runTaskDoc);
+    registry.register(taskDocShowSpec, makeRunTaskDocShowHandler(getCtx));
+    registry.register(taskDocSetSpec, makeRunTaskDocSetHandler(getCtx));
+    registry.register(taskScrubSpec, makeRunTaskScrubHandler(getCtx));
+    registry.register(taskScaffoldSpec, makeRunTaskScaffoldHandler(getCtx));
+    registry.register(taskNormalizeSpec, makeRunTaskNormalizeHandler(getCtx));
+    registry.register(taskExportSpec, makeRunTaskExportHandler(getCtx));
+    registry.register(taskLintSpec, runTaskLint);
+    registry.register(taskMigrateSpec, makeRunTaskMigrateHandler(getCtx));
+    registry.register(taskMigrateDocSpec, runTaskMigrateDoc);
+    registry.register(taskPlanSetSpec, makeRunTaskPlanSetHandler(getCtx));
+    registry.register(taskPlanApproveSpec, makeRunTaskPlanApproveHandler(getCtx));
+    registry.register(taskPlanRejectSpec, makeRunTaskPlanRejectHandler(getCtx));
+    registry.register(taskVerifySpec, runTaskVerify);
+    registry.register(taskVerifyOkSpec, makeRunTaskVerifyOkHandler(getCtx));
+    registry.register(taskVerifyReworkSpec, makeRunTaskVerifyReworkHandler(getCtx));
+    registry.register(taskVerifyShowSpec, makeRunTaskVerifyShowHandler(getCtx));
+    registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
+    registry.register(recipesListSpec, runRecipesList);
+    registry.register(recipesListRemoteSpec, runRecipesListRemote);
+    registry.register(recipesInfoSpec, runRecipesInfo);
+    registry.register(recipesExplainSpec, runRecipesExplain);
+    registry.register(recipesRemoveSpec, runRecipesRemove);
+    registry.register(recipesCachePruneSpec, runRecipesCachePrune);
+    registry.register(recipesInstallSpec, runRecipesInstall);
+    registry.register(scenarioListSpec, runScenarioList);
+    registry.register(scenarioInfoSpec, runScenarioInfo);
+    registry.register(scenarioRunSpec, runScenarioRun);
+    registry.register(branchBaseSpec, runBranchBase);
+    registry.register(branchBaseGetSpec, runBranchBaseGet);
+    registry.register(branchBaseSetSpec, runBranchBaseSet);
+    registry.register(branchBaseClearSpec, runBranchBaseClear);
+    registry.register(branchBaseExplainSpec, runBranchBaseExplain);
+    registry.register(branchStatusSpec, runBranchStatus);
+    registry.register(branchRemoveSpec, runBranchRemove);
+    registry.register(backendSpec, makeRunBackendHandler(getCtx));
+    registry.register(backendSyncSpec, makeRunBackendSyncHandler(getCtx));
+    registry.register(syncSpec, makeRunSyncHandler(getCtx));
+    registry.register(prSpec, makeRunPrHandler(getCtx));
+    registry.register(prOpenSpec, makeRunPrOpenHandler(getCtx));
+    registry.register(prUpdateSpec, makeRunPrUpdateHandler(getCtx));
+    registry.register(prCheckSpec, makeRunPrCheckHandler(getCtx));
+    registry.register(prNoteSpec, makeRunPrNoteHandler(getCtx));
+    registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
+    registry.register(commitSpec, makeRunCommitHandler(getCtx));
+    registry.register(startSpec, makeRunStartHandler(getCtx));
+    registry.register(blockSpec, makeRunBlockHandler(getCtx));
+    registry.register(verifySpec, makeRunVerifyHandler(getCtx));
+    registry.register(finishSpec, makeRunFinishHandler(getCtx));
+    registry.register(readySpec, makeRunReadyHandler(getCtx));
+    registry.register(hooksSpec, runHooks);
+    registry.register(hooksInstallSpec, runHooksInstall);
+    registry.register(hooksUninstallSpec, runHooksUninstall);
+    registry.register(hooksRunSpec, runHooksRun);
+    registry.register(cleanupSpec, runCleanup);
+    registry.register(cleanupMergedSpec, makeRunCleanupMergedHandler(getCtx));
+    registry.register(guardSpec, runGuard);
+    registry.register(guardCleanSpec, runGuardClean);
+    registry.register(guardSuggestAllowSpec, runGuardSuggestAllow);
+    registry.register(guardCommitSpec, makeRunGuardCommitHandler(getCtx));
 
-      const match = registry.match(rest);
-      if (match) {
-        const tail = rest.slice(match.consumed);
-        const parsed = parseCommandArgv(match.spec, tail).parsed;
-        return await match.handler({ cwd, rootOverride: globals.root }, parsed);
-      }
+    const match = registry.match(rest);
+    if (match) {
+      const tail = rest.slice(match.consumed);
+      const parsed = parseCommandArgv(match.spec, tail).parsed;
+      return await match.handler({ cwd, rootOverride: globals.root }, parsed);
     }
 
-    if (namespace === "ready") {
-      if (!command || command.startsWith("--") || args.length > 0) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(READY_USAGE, READY_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdReady({
-        ctx: await getCtx("ready"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId: command,
-      });
-    }
-
-    if (namespace === "task" && command === "new") {
-      return await cmdTaskNew({
-        ctx: await getCtx("task new"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "task" && command === "derive") {
-      return await cmdTaskDerive({
-        ctx: await getCtx("task derive"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "branch") {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(BRANCH_BASE_USAGE, BRANCH_BASE_USAGE_EXAMPLE),
-      });
-    }
-
-    if (namespace === "work" && command === "start") {
-      const [taskId, ...restArgs] = args;
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
-        });
-      }
-      let agent = "";
-      let slug = "";
-      let worktree = false;
-
-      for (let i = 0; i < restArgs.length; i++) {
-        const arg = restArgs[i];
-        if (!arg) continue;
-        if (arg === "--agent") {
-          const next = restArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
-            });
-          agent = next;
-          i++;
-          continue;
-        }
-        if (arg === "--slug") {
-          const next = restArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
-            });
-          slug = next;
-          i++;
-          continue;
-        }
-        if (arg === "--worktree") {
-          worktree = true;
-          continue;
-        }
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
-        });
-      }
-
-      if (!agent || !slug) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(WORK_START_USAGE, WORK_START_USAGE_EXAMPLE),
-        });
-      }
-
-      return await cmdWorkStart({
-        ctx: await getCtx("work start"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId,
-        agent,
-        slug,
-        worktree,
-      });
-    }
-
-    if (namespace === "scenario") {
-      return await cmdScenario({
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        command,
-        args,
-      });
-    }
-
-    if (namespace === "recipe" || namespace === "recipes") {
-      return await cmdRecipes({
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        command,
-        args,
-      });
-    }
-
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Not implemented yet. Run `agentplane --help`.",
+    const input = rest.join(" ");
+    const fullCandidates = registry.list().map((e) => e.spec.id.join(" "));
+    const suggestion = suggestOne(input, fullCandidates);
+    const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
+    throw usageError({
+      spec: helpSpec,
+      command: "help",
+      message: `Unknown command: ${input}.${suffix}`,
     });
   } catch (err) {
     if (err instanceof CliError) {

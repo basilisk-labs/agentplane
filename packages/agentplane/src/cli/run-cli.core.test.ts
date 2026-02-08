@@ -384,7 +384,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["nope"]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Not implemented yet");
+      expect(io.stderr).toContain("Unknown command: nope");
+      expect(io.stderr).toContain("Usage:");
     } finally {
       io.restore();
     }
