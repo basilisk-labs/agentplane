@@ -359,6 +359,63 @@ export async function cmdTaskVerifyRework(opts: {
   }
 }
 
+export async function cmdVerifyParsed(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  state: VerifyState;
+  by: string;
+  note: string;
+  details?: string;
+  file?: string;
+  quiet: boolean;
+}): Promise<number> {
+  const by = String(opts.by ?? "").trim();
+  const note = String(opts.note ?? "").trim();
+  if (!by || !note) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
+    });
+  }
+  if (typeof opts.details === "string" && typeof opts.file === "string") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(VERIFY_USAGE, VERIFY_USAGE_EXAMPLE),
+    });
+  }
+
+  let details: string | null = typeof opts.details === "string" ? opts.details : null;
+  if (typeof opts.file === "string") {
+    try {
+      details = await readFile(path.resolve(opts.cwd, opts.file), "utf8");
+    } catch (err) {
+      throw mapCoreError(err, { command: "verify", filePath: opts.file });
+    }
+  }
+
+  try {
+    await recordVerificationResult({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      state: opts.state,
+      by,
+      note,
+      details,
+      quiet: opts.quiet,
+    });
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapBackendError(err, { command: "verify", root: opts.rootOverride ?? null });
+  }
+}
+
 export async function cmdVerify(opts: {
   ctx?: CommandContext;
   cwd: string;

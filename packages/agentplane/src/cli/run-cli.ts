@@ -45,7 +45,7 @@ import { CliError, formatJsonError } from "../shared/errors.js";
 import { writeJsonStableIfChanged, writeTextIfChanged } from "../shared/write-if-changed.js";
 import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
 import { getVersion } from "../meta/version.js";
-import { parseFinish, parseVerify } from "./parse/lifecycle.js";
+import { parseFinish } from "./parse/lifecycle.js";
 import { CommandRegistry } from "../cli2/registry.js";
 import { parseCommandArgv } from "../cli2/parse.js";
 import { helpSpec, makeHelpHandler } from "../cli2/help.js";
@@ -155,6 +155,7 @@ import { integrateSpec, makeRunIntegrateHandler } from "../commands/integrate.co
 import { commitSpec, makeRunCommitHandler } from "../commands/commit.command.js";
 import { startSpec, makeRunStartHandler } from "../commands/start.command.js";
 import { blockSpec, makeRunBlockHandler } from "../commands/block.command.js";
+import { verifySpec, makeRunVerifyHandler } from "../commands/verify.command.js";
 import { hooksSpec, runHooks } from "../commands/hooks/hooks.command.js";
 import { hooksInstallSpec, runHooksInstall } from "../commands/hooks/install.command.js";
 import { hooksUninstallSpec, runHooksUninstall } from "../commands/hooks/uninstall.command.js";
@@ -177,8 +178,6 @@ import {
   BRANCH_BASE_USAGE_EXAMPLE,
   FINISH_USAGE,
   FINISH_USAGE_EXAMPLE,
-  VERIFY_USAGE,
-  VERIFY_USAGE_EXAMPLE,
   WORK_START_USAGE,
   WORK_START_USAGE_EXAMPLE,
   cmdFinish,
@@ -186,7 +185,6 @@ import {
   cmdReady,
   cmdTaskDerive,
   cmdTaskNew,
-  cmdVerify,
   cmdWorkStart,
   dedupeStrings,
   ensureInitCommit,
@@ -1346,6 +1344,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(commitSpec, noop);
       registry.register(startSpec, noop);
       registry.register(blockSpec, noop);
+      registry.register(verifySpec, noop);
       registry.register(hooksSpec, noop);
       registry.register(hooksInstallSpec, noop);
       registry.register(hooksUninstallSpec, noop);
@@ -1500,6 +1499,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(commitSpec, makeRunCommitHandler(getCtx));
       registry.register(startSpec, makeRunStartHandler(getCtx));
       registry.register(blockSpec, makeRunBlockHandler(getCtx));
+      registry.register(verifySpec, makeRunVerifyHandler(getCtx));
       registry.register(hooksSpec, runHooks);
       registry.register(hooksInstallSpec, runHooksInstall);
       registry.register(hooksUninstallSpec, runHooksUninstall);
@@ -1660,21 +1660,6 @@ export async function runCli(argv: string[]): Promise<number> {
         statusCommitRequireClean: parsed.statusCommitRequireClean,
         confirmStatusCommit: parsed.confirmStatusCommit,
         quiet: parsed.quiet,
-      });
-    }
-
-    if (namespace === "verify") {
-      const parsed = parseVerify({
-        taskIdToken: command,
-        args,
-        usage: { usage: VERIFY_USAGE, example: VERIFY_USAGE_EXAMPLE },
-      });
-      return await cmdVerify({
-        ctx: await getCtx("verify"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId: parsed.taskId,
-        args: parsed.args,
       });
     }
 

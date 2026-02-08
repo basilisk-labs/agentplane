@@ -1947,7 +1947,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["verify", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane verify");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane verify");
     } finally {
       io.restore();
       if (previous === undefined) delete process.env.AGENTPLANE_TASK_ID;
@@ -1986,7 +1987,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["verify", taskId, "--ok", "--by", "REVIEWER", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane verify");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane verify");
     } finally {
       io.restore();
     }
@@ -2135,7 +2137,10 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Unknown flag: --nope");
+      expect(io.stderr).toContain("Unknown option: --nope");
+      expect(io.stderr).toContain("Did you mean --note?");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane verify");
     } finally {
       io.restore();
     }
@@ -2209,7 +2214,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane verify");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane verify");
     } finally {
       io.restore();
       if (previous === undefined) delete process.env.AGENTPLANE_TASK_ID;
