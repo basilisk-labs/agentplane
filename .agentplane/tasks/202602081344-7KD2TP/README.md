@@ -1,7 +1,7 @@
 ---
 id: "202602081344-7KD2TP"
 title: "Further decompose integrate command core"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -22,14 +22,19 @@ verification:
   updated_at: "2026-02-08T14:32:27.044Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: bun run typecheck PASS; bun run lint PASS; bun run test:full PASS (vitest, 704 tests). Refactor only: split integrate cmd core into internal modules; pr-flow tests remain green."
-commit: null
+commit:
+  hash: "36b179de0af9734a00d6b961bc6c3bfa15ed6a18"
+  message: "✨ 7KD2TP pr: decompose integrate cmd core"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose integrate cmd core into smaller internal modules; keep behavior stable and keep pr-flow tests passing."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: bun run typecheck PASS; bun run lint PASS; bun run test:full PASS (vitest, 704 tests). Internal refactor only: extracted integrate cmd core helpers into packages/agentplane/src/commands/pr/integrate/internal/*.ts; no behavior changes; pr-flow tests remain green."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-08T14:32:27.046Z"
+doc_updated_at: "2026-02-08T14:33:19.825Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split commands/pr/integrate/cmd.ts into focused modules (merge strategies, meta/diffstat update, verify runner) while preserving behavior and keeping pr-flow tests green."
 ---
