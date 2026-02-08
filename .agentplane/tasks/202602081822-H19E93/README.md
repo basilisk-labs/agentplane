@@ -1,7 +1,8 @@
 ---
 id: "202602081822-H19E93"
 title: "CLI: split registry modules so help path stays light"
-status: "DOING"
+result_summary: "Split registry modules"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-08T18:50:08.450Z"
   updated_by: "TESTER"
   note: "bun run lint; bun run test:cli:core; bun run typecheck"
-commit: null
+commit:
+  hash: "db598e311b070688bfb61f5e9a9ec88d14c871b5"
+  message: "✨ H19E93 cli: split help/run registry modules"
 comments:
   -
     author: "CODER"
     body: "Start: Split help/run registries into separate modules so run-cli help path can avoid importing heavy run handlers."
+  -
+    author: "CODER"
+    body: "Verified: Split registry into registry.help.ts and registry.run.ts and switched run-cli.ts to dynamic imports so help path avoids importing run registry; lint, cli core tests, and typecheck pass."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run lint; bun run test:cli:core; bun run typecheck"
+  -
+    type: "status"
+    at: "2026-02-08T18:51:13.388Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Split registry into registry.help.ts and registry.run.ts and switched run-cli.ts to dynamic imports so help path avoids importing run registry; lint, cli core tests, and typecheck pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T18:50:08.452Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-08T18:51:13.388Z"
+doc_updated_by: "CODER"
 description: "Split registry.ts into registry.help.ts and registry.run.ts (or equivalent) so help fast does not statically import heavy handlers."
 id_source: "generated"
 ---
