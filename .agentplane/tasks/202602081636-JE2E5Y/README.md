@@ -1,7 +1,9 @@
 ---
 id: "202602081636-JE2E5Y"
 title: "Docs: sync help/docs with current CLI (verify/init)"
-status: "DOING"
+result_summary: "Docs synced with current CLI help/spec"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -20,11 +22,16 @@ verification:
   updated_at: "2026-02-08T16:43:29.171Z"
   updated_by: "ORCHESTRATOR"
   note: "Docs aligned with cli2 help/spec; generated CLI reference; bun test:cli:core passed"
-commit: null
+commit:
+  hash: "0cb69cc4cc806bb43d331ed1cebff16d647d0505"
+  message: "✅ JE2E5Y docs: Align docs with cli2 help/spec"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: auditing docs/help vs cli2 registry/spec; will update verify/init wording and examples and add generated CLI reference."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: docs aligned with cli2 help/spec; generated CLI reference; bun test:cli:core passed"
 events:
   -
     type: "status"
@@ -39,8 +46,15 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Docs aligned with cli2 help/spec; generated CLI reference; bun test:cli:core passed"
+  -
+    type: "status"
+    at: "2026-02-08T16:46:34.669Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: docs aligned with cli2 help/spec; generated CLI reference; bun test:cli:core passed"
 doc_version: 2
-doc_updated_at: "2026-02-08T16:43:29.175Z"
+doc_updated_at: "2026-02-08T16:46:34.669Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Audit and fix documentation drift vs cli2 registry/spec; clarify verify semantics (record vs run), update examples/flags, and add generated CLI reference."
 id_source: "generated"
