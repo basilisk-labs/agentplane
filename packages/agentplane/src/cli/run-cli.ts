@@ -6,7 +6,6 @@ import {
   atomicWriteFile,
   defaultConfig,
   findGitRoot,
-  getStagedFiles,
   loadConfig,
   resolveProject,
   saveConfig,
@@ -119,11 +118,13 @@ import {
   makeRunCleanupMergedHandler,
   runCleanup,
 } from "../commands/cleanup/merged.command.js";
+import { guardSpec, runGuard } from "../commands/guard/guard.command.js";
 import { guardCleanSpec, runGuardClean } from "../commands/guard/clean.command.js";
 import {
   guardSuggestAllowSpec,
   runGuardSuggestAllow,
 } from "../commands/guard/suggest-allow.command.js";
+import { guardCommitSpec, makeRunGuardCommitHandler } from "../commands/guard/commit.command.js";
 import {
   BLOCK_USAGE,
   BLOCK_USAGE_EXAMPLE,
@@ -133,8 +134,6 @@ import {
   COMMIT_USAGE_EXAMPLE,
   FINISH_USAGE,
   FINISH_USAGE_EXAMPLE,
-  GUARD_COMMIT_USAGE,
-  GUARD_COMMIT_USAGE_EXAMPLE,
   HOOK_NAMES,
   START_USAGE,
   START_USAGE_EXAMPLE,
@@ -149,7 +148,6 @@ import {
   cmdBlock,
   cmdCommit,
   cmdFinish,
-  cmdGuardCommit,
   cmdHooksInstall,
   cmdHooksRun,
   cmdHooksUninstall,
@@ -183,7 +181,6 @@ import {
   gitInitRepo,
   promptInitBaseBranch,
   resolveInitBaseBranch,
-  suggestAllowPrefixes,
 } from "../commands/workflow.js";
 
 type ParsedArgs = {
@@ -532,9 +529,6 @@ const TASK_COMMENT_USAGE_EXAMPLE =
   'agentplane task comment 202602030608-F1Q8AB --author CODER --body "..."';
 const TASK_SET_STATUS_USAGE = "Usage: agentplane task set-status <task-id> <status> [flags]";
 const TASK_SET_STATUS_USAGE_EXAMPLE = "agentplane task set-status 202602030608-F1Q8AB DONE";
-const GUARD_USAGE = "Usage: agentplane guard <subcommand>";
-const GUARD_USAGE_EXAMPLE =
-  'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane';
 const HOOKS_RUN_USAGE = "Usage: agentplane hooks run <hook>";
 const HOOKS_RUN_USAGE_EXAMPLE = "agentplane hooks run pre-commit";
 const HOOKS_INSTALL_USAGE = "Usage: agentplane hooks install|uninstall";
@@ -1352,8 +1346,10 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(integrateSpec, noop);
       registry.register(cleanupSpec, noop);
       registry.register(cleanupMergedSpec, noop);
+      registry.register(guardSpec, noop);
       registry.register(guardCleanSpec, noop);
       registry.register(guardSuggestAllowSpec, noop);
+      registry.register(guardCommitSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1447,8 +1443,10 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
       registry.register(cleanupSpec, runCleanup);
       registry.register(cleanupMergedSpec, makeRunCleanupMergedHandler(getCtx));
+      registry.register(guardSpec, runGuard);
       registry.register(guardCleanSpec, runGuardClean);
       registry.register(guardSuggestAllowSpec, runGuardSuggestAllow);
+      registry.register(guardCommitSpec, makeRunGuardCommitHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);
@@ -1987,151 +1985,6 @@ export async function runCli(argv: string[]): Promise<number> {
         agent,
         slug,
         worktree,
-      });
-    }
-
-    if (namespace === "guard") {
-      const subcommand = command;
-      const restArgs = args;
-      if (subcommand === "commit") {
-        const taskId = restArgs[0];
-        if (!taskId) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
-          });
-        }
-
-        const allow: string[] = [];
-        let message = "";
-        let autoAllow = false;
-        let allowTasks = false;
-        let allowBase = false;
-        let allowPolicy = false;
-        let allowConfig = false;
-        let allowHooks = false;
-        let allowCI = false;
-        let requireClean = false;
-        let quiet = false;
-
-        for (let i = 1; i < restArgs.length; i++) {
-          const arg = restArgs[i];
-          if (!arg) continue;
-          if (arg === "--allow") {
-            const next = restArgs[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
-              });
-            allow.push(next);
-            i++;
-            continue;
-          }
-          if (arg === "-m" || arg === "--message") {
-            const next = restArgs[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
-              });
-            message = next;
-            i++;
-            continue;
-          }
-          if (arg === "--allow-tasks") {
-            allowTasks = true;
-            continue;
-          }
-          if (arg === "--allow-base") {
-            allowBase = true;
-            continue;
-          }
-          if (arg === "--allow-policy") {
-            allowPolicy = true;
-            continue;
-          }
-          if (arg === "--allow-config") {
-            allowConfig = true;
-            continue;
-          }
-          if (arg === "--allow-hooks") {
-            allowHooks = true;
-            continue;
-          }
-          if (arg === "--allow-ci") {
-            allowCI = true;
-            continue;
-          }
-          if (arg === "--auto-allow") {
-            autoAllow = true;
-            continue;
-          }
-          if (arg === "--require-clean") {
-            requireClean = true;
-            continue;
-          }
-          if (arg === "--quiet") {
-            quiet = true;
-            continue;
-          }
-          if (arg.startsWith("--")) {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
-            });
-          }
-        }
-
-        if (!message) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(GUARD_COMMIT_USAGE, GUARD_COMMIT_USAGE_EXAMPLE),
-          });
-        }
-
-        if (autoAllow && allow.length === 0) {
-          const staged = await getStagedFiles({
-            cwd: process.cwd(),
-            rootOverride: globals.root ?? null,
-          });
-          const prefixes = suggestAllowPrefixes(staged);
-          if (prefixes.length === 0) {
-            throw new CliError({
-              exitCode: 5,
-              code: "E_GIT",
-              message: "No staged files (git index empty)",
-            });
-          }
-          allow.push(...prefixes);
-        }
-
-        return await cmdGuardCommit({
-          ctx: await getCtx("guard commit"),
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          taskId,
-          message,
-          allow,
-          allowBase,
-          allowTasks,
-          allowPolicy,
-          allowConfig,
-          allowHooks,
-          allowCI,
-          requireClean,
-          quiet,
-        });
-      }
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(GUARD_USAGE, GUARD_USAGE_EXAMPLE),
       });
     }
 

@@ -436,7 +436,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["guard", "commit", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane guard commit");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane guard commit");
     } finally {
       io.restore();
     }
@@ -448,7 +449,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["guard", "commit", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane guard commit");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane guard commit");
     } finally {
       io.restore();
     }
@@ -469,7 +471,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane guard commit");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane guard commit");
     } finally {
       io.restore();
     }
@@ -481,7 +484,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["guard", "commit", "202601010101-ABCDEF", "-m", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane guard commit");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane guard commit");
     } finally {
       io.restore();
     }
@@ -502,7 +506,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane guard commit");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane guard commit");
     } finally {
       io.restore();
     }
@@ -514,7 +519,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["guard", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane guard");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane guard <command>");
     } finally {
       io.restore();
     }
