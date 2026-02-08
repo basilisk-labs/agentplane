@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
 import { captureStdIO, silenceStdIO } from "./run-cli.test-helpers.js";
+import { buildHelpFastRegistry, buildRegistry } from "./run-cli/registry.js";
+import type { CommandContext } from "../commands/shared/task-backend.js";
 
 type HelpJson = {
   id: string[];
@@ -10,6 +12,13 @@ type HelpJson = {
 
 function keyId(id: string[]): string {
   return id.join(" ");
+}
+
+function registryCommandIdsSorted(registry: {
+  list(): readonly { spec: { id: string[] } }[];
+}): string[] {
+  const ids = new Set(registry.list().map((e) => e.spec.id.join(" ")));
+  return [...ids].toSorted();
 }
 
 let restoreStdIO: (() => void) | null = null;
@@ -54,5 +63,15 @@ describe("cli2 help contract", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("help registry and run registry expose the same command id set", () => {
+    const helpRegistry = buildHelpFastRegistry();
+    const runRegistry = buildRegistry(
+      (_cmd: string): Promise<CommandContext> =>
+        Promise.reject(new Error("getCtx should not be called during registry construction")),
+    );
+
+    expect(registryCommandIdsSorted(helpRegistry)).toEqual(registryCommandIdsSorted(runRegistry));
   });
 });
