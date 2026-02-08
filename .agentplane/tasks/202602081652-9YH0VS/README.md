@@ -1,7 +1,9 @@
 ---
 id: "202602081652-9YH0VS"
 title: "Refactor: merge cli2 into cli/spec"
-status: "DOING"
+result_summary: "CLI code layout simplified (cli2 merged under cli/spec)"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -20,11 +22,16 @@ verification:
   updated_at: "2026-02-08T16:58:11.098Z"
   updated_by: "ORCHESTRATOR"
   note: "Refactor built + typecheck + cli core tests OK"
-commit: null
+commit:
+  hash: "6927d5c080601fed669a56205ac69b3b3a5bfd76"
+  message: "✅ 9YH0VS cli: Merge cli2 into cli/spec"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: moving src/cli2 under src/cli/spec and updating imports; will verify via typecheck and CLI core tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: src/cli2 moved to src/cli/spec; imports updated; typecheck + test:cli:core + help/docs generation OK"
 events:
   -
     type: "status"
@@ -39,8 +46,15 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Refactor built + typecheck + cli core tests OK"
+  -
+    type: "status"
+    at: "2026-02-08T16:59:42.232Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: src/cli2 moved to src/cli/spec; imports updated; typecheck + test:cli:core + help/docs generation OK"
 doc_version: 2
-doc_updated_at: "2026-02-08T16:58:11.100Z"
+doc_updated_at: "2026-02-08T16:59:42.232Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Remove top-level src/cli2 by moving spec-driven CLI (spec/parse/help/registry) under src/cli/spec; update imports; keep behavior unchanged; keep docs generation working."
 id_source: "generated"
