@@ -1,7 +1,7 @@
 ---
 id: "202602081050-PQ2JPT"
 title: "CLI2-FULL: Full spec-only CLI and monolith decomposition"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -28,14 +28,19 @@ verification:
   updated_at: "2026-02-08T12:23:31.517Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: CLI2 spec-driven routing is the single command source of truth; run-cli.ts is decomposed via cli/run-cli/commands/*; repo has regression test packages/agentplane/src/cli/legacy-cli-regressions.test.ts to prevent legacy patterns; typecheck+lint+test:fast+test:cli:core green; rg assertions for parse*Flags and exported *_USAGE are clean."
-commit: null
+commit:
+  hash: "6f5620326958cb2ddc67834c16ac2d936d4b28f1"
+  message: "✨ PQ2JPT cli: close CLI2 full migration tracking"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: close out CLI2 full-migration tracking task by linking dependent tasks, re-verifying repo invariants (spec-only parsing, no exported usage constants), and recording verification and finish metadata."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: full CLI2 spec-only migration and monolith decomposition completed; all CLI help/usage derives from specs; legacy parse*Flags and exported *_USAGE constants are eliminated; regression guard test is in place; full typecheck/lint/test suites pass."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-08T12:23:31.518Z"
+doc_updated_at: "2026-02-08T12:24:05.005Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Remove all legacy argv parsing, delete usage constants, and decompose remaining monolithic CLI/command modules so spec is the only CLI source of truth."
 id_source: "generated"
