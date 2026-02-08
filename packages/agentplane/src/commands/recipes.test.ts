@@ -5,8 +5,24 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { cmdScenario } from "./scenario.js";
-import { cmdRecipes } from "./recipes.js";
+import {
+  cmdRecipeCachePruneParsed,
+  cmdRecipeExplainParsed,
+  cmdRecipeInfoParsed,
+  cmdRecipeInstall,
+  cmdRecipeListParsed,
+  cmdRecipeListRemoteParsed,
+  cmdRecipeRemoveParsed,
+} from "./recipes.js";
 import { CliError } from "../shared/errors.js";
+import { parseCommandArgv } from "../cli2/parse.js";
+import { recipesCachePruneSpec } from "./recipes/cache-prune.command.js";
+import { recipesExplainSpec } from "./recipes/explain.command.js";
+import { recipesInfoSpec } from "./recipes/info.command.js";
+import { recipesInstallSpec } from "./recipes/install.command.js";
+import { recipesListRemoteSpec } from "./recipes/list-remote.command.js";
+import { recipesListSpec } from "./recipes/list.command.js";
+import { recipesRemoveSpec } from "./recipes/remove.command.js";
 import {
   captureStdIO,
   createRecipeArchive,
@@ -82,13 +98,94 @@ async function installRecipe(opts: {
     : await createRecipeArchive({ tags: opts.tags });
   const io = captureStdIO();
   try {
-    await cmdRecipes({
+    await runRecipesTest({
       cwd: opts.projectDir,
-      args: ["--path", archivePath],
       command: "install",
+      args: ["--path", archivePath],
     });
   } finally {
     io.restore();
+  }
+}
+
+async function runRecipesTest(opts: {
+  cwd: string;
+  rootOverride?: string;
+  command: string | undefined;
+  args: string[];
+}): Promise<number> {
+  if (!opts.command) {
+    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing recipes subcommand." });
+  }
+
+  switch (opts.command) {
+    case "list": {
+      const parsed = parseCommandArgv(recipesListSpec, opts.args).parsed;
+      return await cmdRecipeListParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        flags: parsed,
+      });
+    }
+    case "list-remote": {
+      const parsed = parseCommandArgv(recipesListRemoteSpec, opts.args).parsed;
+      return await cmdRecipeListRemoteParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        flags: parsed,
+      });
+    }
+    case "info": {
+      const parsed = parseCommandArgv(recipesInfoSpec, opts.args).parsed;
+      return await cmdRecipeInfoParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        id: parsed.id,
+      });
+    }
+    case "explain": {
+      const parsed = parseCommandArgv(recipesExplainSpec, opts.args).parsed;
+      return await cmdRecipeExplainParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        id: parsed.id,
+      });
+    }
+    case "install": {
+      const parsed = parseCommandArgv(recipesInstallSpec, opts.args).parsed;
+      return await cmdRecipeInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, ...parsed });
+    }
+    case "remove": {
+      const parsed = parseCommandArgv(recipesRemoveSpec, opts.args).parsed;
+      return await cmdRecipeRemoveParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        id: parsed.id,
+      });
+    }
+    case "cache": {
+      const [sub, ...tail] = opts.args;
+      if (sub !== "prune") {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `Unknown recipes cache subcommand: ${String(sub ?? "")}`,
+        });
+      }
+      const parsed = parseCommandArgv(recipesCachePruneSpec, tail).parsed;
+      return await cmdRecipeCachePruneParsed({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        flags: parsed,
+      });
+    }
+    default: {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Unknown recipes subcommand: ${opts.command}`,
+      });
+    }
   }
 }
 
@@ -122,7 +219,7 @@ describe("commands/recipes", () => {
 
   it("rejects missing recipes subcommand", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: [],
         command: undefined,
@@ -132,7 +229,7 @@ describe("commands/recipes", () => {
 
   it("rejects invalid recipes install usage", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: [],
         command: "install",
@@ -142,7 +239,7 @@ describe("commands/recipes", () => {
 
   it("rejects invalid recipes list usage", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--tag"],
         command: "list",
@@ -150,7 +247,7 @@ describe("commands/recipes", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--unknown"],
         command: "list",
@@ -167,7 +264,7 @@ describe("commands/recipes", () => {
     );
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: [],
         command: "list",
@@ -181,7 +278,7 @@ describe("commands/recipes", () => {
     await writeSignedIndex(indexPath, { schema_version: 1, recipes: [{ id: "viewer" }] });
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd,
         args: ["--index", indexPath, "--refresh"],
         command: "list-remote",
@@ -197,7 +294,7 @@ describe("commands/recipes", () => {
     await writeFile(indexPath, JSON.stringify({ schema_version: 1, recipes: [] }, null, 2), "utf8");
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd,
         args: ["--index", indexPath, "--refresh"],
         command: "list-remote",
@@ -209,7 +306,7 @@ describe("commands/recipes", () => {
 
   it("rejects recipes install positional + flag mix", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--name", "viewer", "extra"],
         command: "install",
@@ -219,7 +316,7 @@ describe("commands/recipes", () => {
 
   it("rejects recipes install with multiple explicit flags", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--name", "viewer", "--url", "https://example.test"],
         command: "install",
@@ -229,7 +326,7 @@ describe("commands/recipes", () => {
 
   it("rejects recipes install with too many positional args", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["one", "two"],
         command: "install",
@@ -239,7 +336,7 @@ describe("commands/recipes", () => {
 
   it("rejects recipes install with invalid conflict mode", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--name", "viewer", "--on-conflict", "bad"],
         command: "install",
@@ -270,7 +367,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: projectDir,
         args: ["viewer"],
         command: "info",
@@ -293,7 +390,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: projectDir,
         args: ["viewer"],
         command: "explain",
@@ -330,7 +427,7 @@ describe("commands/recipes", () => {
 
     const io = captureStdIO();
     try {
-      const code = await cmdRecipes({
+      const code = await runRecipesTest({
         cwd: projectDir,
         args: ["viewer"],
         command: "explain",
@@ -352,7 +449,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
     try {
       await expect(
-        cmdRecipes({
+        runRecipesTest({
           cwd: projectDir,
           args: ["viewer"],
           command: "remove",
@@ -370,7 +467,7 @@ describe("commands/recipes", () => {
 
   it("rejects removing a missing recipe", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["missing"],
         command: "remove",
@@ -384,7 +481,7 @@ describe("commands/recipes", () => {
     await writeSignedIndex(indexPath, { schema_version: 1, recipes: [] });
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd,
         args: ["--name", "missing", "--index", indexPath, "--refresh"],
         command: "install",
@@ -414,7 +511,7 @@ describe("commands/recipes", () => {
     });
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd,
         args: ["--name", "viewer", "--index", indexPath, "--refresh"],
         command: "install",
@@ -676,7 +773,7 @@ describe("commands/recipes", () => {
       },
     });
 
-    await cmdRecipes({
+    await runRecipesTest({
       cwd: projectDir,
       args: ["--path", archivePath],
       command: "install",
@@ -753,7 +850,7 @@ describe("commands/recipes", () => {
       },
     });
 
-    await cmdRecipes({
+    await runRecipesTest({
       cwd: projectDir,
       args: ["--path", archivePath],
       command: "install",
@@ -810,7 +907,7 @@ describe("commands/recipes", () => {
       },
     });
 
-    await cmdRecipes({
+    await runRecipesTest({
       cwd: projectDir,
       args: ["--path", archivePath],
       command: "install",
@@ -825,7 +922,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: [],
         command: "list",
@@ -840,7 +937,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--tag", "docs"],
         command: "list",
@@ -857,7 +954,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--full"],
         command: "list",
@@ -909,7 +1006,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--tag", "docs"],
         command: "list",
@@ -939,7 +1036,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd,
         args: ["--index", indexPath, "--refresh"],
         command: "list-remote",
@@ -987,7 +1084,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["--index", "https://example.test/index.json", "--refresh", "--yes"],
         command: "list-remote",
@@ -1003,7 +1100,7 @@ describe("commands/recipes", () => {
 
   it("rejects missing cache subcommand", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: [],
         command: "cache",
@@ -1013,7 +1110,7 @@ describe("commands/recipes", () => {
 
   it("rejects invalid cache subcommand", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["noop"],
         command: "cache",
@@ -1023,7 +1120,7 @@ describe("commands/recipes", () => {
 
   it("rejects invalid cache prune flags", async () => {
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["prune", "--bad"],
         command: "cache",
@@ -1035,7 +1132,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["prune"],
         command: "cache",
@@ -1053,7 +1150,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["prune"],
         command: "cache",
@@ -1072,7 +1169,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["prune", "--all", "--dry-run"],
         command: "cache",
@@ -1092,7 +1189,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["prune"],
         command: "cache",
@@ -1112,7 +1209,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["prune"],
         command: "cache",
@@ -1131,7 +1228,7 @@ describe("commands/recipes", () => {
     const io = captureStdIO();
 
     await expect(
-      cmdRecipes({
+      runRecipesTest({
         cwd: process.cwd(),
         args: ["prune", "--all"],
         command: "cache",

@@ -15,11 +15,9 @@ import {
   infoMessage,
   invalidFieldMessage,
   invalidPathMessage,
-  missingValueMessage,
   missingFileMessage,
   requiredFieldMessage,
   successMessage,
-  usageMessage,
 } from "../cli/output.js";
 import { isRecord } from "../shared/guards.js";
 import { CliError } from "../shared/errors.js";
@@ -115,25 +113,6 @@ export const RECIPES_SCENARIOS_DIR_NAME = "scenarios";
 export const RECIPES_SCENARIOS_INDEX_NAME = "scenarios.json";
 const RECIPES_REMOTE_INDEX_NAME = "recipes-index.json";
 const RECIPES_REMOTE_INDEX_SIG_NAME = "recipes-index.json.sig";
-const RECIPE_USAGE =
-  "Usage: agentplane recipes <list|info|explain|install|remove|list-remote|cache> [args]";
-const RECIPE_USAGE_EXAMPLE = "agentplane recipes list";
-const RECIPE_INFO_USAGE = "Usage: agentplane recipes info <id>";
-const RECIPE_INFO_USAGE_EXAMPLE = "agentplane recipes info viewer";
-const RECIPE_EXPLAIN_USAGE = "Usage: agentplane recipes explain <id>";
-const RECIPE_EXPLAIN_USAGE_EXAMPLE = "agentplane recipes explain viewer";
-const RECIPE_INSTALL_USAGE =
-  "Usage: agentplane recipes install --name <id> [--index <path|url>] [--refresh] [--yes] | --path <path> | --url <url> [--yes]";
-const RECIPE_INSTALL_USAGE_EXAMPLE = "agentplane recipes install --name viewer";
-const RECIPE_REMOVE_USAGE = "Usage: agentplane recipes remove <id>";
-const RECIPE_REMOVE_USAGE_EXAMPLE = "agentplane recipes remove viewer";
-const RECIPE_CACHE_USAGE = "Usage: agentplane recipes cache <prune> [args]";
-const RECIPE_CACHE_USAGE_EXAMPLE = "agentplane recipes cache prune --dry-run";
-const RECIPE_CACHE_PRUNE_USAGE = "Usage: agentplane recipes cache prune [--dry-run] [--all]";
-const RECIPE_CACHE_PRUNE_USAGE_EXAMPLE = "agentplane recipes cache prune --dry-run";
-const RECIPE_LIST_REMOTE_USAGE =
-  "Usage: agentplane recipes list-remote [--refresh] [--index <path|url>] [--yes]";
-const RECIPE_LIST_REMOTE_USAGE_EXAMPLE = "agentplane recipes list-remote --refresh";
 const DEFAULT_RECIPES_INDEX_URL =
   "https://raw.githubusercontent.com/basilisk-labs/agentplane-recipes/main/index.json";
 const RECIPES_INDEX_PUBLIC_KEYS_ENV = "AGENTPLANE_RECIPES_INDEX_PUBLIC_KEYS";
@@ -142,7 +121,6 @@ const RECIPES_INDEX_PUBLIC_KEYS: Record<string, string> = {
 MCowBQYDK2VwAyEAeRWdXKVZtz0v+bnQS3zb24jMfa0gflsRUHQkeJkji6E=
 -----END PUBLIC KEY-----`,
 };
-const RECIPE_CONFLICT_MODES = ["fail", "rename", "overwrite"] as const;
 const AGENTPLANE_HOME_ENV = "AGENTPLANE_HOME";
 const GLOBAL_RECIPES_DIR_NAME = "recipes";
 const PROJECT_RECIPES_CACHE_DIR_NAME = "recipes-cache";
@@ -179,48 +157,6 @@ type RecipeListRemoteFlags = {
 };
 
 export type { RecipeListRemoteFlags };
-
-function parseRecipeListRemoteFlags(args: string[]): RecipeListRemoteFlags {
-  const out: RecipeListRemoteFlags = { refresh: false, yes: false };
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (!arg.startsWith("--")) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(RECIPE_LIST_REMOTE_USAGE, RECIPE_LIST_REMOTE_USAGE_EXAMPLE),
-      });
-    }
-    if (arg === "--refresh") {
-      out.refresh = true;
-      continue;
-    }
-    if (arg === "--yes") {
-      out.yes = true;
-      continue;
-    }
-    const next = args[i + 1];
-    if (!next) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage(arg) });
-    }
-    switch (arg) {
-      case "--index": {
-        out.index = next;
-        break;
-      }
-      default: {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(RECIPE_LIST_REMOTE_USAGE, RECIPE_LIST_REMOTE_USAGE_EXAMPLE),
-        });
-      }
-    }
-    i++;
-  }
-  return out;
-}
 
 function normalizeRecipeId(value: string): string {
   const trimmed = value.trim();
@@ -648,148 +584,6 @@ export type RecipeInstallSource =
   | { type: "url"; value: string }
   | { type: "auto"; value: string };
 
-function parseRecipeInstallArgs(args: string[]): {
-  source: RecipeInstallSource;
-  index?: string;
-  refresh: boolean;
-  onConflict: RecipeConflictMode;
-  yes: boolean;
-} {
-  let onConflict: RecipeConflictMode = "fail";
-  let name: string | null = null;
-  let localPath: string | null = null;
-  let url: string | null = null;
-  let index: string | undefined;
-  let refresh = false;
-  let yes = false;
-  const positional: string[] = [];
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (arg === "--name") {
-      const next = args[i + 1];
-      if (!next)
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-        });
-      name = next;
-      i++;
-      continue;
-    }
-    if (arg === "--path") {
-      const next = args[i + 1];
-      if (!next)
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-        });
-      localPath = next;
-      i++;
-      continue;
-    }
-    if (arg === "--url") {
-      const next = args[i + 1];
-      if (!next)
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-        });
-      url = next;
-      i++;
-      continue;
-    }
-    if (arg === "--index") {
-      const next = args[i + 1];
-      if (!next)
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-        });
-      index = next;
-      i++;
-      continue;
-    }
-    if (arg === "--refresh") {
-      refresh = true;
-      continue;
-    }
-    if (arg === "--yes") {
-      yes = true;
-      continue;
-    }
-    if (arg === "--on-conflict") {
-      const next = args[i + 1];
-      if (!next)
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-        });
-      if (!RECIPE_CONFLICT_MODES.includes(next as RecipeConflictMode)) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-        });
-      }
-      onConflict = next as RecipeConflictMode;
-      i++;
-      continue;
-    }
-    if (arg.startsWith("--")) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-      });
-    }
-    positional.push(arg);
-  }
-
-  const explicitFlags = [name, localPath, url].filter(Boolean).length;
-  if (explicitFlags > 1) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-    });
-  }
-  if (positional.length > 1) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-    });
-  }
-  if (positional.length > 0 && explicitFlags > 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-    });
-  }
-
-  if (name) return { source: { type: "name", value: name }, index, refresh, onConflict, yes };
-  if (localPath)
-    return { source: { type: "path", value: localPath }, index, refresh, onConflict, yes };
-  if (url) return { source: { type: "url", value: url }, index, refresh, onConflict, yes };
-  if (positional.length === 1) {
-    return { source: { type: "auto", value: positional[0] }, index, refresh, onConflict, yes };
-  }
-
-  throw new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
-    message: usageMessage(RECIPE_INSTALL_USAGE, RECIPE_INSTALL_USAGE_EXAMPLE),
-  });
-}
-
 type RecipeCachePruneFlags = {
   dryRun: boolean;
   all: boolean;
@@ -803,71 +597,6 @@ type RecipeListFlags = {
 };
 
 export type { RecipeListFlags };
-
-function parseRecipeListArgs(args: string[]): RecipeListFlags {
-  const flags: RecipeListFlags = { full: false };
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (!arg) continue;
-    if (arg === "--full") {
-      flags.full = true;
-      continue;
-    }
-    if (arg === "--tag") {
-      const next = args[i + 1];
-      if (!next)
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
-        });
-      flags.tag = next.trim();
-      i++;
-      continue;
-    }
-    if (arg.startsWith("--")) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
-      });
-    }
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
-    });
-  }
-  if (flags.tag !== undefined && !flags.tag) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
-    });
-  }
-  return flags;
-}
-
-function parseRecipeCachePruneArgs(args: string[]): RecipeCachePruneFlags {
-  const flags: RecipeCachePruneFlags = { dryRun: false, all: false };
-  for (const arg of args) {
-    if (!arg) continue;
-    if (arg === "--dry-run") {
-      flags.dryRun = true;
-      continue;
-    }
-    if (arg === "--all") {
-      flags.all = true;
-      continue;
-    }
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(RECIPE_CACHE_PRUNE_USAGE, RECIPE_CACHE_PRUNE_USAGE_EXAMPLE),
-    });
-  }
-  return flags;
-}
 
 async function applyRecipeAgents(opts: {
   manifest: RecipeManifest;
@@ -1011,20 +740,6 @@ async function loadRecipesRemoteIndex(opts: {
   return validateRecipesIndex(rawIndex);
 }
 
-async function cmdRecipeList(opts: {
-  cwd: string;
-  rootOverride?: string;
-  args: string[];
-}): Promise<number> {
-  try {
-    const flags = parseRecipeListArgs(opts.args);
-    return await cmdRecipeListParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride, flags });
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "recipes list", root: opts.rootOverride ?? null });
-  }
-}
-
 export async function cmdRecipeListParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -1077,15 +792,6 @@ export async function cmdRecipeListParsed(opts: {
   }
 }
 
-async function cmdRecipeListRemote(opts: {
-  cwd: string;
-  rootOverride?: string;
-  args: string[];
-}): Promise<number> {
-  const flags = parseRecipeListRemoteFlags(opts.args);
-  return await cmdRecipeListRemoteParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride, flags });
-}
-
 export async function cmdRecipeListRemoteParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -1126,14 +832,6 @@ export async function cmdRecipeListRemoteParsed(opts: {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "recipes list-remote", root: opts.rootOverride ?? null });
   }
-}
-
-async function cmdRecipeInfo(opts: {
-  cwd: string;
-  rootOverride?: string;
-  id: string;
-}): Promise<number> {
-  return await cmdRecipeInfoParsed(opts);
 }
 
 export async function cmdRecipeInfoParsed(opts: {
@@ -1194,14 +892,6 @@ export async function cmdRecipeInfoParsed(opts: {
     if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "recipes info", root: opts.rootOverride ?? null });
   }
-}
-
-async function cmdRecipeExplain(opts: {
-  cwd: string;
-  rootOverride?: string;
-  id: string;
-}): Promise<number> {
-  return await cmdRecipeExplainParsed(opts);
 }
 
 export async function cmdRecipeExplainParsed(opts: {
@@ -1503,14 +1193,6 @@ export async function cmdRecipeInstall(opts: {
   }
 }
 
-async function cmdRecipeRemove(opts: {
-  cwd: string;
-  rootOverride?: string;
-  id: string;
-}): Promise<number> {
-  return await cmdRecipeRemoveParsed(opts);
-}
-
 export async function cmdRecipeRemoveParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -1570,15 +1252,6 @@ async function listRecipeCacheEntries(cacheDir: string): Promise<
     }
   }
   return entries;
-}
-
-async function cmdRecipeCachePrune(opts: {
-  cwd: string;
-  rootOverride?: string;
-  args: string[];
-}): Promise<number> {
-  const flags = parseRecipeCachePruneArgs(opts.args);
-  return await cmdRecipeCachePruneParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride, flags });
 }
 
 export async function cmdRecipeCachePruneParsed(opts: {
@@ -1669,114 +1342,4 @@ export async function cmdRecipeCachePruneParsed(opts: {
   }
 }
 
-export async function cmdRecipes(opts: {
-  cwd: string;
-  rootOverride?: string;
-  command?: string;
-  args: string[];
-}): Promise<number> {
-  const subcommand = opts.command;
-  if (!subcommand) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
-    });
-  }
-  if (subcommand === "list") {
-    return await cmdRecipeList({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      args: opts.args,
-    });
-  }
-  if (subcommand === "list-remote") {
-    return await cmdRecipeListRemote({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      args: opts.args,
-    });
-  }
-  if (subcommand === "info") {
-    if (opts.args.length !== 1) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(RECIPE_INFO_USAGE, RECIPE_INFO_USAGE_EXAMPLE),
-      });
-    }
-    return await cmdRecipeInfo({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      id: opts.args[0],
-    });
-  }
-  if (subcommand === "explain") {
-    if (opts.args.length !== 1) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(RECIPE_EXPLAIN_USAGE, RECIPE_EXPLAIN_USAGE_EXAMPLE),
-      });
-    }
-    return await cmdRecipeExplain({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      id: opts.args[0],
-    });
-  }
-  if (subcommand === "install") {
-    const parsed = parseRecipeInstallArgs(opts.args);
-    return await cmdRecipeInstall({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      source: parsed.source,
-      index: parsed.index,
-      refresh: parsed.refresh,
-      onConflict: parsed.onConflict,
-      yes: parsed.yes,
-    });
-  }
-  if (subcommand === "remove") {
-    if (opts.args.length !== 1) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(RECIPE_REMOVE_USAGE, RECIPE_REMOVE_USAGE_EXAMPLE),
-      });
-    }
-    return await cmdRecipeRemove({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      id: opts.args[0],
-    });
-  }
-  if (subcommand === "cache") {
-    const cacheSub = opts.args[0];
-    const cacheArgs = opts.args.slice(1);
-    if (!cacheSub) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(RECIPE_CACHE_USAGE, RECIPE_CACHE_USAGE_EXAMPLE),
-      });
-    }
-    if (cacheSub === "prune") {
-      return await cmdRecipeCachePrune({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride,
-        args: cacheArgs,
-      });
-    }
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(RECIPE_CACHE_USAGE, RECIPE_CACHE_USAGE_EXAMPLE),
-    });
-  }
-  throw new CliError({
-    exitCode: 2,
-    code: "E_USAGE",
-    message: usageMessage(RECIPE_USAGE, RECIPE_USAGE_EXAMPLE),
-  });
-}
+// Note: legacy `cmdRecipes(...)` dispatcher was removed. cli2 command specs are the source of truth.
