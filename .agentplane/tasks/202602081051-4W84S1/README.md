@@ -1,7 +1,7 @@
 ---
 id: "202602081051-4W84S1"
 title: "CLI2-FULL-030: Decompose run-cli.ts"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T12:17:17.078Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: decomposed cli/run-cli.ts by extracting core/config/ide/init command specs+handlers into packages/agentplane/src/cli/run-cli/commands/*; removed remaining exported *_USAGE constants to prevent help drift; ran typecheck, lint, test:fast, test:cli:core; rg assertions for legacy flag parsers and *_USAGE exports are clean."
-commit: null
+commit:
+  hash: "7b6b86afd52af98bcac390cb8bd7310ab2213427"
+  message: "✨ 4W84S1 cli: decompose run-cli.ts"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose packages/agentplane/src/cli/run-cli.ts into smaller modules (globals parsing, help routing, registry build, update-check gating, project/bootstrap), while preserving behavior via cli core tests and focused unit tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: extracted init/core/config/ide CLI2 command specs+handlers into packages/agentplane/src/cli/run-cli/commands and removed remaining exported *_USAGE constants/re-exports to keep help/usage spec-driven; typecheck+lint+tests green."
 doc_version: 2
-doc_updated_at: "2026-02-08T12:17:17.079Z"
+doc_updated_at: "2026-02-08T12:18:09.999Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Extract globals/help fast-path/registry builder/update-check gating into modules; keep CLI behavior stable."
 id_source: "generated"
