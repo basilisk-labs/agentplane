@@ -1,7 +1,7 @@
 ---
 id: "202602081238-QMXVTN"
 title: "Decompose or remove legacy commands/scenario.ts"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-08T13:17:14.088Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: decomposed commands/scenario.ts into scenario/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
-commit: null
+commit:
+  hash: "42b9f9b03cc28f838e989387e03d06e539acbbdc"
+  message: "✨ QMXVTN scenario: decompose scenario.ts into impl modules"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose commands/scenario.ts into scenario/impl modules while preserving behavior and keeping bun run test:full green."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: split commands/scenario.ts into scenario/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T13:17:14.090Z"
+doc_updated_at: "2026-02-08T13:17:55.787Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Replace packages/agentplane/src/commands/scenario.ts monolith with modular scenario implementation or delete if fully superseded by commands/scenario/*.command.ts; keep behavior and tests."
 id_source: "generated"
