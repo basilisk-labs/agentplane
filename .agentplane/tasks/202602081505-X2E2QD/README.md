@@ -1,7 +1,7 @@
 ---
 id: "202602081505-X2E2QD"
 title: "Docs: TS ESM import specifiers (.js in TS source)"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -19,14 +19,19 @@ verification:
   updated_at: "2026-02-08T15:09:40.690Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: added docs/developer/typescript-esm-imports.mdx and linked from docs/docs.json; bun run typecheck PASS; bun run lint PASS."
-commit: null
+commit:
+  hash: "59a4fe12fb6e979bff79eb7c52d93a8ea966b5a4"
+  message: "✨ X2E2QD docs: explain .js import specifiers in TS ESM"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: document why TS sources import with .js specifiers in Node ESM builds, and how editors should interpret it."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: documented .js import specifiers for TS Node ESM builds; typecheck/lint pass; no runtime behavior changes."
 events: []
 doc_version: 2
-doc_updated_at: "2026-02-08T15:09:40.692Z"
+doc_updated_at: "2026-02-08T15:10:19.564Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Document why TS sources import with .js specifiers in NodeNext/ESM builds, and how editors should interpret it; reduce confusion from IDE warnings."
 id_source: "generated"
