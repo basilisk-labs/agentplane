@@ -1,7 +1,7 @@
 ---
 id: "202602081051-D35M4C"
 title: "CLI2-FULL-012: Remove legacy argv parsing from verify recording"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T11:08:22.211Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: removed legacy verify argv parsing/usage constants (parseVerifyRecordFlags/VERIFY_USAGE/TASK_VERIFY_USAGE/cmdVerify wrapper), updated workflow tests to structured verify APIs, and confirmed typecheck + cli core + fast tests pass."
-commit: null
+commit:
+  hash: "a62781ad659c974633ac2ba3d83f3ff3e14556ba"
+  message: "✨ D35M4C cli: remove legacy verify argv parsing"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: refactor verify recording to parsed-only API, delete legacy argv parsing and usage constants, and keep cli2 specs as the only CLI source of truth."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: verify recording is fully spec-driven (no legacy argv parser/usage constants); verify APIs are structured, workflow tests no longer pass argv arrays, and typecheck + cli core + fast tests pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T11:08:22.212Z"
+doc_updated_at: "2026-02-08T11:08:53.434Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Refactor verify recording to parsed-only API; delete parseVerifyRecordFlags and usage constants; strengthen E_USAGE tests."
 id_source: "generated"
