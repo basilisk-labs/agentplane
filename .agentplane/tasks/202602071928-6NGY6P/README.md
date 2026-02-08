@@ -1,7 +1,7 @@
 ---
 id: "202602071928-6NGY6P"
 title: "CLI2-062: Migrate branch remove to cli2"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:39:49.455Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: Migrated branch remove to cli2 spec + handler; removed legacy parsing; ran bun run typecheck, bun run lint, bun run test:cli (core suites included)."
-commit: null
+commit:
+  hash: "b236177214dc1c6f2fc645bd52faf671539e8276"
+  message: "✅ 6NGY6P cli: migrate branch remove to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Add cli2 spec + handler for branch remove; wire into help fast-path + main registry, remove legacy parsing, and update core CLI tests to expect spec-derived usage/hints."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated branch remove to cli2 spec + handler; registered in help fast-path and main cli2 registry; removed legacy parsing; kept runtime behavior. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:39:49.456Z"
+doc_updated_at: "2026-02-08T04:40:23.629Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `branch remove`."
 ---
