@@ -489,7 +489,7 @@ describe("runCli recipes", () => {
       },
       {
         args: ["recipes", "cache", "prune", "--wat"],
-        msg: "Usage: agentplane recipes cache prune",
+        msg: "Unknown option: --wat",
       },
       {
         args: ["recipes", "list-remote", "--index"],
@@ -768,7 +768,10 @@ describe("runCli recipes", () => {
     try {
       const code = await runCli(["recipes", "remove", "id", "extra", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane recipes remove");
+      expect(io.stderr).toContain("Unexpected argument: extra");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane recipes remove");
+      expect(io.stderr).toContain("agentplane help recipes remove --compact");
     } finally {
       io.restore();
     }

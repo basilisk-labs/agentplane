@@ -68,6 +68,11 @@ import {
 } from "../commands/recipes/list-remote.command.js";
 import { recipesInfoSpec, runRecipesInfo } from "../commands/recipes/info.command.js";
 import { recipesExplainSpec, runRecipesExplain } from "../commands/recipes/explain.command.js";
+import { recipesRemoveSpec, runRecipesRemove } from "../commands/recipes/remove.command.js";
+import {
+  recipesCachePruneSpec,
+  runRecipesCachePrune,
+} from "../commands/recipes/cache-prune.command.js";
 import { upgradeSpec, runUpgrade } from "../commands/upgrade.command.js";
 import {
   BACKEND_SYNC_USAGE,
@@ -1314,6 +1319,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(recipesListRemoteSpec, noop);
       registry.register(recipesInfoSpec, noop);
       registry.register(recipesExplainSpec, noop);
+      registry.register(recipesRemoveSpec, noop);
+      registry.register(recipesCachePruneSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1384,6 +1391,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
       registry.register(recipesInfoSpec, runRecipesInfo);
       registry.register(recipesExplainSpec, runRecipesExplain);
+      registry.register(recipesRemoveSpec, runRecipesRemove);
+      registry.register(recipesCachePruneSpec, runRecipesCachePrune);
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);

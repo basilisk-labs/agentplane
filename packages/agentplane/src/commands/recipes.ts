@@ -795,6 +795,8 @@ type RecipeCachePruneFlags = {
   all: boolean;
 };
 
+export type { RecipeCachePruneFlags };
+
 type RecipeListFlags = {
   full: boolean;
   tag?: string;
@@ -1508,6 +1510,14 @@ async function cmdRecipeRemove(opts: {
   rootOverride?: string;
   id: string;
 }): Promise<number> {
+  return await cmdRecipeRemoveParsed(opts);
+}
+
+export async function cmdRecipeRemoveParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+  id: string;
+}): Promise<number> {
   try {
     const recipesPath = resolveInstalledRecipesPath();
     const installed = await readInstalledRecipesFile(recipesPath);
@@ -1570,6 +1580,15 @@ async function cmdRecipeCachePrune(opts: {
   args: string[];
 }): Promise<number> {
   const flags = parseRecipeCachePruneArgs(opts.args);
+  return await cmdRecipeCachePruneParsed({ cwd: opts.cwd, rootOverride: opts.rootOverride, flags });
+}
+
+export async function cmdRecipeCachePruneParsed(opts: {
+  cwd: string;
+  rootOverride?: string;
+  flags: RecipeCachePruneFlags;
+}): Promise<number> {
+  const flags = opts.flags;
   try {
     const cacheDir = resolveGlobalRecipesDir();
     if (!(await fileExists(cacheDir))) {

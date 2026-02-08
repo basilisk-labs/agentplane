@@ -1,7 +1,7 @@
 ---
 id: "202602071928-PX2SCJ"
 title: "CLI2-054: Migrate recipes remove/cache prune to cli2"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:07:24.299Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:08:52.607Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: migrated recipes remove and recipes cache prune to cli2 with spec-derived parsing/help/usage and routed via cli2 registry. Refactored implementations to accept parsed args/flags (cmdRecipeRemoveParsed/cmdRecipeCachePruneParsed) and updated run-cli recipes tests for new E_USAGE output/help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:unit."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrate recipes remove and recipes cache prune to cli2 with spec-derived parsing/help/usage; refactor implementations to accept parsed args/flags; update run-cli recipes tests accordingly."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:07.817Z"
+doc_updated_at: "2026-02-08T04:08:52.608Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `recipes remove` and `recipes cache prune`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:recipes
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:08:52.607Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: migrated recipes remove and recipes cache prune to cli2 with spec-derived parsing/help/usage and routed via cli2 registry. Refactored implementations to accept parsed args/flags (cmdRecipeRemoveParsed/cmdRecipeCachePruneParsed) and updated run-cli recipes tests for new E_USAGE output/help hints. Checks: bun run typecheck, bun run lint, bun run format:check, bun run test:cli:unit.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:07:24.437Z, excerpt_hash=sha256:49a21b4783624e46a2b558687273ceab46dfe2bee43a66b6c9c72eba5cd63609
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
