@@ -1,44 +1,28 @@
-import { mkdir, rm } from "node:fs/promises";
 import path from "node:path";
 
-import {
-  atomicWriteFile,
-  defaultConfig,
-  findGitRoot,
-  resolveProject,
-  saveConfig,
-  setByDottedKey,
-} from "@agentplaneorg/core";
+import { resolveProject } from "@agentplaneorg/core";
 
 import type { WorkflowMode } from "../../../agents/agents-template.js";
-import {
-  filterAgentsByWorkflow,
-  loadAgentTemplates,
-  loadAgentsTemplate,
-} from "../../../agents/agents-template.js";
 import { mapCoreError } from "../../error-map.js";
-import { backupPath, fileExists, getPathKind } from "../../fs-utils.js";
 import { promptChoice, promptInput, promptYesNo } from "../../prompts.js";
-import { infoMessage, invalidValueForFlag } from "../../output.js";
+import { invalidValueForFlag } from "../../output.js";
 import {
-  listBundledRecipes,
   renderBundledRecipesHint,
   validateBundledRecipesSelection,
 } from "../../recipes-bundled.js";
 import { usageError } from "../../../cli2/errors.js";
 import type { CommandHandler, CommandSpec } from "../../../cli2/spec.js";
 import { CliError } from "../../../shared/errors.js";
-import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 import { getVersion } from "../../../meta/version.js";
-import {
-  cmdHooksInstall,
-  ensureInitCommit,
-  gitInitRepo,
-  promptInitBaseBranch,
-  resolveInitBaseBranch,
-} from "../../../commands/workflow.js";
+import { cmdHooksInstall, ensureInitCommit } from "../../../commands/workflow.js";
 
-import { cmdIdeSync } from "./ide.js";
+import { resolveInitBaseBranchForInit } from "./init/base-branch.js";
+import { collectInitConflicts, handleInitConflicts } from "./init/conflicts.js";
+import { ensureGitRoot } from "./init/git.js";
+import { maybeSyncIde } from "./init/ide-sync.js";
+import { maybeInstallBundledRecipes } from "./init/recipes.js";
+import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./init/write-config.js";
+import { ensureAgentsFiles } from "./init/write-agents.js";
 
 type InitFlags = {
   ide?: "codex" | "cursor" | "windsurf";
@@ -327,26 +311,20 @@ async function cmdInit(opts: {
 
   try {
     const initRoot = path.resolve(opts.rootOverride ?? opts.cwd);
-    const existingGitRoot = await findGitRoot(initRoot);
-    const gitRootExisted = Boolean(existingGitRoot);
-    let gitRoot = existingGitRoot;
     const baseBranchFallback = "main";
-    if (!gitRoot) {
-      await gitInitRepo(initRoot, baseBranchFallback);
-      gitRoot = initRoot;
-    }
+    const { gitRoot, gitRootExisted } = await ensureGitRoot({ initRoot, baseBranchFallback });
 
     const resolved = await resolveProject({
       cwd: gitRoot,
       rootOverride: gitRoot,
     });
-    let initBaseBranch = await resolveInitBaseBranch(resolved.gitRoot, baseBranchFallback);
-    if (isInteractive && workflow === "branch_pr" && gitRootExisted) {
-      initBaseBranch = await promptInitBaseBranch({
-        gitRoot: resolved.gitRoot,
-        fallback: initBaseBranch,
-      });
-    }
+    const initBaseBranch = await resolveInitBaseBranchForInit({
+      gitRoot: resolved.gitRoot,
+      baseBranchFallback,
+      isInteractive,
+      workflow,
+      gitRootExisted,
+    });
     const configPath = path.join(resolved.agentplaneDir, "config.json");
     const localBackendPath = path.join(resolved.agentplaneDir, "backends", "local", "backend.json");
     const redmineBackendPath = path.join(
@@ -366,130 +344,47 @@ async function cmdInit(opts: {
       path.join(resolved.agentplaneDir, "backends", "redmine"),
     ];
     const initFiles = [configPath, localBackendPath, redmineBackendPath];
-    const conflicts: string[] = [];
+    const conflicts = await collectInitConflicts({ initDirs, initFiles });
+    await handleInitConflicts({
+      gitRoot: resolved.gitRoot,
+      conflicts,
+      backup: flags.backup === true,
+      force: flags.force === true,
+    });
 
-    for (const dir of initDirs) {
-      const kind = await getPathKind(dir);
-      if (kind && kind !== "dir") conflicts.push(dir);
-    }
-    for (const filePath of initFiles) {
-      if (await fileExists(filePath)) conflicts.push(filePath);
-    }
+    await ensureAgentplaneDirs(resolved.agentplaneDir);
+    await writeInitConfig({
+      agentplaneDir: resolved.agentplaneDir,
+      gitRoot: resolved.gitRoot,
+      workflow,
+      backendConfigPathAbs: backendPath,
+      requirePlanApproval,
+      requireNetworkApproval,
+      requireVerifyApproval,
+    });
+    await writeBackendStubs({ localBackendPath, redmineBackendPath });
 
-    if (conflicts.length > 0) {
-      if (flags.backup) {
-        for (const conflict of conflicts) {
-          await backupPath(conflict);
-        }
-      } else if (flags.force) {
-        for (const conflict of conflicts) {
-          await rm(conflict, { recursive: true, force: true });
-        }
-      } else {
-        const rendered = conflicts
-          .map((conflict) => `- ${path.relative(resolved.gitRoot, conflict)}`)
-          .join("\n");
-        throw new CliError({
-          exitCode: 5,
-          code: "E_IO",
-          message:
-            `Init conflicts detected:\n${rendered}\n` +
-            "Re-run with --force to overwrite or --backup to preserve existing files.",
-        });
-      }
-    }
-
-    await mkdir(resolved.agentplaneDir, { recursive: true });
-    await mkdir(path.join(resolved.agentplaneDir, "tasks"), { recursive: true });
-    await mkdir(path.join(resolved.agentplaneDir, "agents"), { recursive: true });
-    await mkdir(path.join(resolved.agentplaneDir, "cache"), { recursive: true });
-    await mkdir(path.join(resolved.agentplaneDir, "backends", "local"), { recursive: true });
-    await mkdir(path.join(resolved.agentplaneDir, "backends", "redmine"), { recursive: true });
-
-    const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
-    setByDottedKey(rawConfig, "workflow_mode", workflow);
-    setByDottedKey(
-      rawConfig,
-      "tasks_backend.config_path",
-      path.relative(resolved.gitRoot, backendPath),
-    );
-    setByDottedKey(rawConfig, "agents.approvals.require_plan", String(requirePlanApproval));
-    setByDottedKey(rawConfig, "agents.approvals.require_network", String(requireNetworkApproval));
-    setByDottedKey(rawConfig, "agents.approvals.require_verify", String(requireVerifyApproval));
-    await saveConfig(resolved.agentplaneDir, rawConfig);
-
-    const localBackendPayload = {
-      id: "local",
-      version: 1,
-      module: "backend.py",
-      class: "LocalBackend",
-      settings: { dir: ".agentplane/tasks" },
-    };
-    const redmineBackendPayload = {
-      id: "redmine",
-      version: 1,
-      module: "backend.py",
-      class: "RedmineBackend",
-      settings: {
-        url: "https://redmine.example",
-        api_key: "replace-me",
-        project_id: "replace-me",
-        owner_agent: "REDMINE",
-        custom_fields: { task_id: 1 },
-      },
-    };
-    await writeJsonStableIfChanged(localBackendPath, localBackendPayload);
-    await writeJsonStableIfChanged(redmineBackendPath, redmineBackendPayload);
-
-    const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
-    const installPaths: string[] = [
-      path.relative(resolved.gitRoot, configPath),
-      path.relative(resolved.gitRoot, backendPath),
-    ];
-    let wroteAgents = false;
-    if (!(await fileExists(agentsPath))) {
-      const template = await loadAgentsTemplate();
-      const filtered = filterAgentsByWorkflow(template, workflow);
-      await atomicWriteFile(agentsPath, filtered, "utf8");
-      wroteAgents = true;
-    }
-    if (wroteAgents) {
-      installPaths.push(path.relative(resolved.gitRoot, agentsPath));
-    }
-
-    const agentTemplates = await loadAgentTemplates();
-    for (const agent of agentTemplates) {
-      const targetPath = path.join(resolved.agentplaneDir, "agents", agent.fileName);
-      if (await fileExists(targetPath)) continue;
-      await atomicWriteFile(targetPath, agent.contents, "utf8");
-      installPaths.push(path.relative(resolved.gitRoot, targetPath));
-    }
+    const { installPaths } = await ensureAgentsFiles({
+      gitRoot: resolved.gitRoot,
+      agentplaneDir: resolved.agentplaneDir,
+      workflow,
+      configPathAbs: configPath,
+      backendPathAbs: backendPath,
+    });
 
     if (hooks) {
       await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
     }
 
-    if (ide !== "codex") {
-      await cmdIdeSync({ cwd: opts.cwd, rootOverride: opts.rootOverride, ide });
-      const cursorPath = path.join(resolved.gitRoot, ".cursor", "rules", "agentplane.mdc");
-      const windsurfPath = path.join(resolved.gitRoot, ".windsurf", "rules", "agentplane.md");
-      if (ide === "cursor" && (await fileExists(cursorPath))) {
-        installPaths.push(path.relative(resolved.gitRoot, cursorPath));
-      }
-      if (ide === "windsurf" && (await fileExists(windsurfPath))) {
-        installPaths.push(path.relative(resolved.gitRoot, windsurfPath));
-      }
-    }
+    const ideRes = await maybeSyncIde({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      ide,
+      gitRoot: resolved.gitRoot,
+    });
+    installPaths.push(...ideRes.installPaths);
 
-    if (recipes.length > 0) {
-      if (listBundledRecipes().length === 0) {
-        process.stdout.write(`${infoMessage("bundled recipes are empty; nothing to install")}\n`);
-      } else {
-        process.stdout.write(
-          `${infoMessage("bundled recipe install is not implemented; skipping")}\n`,
-        );
-      }
-    }
+    maybeInstallBundledRecipes(recipes);
 
     await ensureInitCommit({
       gitRoot: resolved.gitRoot,
