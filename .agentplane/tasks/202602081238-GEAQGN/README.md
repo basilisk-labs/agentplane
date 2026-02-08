@@ -1,7 +1,7 @@
 ---
 id: "202602081238-GEAQGN"
 title: "Decompose commands/pr/integrate.ts"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -22,13 +22,18 @@ verification:
   updated_at: "2026-02-08T13:39:39.640Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: bun run typecheck, bun run lint, bun run test:full (704 tests) all pass; integrate.ts is now a facade and implementation lives under commands/pr/integrate/*."
-commit: null
+commit:
+  hash: "9ae1e496fb44d4a2942b4e49c8f738753b23f04f"
+  message: "✨ GEAQGN pr: decompose integrate into modules"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose pr/integrate.ts into focused modules while preserving behavior and keeping bun run test:full green."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: pr integrate command is now split into commands/pr/integrate/* with integrate.ts as a facade; bun run typecheck, bun run lint, and bun run test:full all pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T13:39:39.642Z"
+doc_updated_at: "2026-02-08T13:42:23.752Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split packages/agentplane/src/commands/pr/integrate.ts into smaller modules (merge strategies, verify gate, PR artifacts update, diffstat) and keep tests green."
 id_source: "generated"
