@@ -62,6 +62,7 @@ import { taskListSpec, makeRunTaskListHandler } from "../commands/task/list.comm
 import { taskNextSpec, makeRunTaskNextHandler } from "../commands/task/next.command.js";
 import { taskSearchSpec, makeRunTaskSearchHandler } from "../commands/task/search.command.js";
 import { taskShowSpec, makeRunTaskShowHandler } from "../commands/task/show.command.js";
+import { taskAddSpec, makeRunTaskAddHandler } from "../commands/task/add.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -156,7 +157,6 @@ import {
   cmdHooksInstall,
   cmdReady,
   cmdStart,
-  cmdTaskAdd,
   cmdTaskComment,
   cmdTaskDocSet,
   cmdTaskDocShow,
@@ -1351,6 +1351,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskSearchSpec, noop);
       registry.register(taskShowSpec, noop);
       registry.register(taskNewSpec, noop);
+      registry.register(taskAddSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
@@ -1419,6 +1420,7 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskSearchSpec, makeRunTaskSearchHandler(getCtx));
       registry.register(taskShowSpec, makeRunTaskShowHandler(getCtx));
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
+      registry.register(taskAddSpec, makeRunTaskAddHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
@@ -1494,15 +1496,6 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "task" && command === "derive") {
       return await cmdTaskDerive({
         ctx: await getCtx("task derive"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "task" && command === "add") {
-      return await cmdTaskAdd({
-        ctx: await getCtx("task add"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         args,

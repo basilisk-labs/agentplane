@@ -68,19 +68,17 @@ async function makeRepo(): Promise<string> {
 async function addTask(root: string, taskId: string): Promise<void> {
   await cmdTaskAdd({
     cwd: root,
-    args: [
-      taskId,
-      "--title",
-      "Task",
-      "--description",
-      "Desc",
-      "--priority",
-      "med",
-      "--owner",
-      "CODER",
-      "--tag",
-      "nodejs",
-    ],
+    taskIds: [taskId],
+    title: "Task",
+    description: "Desc",
+    status: "TODO",
+    priority: "med",
+    owner: "CODER",
+    tags: ["nodejs"],
+    dependsOn: [],
+    verify: [],
+    commentAuthor: null,
+    commentBody: null,
   });
 }
 
@@ -112,15 +110,6 @@ describe("commands/workflow", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("rejects task add with missing flags", async () => {
-    await expect(
-      cmdTaskAdd({
-        cwd: process.cwd(),
-        args: [],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-  });
-
   it("dedupes and trims strings", () => {
     expect(dedupeStrings([" a ", "b", "a", " ", "b "])).toEqual(["a", "b"]);
   });
@@ -138,25 +127,17 @@ describe("commands/workflow", () => {
     await addTask(root, "202602051630-A1B2");
     await cmdTaskAdd({
       cwd: root,
-      args: [
-        "202602051630-A1B3",
-        "--title",
-        "Needs deps",
-        "--description",
-        "Desc",
-        "--owner",
-        "CODER",
-        "--priority",
-        "high",
-        "--tag",
-        "urgent",
-        "--verify",
-        "echo ok",
-        "--depends-on",
-        "202602051630-A1B2",
-        "--depends-on",
-        "202602051630-A1B4",
-      ],
+      taskIds: ["202602051630-A1B3"],
+      title: "Needs deps",
+      description: "Desc",
+      status: "TODO",
+      priority: "high",
+      owner: "CODER",
+      tags: ["urgent"],
+      dependsOn: ["202602051630-A1B2", "202602051630-A1B4"],
+      verify: ["echo ok"],
+      commentAuthor: null,
+      commentBody: null,
     });
 
     const io = captureStdIO();
@@ -174,35 +155,6 @@ describe("commands/workflow", () => {
     } finally {
       io.restore();
     }
-  });
-
-  it("task add ignores depends-on [] literal", async () => {
-    const root = await makeRepo();
-    await cmdTaskAdd({
-      cwd: root,
-      args: [
-        "202602051630-A1B5",
-        "--title",
-        "Needs deps",
-        "--description",
-        "Desc",
-        "--owner",
-        "CODER",
-        "--priority",
-        "high",
-        "--tag",
-        "urgent",
-        "--depends-on",
-        "[]",
-      ],
-    });
-
-    const readme = await readFile(
-      path.join(root, ".agentplane", "tasks", "202602051630-A1B5", "README.md"),
-      "utf8",
-    );
-    expect(readme).toContain("depends_on: []");
-    expect(readme).not.toContain('depends_on: ["[]"]');
   });
 
   it("task doc set validates usage and updated-by inputs", async () => {
@@ -417,19 +369,17 @@ describe("commands/workflow", () => {
       try {
         const code = await cmdTaskAdd({
           cwd: root,
-          args: [
-            "202602050900-X1Y3",
-            "--title",
-            "Task",
-            "--description",
-            "Desc",
-            "--priority",
-            "med",
-            "--owner",
-            "CODER",
-            "--tag",
-            "backend",
-          ],
+          taskIds: ["202602050900-X1Y3"],
+          title: "Task",
+          description: "Desc",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          tags: ["backend"],
+          dependsOn: [],
+          verify: [],
+          commentAuthor: null,
+          commentBody: null,
         });
         expect(code).toBe(0);
       } finally {
@@ -440,19 +390,17 @@ describe("commands/workflow", () => {
     await expect(
       cmdTaskAdd({
         cwd: root,
-        args: [
-          taskId,
-          "--title",
-          "Task",
-          "--description",
-          "Desc",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-        ],
+        taskIds: [taskId],
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        tags: ["docs"],
+        dependsOn: [],
+        verify: [],
+        commentAuthor: null,
+        commentBody: null,
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
   });
@@ -475,23 +423,17 @@ describe("commands/workflow", () => {
     try {
       const code = await cmdTaskAdd({
         cwd: root,
-        args: [
-          "202602050900-Z1Z2",
-          "--title",
-          "Task",
-          "--description",
-          "Desc",
-          "--priority",
-          "med",
-          "--owner",
-          "CODER",
-          "--tag",
-          "docs",
-          "--comment-author",
-          "CODER",
-          "--comment-body",
-          "Hello",
-        ],
+        taskIds: ["202602050900-Z1Z2"],
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        tags: ["docs"],
+        dependsOn: [],
+        verify: [],
+        commentAuthor: "CODER",
+        commentBody: "Hello",
       });
       expect(code).toBe(0);
     } finally {
@@ -546,39 +488,31 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     await cmdTaskAdd({
       cwd: root,
-      args: [
-        "202602050900-T1V2",
-        "--title",
-        "Alpha",
-        "--description",
-        "Desc",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-      ],
+      taskIds: ["202602050900-T1V2"],
+      title: "Alpha",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      tags: ["docs"],
+      dependsOn: [],
+      verify: [],
+      commentAuthor: null,
+      commentBody: null,
     });
     await cmdTaskAdd({
       cwd: root,
-      args: [
-        "202602050900-W3X4",
-        "--title",
-        "Beta",
-        "--description",
-        "Desc",
-        "--priority",
-        "med",
-        "--owner",
-        "DOCS",
-        "--tag",
-        "backend",
-        "--verify",
-        "bun run test",
-        "--status",
-        "DOING",
-      ],
+      taskIds: ["202602050900-W3X4"],
+      title: "Beta",
+      description: "Desc",
+      status: "DOING",
+      priority: "med",
+      owner: "DOCS",
+      tags: ["backend"],
+      dependsOn: [],
+      verify: ["bun run test"],
+      commentAuthor: null,
+      commentBody: null,
     });
 
     const ioList = captureStdIO();
@@ -611,21 +545,17 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     await cmdTaskAdd({
       cwd: root,
-      args: [
-        "202602050900-DEP1",
-        "--title",
-        "Alpha",
-        "--description",
-        "Desc",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--depends-on",
-        "202602050900-DEP2",
-      ],
+      taskIds: ["202602050900-DEP1"],
+      title: "Alpha",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      tags: ["docs"],
+      dependsOn: ["202602050900-DEP2"],
+      verify: [],
+      commentAuthor: null,
+      commentBody: null,
     });
 
     const ioMissing = captureStdIO();
@@ -651,23 +581,17 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     await cmdTaskAdd({
       cwd: root,
-      args: [
-        "202602050900-S1R2",
-        "--title",
-        "Searchable",
-        "--description",
-        "Alpha",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "docs",
-        "--comment-author",
-        "CODER",
-        "--comment-body",
-        "needle",
-      ],
+      taskIds: ["202602050900-S1R2"],
+      title: "Searchable",
+      description: "Alpha",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      tags: ["docs"],
+      dependsOn: [],
+      verify: [],
+      commentAuthor: "CODER",
+      commentBody: "needle",
     });
 
     await expect(
