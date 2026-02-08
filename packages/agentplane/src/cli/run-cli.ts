@@ -310,8 +310,10 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
-      const { buildHelpFastRegistry } = await import("./run-cli/registry.help.js");
-      const registry = buildHelpFastRegistry();
+      const { buildRegistry } = await import("./run-cli/registry.run.js");
+      const registry = buildRegistry((_cmd: string) =>
+        Promise.reject(new Error("getCtx should not be called for help")),
+      );
 
       const match = registry.match(helpArgv);
       if (!match) {

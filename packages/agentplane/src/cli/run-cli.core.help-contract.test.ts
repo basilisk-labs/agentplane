@@ -2,9 +2,9 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
 import { captureStdIO, silenceStdIO } from "./run-cli.test-helpers.js";
-import { buildHelpFastRegistry } from "./run-cli/registry.help.js";
 import { buildRegistry } from "./run-cli/registry.run.js";
 import type { CommandContext } from "../commands/shared/task-backend.js";
+import { COMMANDS } from "./run-cli/command-catalog.js";
 
 type HelpJson = {
   id: string[];
@@ -20,6 +20,10 @@ function registryCommandIdsSorted(registry: {
 }): string[] {
   const ids = new Set(registry.list().map((e) => e.spec.id.join(" ")));
   return [...ids].toSorted();
+}
+
+function commandCatalogIdsSorted(): string[] {
+  return [...new Set(COMMANDS.map((e) => e.spec.id.join(" ")))].toSorted();
 }
 
 let restoreStdIO: (() => void) | null = null;
@@ -66,13 +70,16 @@ describe("cli2 help contract", () => {
     }
   });
 
-  it("help registry and run registry expose the same command id set", () => {
-    const helpRegistry = buildHelpFastRegistry();
+  it("run registry covers the command catalog id set", () => {
     const runRegistry = buildRegistry(
       (_cmd: string): Promise<CommandContext> =>
         Promise.reject(new Error("getCtx should not be called during registry construction")),
     );
 
-    expect(registryCommandIdsSorted(helpRegistry)).toEqual(registryCommandIdsSorted(runRegistry));
+    // buildRegistry registers helpSpec in addition to COMMANDS.
+    const runIds = registryCommandIdsSorted(runRegistry);
+    const runIdsWithoutHelp = runIds.filter((id) => id !== "help");
+    expect(runIdsWithoutHelp).toEqual(commandCatalogIdsSorted());
+    expect(runIds).toContain("help");
   });
 });
