@@ -1,7 +1,7 @@
 ---
 id: "202602071928-KJZ9WS"
 title: "CLI2-064: Migrate pr open/update/check/note to cli2"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -19,13 +19,18 @@ verification:
   updated_at: "2026-02-08T04:45:55.673Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: Migrated pr open/update/check/note to cli2 specs + handlers; removed legacy dispatcher; updated PR-flow CLI tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli."
-commit: null
+commit:
+  hash: "dcd56a2f1166661e4e49b1d8c7133a130e7bfaa6"
+  message: "✅ KJZ9WS cli: migrate pr commands to cli2"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Add cli2 specs + handlers for pr open/update/check/note; register in help fast-path and main cli2 registry; remove legacy parsing/dispatch; update core PR-flow CLI tests to assert spec-derived usage/hints."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Migrated pr open/update/check/note to cli2 specs + handlers and registered for help; removed legacy argv parsing/dispatch; updated PR-flow tests to assert spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 doc_version: 2
-doc_updated_at: "2026-02-08T04:45:55.674Z"
+doc_updated_at: "2026-02-08T04:46:32.840Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `pr open/update/check/note`."
 ---
