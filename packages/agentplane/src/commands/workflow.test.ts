@@ -1309,11 +1309,7 @@ describe("commands/workflow", () => {
     }
   });
 
-  it("task normalize handles writeTask and rejects unknown flags", async () => {
-    await expect(cmdTaskNormalize({ cwd: process.cwd(), args: ["--nope"] })).rejects.toMatchObject({
-      code: "E_USAGE",
-    });
-
+  it("task normalize handles writeTask", async () => {
     const root = await makeRepo();
     const tasks: TaskData[] = [
       {
@@ -1346,7 +1342,7 @@ describe("commands/workflow", () => {
     });
     const io = captureStdIO();
     try {
-      const code = await cmdTaskNormalize({ cwd: root, args: ["--quiet"] });
+      const code = await cmdTaskNormalize({ cwd: root, quiet: true, force: false });
       expect(code).toBe(0);
       expect(writeTask).toHaveBeenCalledTimes(1);
       expect(io.stdout).toBe("");

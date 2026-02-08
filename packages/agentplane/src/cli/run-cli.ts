@@ -68,6 +68,12 @@ import { taskDocShowSpec, makeRunTaskDocShowHandler } from "../commands/task/doc
 import { taskDocSetSpec, makeRunTaskDocSetHandler } from "../commands/task/doc-set.command.js";
 import { taskScrubSpec, makeRunTaskScrubHandler } from "../commands/task/scrub.command.js";
 import { taskScaffoldSpec, makeRunTaskScaffoldHandler } from "../commands/task/scaffold.command.js";
+import {
+  taskNormalizeSpec,
+  makeRunTaskNormalizeHandler,
+} from "../commands/task/normalize.command.js";
+import { taskExportSpec, makeRunTaskExportHandler } from "../commands/task/export.command.js";
+import { taskLintSpec, runTaskLint } from "../commands/task/lint.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -160,12 +166,9 @@ import {
   cmdStart,
   cmdTaskDocShow,
   cmdTaskDerive,
-  cmdTaskExport,
-  cmdTaskLint,
   cmdTaskMigrate,
   cmdTaskMigrateDoc,
   cmdTaskNew,
-  cmdTaskNormalize,
   cmdTaskPlan,
   cmdVerify,
   cmdTaskVerify,
@@ -1350,6 +1353,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskDocSetSpec, noop);
       registry.register(taskScrubSpec, noop);
       registry.register(taskScaffoldSpec, noop);
+      registry.register(taskNormalizeSpec, noop);
+      registry.register(taskExportSpec, noop);
+      registry.register(taskLintSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
@@ -1427,6 +1433,9 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskDocSetSpec, makeRunTaskDocSetHandler(getCtx));
       registry.register(taskScrubSpec, makeRunTaskScrubHandler(getCtx));
       registry.register(taskScaffoldSpec, makeRunTaskScaffoldHandler(getCtx));
+      registry.register(taskNormalizeSpec, makeRunTaskNormalizeHandler(getCtx));
+      registry.register(taskExportSpec, makeRunTaskExportHandler(getCtx));
+      registry.register(taskLintSpec, runTaskLint);
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
@@ -1508,15 +1517,6 @@ export async function runCli(argv: string[]): Promise<number> {
       });
     }
 
-    if (namespace === "task" && command === "normalize") {
-      return await cmdTaskNormalize({
-        ctx: await getCtx("task normalize"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
     if (namespace === "task" && command === "migrate") {
       return await cmdTaskMigrate({
         ctx: await getCtx("task migrate"),
@@ -1528,18 +1528,6 @@ export async function runCli(argv: string[]): Promise<number> {
 
     if (namespace === "task" && command === "migrate-doc") {
       return await cmdTaskMigrateDoc({ cwd: process.cwd(), rootOverride: globals.root, args });
-    }
-
-    if (namespace === "task" && command === "export") {
-      return await cmdTaskExport({
-        ctx: await getCtx("task export"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-      });
-    }
-
-    if (namespace === "task" && command === "lint") {
-      return await cmdTaskLint({ cwd: process.cwd(), rootOverride: globals.root });
     }
 
     if (namespace === "task" && command === "verify-show") {
