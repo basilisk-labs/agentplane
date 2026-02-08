@@ -1,7 +1,7 @@
 ---
 id: "202602081051-QSHZVZ"
 title: "CLI2-FULL-021: Decompose PR command monolith"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -21,13 +21,18 @@ verification:
   updated_at: "2026-02-08T11:32:31.354Z"
   updated_by: "ORCHESTRATOR"
   note: "Verified: decomposed pr/index.ts into per-command modules (open/update/check/note/integrate) plus shared internals; removed legacy *_USAGE constants and usageMessage usage; updated workflow reexports; typecheck, lint, test:fast, and cli core tests pass."
-commit: null
+commit:
+  hash: "9eef9e56fc6863b8c5b06e9bc328f0d1cfe3eb9a"
+  message: "✨ QSHZVZ cli: decompose pr commands"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: decompose the PR command implementation into smaller modules, remove any remaining legacy argv routing/parsing, and keep behavior stable via updated cli core tests and targeted unit tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: decomposed pr/index.ts into focused modules (open/update/check/note/integrate) with shared internals; removed legacy *_USAGE constants and usageMessage-based errors; updated workflow reexports; typecheck, format, lint, test:fast, and cli core PR flow tests all pass."
 doc_version: 2
-doc_updated_at: "2026-02-08T11:32:31.355Z"
+doc_updated_at: "2026-02-08T11:34:12.191Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split commands/pr/index.ts into focused modules with clean boundaries and targeted tests."
 id_source: "generated"
