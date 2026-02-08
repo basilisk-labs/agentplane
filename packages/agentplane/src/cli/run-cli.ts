@@ -113,6 +113,10 @@ import {
 } from "../commands/pr/pr.command.js";
 import { integrateSpec, makeRunIntegrateHandler } from "../commands/integrate.command.js";
 import { commitSpec, makeRunCommitHandler } from "../commands/commit.command.js";
+import { hooksSpec, runHooks } from "../commands/hooks/hooks.command.js";
+import { hooksInstallSpec, runHooksInstall } from "../commands/hooks/install.command.js";
+import { hooksUninstallSpec, runHooksUninstall } from "../commands/hooks/uninstall.command.js";
+import { hooksRunSpec, runHooksRun } from "../commands/hooks/run.command.js";
 import {
   cleanupMergedSpec,
   cleanupSpec,
@@ -133,7 +137,6 @@ import {
   BRANCH_BASE_USAGE_EXAMPLE,
   FINISH_USAGE,
   FINISH_USAGE_EXAMPLE,
-  HOOK_NAMES,
   START_USAGE,
   START_USAGE_EXAMPLE,
   TASK_DOC_SET_USAGE,
@@ -147,8 +150,6 @@ import {
   cmdBlock,
   cmdFinish,
   cmdHooksInstall,
-  cmdHooksRun,
-  cmdHooksUninstall,
   cmdReady,
   cmdStart,
   cmdTaskAdd,
@@ -527,10 +528,6 @@ const TASK_COMMENT_USAGE_EXAMPLE =
   'agentplane task comment 202602030608-F1Q8AB --author CODER --body "..."';
 const TASK_SET_STATUS_USAGE = "Usage: agentplane task set-status <task-id> <status> [flags]";
 const TASK_SET_STATUS_USAGE_EXAMPLE = "agentplane task set-status 202602030608-F1Q8AB DONE";
-const HOOKS_RUN_USAGE = "Usage: agentplane hooks run <hook>";
-const HOOKS_RUN_USAGE_EXAMPLE = "agentplane hooks run pre-commit";
-const HOOKS_INSTALL_USAGE = "Usage: agentplane hooks install|uninstall";
-const HOOKS_INSTALL_USAGE_EXAMPLE = "agentplane hooks install";
 
 function parseBooleanValueForInit(flag: string, value: string): boolean {
   const normalized = value.trim().toLowerCase();
@@ -1343,6 +1340,10 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prNoteSpec, noop);
       registry.register(integrateSpec, noop);
       registry.register(commitSpec, noop);
+      registry.register(hooksSpec, noop);
+      registry.register(hooksInstallSpec, noop);
+      registry.register(hooksUninstallSpec, noop);
+      registry.register(hooksRunSpec, noop);
       registry.register(cleanupSpec, noop);
       registry.register(cleanupMergedSpec, noop);
       registry.register(guardSpec, noop);
@@ -1441,6 +1442,10 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(prNoteSpec, makeRunPrNoteHandler(getCtx));
       registry.register(integrateSpec, makeRunIntegrateHandler(getCtx));
       registry.register(commitSpec, makeRunCommitHandler(getCtx));
+      registry.register(hooksSpec, runHooks);
+      registry.register(hooksInstallSpec, runHooksInstall);
+      registry.register(hooksUninstallSpec, runHooksUninstall);
+      registry.register(hooksRunSpec, runHooksRun);
       registry.register(cleanupSpec, runCleanup);
       registry.register(cleanupMergedSpec, makeRunCleanupMergedHandler(getCtx));
       registry.register(guardSpec, runGuard);
@@ -2099,40 +2104,6 @@ export async function runCli(argv: string[]): Promise<number> {
         rootOverride: globals.root,
         command,
         args,
-      });
-    }
-
-    if (namespace === "hooks") {
-      const subcommand = command;
-      const restArgs = args;
-      if (subcommand === "install") {
-        const quiet = restArgs.includes("--quiet");
-        return await cmdHooksInstall({ cwd: process.cwd(), rootOverride: globals.root, quiet });
-      }
-      if (subcommand === "uninstall") {
-        const quiet = restArgs.includes("--quiet");
-        return await cmdHooksUninstall({ cwd: process.cwd(), rootOverride: globals.root, quiet });
-      }
-      if (subcommand === "run") {
-        const hook = restArgs[0] as (typeof HOOK_NAMES)[number] | undefined;
-        if (!hook || !HOOK_NAMES.includes(hook)) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(HOOKS_RUN_USAGE, HOOKS_RUN_USAGE_EXAMPLE),
-          });
-        }
-        return await cmdHooksRun({
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          hook,
-          args: restArgs.slice(1),
-        });
-      }
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(HOOKS_INSTALL_USAGE, HOOKS_INSTALL_USAGE_EXAMPLE),
       });
     }
 

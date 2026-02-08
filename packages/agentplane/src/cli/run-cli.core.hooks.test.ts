@@ -160,7 +160,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["hooks", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane hooks install|uninstall");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane hooks <command>");
     } finally {
       io.restore();
     }
@@ -266,7 +267,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["hooks", "run", "nope", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane hooks run <hook>");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane hooks run");
     } finally {
       io.restore();
     }
