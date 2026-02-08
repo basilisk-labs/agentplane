@@ -1,7 +1,7 @@
 ---
 id: "202602071928-6MRYS0"
 title: "CLI2-085: Migrate task doc set/show to cli2"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,27 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T06:08:33.595Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK"
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
+  state: "ok"
+  updated_at: "2026-02-08T06:15:40.153Z"
+  updated_by: "ORCHESTRATOR"
+  note: "typecheck: bun run typecheck\\ncli core: bun run test:cli:core\\nfast suite: bun run test:fast\\nResult: OK"
+commit:
+  hash: "c560d5cbaf9375f1a61129998aad790126859ace"
+  message: "🚧 6MRYS0 cli: migrate task doc set/show to cli2"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: migrating task doc set/show to cli2. Will model task doc as a namespace command with set/show subcommands, remove legacy dispatcher, and update CLI core tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: task doc set/show migrated to cli2 with spec-driven parsing/help; bun run typecheck; bun run test:cli:core; bun run test:fast; bun run lint."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:25.567Z"
+doc_updated_at: "2026-02-08T06:17:42.651Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task doc set/show`."
 ---
@@ -44,13 +52,7 @@ Out of scope:
 
 ## Plan
 
-1. Add a `CommandSpec` for the command (args/options/examples/notes).
-2. Wire it into the cli2 registry.
-3. Route execution to existing business logic (no argv parsing in command logic).
-4. Delete or bypass legacy parse helpers for this command.
-5. Update tests to assert:
-- spec-derived help includes all options
-- parse errors produce E_USAGE with compact usage
+Plan:\n1. Define cli2 specs for task doc show and task doc set (subcommands under task doc).\n2. Preserve current behavior for section selection, quiet mode, --file vs inline text, and --updated-by validation.\n3. Wire specs into cli2 registry and remove legacy dispatcher for task doc.\n4. Update run-cli core tests to match cli2 error wording (missing value/unknown option) while preserving semantics.\n5. Run bun run typecheck, bun run test:cli:core, bun run test:fast.\n6. Record verification, commit, finish, and closure commit.
 
 ## Risks
 
@@ -82,6 +84,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T06:15:40.153Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: typecheck: bun run typecheck\ncli core: bun run test:cli:core\nfast suite: bun run test:fast\nResult: OK
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T06:08:38.754Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
