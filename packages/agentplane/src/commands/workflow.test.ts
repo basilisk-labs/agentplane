@@ -28,7 +28,8 @@ import {
   cmdHooksUninstall,
   cmdStart,
   cmdVerify,
-  cmdTaskVerify,
+  cmdTaskVerifyOk,
+  cmdTaskVerifyRework,
   cmdReady,
   cmdTaskNormalize,
   cmdTaskScaffold,
@@ -1021,9 +1022,12 @@ describe("commands/workflow", () => {
     });
     expect(codeFinish).toBe(0);
 
-    const code = await cmdTaskVerify({
+    const code = await cmdTaskVerifyRework({
       cwd: root,
-      args: ["rework", taskId, "--by", "REVIEWER", "--note", "Needs changes", "--quiet"],
+      taskId,
+      by: "REVIEWER",
+      note: "Needs changes",
+      quiet: true,
     });
     expect(code).toBe(0);
 
@@ -1032,6 +1036,27 @@ describe("commands/workflow", () => {
     expect(task?.status).toBe("DOING");
     expect(task?.commit ?? null).toBeNull();
     expect(task?.verification?.state).toBe("needs_rework");
+  });
+
+  it("task verify ok records ok state without changing status or commit", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-V1F6";
+    await addTask(root, taskId);
+
+    const code = await cmdTaskVerifyOk({
+      cwd: root,
+      taskId,
+      by: "REVIEWER",
+      note: "Ok to proceed",
+      quiet: true,
+    });
+    expect(code).toBe(0);
+
+    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
+    const task = await backend.getTask(taskId);
+    expect(task?.status).toBe("TODO");
+    expect(task?.commit ?? null).toBeNull();
+    expect(task?.verification?.state).toBe("ok");
   });
 
   it("hooks install/uninstall and run validate commit-msg and pre-commit", async () => {

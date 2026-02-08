@@ -247,30 +247,19 @@ async function recordVerificationResult(opts: {
   }
 }
 
-export async function cmdTaskVerify(opts: {
+export async function cmdTaskVerifyOk(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
-  args: string[];
+  taskId: string;
+  by: string;
+  note: string;
+  details?: string;
+  file?: string;
+  quiet: boolean;
 }): Promise<number> {
-  const [subcommand, taskId, ...restArgs] = opts.args;
-  if (!subcommand || !taskId || (subcommand !== "ok" && subcommand !== "rework")) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
-    });
-  }
-  const flags = parseVerifyRecordFlags(restArgs);
-  const by = (flags.by ?? "").trim();
-  const note = (flags.note ?? "").trim();
-  if (flags.details && flags.file) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
-    });
-  }
+  const by = String(opts.by ?? "").trim();
+  const note = String(opts.note ?? "").trim();
   if (!by || !note) {
     throw new CliError({
       exitCode: 2,
@@ -278,13 +267,20 @@ export async function cmdTaskVerify(opts: {
       message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
     });
   }
+  if (typeof opts.details === "string" && typeof opts.file === "string") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
+    });
+  }
 
-  let details: string | null = flags.details ?? null;
-  if (flags.file) {
+  let details: string | null = typeof opts.details === "string" ? opts.details : null;
+  if (typeof opts.file === "string") {
     try {
-      details = await readFile(path.resolve(opts.cwd, flags.file), "utf8");
+      details = await readFile(path.resolve(opts.cwd, opts.file), "utf8");
     } catch (err) {
-      throw mapCoreError(err, { command: "task verify", filePath: flags.file });
+      throw mapCoreError(err, { command: "task verify ok", filePath: opts.file });
     }
   }
 
@@ -293,17 +289,73 @@ export async function cmdTaskVerify(opts: {
       ctx: opts.ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
-      taskId,
-      state: subcommand === "ok" ? "ok" : "needs_rework",
+      taskId: opts.taskId,
+      state: "ok",
       by,
       note,
       details,
-      quiet: flags.quiet,
+      quiet: opts.quiet,
     });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapBackendError(err, { command: "task verify", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: "task verify ok", root: opts.rootOverride ?? null });
+  }
+}
+
+export async function cmdTaskVerifyRework(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  by: string;
+  note: string;
+  details?: string;
+  file?: string;
+  quiet: boolean;
+}): Promise<number> {
+  const by = String(opts.by ?? "").trim();
+  const note = String(opts.note ?? "").trim();
+  if (!by || !note) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
+    });
+  }
+  if (typeof opts.details === "string" && typeof opts.file === "string") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: usageMessage(TASK_VERIFY_USAGE, TASK_VERIFY_USAGE_EXAMPLE),
+    });
+  }
+
+  let details: string | null = typeof opts.details === "string" ? opts.details : null;
+  if (typeof opts.file === "string") {
+    try {
+      details = await readFile(path.resolve(opts.cwd, opts.file), "utf8");
+    } catch (err) {
+      throw mapCoreError(err, { command: "task verify rework", filePath: opts.file });
+    }
+  }
+
+  try {
+    await recordVerificationResult({
+      ctx: opts.ctx,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      taskId: opts.taskId,
+      state: "needs_rework",
+      by,
+      note,
+      details,
+      quiet: opts.quiet,
+    });
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapBackendError(err, { command: "task verify rework", root: opts.rootOverride ?? null });
   }
 }
 

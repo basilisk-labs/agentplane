@@ -85,6 +85,19 @@ import {
   taskPlanRejectSpec,
   makeRunTaskPlanRejectHandler,
 } from "../commands/task/plan-reject.command.js";
+import { taskVerifySpec, runTaskVerify } from "../commands/task/verify.command.js";
+import {
+  taskVerifyOkSpec,
+  makeRunTaskVerifyOkHandler,
+} from "../commands/task/verify-ok.command.js";
+import {
+  taskVerifyReworkSpec,
+  makeRunTaskVerifyReworkHandler,
+} from "../commands/task/verify-rework.command.js";
+import {
+  taskVerifyShowSpec,
+  makeRunTaskVerifyShowHandler,
+} from "../commands/task/verify-show.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -175,11 +188,9 @@ import {
   cmdHooksInstall,
   cmdReady,
   cmdStart,
-  cmdTaskDocShow,
   cmdTaskDerive,
   cmdTaskNew,
   cmdVerify,
-  cmdTaskVerify,
   cmdWorkStart,
   dedupeStrings,
   ensureInitCommit,
@@ -1369,6 +1380,10 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskPlanSetSpec, noop);
       registry.register(taskPlanApproveSpec, noop);
       registry.register(taskPlanRejectSpec, noop);
+      registry.register(taskVerifySpec, noop);
+      registry.register(taskVerifyOkSpec, noop);
+      registry.register(taskVerifyReworkSpec, noop);
+      registry.register(taskVerifyShowSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
@@ -1454,6 +1469,10 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskPlanSetSpec, makeRunTaskPlanSetHandler(getCtx));
       registry.register(taskPlanApproveSpec, makeRunTaskPlanApproveHandler(getCtx));
       registry.register(taskPlanRejectSpec, makeRunTaskPlanRejectHandler(getCtx));
+      registry.register(taskVerifySpec, runTaskVerify);
+      registry.register(taskVerifyOkSpec, makeRunTaskVerifyOkHandler(getCtx));
+      registry.register(taskVerifyReworkSpec, makeRunTaskVerifyReworkHandler(getCtx));
+      registry.register(taskVerifyShowSpec, makeRunTaskVerifyShowHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
@@ -1529,49 +1548,6 @@ export async function runCli(argv: string[]): Promise<number> {
     if (namespace === "task" && command === "derive") {
       return await cmdTaskDerive({
         ctx: await getCtx("task derive"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "task" && command === "verify-show") {
-      const [taskId, ...restArgs] = args;
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(
-            "Usage: agentplane task verify-show <task-id> [--quiet]",
-            "agentplane task verify-show 202602030608-F1Q8AB",
-          ),
-        });
-      }
-      const quiet = restArgs.includes("--quiet");
-      const extra = restArgs.filter((a) => a !== "--quiet");
-      if (extra.length > 0) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(
-            "Usage: agentplane task verify-show <task-id> [--quiet]",
-            "agentplane task verify-show 202602030608-F1Q8AB",
-          ),
-        });
-      }
-      return await cmdTaskDocShow({
-        ctx: await getCtx("task verify-show"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId,
-        section: "Verify Steps",
-        quiet,
-      });
-    }
-
-    if (namespace === "task" && command === "verify") {
-      return await cmdTaskVerify({
-        ctx: await getCtx("task verify"),
         cwd: process.cwd(),
         rootOverride: globals.root,
         args,

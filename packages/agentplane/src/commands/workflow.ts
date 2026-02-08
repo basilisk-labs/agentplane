@@ -69,7 +69,8 @@ export {
   cmdBlock,
   cmdFinish,
   cmdVerify,
-  cmdTaskVerify,
+  cmdTaskVerifyOk,
+  cmdTaskVerifyRework,
 } from "./task/index.js";
 
 export {
