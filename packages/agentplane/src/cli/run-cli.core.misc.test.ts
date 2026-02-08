@@ -254,7 +254,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["task", "show", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane task show");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane task show");
     } finally {
       io.restore();
     }

@@ -133,38 +133,6 @@ describe("commands/workflow", () => {
     ]);
   });
 
-  it("rejects task list with missing filter values", async () => {
-    await expect(
-      cmdTaskListWithFilters({
-        cwd: process.cwd(),
-        args: ["--status"],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-
-    await expect(
-      cmdTaskListWithFilters({
-        cwd: process.cwd(),
-        args: ["--owner"],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-
-    await expect(
-      cmdTaskListWithFilters({
-        cwd: process.cwd(),
-        args: ["--tag"],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-  });
-
-  it("rejects task list with unknown flags", async () => {
-    await expect(
-      cmdTaskListWithFilters({
-        cwd: process.cwd(),
-        args: ["--nope"],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-  });
-
   it("task list reports deps, tags, and verify counts", async () => {
     const root = await makeRepo();
     await addTask(root, "202602051630-A1B2");
@@ -193,7 +161,10 @@ describe("commands/workflow", () => {
 
     const io = captureStdIO();
     try {
-      const code = await cmdTaskListWithFilters({ cwd: root, args: [] });
+      const code = await cmdTaskListWithFilters({
+        cwd: root,
+        filters: { status: [], owner: [], tag: [], quiet: false },
+      });
       expect(code).toBe(0);
       expect(io.stdout).toContain("deps=missing:202602051630-A1B4,wait:202602051630-A1B2");
       expect(io.stdout).toContain("tags=urgent");
@@ -232,22 +203,6 @@ describe("commands/workflow", () => {
     );
     expect(readme).toContain("depends_on: []");
     expect(readme).not.toContain('depends_on: ["[]"]');
-  });
-
-  it("rejects task next with invalid limit flags", async () => {
-    await expect(
-      cmdTaskNext({
-        cwd: process.cwd(),
-        args: ["--limit"],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
-
-    await expect(
-      cmdTaskNext({
-        cwd: process.cwd(),
-        args: ["--limit", "nope"],
-      }),
-    ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
   it("task doc set validates usage and updated-by inputs", async () => {
@@ -630,7 +585,7 @@ describe("commands/workflow", () => {
     try {
       const code = await cmdTaskListWithFilters({
         cwd: root,
-        args: ["--owner", "CODER", "--tag", "docs", "--quiet"],
+        filters: { status: [], owner: ["CODER"], tag: ["docs"], quiet: true },
       });
       expect(code).toBe(0);
       expect(ioList.stdout).toContain("202602050900-T1V2");
@@ -643,7 +598,7 @@ describe("commands/workflow", () => {
     try {
       const code = await cmdTaskNext({
         cwd: root,
-        args: ["--status", "TODO", "--limit", "1"],
+        filters: { status: ["TODO"], owner: [], tag: [], limit: 1, quiet: false },
       });
       expect(code).toBe(0);
       expect(ioNext.stdout).toContain("Ready:");
@@ -715,13 +670,25 @@ describe("commands/workflow", () => {
       ],
     });
 
-    await expect(cmdTaskSearch({ cwd: root, query: "   ", args: [] })).rejects.toMatchObject({
+    await expect(
+      cmdTaskSearch({
+        cwd: root,
+        query: "   ",
+        regex: false,
+        filters: { status: [], owner: [], tag: [], quiet: true },
+      }),
+    ).rejects.toMatchObject({
       code: "E_USAGE",
     });
 
     const io = captureStdIO();
     try {
-      const code = await cmdTaskSearch({ cwd: root, query: "needle", args: [] });
+      const code = await cmdTaskSearch({
+        cwd: root,
+        query: "needle",
+        regex: false,
+        filters: { status: [], owner: [], tag: [], quiet: true },
+      });
       expect(code).toBe(0);
       expect(io.stdout).toContain("202602050900-S1R2");
     } finally {

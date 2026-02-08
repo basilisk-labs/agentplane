@@ -977,7 +977,7 @@ describe("runCli", () => {
   it("task next rejects invalid limit values", async () => {
     const root = await mkGitRepoRoot();
     const cases: { args: string[]; msg: string }[] = [
-      { args: ["task", "next", "--limit"], msg: "Missing value for --limit" },
+      { args: ["task", "next", "--limit"], msg: "Missing value after --limit" },
       {
         args: ["task", "next", "--limit", "nope"],
         msg: "Invalid value for --limit: nope (expected integer)",
@@ -1127,7 +1127,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     const cases: { args: string[]; msg: string }[] = [
       { args: ["task", "search", "  "], msg: "Missing query (expected non-empty text)" },
-      { args: ["task", "search", "query", "--limit"], msg: "Missing value for --limit" },
+      { args: ["task", "search", "query", "--limit"], msg: "Missing value after --limit" },
       {
         args: ["task", "search", "query", "--limit", "nope"],
         msg: "Invalid value for --limit: nope (expected integer)",
@@ -1555,10 +1555,10 @@ describe("runCli", () => {
   it("task list rejects missing filter values and unknown flags", async () => {
     const root = await mkGitRepoRoot();
     const cases: { args: string[]; msg: string }[] = [
-      { args: ["task", "list", "--status"], msg: "Missing value for --status" },
-      { args: ["task", "list", "--owner"], msg: "Missing value for --owner" },
-      { args: ["task", "list", "--tag"], msg: "Missing value for --tag" },
-      { args: ["task", "list", "--nope"], msg: "Unknown flag: --nope" },
+      { args: ["task", "list", "--status"], msg: "Missing value after --status" },
+      { args: ["task", "list", "--owner"], msg: "Missing value after --owner" },
+      { args: ["task", "list", "--tag"], msg: "Missing value after --tag" },
+      { args: ["task", "list", "--nope"], msg: "Unknown option: --nope" },
     ];
 
     for (const entry of cases) {

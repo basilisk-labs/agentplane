@@ -58,6 +58,10 @@ import { helpSpec, makeHelpHandler } from "../cli2/help.js";
 import type { CommandHandler, CommandSpec } from "../cli2/spec.js";
 import { usageError } from "../cli2/errors.js";
 import { taskNewSpec, makeRunTaskNewHandler } from "../commands/task/new.command.js";
+import { taskListSpec, makeRunTaskListHandler } from "../commands/task/list.command.js";
+import { taskNextSpec, makeRunTaskNextHandler } from "../commands/task/next.command.js";
+import { taskSearchSpec, makeRunTaskSearchHandler } from "../commands/task/search.command.js";
+import { taskShowSpec, makeRunTaskShowHandler } from "../commands/task/show.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -162,16 +166,12 @@ import {
   cmdTaskMigrate,
   cmdTaskMigrateDoc,
   cmdTaskNew,
-  cmdTaskNext,
   cmdTaskNormalize,
   cmdTaskPlan,
   cmdTaskScaffold,
   cmdTaskScrub,
-  cmdTaskSearch,
   cmdTaskSetStatus,
-  cmdTaskShow,
   cmdTaskUpdate,
-  cmdTaskList,
   cmdVerify,
   cmdTaskVerify,
   cmdWorkStart,
@@ -519,10 +519,6 @@ type InitFlags = {
 
 const READY_USAGE = "Usage: agentplane ready <task-id>";
 const READY_USAGE_EXAMPLE = "agentplane ready 202602030608-F1Q8AB";
-const TASK_SHOW_USAGE = "Usage: agentplane task show <task-id>";
-const TASK_SHOW_USAGE_EXAMPLE = "agentplane task show 202602030608-F1Q8AB";
-const TASK_SEARCH_USAGE = "Usage: agentplane task search <query> [flags]";
-const TASK_SEARCH_USAGE_EXAMPLE = 'agentplane task search "cli"';
 const TASK_COMMENT_USAGE = "Usage: agentplane task comment <task-id>";
 const TASK_COMMENT_USAGE_EXAMPLE =
   'agentplane task comment 202602030608-F1Q8AB --author CODER --body "..."';
@@ -1350,6 +1346,10 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(guardCleanSpec, noop);
       registry.register(guardSuggestAllowSpec, noop);
       registry.register(guardCommitSpec, noop);
+      registry.register(taskListSpec, noop);
+      registry.register(taskNextSpec, noop);
+      registry.register(taskSearchSpec, noop);
+      registry.register(taskShowSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1414,6 +1414,10 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(modeGetSpec, runModeGet);
       registry.register(modeSetSpec, runModeSet);
       registry.register(ideSyncSpec, runIdeSync);
+      registry.register(taskListSpec, makeRunTaskListHandler(getCtx));
+      registry.register(taskNextSpec, makeRunTaskNextHandler(getCtx));
+      registry.register(taskSearchSpec, makeRunTaskSearchHandler(getCtx));
+      registry.register(taskShowSpec, makeRunTaskShowHandler(getCtx));
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
@@ -1520,59 +1524,6 @@ export async function runCli(argv: string[]): Promise<number> {
         cwd: process.cwd(),
         rootOverride: globals.root,
         args,
-      });
-    }
-
-    if (namespace === "task" && command === "show") {
-      const [taskId] = args;
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(TASK_SHOW_USAGE, TASK_SHOW_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdTaskShow({
-        ctx: await getCtx("task show"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId,
-      });
-    }
-
-    if (namespace === "task" && command === "list") {
-      return await cmdTaskList({
-        ctx: await getCtx("task list"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "task" && command === "next") {
-      return await cmdTaskNext({
-        ctx: await getCtx("task next"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        args,
-      });
-    }
-
-    if (namespace === "task" && command === "search") {
-      const [query, ...restArgs] = args;
-      if (!query) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(TASK_SEARCH_USAGE, TASK_SEARCH_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdTaskSearch({
-        ctx: await getCtx("task search"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        query,
-        args: restArgs,
       });
     }
 

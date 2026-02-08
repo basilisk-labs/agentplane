@@ -5,17 +5,16 @@ import {
   buildDependencyState,
   dedupeStrings,
   formatTaskLine,
-  parseTaskListFilters,
   toStringArray,
+  type TaskListFilters,
 } from "./shared.js";
 
 export async function cmdTaskListWithFilters(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
-  args: string[];
+  filters: TaskListFilters;
 }): Promise<number> {
-  const filters = parseTaskListFilters(opts.args);
   try {
     const ctx =
       opts.ctx ??
@@ -23,16 +22,16 @@ export async function cmdTaskListWithFilters(opts: {
     const tasks = await listTasksMemo(ctx);
     const depState = buildDependencyState(tasks);
     let filtered = tasks;
-    if (filters.status.length > 0) {
-      const wanted = new Set(filters.status.map((s) => s.trim().toUpperCase()));
+    if (opts.filters.status.length > 0) {
+      const wanted = new Set(opts.filters.status.map((s) => s.trim().toUpperCase()));
       filtered = filtered.filter((task) => wanted.has(String(task.status || "TODO").toUpperCase()));
     }
-    if (filters.owner.length > 0) {
-      const wanted = new Set(filters.owner.map((o) => o.trim().toUpperCase()));
+    if (opts.filters.owner.length > 0) {
+      const wanted = new Set(opts.filters.owner.map((o) => o.trim().toUpperCase()));
       filtered = filtered.filter((task) => wanted.has(String(task.owner || "").toUpperCase()));
     }
-    if (filters.tag.length > 0) {
-      const wanted = new Set(filters.tag.map((t) => t.trim()).filter(Boolean));
+    if (opts.filters.tag.length > 0) {
+      const wanted = new Set(opts.filters.tag.map((t) => t.trim()).filter(Boolean));
       filtered = filtered.filter((task) => {
         const tags = dedupeStrings(toStringArray(task.tags));
         return tags.some((tag) => wanted.has(tag));
@@ -42,7 +41,7 @@ export async function cmdTaskListWithFilters(opts: {
     for (const task of sorted) {
       process.stdout.write(`${formatTaskLine(task, depState.get(task.id))}\n`);
     }
-    if (!filters.quiet) {
+    if (!opts.filters.quiet) {
       const counts: Record<string, number> = {};
       for (const task of sorted) {
         const status = String(task.status || "TODO").toUpperCase();
@@ -65,7 +64,7 @@ export async function cmdTaskList(opts: {
   ctx?: CommandContext;
   cwd: string;
   rootOverride?: string;
-  args: string[];
+  filters: TaskListFilters;
 }): Promise<number> {
   return await cmdTaskListWithFilters(opts);
 }

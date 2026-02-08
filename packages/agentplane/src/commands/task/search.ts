@@ -8,9 +8,9 @@ import {
   buildDependencyState,
   dedupeStrings,
   formatTaskLine,
-  parseTaskListFilters,
   taskTextBlob,
   toStringArray,
+  type TaskListFilters,
 } from "./shared.js";
 
 export async function cmdTaskSearch(opts: {
@@ -18,7 +18,8 @@ export async function cmdTaskSearch(opts: {
   cwd: string;
   rootOverride?: string;
   query: string;
-  args: string[];
+  regex: boolean;
+  filters: TaskListFilters;
 }): Promise<number> {
   const query = opts.query.trim();
   if (!query) {
@@ -28,13 +29,6 @@ export async function cmdTaskSearch(opts: {
       message: "Missing query (expected non-empty text)",
     });
   }
-  let regex = false;
-  const restArgs = [...opts.args];
-  if (restArgs.includes("--regex")) {
-    regex = true;
-    restArgs.splice(restArgs.indexOf("--regex"), 1);
-  }
-  const filters = parseTaskListFilters(restArgs, { allowLimit: true });
   try {
     const ctx =
       opts.ctx ??
@@ -42,23 +36,23 @@ export async function cmdTaskSearch(opts: {
     const tasks = await ctx.taskBackend.listTasks();
     const depState = buildDependencyState(tasks);
     let filtered = tasks;
-    if (filters.status.length > 0) {
-      const wanted = new Set(filters.status.map((s) => s.trim().toUpperCase()));
+    if (opts.filters.status.length > 0) {
+      const wanted = new Set(opts.filters.status.map((s) => s.trim().toUpperCase()));
       filtered = filtered.filter((task) => wanted.has(String(task.status || "TODO").toUpperCase()));
     }
-    if (filters.owner.length > 0) {
-      const wanted = new Set(filters.owner.map((o) => o.trim().toUpperCase()));
+    if (opts.filters.owner.length > 0) {
+      const wanted = new Set(opts.filters.owner.map((o) => o.trim().toUpperCase()));
       filtered = filtered.filter((task) => wanted.has(String(task.owner || "").toUpperCase()));
     }
-    if (filters.tag.length > 0) {
-      const wanted = new Set(filters.tag.map((t) => t.trim()).filter(Boolean));
+    if (opts.filters.tag.length > 0) {
+      const wanted = new Set(opts.filters.tag.map((t) => t.trim()).filter(Boolean));
       filtered = filtered.filter((task) => {
         const tags = dedupeStrings(toStringArray(task.tags));
         return tags.some((tag) => wanted.has(tag));
       });
     }
     let matches: TaskData[] = [];
-    if (regex) {
+    if (opts.regex) {
       let pattern: RegExp;
       try {
         pattern = new RegExp(query, "i");
@@ -75,8 +69,8 @@ export async function cmdTaskSearch(opts: {
       const needle = query.toLowerCase();
       matches = filtered.filter((task) => taskTextBlob(task).toLowerCase().includes(needle));
     }
-    if (filters.limit !== undefined && filters.limit >= 0) {
-      matches = matches.slice(0, filters.limit);
+    if (opts.filters.limit !== undefined && opts.filters.limit >= 0) {
+      matches = matches.slice(0, opts.filters.limit);
     }
     const sorted = matches.toSorted((a, b) => a.id.localeCompare(b.id));
     for (const task of sorted) {
