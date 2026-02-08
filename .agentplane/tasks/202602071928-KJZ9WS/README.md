@@ -1,7 +1,7 @@
 ---
 id: "202602071928-KJZ9WS"
 title: "CLI2-064: Migrate pr open/update/check/note to cli2"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on:
@@ -10,19 +10,22 @@ tags:
   - "cli code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-02-08T04:40:57.679Z"
+  updated_by: "ORCHESTRATOR"
+  note: "OK: migrate pr open/update/check/note to cli2 specs + handlers; remove legacy dispatcher and keep behavior."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-02-08T04:45:55.673Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Verified: Migrated pr open/update/check/note to cli2 specs + handlers; removed legacy dispatcher; updated PR-flow CLI tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli."
 commit: null
-comments: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Add cli2 specs + handlers for pr open/update/check/note; register in help fast-path and main cli2 registry; remove legacy parsing/dispatch; update core PR-flow CLI tests to assert spec-derived usage/hints."
 doc_version: 2
-doc_updated_at: "2026-02-07T19:28:14.627Z"
+doc_updated_at: "2026-02-08T04:45:55.674Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `pr open/update/check/note`."
 ---
@@ -82,6 +85,14 @@ bun run test:cli:core
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T04:45:55.673Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: Migrated pr open/update/check/note to cli2 specs + handlers; removed legacy dispatcher; updated PR-flow CLI tests for spec-derived usage/hints. Evidence: bun run typecheck, bun run lint, bun run test:cli.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:41:02.417Z, excerpt_hash=sha256:d5d903f5d4184aa0affc28a54413fddcf1d88e8a2bd363c1a0d7185ce327be73
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

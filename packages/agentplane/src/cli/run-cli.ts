@@ -101,6 +101,18 @@ import { scenarioListSpec, runScenarioList } from "../commands/scenario/list.com
 import { scenarioInfoSpec, runScenarioInfo } from "../commands/scenario/info.command.js";
 import { scenarioRunSpec, runScenarioRun } from "../commands/scenario/run.command.js";
 import {
+  makeRunPrCheckHandler,
+  makeRunPrHandler,
+  makeRunPrNoteHandler,
+  makeRunPrOpenHandler,
+  makeRunPrUpdateHandler,
+  prCheckSpec,
+  prNoteSpec,
+  prOpenSpec,
+  prSpec,
+  prUpdateSpec,
+} from "../commands/pr/pr.command.js";
+import {
   BLOCK_USAGE,
   BLOCK_USAGE_EXAMPLE,
   BRANCH_BASE_USAGE,
@@ -116,14 +128,6 @@ import {
   HOOK_NAMES,
   INTEGRATE_USAGE,
   INTEGRATE_USAGE_EXAMPLE,
-  PR_CHECK_USAGE,
-  PR_CHECK_USAGE_EXAMPLE,
-  PR_NOTE_USAGE,
-  PR_NOTE_USAGE_EXAMPLE,
-  PR_OPEN_USAGE,
-  PR_OPEN_USAGE_EXAMPLE,
-  PR_UPDATE_USAGE,
-  PR_UPDATE_USAGE_EXAMPLE,
   START_USAGE,
   START_USAGE_EXAMPLE,
   TASK_DOC_SET_USAGE,
@@ -145,10 +149,6 @@ import {
   cmdHooksRun,
   cmdHooksUninstall,
   cmdIntegrate,
-  cmdPrCheck,
-  cmdPrNote,
-  cmdPrOpen,
-  cmdPrUpdate,
   cmdReady,
   cmdStart,
   cmdTaskAdd,
@@ -528,8 +528,6 @@ const TASK_COMMENT_USAGE_EXAMPLE =
   'agentplane task comment 202602030608-F1Q8AB --author CODER --body "..."';
 const TASK_SET_STATUS_USAGE = "Usage: agentplane task set-status <task-id> <status> [flags]";
 const TASK_SET_STATUS_USAGE_EXAMPLE = "agentplane task set-status 202602030608-F1Q8AB DONE";
-const PR_GROUP_USAGE = "Usage: agentplane pr open|update|check|note <task-id>";
-const PR_GROUP_USAGE_EXAMPLE = "agentplane pr open 202602030608-F1Q8AB --author CODER";
 const GUARD_USAGE = "Usage: agentplane guard <subcommand>";
 const GUARD_USAGE_EXAMPLE =
   'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane';
@@ -1342,6 +1340,11 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(backendSpec, noop);
       registry.register(backendSyncSpec, noop);
       registry.register(syncSpec, noop);
+      registry.register(prSpec, noop);
+      registry.register(prOpenSpec, noop);
+      registry.register(prUpdateSpec, noop);
+      registry.register(prCheckSpec, noop);
+      registry.register(prNoteSpec, noop);
       registry.register(taskNewSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
@@ -1427,6 +1430,11 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(backendSpec, makeRunBackendHandler(getCtx));
       registry.register(backendSyncSpec, makeRunBackendSyncHandler(getCtx));
       registry.register(syncSpec, makeRunSyncHandler(getCtx));
+      registry.register(prSpec, makeRunPrHandler(getCtx));
+      registry.register(prOpenSpec, makeRunPrOpenHandler(getCtx));
+      registry.register(prUpdateSpec, makeRunPrUpdateHandler(getCtx));
+      registry.register(prCheckSpec, makeRunPrCheckHandler(getCtx));
+      registry.register(prNoteSpec, makeRunPrNoteHandler(getCtx));
       registry.register(recipesInstallSpec, runRecipesInstall);
 
       const match = registry.match(rest);
@@ -1965,161 +1973,6 @@ export async function runCli(argv: string[]): Promise<number> {
         agent,
         slug,
         worktree,
-      });
-    }
-
-    if (namespace === "pr") {
-      const [taskId, ...restArgs] = args;
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
-        });
-      }
-
-      if (command === "open") {
-        let author = "";
-        let branch: string | undefined;
-        for (let i = 0; i < restArgs.length; i++) {
-          const arg = restArgs[i];
-          if (!arg) continue;
-          if (arg === "--author") {
-            const next = restArgs[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
-              });
-            author = next;
-            i++;
-            continue;
-          }
-          if (arg === "--branch") {
-            const next = restArgs[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
-              });
-            branch = next;
-            i++;
-            continue;
-          }
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
-          });
-        }
-        if (!author) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(PR_OPEN_USAGE, PR_OPEN_USAGE_EXAMPLE),
-          });
-        }
-        return await cmdPrOpen({
-          ctx: await getCtx("pr open"),
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          taskId,
-          author,
-          branch,
-        });
-      }
-
-      if (command === "update") {
-        if (restArgs.length > 0) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(PR_UPDATE_USAGE, PR_UPDATE_USAGE_EXAMPLE),
-          });
-        }
-        return await cmdPrUpdate({
-          ctx: await getCtx("pr update"),
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          taskId,
-        });
-      }
-
-      if (command === "check") {
-        if (restArgs.length > 0) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(PR_CHECK_USAGE, PR_CHECK_USAGE_EXAMPLE),
-          });
-        }
-        return await cmdPrCheck({
-          ctx: await getCtx("pr check"),
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          taskId,
-        });
-      }
-
-      if (command === "note") {
-        let author = "";
-        let body = "";
-        for (let i = 0; i < restArgs.length; i++) {
-          const arg = restArgs[i];
-          if (!arg) continue;
-          if (arg === "--author") {
-            const next = restArgs[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
-              });
-            author = next;
-            i++;
-            continue;
-          }
-          if (arg === "--body") {
-            const next = restArgs[i + 1];
-            if (!next)
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
-              });
-            body = next;
-            i++;
-            continue;
-          }
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
-          });
-        }
-        if (!author || !body) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(PR_NOTE_USAGE, PR_NOTE_USAGE_EXAMPLE),
-          });
-        }
-        return await cmdPrNote({
-          ctx: await getCtx("pr note"),
-          cwd: process.cwd(),
-          rootOverride: globals.root,
-          taskId,
-          author,
-          body,
-        });
-      }
-
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: usageMessage(PR_GROUP_USAGE, PR_GROUP_USAGE_EXAMPLE),
       });
     }
 

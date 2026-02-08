@@ -703,7 +703,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr note");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr note");
     } finally {
       io.restore();
     }
@@ -797,7 +798,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["pr", "open", taskId, "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr open");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr open");
     } finally {
       io.restore();
     }
@@ -847,7 +849,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr open");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr open");
     } finally {
       io.restore();
     }
@@ -1003,7 +1006,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["pr", "update", "202601010101-ABCDEF", "--extra", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr update");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr update");
     } finally {
       io.restore();
     }
@@ -1238,7 +1242,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["pr", "check", "202601010101-ABCDEF", "--extra", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr check");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr check");
     } finally {
       io.restore();
     }
@@ -2537,7 +2542,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr note");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr note");
     } finally {
       io.restore();
     }
@@ -2549,7 +2555,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["pr", "note", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr note");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr note");
     } finally {
       io.restore();
     }
@@ -2561,7 +2568,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["pr", "open", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr open");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr open");
     } finally {
       io.restore();
     }
@@ -2573,7 +2581,8 @@ describe("runCli", () => {
     try {
       const code = await runCli(["pr", "nope", "202601010101-ABCDEF", "--root", root]);
       expect(code).toBe(2);
-      expect(io.stderr).toContain("Usage: agentplane pr open|update|check|note");
+      expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("agentplane pr <open|update|check|note>");
     } finally {
       io.restore();
     }
