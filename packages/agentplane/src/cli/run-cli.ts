@@ -28,13 +28,7 @@ import {
   validateBundledRecipesSelection,
 } from "./recipes-bundled.js";
 import { mapCoreError } from "./error-map.js";
-import {
-  infoMessage,
-  invalidValueForFlag,
-  missingValueMessage,
-  usageMessage,
-  warnMessage,
-} from "./output.js";
+import { infoMessage, invalidValueForFlag, usageMessage, warnMessage } from "./output.js";
 import {
   fetchLatestNpmVersion,
   readUpdateCheckCache,
@@ -64,6 +58,11 @@ import { taskSearchSpec, makeRunTaskSearchHandler } from "../commands/task/searc
 import { taskShowSpec, makeRunTaskShowHandler } from "../commands/task/show.command.js";
 import { taskAddSpec, makeRunTaskAddHandler } from "../commands/task/add.command.js";
 import { taskUpdateSpec, makeRunTaskUpdateHandler } from "../commands/task/update.command.js";
+import { taskCommentSpec, makeRunTaskCommentHandler } from "../commands/task/comment.command.js";
+import {
+  taskSetStatusSpec,
+  makeRunTaskSetStatusHandler,
+} from "../commands/task/set-status.command.js";
 import { workStartSpec, makeRunWorkStartHandler } from "../commands/branch/work-start.command.js";
 import {
   branchBaseClearSpec,
@@ -158,7 +157,6 @@ import {
   cmdHooksInstall,
   cmdReady,
   cmdStart,
-  cmdTaskComment,
   cmdTaskDocSet,
   cmdTaskDocShow,
   cmdTaskDerive,
@@ -171,7 +169,6 @@ import {
   cmdTaskPlan,
   cmdTaskScaffold,
   cmdTaskScrub,
-  cmdTaskSetStatus,
   cmdVerify,
   cmdTaskVerify,
   cmdWorkStart,
@@ -519,11 +516,6 @@ type InitFlags = {
 
 const READY_USAGE = "Usage: agentplane ready <task-id>";
 const READY_USAGE_EXAMPLE = "agentplane ready 202602030608-F1Q8AB";
-const TASK_COMMENT_USAGE = "Usage: agentplane task comment <task-id>";
-const TASK_COMMENT_USAGE_EXAMPLE =
-  'agentplane task comment 202602030608-F1Q8AB --author CODER --body "..."';
-const TASK_SET_STATUS_USAGE = "Usage: agentplane task set-status <task-id> <status> [flags]";
-const TASK_SET_STATUS_USAGE_EXAMPLE = "agentplane task set-status 202602030608-F1Q8AB DONE";
 
 function parseBooleanValueForInit(flag: string, value: string): boolean {
   const normalized = value.trim().toLowerCase();
@@ -1353,6 +1345,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskNewSpec, noop);
       registry.register(taskAddSpec, noop);
       registry.register(taskUpdateSpec, noop);
+      registry.register(taskCommentSpec, noop);
+      registry.register(taskSetStatusSpec, noop);
       registry.register(workStartSpec, noop);
       registry.register(recipesInstallSpec, noop);
       registry.register(helpSpec, makeHelpHandler(registry));
@@ -1423,6 +1417,8 @@ export async function runCli(argv: string[]): Promise<number> {
       registry.register(taskNewSpec, makeRunTaskNewHandler(getCtx));
       registry.register(taskAddSpec, makeRunTaskAddHandler(getCtx));
       registry.register(taskUpdateSpec, makeRunTaskUpdateHandler(getCtx));
+      registry.register(taskCommentSpec, makeRunTaskCommentHandler(getCtx));
+      registry.register(taskSetStatusSpec, makeRunTaskSetStatusHandler(getCtx));
       registry.register(workStartSpec, makeRunWorkStartHandler(getCtx));
       registry.register(recipesListSpec, runRecipesList);
       registry.register(recipesListRemoteSpec, runRecipesListRemote);
@@ -1643,212 +1639,6 @@ export async function runCli(argv: string[]): Promise<number> {
         cwd: process.cwd(),
         rootOverride: globals.root,
         args,
-      });
-    }
-
-    if (namespace === "task" && command === "comment") {
-      const [taskId, ...restArgs] = args;
-      if (!taskId) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(TASK_COMMENT_USAGE, TASK_COMMENT_USAGE_EXAMPLE),
-        });
-      }
-      let author = "";
-      let body = "";
-      for (let i = 0; i < restArgs.length; i++) {
-        const arg = restArgs[i];
-        if (!arg) continue;
-        if (arg === "--author") {
-          const next = restArgs[i + 1];
-          if (!next) {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: missingValueMessage("--author"),
-            });
-          }
-          author = next;
-          i++;
-          continue;
-        }
-        if (arg === "--body") {
-          const next = restArgs[i + 1];
-          if (!next) {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: missingValueMessage("--body"),
-            });
-          }
-          body = next;
-          i++;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(TASK_COMMENT_USAGE, TASK_COMMENT_USAGE_EXAMPLE),
-          });
-        }
-      }
-      if (!author || !body) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(TASK_COMMENT_USAGE, TASK_COMMENT_USAGE_EXAMPLE),
-        });
-      }
-      return await cmdTaskComment({
-        ctx: await getCtx("task comment"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId,
-        author,
-        body,
-      });
-    }
-
-    if (namespace === "task" && command === "set-status") {
-      const [taskId, status, ...restArgs] = args;
-      if (!taskId || !status) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: usageMessage(TASK_SET_STATUS_USAGE, TASK_SET_STATUS_USAGE_EXAMPLE),
-        });
-      }
-      let author: string | undefined;
-      let body: string | undefined;
-      let commit: string | undefined;
-      let force = false;
-      let commitFromComment = false;
-      let commitEmoji: string | undefined;
-      const commitAllow: string[] = [];
-      let commitAutoAllow = false;
-      let commitAllowTasks = true;
-      let commitRequireClean = false;
-      let confirmStatusCommit = false;
-      let quiet = false;
-      for (let i = 0; i < restArgs.length; i++) {
-        const arg = restArgs[i];
-        if (!arg) continue;
-        if (arg === "--author") {
-          const next = restArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: missingValueMessage("--author"),
-            });
-          author = next;
-          i++;
-          continue;
-        }
-        if (arg === "--body") {
-          const next = restArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: missingValueMessage("--body"),
-            });
-          body = next;
-          i++;
-          continue;
-        }
-        if (arg === "--commit") {
-          const next = restArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: missingValueMessage("--commit"),
-            });
-          commit = next;
-          i++;
-          continue;
-        }
-        if (arg === "--force") {
-          force = true;
-          continue;
-        }
-        if (arg === "--commit-from-comment") {
-          commitFromComment = true;
-          continue;
-        }
-        if (arg === "--commit-emoji") {
-          const next = restArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: missingValueMessage("--commit-emoji"),
-            });
-          commitEmoji = next;
-          i++;
-          continue;
-        }
-        if (arg === "--commit-allow") {
-          const next = restArgs[i + 1];
-          if (!next)
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: missingValueMessage("--commit-allow"),
-            });
-          commitAllow.push(next);
-          i++;
-          continue;
-        }
-        if (arg === "--commit-auto-allow") {
-          commitAutoAllow = true;
-          continue;
-        }
-        if (arg === "--commit-allow-tasks") {
-          commitAllowTasks = true;
-          continue;
-        }
-        if (arg === "--commit-require-clean") {
-          commitRequireClean = true;
-          continue;
-        }
-        if (arg === "--confirm-status-commit") {
-          confirmStatusCommit = true;
-          continue;
-        }
-        if (arg === "--quiet") {
-          quiet = true;
-          continue;
-        }
-        if (arg.startsWith("--")) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: usageMessage(TASK_SET_STATUS_USAGE, TASK_SET_STATUS_USAGE_EXAMPLE),
-          });
-        }
-      }
-      return await cmdTaskSetStatus({
-        ctx: await getCtx("task set-status"),
-        cwd: process.cwd(),
-        rootOverride: globals.root,
-        taskId,
-        status,
-        author,
-        body,
-        commit,
-        force,
-        commitFromComment,
-        commitEmoji,
-        commitAllow,
-        commitAutoAllow,
-        commitAllowTasks,
-        commitRequireClean,
-        confirmStatusCommit,
-        quiet,
       });
     }
 

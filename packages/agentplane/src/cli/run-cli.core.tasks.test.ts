@@ -244,7 +244,7 @@ describe("runCli", () => {
       try {
         const code = await runCli(["task", "comment", taskId, "--author", "Coder", "--root", root]);
         expect(code).toBe(2);
-        expect(io.stderr).toContain("Usage: agentplane task comment");
+        expect(io.stderr).toContain("Missing required option: --body");
       } finally {
         io.restore();
       }
@@ -255,7 +255,7 @@ describe("runCli", () => {
       try {
         const code = await runCli(["task", "comment", taskId, "--author", "--root", root]);
         expect(code).toBe(2);
-        expect(io.stderr).toContain("Missing value for --author");
+        expect(io.stderr).toContain("Missing value after --author");
       } finally {
         io.restore();
       }
@@ -266,7 +266,7 @@ describe("runCli", () => {
       try {
         const code = await runCli(["task", "comment", taskId, "--nope", "--root", root]);
         expect(code).toBe(2);
-        expect(io.stderr).toContain("Usage: agentplane task comment");
+        expect(io.stderr).toContain("Unknown option: --nope.");
       } finally {
         io.restore();
       }
@@ -393,7 +393,7 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(2);
-        expect(io.stderr).toContain("Missing value for --commit");
+        expect(io.stderr).toContain("Missing value after --commit");
       } finally {
         io.restore();
       }
@@ -412,7 +412,7 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(2);
-        expect(io.stderr).toContain("Missing value for --commit-emoji");
+        expect(io.stderr).toContain("Missing value after --commit-emoji");
       } finally {
         io.restore();
       }
@@ -431,7 +431,7 @@ describe("runCli", () => {
           root,
         ]);
         expect(code).toBe(2);
-        expect(io.stderr).toContain("Missing value for --commit-allow");
+        expect(io.stderr).toContain("Missing value after --commit-allow");
       } finally {
         io.restore();
       }
