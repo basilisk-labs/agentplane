@@ -56,13 +56,20 @@ describe("cli/http", () => {
   it("downloadToFile writes response bytes to disk", async () => {
     const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-http-test-"));
     const dest = path.join(tempDir, "download.bin");
-    const data = new TextEncoder().encode("payload").buffer;
+    const payload = new TextEncoder().encode("payload");
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(payload);
+        controller.close();
+      },
+    });
 
     fetchMock.mockResolvedValue({
       ok: true,
       status: 200,
       statusText: "OK",
-      arrayBuffer: vi.fn(() => data),
+      body: stream,
+      arrayBuffer: vi.fn(() => payload.buffer),
     });
 
     await downloadToFile("https://example.test", dest);
@@ -81,6 +88,11 @@ describe("cli/http", () => {
       ok: true,
       status: 200,
       statusText: "OK",
+      body: new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.close();
+        },
+      }),
       arrayBuffer: vi.fn(() => new ArrayBuffer(0)),
     });
 
@@ -97,6 +109,7 @@ describe("cli/http", () => {
       ok: false,
       status: 404,
       statusText: "Missing",
+      body: null,
       arrayBuffer: vi.fn(() => new ArrayBuffer(0)),
     });
 

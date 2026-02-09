@@ -32,6 +32,7 @@ import { ensureNetworkApproved } from "./shared/network-approval.js";
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
 const DEFAULT_UPGRADE_CHECKSUM_ASSET = "agentplane-upgrade.tar.gz.sha256";
 const UPGRADE_DOWNLOAD_TIMEOUT_MS = 60_000;
+const UPGRADE_RELEASE_METADATA_TIMEOUT_MS = 15_000;
 
 export type UpgradeFlags = {
   source?: string;
@@ -512,7 +513,10 @@ export async function cmdUpgradeParsed(opts: {
       );
       const assetName = flags.asset ?? DEFAULT_UPGRADE_ASSET;
       const checksumName = flags.checksumAsset ?? DEFAULT_UPGRADE_CHECKSUM_ASSET;
-      const release = (await fetchJson(releaseUrl)) as GitHubRelease;
+      const release = (await fetchJson(
+        releaseUrl,
+        UPGRADE_RELEASE_METADATA_TIMEOUT_MS,
+      )) as GitHubRelease;
       const download = resolveUpgradeDownloadFromRelease({
         release,
         owner,
@@ -660,9 +664,16 @@ export async function cmdUpgradeParsed(opts: {
         continue;
       }
 
+      let existingBuf: Buffer | null = null;
+      let existingText: string | null = null;
       if (kind !== null) {
-        const existingText = await readFile(destPath, "utf8");
+        existingBuf = await readFile(destPath);
+      }
+
+      // Merge logic only needs text for a small subset of managed files.
+      if (existingBuf) {
         if (entry.merge_strategy === "agents_policy_markdown" && rel === "AGENTS.md") {
+          existingText = existingBuf.toString("utf8");
           const mergedText = mergeAgentsPolicyMarkdown(data.toString("utf8"), existingText);
           data = Buffer.from(mergedText, "utf8");
           merged.push(rel);
@@ -671,6 +682,7 @@ export async function cmdUpgradeParsed(opts: {
           rel.startsWith(".agentplane/agents/") &&
           rel.endsWith(".json")
         ) {
+          existingText = existingBuf.toString("utf8");
           const baselineKey = toBaselineKey(rel);
           let mergedText: string | null = null;
           if (baselineKey) {
@@ -696,11 +708,8 @@ export async function cmdUpgradeParsed(opts: {
 
       fileContents.set(rel, data);
       if (kind === null) additions.push(rel);
-      else {
-        const existingBuf = await readFile(destPath);
-        if (Buffer.compare(existingBuf, data) === 0) skipped.push(rel);
-        else updates.push(rel);
-      }
+      else if (existingBuf && Buffer.compare(existingBuf, data) === 0) skipped.push(rel);
+      else updates.push(rel);
     }
 
     if (missingRequired.length > 0) {

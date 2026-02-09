@@ -1,4 +1,7 @@
+import { createWriteStream } from "node:fs";
 import { writeFile } from "node:fs/promises";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 
 import { exitCodeForError } from "./exit-codes.js";
 import { CliError } from "../shared/errors.js";
@@ -87,8 +90,15 @@ export async function downloadToFile(
         message: `Failed to download ${url} (${res.status} ${res.statusText})`,
       });
     }
-    const buffer = Buffer.from(await res.arrayBuffer());
-    await writeFile(destPath, buffer);
+    // Prefer streaming to disk to avoid buffering large downloads in memory.
+    // Keep an arrayBuffer fallback for environments/mocks without a body stream.
+    if (res.body) {
+      const readable = Readable.fromWeb(res.body as unknown as ReadableStream<Uint8Array>);
+      await pipeline(readable, createWriteStream(destPath));
+    } else {
+      const buffer = Buffer.from(await res.arrayBuffer());
+      await writeFile(destPath, buffer);
+    }
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw new CliError({
