@@ -1,7 +1,8 @@
 ---
 id: "202602090949-ZBKTRH"
 title: "Release v0.2.1"
-status: "DOING"
+result_summary: "Release v0.2.1 tagged"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-02-09T09:51:21.384Z"
   updated_by: "INTEGRATOR"
   note: "Prepared v0.2.1: added docs/releases/v0.2.1.md; bumped packages/core + packages/agentplane to 0.2.1 and updated dependency; validated release scripts (check-release-notes/version) and ran bun run lint/test:full/coverage PASS."
-commit: null
+commit:
+  hash: "92d9870729b5043563e123210f977ff375784d53"
+  message: "✅ ZBKTRH release: v0.2.1"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Prepare v0.2.1 release (notes + version bumps + validation), tag v0.2.1, and push to trigger publish workflow."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Prepared v0.2.1 (release notes + version bumps + validation scripts); full lint/test:full/coverage pass; created annotated git tag v0.2.1 at the release commit."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "Prepared v0.2.1: added docs/releases/v0.2.1.md; bumped packages/core + packages/agentplane to 0.2.1 and updated dependency; validated release scripts (check-release-notes/version) and ran bun run lint/test:full/coverage PASS."
+  -
+    type: "status"
+    at: "2026-02-09T09:52:13.089Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Prepared v0.2.1 (release notes + version bumps + validation scripts); full lint/test:full/coverage pass; created annotated git tag v0.2.1 at the release commit."
 doc_version: 2
-doc_updated_at: "2026-02-09T09:51:21.386Z"
+doc_updated_at: "2026-02-09T09:52:13.089Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and push release v0.2.1: bump package versions (core + agentplane), add release notes docs/releases/v0.2.1.md, run validation scripts, create git tag v0.2.1, and push tag to trigger publish workflow."
 id_source: "generated"
