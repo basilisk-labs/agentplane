@@ -20,7 +20,7 @@
     "task_prefix": "task"
   },
   "framework": {
-    "source": "https://github.com/basilisk-labs/agent-plane",
+    "source": "https://github.com/basilisk-labs/agentplane",
     "last_update": null
   },
   "tasks": {

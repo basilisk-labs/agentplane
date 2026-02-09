@@ -4,7 +4,7 @@
   "description": "Recipe runtime helpers for Agent Plane (internal package).",
   "keywords": [
     "agentplane",
-    "agent-plane",
+    "agentplane-framework",
     "recipes",
     "automation",
     "cli"

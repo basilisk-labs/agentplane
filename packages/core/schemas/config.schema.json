@@ -83,14 +83,14 @@
       "additionalProperties": true,
       "required": ["source", "last_update"],
       "default": {
-        "source": "https://github.com/basilisk-labs/agent-plane",
+        "source": "https://github.com/basilisk-labs/agentplane",
         "last_update": null
       },
       "properties": {
         "source": {
           "type": "string",
           "minLength": 1,
-          "default": "https://github.com/basilisk-labs/agent-plane"
+          "default": "https://github.com/basilisk-labs/agentplane"
         },
         "last_update": {
           "type": ["string", "null"],

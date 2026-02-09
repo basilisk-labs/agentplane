@@ -4,7 +4,7 @@
   "description": "Test helpers for Agent Plane packages (internal package).",
   "keywords": [
     "agentplane",
-    "agent-plane",
+    "agentplane-framework",
     "testing",
     "testkit",
     "cli"

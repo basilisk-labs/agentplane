@@ -146,7 +146,7 @@ describe("base-branch", () => {
         worktrees_dir: ".agentplane/worktrees",
       },
       branch: { task_prefix: "task" },
-      framework: { source: "https://github.com/basilisk-labs/agent-plane", last_update: null },
+      framework: { source: "https://github.com/basilisk-labs/agentplane", last_update: null },
       tasks: {
         id_suffix_length_default: 6,
         verify: {

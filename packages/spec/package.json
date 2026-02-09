@@ -4,7 +4,7 @@
   "description": "Schemas and examples for Agent Plane file formats (internal package).",
   "keywords": [
     "agentplane",
-    "agent-plane",
+    "agentplane-framework",
     "schema",
     "spec",
     "tasks"

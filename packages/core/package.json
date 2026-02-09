@@ -4,7 +4,7 @@
   "description": "Core utilities and models for the Agent Plane CLI.",
   "keywords": [
     "agentplane",
-    "agent-plane",
+    "agentplane-framework",
     "core",
     "tasks",
     "workflow",

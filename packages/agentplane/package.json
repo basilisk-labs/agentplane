@@ -4,7 +4,7 @@
   "description": "Agent Plane CLI for task workflows, recipes, and project automation.",
   "keywords": [
     "agentplane",
-    "agent-plane",
+    "agentplane-framework",
     "cli",
     "tasks",
     "workflow",

@@ -8,7 +8,12 @@ import { backupPath, fileExists, getPathKind } from "../cli/fs-utils.js";
 import { downloadToFile, fetchJson } from "../cli/http.js";
 import { parseSha256Text, sha256File } from "../cli/checksum.js";
 import { extractArchive } from "../cli/archive.js";
-import { invalidFieldMessage, invalidValueMessage, requiredFieldMessage } from "../cli/output.js";
+import {
+  invalidFieldMessage,
+  invalidValueMessage,
+  requiredFieldMessage,
+  warnMessage,
+} from "../cli/output.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
 import { CliError } from "../shared/errors.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
@@ -43,6 +48,24 @@ function parseGitHubRepo(source: string): { owner: string; repo: string } {
   } catch {
     throw new Error(invalidValueMessage("GitHub repo URL", trimmed, "owner/repo"));
   }
+}
+
+export function normalizeFrameworkSourceForUpgrade(source: string): {
+  source: string;
+  owner: string;
+  repo: string;
+  migrated: boolean;
+} {
+  const { owner, repo } = parseGitHubRepo(source);
+  if (owner === "basilisk-labs" && repo === "agent-plane") {
+    return {
+      source: `https://github.com/${owner}/agentplane`,
+      owner,
+      repo: "agentplane",
+      migrated: true,
+    };
+  }
+  return { source: `https://github.com/${owner}/${repo}`, owner, repo, migrated: false };
 }
 
 async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
@@ -95,7 +118,17 @@ export async function cmdUpgradeParsed(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
-  const source = flags.source ?? loaded.config.framework.source;
+  const sourceFromFlags = typeof flags.source === "string" && flags.source.trim().length > 0;
+  const originalSource = flags.source ?? loaded.config.framework.source;
+  const normalized = normalizeFrameworkSourceForUpgrade(originalSource);
+  const source = normalized.source;
+  if (normalized.migrated) {
+    process.stderr.write(
+      `${warnMessage(
+        `config.framework.source uses deprecated repo basilisk-labs/agent-plane; using ${source}`,
+      )}\n`,
+    );
+  }
   let networkApproved = false;
   const ensureApproved = async (reason: string): Promise<void> => {
     if (networkApproved) return;
@@ -129,7 +162,7 @@ export async function cmdUpgradeParsed(opts: {
         await downloadToFile(checksumValue, checksumPath);
       }
     } else {
-      const { owner, repo } = parseGitHubRepo(source);
+      const { owner, repo } = normalized;
       const releaseUrl = flags.tag
         ? `https://api.github.com/repos/${owner}/${repo}/releases/tags/${flags.tag}`
         : `https://api.github.com/repos/${owner}/${repo}/releases/latest`;
@@ -256,6 +289,9 @@ export async function cmdUpgradeParsed(opts: {
     }
 
     const raw = { ...loaded.raw };
+    if (!sourceFromFlags && normalized.migrated) {
+      setByDottedKey(raw, "framework.source", source);
+    }
     setByDottedKey(raw, "framework.last_update", new Date().toISOString());
     await saveConfig(resolved.agentplaneDir, raw);
 
