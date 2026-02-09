@@ -1,7 +1,8 @@
 ---
 id: "202602091019-F3GHJH"
 title: "Fix flaky run-cli.core.boot test timeout"
-status: "DOING"
+result_summary: "Boot tests no longer flake under pre-push"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-02-09T10:20:04.703Z"
   updated_by: "TESTER"
   note: "bunx vitest run packages/agentplane/src/cli/run-cli.core.boot.test.ts"
-commit: null
+commit:
+  hash: "e65ab11f865898a7bfaf39bb508d7b045aeed4d2"
+  message: "✅ F3GHJH tests: increase boot test timeouts"
 comments:
   -
     author: "TESTER"
     body: "Start: Fix pre-push flake by increasing timeout in run-cli.core.boot.test.ts; verify with targeted vitest run."
+  -
+    author: "TESTER"
+    body: "Verified: bunx vitest run packages/agentplane/src/cli/run-cli.core.boot.test.ts; increased per-test timeouts to avoid pre-push failures."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bunx vitest run packages/agentplane/src/cli/run-cli.core.boot.test.ts"
+  -
+    type: "status"
+    at: "2026-02-09T10:21:11.648Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bunx vitest run packages/agentplane/src/cli/run-cli.core.boot.test.ts; increased per-test timeouts to avoid pre-push failures."
 doc_version: 2
-doc_updated_at: "2026-02-09T10:20:04.705Z"
+doc_updated_at: "2026-02-09T10:21:11.648Z"
 doc_updated_by: "TESTER"
 description: "Pre-push hook intermittently fails due to 5s timeout in run-cli.core.boot.test.ts; increase per-test timeout to avoid release/push failures."
 id_source: "generated"
