@@ -5,8 +5,9 @@ import { writeJsonStableIfChanged } from "../shared/write-if-changed.js";
 
 import type { TaskData } from "./task-backend.js";
 
-export const TASK_INDEX_SCHEMA_VERSION = 1;
-const TASK_INDEX_FILENAME = "tasks-index.v1.json";
+export const TASK_INDEX_SCHEMA_VERSION = 2;
+const TASK_INDEX_FILENAME = "tasks-index.v2.json";
+const LEGACY_TASK_INDEX_FILENAME = "tasks-index.v1.json";
 
 export type TaskIndexEntry = {
   task: TaskData;
@@ -14,10 +15,18 @@ export type TaskIndexEntry = {
   mtimeMs: number;
 };
 
-export type TaskIndexFile = {
+export type TaskIndexFileV1 = {
   schema_version: 1;
   tasks: TaskIndexEntry[];
 };
+
+export type TaskIndexFileV2 = {
+  schema_version: 2;
+  byId: Record<string, TaskIndexEntry>;
+  byPath: Record<string, string>;
+};
+
+export type TaskIndexFile = TaskIndexFileV2;
 
 export function resolveTaskIndexPath(tasksDir: string): string {
   const normalized = path.normalize(tasksDir);
@@ -33,6 +42,12 @@ export function resolveTaskIndexPath(tasksDir: string): string {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function resolveLegacyIndexPath(indexPath: string): string {
+  // Best-effort migration path: when upgrading from v1->v2, the v1 file may still exist.
+  const dir = path.dirname(indexPath);
+  return path.join(dir, LEGACY_TASK_INDEX_FILENAME);
 }
 
 function isTaskIndexEntry(value: unknown): value is TaskIndexEntry {
@@ -52,27 +67,69 @@ function isTaskIndexEntry(value: unknown): value is TaskIndexEntry {
   return true;
 }
 
-export async function loadTaskIndex(indexPath: string): Promise<TaskIndexFile | null> {
-  let raw = "";
-  try {
-    raw = await readFile(indexPath, "utf8");
-  } catch {
-    return null;
+function toV2FromEntries(entries: TaskIndexEntry[]): TaskIndexFileV2 {
+  const byId: Record<string, TaskIndexEntry> = {};
+  const byPath: Record<string, string> = {};
+  for (const entry of entries) {
+    const id = entry.task.id;
+    if (typeof id !== "string" || !id.trim()) continue;
+    byId[id] = entry;
+    byPath[entry.readmePath] = id;
   }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw) as unknown;
-  } catch {
-    return null;
-  }
-  if (!isRecord(parsed)) return null;
-  if (parsed.schema_version !== TASK_INDEX_SCHEMA_VERSION) return null;
-  if (!Array.isArray(parsed.tasks)) return null;
-  const tasks = parsed.tasks.filter((entry) => isTaskIndexEntry(entry));
-  return { schema_version: TASK_INDEX_SCHEMA_VERSION, tasks };
+  return { schema_version: 2, byId, byPath };
 }
 
-export async function saveTaskIndex(indexPath: string, index: TaskIndexFile): Promise<void> {
+function isTaskIndexFileV2(value: unknown): value is TaskIndexFileV2 {
+  if (!isRecord(value)) return false;
+  if (value.schema_version !== 2) return false;
+  if (!isRecord(value.byId)) return false;
+  if (!isRecord(value.byPath)) return false;
+
+  // Validate entries shallowly; be lenient so cache can still help even if partially corrupt.
+  for (const entry of Object.values(value.byId)) {
+    if (!isTaskIndexEntry(entry)) return false;
+  }
+  for (const v of Object.values(value.byPath)) {
+    if (typeof v !== "string") return false;
+  }
+  return true;
+}
+
+function isTaskIndexFileV1(value: unknown): value is TaskIndexFileV1 {
+  if (!isRecord(value)) return false;
+  if (value.schema_version !== 1) return false;
+  if (!Array.isArray(value.tasks)) return false;
+  return true;
+}
+
+async function readJsonFile(p: string): Promise<unknown> {
+  let raw = "";
+  try {
+    raw = await readFile(p, "utf8");
+  } catch {
+    return null;
+  }
+  try {
+    return JSON.parse(raw) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+export async function loadTaskIndex(indexPath: string): Promise<TaskIndexFile | null> {
+  const v2 = await readJsonFile(indexPath);
+  if (v2 && isTaskIndexFileV2(v2)) return v2;
+
+  const legacyPath = resolveLegacyIndexPath(indexPath);
+  const v1 = await readJsonFile(legacyPath);
+  if (v1 && isTaskIndexFileV1(v1)) {
+    const entries = v1.tasks.filter((entry) => isTaskIndexEntry(entry));
+    return toV2FromEntries(entries);
+  }
+  return null;
+}
+
+export async function saveTaskIndex(indexPath: string, index: TaskIndexFileV2): Promise<void> {
   await writeJsonStableIfChanged(indexPath, index);
 }
 

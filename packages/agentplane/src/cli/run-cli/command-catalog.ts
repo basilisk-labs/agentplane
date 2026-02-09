@@ -33,6 +33,7 @@ import { taskVerifySpec } from "../../commands/task/verify.command.js";
 import { taskVerifyOkSpec } from "../../commands/task/verify-ok.command.js";
 import { taskVerifyReworkSpec } from "../../commands/task/verify-rework.command.js";
 import { taskVerifyShowSpec } from "../../commands/task/verify-show.command.js";
+import { taskRebuildIndexSpec } from "../../commands/task/rebuild-index.command.js";
 
 import { workStartSpec } from "../../commands/branch/work-start.command.js";
 import {
@@ -298,6 +299,11 @@ export const COMMANDS = [
   entry(taskVerifyShowSpec, (deps) =>
     import("../../commands/task/verify-show.command.js").then((m) =>
       m.makeRunTaskVerifyShowHandler(deps.getCtx),
+    ),
+  ),
+  entry(taskRebuildIndexSpec, (deps) =>
+    import("../../commands/task/rebuild-index.command.js").then((m) =>
+      m.makeRunTaskRebuildIndexHandler(deps.getCtx),
     ),
   ),
 

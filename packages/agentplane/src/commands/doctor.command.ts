@@ -5,6 +5,7 @@ import { resolveProject } from "@agentplaneorg/core";
 
 import type { CommandHandler, CommandSpec } from "../cli/spec/spec.js";
 import { warnMessage, successMessage } from "../cli/output.js";
+import { loadCommandContext } from "./shared/task-backend.js";
 
 type DoctorParsed = {
   fix: boolean;
@@ -124,6 +125,17 @@ async function safeFixGitignore(repoRoot: string): Promise<{ changed: boolean; n
   return { changed: true, note: "Fixed: added .agentplane/.upgrade/ to .gitignore." };
 }
 
+async function safeFixTaskIndex(repoRoot: string): Promise<{ changed: boolean; note: string }> {
+  try {
+    // Best-effort: rebuilding the index is a side-effect of listing tasks for the local backend.
+    const ctx = await loadCommandContext({ cwd: repoRoot, rootOverride: null });
+    await ctx.taskBackend.listTasks();
+    return { changed: true, note: "OK: rebuilt tasks index cache (best-effort)." };
+  } catch {
+    return { changed: false, note: "Skip: could not rebuild tasks index cache." };
+  }
+}
+
 export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const repoRoot = resolved.gitRoot;
@@ -138,6 +150,8 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   if (p.fix) {
     const fix = await safeFixGitignore(repoRoot);
     console.log(successMessage("doctor fix", undefined, fix.note));
+    const idx = await safeFixTaskIndex(repoRoot);
+    console.log(successMessage("doctor fix", undefined, idx.note));
   }
 
   console.log(successMessage("doctor", undefined, "OK"));

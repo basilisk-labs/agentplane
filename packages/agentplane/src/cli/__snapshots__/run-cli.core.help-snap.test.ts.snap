@@ -95,6 +95,7 @@ Commands:
     task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
     task plan reject  Reject the current task plan (requires a note).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
+    task rebuild-index  Rebuild the task index cache for the configured backend (best-effort).
     task scaffold  Write a task README file scaffold (for the current doc template).
     task scrub  Replace a string across all tasks (frontmatter + docs).
     task search  Search tasks by text or regex with optional filters.

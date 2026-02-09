@@ -436,14 +436,16 @@ describe("LocalBackend", () => {
     };
     await backend.writeTask(task);
     await backend.listTasks();
-    const indexPath = path.join(tempDir, ".cache", "tasks-index.v1.json");
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
     const parsed = JSON.parse(await readFile(indexPath, "utf8")) as {
       schema_version: number;
-      tasks: { task: TaskData }[];
+      byId: Record<string, { task: TaskData }>;
+      byPath: Record<string, string>;
     };
-    expect(parsed.schema_version).toBe(1);
-    expect(parsed.tasks).toHaveLength(1);
-    expect(parsed.tasks[0]?.task.id).toBe(task.id);
+    expect(parsed.schema_version).toBe(2);
+    expect(Object.keys(parsed.byId)).toHaveLength(1);
+    expect(parsed.byId[task.id]?.task.id).toBe(task.id);
+    expect(Object.values(parsed.byPath)).toContain(task.id);
   });
 
   it("defaults doc_updated_by to last comment author", async () => {

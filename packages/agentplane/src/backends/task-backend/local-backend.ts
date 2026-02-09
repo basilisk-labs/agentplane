@@ -78,11 +78,13 @@ export class LocalBackend implements TaskBackend {
     const cachedIndex = await loadTaskIndex(indexPath);
     const cachedByPath = new Map<string, TaskIndexEntry>();
     if (cachedIndex) {
-      for (const entry of cachedIndex.tasks) {
-        cachedByPath.set(entry.readmePath, entry);
+      for (const [readmePath, taskId] of Object.entries(cachedIndex.byPath)) {
+        const entry = cachedIndex.byId[taskId];
+        if (entry) cachedByPath.set(readmePath, entry);
       }
     }
-    const nextIndex: TaskIndexEntry[] = [];
+    const nextById: Record<string, TaskIndexEntry> = {};
+    const nextByPath: Record<string, string> = {};
     const seen = new Set<string>();
 
     // Deterministic ordering helps both users and tests; keep I/O bounded to avoid storms.
@@ -146,11 +148,14 @@ export class LocalBackend implements TaskBackend {
         seen.add(taskId);
       }
       tasks.push(res.task);
-      if (res.index) nextIndex.push(res.index);
-      else nextIndex.push(buildTaskIndexEntry(res.task, res.readme, res.mtimeMs));
+      if (taskId) {
+        const entry = res.index ?? buildTaskIndexEntry(res.task, res.readme, res.mtimeMs);
+        nextById[taskId] = entry;
+        nextByPath[entry.readmePath] = taskId;
+      }
     }
     try {
-      await saveTaskIndex(indexPath, { schema_version: 1, tasks: nextIndex });
+      await saveTaskIndex(indexPath, { schema_version: 2, byId: nextById, byPath: nextByPath });
     } catch {
       // Best-effort cache; ignore failures.
     }
