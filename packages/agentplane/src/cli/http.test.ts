@@ -8,9 +8,11 @@ import { downloadToFile, fetchJson } from "./http.js";
 
 describe("cli/http", () => {
   const fetchMock = vi.fn();
+  const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
 
   beforeEach(() => {
     fetchMock.mockReset();
+    setTimeoutSpy.mockClear();
     vi.stubGlobal("fetch", fetchMock as unknown as typeof fetch);
   });
 
@@ -67,6 +69,25 @@ describe("cli/http", () => {
 
     const contents = await readFile(dest, "utf8");
     expect(contents).toBe("payload");
+
+    await rm(tempDir, { recursive: true, force: true });
+  });
+
+  it("downloadToFile uses the provided timeoutMs", async () => {
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-http-timeout-test-"));
+    const dest = path.join(tempDir, "download.bin");
+
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      arrayBuffer: vi.fn(() => new ArrayBuffer(0)),
+    });
+
+    await downloadToFile("https://example.test", dest, 12_345);
+
+    // Note: setTimeout is also called by other tests; only assert that a call exists with this value.
+    expect(setTimeoutSpy.mock.calls.some((c) => c[1] === 12_345)).toBe(true);
 
     await rm(tempDir, { recursive: true, force: true });
   });

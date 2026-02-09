@@ -20,6 +20,7 @@ import { ensureNetworkApproved } from "./shared/network-approval.js";
 
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
 const DEFAULT_UPGRADE_CHECKSUM_ASSET = "agentplane-upgrade.tar.gz.sha256";
+const UPGRADE_DOWNLOAD_TIMEOUT_MS = 60_000;
 
 export type UpgradeFlags = {
   source?: string;
@@ -383,7 +384,7 @@ export async function cmdUpgradeParsed(opts: {
       bundlePath = isUrl ? path.join(tempRoot, "bundle.tar.gz") : path.resolve(flags.bundle);
       if (isUrl) {
         await ensureApproved("upgrade downloads the bundle/checksum from the network");
-        await downloadToFile(flags.bundle, bundlePath);
+        await downloadToFile(flags.bundle, bundlePath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
       }
       const checksumValue = flags.checksum ?? "";
       const checksumIsUrl =
@@ -393,7 +394,7 @@ export async function cmdUpgradeParsed(opts: {
         : path.resolve(checksumValue);
       if (checksumIsUrl) {
         await ensureApproved("upgrade downloads the bundle/checksum from the network");
-        await downloadToFile(checksumValue, checksumPath);
+        await downloadToFile(checksumValue, checksumPath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
       }
     } else {
       const { owner, repo } = normalized;
@@ -417,8 +418,8 @@ export async function cmdUpgradeParsed(opts: {
       if (download.kind === "assets") {
         bundlePath = path.join(tempRoot, assetName);
         checksumPath = path.join(tempRoot, checksumName);
-        await downloadToFile(download.bundleUrl, bundlePath);
-        await downloadToFile(download.checksumUrl, checksumPath);
+        await downloadToFile(download.bundleUrl, bundlePath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
+        await downloadToFile(download.checksumUrl, checksumPath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
       } else {
         process.stderr.write(
           `${warnMessage(
@@ -427,7 +428,7 @@ export async function cmdUpgradeParsed(opts: {
         );
         allowNonUpgradePaths = true;
         bundlePath = path.join(tempRoot, "source.tar.gz");
-        await downloadToFile(download.tarballUrl, bundlePath);
+        await downloadToFile(download.tarballUrl, bundlePath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
         checksumPath = "";
       }
     }

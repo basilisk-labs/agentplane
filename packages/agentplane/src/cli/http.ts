@@ -3,9 +3,13 @@ import { writeFile } from "node:fs/promises";
 import { exitCodeForError } from "./exit-codes.js";
 import { CliError } from "../shared/errors.js";
 
-const DEFAULT_TIMEOUT_MS = 1500;
+const DEFAULT_FETCH_TIMEOUT_MS = 1500;
+const DEFAULT_DOWNLOAD_TIMEOUT_MS = 30_000;
 
-export async function fetchJson(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<unknown> {
+export async function fetchJson(
+  url: string,
+  timeoutMs = DEFAULT_FETCH_TIMEOUT_MS,
+): Promise<unknown> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -33,7 +37,10 @@ export async function fetchJson(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Pr
   }
 }
 
-export async function fetchText(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<string> {
+export async function fetchText(
+  url: string,
+  timeoutMs = DEFAULT_FETCH_TIMEOUT_MS,
+): Promise<string> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -64,7 +71,7 @@ export async function fetchText(url: string, timeoutMs = DEFAULT_TIMEOUT_MS): Pr
 export async function downloadToFile(
   url: string,
   destPath: string,
-  timeoutMs = DEFAULT_TIMEOUT_MS,
+  timeoutMs = DEFAULT_DOWNLOAD_TIMEOUT_MS,
 ): Promise<void> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
