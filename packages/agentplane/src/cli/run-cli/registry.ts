@@ -173,6 +173,8 @@ import {
 } from "../../commands/guard/suggest-allow.command.js";
 import { guardCommitSpec, makeRunGuardCommitHandler } from "../../commands/guard/commit.command.js";
 
+import { agentLintSpec, runAgentLint } from "../../commands/agent/lint.command.js";
+
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 
 const helpNoop = () => Promise.resolve(0);
@@ -184,6 +186,7 @@ export function buildHelpFastRegistry(): CommandRegistry {
   registry.register(quickstartSpec, helpNoop);
   registry.register(roleSpec, helpNoop);
   registry.register(agentsSpec, helpNoop);
+  registry.register(agentLintSpec, helpNoop);
   registry.register(configShowSpec, helpNoop);
   registry.register(configSetSpec, helpNoop);
   registry.register(modeGetSpec, helpNoop);
@@ -277,6 +280,7 @@ export function buildRegistry(
   registry.register(quickstartSpec, runQuickstart);
   registry.register(roleSpec, runRole);
   registry.register(agentsSpec, runAgents);
+  registry.register(agentLintSpec, runAgentLint);
   registry.register(configShowSpec, runConfigShow);
   registry.register(configSetSpec, runConfigSet);
   registry.register(modeGetSpec, runModeGet);

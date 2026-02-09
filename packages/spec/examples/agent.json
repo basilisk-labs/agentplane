@@ -1,0 +1,12 @@
+{
+  "id": "EXAMPLE_AGENT",
+  "role": "Demonstrate the agent definition schema.",
+  "description": "A minimal agent definition used as a reference example in tests and documentation.",
+  "inputs": ["A task ID or free-form user request."],
+  "outputs": ["A structured summary of work performed."],
+  "permissions": ["Project files: read-only."],
+  "workflow": [
+    "Follow shared workflow rules in AGENTS.md.",
+    "Inspect relevant files and report findings."
+  ]
+}

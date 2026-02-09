@@ -92,3 +92,11 @@ export {
 } from "./commit/commit-policy.js";
 
 export { getStagedFiles, getUnstagedFiles, getUnstagedTrackedFiles } from "./git/git-utils.js";
+
+export {
+  validateAgent,
+  lintAgent,
+  lintAgentsDir,
+  type AgentDefinition,
+  type AgentLintResult,
+} from "./agents/agent-schema.js";
