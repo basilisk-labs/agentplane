@@ -19,7 +19,7 @@ describe("upgrade merge behavior", () => {
     const originalConfig = await readFile(configPath, "utf8");
 
     // Seed a baseline file set to enable three-way agent JSON merges.
-    const baselineDir = path.join(root, ".agentplane", "upgrade", "baseline");
+    const baselineDir = path.join(root, ".agentplane", ".upgrade", "baseline");
     await mkdir(path.join(baselineDir, "agents"), { recursive: true });
     await writeFile(
       path.join(baselineDir, "agents", "CODER.json"),

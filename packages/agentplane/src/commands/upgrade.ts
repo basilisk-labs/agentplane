@@ -374,6 +374,26 @@ export async function cmdUpgradeParsed(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
+  const upgradeStateDir = path.join(resolved.agentplaneDir, ".upgrade");
+  const lockPath = path.join(upgradeStateDir, "lock.json");
+  const statePath = path.join(upgradeStateDir, "state.json");
+  const baselineDirNew = path.join(upgradeStateDir, "baseline");
+  const baselineDirLegacy = path.join(resolved.agentplaneDir, "upgrade", "baseline");
+
+  await mkdir(upgradeStateDir, { recursive: true });
+  if (await fileExists(lockPath)) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Upgrade is locked (found ${path.relative(resolved.gitRoot, lockPath)})`,
+    });
+  }
+  await writeFile(
+    lockPath,
+    JSON.stringify({ pid: process.pid, started_at: new Date().toISOString() }, null, 2) + "\n",
+    "utf8",
+  );
+  let lockAcquired = true;
   let networkApproved = false;
   const ensureApproved = async (reason: string): Promise<void> => {
     if (networkApproved) return;
@@ -510,7 +530,19 @@ export async function cmdUpgradeParsed(opts: {
     const merged: string[] = [];
     const missingRequired: string[] = [];
 
-    const baselineDir = path.join(resolved.agentplaneDir, "upgrade", "baseline");
+    const readBaselineText = async (baselineKey: string): Promise<string | null> => {
+      try {
+        return await readFile(path.join(baselineDirNew, baselineKey), "utf8");
+      } catch {
+        // Back-compat: older upgrades wrote baselines under .agentplane/upgrade/baseline.
+        try {
+          return await readFile(path.join(baselineDirLegacy, baselineKey), "utf8");
+        } catch {
+          return null;
+        }
+      }
+    };
+
     const toBaselineKey = (rel: string): string | null => {
       if (rel === "AGENTS.md") return "AGENTS.md";
       if (rel.startsWith(".agentplane/")) return rel.slice(".agentplane/".length);
@@ -576,7 +608,8 @@ export async function cmdUpgradeParsed(opts: {
           let mergedText: string | null = null;
           if (baselineKey) {
             try {
-              const baselineText = await readFile(path.join(baselineDir, baselineKey), "utf8");
+              const baselineText = await readBaselineText(baselineKey);
+              if (!baselineText) throw new Error("missing baseline");
               mergedText = mergeAgentJson3Way({
                 incomingText: data.toString("utf8"),
                 currentText: existingText,
@@ -634,7 +667,7 @@ export async function cmdUpgradeParsed(opts: {
       // Record a baseline copy for future three-way merges.
       const baselineKey = toBaselineKey(rel);
       if (baselineKey && data) {
-        const baselinePath = path.join(baselineDir, baselineKey);
+        const baselinePath = path.join(baselineDirNew, baselineKey);
         await mkdir(path.dirname(baselinePath), { recursive: true });
         await writeFile(baselinePath, data);
       }
@@ -646,6 +679,19 @@ export async function cmdUpgradeParsed(opts: {
     }
     setByDottedKey(raw, "framework.last_update", new Date().toISOString());
     await saveConfig(resolved.agentplaneDir, raw);
+    await writeFile(
+      statePath,
+      JSON.stringify(
+        {
+          applied_at: new Date().toISOString(),
+          source: bundleLayout,
+          updated: { add: additions.length, update: updates.length, unchanged: skipped.length },
+        },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
 
     process.stdout.write(
       `Upgrade applied: ${additions.length} add, ${updates.length} update, ${skipped.length} unchanged\n`,
@@ -654,5 +700,12 @@ export async function cmdUpgradeParsed(opts: {
   } finally {
     if (extractRoot) await rm(extractRoot, { recursive: true, force: true });
     if (tempRoot) await rm(tempRoot, { recursive: true, force: true });
+    if (lockAcquired) {
+      try {
+        await rm(lockPath, { force: true });
+      } catch {
+        // best-effort cleanup
+      }
+    }
   }
 }
