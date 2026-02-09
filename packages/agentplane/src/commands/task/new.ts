@@ -3,7 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { nowIso, requiresVerify } from "./shared.js";
+import { nowIso, requiresVerify, warnIfUnknownOwner } from "./shared.js";
 
 export type TaskNewParsed = {
   title: string;
@@ -56,6 +56,7 @@ export async function runTaskNewParsed(opts: {
       ctx.config.tasks.verify.require_steps_for_tags ?? ctx.config.tasks.verify.required_tags;
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
     const requiresVerifySteps = requiresVerify(p.tags, requireStepsTags);
+    await warnIfUnknownOwner(ctx, p.owner);
     if (requiresVerifySteps) {
       process.stderr.write(
         `${warnMessage(

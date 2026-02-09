@@ -1,5 +1,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { readdir } from "node:fs/promises";
+import path from "node:path";
 
 import { type AgentplaneConfig } from "@agentplaneorg/core";
 
@@ -9,10 +11,12 @@ import {
   missingValueMessage,
   warnMessage,
 } from "../../cli/output.js";
+import { fileExists } from "../../cli/fs-utils.js";
 import { type TaskData, type TaskEvent } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { dedupeStrings } from "../../shared/strings.js";
 import { parseGitLogHashSubject } from "../../shared/git-log.js";
+import type { CommandContext } from "../shared/task-backend.js";
 
 export { dedupeStrings } from "../../shared/strings.js";
 
@@ -85,6 +89,30 @@ export function requiresVerify(tags: string[], requiredTags: string[]): boolean 
   const required = new Set(requiredTags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
   if (required.size === 0) return false;
   return tags.some((tag) => required.has(tag.trim().toLowerCase()));
+}
+
+export async function warnIfUnknownOwner(ctx: CommandContext, owner: string): Promise<void> {
+  const trimmed = owner.trim();
+  if (!trimmed) return;
+
+  const agentsDir = path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.agents_dir);
+  if (!(await fileExists(agentsDir))) return;
+
+  const entries = await readdir(agentsDir);
+  const ids = entries
+    .filter((name) => name.endsWith(".json"))
+    .map((name) => name.slice(0, -".json".length))
+    .filter((id) => id.trim().length > 0);
+  if (ids.length === 0) return;
+
+  if (!ids.includes(trimmed)) {
+    process.stderr.write(
+      `${warnMessage(
+        `unknown task owner id: ${trimmed} (not found under ${ctx.config.paths.agents_dir}; ` +
+          `pick an existing agent id or create ${ctx.config.paths.agents_dir}/${trimmed}.json)`,
+      )}\n`,
+    );
+  }
 }
 
 export function appendTaskEvent(task: TaskData, event: TaskEvent): TaskEvent[] {

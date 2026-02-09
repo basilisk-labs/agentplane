@@ -48,6 +48,22 @@ as **network and/or outside-repo** activity and request explicit approval before
 
 No other role may assume another role’s authority.
 
+## Execution agents (registry)
+
+Execution agents are defined by JSON files under `.agentplane/agents/*.json`. The file basename (without `.json`) is the agent ID (e.g. `CODER`, `TESTER`, `REVIEWER`, `DOCS`).
+
+**Contract (downstream task assignment):**
+
+- Every downstream task created by PLANNER MUST set `owner` to an existing execution agent ID from `.agentplane/agents/*.json`.
+- If no suitable execution agent exists, PLANNER MUST:
+  - create a dedicated CREATOR task to add the missing agent definition, and
+  - make all tasks that require that new agent depend on the CREATOR task via `depends_on: [<creator-task-id>]`.
+
+**Enforcement status:**
+
+- Current: warn-only in CLI (`task new` / `task update`) when `owner` does not exist in `.agentplane/agents`.
+- Planned: upgrade to lint/CI gate once the workflow is stable.
+
 ## Definitions (remove ambiguity)
 
 - **Read-only inspection**: commands that may read repo state but must not change tracked files or commit history.

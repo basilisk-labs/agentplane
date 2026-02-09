@@ -3,7 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, unknownEntityMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { dedupeStrings, requiresVerify, toStringArray } from "./shared.js";
+import { dedupeStrings, requiresVerify, toStringArray, warnIfUnknownOwner } from "./shared.js";
 
 export async function cmdTaskUpdate(opts: {
   ctx?: CommandContext;
@@ -37,7 +37,10 @@ export async function cmdTaskUpdate(opts: {
     if (opts.title !== undefined) next.title = opts.title;
     if (opts.description !== undefined) next.description = opts.description;
     if (opts.priority !== undefined) next.priority = opts.priority;
-    if (opts.owner !== undefined) next.owner = opts.owner;
+    if (opts.owner !== undefined) {
+      next.owner = opts.owner;
+      await warnIfUnknownOwner(ctx, opts.owner);
+    }
 
     const existingTags = opts.replaceTags ? [] : dedupeStrings(toStringArray(next.tags));
     const mergedTags = dedupeStrings([...existingTags, ...opts.tags]);
