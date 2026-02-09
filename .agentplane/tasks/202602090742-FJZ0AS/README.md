@@ -1,7 +1,8 @@
 ---
 id: "202602090742-FJZ0AS"
 title: "Coverage: add unit tests for task finish"
-status: "DOING"
+result_summary: "finish coverage improved"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-09T07:55:59.496Z"
   updated_by: "TESTER"
   note: "finish.unit tests added; bun run lint PASS; bun run test:full PASS; bun run coverage PASS (branches 72.78%)."
-commit: null
+commit:
+  hash: "7ff8dc83ada9cb6c8950b40da127aab22a026ce1"
+  message: "✅ FJZ0AS test: add finish unit coverage"
 comments:
   -
     author: "TESTER"
     body: "Start: Add unit tests for finish command to cover key branches and reduce missed coverage in task closure paths."
+  -
+    author: "TESTER"
+    body: "Verified: finish.unit tests added; bun run lint/test:full/coverage pass (branches 72.78%)."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "finish.unit tests added; bun run lint PASS; bun run test:full PASS; bun run coverage PASS (branches 72.78%)."
+  -
+    type: "status"
+    at: "2026-02-09T07:56:58.777Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: finish.unit tests added; bun run lint/test:full/coverage pass (branches 72.78%)."
 doc_version: 2
-doc_updated_at: "2026-02-09T07:55:59.497Z"
+doc_updated_at: "2026-02-09T07:56:58.777Z"
 doc_updated_by: "TESTER"
 description: "Add focused unit tests for packages/agentplane/src/commands/task/finish.ts to reduce missed branches and lock down edge-case semantics."
 id_source: "generated"
