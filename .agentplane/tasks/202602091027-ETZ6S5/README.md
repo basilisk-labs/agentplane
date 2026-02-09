@@ -1,7 +1,8 @@
 ---
 id: "202602091027-ETZ6S5"
 title: "upgrade: increase download timeout for tarball fallback"
-status: "DOING"
+result_summary: "Upgrade downloads no longer fail due to 1.5s timeout"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-02-09T10:30:14.311Z"
   updated_by: "CODER"
   note: "bun run lint; bunx vitest run packages/agentplane/src/cli/http.test.ts packages/agentplane/src/commands/upgrade*.test.ts packages/agentplane/src/commands/upgrade*.unit.test.ts"
-commit: null
+commit:
+  hash: "a00aa11adc45c3e43f7afb82404d45c8b55a7c63"
+  message: "✅ ETZ6S5 upgrade: longer download timeouts"
 comments:
   -
     author: "CODER"
     body: "Start: Increase upgrade downloadToFile timeouts (bundle/checksum/tarball) so tarball_url fallback works reliably; add regression test for timeout propagation if feasible."
+  -
+    author: "CODER"
+    body: "Verified: bun run lint; bunx vitest run packages/agentplane/src/cli/http.test.ts packages/agentplane/src/commands/upgrade*.test.ts packages/agentplane/src/commands/upgrade*.unit.test.ts; upgrade download calls use a 60s timeout and downloadToFile default is now 30s."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "bun run lint; bunx vitest run packages/agentplane/src/cli/http.test.ts packages/agentplane/src/commands/upgrade*.test.ts packages/agentplane/src/commands/upgrade*.unit.test.ts"
+  -
+    type: "status"
+    at: "2026-02-09T10:31:29.913Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run lint; bunx vitest run packages/agentplane/src/cli/http.test.ts packages/agentplane/src/commands/upgrade*.test.ts packages/agentplane/src/commands/upgrade*.unit.test.ts; upgrade download calls use a 60s timeout and downloadToFile default is now 30s."
 doc_version: 2
-doc_updated_at: "2026-02-09T10:30:14.314Z"
+doc_updated_at: "2026-02-09T10:31:29.913Z"
 doc_updated_by: "CODER"
 description: "Fix agentplane upgrade failing with E_NETWORK when downloading GitHub tarball_url due to overly short default HTTP timeout (1.5s). Use a larger timeout for upgrade downloads."
 id_source: "generated"
