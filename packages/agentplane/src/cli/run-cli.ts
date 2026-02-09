@@ -49,6 +49,10 @@ function prescanJsonErrors(argv: readonly string[]): boolean {
     if (arg === "--allow-network") continue;
 
     // Scoped global: only before the command id.
+    if (arg === "--json-errors") {
+      if (!hasRest) return true;
+      continue;
+    }
     if (arg === "--json") {
       if (!hasRest) return true;
       continue;
@@ -97,6 +101,16 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
       // before the command id. This avoids accidental capture of command-specific flags.
       if (rest.length === 0) {
         allowNetwork = true;
+        continue;
+      }
+      rest.push(arg);
+      continue;
+    }
+    if (arg === "--json-errors") {
+      // Scoped global: only treat `--json-errors` as "JSON errors" if it appears
+      // before the command id. This mirrors the existing `--json` behavior.
+      if (rest.length === 0) {
+        jsonErrors = true;
         continue;
       }
       rest.push(arg);
