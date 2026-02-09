@@ -22,6 +22,10 @@ export class TaskBackendAdapter implements TaskBackendPort {
   }
 
   exportTasksJson(path: string): Promise<void> {
-    return this.ctx.taskBackend.exportTasksJson(path);
+    const backend = this.ctx.taskBackend;
+    if (!backend.exportTasksJson) {
+      throw new Error("Backend does not support exportTasksJson");
+    }
+    return backend.exportTasksJson(path);
   }
 }
