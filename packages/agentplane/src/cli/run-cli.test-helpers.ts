@@ -367,7 +367,10 @@ export async function createUpgradeBundle(files: Record<string, string>): Promis
   checksumPath: string;
 }> {
   const manifestUrl = new URL("../../assets/framework.manifest.json", import.meta.url);
-  const manifestText = await readFile(fileURLToPath(manifestUrl), "utf8");
+  const manifestText =
+    typeof files["framework.manifest.json"] === "string"
+      ? files["framework.manifest.json"]
+      : await readFile(fileURLToPath(manifestUrl), "utf8");
   const manifest = JSON.parse(manifestText) as {
     schema_version?: number;
     files?: { path?: string; source_path?: string; type?: string; required?: boolean }[];
@@ -382,6 +385,9 @@ export async function createUpgradeBundle(files: Record<string, string>): Promis
       : relPath;
     normalizedFiles[mapped] = content;
   }
+
+  // Ensure the bundle always carries its manifest at the root.
+  normalizedFiles["framework.manifest.json"] ??= manifestText;
 
   if (manifest.schema_version === 1 && Array.isArray(manifest.files)) {
     for (const entry of manifest.files) {

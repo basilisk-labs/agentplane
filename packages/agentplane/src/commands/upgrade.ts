@@ -63,11 +63,10 @@ type FrameworkManifestEntry = {
   required?: boolean;
 };
 
-const MANIFEST_URL = new URL("../../assets/framework.manifest.json", import.meta.url);
 const ASSETS_DIR_URL = new URL("../../assets/", import.meta.url);
 
-async function loadFrameworkManifest(): Promise<FrameworkManifest> {
-  const text = await readFile(fileURLToPath(MANIFEST_URL), "utf8");
+async function loadFrameworkManifestFromPath(manifestPath: string): Promise<FrameworkManifest> {
+  const text = await readFile(manifestPath, "utf8");
   const parsed = JSON.parse(text) as FrameworkManifest;
   if (parsed?.schema_version !== 1 || !Array.isArray(parsed?.files)) {
     throw new CliError({
@@ -81,6 +80,10 @@ async function loadFrameworkManifest(): Promise<FrameworkManifest> {
 
 function isDeniedUpgradePath(relPath: string): boolean {
   if (relPath === ".agentplane/config.json") return true;
+  if (relPath === ".agentplane/tasks.json") return true;
+  if (relPath.startsWith(".agentplane/backends/")) return true;
+  if (relPath.startsWith(".agentplane/worktrees/")) return true;
+  if (relPath.startsWith(".agentplane/recipes/")) return true;
   if (relPath.startsWith(".agentplane/tasks/")) return true;
   if (relPath.startsWith(".agentplane/.upgrade/")) return true;
   if (relPath === ".git" || relPath.startsWith(".git/")) return true;
@@ -165,7 +168,8 @@ async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
 
 function isAllowedUpgradePath(relPath: string): boolean {
   if (relPath === "AGENTS.md") return true;
-  return relPath.startsWith(".agentplane/");
+  if (relPath.startsWith(".agentplane/agents/") && relPath.endsWith(".json")) return true;
+  return false;
 }
 
 const LOCAL_OVERRIDES_START = "<!-- AGENTPLANE:LOCAL-START -->";
@@ -531,7 +535,11 @@ export async function cmdUpgradeParsed(opts: {
           ? path.join(extractedRoot, "packages", "agentplane", "assets")
           : extractedRoot;
     }
-    const manifest = await loadFrameworkManifest();
+    const manifestPath =
+      bundleLayout === "local_assets"
+        ? fileURLToPath(new URL("../../assets/framework.manifest.json", import.meta.url))
+        : path.join(bundleRoot, "framework.manifest.json");
+    const manifest = await loadFrameworkManifestFromPath(manifestPath);
 
     const additions: string[] = [];
     const updates: string[] = [];
