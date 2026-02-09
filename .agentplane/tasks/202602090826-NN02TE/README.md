@@ -1,7 +1,8 @@
 ---
 id: "202602090826-NN02TE"
 title: "AGENTS.md: align roles vs agents + warn on unknown task owner"
-status: "DOING"
+result_summary: "Owner registry warnings + AGENTS.md alignment"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-09T08:32:54.982Z"
   updated_by: "ORCHESTRATOR"
   note: "Updated AGENTS.md to explicitly separate authority roles vs execution agents registry (.agentplane/agents). Implemented warn-only owner validation: task new/update emit warning when owner is not found under .agentplane/agents. Added unit tests for warnIfUnknownOwner. bun run lint/test:full/coverage PASS."
-commit: null
+commit:
+  hash: "f5613603dbdb0357f832eec899a8ca8fe78bf726"
+  message: "✅ NN02TE policy: warn on unknown task owner"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Update AGENTS.md contracts around agent assignment; add warn-only owner validation in task new/update with tests."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Updated AGENTS.md to distinguish authority roles vs execution agents registry and require downstream tasks to be owned by an existing agent (or schedule CREATOR). Implemented warn-only owner validation in task new/update with unit tests; lint/test:full/coverage pass."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "ORCHESTRATOR"
     state: "ok"
     note: "Updated AGENTS.md to explicitly separate authority roles vs execution agents registry (.agentplane/agents). Implemented warn-only owner validation: task new/update emit warning when owner is not found under .agentplane/agents. Added unit tests for warnIfUnknownOwner. bun run lint/test:full/coverage PASS."
+  -
+    type: "status"
+    at: "2026-02-09T08:33:42.606Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Updated AGENTS.md to distinguish authority roles vs execution agents registry and require downstream tasks to be owned by an existing agent (or schedule CREATOR). Implemented warn-only owner validation in task new/update with unit tests; lint/test:full/coverage pass."
 doc_version: 2
-doc_updated_at: "2026-02-09T08:32:54.985Z"
+doc_updated_at: "2026-02-09T08:33:42.606Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Review AGENTS.md for internal consistency and update it to require downstream tasks to be assigned to an existing agent ID (or schedule CREATOR). Add CLI warnings when task owner is not found under .agentplane/agents."
 id_source: "generated"
