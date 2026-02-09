@@ -56,6 +56,8 @@ Commands:
     pr note  Append a handoff note into PR review.md.
     pr open  Create PR artifacts for a task.
     pr update  Update PR artifacts (diffstat and auto summary).
+  Quality:
+    doctor  Check structural invariants of an agentplane workspace (and optionally apply safe fixes).
   Recipes:
     recipes  Recipe management commands.
     recipes cache  Manage recipes cache.

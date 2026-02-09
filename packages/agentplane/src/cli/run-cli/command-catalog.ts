@@ -79,6 +79,7 @@ import { blockSpec } from "../../commands/block.command.js";
 import { verifySpec } from "../../commands/verify.command.js";
 import { finishSpec } from "../../commands/finish.command.js";
 import { readySpec } from "../../commands/ready.command.js";
+import { doctorSpec } from "../../commands/doctor.command.js";
 
 import { docsCliSpec } from "../../commands/docs/cli.command.js";
 import { hooksSpec } from "../../commands/hooks/hooks.command.js";
@@ -169,6 +170,12 @@ export const COMMANDS = [
   entry(ideSyncSpec, () => import("./commands/ide.js").then((m) => m.runIdeSync), {
     needsProject: true,
     needsConfig: true,
+    needsTaskContext: false,
+  }),
+
+  entry(doctorSpec, () => import("../../commands/doctor.command.js").then((m) => m.runDoctor), {
+    needsProject: true,
+    needsConfig: false,
     needsTaskContext: false,
   }),
 
