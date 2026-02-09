@@ -47,15 +47,11 @@ export async function writeBackendStubs(opts: {
   const localBackendPayload = {
     id: "local",
     version: 1,
-    module: "backend.py",
-    class: "LocalBackend",
     settings: { dir: ".agentplane/tasks" },
   };
   const redmineBackendPayload = {
     id: "redmine",
     version: 1,
-    module: "backend.py",
-    class: "RedmineBackend",
     settings: {
       url: "https://redmine.example",
       api_key: "replace-me",

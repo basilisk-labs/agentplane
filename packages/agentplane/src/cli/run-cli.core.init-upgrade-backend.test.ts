@@ -199,6 +199,13 @@ describe("runCli", () => {
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "direct"');
     expect(configText).toContain('"config_path": ".agentplane/backends/local/backend.json"');
+
+    const backendText = await readFile(backendPath, "utf8");
+    const backend = JSON.parse(backendText) as Record<string, unknown>;
+    expect(backend).toMatchObject({ id: "local", version: 1 });
+    expect(backend).toHaveProperty("settings");
+    expect(backend).not.toHaveProperty("module");
+    expect(backend).not.toHaveProperty("class");
   });
 
   it("init --backend redmine sets backend config path", async () => {
