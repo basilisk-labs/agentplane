@@ -38,6 +38,22 @@ describe("validateAgent", () => {
   it("rejects empty permissions", () => {
     expect(() => validateAgent({ ...VALID_AGENT, permissions: [] })).toThrow(/agent/);
   });
+
+  it("accepts agent with tool restrictions", () => {
+    const agent = {
+      ...VALID_AGENT,
+      allowed_tools: ["read", "write"],
+      denied_tools: ["git_commit"],
+      model_preference: "fast" as const,
+    };
+    expect(() => validateAgent(agent)).not.toThrow();
+  });
+
+  it("rejects invalid model_preference", () => {
+    expect(() =>
+      validateAgent({ ...VALID_AGENT, model_preference: "turbo" }),
+    ).toThrow(/agent/);
+  });
 });
 
 describe("lintAgent", () => {
@@ -49,6 +65,12 @@ describe("lintAgent", () => {
   it("detects filename mismatch", () => {
     const result = lintAgent(VALID_AGENT, "WRONG.json");
     expect(result.errors.some((e) => e.includes("does not match"))).toBe(true);
+  });
+
+  it("detects allowed/denied overlap", () => {
+    const agent = { ...VALID_AGENT, allowed_tools: ["read", "write"], denied_tools: ["write"] };
+    const result = lintAgent(agent);
+    expect(result.errors.some((e) => e.includes("overlap"))).toBe(true);
   });
 
   it("returns schema errors for invalid input", () => {

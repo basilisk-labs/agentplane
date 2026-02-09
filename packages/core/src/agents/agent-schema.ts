@@ -14,6 +14,9 @@ export type AgentDefinition = {
   outputs?: string[];
   permissions: string[];
   workflow: string[];
+  allowed_tools?: string[];
+  denied_tools?: string[];
+  model_preference?: "fast" | "balanced" | "powerful";
 };
 
 export type AgentLintResult = {
@@ -79,6 +82,15 @@ export function lintAgent(raw: unknown, fileName?: string): AgentLintResult {
       errors.push(
         `filename "${fileName}" does not match agent id "${agent.id}" (expected "${expected}")`,
       );
+    }
+  }
+
+  // Check allowed_tools / denied_tools overlap
+  if (agent.allowed_tools && agent.denied_tools) {
+    const allowed = new Set(agent.allowed_tools);
+    const overlap = agent.denied_tools.filter((t) => allowed.has(t));
+    if (overlap.length > 0) {
+      errors.push(`allowed_tools and denied_tools overlap: ${overlap.join(", ")}`);
     }
   }
 

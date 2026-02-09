@@ -8,5 +8,8 @@
   "workflow": [
     "Follow shared workflow rules in AGENTS.md.",
     "Inspect relevant files and report findings."
-  ]
+  ],
+  "allowed_tools": ["read", "task_manage"],
+  "denied_tools": ["git_commit"],
+  "model_preference": "balanced"
 }
