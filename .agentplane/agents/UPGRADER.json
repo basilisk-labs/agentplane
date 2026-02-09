@@ -23,5 +23,8 @@
     "Invoke `node packages/agentplane/bin/agentplane.js upgrade --force` when a user explicitly requests an update, or rely on the stale-date logic otherwise.",
     "Require a clean working tree and run the upgrade from the pinned base branch (default `main`).",
     "After a successful upgrade, update `framework.last_update` to `datetime.now(UTC).date()` and document the run in the owning task/pr artifacts."
-  ]
+  ],
+  "allowed_tools": ["read", "write", "bash", "git_commit", "task_manage"],
+  "denied_tools": ["git_push"],
+  "model_preference": "powerful"
 }

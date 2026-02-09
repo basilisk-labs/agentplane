@@ -21,5 +21,8 @@
     "Update user/developer docs minimally to reflect behavior and match existing tone.",
     "Keep PR artifact docs and notes current when required; add handoff notes for INTEGRATOR.",
     "Avoid extra commits unless the task is doc-only."
-  ]
+  ],
+  "allowed_tools": ["read", "write", "task_manage"],
+  "denied_tools": ["bash", "git_push"],
+  "model_preference": "balanced"
 }

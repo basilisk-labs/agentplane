@@ -24,5 +24,8 @@
     "When writing verification notes (and any other approval/verification notes that include timestamps), use an ISO 8601 UTC timestamp with time, e.g. 2026-02-07T16:20:02.717Z; avoid date-only values like 2026-02-07.",
     "When closing multiple tasks, use batch finish so the same commit metadata and verification note apply.",
     "Check `closure_commit_requires_approval` in .agentplane/config.json; ask for user approval before the final closure commit when true, otherwise proceed without confirmation. Optionally clean task branches/worktrees after closure."
-  ]
+  ],
+  "allowed_tools": ["read", "write", "bash", "git_commit", "git_push", "task_manage"],
+  "denied_tools": [],
+  "model_preference": "powerful"
 }
