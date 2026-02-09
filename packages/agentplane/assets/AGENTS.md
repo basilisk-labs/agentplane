@@ -6,7 +6,7 @@ default_initiator: ORCHESTRATOR
 
 # PURPOSE
 
-This document defines the **behavioral policy** for agents operating in this workspace.
+This document defines the **behavioral policy** for agents operating in an agentplane-managed development workspace.
 Goal: **deterministic execution**, **tight guardrails**, and **minimum accidental changes** by enforcing a strict, inspectable pipeline.
 
 This policy is designed to be the single, authoritative instruction set the agent follows when invoked in a folder containing this file.
@@ -28,8 +28,7 @@ If two sources conflict, prefer the higher-priority source.
 
 All commands in this policy are written as `agentplane ...` and MUST use the `agentplane` CLI available on `PATH`.
 
-- Do not use repository-relative entrypoints (for example `node .../bin/agentplane.js`) in instructions or automation.
-- When the policy says `agentplane <args>`, it refers to the packaged CLI binary.
+Do not use repository-relative entrypoints (for example `node .../bin/agentplane.js`) in instructions or automation.
 
 ## Scope boundary
 
@@ -108,6 +107,11 @@ Outside-workspace includes (non-exhaustive):
 - modifying keychains, ssh keys, credential stores
 - any tool that mutates outside-workspace state
 
+### Interactive vs non-interactive runs (approvals mechanics)
+
+- Interactive: the user can approve prompts (for example network use) during the run.
+- Non-interactive (CI, scripted runs): approvals MUST be expressed via flags/config up front (for example `--yes`). If an approval is required and not granted, stop and request explicit user instruction.
+
 ---
 
 # NON-NEGOTIABLE PIPELINE
@@ -152,13 +156,18 @@ This is the required substitute for raw chain-of-thought.
 
 Preflight is **read-only inspection**. It is allowed before user approval.
 
-Before any planning or execution, ORCHESTRATOR must run:
+Before any planning or execution, ORCHESTRATOR must:
 
-1. `agentplane config show`
-2. `agentplane quickstart` (CLI instructions)
-3. `agentplane task list`
-4. `git status --short --untracked-files=no`
-5. `git rev-parse --abbrev-ref HEAD`
+1. Determine whether the current directory is an initialized agentplane workspace (e.g. `.agentplane/config.json` exists).
+2. Attempt git inspection:
+   - `git status --short --untracked-files=no`
+   - `git rev-parse --abbrev-ref HEAD`
+3. If the workspace is initialized, also run:
+   - `agentplane config show`
+   - `agentplane quickstart` (CLI instructions)
+   - `agentplane task list`
+
+If a command fails because the workspace is not initialized or not a git repo, record that fact in the Preflight Summary instead of guessing or proceeding with mutating actions.
 
 Then report a **Preflight Summary** (do not dump full config or quickstart text).
 
@@ -169,6 +178,8 @@ You MUST explicitly state:
 - Config loaded: yes/no
 - CLI instructions loaded: yes/no
 - Task list loaded: yes/no
+- Workspace initialized: yes/no
+- Git repository detected: yes/no
 - Working tree clean (tracked-only): yes/no
 - Current git branch: `<name>`
 - `workflow_mode`: `direct` / `branch_pr` / unknown
@@ -385,7 +396,9 @@ If config sets `agents.approvals.require_plan=true`:
 
 # COMMIT WORKFLOW
 
-- Commits and pushes must go through `agentplane` commands (no direct `git commit`/`git push`) unless explicitly overridden.
+Default: commits and pushes should go through `agentplane` commands (instead of direct `git commit`/`git push`) to enforce policy and allowlists.
+
+Override: direct git operations are allowed only with explicit user approval, and must be logged under the task `## Notes` → `### Approvals / Overrides`.
 
 ## Commit message semantics (canonical)
 
