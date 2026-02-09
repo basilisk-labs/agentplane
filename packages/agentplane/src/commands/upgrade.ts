@@ -33,6 +33,11 @@ export type UpgradeFlags = {
   yes: boolean;
 };
 
+type GitHubRelease = {
+  assets?: { name?: string; browser_download_url?: string }[];
+  tarball_url?: string;
+};
+
 function parseGitHubRepo(source: string): { owner: string; repo: string } {
   const trimmed = source.trim();
   if (!trimmed) throw new Error(requiredFieldMessage("config.framework.source"));
@@ -66,6 +71,37 @@ export function normalizeFrameworkSourceForUpgrade(source: string): {
     };
   }
   return { source: `https://github.com/${owner}/${repo}`, owner, repo, migrated: false };
+}
+
+export function resolveUpgradeDownloadFromRelease(opts: {
+  release: GitHubRelease;
+  owner: string;
+  repo: string;
+  assetName: string;
+  checksumName: string;
+}):
+  | { kind: "assets"; bundleUrl: string; checksumUrl: string }
+  | { kind: "tarball"; tarballUrl: string } {
+  const assets = Array.isArray(opts.release.assets) ? opts.release.assets : [];
+  const asset = assets.find((a) => a?.name === opts.assetName);
+  const checksumAsset = assets.find((a) => a?.name === opts.checksumName);
+  if (asset?.browser_download_url && checksumAsset?.browser_download_url) {
+    return {
+      kind: "assets",
+      bundleUrl: asset.browser_download_url,
+      checksumUrl: checksumAsset.browser_download_url,
+    };
+  }
+
+  const tarballUrl = typeof opts.release.tarball_url === "string" ? opts.release.tarball_url : "";
+  if (!tarballUrl) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_NETWORK"),
+      code: "E_NETWORK",
+      message: `Upgrade assets not found in ${opts.owner}/${opts.repo} release`,
+    });
+  }
+  return { kind: "tarball", tarballUrl };
 }
 
 async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
@@ -338,6 +374,9 @@ export async function cmdUpgradeParsed(opts: {
     tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-"));
     let bundlePath = "";
     let checksumPath = "";
+    // GitHub release tarballs contain the full repository. When we fall back to tarball_url,
+    // we must ignore non-upgrade paths instead of failing validation.
+    let allowNonUpgradePaths = false;
 
     if (flags.bundle) {
       const isUrl = flags.bundle.startsWith("http://") || flags.bundle.startsWith("https://");
@@ -364,42 +403,52 @@ export async function cmdUpgradeParsed(opts: {
       await ensureApproved(
         "upgrade fetches release metadata and downloads assets from the network",
       );
-      const release = (await fetchJson(releaseUrl)) as {
-        assets?: { name?: string; browser_download_url?: string }[];
-      };
-      const assets = Array.isArray(release.assets) ? release.assets : [];
       const assetName = flags.asset ?? DEFAULT_UPGRADE_ASSET;
       const checksumName = flags.checksumAsset ?? DEFAULT_UPGRADE_CHECKSUM_ASSET;
-      const asset = assets.find((entry) => entry.name === assetName);
-      const checksumAsset = assets.find((entry) => entry.name === checksumName);
-      if (!asset?.browser_download_url || !checksumAsset?.browser_download_url) {
-        throw new CliError({
-          exitCode: exitCodeForError("E_NETWORK"),
-          code: "E_NETWORK",
-          message: `Upgrade assets not found in ${owner}/${repo} release`,
-        });
+      const release = (await fetchJson(releaseUrl)) as GitHubRelease;
+      const download = resolveUpgradeDownloadFromRelease({
+        release,
+        owner,
+        repo,
+        assetName,
+        checksumName,
+      });
+
+      if (download.kind === "assets") {
+        bundlePath = path.join(tempRoot, assetName);
+        checksumPath = path.join(tempRoot, checksumName);
+        await downloadToFile(download.bundleUrl, bundlePath);
+        await downloadToFile(download.checksumUrl, checksumPath);
+      } else {
+        process.stderr.write(
+          `${warnMessage(
+            `upgrade release does not include ${assetName}/${checksumName}; falling back to tarball_url without checksum verification`,
+          )}\n`,
+        );
+        allowNonUpgradePaths = true;
+        bundlePath = path.join(tempRoot, "source.tar.gz");
+        await downloadToFile(download.tarballUrl, bundlePath);
+        checksumPath = "";
       }
-      bundlePath = path.join(tempRoot, assetName);
-      checksumPath = path.join(tempRoot, checksumName);
-      await downloadToFile(asset.browser_download_url, bundlePath);
-      await downloadToFile(checksumAsset.browser_download_url, checksumPath);
     }
 
-    const expected = parseSha256Text(await readFile(checksumPath, "utf8"));
-    if (!expected) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: "Upgrade checksum file is empty or invalid",
-      });
-    }
-    const actual = await sha256File(bundlePath);
-    if (actual !== expected) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: `Upgrade checksum mismatch (expected ${expected}, got ${actual})`,
-      });
+    if (checksumPath) {
+      const expected = parseSha256Text(await readFile(checksumPath, "utf8"));
+      if (!expected) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: "Upgrade checksum file is empty or invalid",
+        });
+      }
+      const actual = await sha256File(bundlePath);
+      if (actual !== expected) {
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: `Upgrade checksum mismatch (expected ${expected}, got ${actual})`,
+        });
+      }
     }
 
     extractRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-extract-"));
@@ -440,6 +489,9 @@ export async function cmdUpgradeParsed(opts: {
         });
       }
       if (!isAllowedUpgradePath(rel)) {
+        if (allowNonUpgradePaths) {
+          continue;
+        }
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
@@ -505,6 +557,15 @@ export async function cmdUpgradeParsed(opts: {
           updates.push(rel);
         }
       }
+    }
+
+    if (fileContents.size === 0) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message:
+          "Upgrade bundle contains no applicable files (expected AGENTS.md and/or .agentplane/).",
+      });
     }
 
     if (flags.dryRun) {
