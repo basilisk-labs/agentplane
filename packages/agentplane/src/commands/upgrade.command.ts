@@ -9,8 +9,21 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
   group: "Setup",
   summary: "Upgrade the local agentplane framework bundle in the repo.",
   description:
-    "Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade uses the locally installed agentplane package assets (no network). Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.",
+    "Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade generates an agent-assisted plan from the locally installed agentplane package assets (no network) and does not modify files. Use --auto to apply changes. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.",
   options: [
+    {
+      kind: "boolean",
+      name: "agent",
+      default: false,
+      description:
+        "Generate an agent-assisted upgrade plan (no files are modified). This is the default mode.",
+    },
+    {
+      kind: "boolean",
+      name: "auto",
+      default: false,
+      description: "Apply the upgrade automatically (writes managed files).",
+    },
     {
       kind: "boolean",
       name: "remote",
@@ -79,14 +92,27 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
       description: "Auto-approve network access prompts (subject to config approvals).",
     },
   ],
+  validateRaw: (raw) => {
+    if (raw.opts.agent === true && raw.opts.auto === true) {
+      throw usageError({
+        spec: upgradeSpec,
+        command: "upgrade",
+        message: "Options --agent and --auto are mutually exclusive.",
+      });
+    }
+  },
   examples: [
     {
       cmd: "agentplane upgrade",
-      why: "Upgrade using the locally installed agentplane package assets (no network).",
+      why: "Generate an agent-assisted plan using locally installed assets (no network).",
+    },
+    {
+      cmd: "agentplane upgrade --auto",
+      why: "Apply the upgrade automatically (writes managed files).",
     },
     {
       cmd: "agentplane upgrade --remote --tag v0.1.9 --dry-run",
-      why: "Preview changes for a specific GitHub release tag.",
+      why: "Preview changes for a specific GitHub release tag (no writes).",
     },
     {
       cmd: "agentplane upgrade --bundle ./agentplane-upgrade.tar.gz --checksum ./agentplane-upgrade.tar.gz.sha256",
@@ -96,6 +122,7 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
   parse: (raw) => {
     const noBackup = raw.opts["no-backup"] === true;
     return {
+      mode: raw.opts.auto === true ? "auto" : "agent",
       remote: raw.opts.remote === true,
       allowTarball: raw.opts["allow-tarball"] === true,
       source: raw.opts.source as string | undefined,

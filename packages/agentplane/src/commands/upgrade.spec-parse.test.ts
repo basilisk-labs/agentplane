@@ -62,4 +62,23 @@ describe("upgradeSpec parsing/validation", () => {
     const out = parseCommandArgv(upgradeSpec, ["--remote", "--allow-tarball"]);
     expect(out.parsed.allowTarball).toBe(true);
   });
+
+  it("defaults to agent mode (plan-only)", () => {
+    const out = parseCommandArgv(upgradeSpec, []);
+    expect(out.parsed.mode).toBe("agent");
+  });
+
+  it("parses --auto mode", () => {
+    const out = parseCommandArgv(upgradeSpec, ["--auto"]);
+    expect(out.parsed.mode).toBe("auto");
+  });
+
+  it("rejects --agent + --auto", () => {
+    try {
+      parseCommandArgv(upgradeSpec, ["--agent", "--auto"]);
+      throw new Error("expected parseCommandArgv to throw");
+    } catch (err) {
+      expect(err).toMatchObject({ code: "E_USAGE" });
+    }
+  });
 });

@@ -756,6 +756,7 @@ describe("runCli", () => {
     try {
       const code = await runCli([
         "upgrade",
+        "--auto",
         "--bundle",
         bundlePath,
         "--checksum",

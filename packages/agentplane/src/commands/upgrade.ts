@@ -41,6 +41,7 @@ export type UpgradeFlags = {
   checksum?: string;
   asset?: string;
   checksumAsset?: string;
+  mode: "agent" | "auto";
   remote: boolean;
   allowTarball: boolean;
   dryRun: boolean;
@@ -757,6 +758,75 @@ export async function cmdUpgradeParsed(opts: {
       for (const rel of updates) process.stdout.write(`UPDATE ${rel}\n`);
       for (const rel of skipped) process.stdout.write(`SKIP ${rel}\n`);
       for (const rel of merged) process.stdout.write(`MERGE ${rel}\n`);
+      return 0;
+    }
+
+    if (flags.mode === "agent") {
+      const agentDir = path.join(upgradeStateDir, "agent");
+      const runId = new Date().toISOString().replaceAll(":", "-").replaceAll(".", "-");
+      const runDir = path.join(agentDir, runId);
+      await mkdir(runDir, { recursive: true });
+
+      const managedFiles = manifest.files.map((f) => f.path.replaceAll("\\", "/").trim());
+      const planMd =
+        `# agentplane upgrade plan (${runId})\n\n` +
+        `Mode: agent-assisted (no files modified)\n\n` +
+        `## Summary\n\n` +
+        `- additions: ${additions.length}\n` +
+        `- updates: ${updates.length}\n` +
+        `- unchanged: ${skipped.length}\n` +
+        `- merged (auto-safe transforms already applied to incoming): ${merged.length}\n\n` +
+        `## Managed files (manifest)\n\n` +
+        managedFiles.map((p) => `- ${p}`).join("\n") +
+        `\n\n` +
+        `## Proposed changes\n\n` +
+        additions.map((p) => `- ADD ${p}`).join("\n") +
+        (additions.length > 0 ? "\n" : "") +
+        updates.map((p) => `- UPDATE ${p}`).join("\n") +
+        (updates.length > 0 ? "\n" : "") +
+        merged.map((p) => `- MERGE ${p}`).join("\n") +
+        (merged.length > 0 ? "\n" : "") +
+        skipped.map((p) => `- SKIP ${p}`).join("\n") +
+        (skipped.length > 0 ? "\n" : "") +
+        `\n` +
+        `## Next steps\n\n` +
+        `1. Review the proposed changes list.\n` +
+        `2. Apply changes manually or re-run with \`agentplane upgrade --auto\` to apply managed files.\n` +
+        `3. Run \`agentplane doctor\` (or \`agentplane doctor --fix\`) and ensure checks pass.\n`;
+
+      const constraintsMd =
+        `# Upgrade constraints\n\n` +
+        `This upgrade is restricted to framework-managed files only.\n\n` +
+        `## Must not touch\n\n` +
+        `- .agentplane/tasks/** (task data)\n` +
+        `- .agentplane/tasks.json (export snapshot)\n` +
+        `- .agentplane/backends/** (backend configuration)\n` +
+        `- .agentplane/config.json (project config)\n` +
+        `- .git/**\n\n` +
+        `## Notes\n\n` +
+        `- The upgrade bundle is validated against framework.manifest.json.\n` +
+        `- AGENTS.md is managed under .agentplane/AGENTS.md and workspace-root AGENTS.md is a symlink.\n`;
+
+      const reportMd =
+        `# Upgrade report (${runId})\n\n` +
+        `## Actions taken\n\n` +
+        `- [ ] Reviewed plan.md\n` +
+        `- [ ] Applied changes (manual or --auto)\n` +
+        `- [ ] Ran doctor\n` +
+        `- [ ] Ran tests / lint\n\n` +
+        `## Notes\n\n` +
+        `- \n`;
+
+      await writeFile(path.join(runDir, "plan.md"), planMd, "utf8");
+      await writeFile(path.join(runDir, "constraints.md"), constraintsMd, "utf8");
+      await writeFile(path.join(runDir, "report.md"), reportMd, "utf8");
+      await writeFile(
+        path.join(runDir, "files.json"),
+        JSON.stringify({ additions, updates, skipped, merged }, null, 2) + "\n",
+        "utf8",
+      );
+
+      process.stdout.write(`Upgrade plan written: ${path.relative(resolved.gitRoot, runDir)}\n`);
       return 0;
     }
 

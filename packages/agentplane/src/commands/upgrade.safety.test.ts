@@ -43,6 +43,7 @@ describe("upgrade safety invariants", () => {
         flags: {
           bundle: bundlePath,
           checksum: checksumPath,
+          mode: "auto",
           remote: false,
           allowTarball: false,
           dryRun: false,
@@ -103,6 +104,7 @@ describe("upgrade safety invariants", () => {
         flags: {
           bundle: bundlePath,
           checksum: checksumPath,
+          mode: "auto",
           remote: false,
           allowTarball: false,
           dryRun: false,
@@ -141,6 +143,7 @@ describe("upgrade safety invariants", () => {
         flags: {
           bundle: bundlePath,
           checksum: checksumPath,
+          mode: "auto",
           remote: false,
           allowTarball: false,
           dryRun: false,

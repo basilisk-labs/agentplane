@@ -93,6 +93,7 @@ describe("upgrade merge behavior", () => {
       flags: {
         bundle: bundlePath,
         checksum: checksumPath,
+        mode: "auto",
         remote: false,
         allowTarball: false,
         dryRun: false,
