@@ -1,7 +1,8 @@
 ---
 id: "202602090956-HEVSEM"
 title: "upgrade: fallback to tarball_url when release assets missing"
-status: "DOING"
+result_summary: "Upgrade no longer fails when release assets are missing"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-02-09T10:06:21.860Z"
   updated_by: "CODER"
   note: "bun run lint; bun run test:full; bun run coverage"
-commit: null
+commit:
+  hash: "d9e9b8614979fef309e8680e70d00dcb9d3329fd"
+  message: "✅ HEVSEM upgrade: tarball_url fallback for missing release assets"
 comments:
   -
     author: "CODER"
     body: "Start: Implement upgrade fallback to GitHub release tarball_url when upgrade assets are missing; add tests; ship patch release."
+  -
+    author: "CODER"
+    body: "Verified: bun run lint, bun run test:full, bun run coverage; upgrade now falls back to GitHub release tarball_url when upgrade assets are missing and applies only AGENTS.md/.agentplane/*."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "bun run lint; bun run test:full; bun run coverage"
+  -
+    type: "status"
+    at: "2026-02-09T10:08:32.782Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run lint, bun run test:full, bun run coverage; upgrade now falls back to GitHub release tarball_url when upgrade assets are missing and applies only AGENTS.md/.agentplane/*."
 doc_version: 2
-doc_updated_at: "2026-02-09T10:06:21.865Z"
+doc_updated_at: "2026-02-09T10:08:32.782Z"
 doc_updated_by: "CODER"
 description: "Fix agentplane upgrade failing on npm-installed CLI when GitHub releases do not include agentplane-upgrade.tar.gz assets. Add fallback to release tarball_url with a warning (no checksum), keep existing asset+checksum path when available, and add tests."
 id_source: "generated"
