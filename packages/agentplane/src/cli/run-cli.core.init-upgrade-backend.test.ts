@@ -809,7 +809,7 @@ describe("runCli", () => {
     await writeDefaultConfig(root);
     const io = captureStdIO();
     try {
-      const code = await runCli(["upgrade", "--dry-run", "--root", root]);
+      const code = await runCli(["upgrade", "--remote", "--dry-run", "--root", root]);
       expect(code).toBe(3);
       expect(io.stderr).toContain("--yes");
     } finally {
@@ -895,7 +895,7 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["upgrade", "--dry-run", "--root", root]);
+      const code = await runCli(["upgrade", "--remote", "--dry-run", "--root", root]);
       expect(code).toBe(1);
       expect(io.stderr).toContain("Invalid field config.framework.source: expected GitHub URL");
     } finally {

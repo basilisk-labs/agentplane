@@ -40,6 +40,15 @@ describe("upgradeSpec parsing/validation", () => {
     }
   });
 
+  it("requires --remote when passing remote hint options", () => {
+    try {
+      parseCommandArgv(upgradeSpec, ["--tag", "v0.1.0"]);
+      throw new Error("expected parseCommandArgv to throw");
+    } catch (err) {
+      expect(err).toMatchObject({ code: "E_USAGE" });
+    }
+  });
+
   it("rejects positional args", () => {
     try {
       parseCommandArgv(upgradeSpec, ["oops"]);

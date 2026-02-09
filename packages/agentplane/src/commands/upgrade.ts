@@ -54,6 +54,7 @@ type FrameworkManifestEntry = {
 };
 
 const MANIFEST_URL = new URL("../../assets/framework.manifest.json", import.meta.url);
+const ASSETS_DIR_URL = new URL("../../assets/", import.meta.url);
 
 async function loadFrameworkManifest(): Promise<FrameworkManifest> {
   const text = await readFile(fileURLToPath(MANIFEST_URL), "utf8");
@@ -373,23 +374,20 @@ export async function cmdUpgradeParsed(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
-  const sourceFromFlags = typeof flags.source === "string" && flags.source.trim().length > 0;
-  const originalSource = flags.source ?? loaded.config.framework.source;
-  const normalized = normalizeFrameworkSourceForUpgrade(originalSource);
-  const source = normalized.source;
-  if (normalized.migrated) {
-    process.stderr.write(
-      `${warnMessage(
-        `config.framework.source uses deprecated repo basilisk-labs/agent-plane; using ${source}`,
-      )}\n`,
-    );
-  }
   let networkApproved = false;
   const ensureApproved = async (reason: string): Promise<void> => {
     if (networkApproved) return;
     await ensureNetworkApproved({ config: loaded.config, yes: flags.yes, reason });
     networkApproved = true;
   };
+
+  const hasBundle = Boolean(flags.bundle);
+  const hasRemoteHints =
+    Boolean(flags.source) ||
+    Boolean(flags.tag) ||
+    Boolean(flags.asset) ||
+    Boolean(flags.checksumAsset);
+  const useRemote = flags.remote === true || hasRemoteHints;
 
   let tempRoot: string | null = null;
   let extractRoot: string | null = null;
@@ -398,8 +396,14 @@ export async function cmdUpgradeParsed(opts: {
     tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-"));
     let bundlePath = "";
     let checksumPath = "";
+    let bundleLayout: "local_assets" | "upgrade_bundle" | "repo_tarball" = "upgrade_bundle";
+    let bundleRoot = "";
+    let normalizedSourceToPersist: string | null = null;
 
-    if (flags.bundle) {
+    if (!hasBundle && !useRemote) {
+      bundleLayout = "local_assets";
+      bundleRoot = fileURLToPath(ASSETS_DIR_URL);
+    } else if (flags.bundle) {
       const isUrl = flags.bundle.startsWith("http://") || flags.bundle.startsWith("https://");
       bundlePath = isUrl ? path.join(tempRoot, "bundle.tar.gz") : path.resolve(flags.bundle);
       if (isUrl) {
@@ -417,6 +421,20 @@ export async function cmdUpgradeParsed(opts: {
         await downloadToFile(checksumValue, checksumPath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
       }
     } else {
+      const sourceFromFlags = typeof flags.source === "string" && flags.source.trim().length > 0;
+      const originalSource = flags.source ?? loaded.config.framework.source;
+      const normalized = normalizeFrameworkSourceForUpgrade(originalSource);
+      if (!sourceFromFlags && normalized.migrated) {
+        normalizedSourceToPersist = normalized.source;
+      }
+      if (normalized.migrated) {
+        process.stderr.write(
+          `${warnMessage(
+            `config.framework.source uses deprecated repo basilisk-labs/agent-plane; using ${normalized.source}`,
+          )}\n`,
+        );
+      }
+
       const { owner, repo } = normalized;
       const releaseUrl = flags.tag
         ? `https://api.github.com/repos/${owner}/${repo}/releases/tags/${flags.tag}`
@@ -446,13 +464,14 @@ export async function cmdUpgradeParsed(opts: {
             `upgrade release does not include ${assetName}/${checksumName}; falling back to tarball_url without checksum verification`,
           )}\n`,
         );
+        bundleLayout = "repo_tarball";
         bundlePath = path.join(tempRoot, "source.tar.gz");
         await downloadToFile(download.tarballUrl, bundlePath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
         checksumPath = "";
       }
     }
 
-    if (checksumPath) {
+    if (bundleLayout !== "local_assets" && checksumPath) {
       const expected = parseSha256Text(await readFile(checksumPath, "utf8"));
       if (!expected) {
         throw new CliError({
@@ -470,13 +489,18 @@ export async function cmdUpgradeParsed(opts: {
         });
       }
     }
-
-    extractRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-extract-"));
-    await extractArchive({
-      archivePath: bundlePath,
-      destDir: extractRoot,
-    });
-    const bundleRoot = await resolveUpgradeRoot(extractRoot);
+    if (bundleLayout !== "local_assets") {
+      extractRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-extract-"));
+      await extractArchive({
+        archivePath: bundlePath,
+        destDir: extractRoot,
+      });
+      const extractedRoot = await resolveUpgradeRoot(extractRoot);
+      bundleRoot =
+        bundleLayout === "repo_tarball"
+          ? path.join(extractedRoot, "packages", "agentplane", "assets")
+          : extractedRoot;
+    }
     const manifest = await loadFrameworkManifest();
 
     const additions: string[] = [];
@@ -617,8 +641,8 @@ export async function cmdUpgradeParsed(opts: {
     }
 
     const raw = { ...loaded.raw };
-    if (!sourceFromFlags && normalized.migrated) {
-      setByDottedKey(raw, "framework.source", source);
+    if (normalizedSourceToPersist) {
+      setByDottedKey(raw, "framework.source", normalizedSourceToPersist);
     }
     setByDottedKey(raw, "framework.last_update", new Date().toISOString());
     await saveConfig(resolved.agentplaneDir, raw);

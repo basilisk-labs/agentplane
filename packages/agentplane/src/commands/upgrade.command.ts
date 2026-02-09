@@ -9,8 +9,14 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
   group: "Setup",
   summary: "Upgrade the local agentplane framework bundle in the repo.",
   description:
-    "Downloads (or reads) an upgrade bundle, verifies checksum, and applies allowed files into the repo. Network access is gated by config approvals; use --yes when allowed.",
+    "Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade uses the locally installed agentplane package assets (no network). Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.",
   options: [
+    {
+      kind: "boolean",
+      name: "remote",
+      default: false,
+      description: "Fetch the framework bundle from GitHub releases (requires network approvals).",
+    },
     {
       kind: "string",
       name: "tag",
@@ -69,11 +75,11 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
   examples: [
     {
       cmd: "agentplane upgrade",
-      why: "Upgrade to the latest release using config.framework.source.",
+      why: "Upgrade using the locally installed agentplane package assets (no network).",
     },
     {
-      cmd: "agentplane upgrade --tag v0.1.9 --dry-run",
-      why: "Preview changes for a specific release tag.",
+      cmd: "agentplane upgrade --remote --tag v0.1.9 --dry-run",
+      why: "Preview changes for a specific GitHub release tag.",
     },
     {
       cmd: "agentplane upgrade --bundle ./agentplane-upgrade.tar.gz --checksum ./agentplane-upgrade.tar.gz.sha256",
@@ -83,6 +89,7 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
   parse: (raw) => {
     const noBackup = raw.opts["no-backup"] === true;
     return {
+      remote: raw.opts.remote === true,
       source: raw.opts.source as string | undefined,
       tag: raw.opts.tag as string | undefined,
       bundle: raw.opts.bundle as string | undefined,
@@ -102,6 +109,17 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
         spec: upgradeSpec,
         command: "upgrade",
         message: "Options --bundle and --checksum must be provided together (or omitted together).",
+      });
+    }
+
+    const hasRemoteHints =
+      Boolean(p.source) || Boolean(p.tag) || Boolean(p.asset) || Boolean(p.checksumAsset);
+    if (!p.remote && hasRemoteHints && !hasBundle) {
+      throw usageError({
+        spec: upgradeSpec,
+        command: "upgrade",
+        message:
+          "Remote upgrade options (--tag/--source/--asset/--checksum-asset) require --remote.",
       });
     }
   },
