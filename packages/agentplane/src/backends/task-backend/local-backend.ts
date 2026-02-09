@@ -84,60 +84,70 @@ export class LocalBackend implements TaskBackend {
     }
     const nextIndex: TaskIndexEntry[] = [];
     const seen = new Set<string>();
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      const readme = path.join(this.root, entry.name, "README.md");
+
+    // Deterministic ordering helps both users and tests; keep I/O bounded to avoid storms.
+    const dirs = entries
+      .filter((e) => e.isDirectory())
+      .map((e) => e.name)
+      .toSorted();
+
+    type ListTaskResult = {
+      task: TaskData;
+      index: TaskIndexEntry | null;
+      mtimeMs: number;
+      readme: string;
+    };
+
+    const results = await mapLimit<string, ListTaskResult | null>(dirs, 32, async (dirName) => {
+      const readme = path.join(this.root, dirName, "README.md");
       let stats;
       try {
         stats = await stat(readme);
       } catch {
-        continue;
+        return null;
       }
-      if (!stats.isFile()) continue;
+      if (!stats.isFile()) return null;
+
       const cached = cachedByPath.get(readme);
       if (cached?.mtimeMs === stats.mtimeMs) {
-        const taskId = cached.task.id.trim();
-        if (taskId) {
-          validateTaskId(taskId);
-          if (seen.has(taskId)) {
-            throw new Error(`Duplicate task id in local backend: ${taskId}`);
-          }
-          seen.add(taskId);
-        }
-        tasks.push(cached.task);
-        nextIndex.push(cached);
-        continue;
+        return { task: cached.task, index: cached, mtimeMs: stats.mtimeMs, readme };
       }
+
       let text = "";
       try {
         text = await readFile(readme, "utf8");
       } catch {
-        continue;
+        return null;
       }
       let parsed;
       try {
         parsed = parseTaskReadme(text);
       } catch {
-        continue;
+        return null;
       }
       const fm = parsed.frontmatter;
-      if (!isRecord(fm) || Object.keys(fm).length === 0) continue;
-      const taskId = (typeof fm.id === "string" ? fm.id : entry.name).trim();
-      if (taskId) {
-        validateTaskId(taskId);
-        if (seen.has(taskId)) {
-          throw new Error(`Duplicate task id in local backend: ${taskId}`);
-        }
-        seen.add(taskId);
-      }
+      if (!isRecord(fm) || Object.keys(fm).length === 0) return null;
+      const taskId = (typeof fm.id === "string" ? fm.id : dirName).trim();
       const task = taskRecordToData({
         id: taskId,
         frontmatter: fm as unknown as TaskRecord["frontmatter"],
         body: parsed.body,
         readmePath: readme,
       });
-      tasks.push(task);
-      nextIndex.push(buildTaskIndexEntry(task, readme, stats.mtimeMs));
+      return { task, index: null, mtimeMs: stats.mtimeMs, readme };
+    });
+
+    for (const res of results) {
+      if (!res) continue;
+      const taskId = res.task.id.trim();
+      if (taskId) {
+        validateTaskId(taskId);
+        if (seen.has(taskId)) throw new Error(`Duplicate task id in local backend: ${taskId}`);
+        seen.add(taskId);
+      }
+      tasks.push(res.task);
+      if (res.index) nextIndex.push(res.index);
+      else nextIndex.push(buildTaskIndexEntry(res.task, res.readme, res.mtimeMs));
     }
     try {
       await saveTaskIndex(indexPath, { schema_version: 1, tasks: nextIndex });
