@@ -14,7 +14,8 @@ export type WorkStartParsed = {
 export const workStartSpec: CommandSpec<WorkStartParsed> = {
   id: ["work", "start"],
   group: "Work",
-  summary: "Create or switch to the task branch (optionally via git worktree).",
+  summary:
+    "Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).",
   args: [
     { name: "task-id", required: true, valueHint: "<task-id>", description: "Existing task id." },
   ],
@@ -47,10 +48,11 @@ export const workStartSpec: CommandSpec<WorkStartParsed> = {
   examples: [
     {
       cmd: "agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli",
-      why: "Start work by checking out / creating the branch in-place (direct mode).",
+      why: "Start work (direct mode records the active task; branch_pr uses a dedicated task branch/worktree).",
     },
   ],
   notes: [
+    "When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.",
     "When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.",
   ],
   parse: (raw) => ({

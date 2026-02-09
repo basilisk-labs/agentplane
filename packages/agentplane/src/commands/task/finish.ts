@@ -3,6 +3,8 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
+import { readFile, rm } from "node:fs/promises";
+import path from "node:path";
 
 import { commitFromComment } from "../guard/index.js";
 import {
@@ -22,6 +24,23 @@ import {
   readHeadCommit,
   requireStructuredComment,
 } from "./shared.js";
+
+async function clearDirectWorkLockIfMatches(opts: {
+  agentplaneDir: string;
+  taskIds: string[];
+}): Promise<void> {
+  const lockPath = path.join(opts.agentplaneDir, "cache", "direct-work.json");
+  try {
+    const text = await readFile(lockPath, "utf8");
+    const parsed = JSON.parse(text) as { task_id?: unknown } | null;
+    const lockTaskId = parsed && typeof parsed.task_id === "string" ? parsed.task_id : null;
+    if (!lockTaskId) return;
+    if (!opts.taskIds.includes(lockTaskId)) return;
+    await rm(lockPath, { force: true });
+  } catch {
+    // best-effort
+  }
+}
 
 export async function cmdFinish(opts: {
   ctx?: CommandContext;
@@ -222,6 +241,13 @@ export async function cmdFinish(opts: {
         requireClean: opts.statusCommitRequireClean,
         quiet: opts.quiet,
         config: ctx.config,
+      });
+    }
+
+    if (ctx.config.workflow_mode === "direct") {
+      await clearDirectWorkLockIfMatches({
+        agentplaneDir: ctx.resolvedProject.agentplaneDir,
+        taskIds: opts.taskIds,
       });
     }
 

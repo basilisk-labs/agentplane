@@ -107,7 +107,7 @@ Commands:
     task verify rework  Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
     task verify-show  Print the task Verify Steps section (alias for task doc show --section "Verify Steps").
   Work:
-    work start  Create or switch to the task branch (optionally via git worktree).
+    work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
 "
 `;
 
@@ -161,7 +161,7 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
   "examples": [
     {
       "cmd": "agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli",
-      "why": "Start work by checking out / creating the branch in-place (direct mode).",
+      "why": "Start work (direct mode records the active task; branch_pr uses a dedicated task branch/worktree).",
     },
   ],
   "group": "Work",
@@ -170,6 +170,7 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
     "start",
   ],
   "notes": [
+    "When workflow_mode=direct, agentplane does not create task branches; it records a single active task for the workspace.",
     "When workflow_mode=branch_pr, --worktree is required and the command must be run on the base branch.",
   ],
   "options": [
@@ -196,7 +197,7 @@ exports[`runCli help snapshots (cli2) > help work start --json snapshot 1`] = `
       "name": "worktree",
     },
   ],
-  "summary": "Create or switch to the task branch (optionally via git worktree).",
+  "summary": "Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).",
   "usage": [
     "agentplane work start <task-id> --agent <ID> --slug <slug> [options]",
   ],

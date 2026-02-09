@@ -230,7 +230,7 @@ describe("runCli", () => {
 
     await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
     const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["add", "."], { cwd: root });
     await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
     let taskId = "";
@@ -279,7 +279,14 @@ describe("runCli", () => {
     }
 
     const { stdout } = await execFileAsync("git", ["branch", "--show-current"], { cwd: root });
-    expect(stdout.trim()).toBe(`task/${taskId}/work-start`);
+    expect(stdout.trim()).toBe("main");
+
+    const lockText = await readFile(
+      path.join(root, ".agentplane", "cache", "direct-work.json"),
+      "utf8",
+    );
+    const lock = JSON.parse(lockText) as { task_id?: unknown };
+    expect(lock.task_id).toBe(taskId);
   });
 
   it("work start rejects --worktree in direct mode", async () => {

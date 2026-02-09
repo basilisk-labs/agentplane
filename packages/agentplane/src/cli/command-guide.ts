@@ -106,7 +106,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "CODER",
     lines: [
-      "- direct mode: work in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` creates/checks out `task/<task-id>/<slug>` in-place (no worktree). Use `agentplane task scaffold <task-id>` for docs without switching branches.",
+      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `agentplane task scaffold <task-id>` for docs without switching context.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       "- Verify Steps: `agentplane task verify-show <task-id>` (use as the verification contract before recording results).",
@@ -118,7 +118,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "TESTER",
     lines: [
-      "- direct mode: work in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` creates/checks out `task/<task-id>/<slug>` in-place (no worktree). Use `agentplane task scaffold <task-id>` for docs without switching branches.",
+      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `agentplane task scaffold <task-id>` for docs without switching context.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       "- Verify Steps: `agentplane task verify-show <task-id>` (treat as the verification contract).",
