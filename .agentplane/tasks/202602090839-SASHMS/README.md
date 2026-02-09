@@ -1,7 +1,8 @@
 ---
 id: "202602090839-SASHMS"
 title: "Release v0.2.0"
-status: "DOING"
+result_summary: "Release v0.2.0 tagged"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
 depends_on: []
@@ -16,15 +17,20 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-02-09T08:45:14.009Z"
+  updated_by: "INTEGRATOR"
+  note: "Prepared release v0.2.0: added docs/releases/v0.2.0.md, bumped packages/core + packages/agentplane to 0.2.0 and updated dependency, fixed init tests to assert against getVersion(). Validated scripts/check-release-notes + scripts/check-release-version; bun run lint/test:full/coverage PASS. Release tag v0.2.0 created at b317676e38c0."
+commit:
+  hash: "b317676e38c02c4e418640cfe17d19657a23d304"
+  message: "✅ SASHMS release: v0.2.0"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Prepare v0.2.0 release (notes + version bumps + validation), tag v0.2.0, and push to trigger publish workflow."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: Prepared v0.2.0 (release notes + version bumps + validation scripts); fixed version-coupled init tests; created annotated git tag v0.2.0 at the release commit; full lint/test:full/coverage pass."
 events:
   -
     type: "status"
@@ -33,8 +39,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Prepare v0.2.0 release (notes + version bumps + validation), tag v0.2.0, and push to trigger publish workflow."
+  -
+    type: "verify"
+    at: "2026-02-09T08:45:14.009Z"
+    author: "INTEGRATOR"
+    state: "ok"
+    note: "Prepared release v0.2.0: added docs/releases/v0.2.0.md, bumped packages/core + packages/agentplane to 0.2.0 and updated dependency, fixed init tests to assert against getVersion(). Validated scripts/check-release-notes + scripts/check-release-version; bun run lint/test:full/coverage PASS. Release tag v0.2.0 created at b317676e38c0."
+  -
+    type: "status"
+    at: "2026-02-09T08:45:24.028Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Prepared v0.2.0 (release notes + version bumps + validation scripts); fixed version-coupled init tests; created annotated git tag v0.2.0 at the release commit; full lint/test:full/coverage pass."
 doc_version: 2
-doc_updated_at: "2026-02-09T08:40:35.956Z"
+doc_updated_at: "2026-02-09T08:45:24.028Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and push release v0.2.0: bump package versions (core + agentplane), add release notes docs/releases/v0.2.0.md, run validation scripts, create git tag v0.2.0, and push tag to trigger publish workflow."
 id_source: "generated"
@@ -75,6 +94,14 @@ id_source: "generated"
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-09T08:45:14.009Z — VERIFY — ok
+
+By: INTEGRATOR
+
+Note: Prepared release v0.2.0: added docs/releases/v0.2.0.md, bumped packages/core + packages/agentplane to 0.2.0 and updated dependency, fixed init tests to assert against getVersion(). Validated scripts/check-release-notes + scripts/check-release-version; bun run lint/test:full/coverage PASS. Release tag v0.2.0 created at b317676e38c0.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:40:35.956Z, excerpt_hash=sha256:9e571588255081db7b0763d4c70bee03ed0d89ab934456809c4412bc419c258b
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
