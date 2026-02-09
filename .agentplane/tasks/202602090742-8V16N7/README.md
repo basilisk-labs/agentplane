@@ -1,7 +1,8 @@
 ---
 id: "202602090742-8V16N7"
 title: "Coverage: add unit tests for task verify-record"
-status: "DOING"
+result_summary: "verify-record coverage improved"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-02-09T07:49:24.448Z"
   updated_by: "TESTER"
   note: "verify-record.unit tests added; bun run lint PASS; bun run test:full PASS; bun run coverage PASS (branches 72.43%)."
-commit: null
+commit:
+  hash: "9526a9e3a0f1ab1a1d9f857ac0bf12384b27d517"
+  message: "✅ 8V16N7 test: add verify-record unit coverage"
 comments:
   -
     author: "TESTER"
     body: "Start: Add unit tests for verify-record to cover key branches and reduce missed coverage in core task lifecycle paths."
+  -
+    author: "TESTER"
+    body: "Verified: verify-record.unit tests added; bun run lint/test:full/coverage pass (branches 72.43%)."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "verify-record.unit tests added; bun run lint PASS; bun run test:full PASS; bun run coverage PASS (branches 72.43%)."
+  -
+    type: "status"
+    at: "2026-02-09T07:50:32.693Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: verify-record.unit tests added; bun run lint/test:full/coverage pass (branches 72.43%)."
 doc_version: 2
-doc_updated_at: "2026-02-09T07:49:24.449Z"
+doc_updated_at: "2026-02-09T07:50:32.693Z"
 doc_updated_by: "TESTER"
 description: "Add focused unit tests for packages/agentplane/src/commands/task/verify-record.ts to reduce missed branches and lock down semantics."
 id_source: "generated"
