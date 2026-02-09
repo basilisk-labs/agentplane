@@ -2,8 +2,8 @@ import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import { cmdTaskList } from "./list.js";
 import type { TaskListFilters } from "./shared.js";
+import { taskListUsecase } from "../../usecases/task/task-list-usecase.js";
 
 export type TaskListParsed = { filters: TaskListFilters };
 
@@ -65,10 +65,9 @@ export const taskListSpec: CommandSpec<TaskListParsed> = {
 
 export function makeRunTaskListHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: TaskListParsed): Promise<number> => {
-    return await cmdTaskList({
-      ctx: await getCtx("task list"),
-      cwd: ctx.cwd,
-      rootOverride: ctx.rootOverride,
+    return await taskListUsecase({
+      cli: ctx,
+      command: await getCtx("task list"),
       filters: p.filters,
     });
   };

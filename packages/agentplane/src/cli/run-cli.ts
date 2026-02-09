@@ -18,7 +18,8 @@ import {
 } from "./update-check.js";
 import { loadDotEnv } from "../shared/env.js";
 import { CliError, formatJsonError } from "../shared/errors.js";
-import { loadCommandContext, type CommandContext } from "../commands/shared/task-backend.js";
+import type { CommandContext } from "../commands/shared/task-backend.js";
+import { resolveContext } from "../usecases/context/resolve-context.js";
 import { getVersion } from "../meta/version.js";
 import { parseCommandArgv } from "./spec/parse.js";
 import { helpSpec } from "./spec/help.js";
@@ -415,7 +416,7 @@ export async function runCli(argv: string[]): Promise<number> {
 
     let ctxPromise: Promise<CommandContext> | null = null;
     const getCtx = async (commandForErrorContext: string): Promise<CommandContext> => {
-      ctxPromise ??= loadCommandContext({ cwd, rootOverride: globals.root ?? null });
+      ctxPromise ??= resolveContext({ cwd, rootOverride: globals.root ?? null });
       try {
         return await ctxPromise;
       } catch (err) {
