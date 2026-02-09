@@ -1,7 +1,8 @@
 ---
 id: "202602091011-14085V"
 title: "Release v0.2.2"
-status: "DOING"
+result_summary: "Tagged and prepared v0.2.2 for publish"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-02-09T10:12:59.089Z"
   updated_by: "INTEGRATOR"
   note: "node scripts/check-release-notes.mjs --tag v0.2.2; node scripts/check-release-version.mjs --tag v0.2.2; bun run test:full"
-commit: null
+commit:
+  hash: "5f3c7026390df744e5544f332e5118b056745a58"
+  message: "✅ 14085V release: v0.2.2"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Prepare and publish v0.2.2 (versions, release notes, tag) after validating release check scripts and tests are green."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: node scripts/check-release-notes.mjs --tag v0.2.2; node scripts/check-release-version.mjs --tag v0.2.2; bun run test:full; version bumps and release notes committed."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "node scripts/check-release-notes.mjs --tag v0.2.2; node scripts/check-release-version.mjs --tag v0.2.2; bun run test:full"
+  -
+    type: "status"
+    at: "2026-02-09T10:15:43.929Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: node scripts/check-release-notes.mjs --tag v0.2.2; node scripts/check-release-version.mjs --tag v0.2.2; bun run test:full; version bumps and release notes committed."
 doc_version: 2
-doc_updated_at: "2026-02-09T10:12:59.091Z"
+doc_updated_at: "2026-02-09T10:15:43.929Z"
 doc_updated_by: "INTEGRATOR"
 description: "Cut patch release v0.2.2 containing upgrade tarball_url fallback when release assets are missing."
 id_source: "generated"
