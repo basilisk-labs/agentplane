@@ -57,4 +57,9 @@ describe("upgradeSpec parsing/validation", () => {
       expect(err).toMatchObject({ code: "E_USAGE" });
     }
   });
+
+  it("parses --allow-tarball", () => {
+    const out = parseCommandArgv(upgradeSpec, ["--remote", "--allow-tarball"]);
+    expect(out.parsed.allowTarball).toBe(true);
+  });
 });

@@ -18,6 +18,13 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
       description: "Fetch the framework bundle from GitHub releases (requires network approvals).",
     },
     {
+      kind: "boolean",
+      name: "allow-tarball",
+      default: false,
+      description:
+        "Allow falling back to a GitHub repo tarball when release assets are missing (no checksum verification).",
+    },
+    {
       kind: "string",
       name: "tag",
       valueHint: "<tag>",
@@ -90,6 +97,7 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
     const noBackup = raw.opts["no-backup"] === true;
     return {
       remote: raw.opts.remote === true,
+      allowTarball: raw.opts["allow-tarball"] === true,
       source: raw.opts.source as string | undefined,
       tag: raw.opts.tag as string | undefined,
       bundle: raw.opts.bundle as string | undefined,

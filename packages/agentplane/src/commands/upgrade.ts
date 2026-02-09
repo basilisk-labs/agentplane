@@ -40,12 +40,15 @@ export type UpgradeFlags = {
   checksum?: string;
   asset?: string;
   checksumAsset?: string;
+  remote: boolean;
+  allowTarball: boolean;
   dryRun: boolean;
   backup: boolean;
   yes: boolean;
 };
 
 type GitHubRelease = {
+  tag_name?: string;
   assets?: { name?: string; browser_download_url?: string }[];
   tarball_url?: string;
 };
@@ -154,6 +157,37 @@ export function resolveUpgradeDownloadFromRelease(opts: {
     });
   }
   return { kind: "tarball", tarballUrl };
+}
+
+function buildCodeloadTarGzUrl(opts: { owner: string; repo: string; tag: string }): string {
+  // Prefer codeload over api.github.com tarball_url. It is less brittle and does not require
+  // GitHub API-specific behavior/rate limits.
+  const tag = opts.tag.trim();
+  if (!tag) throw new Error("tag is required");
+  return `https://codeload.github.com/${opts.owner}/${opts.repo}/tar.gz/${encodeURIComponent(tag)}`;
+}
+
+export function resolveRepoTarballUrl(opts: {
+  release: GitHubRelease;
+  owner: string;
+  repo: string;
+  explicitTag?: string;
+}): string {
+  const tag =
+    (typeof opts.explicitTag === "string" && opts.explicitTag.trim()) ||
+    (typeof opts.release.tag_name === "string" && opts.release.tag_name.trim()) ||
+    "";
+  if (tag) return buildCodeloadTarGzUrl({ owner: opts.owner, repo: opts.repo, tag });
+
+  const tarballUrl = typeof opts.release.tarball_url === "string" ? opts.release.tarball_url : "";
+  if (tarballUrl) return tarballUrl;
+
+  throw new CliError({
+    exitCode: exitCodeForError("E_NETWORK"),
+    code: "E_NETWORK",
+    message:
+      "GitHub release did not provide tag_name or tarball_url; cannot fall back to repo tarball.",
+  });
 }
 
 async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
@@ -493,14 +527,29 @@ export async function cmdUpgradeParsed(opts: {
         await downloadToFile(download.bundleUrl, bundlePath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
         await downloadToFile(download.checksumUrl, checksumPath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
       } else {
+        if (!flags.allowTarball) {
+          throw new CliError({
+            exitCode: exitCodeForError("E_NETWORK"),
+            code: "E_NETWORK",
+            message:
+              `Upgrade assets ${assetName}/${checksumName} not found in ${owner}/${repo} release. ` +
+              "Publish the upgrade bundle assets, or re-run with --allow-tarball to download a repo tarball (no checksum verification).",
+          });
+        }
         process.stderr.write(
           `${warnMessage(
-            `upgrade release does not include ${assetName}/${checksumName}; falling back to tarball_url without checksum verification`,
+            `upgrade release does not include ${assetName}/${checksumName}; falling back to repo tarball without checksum verification`,
           )}\n`,
         );
         bundleLayout = "repo_tarball";
         bundlePath = path.join(tempRoot, "source.tar.gz");
-        await downloadToFile(download.tarballUrl, bundlePath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
+        const tarballUrl = resolveRepoTarballUrl({
+          release,
+          owner,
+          repo,
+          explicitTag: flags.tag,
+        });
+        await downloadToFile(tarballUrl, bundlePath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
         checksumPath = "";
       }
     }

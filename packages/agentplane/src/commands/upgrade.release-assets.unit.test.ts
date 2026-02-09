@@ -23,7 +23,7 @@ describe("resolveUpgradeDownloadFromRelease", () => {
     }
   });
 
-  it("falls back to tarball_url when assets are missing", () => {
+  it("returns tarball_url when assets are missing (caller may gate usage)", () => {
     const out = resolveUpgradeDownloadFromRelease({
       release: { assets: [], tarball_url: "https://x/tarball" },
       owner: "basilisk-labs",
