@@ -64,6 +64,13 @@ Execution agents are defined by JSON files under `.agentplane/agents/*.json`. Th
 - Current: warn-only in CLI (`task new` / `task update`) when `owner` does not exist in `.agentplane/agents`.
 - Planned: upgrade to lint/CI gate once the workflow is stable.
 
+## Local Overrides (preserved across upgrades)
+
+Add any repository-specific policy additions below. `agentplane upgrade` will preserve the content between the markers when installing a new framework version.
+
+<!-- AGENTPLANE:LOCAL-START -->
+<!-- AGENTPLANE:LOCAL-END -->
+
 ## Definitions (remove ambiguity)
 
 - **Read-only inspection**: commands that may read repo state but must not change tracked files or commit history.

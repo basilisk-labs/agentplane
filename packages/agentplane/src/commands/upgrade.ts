@@ -97,6 +97,201 @@ function isAllowedUpgradePath(relPath: string): boolean {
   return relPath.startsWith(".agentplane/");
 }
 
+const LOCAL_OVERRIDES_START = "<!-- AGENTPLANE:LOCAL-START -->";
+const LOCAL_OVERRIDES_END = "<!-- AGENTPLANE:LOCAL-END -->";
+
+function extractLocalOverridesBlock(text: string): string | null {
+  const start = text.indexOf(LOCAL_OVERRIDES_START);
+  const end = text.indexOf(LOCAL_OVERRIDES_END);
+  if (start === -1 || end === -1 || end < start) return null;
+  return text.slice(start + LOCAL_OVERRIDES_START.length, end).trim();
+}
+
+function withLocalOverridesBlock(base: string, localOverrides: string): string {
+  const start = base.indexOf(LOCAL_OVERRIDES_START);
+  const end = base.indexOf(LOCAL_OVERRIDES_END);
+  if (start === -1 || end === -1 || end < start) {
+    const suffix =
+      "\n\n## Local Overrides (preserved across upgrades)\n\n" +
+      `${LOCAL_OVERRIDES_START}\n` +
+      (localOverrides.trim() ? `${localOverrides.trim()}\n` : "") +
+      `${LOCAL_OVERRIDES_END}\n`;
+    return `${base.trimEnd()}${suffix}`;
+  }
+  const before = base.slice(0, start + LOCAL_OVERRIDES_START.length);
+  const after = base.slice(end);
+  return `${before}\n${localOverrides.trim() ? `${localOverrides.trim()}\n` : ""}${after}`;
+}
+
+function parseH2Sections(text: string): Map<string, string> {
+  const lines = text.replaceAll("\r\n", "\n").split("\n");
+  const sections = new Map<string, string>();
+  let current: string | null = null;
+  let buf: string[] = [];
+
+  const flush = () => {
+    if (!current) return;
+    if (!sections.has(current)) {
+      sections.set(current, buf.join("\n").trimEnd());
+    }
+  };
+
+  for (const line of lines) {
+    const m = /^##\s+(.+?)\s*$/.exec(line);
+    if (m) {
+      flush();
+      current = (m[1] ?? "").trim();
+      buf = [];
+      continue;
+    }
+    if (current) buf.push(line);
+  }
+  flush();
+  return sections;
+}
+
+function mergeAgentsPolicyMarkdown(incoming: string, current: string): string {
+  const local = extractLocalOverridesBlock(current);
+  if (local !== null) {
+    return withLocalOverridesBlock(incoming, local);
+  }
+
+  // Fallback: if the user edited AGENTS.md without the local markers, preserve their changes by
+  // appending differing/extra sections into a dedicated local overrides block.
+  const incomingSections = parseH2Sections(incoming);
+  const currentSections = parseH2Sections(current);
+  const overrides: string[] = [];
+  for (const [title, body] of currentSections.entries()) {
+    const incomingBody = incomingSections.get(title);
+    if (incomingBody === undefined) {
+      overrides.push(`### Added section: ${title}\n\n${body.trim()}\n`);
+      continue;
+    }
+    if (incomingBody.trim() !== body.trim()) {
+      overrides.push(`### Local edits for: ${title}\n\n${body.trim()}\n`);
+    }
+  }
+
+  if (overrides.length === 0) return incoming;
+  return withLocalOverridesBlock(incoming, overrides.join("\n"));
+}
+
+function isJsonRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function mergeAgentJson(incomingText: string, currentText: string): string | null {
+  let incoming: unknown;
+  let current: unknown;
+  try {
+    incoming = JSON.parse(incomingText);
+    current = JSON.parse(currentText);
+  } catch {
+    return null;
+  }
+  if (!isJsonRecord(incoming) || !isJsonRecord(current)) return null;
+
+  const out: Record<string, unknown> = { ...incoming };
+  for (const [k, curVal] of Object.entries(current)) {
+    const incVal = incoming[k];
+    if (incVal === undefined) {
+      out[k] = curVal;
+      continue;
+    }
+    if (Array.isArray(incVal) && Array.isArray(curVal)) {
+      const merged = [...(incVal as unknown[])] as unknown[];
+      for (const item of curVal) {
+        if (!merged.some((x) => JSON.stringify(x) === JSON.stringify(item))) merged.push(item);
+      }
+      out[k] = merged;
+      continue;
+    }
+    if (isJsonRecord(incVal) && isJsonRecord(curVal)) {
+      out[k] = { ...incVal, ...curVal };
+      continue;
+    }
+    if (curVal !== incVal && curVal !== null && curVal !== "") {
+      out[k] = curVal;
+      continue;
+    }
+    out[k] = incVal;
+  }
+
+  return JSON.stringify(out, null, 2) + "\n";
+}
+
+function mergeAgentJson3Way(opts: {
+  incomingText: string;
+  currentText: string;
+  baseText: string;
+}): string | null {
+  let incoming: unknown;
+  let current: unknown;
+  let base: unknown;
+  try {
+    incoming = JSON.parse(opts.incomingText);
+    current = JSON.parse(opts.currentText);
+    base = JSON.parse(opts.baseText);
+  } catch {
+    return null;
+  }
+  if (!isJsonRecord(incoming) || !isJsonRecord(current) || !isJsonRecord(base)) return null;
+
+  const keys = new Set([...Object.keys(incoming), ...Object.keys(current), ...Object.keys(base)]);
+  const out: Record<string, unknown> = {};
+
+  for (const key of keys) {
+    const incVal = incoming[key];
+    const curVal = current[key];
+    const baseVal = base[key];
+
+    // Arrays: always take incoming as base; if user changed vs base, append user-only items.
+    if (Array.isArray(incVal) && Array.isArray(curVal) && Array.isArray(baseVal)) {
+      const merged = [...(incVal as unknown[])] as unknown[];
+      const userChanged = JSON.stringify(curVal) !== JSON.stringify(baseVal);
+      if (userChanged) {
+        for (const item of curVal) {
+          if (!merged.some((x) => JSON.stringify(x) === JSON.stringify(item))) merged.push(item);
+        }
+      }
+      out[key] = merged;
+      continue;
+    }
+
+    // Objects: shallow merge; for each subkey, prefer incoming unless user changed vs base.
+    if (isJsonRecord(incVal) && isJsonRecord(curVal) && isJsonRecord(baseVal)) {
+      const merged: Record<string, unknown> = { ...incVal };
+      const subKeys = new Set([
+        ...Object.keys(incVal),
+        ...Object.keys(curVal),
+        ...Object.keys(baseVal),
+      ]);
+      for (const sk of subKeys) {
+        const incSub = incVal[sk];
+        const curSub = curVal[sk];
+        const baseSub = baseVal[sk];
+        const userChanged = JSON.stringify(curSub) !== JSON.stringify(baseSub);
+        if (userChanged) merged[sk] = curSub;
+        else if (incSub !== undefined) merged[sk] = incSub;
+        else if (curSub !== undefined) merged[sk] = curSub;
+      }
+      out[key] = merged;
+      continue;
+    }
+
+    // Scalars: prefer incoming unless the user changed vs base.
+    if (JSON.stringify(curVal) !== JSON.stringify(baseVal)) {
+      if (curVal !== undefined) out[key] = curVal;
+      else if (incVal !== undefined) out[key] = incVal;
+      continue;
+    }
+    if (incVal !== undefined) out[key] = incVal;
+    else if (curVal !== undefined) out[key] = curVal;
+  }
+
+  return JSON.stringify(out, null, 2) + "\n";
+}
+
 export async function cmdUpgradeParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -219,6 +414,14 @@ export async function cmdUpgradeParsed(opts: {
     const updates: string[] = [];
     const skipped: string[] = [];
     const fileContents = new Map<string, Buffer>();
+    const merged: string[] = [];
+
+    const baselineDir = path.join(resolved.agentplaneDir, "upgrade", "baseline");
+    const toBaselineKey = (rel: string): string | null => {
+      if (rel === "AGENTS.md") return "AGENTS.md";
+      if (rel.startsWith(".agentplane/")) return rel.slice(".agentplane/".length);
+      return null;
+    };
 
     for (const filePath of files) {
       let rel = path.relative(bundleRoot, filePath).replaceAll("\\", "/");
@@ -254,13 +457,49 @@ export async function cmdUpgradeParsed(opts: {
         });
       }
 
-      const data = await readFile(filePath);
+      if (rel === ".agentplane/config.json") {
+        // Never overwrite local config during upgrade.
+        skipped.push(rel);
+        continue;
+      }
+
+      let data = await readFile(filePath);
+
+      if (kind !== null) {
+        const existing = await readFile(destPath, "utf8");
+        if (rel === "AGENTS.md") {
+          const mergedText = mergeAgentsPolicyMarkdown(data.toString("utf8"), existing);
+          data = Buffer.from(mergedText, "utf8");
+          merged.push(rel);
+        } else if (rel.startsWith(".agentplane/agents/") && rel.endsWith(".json")) {
+          const baselineKey = toBaselineKey(rel);
+          let mergedText: string | null = null;
+          if (baselineKey) {
+            try {
+              const baselineText = await readFile(path.join(baselineDir, baselineKey), "utf8");
+              mergedText = mergeAgentJson3Way({
+                incomingText: data.toString("utf8"),
+                currentText: existing,
+                baseText: baselineText,
+              });
+            } catch {
+              mergedText = null;
+            }
+          }
+          mergedText ??= mergeAgentJson(data.toString("utf8"), existing);
+          if (mergedText) {
+            data = Buffer.from(mergedText, "utf8");
+            merged.push(rel);
+          }
+        }
+      }
+
       fileContents.set(rel, data);
       if (kind === null) {
         additions.push(rel);
       } else {
-        const existing = await readFile(destPath);
-        if (Buffer.compare(existing, data) === 0) {
+        const existingBuf = await readFile(destPath);
+        if (Buffer.compare(existingBuf, data) === 0) {
           skipped.push(rel);
         } else {
           updates.push(rel);
@@ -275,7 +514,16 @@ export async function cmdUpgradeParsed(opts: {
       for (const rel of additions) process.stdout.write(`ADD ${rel}\n`);
       for (const rel of updates) process.stdout.write(`UPDATE ${rel}\n`);
       for (const rel of skipped) process.stdout.write(`SKIP ${rel}\n`);
+      for (const rel of merged) process.stdout.write(`MERGE ${rel}\n`);
       return 0;
+    }
+
+    if (skipped.includes(".agentplane/config.json")) {
+      process.stderr.write(
+        `${warnMessage(
+          "upgrade bundle includes .agentplane/config.json; skipping to preserve local configuration",
+        )}\n`,
+      );
     }
 
     for (const rel of [...additions, ...updates]) {
@@ -286,6 +534,14 @@ export async function cmdUpgradeParsed(opts: {
       await mkdir(path.dirname(destPath), { recursive: true });
       const data = fileContents.get(rel);
       if (data) await writeFile(destPath, data);
+
+      // Record a baseline copy for future three-way merges.
+      const baselineKey = toBaselineKey(rel);
+      if (baselineKey && data) {
+        const baselinePath = path.join(baselineDir, baselineKey);
+        await mkdir(path.dirname(baselinePath), { recursive: true });
+        await writeFile(baselinePath, data);
+      }
     }
 
     const raw = { ...loaded.raw };
