@@ -1,8 +1,7 @@
 ---
 id: "202602091430-XNNPBJ"
 title: "Release v0.3.0"
-result_summary: "Tagged and prepared v0.3.0 for publish"
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "INTEGRATOR"
 depends_on: []
@@ -21,16 +20,11 @@ verification:
   updated_at: "2026-02-09T14:32:43.120Z"
   updated_by: "INTEGRATOR"
   note: "node scripts/check-release-notes.mjs --tag v0.3.0; node scripts/check-release-version.mjs --tag v0.3.0; bun run test:full"
-commit:
-  hash: "b13df55bc76e337dad2a5f864180f248731a4b1e"
-  message: "✅ XNNPBJ release: v0.3.0"
+commit: null
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Prepare and publish v0.3.0 (versions, release notes, tag) for the safe upgrade redesign."
-  -
-    author: "INTEGRATOR"
-    body: "Verified: node scripts/check-release-notes.mjs --tag v0.3.0; node scripts/check-release-version.mjs --tag v0.3.0; bun run test:full; version bumps and release notes committed."
 events:
   -
     type: "status"
@@ -45,15 +39,8 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "node scripts/check-release-notes.mjs --tag v0.3.0; node scripts/check-release-version.mjs --tag v0.3.0; bun run test:full"
-  -
-    type: "status"
-    at: "2026-02-09T14:34:13.977Z"
-    author: "INTEGRATOR"
-    from: "DOING"
-    to: "DONE"
-    note: "Verified: node scripts/check-release-notes.mjs --tag v0.3.0; node scripts/check-release-version.mjs --tag v0.3.0; bun run test:full; version bumps and release notes committed."
 doc_version: 2
-doc_updated_at: "2026-02-09T14:34:13.977Z"
+doc_updated_at: "2026-02-09T14:32:43.124Z"
 doc_updated_by: "INTEGRATOR"
 description: "Cut release v0.3.0: safe manifest-based upgrade with local-source default, .agentplane/.upgrade state/lock/baseline, and safety tests."
 id_source: "generated"
