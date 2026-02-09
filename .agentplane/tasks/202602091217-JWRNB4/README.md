@@ -1,7 +1,8 @@
 ---
 id: "202602091217-JWRNB4"
 title: "Upgrade redesign: manifest-based safe upgrade"
-status: "DOING"
+result_summary: "Safe upgrade foundation delivered"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "0fb212509c7de2c51878c7a14d6a4b6ca0562c40"
+  message: "✅ JWRNB4 upgrade: deliver safe upgrade foundations"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: Deliver safe upgrade for live workspaces: strict managed set via manifest, state/baseline/lock under .agentplane/.upgrade, and local (npm-installed) framework source by default."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: See child tasks PEJM0T, FDJE22, T4JSEV, BDKNWJ (lint+tests recorded). Core invariants are in place: manifest-only apply, denylist for user-owned data, local-source default, and .agentplane/.upgrade state/lock/baseline."
 events:
   -
     type: "status"
@@ -33,8 +39,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Deliver safe upgrade for live workspaces: strict managed set via manifest, state/baseline/lock under .agentplane/.upgrade, and local (npm-installed) framework source by default."
+  -
+    type: "status"
+    at: "2026-02-09T14:28:15.084Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: See child tasks PEJM0T, FDJE22, T4JSEV, BDKNWJ (lint+tests recorded). Core invariants are in place: manifest-only apply, denylist for user-owned data, local-source default, and .agentplane/.upgrade state/lock/baseline."
 doc_version: 2
-doc_updated_at: "2026-02-09T14:26:32.136Z"
+doc_updated_at: "2026-02-09T14:28:15.084Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement a deterministic, safe upgrade pipeline: strict managed-file manifest, baseline-backed 3-way merges, lock/state under .agentplane/.upgrade, and local framework source (npm-installed) by default."
 id_source: "generated"
