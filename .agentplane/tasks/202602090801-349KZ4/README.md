@@ -1,7 +1,8 @@
 ---
 id: "202602090801-349KZ4"
 title: "CLI refactor: command catalog + fast help groundwork"
-status: "TODO"
+result_summary: "Initial CLI refactor tranche validated"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -15,15 +16,43 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-02-09T08:09:46.370Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Validated current CLI already includes: command catalog, split registry, lazy handler imports, prescanJsonErrors + regression test. Ran bun run test:full (784 tests) and bun run coverage (branches 72.78%) PASS."
+commit:
+  hash: "18dc0161ca263686642d1b72f68520cee9d8ed31"
+  message: "✅ H3DVFH close: noop (already implemented)"
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: Track initial CLI refactor steps; reconcile requested tasks with current codebase state; close as verified once validated."
+  -
+    author: "ORCHESTRATOR"
+    body: "Verified: Confirmed core refactor steps (catalog + lazy imports + split registry + json prescan) are already present; full test and coverage runs pass."
+events:
+  -
+    type: "status"
+    at: "2026-02-09T08:09:46.120Z"
+    author: "ORCHESTRATOR"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Track initial CLI refactor steps; reconcile requested tasks with current codebase state; close as verified once validated."
+  -
+    type: "verify"
+    at: "2026-02-09T08:09:46.370Z"
+    author: "ORCHESTRATOR"
+    state: "ok"
+    note: "Validated current CLI already includes: command catalog, split registry, lazy handler imports, prescanJsonErrors + regression test. Ran bun run test:full (784 tests) and bun run coverage (branches 72.78%) PASS."
+  -
+    type: "status"
+    at: "2026-02-09T08:09:46.639Z"
+    author: "ORCHESTRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Confirmed core refactor steps (catalog + lazy imports + split registry + json prescan) are already present; full test and coverage runs pass."
 doc_version: 2
-doc_updated_at: "2026-02-09T08:03:15.446Z"
+doc_updated_at: "2026-02-09T08:09:46.639Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Tracking task for initial CLI refactor steps: fix json error-mode edge case; add registry consistency guards; introduce a single command catalog; split help/run registries to avoid heavy imports."
 id_source: "generated"
@@ -70,6 +99,17 @@ Out-of-scope (на этом этапе):
 ## Verification
 
 Pending.
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-09T08:09:46.370Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Validated current CLI already includes: command catalog, split registry, lazy handler imports, prescanJsonErrors + regression test. Ran bun run test:full (784 tests) and bun run coverage (branches 72.78%) PASS.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:09:46.120Z, excerpt_hash=sha256:f5457b97e854b607f7ea322044a312d32868d862de5b3039fe24000045b71c1c
+
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
