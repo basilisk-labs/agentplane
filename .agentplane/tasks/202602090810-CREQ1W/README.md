@@ -1,7 +1,8 @@
 ---
 id: "202602090810-CREQ1W"
 title: "CLI UX: introduce --json-errors to disambiguate --json"
-status: "DOING"
+result_summary: "Added --json-errors"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-09T08:13:55.903Z"
   updated_by: "CODER"
   note: "Implemented --json-errors scoped global flag for JSON error output; kept existing --json behavior. Added run-cli.core.test coverage for --json-errors; bun run lint PASS; bun run test:full PASS; bun run coverage PASS."
-commit: null
+commit:
+  hash: "b44c8fdb248ead603c236f4cc91d47d08778da43"
+  message: "✅ CREQ1W cli: add --json-errors global flag"
 comments:
   -
     author: "CODER"
     body: "Start: Add --json-errors global flag for JSON error output; keep help --json for JSON help; update prescan/parser and tests."
+  -
+    author: "CODER"
+    body: "Verified: Added --json-errors as an explicit (scoped-global) flag for JSON error output; kept existing --json behavior for backwards compatibility and help --json. Updated run-cli.core.test coverage; lint/test:full/coverage pass."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Implemented --json-errors scoped global flag for JSON error output; kept existing --json behavior. Added run-cli.core.test coverage for --json-errors; bun run lint PASS; bun run test:full PASS; bun run coverage PASS."
+  -
+    type: "status"
+    at: "2026-02-09T08:14:41.793Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Added --json-errors as an explicit (scoped-global) flag for JSON error output; kept existing --json behavior for backwards compatibility and help --json. Updated run-cli.core.test coverage; lint/test:full/coverage pass."
 doc_version: 2
-doc_updated_at: "2026-02-09T08:13:55.905Z"
+doc_updated_at: "2026-02-09T08:14:41.793Z"
 doc_updated_by: "CODER"
 description: "Implement a dedicated global flag --json-errors for machine-readable error output, keep help --json semantics for JSON help output, and update tests/docs accordingly."
 id_source: "generated"
