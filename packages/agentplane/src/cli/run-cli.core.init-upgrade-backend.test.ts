@@ -26,6 +26,7 @@ import {
 
 import { runCli } from "./run-cli.js";
 import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
+import { getVersion } from "../meta/version.js";
 import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
@@ -249,7 +250,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    expect(subject.trim()).toContain("agentplane 0.1.9");
+    expect(subject.trim()).toContain(`agentplane ${getVersion()}`);
 
     const { stdout: baseBranch } = await execFileAsync(
       "git",
@@ -345,7 +346,7 @@ describe("runCli", () => {
       cwd: root,
       env: cleanGitEnv(),
     });
-    expect(subject.trim()).toContain("agentplane 0.1.9");
+    expect(subject.trim()).toContain(`agentplane ${getVersion()}`);
 
     const { stdout: baseBranch } = await execFileAsync(
       "git",
