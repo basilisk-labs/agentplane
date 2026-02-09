@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "source_path": "AGENTS.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/CODER.json",
+      "source_path": "agents/CODER.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/CREATOR.json",
+      "source_path": "agents/CREATOR.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/DOCS.json",
+      "source_path": "agents/DOCS.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/INTEGRATOR.json",
+      "source_path": "agents/INTEGRATOR.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/ORCHESTRATOR.json",
+      "source_path": "agents/ORCHESTRATOR.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/PLANNER.json",
+      "source_path": "agents/PLANNER.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/REDMINE.json",
+      "source_path": "agents/REDMINE.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/REVIEWER.json",
+      "source_path": "agents/REVIEWER.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/TESTER.json",
+      "source_path": "agents/TESTER.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/UPDATER.json",
+      "source_path": "agents/UPDATER.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/agents/UPGRADER.json",
+      "source_path": "agents/UPGRADER.json",
+      "type": "json",
+      "merge_strategy": "agent_json_3way",
+      "required": true
+    }
+  ]
+}

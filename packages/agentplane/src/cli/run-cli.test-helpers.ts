@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { access, cp, mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { afterAll, beforeAll } from "vitest";
 
@@ -365,10 +366,40 @@ export async function createUpgradeBundle(files: Record<string, string>): Promis
   bundlePath: string;
   checksumPath: string;
 }> {
+  const manifestUrl = new URL("../../assets/framework.manifest.json", import.meta.url);
+  const manifestText = await readFile(fileURLToPath(manifestUrl), "utf8");
+  const manifest = JSON.parse(manifestText) as {
+    schema_version?: number;
+    files?: { path?: string; source_path?: string; type?: string; required?: boolean }[];
+  };
+
+  const normalizedFiles: Record<string, string> = {};
+  for (const [relPath, content] of Object.entries(files)) {
+    // Tests historically authored bundles using workspace-destination paths. Upgrade now reads
+    // upstream files via manifest source_path (package assets layout).
+    const mapped = relPath.startsWith(".agentplane/agents/")
+      ? relPath.replace(/^\.agentplane\/agents\//, "agents/")
+      : relPath;
+    normalizedFiles[mapped] = content;
+  }
+
+  if (manifest.schema_version === 1 && Array.isArray(manifest.files)) {
+    for (const entry of manifest.files) {
+      if (!entry?.required) continue;
+      const sourceRel = (entry.source_path ?? entry.path ?? "").trim();
+      if (!sourceRel) continue;
+      if (normalizedFiles[sourceRel] !== undefined) continue;
+
+      if (entry.type === "json") normalizedFiles[sourceRel] = "{}\n";
+      else if (sourceRel.endsWith(".md")) normalizedFiles[sourceRel] = "# AGENTS\n";
+      else normalizedFiles[sourceRel] = "\n";
+    }
+  }
+
   const baseDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-bundle-"));
   const bundleDir = path.join(baseDir, "bundle");
   await mkdir(bundleDir, { recursive: true });
-  for (const [relPath, content] of Object.entries(files)) {
+  for (const [relPath, content] of Object.entries(normalizedFiles)) {
     const fullPath = path.join(bundleDir, relPath);
     await mkdir(path.dirname(fullPath), { recursive: true });
     await writeFile(fullPath, content, "utf8");

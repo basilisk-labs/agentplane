@@ -1,6 +1,7 @@
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { loadConfig, resolveProject, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
@@ -38,6 +39,42 @@ type GitHubRelease = {
   assets?: { name?: string; browser_download_url?: string }[];
   tarball_url?: string;
 };
+
+type FrameworkManifest = {
+  schema_version: 1;
+  files: FrameworkManifestEntry[];
+};
+
+type FrameworkManifestEntry = {
+  path: string;
+  source_path?: string;
+  type: "markdown" | "json" | "text";
+  merge_strategy: "agents_policy_markdown" | "agent_json_3way" | "agent_json_merge";
+  required?: boolean;
+};
+
+const MANIFEST_URL = new URL("../../assets/framework.manifest.json", import.meta.url);
+
+async function loadFrameworkManifest(): Promise<FrameworkManifest> {
+  const text = await readFile(fileURLToPath(MANIFEST_URL), "utf8");
+  const parsed = JSON.parse(text) as FrameworkManifest;
+  if (parsed?.schema_version !== 1 || !Array.isArray(parsed?.files)) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: "Invalid framework.manifest.json (expected schema_version=1 and files array).",
+    });
+  }
+  return parsed;
+}
+
+function isDeniedUpgradePath(relPath: string): boolean {
+  if (relPath === ".agentplane/config.json") return true;
+  if (relPath.startsWith(".agentplane/tasks/")) return true;
+  if (relPath.startsWith(".agentplane/.upgrade/")) return true;
+  if (relPath === ".git" || relPath.startsWith(".git/")) return true;
+  return false;
+}
 
 function parseGitHubRepo(source: string): { owner: string; repo: string } {
   const trimmed = source.trim();
@@ -113,20 +150,6 @@ async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
     return path.join(extractedDir, dirs[0]);
   }
   return extractedDir;
-}
-
-async function listFilesRecursive(rootDir: string): Promise<string[]> {
-  const out: string[] = [];
-  const entries = await readdir(rootDir, { withFileTypes: true });
-  for (const entry of entries) {
-    const fullPath = path.join(rootDir, entry.name);
-    if (entry.isDirectory()) {
-      out.push(...(await listFilesRecursive(fullPath)));
-    } else if (entry.isFile()) {
-      out.push(fullPath);
-    }
-  }
-  return out;
 }
 
 function isAllowedUpgradePath(relPath: string): boolean {
@@ -375,9 +398,6 @@ export async function cmdUpgradeParsed(opts: {
     tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-"));
     let bundlePath = "";
     let checksumPath = "";
-    // GitHub release tarballs contain the full repository. When we fall back to tarball_url,
-    // we must ignore non-upgrade paths instead of failing validation.
-    let allowNonUpgradePaths = false;
 
     if (flags.bundle) {
       const isUrl = flags.bundle.startsWith("http://") || flags.bundle.startsWith("https://");
@@ -426,7 +446,6 @@ export async function cmdUpgradeParsed(opts: {
             `upgrade release does not include ${assetName}/${checksumName}; falling back to tarball_url without checksum verification`,
           )}\n`,
         );
-        allowNonUpgradePaths = true;
         bundlePath = path.join(tempRoot, "source.tar.gz");
         await downloadToFile(download.tarballUrl, bundlePath, UPGRADE_DOWNLOAD_TIMEOUT_MS);
         checksumPath = "";
@@ -458,13 +477,14 @@ export async function cmdUpgradeParsed(opts: {
       destDir: extractRoot,
     });
     const bundleRoot = await resolveUpgradeRoot(extractRoot);
+    const manifest = await loadFrameworkManifest();
 
-    const files = await listFilesRecursive(bundleRoot);
     const additions: string[] = [];
     const updates: string[] = [];
     const skipped: string[] = [];
     const fileContents = new Map<string, Buffer>();
     const merged: string[] = [];
+    const missingRequired: string[] = [];
 
     const baselineDir = path.join(resolved.agentplaneDir, "upgrade", "baseline");
     const toBaselineKey = (rel: string): string | null => {
@@ -473,30 +493,27 @@ export async function cmdUpgradeParsed(opts: {
       return null;
     };
 
-    for (const filePath of files) {
-      let rel = path.relative(bundleRoot, filePath).replaceAll("\\", "/");
+    for (const entry of manifest.files) {
+      const rel = entry.path.replaceAll("\\", "/").trim();
       if (!rel || rel.startsWith("..") || path.isAbsolute(rel)) {
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
-          message: `Invalid bundle path: ${filePath}`,
+          message: `Invalid manifest path: ${entry.path}`,
         });
       }
-      if (rel === ".git" || rel.startsWith(".git/")) {
+      if (isDeniedUpgradePath(rel)) {
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
-          message: `Upgrade bundle cannot write to .git (${rel})`,
+          message: `Manifest includes a denied path: ${rel}`,
         });
       }
       if (!isAllowedUpgradePath(rel)) {
-        if (allowNonUpgradePaths) {
-          continue;
-        }
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
-          message: `Upgrade bundle path not allowed: ${rel}`,
+          message: `Manifest path not allowed: ${rel}`,
         });
       }
 
@@ -510,21 +527,27 @@ export async function cmdUpgradeParsed(opts: {
         });
       }
 
-      if (rel === ".agentplane/config.json") {
-        // Never overwrite local config during upgrade.
-        skipped.push(rel);
+      const sourceRel = (entry.source_path ?? entry.path).replaceAll("\\", "/").trim();
+      const sourcePath = path.join(bundleRoot, sourceRel);
+      let data: Buffer;
+      try {
+        data = await readFile(sourcePath);
+      } catch {
+        if (entry.required) missingRequired.push(rel);
         continue;
       }
 
-      let data = await readFile(filePath);
-
       if (kind !== null) {
-        const existing = await readFile(destPath, "utf8");
-        if (rel === "AGENTS.md") {
-          const mergedText = mergeAgentsPolicyMarkdown(data.toString("utf8"), existing);
+        const existingText = await readFile(destPath, "utf8");
+        if (entry.merge_strategy === "agents_policy_markdown" && rel === "AGENTS.md") {
+          const mergedText = mergeAgentsPolicyMarkdown(data.toString("utf8"), existingText);
           data = Buffer.from(mergedText, "utf8");
           merged.push(rel);
-        } else if (rel.startsWith(".agentplane/agents/") && rel.endsWith(".json")) {
+        } else if (
+          entry.merge_strategy === "agent_json_3way" &&
+          rel.startsWith(".agentplane/agents/") &&
+          rel.endsWith(".json")
+        ) {
           const baselineKey = toBaselineKey(rel);
           let mergedText: string | null = null;
           if (baselineKey) {
@@ -532,14 +555,14 @@ export async function cmdUpgradeParsed(opts: {
               const baselineText = await readFile(path.join(baselineDir, baselineKey), "utf8");
               mergedText = mergeAgentJson3Way({
                 incomingText: data.toString("utf8"),
-                currentText: existing,
+                currentText: existingText,
                 baseText: baselineText,
               });
             } catch {
               mergedText = null;
             }
           }
-          mergedText ??= mergeAgentJson(data.toString("utf8"), existing);
+          mergedText ??= mergeAgentJson(data.toString("utf8"), existingText);
           if (mergedText) {
             data = Buffer.from(mergedText, "utf8");
             merged.push(rel);
@@ -548,24 +571,19 @@ export async function cmdUpgradeParsed(opts: {
       }
 
       fileContents.set(rel, data);
-      if (kind === null) {
-        additions.push(rel);
-      } else {
+      if (kind === null) additions.push(rel);
+      else {
         const existingBuf = await readFile(destPath);
-        if (Buffer.compare(existingBuf, data) === 0) {
-          skipped.push(rel);
-        } else {
-          updates.push(rel);
-        }
+        if (Buffer.compare(existingBuf, data) === 0) skipped.push(rel);
+        else updates.push(rel);
       }
     }
 
-    if (fileContents.size === 0) {
+    if (missingRequired.length > 0) {
       throw new CliError({
         exitCode: 3,
         code: "E_VALIDATION",
-        message:
-          "Upgrade bundle contains no applicable files (expected AGENTS.md and/or .agentplane/).",
+        message: `Upgrade bundle is missing required managed files: ${missingRequired.join(", ")}`,
       });
     }
 
@@ -578,14 +596,6 @@ export async function cmdUpgradeParsed(opts: {
       for (const rel of skipped) process.stdout.write(`SKIP ${rel}\n`);
       for (const rel of merged) process.stdout.write(`MERGE ${rel}\n`);
       return 0;
-    }
-
-    if (skipped.includes(".agentplane/config.json")) {
-      process.stderr.write(
-        `${warnMessage(
-          "upgrade bundle includes .agentplane/config.json; skipping to preserve local configuration",
-        )}\n`,
-      );
     }
 
     for (const rel of [...additions, ...updates]) {
