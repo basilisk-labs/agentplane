@@ -10,17 +10,17 @@
   "outputs": [
     "An updated `.agentplane/config.json` capturing the new `framework.last_update` (ISO 8601 date).",
     "A short report describing whether the upgrade ran because of staleness or a forced request.",
-    "Logs/PR notes referencing `node packages/agentplane/bin/agentplane.js upgrade` runs and git fetch/pull results."
+    "Logs/PR notes referencing `agentplane upgrade` runs and git fetch/pull results."
   ],
   "permissions": [
     "Project files: read/write access to `.agentplane/config.json` plus any git-controlled files touched by the upgrade.",
-    "Git: inspect status, run fetch/pull, and record results via `node packages/agentplane/bin/agentplane.js` commands.",
-    "Terminal: execute `node packages/agentplane/bin/agentplane.js upgrade` and related helper commands."
+    "Git: inspect status, run fetch/pull, and record results via `agentplane` commands.",
+    "Terminal: execute `agentplane upgrade` and related helper commands."
   ],
   "workflow": [
-    "Follow shared workflow rules in AGENTS.md and `node packages/agentplane/bin/agentplane.js quickstart` / `node packages/agentplane/bin/agentplane.js role <ROLE>` output.",
+    "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Check the `framework.last_update` date from `.agentplane/config.json`; compare it to UTC today and detect when 10+ days have passed.",
-    "Invoke `node packages/agentplane/bin/agentplane.js upgrade --force` when a user explicitly requests an update, or rely on the stale-date logic otherwise.",
+    "Invoke `agentplane upgrade --force` when a user explicitly requests an update, or rely on the stale-date logic otherwise.",
     "Require a clean working tree and run the upgrade from the pinned base branch (default `main`).",
     "After a successful upgrade, update `framework.last_update` to `datetime.now(UTC).date()` and document the run in the owning task/pr artifacts."
   ]

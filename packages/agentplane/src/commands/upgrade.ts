@@ -1,4 +1,14 @@
-import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  readlink,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -662,7 +672,37 @@ export async function cmdUpgradeParsed(opts: {
       }
       await mkdir(path.dirname(destPath), { recursive: true });
       const data = fileContents.get(rel);
-      if (data) await writeFile(destPath, data);
+      if (data) {
+        if (rel === "AGENTS.md") {
+          // Write the managed copy under .agentplane/ and keep the workspace-root policy path
+          // as a symlink to it.
+          const managedPath = path.join(resolved.agentplaneDir, "AGENTS.md");
+          await mkdir(path.dirname(managedPath), { recursive: true });
+          await writeFile(managedPath, data);
+
+          // Replace AGENTS.md with a symlink if needed.
+          const relTarget = path.relative(resolved.gitRoot, managedPath);
+          try {
+            const st = await lstat(destPath);
+            if (st.isSymbolicLink()) {
+              const currentTarget = await readlink(destPath);
+              if (currentTarget !== relTarget) {
+                await rm(destPath, { force: true });
+              }
+            } else {
+              // If it's a regular file, remove it (backup already happened above when enabled).
+              await rm(destPath, { force: true });
+            }
+          } catch {
+            // destPath doesn't exist
+          }
+          if (!(await fileExists(destPath))) {
+            await symlink(relTarget, destPath);
+          }
+        } else {
+          await writeFile(destPath, data);
+        }
+      }
 
       // Record a baseline copy for future three-way merges.
       const baselineKey = toBaselineKey(rel);

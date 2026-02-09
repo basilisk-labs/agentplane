@@ -20,12 +20,12 @@ describe("agents-template", () => {
     expect(bundledText).toBe(`${assetsText.trimEnd()}\n`);
   });
 
-  it("repo AGENTS.md uses repo-local CLI while assets use system CLI", async () => {
+  it("repo AGENTS.md matches bundled AGENTS.md (system CLI)", async () => {
     const repoText = await readFile(path.join(process.cwd(), "AGENTS.md"), "utf8");
     const bundledText = await loadAgentsTemplate();
-    expect(repoText).toContain(LOCAL_CLI);
+    expect(repoText).not.toContain(LOCAL_CLI);
     expect(bundledText).not.toContain(LOCAL_CLI);
-    expect(repoText.trimEnd()).not.toBe(bundledText.trimEnd());
+    expect(`${repoText.trimEnd()}\n`).toBe(bundledText);
   });
 
   it("bundled agents match framework assets/agents", async () => {
@@ -43,7 +43,7 @@ describe("agents-template", () => {
     }
   });
 
-  it("installed agents prefer repo-local CLI", async () => {
+  it("installed agents prefer system CLI", async () => {
     const repoAgentsDir = path.join(process.cwd(), ".agentplane", "agents");
     const entries = await readdir(repoAgentsDir);
     const jsonEntries = entries.filter((entry) => entry.endsWith(".json"));
@@ -52,8 +52,8 @@ describe("agents-template", () => {
     for (const entry of jsonEntries) {
       const repoPath = path.join(repoAgentsDir, entry);
       const repoText = await readFile(repoPath, "utf8");
-      expect(repoText).toContain(LOCAL_CLI);
-      expect(repoText).not.toMatch(systemCommandRe);
+      expect(repoText).not.toContain(LOCAL_CLI);
+      expect(repoText).toMatch(systemCommandRe);
     }
   });
 
