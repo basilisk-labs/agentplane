@@ -1,7 +1,8 @@
 ---
 id: "202602091522-089FS2"
 title: "CLI errors: enforce exitCodeForError mapping"
-status: "DOING"
+result_summary: "Exit codes derived from ErrorCode mapping"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "a1b446df808f4117c4a2a0b867eb7e537d6b0d4d"
+  message: "✅ 089FS2 cli: align exit codes with ErrorCode mapping"
 comments:
   -
     author: "CODER"
     body: "Start: implement a CliError factory that derives exitCode via exitCodeForError and migrate throw sites away from hardcoded exit codes."
+  -
+    author: "CODER"
+    body: "Verified: Replaced hardcoded/mismatched CliError exit codes (especially E_IO/E_GIT) with exitCodeForError-derived values across CLI/commands, added cliError helper, and updated tests to reflect the consistent mapping. Ran bun run lint and bun run test:full."
 events:
   -
     type: "status"
@@ -33,8 +39,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement a CliError factory that derives exitCode via exitCodeForError and migrate throw sites away from hardcoded exit codes."
+  -
+    type: "status"
+    at: "2026-02-09T15:43:24.126Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Replaced hardcoded/mismatched CliError exit codes (especially E_IO/E_GIT) with exitCodeForError-derived values across CLI/commands, added cliError helper, and updated tests to reflect the consistent mapping. Ran bun run lint and bun run test:full."
 doc_version: 2
-doc_updated_at: "2026-02-09T15:26:37.763Z"
+doc_updated_at: "2026-02-09T15:43:24.126Z"
 doc_updated_by: "CODER"
 description: "Eliminate hardcoded exitCode mismatches vs ErrorCode by introducing a CLI error factory and migrating throw sites to compute exitCode strictly via exitCodeForError."
 id_source: "generated"
