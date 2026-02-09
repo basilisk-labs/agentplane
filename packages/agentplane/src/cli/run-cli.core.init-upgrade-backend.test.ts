@@ -625,7 +625,7 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--yes", "--root", root]);
-      expect(code).toBe(5);
+      expect(code).toBe(4);
       expect(io.stderr).toContain("Init conflicts detected");
       expect(io.stderr).toContain(".agentplane/config.json");
     } finally {
@@ -668,7 +668,7 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--yes", "--root", root]);
-      expect(code).toBe(5);
+      expect(code).toBe(4);
       expect(io.stderr).toContain("Init conflicts detected");
       expect(io.stderr).toContain(".agentplane/config.json");
       expect(io.stderr).toContain(".agentplane/backends/local/backend.json");

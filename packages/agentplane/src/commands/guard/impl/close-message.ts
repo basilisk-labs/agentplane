@@ -3,6 +3,7 @@ import path from "node:path";
 import { extractTaskSuffix } from "@agentplaneorg/core";
 
 import type { TaskData } from "../../../backends/task-backend.js";
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 
 import { execFileAsync, gitEnv } from "../../shared/git.js";
@@ -136,13 +137,17 @@ export async function buildCloseCommitMessage(opts: {
   const isSpike = tags.includes("spike");
 
   if (String(task.status || "").toUpperCase() !== "DONE") {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Task is not DONE: ${task.id}` });
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message: `Task is not DONE: ${task.id}`,
+    });
   }
 
   const implCommit = task.commit?.hash?.trim() ?? "";
   if (!implCommit) {
     throw new CliError({
-      exitCode: 2,
+      exitCode: exitCodeForError("E_USAGE"),
       code: "E_USAGE",
       message: `Task is missing recorded commit metadata: ${task.id} (finish with --commit or set commit on the task).`,
     });

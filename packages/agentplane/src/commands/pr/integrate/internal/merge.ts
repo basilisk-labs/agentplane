@@ -1,5 +1,6 @@
 import { extractTaskSuffix, validateCommitSubject } from "@agentplaneorg/core";
 
+import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../../../shared/git.js";
 import { gitRevParse } from "../../../shared/git-ops.js";
@@ -26,7 +27,7 @@ export async function runSquashMerge(opts: {
       env: gitEnv(),
     });
     const message = err instanceof Error ? err.message : "git merge --squash failed";
-    throw new CliError({ exitCode: 2, code: "E_GIT", message });
+    throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
 
   const { stdout: staged } = await execFileAsync("git", ["diff", "--cached", "--name-only"], {
@@ -39,7 +40,7 @@ export async function runSquashMerge(opts: {
       env: gitEnv(),
     });
     throw new CliError({
-      exitCode: 2,
+      exitCode: exitCodeForError("E_USAGE"),
       code: "E_USAGE",
       message: `Nothing to integrate: ${opts.branch} is already merged into ${opts.base}`,
     });
@@ -81,7 +82,7 @@ export async function runSquashMerge(opts: {
       env: gitEnv(),
     });
     const message = err instanceof Error ? err.message : "git commit failed";
-    throw new CliError({ exitCode: 2, code: "E_GIT", message });
+    throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
 
   return await gitRevParse(opts.gitRoot, ["HEAD"]);
@@ -108,7 +109,7 @@ export async function runMergeCommit(opts: {
   } catch (err) {
     await execFileAsync("git", ["merge", "--abort"], { cwd: opts.gitRoot, env: gitEnv() });
     const message = err instanceof Error ? err.message : "git merge failed";
-    throw new CliError({ exitCode: 2, code: "E_GIT", message });
+    throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
   return await gitRevParse(opts.gitRoot, ["HEAD"]);
 }
@@ -140,7 +141,7 @@ export async function runRebaseFastForward(opts: {
   } catch (err) {
     await execFileAsync("git", ["rebase", "--abort"], { cwd: opts.worktreePath, env: gitEnv() });
     const message = err instanceof Error ? err.message : "git rebase failed";
-    throw new CliError({ exitCode: 2, code: "E_GIT", message });
+    throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
 
   let branchHeadSha = await gitRevParse(opts.gitRoot, [opts.branch]);
@@ -181,7 +182,7 @@ export async function runRebaseFastForward(opts: {
       env: gitEnv(),
     }).catch(() => null);
     const message = err instanceof Error ? err.message : "git merge --ff-only failed";
-    throw new CliError({ exitCode: 2, code: "E_GIT", message });
+    throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
   }
 
   const mergeHash = await gitRevParse(opts.gitRoot, ["HEAD"]);

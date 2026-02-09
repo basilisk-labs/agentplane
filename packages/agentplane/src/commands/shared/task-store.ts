@@ -11,6 +11,7 @@ import {
 } from "@agentplaneorg/core";
 
 import { LocalBackend, type TaskData, taskRecordToData } from "../../backends/task-backend.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { resolveDocUpdatedBy, taskDataToFrontmatter, type CommandContext } from "./task-backend.js";
@@ -64,7 +65,7 @@ async function ensureUnchangedOnDisk(opts: {
   const st = await stat(opts.readmePath);
   if (st.mtimeMs !== opts.expectedMtimeMs) {
     throw new CliError({
-      exitCode: 4,
+      exitCode: exitCodeForError("E_IO"),
       code: "E_IO",
       message: `Task README changed concurrently: ${opts.readmePath}`,
     });
@@ -87,7 +88,11 @@ export class TaskStore {
   private async getCached(taskId: string): Promise<CachedTask> {
     const key = taskId.trim();
     if (!key) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "task id is required" });
+      throw new CliError({
+        exitCode: exitCodeForError("E_USAGE"),
+        code: "E_USAGE",
+        message: "task id is required",
+      });
     }
     const existing = this.cache.get(key);
     if (existing) return await existing;

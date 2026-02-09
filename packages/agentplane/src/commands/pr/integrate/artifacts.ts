@@ -1,5 +1,6 @@
 import path from "node:path";
 
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 
 import { readPrArtifact } from "../internal/pr-paths.js";
@@ -62,7 +63,11 @@ export async function readAndValidatePrArtifacts(opts: {
   if (reviewText) validateReviewContents(reviewText, errors);
 
   if (errors.length > 0) {
-    throw new CliError({ exitCode: 3, code: "E_VALIDATION", message: errors.join("\n") });
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: errors.join("\n"),
+    });
   }
 
   return { verifyLogText };

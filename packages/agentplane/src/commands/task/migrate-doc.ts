@@ -15,6 +15,7 @@ import {
 } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../cli/error-map.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../cli/fs-utils.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -150,7 +151,7 @@ export async function cmdTaskMigrateDoc(opts: {
         if (!(await fileExists(readmePath))) {
           const taskId = path.basename(path.dirname(readmePath));
           throw new CliError({
-            exitCode: 5,
+            exitCode: exitCodeForError("E_IO"),
             code: "E_IO",
             message: `Task README not found: ${taskId}`,
           });

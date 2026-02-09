@@ -7,6 +7,7 @@ import { defaultConfig, loadConfig } from "@agentplaneorg/core";
 import { extractArchive } from "../../../../cli/archive.js";
 import { sha256File } from "../../../../cli/checksum.js";
 import { mapCoreError } from "../../../../cli/error-map.js";
+import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../../../cli/fs-utils.js";
 import { downloadToFile } from "../../../../cli/http.js";
 import { CliError } from "../../../../shared/errors.js";
@@ -81,7 +82,7 @@ export async function cmdRecipeInstall(opts: {
         const entry = index.recipes.find((recipe) => recipe.id === recipeId);
         if (!entry) {
           throw new CliError({
-            exitCode: 5,
+            exitCode: exitCodeForError("E_IO"),
             code: "E_IO",
             message: `Recipe not found in remote index: ${recipeId}`,
           });
@@ -111,7 +112,7 @@ export async function cmdRecipeInstall(opts: {
         const resolved = path.resolve(opts.cwd, latest.url);
         if (!(await fileExists(resolved))) {
           throw new CliError({
-            exitCode: 5,
+            exitCode: exitCodeForError("E_IO"),
             code: "E_IO",
             message: `Recipe archive not found: ${latest.url}`,
           });
@@ -134,7 +135,7 @@ export async function cmdRecipeInstall(opts: {
           const candidate = await resolvePathFallback(source.value);
           if (!(await fileExists(candidate))) {
             throw new CliError({
-              exitCode: 5,
+              exitCode: exitCodeForError("E_IO"),
               code: "E_IO",
               message: `Recipe archive not found: ${source.value}`,
             });
@@ -179,7 +180,7 @@ export async function cmdRecipeInstall(opts: {
       const installKind = await getPathKind(installDir);
       if (installKind && installKind !== "dir") {
         throw new CliError({
-          exitCode: 5,
+          exitCode: exitCodeForError("E_IO"),
           code: "E_IO",
           message: `Recipe install path is not a directory: ${installDir}`,
         });

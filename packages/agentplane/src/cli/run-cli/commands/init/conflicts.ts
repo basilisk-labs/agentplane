@@ -2,6 +2,7 @@ import { rm } from "node:fs/promises";
 import path from "node:path";
 
 import { backupPath, fileExists, getPathKind } from "../../../fs-utils.js";
+import { exitCodeForError } from "../../../exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 export async function collectInitConflicts(opts: {
@@ -45,7 +46,7 @@ export async function handleInitConflicts(opts: {
     .map((conflict) => `- ${path.relative(opts.gitRoot, conflict)}`)
     .join("\n");
   throw new CliError({
-    exitCode: 5,
+    exitCode: exitCodeForError("E_IO"),
     code: "E_IO",
     message:
       `Init conflicts detected:\n${rendered}\n` +

@@ -1,5 +1,6 @@
 import { extractLastVerifiedSha, runShellCommand } from "../../shared/pr-meta.js";
 import { successMessage } from "../../../cli/output.js";
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 
 function normalizeVerifyCommands(rawVerify: unknown): string[] {
@@ -60,9 +61,10 @@ export async function runVerifyCommands(opts: {
     });
     if (result.code !== 0) {
       throw new CliError({
-        exitCode: result.code || 1,
+        exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
         message: `Verify command failed: ${command}`,
+        context: { commandExitCode: result.code || 1 },
       });
     }
   }

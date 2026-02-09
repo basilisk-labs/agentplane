@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { mapBackendError } from "../../cli/error-map.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { successMessage, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -36,7 +37,7 @@ export async function cmdPrCheck(opts: {
 
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
         message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
@@ -79,7 +80,11 @@ export async function cmdPrCheck(opts: {
     }
 
     if (errors.length > 0) {
-      throw new CliError({ exitCode: 3, code: "E_VALIDATION", message: errors.join("\n") });
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message: errors.join("\n"),
+      });
     }
 
     process.stdout.write(`${successMessage("pr check", path.relative(resolved.gitRoot, prDir))}\n`);

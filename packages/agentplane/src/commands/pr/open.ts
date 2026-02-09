@@ -4,6 +4,7 @@ import path from "node:path";
 import { atomicWriteFile } from "@agentplaneorg/core";
 
 import { mapBackendError } from "../../cli/error-map.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { successMessage, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -34,7 +35,11 @@ export async function cmdPrOpen(opts: {
   try {
     const author = opts.author.trim();
     if (!author) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Invalid value for --author." });
+      throw new CliError({
+        exitCode: exitCodeForError("E_USAGE"),
+        code: "E_USAGE",
+        message: "Invalid value for --author.",
+      });
     }
 
     const ctx =
@@ -51,7 +56,7 @@ export async function cmdPrOpen(opts: {
 
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
         message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
@@ -60,7 +65,7 @@ export async function cmdPrOpen(opts: {
     const branch = (opts.branch ?? (await gitCurrentBranch(resolved.gitRoot))).trim();
     if (!branch) {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
         message: "Branch could not be resolved (use --branch).",
       });

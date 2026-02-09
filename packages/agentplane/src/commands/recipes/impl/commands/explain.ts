@@ -1,4 +1,5 @@
 import { mapCoreError } from "../../../../cli/error-map.js";
+import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { collectRecipeScenarioDetails } from "../scenario.js";
@@ -16,7 +17,7 @@ export async function cmdRecipeExplainParsed(opts: {
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
-        exitCode: 5,
+        exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
         message: `Recipe not installed: ${opts.id}`,
       });

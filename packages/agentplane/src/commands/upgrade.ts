@@ -587,7 +587,7 @@ export async function cmdUpgradeParsed(opts: {
       const kind = await getPathKind(destPath);
       if (kind === "dir") {
         throw new CliError({
-          exitCode: 5,
+          exitCode: exitCodeForError("E_IO"),
           code: "E_IO",
           message: `Upgrade target is a directory: ${rel}`,
         });

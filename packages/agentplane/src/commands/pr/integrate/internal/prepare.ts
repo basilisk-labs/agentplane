@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { resolveBaseBranch } from "@agentplaneorg/core";
 
 import { fileExists } from "../../../../cli/fs-utils.js";
+import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { unknownEntityMessage, workflowModeMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureGitClean } from "../../../guard/index.js";
@@ -76,7 +77,7 @@ export async function prepareIntegrate(opts: {
 
   if (loadedConfig.workflow_mode !== "branch_pr") {
     throw new CliError({
-      exitCode: 2,
+      exitCode: exitCodeForError("E_USAGE"),
       code: "E_USAGE",
       message: workflowModeMessage(loadedConfig.workflow_mode, "branch_pr"),
     });
@@ -87,7 +88,11 @@ export async function prepareIntegrate(opts: {
   await ensureGitClean({ cwd: opts.cwd, rootOverride: opts.rootOverride });
 
   if (opts.base?.trim().length === 0) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Invalid value for --base." });
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message: "Invalid value for --base.",
+    });
   }
 
   const baseBranch = await resolveBaseBranch({
@@ -98,7 +103,7 @@ export async function prepareIntegrate(opts: {
   });
   if (!baseBranch) {
     throw new CliError({
-      exitCode: 2,
+      exitCode: exitCodeForError("E_USAGE"),
       code: "E_USAGE",
       message: "Base branch could not be resolved (use `agentplane branch base set` or --base).",
     });
@@ -107,7 +112,7 @@ export async function prepareIntegrate(opts: {
   const currentBranch = await gitCurrentBranch(resolved.gitRoot);
   if (currentBranch !== baseBranch) {
     throw new CliError({
-      exitCode: 5,
+      exitCode: exitCodeForError("E_GIT"),
       code: "E_GIT",
       message: `integrate must run on base branch ${baseBranch} (current: ${currentBranch})`,
     });

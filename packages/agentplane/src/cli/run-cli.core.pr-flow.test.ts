@@ -1863,7 +1863,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(2);
+      expect(code).toBe(5);
       expect(io.stderr).toContain("merge --ff-only");
     } finally {
       io.restore();
@@ -1944,7 +1944,7 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(1);
+      expect(code).toBe(4);
       expect(io.stderr).toContain("Verify command failed");
     } finally {
       io.restore();

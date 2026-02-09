@@ -14,6 +14,7 @@ import {
   cmdRecipeRemoveParsed,
 } from "./recipes.js";
 import { cmdScenarioInfoParsed, cmdScenarioListParsed, cmdScenarioRunParsed } from "./scenario.js";
+import { exitCodeForError } from "../cli/exit-codes.js";
 import { CliError } from "../shared/errors.js";
 import { parseCommandArgv } from "../cli/spec/parse.js";
 import { recipesCachePruneSpec } from "./recipes/cache-prune.command.js";
@@ -118,7 +119,11 @@ async function runRecipesTest(opts: {
   args: string[];
 }): Promise<number> {
   if (!opts.command) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing recipes subcommand." });
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message: "Missing recipes subcommand.",
+    });
   }
 
   switch (opts.command) {
@@ -199,7 +204,11 @@ async function runScenarioTest(opts: {
   args: string[];
 }): Promise<number> {
   if (!opts.command) {
-    throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Missing scenario subcommand." });
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message: "Missing scenario subcommand.",
+    });
   }
 
   switch (opts.command) {

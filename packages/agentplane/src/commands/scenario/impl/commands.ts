@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import { atomicWriteFile, resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../../cli/error-map.js";
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
 import { emptyStateMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
@@ -103,7 +104,7 @@ export async function cmdScenarioInfoParsed(opts: {
     const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
     if (!entry) {
       throw new CliError({
-        exitCode: 5,
+        exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
         message: `Recipe not installed: ${recipeId}`,
       });
@@ -135,7 +136,7 @@ export async function cmdScenarioInfoParsed(opts: {
 
     if (!scenario && !summary) {
       throw new CliError({
-        exitCode: 5,
+        exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
         message: `Scenario not found: ${recipeId}:${scenarioId}`,
       });
@@ -217,7 +218,7 @@ export async function cmdScenarioRunParsed(opts: {
     const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
     if (!entry) {
       throw new CliError({
-        exitCode: 5,
+        exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
         message: `Recipe not installed: ${recipeId}`,
       });
@@ -228,7 +229,7 @@ export async function cmdScenarioRunParsed(opts: {
     const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
     if ((await getPathKind(scenariosDir)) !== "dir") {
       throw new CliError({
-        exitCode: 5,
+        exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
         message: `Scenario definitions not found for recipe: ${recipeId}`,
       });
@@ -245,7 +246,7 @@ export async function cmdScenarioRunParsed(opts: {
     }
     if (!scenario) {
       throw new CliError({
-        exitCode: 5,
+        exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
         message: `Scenario not found: ${recipeId}:${scenarioId}`,
       });
@@ -277,7 +278,7 @@ export async function cmdScenarioRunParsed(opts: {
       const toolEntry = manifest.tools?.find((tool) => tool?.id === step.tool);
       if (!toolEntry) {
         throw new CliError({
-          exitCode: 5,
+          exitCode: exitCodeForError("E_IO"),
           code: "E_IO",
           message: `Tool not found in recipe manifest: ${step.tool}`,
         });
@@ -301,7 +302,7 @@ export async function cmdScenarioRunParsed(opts: {
       const entrypointPath = path.join(recipeDir, entrypoint);
       if (!(await fileExists(entrypointPath))) {
         throw new CliError({
-          exitCode: 5,
+          exitCode: exitCodeForError("E_IO"),
           code: "E_IO",
           message: `Tool entrypoint not found: ${entrypoint}`,
         });

@@ -1,6 +1,7 @@
 import { rm } from "node:fs/promises";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
+import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { successMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 
@@ -18,7 +19,7 @@ export async function cmdRecipeRemoveParsed(opts: {
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
-        exitCode: 5,
+        exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
         message: `Recipe not installed: ${opts.id}`,
       });

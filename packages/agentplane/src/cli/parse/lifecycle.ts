@@ -1,4 +1,5 @@
 import { CliError } from "../../shared/errors.js";
+import { exitCodeForError } from "../exit-codes.js";
 import { usageMessage } from "../output.js";
 
 export type UsageStrings = {
@@ -50,7 +51,11 @@ export type ParsedFinish = {
 };
 
 function usageError(u: UsageStrings): CliError {
-  return new CliError({ exitCode: 2, code: "E_USAGE", message: usageMessage(u.usage, u.example) });
+  return new CliError({
+    exitCode: exitCodeForError("E_USAGE"),
+    code: "E_USAGE",
+    message: usageMessage(u.usage, u.example),
+  });
 }
 
 function requireTaskId(taskIdToken: string | undefined, u: UsageStrings): string {

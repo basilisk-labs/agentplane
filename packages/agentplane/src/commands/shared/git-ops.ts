@@ -1,5 +1,6 @@
 import { execFileAsync, gitEnv } from "./git.js";
 import { setPinnedBaseBranch } from "@agentplaneorg/core";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { promptChoice, promptInput } from "../../cli/prompts.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -134,7 +135,7 @@ export async function promptInitBaseBranch(opts: {
     const candidate = raw.trim() || opts.fallback;
     if (!candidate) {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
         message: "Base branch name cannot be empty",
       });
@@ -148,7 +149,7 @@ export async function promptInitBaseBranch(opts: {
       );
     } catch (err) {
       const message = err instanceof Error ? err.message : `Failed to create branch ${candidate}`;
-      throw new CliError({ exitCode: 5, code: "E_GIT", message });
+      throw new CliError({ exitCode: exitCodeForError("E_GIT"), code: "E_GIT", message });
     }
     return candidate;
   };
@@ -181,7 +182,7 @@ export async function ensureInitCommit(opts: {
   const stagedBefore = await gitStagedPaths(opts.gitRoot);
   if (stagedBefore.length > 0) {
     throw new CliError({
-      exitCode: 5,
+      exitCode: exitCodeForError("E_GIT"),
       code: "E_GIT",
       message:
         "Git index has staged changes; commit or unstage them before running agentplane init.",

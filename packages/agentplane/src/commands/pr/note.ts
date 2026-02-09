@@ -4,6 +4,7 @@ import path from "node:path";
 import { atomicWriteFile } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../cli/error-map.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { successMessage, workflowModeMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
@@ -24,10 +25,18 @@ export async function cmdPrNote(opts: {
     const author = opts.author.trim();
     const body = opts.body.trim();
     if (!author) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Invalid value for --author." });
+      throw new CliError({
+        exitCode: exitCodeForError("E_USAGE"),
+        code: "E_USAGE",
+        message: "Invalid value for --author.",
+      });
     }
     if (!body) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Invalid value for --body." });
+      throw new CliError({
+        exitCode: exitCodeForError("E_USAGE"),
+        code: "E_USAGE",
+        message: "Invalid value for --body.",
+      });
     }
 
     const ctx =
@@ -36,7 +45,7 @@ export async function cmdPrNote(opts: {
     const { config, reviewPath, resolved } = await resolvePrPaths({ ...opts, ctx });
     if (config.workflow_mode !== "branch_pr") {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
         message: workflowModeMessage(config.workflow_mode, "branch_pr"),
       });
@@ -45,7 +54,7 @@ export async function cmdPrNote(opts: {
     if (!(await fileExists(reviewPath))) {
       const relReviewPath = path.relative(resolved.gitRoot, reviewPath);
       throw new CliError({
-        exitCode: 3,
+        exitCode: exitCodeForError("E_VALIDATION"),
         code: "E_VALIDATION",
         message: `Missing ${relReviewPath} (run \`agentplane pr open\`)`,
       });

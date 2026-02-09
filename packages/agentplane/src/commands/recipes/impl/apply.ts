@@ -1,6 +1,7 @@
 import { cp, mkdir, readFile, readdir, rename, rm } from "node:fs/promises";
 import path from "node:path";
 
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
 import { invalidFieldMessage, missingFileMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
@@ -62,7 +63,7 @@ export async function applyRecipeAgents(opts: {
     if (await getPathKind(targetPath)) {
       if (opts.onConflict === "fail") {
         throw new CliError({
-          exitCode: 5,
+          exitCode: exitCodeForError("E_IO"),
           code: "E_IO",
           message: `Agent already exists: ${targetId}`,
         });

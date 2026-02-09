@@ -1,6 +1,7 @@
 import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../cli/error-map.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { gitAheadBehind } from "../shared/git-diff.js";
@@ -27,25 +28,29 @@ export async function cmdBranchStatus(opts: {
       mode: loaded.config.workflow_mode,
     });
     if (!branch) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Invalid value for --branch." });
+      throw new CliError({
+        exitCode: exitCodeForError("E_USAGE"),
+        code: "E_USAGE",
+        message: "Invalid value for --branch.",
+      });
     }
     if (!base) {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
         message: "Base branch could not be resolved (use `agentplane branch base set` or --base).",
       });
     }
     if (!(await gitBranchExists(resolved.gitRoot, branch))) {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
         message: unknownEntityMessage("branch", branch),
       });
     }
     if (!(await gitBranchExists(resolved.gitRoot, base))) {
       throw new CliError({
-        exitCode: 2,
+        exitCode: exitCodeForError("E_USAGE"),
         code: "E_USAGE",
         message: unknownEntityMessage("base branch", base),
       });

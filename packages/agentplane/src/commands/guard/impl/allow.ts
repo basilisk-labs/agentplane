@@ -1,5 +1,6 @@
 import { resolveProject } from "@agentplaneorg/core";
 
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../../shared/git-path.js";
 import { CliError } from "../../../shared/errors.js";
 import { GitContext } from "../../shared/git-context.js";
@@ -38,13 +39,17 @@ export async function ensureGitClean(opts: {
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
   const staged = await ctx.git.statusStagedPaths();
   if (staged.length > 0) {
-    throw new CliError({ exitCode: 5, code: "E_GIT", message: "Working tree has staged changes" });
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message: "Working tree has staged changes",
+    });
   }
   // Policy-defined "clean" ignores untracked files.
   const unstaged = await ctx.git.statusUnstagedTrackedPaths();
   if (unstaged.length > 0) {
     throw new CliError({
-      exitCode: 5,
+      exitCode: exitCodeForError("E_GIT"),
       code: "E_GIT",
       message: "Working tree has unstaged changes",
     });

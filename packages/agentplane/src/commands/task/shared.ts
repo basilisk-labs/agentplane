@@ -12,6 +12,7 @@ import {
   warnMessage,
 } from "../../cli/output.js";
 import { fileExists } from "../../cli/fs-utils.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
 import { type TaskData, type TaskEvent } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { dedupeStrings } from "../../shared/strings.js";
@@ -329,7 +330,7 @@ export function parseTaskListFilters(
       const next = args[i + 1];
       if (!next) {
         throw new CliError({
-          exitCode: 2,
+          exitCode: exitCodeForError("E_USAGE"),
           code: "E_USAGE",
           message: missingValueMessage("--status"),
         });
@@ -342,7 +343,7 @@ export function parseTaskListFilters(
       const next = args[i + 1];
       if (!next) {
         throw new CliError({
-          exitCode: 2,
+          exitCode: exitCodeForError("E_USAGE"),
           code: "E_USAGE",
           message: missingValueMessage("--owner"),
         });
@@ -354,7 +355,11 @@ export function parseTaskListFilters(
     if (arg === "--tag") {
       const next = args[i + 1];
       if (!next) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: missingValueMessage("--tag") });
+        throw new CliError({
+          exitCode: exitCodeForError("E_USAGE"),
+          code: "E_USAGE",
+          message: missingValueMessage("--tag"),
+        });
       }
       out.tag.push(next);
       i++;
@@ -364,7 +369,7 @@ export function parseTaskListFilters(
       const next = args[i + 1];
       if (!next) {
         throw new CliError({
-          exitCode: 2,
+          exitCode: exitCodeForError("E_USAGE"),
           code: "E_USAGE",
           message: missingValueMessage("--limit"),
         });
@@ -372,7 +377,7 @@ export function parseTaskListFilters(
       const parsed = Number.parseInt(next, 10);
       if (!Number.isFinite(parsed)) {
         throw new CliError({
-          exitCode: 2,
+          exitCode: exitCodeForError("E_USAGE"),
           code: "E_USAGE",
           message: invalidValueForFlag("--limit", next, "integer"),
         });
@@ -382,7 +387,11 @@ export function parseTaskListFilters(
       continue;
     }
     if (arg.startsWith("--")) {
-      throw new CliError({ exitCode: 2, code: "E_USAGE", message: `Unknown flag: ${arg}` });
+      throw new CliError({
+        exitCode: exitCodeForError("E_USAGE"),
+        code: "E_USAGE",
+        message: `Unknown flag: ${arg}`,
+      });
     }
   }
   return out;

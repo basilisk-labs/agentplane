@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { loadConfig, resolveProject } from "@agentplaneorg/core";
 import { mapCoreError } from "./error-map.js";
+import { exitCodeForError } from "./exit-codes.js";
 import { warnMessage } from "./output.js";
 import {
   fetchLatestNpmVersion,
@@ -354,7 +355,11 @@ export async function runCli(argv: string[]): Promise<number> {
 
       const match = registry.match(helpArgv);
       if (!match) {
-        throw new CliError({ exitCode: 2, code: "E_USAGE", message: "Unknown command: help" });
+        throw new CliError({
+          exitCode: exitCodeForError("E_USAGE"),
+          code: "E_USAGE",
+          message: "Unknown command: help",
+        });
       }
       const tail = helpArgv.slice(match.consumed);
       const parsed = parseCommandArgv(match.spec, tail).parsed;
@@ -420,7 +425,7 @@ export async function runCli(argv: string[]): Promise<number> {
     const getCtxOrThrow = async (commandForErrorContext: string): Promise<CommandContext> => {
       if (matched?.entry.needsTaskContext === false) {
         throw new CliError({
-          exitCode: 1,
+          exitCode: exitCodeForError("E_INTERNAL"),
           code: "E_INTERNAL",
           message: `Internal error: command does not require task context but attempted to load it: ${commandForErrorContext}`,
         });
@@ -455,7 +460,11 @@ export async function runCli(argv: string[]): Promise<number> {
     }
 
     const message = err instanceof Error ? err.message : String(err);
-    const wrapped = new CliError({ exitCode: 1, code: "E_INTERNAL", message });
+    const wrapped = new CliError({
+      exitCode: exitCodeForError("E_INTERNAL"),
+      code: "E_INTERNAL",
+      message,
+    });
     writeError(wrapped, jsonErrors);
     return wrapped.exitCode;
   }
