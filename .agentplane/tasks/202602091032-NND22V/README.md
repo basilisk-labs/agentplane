@@ -1,7 +1,8 @@
 ---
 id: "202602091032-NND22V"
 title: "Release v0.2.3"
-status: "DOING"
+result_summary: "Tagged and prepared v0.2.3 for publish"
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-02-09T10:34:40.281Z"
   updated_by: "INTEGRATOR"
   note: "node scripts/check-release-notes.mjs --tag v0.2.3; node scripts/check-release-version.mjs --tag v0.2.3; bun run test:full"
-commit: null
+commit:
+  hash: "f3fcf7e7df2d61bb62f346a79f671debdf8b6aac"
+  message: "✅ NND22V release: v0.2.3"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: Prepare and publish v0.2.3 (versions, release notes, tag) with the upgrade download timeout fix."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: node scripts/check-release-notes.mjs --tag v0.2.3; node scripts/check-release-version.mjs --tag v0.2.3; bun run test:full; version bumps and release notes committed."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "INTEGRATOR"
     state: "ok"
     note: "node scripts/check-release-notes.mjs --tag v0.2.3; node scripts/check-release-version.mjs --tag v0.2.3; bun run test:full"
+  -
+    type: "status"
+    at: "2026-02-09T10:36:28.235Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: node scripts/check-release-notes.mjs --tag v0.2.3; node scripts/check-release-version.mjs --tag v0.2.3; bun run test:full; version bumps and release notes committed."
 doc_version: 2
-doc_updated_at: "2026-02-09T10:34:40.284Z"
+doc_updated_at: "2026-02-09T10:36:28.235Z"
 doc_updated_by: "INTEGRATOR"
 description: "Cut patch release v0.2.3: upgrade downloads use longer timeouts so tarball_url fallback works reliably."
 id_source: "generated"
