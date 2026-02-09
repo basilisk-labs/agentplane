@@ -290,7 +290,27 @@ function isJsonRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-function mergeAgentJson(incomingText: string, currentText: string): string | null {
+function canonicalizeJson(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map((v) => canonicalizeJson(v));
+  if (isJsonRecord(value)) {
+    const out: Record<string, unknown> = {};
+    for (const k of Object.keys(value).toSorted()) {
+      out[k] = canonicalizeJson(value[k]);
+    }
+    return out;
+  }
+  return value;
+}
+
+function jsonEqual(a: unknown, b: unknown): boolean {
+  const ca = JSON.stringify(canonicalizeJson(a)) ?? "__undefined__";
+  const cb = JSON.stringify(canonicalizeJson(b)) ?? "__undefined__";
+  return ca === cb;
+}
+
+// Used as a fallback for 3-way merges when no baseline is available. Incoming (upstream) values
+// win for scalar/object conflicts, while user-added keys and array items are preserved.
+function mergeAgentJsonIncomingWins(incomingText: string, currentText: string): string | null {
   let incoming: unknown;
   let current: unknown;
   try {
@@ -310,18 +330,21 @@ function mergeAgentJson(incomingText: string, currentText: string): string | nul
     }
     if (Array.isArray(incVal) && Array.isArray(curVal)) {
       const merged = [...(incVal as unknown[])] as unknown[];
+      const seen = new Set<string>();
+      for (const x of merged) seen.add(JSON.stringify(canonicalizeJson(x)));
       for (const item of curVal) {
-        if (!merged.some((x) => JSON.stringify(x) === JSON.stringify(item))) merged.push(item);
+        const key = JSON.stringify(canonicalizeJson(item));
+        if (!seen.has(key)) {
+          merged.push(item);
+          seen.add(key);
+        }
       }
       out[k] = merged;
       continue;
     }
     if (isJsonRecord(incVal) && isJsonRecord(curVal)) {
-      out[k] = { ...incVal, ...curVal };
-      continue;
-    }
-    if (curVal !== incVal && curVal !== null && curVal !== "") {
-      out[k] = curVal;
+      // Preserve user-only subkeys but let upstream win for conflicts.
+      out[k] = { ...curVal, ...incVal };
       continue;
     }
     out[k] = incVal;
@@ -358,10 +381,16 @@ function mergeAgentJson3Way(opts: {
     // Arrays: always take incoming as base; if user changed vs base, append user-only items.
     if (Array.isArray(incVal) && Array.isArray(curVal) && Array.isArray(baseVal)) {
       const merged = [...(incVal as unknown[])] as unknown[];
-      const userChanged = JSON.stringify(curVal) !== JSON.stringify(baseVal);
+      const userChanged = !jsonEqual(curVal, baseVal);
       if (userChanged) {
+        const seen = new Set<string>();
+        for (const x of merged) seen.add(JSON.stringify(canonicalizeJson(x)));
         for (const item of curVal) {
-          if (!merged.some((x) => JSON.stringify(x) === JSON.stringify(item))) merged.push(item);
+          const k = JSON.stringify(canonicalizeJson(item));
+          if (!seen.has(k)) {
+            merged.push(item);
+            seen.add(k);
+          }
         }
       }
       out[key] = merged;
@@ -380,7 +409,7 @@ function mergeAgentJson3Way(opts: {
         const incSub = incVal[sk];
         const curSub = curVal[sk];
         const baseSub = baseVal[sk];
-        const userChanged = JSON.stringify(curSub) !== JSON.stringify(baseSub);
+        const userChanged = !jsonEqual(curSub, baseSub);
         if (userChanged) merged[sk] = curSub;
         else if (incSub !== undefined) merged[sk] = incSub;
         else if (curSub !== undefined) merged[sk] = curSub;
@@ -390,7 +419,7 @@ function mergeAgentJson3Way(opts: {
     }
 
     // Scalars: prefer incoming unless the user changed vs base.
-    if (JSON.stringify(curVal) !== JSON.stringify(baseVal)) {
+    if (!jsonEqual(curVal, baseVal)) {
       if (curVal !== undefined) out[key] = curVal;
       else if (incVal !== undefined) out[key] = incVal;
       continue;
@@ -698,7 +727,7 @@ export async function cmdUpgradeParsed(opts: {
               mergedText = null;
             }
           }
-          mergedText ??= mergeAgentJson(data.toString("utf8"), existingText);
+          mergedText ??= mergeAgentJsonIncomingWins(data.toString("utf8"), existingText);
           if (mergedText) {
             data = Buffer.from(mergedText, "utf8");
             merged.push(rel);
