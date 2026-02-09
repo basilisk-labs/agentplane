@@ -1,7 +1,8 @@
 ---
 id: "202602090702-B3DHDE"
 title: "Raise branch coverage to meet global threshold"
-status: "DOING"
+result_summary: "Coverage threshold satisfied"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-02-09T07:25:19.937Z"
   updated_by: "TESTER"
   note: "bun run coverage: PASS (branches 72.07% >= 72%); bun run test:full: PASS (769 tests)."
-commit: null
+commit:
+  hash: "c970b1c24154d715182991f0c2ee644343b0dbdb"
+  message: "✅ B3DHDE tests: raise branch coverage above threshold"
 comments:
   -
     author: "TESTER"
     body: "Start: Raise global branch coverage above threshold by adding unit tests for key low-coverage modules (task-doc, lifecycle parser, release metadata)."
+  -
+    author: "TESTER"
+    body: "Verified: bun run coverage passes global thresholds (branches 72.07%); bun run test:full passes."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run coverage: PASS (branches 72.07% >= 72%); bun run test:full: PASS (769 tests)."
+  -
+    type: "status"
+    at: "2026-02-09T07:38:28.321Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run coverage passes global thresholds (branches 72.07%); bun run test:full passes."
 doc_version: 2
-doc_updated_at: "2026-02-09T07:25:19.939Z"
+doc_updated_at: "2026-02-09T07:38:28.321Z"
 doc_updated_by: "TESTER"
 description: "Add targeted unit tests for low-coverage but important modules (task-doc, lifecycle parser, release metadata) to bring branch coverage above 72%."
 id_source: "generated"
