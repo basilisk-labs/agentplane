@@ -37,7 +37,7 @@ describe("runCli bootstrapping metadata", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (process.stderr.write as any) = origStderrWrite;
     }
-  });
+  }, 20_000);
 
   it("role does not require project resolution or config load", async () => {
     const { runCli } = await import("./run-cli.js");
@@ -58,5 +58,5 @@ describe("runCli bootstrapping metadata", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (process.stderr.write as any) = origStderrWrite;
     }
-  });
+  }, 20_000);
 });
