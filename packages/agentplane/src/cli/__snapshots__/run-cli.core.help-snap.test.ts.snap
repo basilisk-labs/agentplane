@@ -68,6 +68,10 @@ Commands:
     recipes list  List installed recipes.
     recipes list-remote  List recipes from the remote index (or cache).
     recipes remove  Remove an installed recipe.
+  Release:
+    release  Prepare a release (agent-assisted notes + version bump workflow).
+    release apply  Apply a prepared release: bump versions, validate notes, commit, and tag.
+    release plan  Generate an agent-assisted release plan (changes list + next patch version).
   Scenario:
     scenario  Recipe scenario commands.
     scenario info  Show scenario details (goal/inputs/outputs/steps).

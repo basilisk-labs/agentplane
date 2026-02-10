@@ -94,6 +94,7 @@ import { guardSuggestAllowSpec } from "../../commands/guard/suggest-allow.comman
 import { guardCommitSpec } from "../../commands/guard/commit.command.js";
 import { releaseSpec } from "../../commands/release/release.command.js";
 import { releasePlanSpec } from "../../commands/release/plan.command.js";
+import { releaseApplySpec } from "../../commands/release/apply.command.js";
 
 import type { CommandContext } from "../../commands/shared/task-backend.js";
 import type { LoadedConfig, ResolvedProject } from "@agentplaneorg/core";
@@ -150,6 +151,15 @@ export const COMMANDS = [
   entry(
     releasePlanSpec,
     () => import("../../commands/release/plan.command.js").then((m) => m.runReleasePlan),
+    {
+      needsProject: true,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    releaseApplySpec,
+    () => import("../../commands/release/apply.command.js").then((m) => m.runReleaseApply),
     {
       needsProject: true,
       needsConfig: false,
