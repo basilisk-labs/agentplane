@@ -39,7 +39,9 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "hooks:install": "lefthook install"
+    "hooks:install": "lefthook install",
+    "schemas:check": "node scripts/sync-schemas.mjs check",
+    "schemas:sync": "node scripts/sync-schemas.mjs sync"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
