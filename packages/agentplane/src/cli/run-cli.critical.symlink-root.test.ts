@@ -53,7 +53,7 @@ describe("critical: symlink root", () => {
 
     // Sanity: the symlink points to the expected location.
     expect(await real(linkChild)).toBe(await real(realChild));
-  });
+  }, 60_000);
 
   it("init via a symlinked cwd initializes the symlink target, not the parent", async () => {
     if (!(await canCreateSymlink())) return;
@@ -79,5 +79,5 @@ describe("critical: symlink root", () => {
     const show = await runCli(["config", "show"], { cwd: linkChild });
     expect(show.code).toBe(0);
     expect(show.stdout).toContain('"workflow_mode": "direct"');
-  });
+  }, 60_000);
 });

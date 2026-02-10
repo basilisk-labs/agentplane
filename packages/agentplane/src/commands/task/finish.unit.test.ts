@@ -320,6 +320,8 @@ describe("task finish (unit)", () => {
         writeTask,
       } as TaskBackend,
     });
+    // Unit test: avoid depending on the direct-mode work lock file (work-start direct-work.json).
+    ctx.config.workflow_mode = "branch_pr";
     mocks.loadTaskFromContext.mockResolvedValue(
       mkTask({
         id: "T-1",
@@ -341,7 +343,7 @@ describe("task finish (unit)", () => {
       breaking: true,
       force: false,
       commitFromComment: true,
-      commitEmoji: "✨",
+      commitEmoji: "✅",
       commitAllow: ["packages/agentplane"],
       commitAutoAllow: false,
       commitAllowTasks: true,
@@ -367,7 +369,7 @@ describe("task finish (unit)", () => {
     expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
     const call = mocks.commitFromComment.mock.calls[0]?.[0] as { emoji?: string; taskId?: string };
     expect(call.taskId).toBe("T-1");
-    expect(call.emoji).toBe("✨");
+    expect(call.emoji).toBe("✅");
     expect(writes.join("")).toContain("finished");
 
     writeSpy.mockRestore();

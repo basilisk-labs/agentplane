@@ -88,7 +88,7 @@ describe("commit-policy", () => {
     });
     expect(result.ok).toBe(false);
     expect(result.errors.join("\n")).toContain(
-      "commit subject must include task suffix as the second token",
+      "commit subject must include the task suffix as the second token",
     );
   });
 
@@ -100,13 +100,21 @@ describe("commit-policy", () => {
     expect(result.ok).toBe(true);
   });
 
-  it("rejects non-task subjects when suffix is not DEV", () => {
+  it("accepts non-task subjects without a suffix", () => {
+    const result = validateCommitSubject({
+      subject: "✨ ci: enforce full tests before push",
+      genericTokens: ["update", "tasks", "wip"],
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects non-task subjects when they look like a task template but suffix is not DEV", () => {
     const result = validateCommitSubject({
       subject: "✨ ABCDEF ci: enforce full tests before push",
       genericTokens: ["update", "tasks", "wip"],
     });
     expect(result.ok).toBe(false);
-    expect(result.errors.join("\n")).toContain("task id is required unless the suffix is 'DEV'");
+    expect(result.errors.join("\n")).toContain("task-like commit subject found");
   });
 
   it("rejects generic non-task subjects even with DEV suffix", () => {

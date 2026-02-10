@@ -327,7 +327,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
       expect(code).toBe(5);
-      expect(io.stderr).toContain("task id is required unless the suffix is 'DEV'");
+      expect(io.stderr).toContain("task-like commit subject found");
     } finally {
       io.restore();
       if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
@@ -340,6 +340,25 @@ describe("runCli", () => {
     await writeDefaultConfig(root);
     const messagePath = path.join(root, "COMMIT_EDITMSG");
     await writeFile(messagePath, "✨ DEV ci: enforce full tests before push\n", "utf8");
+    const prev = process.env.AGENTPLANE_TASK_ID;
+    delete process.env.AGENTPLANE_TASK_ID;
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_TASK_ID;
+      else process.env.AGENTPLANE_TASK_ID = prev;
+    }
+  });
+
+  it("hooks run commit-msg accepts non-task subject without suffix when task env is unset", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const messagePath = path.join(root, "COMMIT_EDITMSG");
+    await writeFile(messagePath, "✨ ci: enforce full tests before push\n", "utf8");
     const prev = process.env.AGENTPLANE_TASK_ID;
     delete process.env.AGENTPLANE_TASK_ID;
 

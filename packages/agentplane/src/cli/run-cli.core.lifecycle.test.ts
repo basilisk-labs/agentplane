@@ -31,6 +31,7 @@ import {
   loadAgentTemplates,
   loadAgentsTemplate,
 } from "../agents/agents-template.js";
+import { resolveCommitEmojiForAgent } from "../shared/agent-emoji.js";
 import * as taskBackend from "../backends/task-backend.js";
 import {
   captureStdIO,
@@ -104,6 +105,61 @@ async function approveTaskPlan(root: string, taskId: string): Promise<void> {
     root,
   ]);
   expect(codeApprove).toBe(0);
+}
+
+async function startDirectWork(root: string, taskId: string, agentId = "CODER"): Promise<void> {
+  const io = captureStdIO();
+  try {
+    const code = await runCli([
+      "work",
+      "start",
+      taskId,
+      "--agent",
+      agentId,
+      "--slug",
+      "cli",
+      "--root",
+      root,
+    ]);
+    if (code !== 0) {
+      throw new Error(`work start failed (code=${code})\n${io.stderr}`);
+    }
+
+    const lockPath = path.join(root, ".agentplane", "cache", "direct-work.json");
+    const raw = await readFile(lockPath, "utf8");
+    const parsed = JSON.parse(raw) as {
+      task_id?: unknown;
+      agent?: unknown;
+      slug?: unknown;
+      branch?: unknown;
+      started_at?: unknown;
+    } | null;
+    if (
+      !parsed ||
+      typeof parsed.task_id !== "string" ||
+      typeof parsed.agent !== "string" ||
+      typeof parsed.slug !== "string" ||
+      typeof parsed.branch !== "string" ||
+      typeof parsed.started_at !== "string"
+    ) {
+      throw new Error(`work start wrote an invalid lock json: ${lockPath}\n${raw}`);
+    }
+    if (parsed.task_id !== taskId) {
+      throw new Error(`work start did not write the expected lock: ${lockPath}\n${raw}`);
+    }
+    if (typeof parsed.agent !== "string" || parsed.agent.trim() !== agentId) {
+      throw new Error(`work start wrote an unexpected agent id in the lock: ${lockPath}`);
+    }
+  } finally {
+    io.restore();
+  }
+}
+
+async function expectedAgentEmoji(root: string, agentId: string): Promise<string> {
+  return await resolveCommitEmojiForAgent({
+    agentsDirAbs: path.join(root, ".agentplane", "agents"),
+    agentId,
+  });
 }
 
 describe("runCli", () => {
@@ -511,6 +567,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -538,6 +595,7 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
 
     const commentBody =
       "Start: implement comment-driven commit for start flow | detail A; detail B";
@@ -570,8 +628,9 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
+    const emoji = await expectedAgentEmoji(root, "CODER");
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} task: implement comment-driven commit for start flow | details: detail A; detail B`,
+      `${emoji} ${suffix} task: implement comment-driven commit for start flow | details: detail A; detail B`,
     );
 
     const { stdout: body } = await execFileAsync("git", ["log", "-1", "--pretty=%b"], {
@@ -588,9 +647,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
-
-    await mkdir(path.join(root, "tmp"), { recursive: true });
-    await writeFile(path.join(root, "tmp", "a.txt"), "hello\n", "utf8");
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -617,6 +674,10 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
+
+    await mkdir(path.join(root, "tmp"), { recursive: true });
+    await writeFile(path.join(root, "tmp", "a.txt"), "hello\n", "utf8");
 
     const io = captureStdIO();
     try {
@@ -645,9 +706,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
-
-    await mkdir(path.join(root, "tmp"), { recursive: true });
-    await writeFile(path.join(root, "tmp", "a b.txt"), "hello\n", "utf8");
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -674,6 +733,10 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
+
+    await mkdir(path.join(root, "tmp"), { recursive: true });
+    await writeFile(path.join(root, "tmp", "a b.txt"), "hello\n", "utf8");
 
     const io = captureStdIO();
     try {
@@ -735,6 +798,7 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
 
     await rm(path.join(root, "tmp", "a.txt"));
 
@@ -822,6 +886,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -875,6 +940,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -901,6 +967,7 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
 
     const commentBody =
       "Start: implement sentence-based summary for commit messages. Add follow-up details.";
@@ -928,8 +995,9 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
+    const emoji = await expectedAgentEmoji(root, "CODER");
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} task: implement sentence-based summary for commit messages. | details: Add follow-up details.`,
+      `${emoji} ${suffix} task: implement sentence-based summary for commit messages. | details: Add follow-up details.`,
     );
   });
 
@@ -988,6 +1056,7 @@ describe("runCli", () => {
     cfg.status_commit_policy = "off";
     await writeConfig(root, cfg);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -1039,8 +1108,9 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
+    const emoji = await expectedAgentEmoji(root, "CODER");
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} task: handle policy off | details: follow-up; extra details included for coverage`,
+      `${emoji} ${suffix} task: handle policy off | details: follow-up; extra details included for coverage`,
     );
   });
 
@@ -1048,6 +1118,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -1101,8 +1172,9 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
+    const emoji = await expectedAgentEmoji(root, "CODER");
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} task: apply separator rules | details: include extra details in the commit message`,
+      `${emoji} ${suffix} task: apply separator rules | details: include extra details in the commit message`,
     );
   });
 
@@ -1161,6 +1233,7 @@ describe("runCli", () => {
     cfg.status_commit_policy = "confirm";
     await writeConfig(root, cfg);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -1187,6 +1260,7 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
 
     const io = captureStdIO();
     try {
@@ -1214,6 +1288,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -1240,6 +1315,7 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
 
     const io = captureStdIO();
     try {
@@ -1265,15 +1341,17 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
+    const emoji = await expectedAgentEmoji(root, "CODER");
     expect(stdout.trim()).toBe(
-      `🚧 ${suffix} task: implement summary-only commit message formatting for start actions`,
+      `${emoji} ${suffix} task: implement summary-only commit message formatting for start actions`,
     );
   });
 
-  it("start commit-from-comment honors custom commit emoji", async () => {
+  it("start commit-from-comment honors custom commit emoji when it matches the executor agent emoji", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -1300,6 +1378,13 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "agents", "CODER.json"),
+      JSON.stringify({ commit_emoji: "✨" }) + "\n",
+      "utf8",
+    );
 
     const io = captureStdIO();
     try {
@@ -1337,6 +1422,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
+    await commitAll(root, "seed");
 
     const ioNew = captureStdIO();
     let taskId = "";
@@ -1363,6 +1449,7 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
+    await startDirectWork(root, taskId, "CODER");
 
     const io = captureStdIO();
     try {

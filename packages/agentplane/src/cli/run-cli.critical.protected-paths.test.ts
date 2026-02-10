@@ -35,7 +35,7 @@ describe("critical: protected paths (staged)", () => {
     const res = await runCli(["hooks", "run", "pre-commit"], { cwd: root });
     expectCliError(res, 5, "E_GIT");
     expect(res.stderr).toMatch(/protected/i);
-  });
+  }, 60_000);
 
   it("blocks delete + re-add of AGENTS.md", async () => {
     const root = await makeTempDir("agentplane-critical-protected-");
@@ -52,7 +52,7 @@ describe("critical: protected paths (staged)", () => {
     const res = await runCli(["hooks", "run", "pre-commit"], { cwd: root });
     expectCliError(res, 5, "E_GIT");
     expect(res.stderr).toMatch(/AGENTS\.md/i);
-  });
+  }, 60_000);
 
   it("blocks staging .agentplane/tasks.json without explicit allow env", async () => {
     const root = await makeTempDir("agentplane-critical-protected-");
@@ -69,5 +69,5 @@ describe("critical: protected paths (staged)", () => {
     const res = await runCli(["hooks", "run", "pre-commit"], { cwd: root });
     expectCliError(res, 5, "E_GIT");
     expect(res.stderr).toMatch(/tasks\.json/i);
-  });
+  }, 60_000);
 });

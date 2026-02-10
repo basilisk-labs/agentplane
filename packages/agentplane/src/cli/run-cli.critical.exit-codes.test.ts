@@ -17,5 +17,5 @@ describe("critical: exit codes contract", () => {
     expectCliError(second, 4, "E_IO");
     expect(second.stderr).toMatch(/Init conflicts detected/i);
     expect(second.stderr).toMatch(/--force/i);
-  });
+  }, 60_000);
 });

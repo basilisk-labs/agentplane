@@ -1,6 +1,6 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage } from "../../cli/output.js";
+import { invalidValueMessage, successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 import { readFile, rm } from "node:fs/promises";
@@ -13,6 +13,8 @@ import {
   type CommandContext,
 } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+
+import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
 import {
   appendTaskEvent,
@@ -202,12 +204,35 @@ export async function cmdFinish(opts: {
 
     // tasks.json is export-only; generated via `agentplane task export`.
 
+    let executorAgent: string | null = null;
+    if (opts.commitFromComment || opts.statusCommit) {
+      const mode = ctx.config.workflow_mode;
+      executorAgent = opts.author;
+      if (mode === "direct") {
+        const lock = await readDirectWorkLock(ctx.resolvedProject.agentplaneDir);
+        const lockAgent = lock?.task_id === primaryTaskId ? (lock.agent?.trim() ?? "") : "";
+        if (lockAgent) executorAgent = lockAgent;
+      }
+    }
+
     if (opts.commitFromComment) {
+      if (typeof opts.commitEmoji === "string" && opts.commitEmoji.trim() !== "✅") {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: invalidValueMessage(
+            "--commit-emoji",
+            opts.commitEmoji,
+            "✅ (finish commits must use a checkmark)",
+          ),
+        });
+      }
       await commitFromComment({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
+        executorAgent: executorAgent ?? undefined,
         author: opts.author,
         statusFrom: primaryStatusFrom ?? undefined,
         statusTo: "DONE",
@@ -224,11 +249,23 @@ export async function cmdFinish(opts: {
     }
 
     if (opts.statusCommit) {
+      if (typeof opts.statusCommitEmoji === "string" && opts.statusCommitEmoji.trim() !== "✅") {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: invalidValueMessage(
+            "--status-commit-emoji",
+            opts.statusCommitEmoji,
+            "✅ (finish commits must use a checkmark)",
+          ),
+        });
+      }
       await commitFromComment({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
+        executorAgent: executorAgent ?? undefined,
         author: opts.author,
         statusFrom: primaryStatusFrom ?? undefined,
         statusTo: "DONE",

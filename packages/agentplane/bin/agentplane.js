@@ -12,6 +12,17 @@ async function exists(p) {
   }
 }
 
+function isTestLikePath(absPath) {
+  // The repo build does not emit test files to dist. If we treat test mtimes as
+  // "src is newer than dist", we can block normal commits that only change tests.
+  const normalized = absPath.replaceAll("\\", "/");
+  if (normalized.includes("/__snapshots__/")) return true;
+  if (normalized.endsWith(".snap")) return true;
+  if (/\.(unit\.)?test\.[cm]?ts$/.test(normalized)) return true;
+  if (/\.(unit\.)?test\.tsx$/.test(normalized)) return true;
+  return false;
+}
+
 // Keep this file dependency-free and simple: rely on directory mtime scans below.
 async function newestMtimeMsInDir(dir) {
   let newest = 0;
@@ -32,6 +43,7 @@ async function newestMtimeMsInDir(dir) {
         continue;
       }
       if (!entry.isFile()) continue;
+      if (isTestLikePath(abs)) continue;
       try {
         const s = await stat(abs);
         if (s.mtimeMs > newest) newest = s.mtimeMs;

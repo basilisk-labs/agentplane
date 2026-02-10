@@ -5,6 +5,7 @@ import path from "node:path";
 
 import { type AgentplaneConfig } from "@agentplaneorg/core";
 
+import { resolveCommitEmojiForAgent } from "../../shared/agent-emoji.js";
 import {
   invalidValueForFlag,
   invalidValueMessage,
@@ -304,6 +305,14 @@ export function defaultCommitEmojiForStatus(status: string): string {
   if (normalized === "DONE") return "✅";
   if (normalized === "BLOCKED") return "⛔";
   return "🧩";
+}
+
+export async function defaultCommitEmojiForAgentId(
+  ctx: CommandContext,
+  agentId: string,
+): Promise<string> {
+  const agentsDir = path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.agents_dir);
+  return await resolveCommitEmojiForAgent({ agentsDirAbs: agentsDir, agentId });
 }
 
 export type TaskListFilters = {

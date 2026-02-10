@@ -1,6 +1,6 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage, warnMessage } from "../../cli/output.js";
+import { invalidValueMessage, successMessage, warnMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -13,11 +13,14 @@ import {
 } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
+import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
+
 import {
   appendTaskEvent,
   buildDependencyState,
   ensurePlanApprovedIfRequired,
   enforceStatusCommitPolicy,
+  defaultCommitEmojiForAgentId,
   extractDocSection,
   isVerifyStepsFilled,
   isTransitionAllowed,
@@ -179,17 +182,39 @@ export async function cmdStart(opts: {
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
+      const mode = ctx.config.workflow_mode;
+      let executorAgent = opts.author;
+      if (mode === "direct") {
+        const lock = await readDirectWorkLock(ctx.resolvedProject.agentplaneDir);
+        const lockAgent = lock?.task_id === opts.taskId ? (lock.agent?.trim() ?? "") : "";
+        if (lockAgent) executorAgent = lockAgent;
+      }
+
+      const expectedEmoji = await defaultCommitEmojiForAgentId(ctx, executorAgent);
+      if (typeof opts.commitEmoji === "string" && opts.commitEmoji.trim() !== expectedEmoji) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: invalidValueMessage(
+            "--commit-emoji",
+            opts.commitEmoji,
+            `${expectedEmoji} (executor agent=${executorAgent})`,
+          ),
+        });
+      }
+
       commitInfo = await commitFromComment({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
+        executorAgent,
         author: opts.author,
         statusFrom: currentStatus,
         statusTo: "DOING",
         commentBody: opts.body,
         formattedComment,
-        emoji: opts.commitEmoji ?? "🚧",
+        emoji: opts.commitEmoji ?? expectedEmoji,
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,

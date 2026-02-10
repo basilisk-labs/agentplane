@@ -418,13 +418,21 @@ In this mode:
 `<suffix>` rules:
 
 - Task commits: `<suffix>` must equal the task id suffix (e.g. task `202601010101-ABCDEF` -> `ABCDEF`).
-- Non-task commits: use the fixed suffix `DEV`.
+- Non-task commits: `<suffix>` may be omitted. Preferred: `<emoji> <scope>: <summary>`.
+- Optional explicit non-task suffix: `DEV` is allowed as `<emoji> DEV <scope>: <summary>`.
 
 Recommended action/status emojis:
 
 - `🚧` start / DOING
 - `⛔` blocked / BLOCKED
 - `✅` finish / DONE
+
+Executor agent emoji policy (status/comment-driven commits):
+
+- In `workflow_mode=direct`, status/comment-driven commits prefer the active `work start` lock (`.agentplane/cache/direct-work.json`) when present.
+- The emoji for status/comment-driven commits is derived from the executor agent id (recorded by `agentplane work start ... --agent <ID>`).
+- Users may override the emoji per agent by adding `commit_emoji` to `.agentplane/agents/<ID>.json`.
+- Finish commits MUST use `✅` (enforced by CLI and by the `commit-msg` hook for agentplane-generated commits).
 
 Agents must not reinterpret `-m` as "body-only" or "comment-only". `-m` is a commit message.
 

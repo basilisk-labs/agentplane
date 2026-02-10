@@ -7,11 +7,13 @@ import { evaluatePolicy } from "../../policy/evaluate.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
+import { resolveCommitEmojiForAgent } from "../../shared/agent-emoji.js";
 import { CliError } from "../../shared/errors.js";
 import { GitContext } from "../shared/git-context.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { gitCurrentBranch, gitRevParse } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
+import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
 const HOOK_MARKER = "agentplane-hook";
 const SHIM_MARKER = "agentplane-hook-shim";
@@ -212,6 +214,44 @@ export async function cmdHooksRun(opts: {
       const loaded = await loadConfig(resolved.agentplaneDir);
 
       const taskId = (process.env.AGENTPLANE_TASK_ID ?? "").trim();
+      const statusTo = (process.env.AGENTPLANE_STATUS_TO ?? "").trim().toUpperCase();
+      const agentsDirAbs = path.join(resolved.gitRoot, loaded.config.paths.agents_dir);
+      let agentId = (process.env.AGENTPLANE_AGENT_ID ?? "").trim();
+      if (!agentId && loaded.config.workflow_mode === "direct" && taskId) {
+        const lock = await readDirectWorkLock(resolved.agentplaneDir);
+        const lockAgent = lock?.agent?.trim() ?? "";
+        if (lock?.task_id === taskId && lockAgent) agentId = lockAgent;
+      }
+
+      const emoji = subject.split(/\s+/).find(Boolean) ?? "";
+      if (taskId) {
+        if (statusTo === "DONE") {
+          if (emoji !== "✅") {
+            throw new CliError({
+              exitCode: 5,
+              code: "E_GIT",
+              message:
+                "Finish commits must use a checkmark emoji.\n" +
+                "Expected:\n" +
+                "  ✅ <TASK_SUFFIX> <scope>: <summary>",
+            });
+          }
+        } else if (agentId) {
+          const expectedEmoji = await resolveCommitEmojiForAgent({ agentsDirAbs, agentId });
+          if (emoji !== expectedEmoji) {
+            throw new CliError({
+              exitCode: 5,
+              code: "E_GIT",
+              message:
+                "Commit emoji does not match the executor agent policy.\n" +
+                `executor_agent=${agentId}\n` +
+                "Expected:\n" +
+                `  ${expectedEmoji} <TASK_SUFFIX> <scope>: <summary>`,
+            });
+          }
+        }
+      }
+
       const res = evaluatePolicy({
         action: "hook_commit_msg",
         config: loaded.config,

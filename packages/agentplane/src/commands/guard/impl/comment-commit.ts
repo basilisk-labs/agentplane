@@ -59,6 +59,7 @@ function deriveCommitMessageFromComment(opts: {
 
 function deriveCommitBodyFromComment(opts: {
   taskId: string;
+  executorAgent?: string;
   author?: string;
   statusFrom?: string;
   statusTo?: string;
@@ -67,7 +68,8 @@ function deriveCommitBodyFromComment(opts: {
 }): string {
   const lines = [
     `Task: ${opts.taskId}`,
-    ...(opts.author ? [`Agent: ${opts.author}`] : []),
+    ...(opts.executorAgent ? [`Agent: ${opts.executorAgent}`] : []),
+    ...(opts.author ? [`Author: ${opts.author}`] : []),
     ...(opts.statusFrom && opts.statusTo ? [`Status: ${opts.statusFrom} -> ${opts.statusTo}`] : []),
     `Comment: ${normalizeCommentBodyForCommit(opts.formattedComment || opts.commentBody)}`,
   ];
@@ -80,6 +82,7 @@ export async function commitFromComment(opts: {
   cwd: string;
   rootOverride?: string;
   taskId: string;
+  executorAgent?: string;
   author?: string;
   statusFrom?: string;
   statusTo?: string;
@@ -136,6 +139,7 @@ export async function commitFromComment(opts: {
     opts.formattedComment ?? formatCommentBodyForCommit(opts.commentBody, opts.config);
   const body = deriveCommitBodyFromComment({
     taskId: opts.taskId,
+    executorAgent: opts.executorAgent,
     author: opts.author,
     statusFrom: opts.statusFrom,
     statusTo: opts.statusTo,
@@ -164,6 +168,8 @@ export async function commitFromComment(opts: {
   // Base overrides must be explicit via the `commit` command's --allow-base flag.
   const env = buildGitCommitEnv({
     taskId: opts.taskId,
+    agentId: opts.executorAgent,
+    statusTo: opts.statusTo,
     allowTasks: opts.allowTasks,
     allowBase: false,
     allowPolicy: false,

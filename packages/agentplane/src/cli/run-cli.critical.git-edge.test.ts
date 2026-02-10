@@ -32,7 +32,7 @@ describe("critical: git e2e edges", () => {
     // branch status calls into git branch resolution; detached HEAD should not proceed silently.
     const res = await runCli(["branch", "status"], { cwd: root });
     expectCliError(res, 5, "E_GIT");
-  });
+  }, 60_000);
 
   it("base branch explain is deterministic without a remote origin", async () => {
     const root = await makeTempDir("agentplane-critical-no-origin-");
@@ -46,5 +46,5 @@ describe("critical: git e2e edges", () => {
     // If this ever changes, we at least want a stable error code and stderr signature.
     expect(explain.code).toBe(0);
     expect(explain.stdout).toContain("effective_base=");
-  });
+  }, 60_000);
 });

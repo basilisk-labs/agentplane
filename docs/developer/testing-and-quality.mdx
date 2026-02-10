@@ -106,7 +106,11 @@ agentplane hooks uninstall
 
 By default, hooks run:
 
-- `commit-msg`: commit subject enforcement (task suffix or `DEV`)
+- `commit-msg`: commit subject enforcement:
+  - Task commits: `<emoji> <TASK_SUFFIX> <scope>: <summary>`
+  - Non-task commits: `<emoji> <scope>: <summary>` (optional explicit `DEV` suffix allowed)
+  - Status/comment-driven task commits derive `<emoji>` from the executor agent id and enforce it via `AGENTPLANE_AGENT_ID`
+  - Finish commits must use `✅` (enforced via `AGENTPLANE_STATUS_TO=DONE`)
 - `pre-commit`: format + lint + fast unit tests
 - `pre-push`: release notes check + critical + full test suites
 
