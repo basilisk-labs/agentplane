@@ -1,7 +1,8 @@
 ---
 id: "202602101802-XT4G13"
 title: "Verify: run full test suite and docs checks"
-status: "DOING"
+result_summary: "Full repo verification passed locally via bun run ci."
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-02-10T18:41:24.738Z"
   updated_by: "TESTER"
   note: "bun run ci passed (format:check, typecheck, lint, coverage)."
-commit: null
+commit:
+  hash: "f453eb0d0f9f1b84206caba2ed36de49a7625d90"
+  message: "📝 XT4G13 testing: run full ci checks"
 comments:
   -
     author: "TESTER"
     body: "Start: Run full repo verification after documentation updates (format, typecheck, lint, tests/coverage) and record results."
+  -
+    author: "TESTER"
+    body: "Verified: Full `bun run ci` suite passed locally (format:check, typecheck, lint, coverage)."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "bun run ci passed (format:check, typecheck, lint, coverage)."
+  -
+    type: "status"
+    at: "2026-02-10T18:42:11.479Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Full `bun run ci` suite passed locally (format:check, typecheck, lint, coverage)."
 doc_version: 2
-doc_updated_at: "2026-02-10T18:41:24.739Z"
+doc_updated_at: "2026-02-10T18:42:11.479Z"
 doc_updated_by: "TESTER"
 description: "Run full repo verification (lint + unit/integration tests) after docs changes; record results in task verification."
 id_source: "generated"
