@@ -15,6 +15,14 @@ bun run typecheck
 bun run test:fast
 ```
 
+If you run the repo-local CLI entrypoint (`node packages/agentplane/bin/agentplane.js ...`),
+the CLI executes from `dist/`. Rebuild after source changes:
+
+```bash
+bun run --filter=@agentplaneorg/core build
+bun run --filter=agentplane build
+```
+
 For a full run (including slower CLI integration tests):
 
 ```bash
