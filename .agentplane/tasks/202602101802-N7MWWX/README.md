@@ -1,7 +1,8 @@
 ---
 id: "202602101802-N7MWWX"
 title: "Docs developer: release and publishing (agent-assisted)"
-status: "DOING"
+result_summary: "Developer release docs reflect the current plan/apply workflow and approval gates."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "1f872d8beb6fe43d4cc515a7e186d18b36955aa7"
+  message: "📝 N7MWWX docs: document release plan/apply workflow"
 comments:
   -
     author: "DOCS"
     body: "Start: Update developer release/publishing docs to match agentplane release plan/apply and patch-only auto bump policy."
+  -
+    author: "DOCS"
+    body: "Verified: Updated developer release docs to make release plan/apply the default workflow and document patch/minor/major safety gates."
 events:
   -
     type: "status"
@@ -32,8 +38,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Update developer release/publishing docs to match agentplane release plan/apply and patch-only auto bump policy."
+  -
+    type: "status"
+    at: "2026-02-10T18:31:59.346Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Updated developer release docs to make release plan/apply the default workflow and document patch/minor/major safety gates."
 doc_version: 2
-doc_updated_at: "2026-02-10T18:31:21.808Z"
+doc_updated_at: "2026-02-10T18:31:59.346Z"
 doc_updated_by: "DOCS"
 description: "Rewrite developer release/publishing docs to match agentplane release plan/apply workflow, patch-only auto bump, and approval rules."
 id_source: "generated"
