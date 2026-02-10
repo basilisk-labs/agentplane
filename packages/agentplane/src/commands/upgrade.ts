@@ -6,7 +6,6 @@ import {
   readFile,
   readlink,
   rm,
-  symlink,
   writeFile,
 } from "node:fs/promises";
 import os from "node:os";
@@ -922,7 +921,7 @@ export async function cmdUpgradeParsed(opts: {
         `- .git/**\n\n` +
         `## Notes\n\n` +
         `- The upgrade bundle is validated against framework.manifest.json.\n` +
-        `- AGENTS.md is managed under .agentplane/AGENTS.md and workspace-root AGENTS.md is a symlink.\n`;
+        `- AGENTS.md is the canonical policy file at the workspace root.\n`;
 
       const reportMd =
         `# Upgrade report (${runId})\n\n` +
@@ -997,34 +996,32 @@ export async function cmdUpgradeParsed(opts: {
       const data = fileContents.get(rel);
       if (data) {
         if (rel === "AGENTS.md") {
-          // Write the managed copy under .agentplane/ and keep the workspace-root policy path
-          // as a symlink to it.
-          const managedPath = path.join(resolved.agentplaneDir, "AGENTS.md");
-          await mkdir(path.dirname(managedPath), { recursive: true });
-          await writeFile(managedPath, data);
-
-          // Replace AGENTS.md with a symlink if needed.
-          const relTarget = path.relative(resolved.gitRoot, managedPath);
+          // If AGENTS.md is a symlink, avoid overwriting an arbitrary external target.
+          // This permits repo-internal symlinks (e.g. the agentplane repo itself) while
+          // keeping user workspaces safe.
           try {
             const st = await lstat(destPath);
             if (st.isSymbolicLink()) {
-              const currentTarget = await readlink(destPath);
-              if (currentTarget !== relTarget) {
-                await rm(destPath, { force: true });
+              const linkTarget = await readlink(destPath);
+              const targetAbs = path.resolve(path.dirname(destPath), linkTarget);
+              const relFromRoot = path.relative(resolved.gitRoot, targetAbs);
+              if (relFromRoot.startsWith("..") || path.isAbsolute(relFromRoot)) {
+                throw new CliError({
+                  exitCode: exitCodeForError("E_VALIDATION"),
+                  code: "E_VALIDATION",
+                  message:
+                    `Refusing to overwrite symlinked AGENTS.md target outside repo: ${linkTarget}. ` +
+                    "Replace the symlink with a regular file and retry.",
+                });
               }
-            } else {
-              // If it's a regular file, remove it (backup already happened above when enabled).
-              await rm(destPath, { force: true });
             }
-          } catch {
-            // destPath doesn't exist
+          } catch (err) {
+            const code = (err as { code?: string } | null)?.code;
+            if (code !== "ENOENT") throw err;
           }
-          if (!(await fileExists(destPath))) {
-            await symlink(relTarget, destPath);
-          }
-        } else {
-          await writeFile(destPath, data);
         }
+
+        await writeFile(destPath, data);
       }
 
       // Record a baseline copy for future three-way merges.

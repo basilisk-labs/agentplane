@@ -1,4 +1,5 @@
-import { readFile, writeFile, mkdir, readdir } from "node:fs/promises";
+import { readFile, writeFile, mkdir, readdir, mkdtemp, symlink } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -152,5 +153,50 @@ describe("upgrade safety invariants", () => {
         },
       }),
     ).rejects.toMatchObject({ code: "E_VALIDATION", exitCode: 3 });
+  });
+
+  it("refuses to overwrite AGENTS.md when it is a symlink to a target outside the repo", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const outsideDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-outside-"));
+    const outsideTarget = path.join(outsideDir, "AGENTS.md");
+    await writeFile(outsideTarget, "OUTSIDE", "utf8");
+
+    const agentsPath = path.join(root, "AGENTS.md");
+    await symlink(outsideTarget, agentsPath);
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [{ path: "AGENTS.md", type: "text", merge_strategy: "agents_policy_markdown" }],
+        },
+        null,
+        2,
+      ),
+      "AGENTS.md": "INCOMING",
+    });
+
+    await expect(
+      cmdUpgradeParsed({
+        cwd: root,
+        rootOverride: root,
+        flags: {
+          bundle: bundlePath,
+          checksum: checksumPath,
+          mode: "auto",
+          remote: false,
+          allowTarball: false,
+          dryRun: false,
+          backup: false,
+          yes: true,
+        },
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION", exitCode: 3 });
+
+    // Ensure the external target was not overwritten.
+    const after = await readFile(outsideTarget, "utf8");
+    expect(after).toBe("OUTSIDE");
   });
 });
