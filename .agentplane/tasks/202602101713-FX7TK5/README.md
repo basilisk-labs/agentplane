@@ -1,7 +1,8 @@
 ---
 id: "202602101713-FX7TK5"
 title: "Archive validation: parse tar.gz in JS (avoid system tar exit-code variance)"
-status: "DOING"
+result_summary: "Switch tar.gz validation to JS parser"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "ddaff076f826459978bbbc72e27ab5e7a213e28b"
+  message: "✅ FX7TK5 cli: validate tar.gz archives without system tar"
 comments:
   -
     author: "CODER"
     body: "Start: switch tar validation to JS parser to remove GNU tar exit-code variance"
+  -
+    author: "CODER"
+    body: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
 events:
   -
     type: "status"
@@ -33,8 +39,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: switch tar validation to JS parser to remove GNU tar exit-code variance"
+  -
+    type: "status"
+    at: "2026-02-10T17:15:46.745Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
 doc_version: 2
-doc_updated_at: "2026-02-10T17:15:06.596Z"
+doc_updated_at: "2026-02-10T17:15:46.745Z"
 doc_updated_by: "CODER"
 description: "Replace tar-based archive validation that shells out to system tar with a small JS tar.gz parser (gunzip + tar header scan) to make unsafe-entry validation deterministic in CI."
 id_source: "generated"
