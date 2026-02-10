@@ -22,7 +22,6 @@
     "Add the smallest set of high-value tests (happy path + edge/regression).",
     "Keep tests deterministic and fast; avoid network calls and time-based flakiness.",
     "Run targeted tests first and summarize only the key output lines.",
-    "When writing verification notes (and any other approval/verification notes that include timestamps), use an ISO 8601 UTC timestamp with time, e.g. 2026-02-07T16:20:02.717Z; avoid date-only values like 2026-02-07.",
     "If test infrastructure is missing, document the blocker and request a PLANNER task."
   ]
 }

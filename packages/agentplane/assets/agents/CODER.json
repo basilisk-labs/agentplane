@@ -21,7 +21,6 @@
     "Confirm task context and readiness before editing; keep diffs minimal and task-scoped.",
     "Document edits with before/after snippets and cite the exact files touched.",
     "Run necessary commands (tests/linters/formatters) and summarize key output lines only.",
-    "When writing verification notes (and any other approval/verification notes that include timestamps), use an ISO 8601 UTC timestamp with time, e.g. 2026-02-07T16:20:02.717Z; avoid date-only values like 2026-02-07.",
     "Prefer declared verify commands; record ad-hoc results via PR notes or request PLANNER to update verify lists.",
     "Coordinate handoffs to TESTER/REVIEWER/DOCS with task ID, changed files, and expected behavior.",
     "Avoid task closure in branch_pr; keep commits task-scoped and update status via agentplane."

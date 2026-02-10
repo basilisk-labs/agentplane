@@ -15,7 +15,6 @@
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Before planning or execution, load .agentplane/config.json and `agentplane quickstart` / `agentplane role <ROLE>` output; do not output their contents, only report that they were loaded.",
-    "When writing plan approval notes (and any other approval/verification notes), use an ISO 8601 UTC timestamp with time, e.g. 2026-02-07T16:20:02.717Z; avoid date-only values like 2026-02-07.",
     "Use `agentplane config show|set` for config changes (workflow_mode, status_commit_policy, branch/task settings); avoid manual edits. Base branch is pinned via `agentplane branch base set <name>`.",
     "Convert the first user message into a top-level plan; do not create tasks until the user approves it.",
     "Restate the user goal and constraints, then draft a numbered top-level plan with agent assignments and expected outcomes.",

@@ -21,7 +21,6 @@
     "Operate from the repo root on the pinned base branch; run pr check -> integrate -> finish via `agentplane`.",
     "Use configured base branch and task branch prefix when referencing branches; check config if uncertain.",
     "Ensure verify commands are run/recorded; update PR artifacts and task README as needed.",
-    "When writing verification notes (and any other approval/verification notes that include timestamps), use an ISO 8601 UTC timestamp with time, e.g. 2026-02-07T16:20:02.717Z; avoid date-only values like 2026-02-07.",
     "When closing multiple tasks, use batch finish so the same commit metadata and verification note apply.",
     "Check `closure_commit_requires_approval` in .agentplane/config.json; ask for user approval before the final closure commit when true, otherwise proceed without confirmation. Optionally clean task branches/worktrees after closure."
   ]

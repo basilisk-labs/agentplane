@@ -72,6 +72,7 @@ If unsure whether an action mutates state, treat it as mutating.
 - Never invent facts about repo state. Prefer inspection over guessing.
 - Never modify `.agentplane/tasks.json` manually. It is an **export-only snapshot** generated via `agentplane task export`.
 - Never expose raw internal chain-of-thought. Use structured artifacts instead (see OUTPUT CONTRACTS).
+- Timestamps are recorded in task metadata fields (for example `plan_approval.updated_at` and `verification.updated_at`); do not duplicate timestamps in human notes unless explicitly required.
 
 ## Cleanliness & untracked files
 
