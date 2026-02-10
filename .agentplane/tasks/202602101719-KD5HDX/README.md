@@ -1,7 +1,8 @@
 ---
 id: "202602101719-KD5HDX"
 title: "Tests: generate unsafe tar.gz archives without system tar"
-status: "DOING"
+result_summary: "Make unsafe tar fixture deterministic"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "9d6025a8e0c1b500edce04a50dc85ee9798bcbdb"
+  message: "✅ KD5HDX test: generate unsafe tar.gz fixture in JS"
 comments:
   -
     author: "TESTER"
     body: "Start: make unsafe tar archive fixtures deterministic across tar implementations"
+  -
+    author: "TESTER"
+    body: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
 events:
   -
     type: "status"
@@ -33,8 +39,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: make unsafe tar archive fixtures deterministic across tar implementations"
+  -
+    type: "status"
+    at: "2026-02-10T17:23:06.412Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
 doc_version: 2
-doc_updated_at: "2026-02-10T17:22:14.808Z"
+doc_updated_at: "2026-02-10T17:23:06.412Z"
 doc_updated_by: "TESTER"
 description: "Make createUnsafeRecipeArchive (tar) generate a deterministic tar.gz with a path-traversal member name in JS, avoiding GNU tar sanitization/exit-code variance that causes CI-only failures."
 id_source: "generated"
