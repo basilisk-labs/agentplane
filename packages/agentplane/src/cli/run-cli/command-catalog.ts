@@ -75,10 +75,10 @@ import {
 import { integrateSpec } from "../../commands/integrate.command.js";
 
 import { commitSpec } from "../../commands/commit.spec.js";
-import { startSpec } from "../../commands/start.command.js";
-import { blockSpec } from "../../commands/block.command.js";
-import { verifySpec } from "../../commands/verify.command.js";
-import { finishSpec } from "../../commands/finish.command.js";
+import { startSpec } from "../../commands/start.spec.js";
+import { blockSpec } from "../../commands/block.spec.js";
+import { verifySpec } from "../../commands/verify.spec.js";
+import { finishSpec } from "../../commands/finish.spec.js";
 import { readySpec } from "../../commands/ready.command.js";
 import { doctorSpec } from "../../commands/doctor.command.js";
 
@@ -436,16 +436,16 @@ export const COMMANDS = [
     import("../../commands/commit.command.js").then((m) => m.makeRunCommitHandler(deps.getCtx)),
   ),
   entry(startSpec, (deps) =>
-    import("../../commands/start.command.js").then((m) => m.makeRunStartHandler(deps.getCtx)),
+    import("../../commands/start.run.js").then((m) => m.makeRunStartHandler(deps.getCtx)),
   ),
   entry(blockSpec, (deps) =>
-    import("../../commands/block.command.js").then((m) => m.makeRunBlockHandler(deps.getCtx)),
+    import("../../commands/block.run.js").then((m) => m.makeRunBlockHandler(deps.getCtx)),
   ),
   entry(verifySpec, (deps) =>
-    import("../../commands/verify.command.js").then((m) => m.makeRunVerifyHandler(deps.getCtx)),
+    import("../../commands/verify.run.js").then((m) => m.makeRunVerifyHandler(deps.getCtx)),
   ),
   entry(finishSpec, (deps) =>
-    import("../../commands/finish.command.js").then((m) => m.makeRunFinishHandler(deps.getCtx)),
+    import("../../commands/finish.run.js").then((m) => m.makeRunFinishHandler(deps.getCtx)),
   ),
   entry(readySpec, (deps) =>
     import("../../commands/ready.command.js").then((m) => m.makeRunReadyHandler(deps.getCtx)),
