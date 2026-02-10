@@ -27,6 +27,12 @@ To run only the CLI integration tests (without the slower smoke test):
 bun run test:cli
 ```
 
+To run the critical pre-push suite (fast, real git, separate-process CLI e2e checks):
+
+```bash
+bun run test:critical
+```
+
 To run the faster CLI unit-ish suites (core + recipes):
 
 ```bash
@@ -90,7 +96,7 @@ agentplane hooks install
 agentplane hooks uninstall
 ```
 
-By default, hooks run fast tests on pre-commit and full tests on pre-push. If a hook fails, fix the issue instead of skipping the hook.
+By default, hooks run fast tests on pre-commit and the critical suite on pre-push. If a hook fails, fix the issue instead of skipping the hook.
 
 ## Coverage and parity tests
 

@@ -1,13 +1,14 @@
 import { chmod, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 
-import { getStagedFiles, loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveBaseBranch, resolveProject } from "@agentplaneorg/core";
 
 import { evaluatePolicy } from "../../policy/evaluate.js";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { infoMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { GitContext } from "../shared/git-context.js";
 import { throwIfPolicyDenied } from "../shared/policy-deny.js";
 import { gitCurrentBranch, gitRevParse } from "../shared/git-ops.js";
 import { isPathWithin } from "../shared/path.js";
@@ -223,10 +224,11 @@ export async function cmdHooksRun(opts: {
     }
 
     if (opts.hook === "pre-commit") {
-      const staged = await getStagedFiles({
+      const resolved = await resolveProject({
         cwd: opts.cwd,
         rootOverride: opts.rootOverride ?? null,
       });
+      const staged = await new GitContext({ gitRoot: resolved.gitRoot }).statusStagedPaths();
       if (staged.length === 0) return 0;
       const allowTasks = (process.env.AGENTPLANE_ALLOW_TASKS ?? "").trim() === "1";
       const allowBase = (process.env.AGENTPLANE_ALLOW_BASE ?? "").trim() === "1";
@@ -235,10 +237,6 @@ export async function cmdHooksRun(opts: {
       const allowHooks = (process.env.AGENTPLANE_ALLOW_HOOKS ?? "").trim() === "1";
       const allowCI = (process.env.AGENTPLANE_ALLOW_CI ?? "").trim() === "1";
 
-      const resolved = await resolveProject({
-        cwd: opts.cwd,
-        rootOverride: opts.rootOverride ?? null,
-      });
       const loaded = await loadConfig(resolved.agentplaneDir);
       const inBranchPr = loaded.config.workflow_mode === "branch_pr";
       const baseBranch = inBranchPr

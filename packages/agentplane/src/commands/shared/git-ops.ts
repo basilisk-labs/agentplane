@@ -27,7 +27,13 @@ export async function gitCurrentBranch(cwd: string): Promise<string> {
     env: gitEnv(),
   });
   const trimmed = stdout.trim();
-  if (!trimmed || trimmed === "HEAD") throw new Error("Failed to resolve git branch");
+  if (!trimmed || trimmed === "HEAD") {
+    throw new CliError({
+      code: "E_GIT",
+      exitCode: exitCodeForError("E_GIT"),
+      message: "Detached HEAD: failed to resolve current branch",
+    });
+  }
   return trimmed;
 }
 

@@ -25,6 +25,7 @@
     "test:cli:scenario": "vitest run packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000",
     "test:cli:smoke": "vitest run packages/agentplane/src/cli/cli-smoke.test.ts --hookTimeout 60000 --testTimeout 60000",
     "test:cli:slow": "vitest run packages/agentplane/src/cli/run-cli.scenario.test.ts packages/agentplane/src/cli/cli-smoke.test.ts --hookTimeout 60000 --testTimeout 60000",
+    "test:critical": "vitest run packages/agentplane/src/cli/run-cli.critical.*.test.ts --hookTimeout 60000 --testTimeout 60000",
     "test:full": "vitest run",
     "coverage": "vitest run --coverage",
     "ci": "bun run format:check && bun run typecheck && bun run lint && bun run coverage",
