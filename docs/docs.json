@@ -42,7 +42,7 @@
           },
           {
             "group": "Configuration",
-            "pages": ["user/configuration", "user/commands"]
+            "pages": ["user/configuration", "user/commands", "user/cli-reference.generated"]
           }
         ]
       },
