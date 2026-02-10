@@ -50,6 +50,9 @@ agentplane backend sync <id> --direction push --yes
 
 Conflict strategies: `diff`, `prefer-local`, `prefer-remote`, `fail`.
 
+Note: `agentplane sync` is a supported alias for backend sync, but the docs prefer the explicit
+`agentplane backend sync` form to avoid ambiguity with other domains (for example `agentplane ide sync`).
+
 ## Notes
 
 - Treat `.agentplane/tasks.json` as a derived snapshot.

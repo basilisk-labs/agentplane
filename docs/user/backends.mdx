@@ -31,6 +31,9 @@ agentplane backend sync <id> --direction push --yes
 
 The CLI may maintain a local cache and falls back to it when remote services are unavailable.
 
+Note: `agentplane sync` is a supported alias for backend sync, but the docs prefer the explicit
+`agentplane backend sync` form to avoid ambiguity with other domains.
+
 ## Conflict strategies
 
 - `diff` — report differences without overwriting.
