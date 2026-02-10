@@ -208,6 +208,31 @@ describe("runCli", () => {
     expect(backend).not.toHaveProperty("class");
   });
 
+  it("init --gitignore-agents updates .gitignore and skips the install commit", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--gitignore-agents", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const gitignorePath = path.join(root, ".gitignore");
+    const gitignore = await readFile(gitignorePath, "utf8");
+    expect(gitignore).toContain("AGENTS.md");
+    expect(gitignore).toContain(".agentplane/agents/");
+
+    const execFileAsync = promisify(execFile) as (
+      file: string,
+      args: readonly string[],
+      opts: { cwd: string; env: NodeJS.ProcessEnv },
+    ) => Promise<{ stdout: string; stderr: string }>;
+    await expect(
+      execFileAsync("git", ["rev-parse", "--verify", "HEAD"], { cwd: root, env: cleanGitEnv() }),
+    ).rejects.toThrow();
+  });
+
   it("init --backend redmine sets backend config path", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);

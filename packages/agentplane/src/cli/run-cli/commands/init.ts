@@ -13,6 +13,7 @@ import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { CliError } from "../../../shared/errors.js";
 import { getVersion } from "../../../meta/version.js";
 import { cmdHooksInstall, ensureInitCommit } from "../../../commands/workflow.js";
+import { setPinnedBaseBranch } from "@agentplaneorg/core";
 
 import { resolveInitBaseBranchForInit } from "./init/base-branch.js";
 import { collectInitConflicts, handleInitConflicts } from "./init/conflicts.js";
@@ -21,12 +22,14 @@ import { maybeSyncIde } from "./init/ide-sync.js";
 import { maybeInstallBundledRecipes } from "./init/recipes.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./init/write-config.js";
 import { ensureAgentsFiles } from "./init/write-agents.js";
+import { ensureGitignoreAgents } from "./init/write-gitignore.js";
 
 type InitFlags = {
   ide?: "codex" | "cursor" | "windsurf";
   workflow?: "direct" | "branch_pr";
   backend?: "local" | "redmine";
   hooks?: boolean;
+  gitignoreAgents?: boolean;
   requirePlanApproval?: boolean;
   requireNetworkApproval?: boolean;
   requireVerifyApproval?: boolean;
@@ -63,7 +66,7 @@ export const initSpec: CommandSpec<InitParsed> = {
   group: "Setup",
   summary: "Initialize agentplane project files under .agentplane/.",
   description:
-    "Creates .agentplane/ config, backend stubs, and agent templates in the target directory. If the target directory is not a git repository, it initializes one and writes an initial install commit. In interactive mode it prompts for missing inputs; use --yes for non-interactive mode.",
+    "Creates .agentplane/ config, backend stubs, and agent templates in the target directory. If the target directory is not a git repository, it initializes one and (by default) writes an initial install commit. Use --gitignore-agents to keep agent templates local (gitignored) and skip the install commit. In interactive mode it prompts for missing inputs; use --yes for non-interactive mode.",
   options: [
     {
       kind: "string",
@@ -136,6 +139,13 @@ export const initSpec: CommandSpec<InitParsed> = {
       default: false,
       description: "Non-interactive mode (do not prompt; use defaults for missing flags).",
     },
+    {
+      kind: "boolean",
+      name: "gitignore-agents",
+      default: false,
+      description:
+        "Add agent files (AGENTS.md and .agentplane/agents/) to .gitignore and skip the initial install commit.",
+    },
   ],
   examples: [
     { cmd: "agentplane init", why: "Interactive setup (prompts for missing values)." },
@@ -146,6 +156,10 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       cmd: "agentplane init --force --yes",
       why: "Re-initialize, overwriting conflicts (non-interactive).",
+    },
+    {
+      cmd: "agentplane init --yes --gitignore-agents",
+      why: "Initialize without committing and keep agent prompts/templates local (gitignored).",
     },
   ],
   validateRaw: (raw) => {
@@ -185,6 +199,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       force: raw.opts.force === true,
       backup: raw.opts.backup === true,
       yes: raw.opts.yes === true,
+      gitignoreAgents: raw.opts["gitignore-agents"] === true,
     };
   },
   validate: (p) => {
@@ -367,6 +382,15 @@ async function cmdInit(opts: {
       backendPathAbs: backendPath,
     });
 
+    if (flags.gitignoreAgents) {
+      await ensureGitignoreAgents({ gitRoot: resolved.gitRoot });
+      await setPinnedBaseBranch({
+        cwd: resolved.gitRoot,
+        rootOverride: resolved.gitRoot,
+        value: initBaseBranch,
+      });
+    }
+
     if (hooks) {
       await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
     }
@@ -381,13 +405,15 @@ async function cmdInit(opts: {
 
     maybeInstallBundledRecipes(recipes);
 
-    await ensureInitCommit({
-      gitRoot: resolved.gitRoot,
-      baseBranch: initBaseBranch,
-      installPaths,
-      version: getVersion(),
-      skipHooks: hooks,
-    });
+    if (!flags.gitignoreAgents) {
+      await ensureInitCommit({
+        gitRoot: resolved.gitRoot,
+        baseBranch: initBaseBranch,
+        installPaths,
+        version: getVersion(),
+        skipHooks: hooks,
+      });
+    }
 
     process.stdout.write(`${path.relative(resolved.gitRoot, resolved.agentplaneDir)}\n`);
     return 0;
