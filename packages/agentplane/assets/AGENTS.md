@@ -78,6 +78,7 @@ If unsure whether an action mutates state, treat it as mutating.
 
 - Ignore pre-existing untracked files you did not create.
 - Only stage/commit files intentionally modified for the current task.
+- Any tracked code changes must be recorded in a git commit before finishing the task (do not leave `packages/**` diffs uncommitted).
 - “Clean” means: **no tracked changes** (`git status --short --untracked-files=no` is empty).
 - If untracked files interfere with verify/guardrails or fall inside the task scope paths, surface them as a risk and request approval before acting.
 
