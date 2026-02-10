@@ -26,12 +26,12 @@
     },
     "packages/agentplane": {
       "name": "agentplane",
-      "version": "0.2.5",
+      "version": "0.2.8",
       "bin": {
         "agentplane": "bin/agentplane.js",
       },
       "dependencies": {
-        "@agentplaneorg/core": "0.2.5",
+        "@agentplaneorg/core": "0.2.6",
         "yauzl": "^2.10.0",
       },
       "devDependencies": {
@@ -40,7 +40,7 @@
     },
     "packages/core": {
       "name": "@agentplaneorg/core",
-      "version": "0.2.5",
+      "version": "0.2.8",
       "dependencies": {
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
@@ -882,6 +882,8 @@
     "@typescript-eslint/typescript-estree/minimatch": ["minimatch@9.0.5", "", { "dependencies": { "brace-expansion": "^2.0.1" } }, "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow=="],
 
     "@typescript-eslint/typescript-estree/semver": ["semver@7.7.3", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q=="],
+
+    "agentplane/@agentplaneorg/core": ["@agentplaneorg/core@0.2.6", "", { "dependencies": { "ajv": "^8.17.1", "ajv-formats": "^3.0.1", "yaml": "^2.8.2" } }, "sha512-NNopCUiQHGMt8Mox6Qn4ZhFdqI0BFSlYsxhAJvgpvkT6UygdmbQYYOyI6MDaCeDS0jLm8uzgaIkKwIdo4CHL3g=="],
 
     "clean-regexp/escape-string-regexp": ["escape-string-regexp@1.0.5", "", {}, "sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg=="],
 
