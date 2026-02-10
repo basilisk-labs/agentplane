@@ -96,7 +96,15 @@ agentplane hooks install
 agentplane hooks uninstall
 ```
 
-By default, hooks run fast tests on pre-commit and the critical suite on pre-push. If a hook fails, fix the issue instead of skipping the hook.
+By default, hooks run fast tests on pre-commit and the critical + full suites on pre-push. If a hook fails, fix the issue instead of skipping the hook.
+
+## CI
+
+On PRs and on pushes to `main`, CI runs:
+
+- `bun run lint`
+- `bun run test:fast`
+- `bun run test:critical`
 
 ## Coverage and parity tests
 

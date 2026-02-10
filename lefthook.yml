@@ -13,3 +13,5 @@ pre-push:
       use_stdin: true
     test-critical:
       run: bun run test:critical
+    test-full:
+      run: bun run test:full
