@@ -160,6 +160,35 @@ async function validateReleaseNotes(notesPath: string): Promise<void> {
   }
 }
 
+async function maybeUpdateBunLockfile(gitRoot: string): Promise<void> {
+  // GitHub publish uses `bun install --frozen-lockfile`, which will fail if the lockfile
+  // needs regeneration after bumping workspace package versions.
+  const bunLockPath = path.join(gitRoot, "bun.lock");
+  const rootPkgPath = path.join(gitRoot, "package.json");
+  if (!(await fileExists(bunLockPath))) return;
+  if (!(await fileExists(rootPkgPath))) return;
+
+  try {
+    await execFileAsync("bun", ["install", "--ignore-scripts"], {
+      cwd: gitRoot,
+      env: process.env,
+      maxBuffer: 50 * 1024 * 1024,
+    });
+  } catch (err) {
+    const e = err as { message?: string } | null;
+    throw new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message:
+        "Failed to update bun.lock via `bun install --ignore-scripts`.\n" +
+        "Fix:\n" +
+        "  1) Run `bun install --ignore-scripts` manually\n" +
+        "  2) Re-run `agentplane release apply`\n" +
+        (e?.message ? `\nDetails:\n${e.message}` : ""),
+    });
+  }
+}
+
 export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
   id: ["release", "apply"],
   group: "Release",
@@ -311,11 +340,17 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
     });
   }
 
-  await git.stage([
+  await maybeUpdateBunLockfile(gitRoot);
+
+  const stagePaths = [
     "packages/core/package.json",
     "packages/agentplane/package.json",
     path.relative(gitRoot, notesPath),
-  ]);
+  ];
+  if (await fileExists(path.join(gitRoot, "bun.lock"))) {
+    stagePaths.push("bun.lock");
+  }
+  await git.stage(stagePaths);
 
   const staged = await git.statusStagedPaths();
   if (staged.length === 0) {
