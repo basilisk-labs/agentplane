@@ -71,7 +71,7 @@ Reserved namespaces (1.0):
 
 - `task`, `work`, `pr`, `branch`, `guard`, `hooks`, `commit`
 - `mode`, `config`, `verify`, `ready`, `integrate`, `cleanup`, `finish`, `start`, `block`
-- `ide`, `backend`, `recipes`, `scenario`, `upgrade`
+- `ide`, `backend`, `recipes`, `scenario`, `upgrade`, `release`
 
 Collision resolution:
 
@@ -111,6 +111,8 @@ This table lists commands and required minimum flags. Implementation may add add
 | `agentplane recipes info <id>`         | Show recipe metadata                                    | Basic manifest fields                                                |
 | `agentplane recipes explain <id>`      | Show detailed recipe info                               | Includes scenario details when available                             |
 | `agentplane recipes cache prune`       | Prune global recipe cache                               | Removes installed recipes not referenced by `recipes.json`           |
+| `agentplane release plan`              | Generate an agent-assisted release plan                 | Patch bump default; minor/major require `--yes`                      |
+| `agentplane release apply`             | Apply a prepared release plan                           | Validates notes, bumps versions, commits, and tags                   |
 
 ### 5.2 Explicit-network commands
 
