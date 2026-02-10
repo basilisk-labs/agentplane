@@ -48,6 +48,24 @@ agentplane task new --title "..." --description "..." --priority med --owner COD
 agentplane task doc set <task-id> --section Summary --text "..."
 ```
 
+## Task export (optional)
+
+Export an integration snapshot (typically `.agentplane/tasks.json`):
+
+```bash
+agentplane task export
+agentplane task lint
+```
+
+## Backend sync (remote backends)
+
+For remote backends (for example Redmine), use explicit sync:
+
+```bash
+agentplane backend sync redmine --direction pull
+agentplane backend sync redmine --direction push --yes
+```
+
 ## Workflow
 
 ```bash
@@ -83,6 +101,6 @@ agentplane scenario run <recipe:scenario>
 
 ## CLI reference (generated)
 
-For the full, up-to-date command surface derived from the cli2 registry/spec, see:
+For the full, up-to-date command surface derived from the registry/spec, see:
 
 - [CLI reference (generated)](cli-reference.generated)
