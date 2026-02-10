@@ -24,6 +24,21 @@ export { dedupeStrings } from "../../shared/strings.js";
 
 export const execFileAsync = promisify(execFile);
 
+async function listAgentIdsMemo(ctx: CommandContext): Promise<string[]> {
+  ctx.memo.agentIds ??= (async () => {
+    const agentsDir = path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.agents_dir);
+    if (!(await fileExists(agentsDir))) return [];
+
+    const entries = await readdir(agentsDir);
+    return entries
+      .filter((name) => name.endsWith(".json"))
+      .map((name) => name.slice(0, -".json".length))
+      .map((id) => id.trim())
+      .filter((id) => id.length > 0);
+  })();
+  return await ctx.memo.agentIds;
+}
+
 export function nowIso(): string {
   return new Date().toISOString();
 }
@@ -97,14 +112,7 @@ export async function warnIfUnknownOwner(ctx: CommandContext, owner: string): Pr
   const trimmed = owner.trim();
   if (!trimmed) return;
 
-  const agentsDir = path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.agents_dir);
-  if (!(await fileExists(agentsDir))) return;
-
-  const entries = await readdir(agentsDir);
-  const ids = entries
-    .filter((name) => name.endsWith(".json"))
-    .map((name) => name.slice(0, -".json".length))
-    .filter((id) => id.trim().length > 0);
+  const ids = await listAgentIdsMemo(ctx);
   if (ids.length === 0) return;
 
   if (!ids.includes(trimmed)) {

@@ -32,6 +32,22 @@ function mkCtx(): CommandContext {
 }
 
 describe("warnIfUnknownOwner", () => {
+  it("memoizes agent ids listing within one ctx instance", async () => {
+    const { warnIfUnknownOwner } = await import("./shared.js");
+    const io = captureStdIO();
+    try {
+      mocks.fileExists.mockResolvedValue(true);
+      mocks.readdir.mockResolvedValue(["CODER.json", "TESTER.json"]);
+
+      const ctx = mkCtx();
+      await warnIfUnknownOwner(ctx, "NOPE");
+      await warnIfUnknownOwner(ctx, "NOPE");
+      expect(mocks.readdir).toHaveBeenCalledTimes(1);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("warns when owner is not present in .agentplane/agents", async () => {
     const { warnIfUnknownOwner } = await import("./shared.js");
     const io = captureStdIO();

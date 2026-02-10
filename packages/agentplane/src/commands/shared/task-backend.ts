@@ -8,6 +8,7 @@ export type CommandMemo = {
   taskList?: Promise<TaskData[]>;
   changedPaths?: Promise<string[]>;
   headCommit?: Promise<string>;
+  agentIds?: Promise<string[]>;
 };
 
 export type CommandContext = {
