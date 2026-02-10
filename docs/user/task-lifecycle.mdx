@@ -15,7 +15,7 @@ A task moves through the same core stages in both modes:
 6. **Verify**: checks are run (if configured) and a verification outcome is recorded.
 7. **Commit**: changes are committed with the task ID suffix.
 8. **Finish**: the task is closed with a Verified note and commit metadata.
-9. **Export**: task snapshots are updated for integrations.
+9. **Export (optional)**: export a task snapshot for integrations (for example `agentplane task export`).
 
 The differences between modes are about **where** work happens and **who** performs closure.
 
@@ -75,7 +75,7 @@ sequenceDiagram
   CLI->>G: Create commit
   E->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata
-  CLI->>B: Update snapshot export
+  E->>CLI: task export (optional)
 ```
 
 ## branch_pr mode (task branches + worktrees)
@@ -127,7 +127,7 @@ sequenceDiagram
   CLI->>B: Refresh diffstat + README summary
   I->>CLI: finish <task-id> --author <id> --body <text> --result <one-line>
   CLI->>B: Close task + store commit metadata
-  CLI->>B: Update snapshot export
+  I->>CLI: task export (optional)
 ```
 
 ## Lifecycle notes and guardrails

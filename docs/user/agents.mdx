@@ -7,6 +7,13 @@ description: "Learn how agents are defined, how responsibilities are split, and 
 
 Agents are defined in JSON under `.agentplane/agents/` (core set + optional recipe-installed agents). A global policy document defines the rules that govern runs.
 
+Key sources of truth (highest to lowest priority):
+
+- `AGENTS.md`
+- `agentplane quickstart` / `agentplane role <ROLE>`
+- `.agentplane/config.json`
+- `.agentplane/agents/*.json`
+
 ## ORCHESTRATOR
 
 - Starts every run.
