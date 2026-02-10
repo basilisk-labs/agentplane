@@ -3,6 +3,8 @@ export type CommitPolicyResult = {
   errors: string[];
 };
 
+const NON_TASK_SUFFIX = "DEV";
+
 function stripPunctuation(input: string): string {
   return input.replaceAll(/[^\p{L}\p{N}\s-]/gu, " ");
 }
@@ -49,14 +51,15 @@ function parseSubjectTemplate(subject: string): {
 
 export function validateCommitSubject(opts: {
   subject: string;
-  taskId: string;
+  taskId?: string;
   genericTokens: string[];
 }): CommitPolicyResult {
   const errors: string[] = [];
   const subject = opts.subject.trim();
   if (!subject) errors.push("commit subject must be non-empty");
 
-  const suffix = extractTaskSuffix(opts.taskId);
+  const taskId = (opts.taskId ?? "").trim();
+  const taskSuffix = taskId ? extractTaskSuffix(taskId) : "";
 
   const template = parseSubjectTemplate(subject);
   if (!template) {
@@ -64,10 +67,15 @@ export function validateCommitSubject(opts: {
     return { ok: false, errors };
   }
 
-  if (!suffix) {
-    errors.push("task id has no suffix");
-  } else if (template.suffix.toLowerCase() !== suffix.toLowerCase()) {
-    errors.push("commit subject must include task suffix as the second token");
+  if (taskSuffix) {
+    if (template.suffix.toLowerCase() !== taskSuffix.toLowerCase()) {
+      errors.push("commit subject must include task suffix as the second token");
+    }
+  } else {
+    // Non-task commits use a fixed suffix to avoid guessing/deriving task context.
+    if (template.suffix.toLowerCase() !== NON_TASK_SUFFIX.toLowerCase()) {
+      errors.push(`task id is required unless the suffix is '${NON_TASK_SUFFIX}'`);
+    }
   }
 
   const normalizedSummary = stripPunctuation(template.summary).toLowerCase().trim();

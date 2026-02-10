@@ -92,6 +92,32 @@ describe("commit-policy", () => {
     );
   });
 
+  it("accepts non-task subjects with DEV suffix", () => {
+    const result = validateCommitSubject({
+      subject: "✨ DEV ci: enforce full tests before push",
+      genericTokens: ["update", "tasks", "wip"],
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("rejects non-task subjects when suffix is not DEV", () => {
+    const result = validateCommitSubject({
+      subject: "✨ ABCDEF ci: enforce full tests before push",
+      genericTokens: ["update", "tasks", "wip"],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors.join("\n")).toContain("task id is required unless the suffix is 'DEV'");
+  });
+
+  it("rejects generic non-task subjects even with DEV suffix", () => {
+    const result = validateCommitSubject({
+      subject: "✨ DEV ci: update",
+      genericTokens: ["update", "tasks", "wip"],
+    });
+    expect(result.ok).toBe(false);
+    expect(result.errors.join("\n")).toContain("commit subject is too generic");
+  });
+
   it("integrates with git commit message", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "file.txt"), "hello", "utf8");

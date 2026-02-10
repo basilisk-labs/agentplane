@@ -9,24 +9,9 @@ export function commitSubjectRule(ctx: PolicyContext): PolicyResult {
     return { ok: false, errors: [gitError("Commit message subject is empty")], warnings: [] };
   }
 
-  const taskId = (ctx.taskId ?? "").trim();
-  if (!taskId) {
-    return {
-      ok: false,
-      errors: [
-        gitError(
-          ctx.action === "hook_commit_msg"
-            ? "AGENTPLANE_TASK_ID is required (use `agentplane commit ...`)"
-            : "Task id is required for commit subject validation",
-        ),
-      ],
-      warnings: [],
-    };
-  }
-
   const policy = validateCommitSubject({
     subject,
-    taskId,
+    taskId: (ctx.taskId ?? "").trim() || undefined,
     genericTokens: ctx.config.commit.generic_tokens,
   });
   if (!policy.ok) {

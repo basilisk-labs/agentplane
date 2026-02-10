@@ -1,6 +1,16 @@
 import { defineConfig } from "vitest/config";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      // In-repo tests should run against source, not stale built artifacts.
+      "@agentplaneorg/core": path.join(__dirname, "packages/core/src/index.ts"),
+    },
+  },
   test: {
     include: ["packages/**/src/**/*.test.ts"],
     environment: "node",

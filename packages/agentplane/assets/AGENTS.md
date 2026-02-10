@@ -6,7 +6,7 @@ default_initiator: ORCHESTRATOR
 
 # PURPOSE
 
-This document defines the **behavioral policy** for agents operating in an agentplane-managed development workspace.
+This document defines the **behavioral policy** for Codex-style agents operating in this repository (CLI + VS Code extension).
 Goal: **deterministic execution**, **tight guardrails**, and **minimum accidental changes** by enforcing a strict, inspectable pipeline.
 
 This policy is designed to be the single, authoritative instruction set the agent follows when invoked in a folder containing this file.
@@ -28,11 +28,9 @@ If two sources conflict, prefer the higher-priority source.
 
 All commands in this policy are written as `agentplane ...` and MUST use the `agentplane` CLI available on `PATH`.
 
-Do not use repository-relative entrypoints (for example `node .../bin/agentplane.js`) in instructions or automation.
-
 ## Scope boundary
 
-- All operations must remain within the workspace unless explicitly approved (see Approval Gates + Overrides).
+- All operations must remain within the repository unless explicitly approved (see Approval Gates + Overrides).
 - Do not read/write global user files (`~`, `/etc`, keychains, ssh keys, global git config) unless explicitly approved and necessary.
 
 ## Agent roles (authority boundaries)
@@ -62,16 +60,16 @@ Execution agents are defined by JSON files under `.agentplane/agents/*.json`. Th
 
 ## Definitions (remove ambiguity)
 
-- **Read-only inspection**: commands that may read workspace state but must not change tracked files or commit history.
+- **Read-only inspection**: commands that may read repo state but must not change tracked files or commit history.
   Examples: `agentplane config show`, `agentplane task list`, `agentplane task show`, `git status`, `git diff`, `cat`, `grep`.
-- **Mutating action**: anything that can change tracked files, task state, commits, branches, or outside-workspace state.
+- **Mutating action**: anything that can change tracked files, task state, commits, branches, or outside-repo state.
   Examples: `agentplane task new/update/doc set/plan set/start/finish/verify`, `git commit`, `git checkout`, `bun install`.
 
 If unsure whether an action mutates state, treat it as mutating.
 
 ## Truthfulness & safety (hard invariants)
 
-- Never invent facts about workspace state. Prefer inspection over guessing.
+- Never invent facts about repo state. Prefer inspection over guessing.
 - Never modify `.agentplane/tasks.json` manually. It is an **export-only snapshot** generated via `agentplane task export`.
 - Never expose raw internal chain-of-thought. Use structured artifacts instead (see OUTPUT CONTRACTS).
 
@@ -82,7 +80,7 @@ If unsure whether an action mutates state, treat it as mutating.
 - “Clean” means: **no tracked changes** (`git status --short --untracked-files=no` is empty).
 - If untracked files interfere with verify/guardrails or fall inside the task scope paths, surface them as a risk and request approval before acting.
 
-## Approval gates (network vs outside-workspace)
+## Approval gates (network vs outside-repo)
 
 ### Network
 
@@ -97,20 +95,15 @@ Network use includes (non-exhaustive):
 - `git fetch`, `git pull`
 - calling external HTTP APIs or remote services
 
-### Outside-workspace
+### Outside-repo
 
-Outside-workspace reading/writing is **always prohibited** unless the user explicitly approves it (regardless of `require_network`).
+Outside-repo reading/writing is **always prohibited** unless the user explicitly approves it (regardless of `require_network`).
 
-Outside-workspace includes (non-exhaustive):
+Outside-repo includes (non-exhaustive):
 
-- reading/writing outside the workspace (`~`, `/etc`, global configs)
+- reading/writing outside the repo (`~`, `/etc`, global configs)
 - modifying keychains, ssh keys, credential stores
-- any tool that mutates outside-workspace state
-
-### Interactive vs non-interactive runs (approvals mechanics)
-
-- Interactive: the user can approve prompts (for example network use) during the run.
-- Non-interactive (CI, scripted runs): approvals MUST be expressed via flags/config up front (for example `--yes`). If an approval is required and not granted, stop and request explicit user instruction.
+- any tool that mutates outside-repo state
 
 ---
 
@@ -156,18 +149,13 @@ This is the required substitute for raw chain-of-thought.
 
 Preflight is **read-only inspection**. It is allowed before user approval.
 
-Before any planning or execution, ORCHESTRATOR must:
+Before any planning or execution, ORCHESTRATOR must run:
 
-1. Determine whether the current directory is an initialized agentplane workspace (e.g. `.agentplane/config.json` exists).
-2. Attempt git inspection:
-   - `git status --short --untracked-files=no`
-   - `git rev-parse --abbrev-ref HEAD`
-3. If the workspace is initialized, also run:
-   - `agentplane config show`
-   - `agentplane quickstart` (CLI instructions)
-   - `agentplane task list`
-
-If a command fails because the workspace is not initialized or not a git repo, record that fact in the Preflight Summary instead of guessing or proceeding with mutating actions.
+1. `agentplane config show`
+2. `agentplane quickstart` (CLI instructions)
+3. `agentplane task list`
+4. `git status --short --untracked-files=no`
+5. `git rev-parse --abbrev-ref HEAD`
 
 Then report a **Preflight Summary** (do not dump full config or quickstart text).
 
@@ -178,8 +166,6 @@ You MUST explicitly state:
 - Config loaded: yes/no
 - CLI instructions loaded: yes/no
 - Task list loaded: yes/no
-- Workspace initialized: yes/no
-- Git repository detected: yes/no
 - Working tree clean (tracked-only): yes/no
 - Current git branch: `<name>`
 - `workflow_mode`: `direct` / `branch_pr` / unknown
@@ -187,7 +173,7 @@ You MUST explicitly state:
   - `require_plan`: true/false/unknown
   - `require_verify`: true/false/unknown
   - `require_network`: true/false/unknown
-- Outside-workspace: not needed / needed (if needed, requires explicit user approval)
+- Outside-repo: not needed / needed (if needed, requires explicit user approval)
 
 Do not output the full contents of config or quickstart unless the user explicitly asks.
 
@@ -199,7 +185,7 @@ Do not output the full contents of config or quickstart unless the user explicit
 - ORCHESTRATOR starts by producing a top-level plan + task decomposition.
 - **Before explicit user approval, do not perform mutating actions.**
   - Allowed: read-only inspection (including preflight).
-  - Prohibited: creating/updating tasks, editing files, starting/finishing tasks, commits, branching, verify runs that mutate task state, network use, outside-workspace access.
+  - Prohibited: creating/updating tasks, editing files, starting/finishing tasks, commits, branching, verify runs that mutate task state, network use, outside-repo access.
 
 ---
 
@@ -219,7 +205,7 @@ ORCHESTRATOR MUST produce:
 - **Decomposition**
   - Atomic tasks assignable to existing agents
 - **Approvals**
-  - Whether network and/or outside-workspace actions will be needed
+  - Whether network and/or outside-repo actions will be needed
   - Any requested overrides (see Override Protocol)
 - **Verification criteria**
   - What will be considered "done" + checks to run
@@ -234,7 +220,7 @@ ORCHESTRATOR MUST produce:
 - PLANNER creates any additional tasks from the approved decomposition.
 - Task IDs are referenced in comments/notes for traceability.
 
-**Task tracking is mandatory** for any work that changes workspace state. Exceptions require explicit user approval (Override Protocol).
+**Task tracking is mandatory** for any work that changes repo state. Exceptions require explicit user approval (Override Protocol).
 
 ---
 
@@ -244,7 +230,7 @@ Overrides exist to let the user intentionally relax guardrails **in a controlled
 
 ## Hard invariants (cannot be overridden)
 
-- No fabricated workspace facts.
+- No fabricated repo facts.
 - No raw chain-of-thought.
 - No manual editing of `.agentplane/tasks.json` (exports are generated, not edited).
 
@@ -253,7 +239,7 @@ Overrides exist to let the user intentionally relax guardrails **in a controlled
 Common overridable guardrails:
 
 - **Network**: allow network access even when `require_network=true`.
-- **Outside-workspace**: allow reading/writing outside the workspace (scoped).
+- **Outside-repo**: allow reading/writing outside the repo (scoped).
 - **Pipeline**: skip/relax steps (e.g., skip task tracking for analysis-only; skip exports).
 - **Tooling**: allow direct `git` operations when no agentplane command exists (commit/push).
 - **Force flags**: allow `--force` status transitions / dependency bypass.
@@ -282,7 +268,7 @@ Any approved override MUST be recorded:
 
 ## Golden rule
 
-If an agent changes workspace state, that work must be traceable to a task ID and a filled task README.
+If an agent changes repo state, that work must be traceable to a task ID and a filled task README.
 
 ## Scaffold is mandatory
 
@@ -396,9 +382,7 @@ If config sets `agents.approvals.require_plan=true`:
 
 # COMMIT WORKFLOW
 
-Default: commits and pushes should go through `agentplane` commands (instead of direct `git commit`/`git push`) to enforce policy and allowlists.
-
-Override: direct git operations are allowed only with explicit user approval, and must be logged under the task `## Notes` → `### Approvals / Overrides`.
+- Commits and pushes must go through `agentplane` commands (no direct `git commit`/`git push`) unless explicitly overridden.
 
 ## Commit message semantics (canonical)
 
@@ -430,6 +414,11 @@ In this mode:
 ## Commit subject format (enforced)
 
 `<emoji> <suffix> <scope>: <summary>`
+
+`<suffix>` rules:
+
+- Task commits: `<suffix>` must equal the task id suffix (e.g. task `202601010101-ABCDEF` -> `ABCDEF`).
+- Non-task commits: use the fixed suffix `DEV`.
 
 Recommended action/status emojis:
 
@@ -509,7 +498,7 @@ Re-approval is required if any of the following becomes true:
 
 - Scope expands beyond the approved in-scope paths/artifacts.
 - New tasks are needed that were not in the approved decomposition.
-- Any network or outside-workspace access becomes necessary (and was not approved).
+- Any network or outside-repo access becomes necessary (and was not approved).
 - Verification criteria change materially.
 - Plan changes materially for an in-flight task (update plan -> plan approval returns to pending).
 - Guardrails require `--force` to proceed.
