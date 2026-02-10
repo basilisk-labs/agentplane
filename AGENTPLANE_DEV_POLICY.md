@@ -77,7 +77,8 @@ Practical enforcement:
 
 ### SemVer policy (project-specific)
 
-- Default policy: only **patch** and **minor** releases are allowed during normal development.
+- Default policy: only **minor** releases are allowed during normal development.
+- **Patch** releases are allowed only as explicit hotfix/backport releases and must be documented (reason + risk) in the release notes and release PR/task.
 - **Major** releases require an explicit, written approval in the release PR/task and must include:
   - a clear breaking change document
   - a migration plan
