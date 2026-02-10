@@ -1,7 +1,8 @@
 ---
 id: "202602101802-G52CH8"
 title: "Docs user: tasks and backends"
-status: "DOING"
+result_summary: "Tasks/backends docs match current backend sync and export commands."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "07cb1debf756bc95272b546b0ea96e31143061a9"
+  message: "📝 G52CH8 docs: align tasks and backends commands"
 comments:
   -
     author: "DOCS"
     body: "Start: Update tasks/backends docs (local/redmine, exports, canonical source) to match current backend model and commands."
+  -
+    author: "DOCS"
+    body: "Verified: Updated tasks/backends docs to use current  and  commands and removed legacy examples."
 events:
   -
     type: "status"
@@ -32,8 +38,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Update tasks/backends docs (local/redmine, exports, canonical source) to match current backend model and commands."
+  -
+    type: "status"
+    at: "2026-02-10T18:25:52.311Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Updated tasks/backends docs to use current  and  commands and removed legacy examples."
 doc_version: 2
-doc_updated_at: "2026-02-10T18:25:03.129Z"
+doc_updated_at: "2026-02-10T18:25:52.311Z"
 doc_updated_by: "DOCS"
 description: "Update tasks/backends docs (local/redmine, exports, canonical source) to match current backend model and commands."
 id_source: "generated"
