@@ -7,10 +7,10 @@ import { configSetSpec, configShowSpec, modeGetSpec, modeSetSpec } from "./comma
 import { ideSyncSpec } from "./commands/ide.js";
 
 import { taskNewSpec } from "../../commands/task/new.spec.js";
-import { taskListSpec } from "../../commands/task/list.command.js";
-import { taskNextSpec } from "../../commands/task/next.command.js";
-import { taskSearchSpec } from "../../commands/task/search.command.js";
-import { taskShowSpec } from "../../commands/task/show.command.js";
+import { taskListSpec } from "../../commands/task/list.spec.js";
+import { taskNextSpec } from "../../commands/task/next.spec.js";
+import { taskSearchSpec } from "../../commands/task/search.spec.js";
+import { taskShowSpec } from "../../commands/task/show.spec.js";
 import { taskAddSpec } from "../../commands/task/add.command.js";
 import { taskUpdateSpec } from "../../commands/task/update.command.js";
 import { taskCommentSpec } from "../../commands/task/comment.command.js";
@@ -208,24 +208,18 @@ export const COMMANDS = [
   }),
 
   entry(taskListSpec, (deps) =>
-    import("../../commands/task/list.command.js").then((m) =>
-      m.makeRunTaskListHandler(deps.getCtx),
-    ),
+    import("../../commands/task/list.run.js").then((m) => m.makeRunTaskListHandler(deps.getCtx)),
   ),
   entry(taskNextSpec, (deps) =>
-    import("../../commands/task/next.command.js").then((m) =>
-      m.makeRunTaskNextHandler(deps.getCtx),
-    ),
+    import("../../commands/task/next.run.js").then((m) => m.makeRunTaskNextHandler(deps.getCtx)),
   ),
   entry(taskSearchSpec, (deps) =>
-    import("../../commands/task/search.command.js").then((m) =>
+    import("../../commands/task/search.run.js").then((m) =>
       m.makeRunTaskSearchHandler(deps.getCtx),
     ),
   ),
   entry(taskShowSpec, (deps) =>
-    import("../../commands/task/show.command.js").then((m) =>
-      m.makeRunTaskShowHandler(deps.getCtx),
-    ),
+    import("../../commands/task/show.run.js").then((m) => m.makeRunTaskShowHandler(deps.getCtx)),
   ),
   entry(taskNewSpec, (deps) =>
     import("../../commands/task/new.command.js").then((m) => m.makeRunTaskNewHandler(deps.getCtx)),
