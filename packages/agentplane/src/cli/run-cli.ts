@@ -1,7 +1,12 @@
 import os from "node:os";
 import path from "node:path";
 
-import { loadConfig, resolveProject } from "@agentplaneorg/core";
+import {
+  loadConfig,
+  resolveProject,
+  type LoadedConfig,
+  type ResolvedProject,
+} from "@agentplaneorg/core";
 import { mapCoreError } from "./error-map.js";
 import { exitCodeForError } from "./exit-codes.js";
 import { warnMessage } from "./output.js";
@@ -355,9 +360,15 @@ export async function runCli(argv: string[]): Promise<number> {
 
     const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
       const { buildRegistry } = await import("./run-cli/registry.run.js");
-      const registry = buildRegistry((_cmd: string) =>
-        Promise.reject(new Error("getCtx should not be called for help")),
-      );
+      const reject =
+        (name: string) =>
+        (_cmd: string): Promise<never> =>
+          Promise.reject(new Error(`${name} should not be called for help`));
+      const registry = buildRegistry({
+        getCtx: reject("getCtx"),
+        getResolvedProject: reject("getResolvedProject"),
+        getLoadedConfig: reject("getLoadedConfig"),
+      });
 
       const match = registry.match(helpArgv);
       if (!match) {
@@ -398,12 +409,35 @@ export async function runCli(argv: string[]): Promise<number> {
       await loadDotEnv(resolved.gitRoot);
     }
 
+    let projectPromise: Promise<ResolvedProject> | null = null;
+    const getResolvedProject = async (commandForErrorContext: string): Promise<ResolvedProject> => {
+      projectPromise ??= resolveProject({ cwd, rootOverride: globals.root ?? null });
+      try {
+        return await projectPromise;
+      } catch (err) {
+        throw mapCoreError(err, { command: commandForErrorContext, root: globals.root ?? null });
+      }
+    };
+
+    let configPromise: Promise<LoadedConfig> | null = null;
+    const getLoadedConfig = async (commandForErrorContext: string): Promise<LoadedConfig> => {
+      configPromise ??= (async () => {
+        const project = await getResolvedProject(commandForErrorContext);
+        return await loadConfig(project.agentplaneDir);
+      })();
+      try {
+        return await configPromise;
+      } catch (err) {
+        throw mapCoreError(err, { command: commandForErrorContext, root: globals.root ?? null });
+      }
+    };
+
     // `require_network=true` means "no network without explicit approval".
     // Update-check is an optional network call, so it must be gated after config load.
     let skipUpdateCheckForPolicy = true;
     if (resolved && matched?.entry.needsConfig !== false) {
       try {
-        const loaded = await loadConfig(resolved.agentplaneDir);
+        const loaded = await getLoadedConfig("update-check");
         const requireNetwork = loaded.config.agents?.approvals.require_network === true;
         const explicitlyApproved = globals.allowNetwork;
         skipUpdateCheckForPolicy = requireNetwork && !explicitlyApproved;
@@ -441,7 +475,11 @@ export async function runCli(argv: string[]): Promise<number> {
 
     // cli2 command routing (single router).
     const { buildRegistry } = await import("./run-cli/registry.run.js");
-    const registry = buildRegistry(getCtxOrThrow);
+    const registry = buildRegistry({
+      getCtx: getCtxOrThrow,
+      getResolvedProject,
+      getLoadedConfig,
+    });
 
     const match = registry.match(rest);
     if (match) {

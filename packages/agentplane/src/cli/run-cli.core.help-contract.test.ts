@@ -3,7 +3,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { runCli } from "./run-cli.js";
 import { captureStdIO, silenceStdIO } from "./run-cli.test-helpers.js";
 import { buildRegistry } from "./run-cli/registry.run.js";
-import type { CommandContext } from "../commands/shared/task-backend.js";
 import { COMMANDS } from "./run-cli/command-catalog.js";
 
 type HelpJson = {
@@ -25,6 +24,11 @@ function registryCommandIdsSorted(registry: {
 function commandCatalogIdsSorted(): string[] {
   return [...new Set(COMMANDS.map((e) => e.spec.id.join(" ")))].toSorted();
 }
+
+const rejectDuringRegistryConstruction =
+  (name: string) =>
+  (_cmd: string): Promise<never> =>
+    Promise.reject(new Error(`${name} should not be called during registry construction`));
 
 let restoreStdIO: (() => void) | null = null;
 
@@ -71,10 +75,11 @@ describe("cli2 help contract", () => {
   });
 
   it("run registry covers the command catalog id set", () => {
-    const runRegistry = buildRegistry(
-      (_cmd: string): Promise<CommandContext> =>
-        Promise.reject(new Error("getCtx should not be called during registry construction")),
-    );
+    const runRegistry = buildRegistry({
+      getCtx: rejectDuringRegistryConstruction("getCtx"),
+      getResolvedProject: rejectDuringRegistryConstruction("getResolvedProject"),
+      getLoadedConfig: rejectDuringRegistryConstruction("getLoadedConfig"),
+    });
 
     // buildRegistry registers helpSpec in addition to COMMANDS.
     const runIds = registryCommandIdsSorted(runRegistry);

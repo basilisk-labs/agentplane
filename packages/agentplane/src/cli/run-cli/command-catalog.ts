@@ -94,9 +94,12 @@ import { guardSuggestAllowSpec } from "../../commands/guard/suggest-allow.comman
 import { guardCommitSpec } from "../../commands/guard/commit.command.js";
 
 import type { CommandContext } from "../../commands/shared/task-backend.js";
+import type { LoadedConfig, ResolvedProject } from "@agentplaneorg/core";
 
 export type RunDeps = {
   getCtx: (commandForErrorContext: string) => Promise<CommandContext>;
+  getResolvedProject: (commandForErrorContext: string) => Promise<ResolvedProject>;
+  getLoadedConfig: (commandForErrorContext: string) => Promise<LoadedConfig>;
   getHelpJsonForDocs: () => readonly HelpJson[];
 };
 
@@ -143,36 +146,60 @@ export const COMMANDS = [
     needsConfig: false,
     needsTaskContext: false,
   }),
-  entry(agentsSpec, () => import("./commands/core.js").then((m) => m.runAgents), {
-    needsProject: true,
-    needsConfig: false,
-    needsTaskContext: false,
-  }),
-  entry(configShowSpec, () => import("./commands/config.js").then((m) => m.runConfigShow), {
-    needsProject: true,
-    needsConfig: true,
-    needsTaskContext: false,
-  }),
-  entry(configSetSpec, () => import("./commands/config.js").then((m) => m.runConfigSet), {
-    needsProject: true,
-    needsConfig: true,
-    needsTaskContext: false,
-  }),
-  entry(modeGetSpec, () => import("./commands/config.js").then((m) => m.runModeGet), {
-    needsProject: true,
-    needsConfig: true,
-    needsTaskContext: false,
-  }),
-  entry(modeSetSpec, () => import("./commands/config.js").then((m) => m.runModeSet), {
-    needsProject: true,
-    needsConfig: true,
-    needsTaskContext: false,
-  }),
-  entry(ideSyncSpec, () => import("./commands/ide.js").then((m) => m.runIdeSync), {
-    needsProject: true,
-    needsConfig: true,
-    needsTaskContext: false,
-  }),
+  entry(
+    agentsSpec,
+    (deps) => import("./commands/core.js").then((m) => m.makeRunAgentsHandler(deps)),
+    {
+      needsProject: true,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    configShowSpec,
+    (deps) => import("./commands/config.js").then((m) => m.makeRunConfigShowHandler(deps)),
+    {
+      needsProject: true,
+      needsConfig: true,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    configSetSpec,
+    (deps) => import("./commands/config.js").then((m) => m.makeRunConfigSetHandler(deps)),
+    {
+      needsProject: true,
+      needsConfig: true,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    modeGetSpec,
+    (deps) => import("./commands/config.js").then((m) => m.makeRunModeGetHandler(deps)),
+    {
+      needsProject: true,
+      needsConfig: true,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    modeSetSpec,
+    (deps) => import("./commands/config.js").then((m) => m.makeRunModeSetHandler(deps)),
+    {
+      needsProject: true,
+      needsConfig: true,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    ideSyncSpec,
+    (deps) => import("./commands/ide.js").then((m) => m.makeRunIdeSyncHandler(deps)),
+    {
+      needsProject: true,
+      needsConfig: true,
+      needsTaskContext: false,
+    },
+  ),
 
   entry(doctorSpec, () => import("../../commands/doctor.command.js").then((m) => m.runDoctor), {
     needsProject: true,

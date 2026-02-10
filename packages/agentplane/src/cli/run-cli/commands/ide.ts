@@ -1,11 +1,11 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { resolveProject } from "@agentplaneorg/core";
-
 import { mapCoreError } from "../../error-map.js";
 import { writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
+import { CliError } from "../../../shared/errors.js";
+import type { RunDeps } from "../command-catalog.js";
 
 type IdeSyncParsed = { ide?: "cursor" | "windsurf" };
 
@@ -33,12 +33,10 @@ export async function cmdIdeSync(opts: {
   cwd: string;
   rootOverride?: string;
   ide?: "cursor" | "windsurf";
+  deps: RunDeps;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-    });
+    const resolved = await opts.deps.getResolvedProject("ide sync");
     const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
     const agentsText = await readFile(agentsPath, "utf8");
 
@@ -76,9 +74,11 @@ export async function cmdIdeSync(opts: {
     }
     return 0;
   } catch (err) {
+    if (err instanceof CliError) throw err;
     throw mapCoreError(err, { command: "ide sync", root: opts.rootOverride ?? null });
   }
 }
 
-export const runIdeSync: CommandHandler<IdeSyncParsed> = (ctx, p) =>
-  cmdIdeSync({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, ide: p.ide });
+export function makeRunIdeSyncHandler(deps: RunDeps): CommandHandler<IdeSyncParsed> {
+  return (ctx, p) => cmdIdeSync({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, ide: p.ide, deps });
+}

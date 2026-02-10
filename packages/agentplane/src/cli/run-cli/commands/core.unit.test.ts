@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { RunDeps } from "../command-catalog.js";
+
 const mockResolveProject =
   vi.fn<
     (opts: { cwd: string; rootOverride: string | null }) => Promise<{ agentplaneDir: string }>
@@ -135,9 +137,16 @@ describe("core commands (unit)", () => {
       return true;
     }) as unknown as typeof process.stdout.write);
 
-    mockResolveProject.mockResolvedValue({ agentplaneDir: "/repo/.agentplane" });
-
-    const { runAgents } = await import("./core.js");
+    const { makeRunAgentsHandler } = await import("./core.js");
+    const deps: RunDeps = {
+      getCtx: (_cmd) => Promise.reject(new Error("getCtx not used in agents unit tests")),
+      getResolvedProject: (_cmd) =>
+        Promise.resolve({ gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" }),
+      getLoadedConfig: (_cmd) =>
+        Promise.reject(new Error("getLoadedConfig not used in agents unit tests")),
+      getHelpJsonForDocs: () => [],
+    };
+    const runAgents = makeRunAgentsHandler(deps);
 
     mockFileExists.mockResolvedValue(false);
     await expect(runAgents(ctx, {})).rejects.toMatchObject({ code: "E_USAGE" });
@@ -167,7 +176,6 @@ describe("core commands (unit)", () => {
       return true;
     }) as unknown as typeof process.stdout.write);
 
-    mockResolveProject.mockResolvedValue({ agentplaneDir: "/repo/.agentplane" });
     mockFileExists.mockResolvedValue(true);
     mockReaddir.mockResolvedValue(["a.json", "b.json"]);
     mockReadFile.mockImplementation((p) =>
@@ -178,7 +186,16 @@ describe("core commands (unit)", () => {
       ),
     );
 
-    const { runAgents } = await import("./core.js");
+    const { makeRunAgentsHandler } = await import("./core.js");
+    const deps: RunDeps = {
+      getCtx: (_cmd) => Promise.reject(new Error("getCtx not used in agents unit tests")),
+      getResolvedProject: (_cmd) =>
+        Promise.resolve({ gitRoot: "/repo", agentplaneDir: "/repo/.agentplane" }),
+      getLoadedConfig: (_cmd) =>
+        Promise.reject(new Error("getLoadedConfig not used in agents unit tests")),
+      getHelpJsonForDocs: () => [],
+    };
+    const runAgents = makeRunAgentsHandler(deps);
     const rc = await runAgents(ctx, {});
     expect(rc).toBe(0);
     const out = writes.join("");
