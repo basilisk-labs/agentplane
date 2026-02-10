@@ -18,26 +18,54 @@ Every release **must** include English, human‑readable notes in `docs/releases
 
 The publish workflow fails if release notes are missing or empty.
 
-## Build and pack
+## Standard release workflow (recommended)
+
+Agent Plane supports an agent-assisted release flow that separates:
+
+- generating a structured changes list and target version (plan)
+- writing human release notes (DOCS)
+- applying the version bump plus tagging for publish (apply)
+
+### 1) Generate a release plan
+
+Patch bumps are the default. Minor/major bumps require explicit approval via `--yes`.
 
 ```bash
-cd packages/agentplane
-npm pack
+agentplane release plan
 ```
 
-Review the tarball contents before publishing.
+This writes a plan directory under `.agentplane/.release/plan/<runId>/` with:
 
-## Publish order
+- the computed `nextTag` and bump kind
+- a machine-readable changes list for release notes authoring
 
-If both packages are public, publish in this order:
+### 2) Write release notes (DOCS)
+
+Create `docs/releases/vX.Y.Z.md` based on the plan output.
+
+### 3) Apply the release (commit plus tag)
 
 ```bash
-cd packages/core
-npm publish --access public
-
-cd ../agentplane
-npm publish --access public
+agentplane release apply
 ```
+
+This command:
+
+- validates that release notes exist and are non-empty
+- bumps workspace package versions together
+- creates a release commit
+- creates the git tag `vX.Y.Z`
+
+To push the release commit and tag:
+
+```bash
+agentplane release apply --push --yes
+```
+
+Notes:
+
+- Patch releases can be applied without `--yes`.
+- Pushing requires `--yes` (safety gate).
 
 ## Trusted publishing (GitHub Actions)
 
@@ -77,5 +105,22 @@ agentplane --help
 
 ## Notes
 
-- Ensure `dist/` is up to date before publishing.
+- Ensure `dist/` is up to date before publishing (monorepo development requires building packages before commits that affect published artifacts).
 - Keep metadata in `package.json` accurate (description, keywords, repository, etc.).
+
+## Emergency manual publish (discouraged)
+
+If trusted publishing is unavailable, you can publish manually, but treat this as a controlled, explicit action with extra verification:
+
+1. Build and pack:
+
+   ```bash
+   bun run release:check
+   ```
+
+2. Publish order:
+
+   ```bash
+   cd packages/core && npm publish --access public
+   cd ../agentplane && npm publish --access public
+   ```
