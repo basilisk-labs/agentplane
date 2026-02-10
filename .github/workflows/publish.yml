@@ -58,8 +58,16 @@ jobs:
           node-version: "20"
       - run: npm i -g npm@11.5.1
       - run: bun install --frozen-lockfile --ignore-scripts
+      # Server-side gate: do not publish if formatting/lint/tests fail.
+      # Hooks are local and can be bypassed; publish must be deterministic.
+      - name: Format (check)
+        run: bun run format:check
       - run: bun run --filter=@agentplaneorg/core build
       - run: bun run --filter=agentplane build
+      - name: Lint
+        run: bun run lint
+      - name: Tests (Full)
+        run: bun run test:full
       - name: Build upgrade bundle assets
         run: |
           set -euo pipefail

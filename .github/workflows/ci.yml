@@ -21,6 +21,10 @@ jobs:
         with:
           node-version: "20"
       - run: bun install --frozen-lockfile --ignore-scripts
+      # ESLint is configured with type-aware rules and project references.
+      # A fresh checkout must build `dist/` first so types resolve correctly.
+      - name: Build (required for type-aware lint)
+        run: bun run build
       - name: Lint
         run: bun run lint
       - name: Unit Tests (Fast)
