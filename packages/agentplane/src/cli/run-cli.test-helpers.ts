@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { gzipSync } from "node:zlib";
 import { afterAll, beforeAll } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
@@ -379,10 +380,82 @@ export async function createUnsafeRecipeArchive(opts: {
   await writeFile(path.join(baseDir, "evil.txt"), "evil", "utf8");
   const archivePath =
     opts.format === "zip" ? path.join(baseDir, "unsafe.zip") : path.join(baseDir, "unsafe.tar.gz");
-  await (opts.format === "zip"
-    ? execFileAsync("zip", ["-qr", archivePath, ".", entryPath], { cwd: recipeDir })
-    : execFileAsync("tar", ["-czf", archivePath, "-C", recipeDir, ".", entryPath]));
+  if (opts.format === "zip") {
+    await execFileAsync("zip", ["-qr", archivePath, ".", entryPath], { cwd: recipeDir });
+    return archivePath;
+  }
+
+  // Build a deterministic tar.gz containing a traversal entry, without relying on system tar behavior.
+  // This keeps the archive validation tests stable across GNU tar / bsdtar.
+  const tar = buildTar([
+    {
+      name: "./manifest.json",
+      data: Buffer.from(JSON.stringify(manifest, null, 2) + "\n", "utf8"),
+    },
+    { name: entryPath, data: Buffer.from("evil\n", "utf8") },
+  ]);
+  const gz = gzipSync(tar);
+  await writeFile(archivePath, gz);
   return archivePath;
+}
+
+function buildTar(entries: { name: string; data: Buffer }[]): Buffer {
+  const out: Buffer[] = [];
+  for (const ent of entries) {
+    const header = tarHeader({
+      name: ent.name,
+      size: ent.data.length,
+      mtime: 0,
+      typeflag: "0",
+    });
+    out.push(header, ent.data, zeroPadTo512(ent.data.length));
+  }
+  // Two empty blocks mark end-of-archive.
+  out.push(Buffer.alloc(1024, 0));
+  return Buffer.concat(out);
+}
+
+function zeroPadTo512(n: number): Buffer {
+  const rem = n % 512;
+  if (rem === 0) return Buffer.alloc(0);
+  return Buffer.alloc(512 - rem, 0);
+}
+
+function tarHeader(opts: { name: string; size: number; mtime: number; typeflag: string }): Buffer {
+  const buf = Buffer.alloc(512, 0);
+  writeTarString(buf, 0, 100, opts.name);
+  writeTarOctal(buf, 100, 8, 0o644); // mode
+  writeTarOctal(buf, 108, 8, 0); // uid
+  writeTarOctal(buf, 116, 8, 0); // gid
+  writeTarOctal(buf, 124, 12, opts.size);
+  writeTarOctal(buf, 136, 12, opts.mtime);
+
+  // checksum field must be treated as spaces for calculation
+  buf.fill(0x20, 148, 156);
+  writeTarString(buf, 156, 1, opts.typeflag);
+  writeTarString(buf, 257, 6, "ustar"); // magic
+  writeTarString(buf, 263, 2, "00"); // version
+
+  const sum = buf.reduce((acc, b) => acc + b, 0);
+  writeTarChecksum(buf, sum);
+  return buf;
+}
+
+function writeTarString(buf: Buffer, offset: number, length: number, value: string): void {
+  const b = Buffer.from(value, "utf8");
+  b.copy(buf, offset, 0, Math.min(length, b.length));
+}
+
+function writeTarOctal(buf: Buffer, offset: number, length: number, value: number): void {
+  const raw = Math.max(0, value).toString(8);
+  const padded = raw.padStart(length - 1, "0") + "\0";
+  writeTarString(buf, offset, length, padded);
+}
+
+function writeTarChecksum(buf: Buffer, sum: number): void {
+  // 6 digits, NUL, space (common convention).
+  const raw = Math.max(0, sum).toString(8).padStart(6, "0");
+  writeTarString(buf, 148, 8, `${raw}\0 `);
 }
 
 export async function createUpgradeBundle(files: Record<string, string>): Promise<{
