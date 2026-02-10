@@ -1,7 +1,8 @@
 ---
 id: "202602101802-YQR0RR"
 title: "Docs user: workflow and task lifecycle"
-status: "DOING"
+result_summary: "Workflow docs match current direct/branch_pr semantics and sources-of-truth ordering."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "4f58abd9a265248e27f70aaa73e32d0a562c7621"
+  message: "📝 YQR0RR docs: align workflow docs"
 comments:
   -
     author: "DOCS"
     body: "Start: Update workflow/task lifecycle/agents/branch_pr docs to match current direct/branch_pr behavior and command semantics."
+  -
+    author: "DOCS"
+    body: "Verified: Updated workflow docs to reflect direct-mode single-stream behavior and made export an explicit optional action."
 events:
   -
     type: "status"
@@ -32,8 +38,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Update workflow/task lifecycle/agents/branch_pr docs to match current direct/branch_pr behavior and command semantics."
+  -
+    type: "status"
+    at: "2026-02-10T18:23:18.245Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Updated workflow docs to reflect direct-mode single-stream behavior and made export an explicit optional action."
 doc_version: 2
-doc_updated_at: "2026-02-10T18:22:37.385Z"
+doc_updated_at: "2026-02-10T18:23:18.245Z"
 doc_updated_by: "DOCS"
 description: "Update workflow/task lifecycle/agents/branch_pr artifacts docs to match current direct and branch_pr behavior and command semantics."
 id_source: "generated"
