@@ -1,7 +1,8 @@
 ---
 id: "202602101802-G58053"
 title: "Docs user: commands guide + generated CLI reference refresh"
-status: "DOING"
+result_summary: "Commands guide and generated CLI reference match the current CLI."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "f30e8a3a8868b3174decf0c5f23708d538c22355"
+  message: "📝 G58053 docs: refresh commands guide and regenerate CLI reference"
 comments:
   -
     author: "DOCS"
     body: "Start: Align commands guide with current CLI and regenerate generated CLI reference."
+  -
+    author: "DOCS"
+    body: "Verified: Updated commands guide and regenerated the generated CLI reference to match the current registry/spec."
 events:
   -
     type: "status"
@@ -32,8 +38,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Align commands guide with current CLI and regenerate generated CLI reference."
+  -
+    type: "status"
+    at: "2026-02-10T18:29:10.082Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Updated commands guide and regenerated the generated CLI reference to match the current registry/spec."
 doc_version: 2
-doc_updated_at: "2026-02-10T18:27:32.124Z"
+doc_updated_at: "2026-02-10T18:29:10.082Z"
 doc_updated_by: "DOCS"
 description: "Align commands guide with current CLI and regenerate docs/user/cli-reference.generated.mdx via agentplane docs tooling."
 id_source: "generated"
