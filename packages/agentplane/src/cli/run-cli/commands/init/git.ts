@@ -1,17 +1,19 @@
-import { findGitRoot } from "@agentplaneorg/core";
+import path from "node:path";
 
 import { gitInitRepo } from "../../../../commands/workflow.js";
+import { getPathKind } from "../../../fs-utils.js";
 
 export async function ensureGitRoot(opts: {
   initRoot: string;
   baseBranchFallback: string;
 }): Promise<{ gitRoot: string; gitRootExisted: boolean }> {
-  const existingGitRoot = await findGitRoot(opts.initRoot);
-  const gitRootExisted = Boolean(existingGitRoot);
-  let gitRoot = existingGitRoot;
-  if (!gitRoot) {
+  // Init is intentionally scoped to initRoot only. We do not search parent directories
+  // for an existing git repository, to avoid accidentally initializing the wrong workspace.
+  const dotGit = path.join(opts.initRoot, ".git");
+  const kind = await getPathKind(dotGit);
+  const gitRootExisted = kind === "dir";
+  if (!gitRootExisted) {
     await gitInitRepo(opts.initRoot, opts.baseBranchFallback);
-    gitRoot = opts.initRoot;
   }
-  return { gitRoot, gitRootExisted };
+  return { gitRoot: opts.initRoot, gitRootExisted };
 }

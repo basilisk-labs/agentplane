@@ -65,7 +65,7 @@ export const initSpec: CommandSpec<InitParsed> = {
   group: "Setup",
   summary: "Initialize agentplane project files under .agentplane/.",
   description:
-    "Creates .agentplane/ config, backend stubs, and agent templates. In interactive mode it prompts for missing inputs; use --yes for non-interactive mode.",
+    "Creates .agentplane/ config, backend stubs, and agent templates in the target directory. If the target directory is not a git repository, it initializes one and writes an initial install commit. In interactive mode it prompts for missing inputs; use --yes for non-interactive mode.",
   options: [
     {
       kind: "string",

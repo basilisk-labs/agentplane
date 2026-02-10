@@ -559,6 +559,50 @@ describe("runCli", () => {
     }
   });
 
+  it("init scopes to the target directory (does not climb to a parent git repo)", async () => {
+    const parent = await mkGitRepoRoot();
+    // Simulate a parent workspace with existing agentplane files that would conflict if init
+    // accidentally targeted the parent git root.
+    await writeDefaultConfig(parent);
+    await mkdir(path.join(parent, ".agentplane", "backends", "local"), { recursive: true });
+    await writeFile(
+      path.join(parent, ".agentplane", "backends", "local", "backend.json"),
+      '{"id":"local","version":"1","settings":{}}\n',
+      "utf8",
+    );
+    await mkdir(path.join(parent, ".agentplane", "backends", "redmine"), { recursive: true });
+    await writeFile(
+      path.join(parent, ".agentplane", "backends", "redmine", "backend.json"),
+      '{"id":"redmine","version":"1","settings":{}}\n',
+      "utf8",
+    );
+
+    const child = path.join(parent, "magic_fresh_directory");
+    await mkdir(child, { recursive: true });
+
+    // Allow commits in the newly initialized child repo without requiring repo-local git config.
+    const originalEnv = { ...process.env };
+    process.env.GIT_AUTHOR_NAME = "Test User";
+    process.env.GIT_AUTHOR_EMAIL = "test@example.com";
+    process.env.GIT_COMMITTER_NAME = "Test User";
+    process.env.GIT_COMMITTER_EMAIL = "test@example.com";
+
+    const originalCwd = process.cwd();
+    process.chdir(child);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes"]);
+      expect(code).toBe(0);
+      expect(await pathExists(path.join(child, ".git"))).toBe(true);
+      expect(await pathExists(path.join(child, ".agentplane", "config.json"))).toBe(true);
+      expect(io.stderr).not.toContain("Init conflicts detected");
+    } finally {
+      io.restore();
+      process.chdir(originalCwd);
+      process.env = originalEnv;
+    }
+  });
+
   it("init rejects unknown flags", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
