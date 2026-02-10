@@ -24,4 +24,5 @@ Agent Plane 1.0 is Node-first. The CLI is `agentplane`, and the project state no
 
 ## Notes
 
-- `tasks.json` is an export-only snapshot managed by the Node CLI; manual edits are discouraged.
+- `AGENTS.md` is the canonical policy file for agent behavior in a repo; treat it as source-controlled infrastructure.
+- `.agentplane/tasks.json` is an export-only snapshot generated via `agentplane task export`; do not edit it by hand.

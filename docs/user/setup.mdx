@@ -22,11 +22,29 @@ Inside a git repository (or a new folder):
 agentplane init
 ```
 
-This creates `.agentplane/` (config, agents, tasks, caches). 1.0 is offline-first; network is used only by explicit commands.
-If the folder is not a git repository, init will create one, pin the base branch, and commit the install.
+This creates:
+
+- `AGENTS.md` at the repo root (the canonical workflow/policy document for agents).
+- `.agentplane/` (config, agents registry, tasks workflow artifacts, caches).
+
+If the folder is not a git repository, init will create one, pin the base branch, and commit the install artifacts.
 If the folder is already a git repository, init pins the base branch to the current branch and commits the install artifacts.
 
-During init, you choose approval toggles and the task backend. Use `--backend local` (default) or `--backend redmine`. The default IDE mode is Codex CLI; pass `--ide cursor` or `--ide windsurf` to install only that IDE’s rules file. The default agent remains ORCHESTRATOR and is not configured via init. You can switch backends later by updating `tasks_backend.config_path` in `.agentplane/config.json`.
+During init, you choose:
+
+- approval toggles (mapped to `agents.approvals.*` in `.agentplane/config.json`)
+- the task backend (`--backend local` by default, or `--backend redmine`)
+- IDE rules integration target (`--ide codex|cursor|windsurf`)
+
+You can switch backends later by updating `tasks_backend.config_path` in `.agentplane/config.json`.
+
+If you want to keep agent policy files out of git (not recommended for most team repos), use:
+
+```bash
+agentplane init --gitignore-agents
+```
+
+This adds agent files (`AGENTS.md` and `.agentplane/agents/`) to `.gitignore` and skips the initial install commit.
 
 ## Upgrade a workspace
 
@@ -34,7 +52,20 @@ During init, you choose approval toggles and the task backend. Use `--backend lo
 agentplane upgrade
 ```
 
-Use this to refresh framework assets (recipes index, docs scaffolds, hooks).
+By default, upgrade runs in agent-assisted mode and does not modify files. Use it to inspect changes and produce a
+machine-readable review report under `.agentplane/.upgrade/`.
+
+To apply managed-file updates automatically:
+
+```bash
+agentplane upgrade --auto
+```
+
+Notes:
+
+- Network access is gated by config approvals; use `--yes` only when you explicitly allow the network prompt flow.
+- Upgrade writes upgrade artifacts under `.agentplane/.upgrade/` and should not touch user-owned task data under
+  `.agentplane/tasks/`.
 
 ## Developing inside this repo (current)
 
