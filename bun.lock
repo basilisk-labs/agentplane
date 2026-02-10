@@ -26,12 +26,12 @@
     },
     "packages/agentplane": {
       "name": "agentplane",
-      "version": "0.1.4",
+      "version": "0.2.5",
       "bin": {
         "agentplane": "bin/agentplane.js",
       },
       "dependencies": {
-        "@agentplaneorg/core": "0.1.4",
+        "@agentplaneorg/core": "0.2.5",
         "yauzl": "^2.10.0",
       },
       "devDependencies": {
@@ -40,7 +40,7 @@
     },
     "packages/core": {
       "name": "@agentplaneorg/core",
-      "version": "0.1.4",
+      "version": "0.2.5",
       "dependencies": {
         "ajv": "^8.17.1",
         "ajv-formats": "^3.0.1",
