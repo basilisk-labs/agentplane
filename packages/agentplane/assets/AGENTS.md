@@ -111,14 +111,28 @@ Outside-repo includes (non-exhaustive):
 
 `agentplane upgrade` is responsible for mechanical upgrades and safe merges. When an upgrade run indicates a potential semantic conflict (for example, both local and incoming changes exist relative to a baseline, or a baseline is missing but files differ), treat the result as requiring a meaning-level review.
 
+Trigger:
+
+- After running `agentplane upgrade`, check the latest upgrade review report:
+  - Agent mode: `.agentplane/.upgrade/agent/<runId>/review.json`
+  - Auto mode: `.agentplane/.upgrade/last-review.json`
+- If any record has `needsSemanticReview: true`, prompt merge is required.
+
 Protocol:
 
 1. ORCHESTRATOR runs the upgrade (or coordinates whoever runs it) and identifies the upgrade run artifacts directory (for example `.agentplane/.upgrade/agent/<runId>/`).
-2. If the upgrade artifacts indicate semantic conflicts or risky merges, ORCHESTRATOR instructs PLANNER to create a downstream task owned by `UPGRADER`.
+2. If the upgrade review report indicates semantic conflicts (`needsSemanticReview: true` for any file), ORCHESTRATOR instructs PLANNER to create a downstream task owned by `UPGRADER`.
 3. UPGRADER performs semantic reconciliation of `AGENTS.md` and `.agentplane/agents/*.json`:
    - `AGENTS.md` remains the canonical policy source (highest priority).
    - Preserve local customizations via the Local Overrides block (`<!-- AGENTPLANE:LOCAL-START/END -->`) where feasible.
    - Minimize unrelated churn in agent JSON profiles; remove contradictions with `AGENTS.md`.
+
+Task creation requirements (PLANNER):
+
+- Owner: `UPGRADER`
+- Description must include:
+  - the upgrade run directory path (for example `.agentplane/.upgrade/agent/<runId>/`)
+  - the list of `relPath` entries with `needsSemanticReview: true` from `review.json`
 
 Done when:
 
