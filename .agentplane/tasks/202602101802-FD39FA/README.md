@@ -21,8 +21,8 @@ verification:
   updated_by: null
   note: null
 commit:
-  hash: "1d2a8c75156f3c4b15b5eec835148be45ba1110f"
-  message: "✅ 5P3DPN close: Docs navigation reflects current reading order and exposes generated CLI reference. (202602101802-5P3DPN) [docs]"
+  hash: "6c82b501d78a8d8aab3000fa5fa547266f69b095"
+  message: "📝 FD39FA docs: refresh getting-started pages"
 comments:
   -
     author: "DOCS"
@@ -45,8 +45,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Refreshed getting-started docs to match current init/upgrade behavior, AGENTS.md invariants, and network-gated upgrade flow."
+  -
+    type: "status"
+    at: "2026-02-10T18:20:10.163Z"
+    author: "DOCS"
+    from: "DONE"
+    to: "DONE"
 doc_version: 2
-doc_updated_at: "2026-02-10T18:19:25.404Z"
+doc_updated_at: "2026-02-10T18:20:10.163Z"
 doc_updated_by: "DOCS"
 description: "Refresh getting-started pages to match current init/upgrade behavior, approvals, and repo-scoped workflow."
 id_source: "generated"
