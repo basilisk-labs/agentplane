@@ -199,4 +199,47 @@ describe("upgrade safety invariants", () => {
     const after = await readFile(outsideTarget, "utf8");
     expect(after).toBe("OUTSIDE");
   });
+
+  it("allows overwriting AGENTS.md when it is a symlink to a target inside the repo", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const internalTarget = path.join(root, "AGENTS.internal.md");
+    await writeFile(internalTarget, "INTERNAL", "utf8");
+
+    const agentsPath = path.join(root, "AGENTS.md");
+    await symlink("AGENTS.internal.md", agentsPath);
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [{ path: "AGENTS.md", type: "text", merge_strategy: "agents_policy_markdown" }],
+        },
+        null,
+        2,
+      ),
+      "AGENTS.md": "INCOMING",
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "auto",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+
+    // Writing through a repo-internal symlink is allowed (and should update the target).
+    const after = await readFile(internalTarget, "utf8");
+    expect(after).toContain("INCOMING");
+  });
 });

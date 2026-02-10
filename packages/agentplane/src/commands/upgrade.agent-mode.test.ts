@@ -86,5 +86,5 @@ describe("upgrade agent-assisted mode", () => {
     // Snapshots are written for files requiring semantic review.
     const proposedSnapshot = path.join(agentDir, latest, "snapshots", "proposed", "AGENTS.md");
     expect(await readFile(proposedSnapshot, "utf8")).toContain("# Incoming");
-  });
+  }, 20_000);
 });

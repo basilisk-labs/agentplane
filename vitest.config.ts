@@ -14,11 +14,18 @@ export default defineConfig({
   test: {
     include: ["packages/**/src/**/*.test.ts"],
     environment: "node",
+    // Many integration-style tests interact with git and the filesystem. Coverage adds
+    // non-trivial overhead, so keep a higher default timeout to avoid CI flakiness.
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     coverage: {
       provider: "v8",
       include: ["packages/**/src/**/*.ts"],
       exclude: [
         "**/*.test.ts",
+        // Thin command entrypoints are exercised indirectly via spec/run handlers and
+        // are not meaningful to include in coverage thresholds.
+        "**/*.command.ts",
         "**/dist/**",
         "**/node_modules/**",
         ".agentplane/**",

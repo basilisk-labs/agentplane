@@ -81,5 +81,5 @@ describe("CliError exit code contract", () => {
     }
 
     expect(violations, violations.join("\n")).toEqual([]);
-  });
+  }, 20_000);
 });

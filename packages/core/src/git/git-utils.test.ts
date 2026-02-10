@@ -52,6 +52,19 @@ describe("git-utils", () => {
     expect(staged).toEqual(["file.txt"]);
   });
 
+  it("includes both sides of staged renames (to prevent protected-path bypass)", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "init"], { cwd: root });
+
+    await execFileAsync("git", ["mv", "file.txt", "renamed.txt"], { cwd: root });
+
+    const staged = await getStagedFiles({ cwd: root, rootOverride: root });
+    expect(staged).toEqual(["file.txt", "renamed.txt"]);
+  }, 15_000);
+
   it("lists unstaged files", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "file.txt"), "x", "utf8");
