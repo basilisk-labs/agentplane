@@ -1,7 +1,8 @@
 ---
 id: "202602101802-TSVKN2"
 title: "Docs help: troubleshooting and glossary refresh"
-status: "DOING"
+result_summary: "Help docs reference backend sync instead of legacy sync commands."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "848c8149b08d432a578bdb8e2c847e69e3fc39b8"
+  message: "📝 TSVKN2 docs: update help for backend sync"
 comments:
   -
     author: "DOCS"
     body: "Start: Refresh troubleshooting pages and glossary for current error modes, approvals, and common footguns."
+  -
+    author: "DOCS"
+    body: "Verified: Updated help docs to replace legacy sync examples with the current backend sync command."
 events:
   -
     type: "status"
@@ -32,8 +38,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Refresh troubleshooting pages and glossary for current error modes, approvals, and common footguns."
+  -
+    type: "status"
+    at: "2026-02-10T18:36:34.715Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Updated help docs to replace legacy sync examples with the current backend sync command."
 doc_version: 2
-doc_updated_at: "2026-02-10T18:35:59.107Z"
+doc_updated_at: "2026-02-10T18:36:34.715Z"
 doc_updated_by: "DOCS"
 description: "Update troubleshooting pages and glossary for current error modes, approvals, and common footguns."
 id_source: "generated"
