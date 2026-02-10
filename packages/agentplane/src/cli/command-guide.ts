@@ -86,7 +86,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "ORCHESTRATOR",
     lines: [
       "- Plan intake: `agentplane task list` / `agentplane task show <task-id>`",
-      '- After plan approval (unless the user opts out): `agentplane task new --title "..." --description "..." --priority med --owner ORCHESTRATOR --depends-on "[]" --tag <tag>`',
+      '- After plan approval (unless the user opts out): create exactly one tracking task: `agentplane task new --title "..." --description "..." --priority med --owner ORCHESTRATOR --depends-on "[]" --tag <tag>`',
       "- Optional scaffold: `agentplane task scaffold <task-id>`",
       "- Two-stage verification: `## Verify Steps` is the ex-ante contract; `agentplane verify ...` appends an ex-post entry into `## Verification`.",
     ],
@@ -206,8 +206,10 @@ export function renderQuickstart(): string {
   return [
     "# agentplane quickstart",
     "",
-    "agentplane CLI is the source of truth for task, PR, verify, and commit commands.",
+    "AGENTS.md is the source of truth for the workflow/process policy; quickstart and role output are the source of truth for CLI syntax and artifacts.",
     "Do not edit `.agentplane/tasks.json` by hand.",
+    "",
+    "- See AGENTS.md for the canonical workflow policy and approval gates.",
     "",
     "## Project setup",
     "",
