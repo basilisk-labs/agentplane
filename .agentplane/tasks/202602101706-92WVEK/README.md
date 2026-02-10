@@ -1,7 +1,8 @@
 ---
 id: "202602101706-92WVEK"
 title: "Archive validation: treat tar warning exit codes as validation, not IO"
-status: "DOING"
+result_summary: "Fix tar validation exit codes across platforms"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "9a6a39839d9d621e0bb4a89b0f33eec613b58a50"
+  message: "✅ 92WVEK cli: make tar archive validation robust"
 comments:
   -
     author: "CODER"
     body: "Start: fix tar listing so unsafe archive errors return E_VALIDATION across platforms"
+  -
+    author: "CODER"
+    body: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
 events:
   -
     type: "status"
@@ -33,8 +39,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: fix tar listing so unsafe archive errors return E_VALIDATION across platforms"
+  -
+    type: "status"
+    at: "2026-02-10T17:09:11.308Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
 doc_version: 2
-doc_updated_at: "2026-02-10T17:08:29.643Z"
+doc_updated_at: "2026-02-10T17:09:11.308Z"
 doc_updated_by: "CODER"
 description: "Fix validateArchive for tar.gz so GNU tar warning exit codes do not surface as E_IO; parse stdout even if tar exits non-zero to keep unsafe-entry errors E_VALIDATION (exit code 3)."
 id_source: "generated"
