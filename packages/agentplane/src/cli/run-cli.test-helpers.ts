@@ -31,6 +31,12 @@ async function ensureGitTemplateRoot(): Promise<string> {
   gitTemplatePromise ??= (async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-template-"));
     await execFileAsync("git", ["init", "-q"], { cwd: root });
+    // Tests must not rely on global git config. Configure author identity locally
+    // so any helper that creates commits works in CI.
+    await execFileAsync("git", ["config", "user.email", "agentplane-test@example.com"], {
+      cwd: root,
+    });
+    await execFileAsync("git", ["config", "user.name", "agentplane-test"], { cwd: root });
     return root;
   })();
   gitTemplateRoot = await gitTemplatePromise;
