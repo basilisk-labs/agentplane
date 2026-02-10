@@ -101,6 +101,11 @@ This repository contains a special policy file (`AGENTS.md`) that defines:
 
 It acts as the canonical policy layer (the "constitution") for agents.
 
+Notes:
+
+- `agentplane init` creates `AGENTS.md` as a regular file at the repository root (if missing).
+- `agentplane upgrade` writes a machine-readable review report under `.agentplane/.upgrade/` (for example `.agentplane/.upgrade/agent/<runId>/review.json` or `.agentplane/.upgrade/last-review.json`) that can signal when a semantic prompt merge is required.
+
 ### 🔹 Roles
 
 Common roles include:
@@ -110,6 +115,8 @@ Common roles include:
 - **CREATOR:** Implements code/config changes.
 - **INTEGRATOR:** Verifies and merges changes.
 - **Additional roles** (e.g., TESTER, DOCS) can be defined per project.
+
+Use `agentplane role <ROLE>` to print the built-in CLI guide and, when available, the project-defined agent profile from `.agentplane/agents/<ROLE>.json`.
 
 ## 📁 Project Structure
 

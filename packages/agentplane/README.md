@@ -46,6 +46,15 @@ npx agentplane quickstart
 - Built-in agent definitions are copied into `.agentplane/agents/`.
 - Optional recipes can install additional agents when you run `agentplane recipes install ...`.
 
+## Upgrade review reports
+
+After `agentplane upgrade` (auto or agent-assisted mode), a machine-readable review report is written under `.agentplane/.upgrade/`:
+
+- Agent mode: `.agentplane/.upgrade/agent/<runId>/review.json`
+- Auto mode: `.agentplane/.upgrade/last-review.json`
+
+If any entry has `needsSemanticReview: true`, treat it as a signal to create an `UPGRADER` task to perform a semantic prompt merge.
+
 ## Guardrails and artifacts
 
 - Approval gates for plans and network access (configured in `.agentplane/config.json`).
@@ -87,6 +96,8 @@ npx agentplane --help
 ```bash
 agentplane --help
 agentplane quickstart
+agentplane role ORCHESTRATOR
+agentplane role UPGRADER
 agentplane config show
 agentplane task list
 agentplane task new --title "..." --description "..." --priority med --owner ORCHESTRATOR --tag docs

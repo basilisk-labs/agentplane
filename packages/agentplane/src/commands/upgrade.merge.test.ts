@@ -103,6 +103,19 @@ describe("upgrade merge behavior", () => {
     });
     expect(code).toBe(0);
 
+    const lastReviewPath = path.join(root, ".agentplane", ".upgrade", "last-review.json");
+    const lastReview = JSON.parse(await readFile(lastReviewPath, "utf8")) as {
+      files?: { relPath?: string; needsSemanticReview?: boolean }[];
+    };
+    expect(
+      lastReview.files?.some((f) => f.relPath === "AGENTS.md" && f.needsSemanticReview === true),
+    ).toBe(true);
+    expect(
+      lastReview.files?.some(
+        (f) => f.relPath === ".agentplane/agents/CODER.json" && f.needsSemanticReview === true,
+      ),
+    ).toBe(true);
+
     const mergedAgents = await readFile(agentsPath, "utf8");
     expect(mergedAgents).toContain("# New Policy");
     expect(mergedAgents).toContain("LOCAL: keep this line");
