@@ -80,10 +80,11 @@ description: "Common problems and how to fix them quickly."
 
 ## Sync fails for remote backend
 
-**Symptom:** `agentplane sync` errors or reports network failures.
+**Symptom:** `agentplane backend sync ...` errors or reports network failures.
 
 **Fix:**
 
 - Confirm backend settings in `.agentplane/backends/<id>/backend.json`.
-- Retry with `--direction pull` to refresh local cache.
+- Retry with `--direction pull` to refresh local cache, for example:
+  - `agentplane backend sync redmine --direction pull`
 - Check custom field mappings if using Redmine.
