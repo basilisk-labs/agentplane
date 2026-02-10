@@ -1,7 +1,8 @@
 ---
 id: "202602101802-5P3DPN"
 title: "Docs IA: updated table of contents and navigation"
-status: "DOING"
+result_summary: "Docs navigation reflects current reading order and exposes generated CLI reference."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "36bb2179519b428ad73bd44cd359669b9687682b"
+  message: "📝 5P3DPN docs: update docs navigation and TOC"
 comments:
   -
     author: "DOCS"
     body: "Start: Update documentation TOC and Mintlify navigation to reflect current code, workflows, and policy boundaries."
+  -
+    author: "DOCS"
+    body: "Verified: Updated docs TOC and Mintlify navigation; validated docs.json parses and generated CLI reference is linked."
 events:
   -
     type: "status"
@@ -31,8 +37,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Update documentation TOC and Mintlify navigation to reflect current code, workflows, and policy boundaries."
+  -
+    type: "status"
+    at: "2026-02-10T18:07:33.676Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Updated docs TOC and Mintlify navigation; validated docs.json parses and generated CLI reference is linked."
 doc_version: 2
-doc_updated_at: "2026-02-10T18:06:40.652Z"
+doc_updated_at: "2026-02-10T18:07:33.676Z"
 doc_updated_by: "DOCS"
 description: "Produce a code-informed documentation outline (TOC) and update docs navigation (docs/index.mdx, docs/docs.json) to match."
 id_source: "generated"
