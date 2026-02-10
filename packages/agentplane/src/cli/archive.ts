@@ -1,6 +1,8 @@
 import { execFile } from "node:child_process";
+import { readFile } from "node:fs/promises";
 import { promisify } from "node:util";
 import path from "node:path";
+import { gunzipSync } from "node:zlib";
 
 import yauzl from "yauzl";
 
@@ -31,8 +33,7 @@ export async function validateArchive(
     const symlinks = entries.filter((entry) => entry.isSymlink).map((entry) => entry.name);
     return validateArchiveEntries(entryNames, symlinks);
   }
-  const entries = await listArchiveEntries(archivePath, type);
-  const symlinks = await listArchiveSymlinks(archivePath, type);
+  const { entries, symlinks } = await listTarGzEntries(archivePath);
   return validateArchiveEntries(entries, symlinks);
 }
 
@@ -101,78 +102,71 @@ export function validateArchiveEntries(entries: string[], symlinks: string[]): A
   return issues;
 }
 
-async function execFileCapture(
-  file: string,
-  args: string[],
-  opts?: Parameters<typeof execFile>[2],
-): Promise<{ stdout: string; stderr: string; error: Error | null }> {
-  return await new Promise((resolve) => {
-    execFile(file, args, opts ?? {}, (error, stdout, stderr) => {
-      resolve({ error: error ?? null, stdout: String(stdout ?? ""), stderr: String(stderr ?? "") });
+function parseTarOctal(field: Buffer): number {
+  const text = field.toString("utf8").replace(/\0.*$/u, "").trim();
+  if (!text) return 0;
+  const n = Number.parseInt(text, 8);
+  return Number.isFinite(n) && n >= 0 ? n : 0;
+}
+
+function isAllZeroBlock(block: Buffer): boolean {
+  for (const b of block) if (b !== 0) return false;
+  return true;
+}
+
+async function listTarGzEntries(
+  archivePath: string,
+): Promise<{ entries: string[]; symlinks: string[] }> {
+  let gz: Buffer;
+  try {
+    gz = await readFile(archivePath);
+  } catch (err) {
+    const e = err as { message?: string } | null;
+    throw new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message: `Failed to read archive: ${archivePath}${e?.message ? `\n${e.message}` : ""}`,
     });
-  });
-}
-
-async function listArchiveEntries(archivePath: string, type: ArchiveType): Promise<string[]> {
-  if (type === "tar") {
-    const res = await execFileCapture("tar", ["-tzf", archivePath]);
-    const stdout = res.stdout;
-    // GNU tar may exit non-zero for warnings while still printing the member list.
-    if (res.error && !stdout.trim()) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_IO"),
-        code: "E_IO",
-        message:
-          "Failed to list tar archive entries.\n" +
-          `archive=${archivePath}\n` +
-          (res.stderr.trim() ? `stderr=${res.stderr.trim()}` : ""),
-      });
-    }
-    return stdout
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0);
   }
-  const { stdout } = await execFileAsync("unzip", ["-Z1", archivePath]);
-  return stdout
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
-}
 
-async function listArchiveSymlinks(archivePath: string, type: ArchiveType): Promise<string[]> {
-  if (type === "tar") {
-    const res = await execFileCapture("tar", ["-tvzf", archivePath]);
-    const stdout = res.stdout;
-    if (res.error && !stdout.trim()) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_IO"),
-        code: "E_IO",
-        message:
-          "Failed to list tar archive symlinks.\n" +
-          `archive=${archivePath}\n` +
-          (res.stderr.trim() ? `stderr=${res.stderr.trim()}` : ""),
-      });
-    }
-    return stdout
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.startsWith("l"))
-      .map((line) => {
-        const arrowIndex = line.indexOf(" -> ");
-        const left = arrowIndex === -1 ? line : line.slice(0, arrowIndex);
-        const tokens = left.trim().split(/\s+/);
-        return tokens.at(-1) ?? "";
-      })
-      .filter((entry) => entry.length > 0);
+  let tar: Buffer;
+  try {
+    tar = gunzipSync(gz);
+  } catch (err) {
+    const e = err as { message?: string } | null;
+    throw new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message:
+        `Failed to gunzip tar archive: ${archivePath}` + (e?.message ? `\n${e.message}` : ""),
+    });
   }
-  const { stdout } = await execFileAsync("unzip", ["-Z", "-v", archivePath]);
-  return stdout
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => /\bsymlink\b/i.test(line) || /\blrwx/.test(line))
-    .map((line) => line.split(/\s+/).at(-1) ?? "")
-    .filter((entry) => entry.length > 0);
+
+  const entries: string[] = [];
+  const symlinks: string[] = [];
+
+  let offset = 0;
+  while (offset + 512 <= tar.length) {
+    const header = tar.subarray(offset, offset + 512);
+    offset += 512;
+    if (isAllZeroBlock(header)) break;
+
+    const nameRaw = header.subarray(0, 100).toString("utf8").replace(/\0.*$/u, "");
+    const prefixRaw = header.subarray(345, 500).toString("utf8").replace(/\0.*$/u, "");
+    const name = prefixRaw ? `${prefixRaw}/${nameRaw}` : nameRaw;
+    const size = parseTarOctal(header.subarray(124, 136));
+    const typeflag = header.subarray(156, 157).toString("utf8");
+
+    if (name) {
+      entries.push(name);
+      if (typeflag === "2") symlinks.push(name);
+    }
+
+    const blocks = Math.ceil(size / 512);
+    offset += blocks * 512;
+  }
+
+  return { entries, symlinks };
 }
 
 function listZipEntries(archivePath: string): Promise<ZipEntryInfo[]> {
