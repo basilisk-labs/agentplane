@@ -23,6 +23,8 @@ These rules apply to:
 3. **Safety around user data.**
    - Upgrade/init tooling must never overwrite user-owned task data (for example `.agentplane/tasks/**`) or other workspace state.
    - Framework-managed changes must be defined by an explicit allowlist/manifest.
+4. **No uncommitted code changes.**
+   - Any tracked code changes under `packages/**` must be captured in a git commit as part of a task (no “done” work left as a working tree diff).
 
 ## Code Quality Bar
 
