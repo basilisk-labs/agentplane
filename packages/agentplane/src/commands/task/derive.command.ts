@@ -1,5 +1,6 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
+import { toStringList } from "../../cli/spec/parse-utils.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { cmdTaskDerive } from "./derive.js";
@@ -12,12 +13,6 @@ export type TaskDeriveParsed = {
   priority: "low" | "normal" | "med" | "high";
   tags: string[];
 };
-
-function toStringList(v: unknown): string[] {
-  if (typeof v === "string") return [v];
-  if (Array.isArray(v)) return v.filter((x): x is string => typeof x === "string");
-  return [];
-}
 
 export const taskDeriveSpec: CommandSpec<TaskDeriveParsed> = {
   id: ["task", "derive"],

@@ -1,5 +1,6 @@
 import type { CommandCtx, CommandSpec } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
+import { toStringList } from "../cli/spec/parse-utils.js";
 import type { CommandContext } from "./shared/task-backend.js";
 
 import { cmdBlock } from "./task/block.js";
@@ -18,12 +19,6 @@ export type BlockParsed = {
   force: boolean;
   quiet: boolean;
 };
-
-function toStringList(v: unknown): string[] {
-  if (typeof v === "string") return [v];
-  if (Array.isArray(v)) return v.filter((x): x is string => typeof x === "string");
-  return [];
-}
 
 export const blockSpec: CommandSpec<BlockParsed> = {
   id: ["block"],

@@ -4,14 +4,9 @@ import type { CommandContext } from "../shared/task-backend.js";
 
 import type { TaskListFilters } from "./shared.js";
 import { taskListUsecase } from "../../usecases/task/task-list-usecase.js";
+import { toStringList } from "../../cli/spec/parse-utils.js";
 
 export type TaskListParsed = { filters: TaskListFilters };
-
-function toStringList(v: unknown): string[] {
-  if (typeof v === "string") return [v];
-  if (Array.isArray(v)) return v.filter((x): x is string => typeof x === "string");
-  return [];
-}
 
 export const taskListSpec: CommandSpec<TaskListParsed> = {
   id: ["task", "list"],

@@ -4,14 +4,9 @@ import type { CommandContext } from "../shared/task-backend.js";
 
 import { cmdTaskNext } from "./next.js";
 import type { TaskListFilters } from "./shared.js";
+import { toStringList } from "../../cli/spec/parse-utils.js";
 
 export type TaskNextParsed = { filters: TaskListFilters };
-
-function toStringList(v: unknown): string[] {
-  if (typeof v === "string") return [v];
-  if (Array.isArray(v)) return v.filter((x): x is string => typeof x === "string");
-  return [];
-}
 
 export const taskNextSpec: CommandSpec<TaskNextParsed> = {
   id: ["task", "next"],

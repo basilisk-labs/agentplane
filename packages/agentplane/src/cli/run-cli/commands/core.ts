@@ -11,6 +11,7 @@ import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { listRoles, renderQuickstart, renderRole } from "../../command-guide.js";
 import type { RunDeps } from "../command-catalog.js";
+import { toStringList } from "../../spec/parse-utils.js";
 
 type QuickstartParsed = Record<string, never>;
 
@@ -116,11 +117,6 @@ async function readAgentProfile(opts: {
   const filePath = path.join(listing.agentplaneDir, "agents", filename);
   const raw = JSON.parse(await readFile(filePath, "utf8")) as AgentProfile;
   return { agentplaneDir: listing.agentplaneDir, filename, profile: raw };
-}
-
-function toStringList(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return value.map((x) => String(x ?? "").trim()).filter(Boolean);
 }
 
 function renderAgentProfileBlock(opts: {
