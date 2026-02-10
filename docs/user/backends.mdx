@@ -25,8 +25,8 @@ Remote backends (for example Redmine) are optional and should be configured expl
 Use explicit sync commands:
 
 ```bash
-agentplane sync <backend> --direction pull
-agentplane sync <backend> --direction push --yes
+agentplane backend sync <id> --direction pull
+agentplane backend sync <id> --direction push --yes
 ```
 
 The CLI may maintain a local cache and falls back to it when remote services are unavailable.

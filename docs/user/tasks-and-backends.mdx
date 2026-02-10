@@ -44,8 +44,8 @@ The active backend is configured in `.agentplane/config.json`:
 ## Sync
 
 ```bash
-agentplane sync <backend> --direction pull
-agentplane sync <backend> --direction push --yes
+agentplane backend sync <id> --direction pull
+agentplane backend sync <id> --direction push --yes
 ```
 
 Conflict strategies: `diff`, `prefer-local`, `prefer-remote`, `fail`.

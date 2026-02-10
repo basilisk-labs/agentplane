@@ -21,7 +21,9 @@ The Redmine backend stores tasks as Redmine issues. It requires explicit configu
 4. Create required custom fields and note their numeric IDs.
 5. Add the environment variables in `.env`.
 6. Set `tasks_backend.config_path` to the Redmine backend config.
-7. Run a `pull`/`push` sync to validate connectivity.
+7. Run a pull/push sync to validate connectivity:
+   - `agentplane backend sync redmine --direction pull`
+   - `agentplane backend sync redmine --direction push --yes`
 
 ## 2) Required custom fields (minimum)
 
