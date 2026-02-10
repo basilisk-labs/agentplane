@@ -1,7 +1,8 @@
 ---
 id: "202602101552-4271QV"
 title: "Release: apply version bump + tag from agent-written notes"
-status: "DOING"
+result_summary: "Add release apply command with validation and tagging"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "a875ae670b1c459667bdfa6289441f520d56dd3c"
+  message: "✅ 4271QV release: add apply command"
 comments:
   -
     author: "CODER"
     body: "Start: implement agentplane release apply (bump versions + validate notes + tag)"
+  -
+    author: "CODER"
+    body: "Verified: bun run ci (format:check, typecheck, lint, coverage) and bun run release:check (build + npm pack --dry-run) succeeded."
 events:
   -
     type: "status"
@@ -33,8 +39,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement agentplane release apply (bump versions + validate notes + tag)"
+  -
+    type: "status"
+    at: "2026-02-10T16:37:10.113Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun run ci (format:check, typecheck, lint, coverage) and bun run release:check (build + npm pack --dry-run) succeeded."
 doc_version: 2
-doc_updated_at: "2026-02-10T16:36:13.142Z"
+doc_updated_at: "2026-02-10T16:37:10.113Z"
 doc_updated_by: "CODER"
 description: "Add agentplane release apply to bump versions, validate docs/releases/vX.Y.Z.md, commit, and create git tag for publish workflow."
 id_source: "generated"
