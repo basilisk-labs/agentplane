@@ -68,6 +68,23 @@ type FrameworkManifestEntry = {
   required?: boolean;
 };
 
+type UpgradeReviewRecord = {
+  relPath: string;
+  mergeStrategy: FrameworkManifestEntry["merge_strategy"];
+  hasBaseline: boolean;
+  changedCurrentVsBaseline: boolean | null;
+  changedIncomingVsBaseline: boolean | null;
+  needsSemanticReview: boolean;
+  mergeApplied: boolean;
+  mergePath:
+    | "none"
+    | "markdownOverrides"
+    | "3way"
+    | "incomingWins"
+    | "incomingWinsFallback"
+    | "parseFailed";
+};
+
 const ASSETS_DIR_URL = new URL("../../assets/", import.meta.url);
 
 async function loadFrameworkManifestFromPath(manifestPath: string): Promise<FrameworkManifest> {
@@ -307,6 +324,25 @@ function jsonEqual(a: unknown, b: unknown): boolean {
   const ca = JSON.stringify(canonicalizeJson(a)) ?? "__undefined__";
   const cb = JSON.stringify(canonicalizeJson(b)) ?? "__undefined__";
   return ca === cb;
+}
+
+function textChangedForType(opts: {
+  type: FrameworkManifestEntry["type"];
+  aText: string | null;
+  bText: string | null;
+}): boolean {
+  if (opts.aText === null && opts.bText === null) return false;
+  if (opts.aText === null || opts.bText === null) return true;
+  if (opts.type === "json") {
+    try {
+      const a: unknown = JSON.parse(opts.aText);
+      const b: unknown = JSON.parse(opts.bText);
+      return !jsonEqual(a, b);
+    } catch {
+      return opts.aText.trim() !== opts.bText.trim();
+    }
+  }
+  return opts.aText.trimEnd() !== opts.bText.trimEnd();
 }
 
 // Used as a fallback for 3-way merges when no baseline is available. Incoming (upstream) values
@@ -630,6 +666,16 @@ export async function cmdUpgradeParsed(opts: {
     const fileContents = new Map<string, Buffer>();
     const merged: string[] = [];
     const missingRequired: string[] = [];
+    const reviewRecords: UpgradeReviewRecord[] = [];
+    const reviewSnapshots = new Map<
+      string,
+      {
+        incomingText: string;
+        currentText: string | null;
+        baselineText: string | null;
+        proposedText: string;
+      }
+    >();
 
     const readBaselineText = async (baselineKey: string): Promise<string | null> => {
       try {
@@ -700,6 +746,14 @@ export async function cmdUpgradeParsed(opts: {
         existingBuf = await readFile(destPath);
       }
 
+      const incomingTextOriginal = data.toString("utf8");
+      const currentTextForReview = existingBuf ? existingBuf.toString("utf8") : null;
+      const baselineKey = toBaselineKey(rel);
+      const baselineText = baselineKey ? await readBaselineText(baselineKey) : null;
+
+      let mergeApplied = false;
+      let mergePath: UpgradeReviewRecord["mergePath"] = "none";
+
       // Merge logic only needs text for a small subset of managed files.
       if (existingBuf) {
         if (entry.merge_strategy === "agents_policy_markdown" && rel === "AGENTS.md") {
@@ -707,18 +761,17 @@ export async function cmdUpgradeParsed(opts: {
           const mergedText = mergeAgentsPolicyMarkdown(data.toString("utf8"), existingText);
           data = Buffer.from(mergedText, "utf8");
           merged.push(rel);
+          mergeApplied = true;
+          mergePath = "markdownOverrides";
         } else if (
           entry.merge_strategy === "agent_json_3way" &&
           rel.startsWith(".agentplane/agents/") &&
           rel.endsWith(".json")
         ) {
           existingText = existingBuf.toString("utf8");
-          const baselineKey = toBaselineKey(rel);
           let mergedText: string | null = null;
-          if (baselineKey) {
+          if (baselineText !== null) {
             try {
-              const baselineText = await readBaselineText(baselineKey);
-              if (!baselineText) throw new Error("missing baseline");
               mergedText = mergeAgentJson3Way({
                 incomingText: data.toString("utf8"),
                 currentText: existingText,
@@ -728,12 +781,76 @@ export async function cmdUpgradeParsed(opts: {
               mergedText = null;
             }
           }
-          mergedText ??= mergeAgentJsonIncomingWins(data.toString("utf8"), existingText);
+          if (mergedText) {
+            mergePath = "3way";
+          } else {
+            mergedText = mergeAgentJsonIncomingWins(data.toString("utf8"), existingText);
+            if (mergedText) {
+              mergePath = baselineText === null ? "incomingWins" : "incomingWinsFallback";
+            }
+          }
           if (mergedText) {
             data = Buffer.from(mergedText, "utf8");
             merged.push(rel);
+            mergeApplied = true;
+          } else {
+            mergePath = "parseFailed";
           }
         }
+      }
+
+      const hasBaseline = baselineText !== null;
+      let changedCurrentVsBaseline: boolean | null = null;
+      let changedIncomingVsBaseline: boolean | null = null;
+      if (baselineText !== null) {
+        changedCurrentVsBaseline = textChangedForType({
+          type: entry.type,
+          aText: currentTextForReview,
+          bText: baselineText,
+        });
+        changedIncomingVsBaseline = textChangedForType({
+          type: entry.type,
+          aText: incomingTextOriginal,
+          bText: baselineText,
+        });
+      }
+
+      const proposedText = data.toString("utf8");
+      const currentDiffersFromIncoming =
+        currentTextForReview === null
+          ? false
+          : textChangedForType({
+              type: entry.type,
+              aText: currentTextForReview,
+              bText: incomingTextOriginal,
+            });
+
+      const baselineConflict =
+        baselineText === null
+          ? false
+          : Boolean(changedCurrentVsBaseline) && Boolean(changedIncomingVsBaseline);
+      const noBaselineConflict = baselineText === null ? currentDiffersFromIncoming : false;
+      const mergeNotAppliedConflict = mergeApplied ? false : currentDiffersFromIncoming;
+      const needsSemanticReview = baselineConflict || noBaselineConflict || mergeNotAppliedConflict;
+
+      reviewRecords.push({
+        relPath: rel,
+        mergeStrategy: entry.merge_strategy,
+        hasBaseline,
+        changedCurrentVsBaseline,
+        changedIncomingVsBaseline,
+        needsSemanticReview,
+        mergeApplied,
+        mergePath,
+      });
+
+      if (flags.mode === "agent" && needsSemanticReview) {
+        reviewSnapshots.set(rel, {
+          incomingText: incomingTextOriginal,
+          currentText: currentTextForReview,
+          baselineText,
+          proposedText,
+        });
       }
 
       fileContents.set(rel, data);
@@ -826,7 +943,48 @@ export async function cmdUpgradeParsed(opts: {
         "utf8",
       );
 
-      process.stdout.write(`Upgrade plan written: ${path.relative(resolved.gitRoot, runDir)}\n`);
+      const needsReview = reviewRecords.filter((r) => r.needsSemanticReview);
+      await writeFile(
+        path.join(runDir, "review.json"),
+        JSON.stringify(
+          {
+            generated_at: new Date().toISOString(),
+            counts: {
+              total: reviewRecords.length,
+              needsSemanticReview: needsReview.length,
+            },
+            files: reviewRecords,
+          },
+          null,
+          2,
+        ) + "\n",
+        "utf8",
+      );
+
+      if (needsReview.length > 0) {
+        const snapshotsRoot = path.join(runDir, "snapshots");
+        for (const [rel, snap] of reviewSnapshots.entries()) {
+          const variants: [string, string | null][] = [
+            ["current", snap.currentText],
+            ["incoming", snap.incomingText],
+            ["baseline", snap.baselineText],
+            ["proposed", snap.proposedText],
+          ];
+          for (const [variant, text] of variants) {
+            if (text === null) continue;
+            const outPath = path.join(snapshotsRoot, variant, rel);
+            await mkdir(path.dirname(outPath), { recursive: true });
+            await writeFile(outPath, text, "utf8");
+          }
+        }
+      }
+
+      const relRunDir = path.relative(resolved.gitRoot, runDir);
+      process.stdout.write(`Upgrade plan written: ${relRunDir}\n`);
+      process.stdout.write(`Prompt merge required: ${needsReview.length} files\n`);
+      if (needsReview.length > 0) {
+        process.stdout.write(`Hint: Create an UPGRADER task and attach ${relRunDir}\n`);
+      }
       return 0;
     }
 
@@ -891,6 +1049,22 @@ export async function cmdUpgradeParsed(opts: {
           applied_at: new Date().toISOString(),
           source: bundleLayout,
           updated: { add: additions.length, update: updates.length, unchanged: skipped.length },
+        },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(upgradeStateDir, "last-review.json"),
+      JSON.stringify(
+        {
+          generated_at: new Date().toISOString(),
+          counts: {
+            total: reviewRecords.length,
+            needsSemanticReview: reviewRecords.filter((r) => r.needsSemanticReview).length,
+          },
+          files: reviewRecords,
         },
         null,
         2,

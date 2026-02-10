@@ -69,8 +69,22 @@ describe("upgrade agent-assisted mode", () => {
     const planPath = path.join(agentDir, latest, "plan.md");
     const constraintsPath = path.join(agentDir, latest, "constraints.md");
     const filesJsonPath = path.join(agentDir, latest, "files.json");
+    const reviewJsonPath = path.join(agentDir, latest, "review.json");
     expect(await readFile(planPath, "utf8")).toContain("agent-assisted");
     expect(await readFile(constraintsPath, "utf8")).toContain("Must not touch");
     expect(await readFile(filesJsonPath, "utf8")).toContain('"additions"');
+
+    const review = JSON.parse(await readFile(reviewJsonPath, "utf8")) as {
+      counts?: { total?: number; needsSemanticReview?: number };
+      files?: { relPath?: string; needsSemanticReview?: boolean }[];
+    };
+    expect(review.counts?.total).toBe(1);
+    expect(review.counts?.needsSemanticReview).toBe(1);
+    expect(review.files?.[0]?.relPath).toBe("AGENTS.md");
+    expect(review.files?.[0]?.needsSemanticReview).toBe(true);
+
+    // Snapshots are written for files requiring semantic review.
+    const proposedSnapshot = path.join(agentDir, latest, "snapshots", "proposed", "AGENTS.md");
+    expect(await readFile(proposedSnapshot, "utf8")).toContain("# Incoming");
   });
 });
