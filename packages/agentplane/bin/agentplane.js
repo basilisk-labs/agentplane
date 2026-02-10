@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
-import { stat } from "node:fs/promises";
+import { readdir, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 async function exists(p) {
@@ -12,9 +12,35 @@ async function exists(p) {
   }
 }
 
-async function mtimeMs(p) {
-  const s = await stat(p);
-  return s.mtimeMs;
+// Keep this file dependency-free and simple: rely on directory mtime scans below.
+async function newestMtimeMsInDir(dir) {
+  let newest = 0;
+  const stack = [dir];
+  while (stack.length > 0) {
+    const current = stack.pop();
+    if (!current) continue;
+    let entries;
+    try {
+      entries = await readdir(current, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      const abs = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        stack.push(abs);
+        continue;
+      }
+      if (!entry.isFile()) continue;
+      try {
+        const s = await stat(abs);
+        if (s.mtimeMs > newest) newest = s.mtimeMs;
+      } catch {
+        // ignore
+      }
+    }
+  }
+  return newest;
 }
 
 async function assertDistUpToDate() {
@@ -24,8 +50,8 @@ async function assertDistUpToDate() {
   if (!inRepo) return true;
 
   const allowStale = (process.env.AGENTPLANE_DEV_ALLOW_STALE_DIST ?? "").trim() === "1";
-  const distCli = path.join(agentplaneRoot, "dist", "cli.js");
-  if (!(await exists(distCli))) {
+  const agentplaneDistDir = path.join(agentplaneRoot, "dist");
+  if (!(await exists(agentplaneDistDir))) {
     process.stderr.write(
       "error: agentplane dist is missing for this repo checkout.\n" +
         "Fix:\n" +
@@ -36,19 +62,21 @@ async function assertDistUpToDate() {
     return false;
   }
 
-  const srcSentinel = path.join(agentplaneRoot, "src", "cli.ts");
-  const distTime = await mtimeMs(distCli);
-  const srcTime = await mtimeMs(srcSentinel);
-  const isStaleAgentplane = srcTime > distTime;
+  const agentplaneSrcDir = path.join(agentplaneRoot, "src");
+  const agentplaneSrcNewest = await newestMtimeMsInDir(agentplaneSrcDir);
+  const agentplaneDistNewest = await newestMtimeMsInDir(agentplaneDistDir);
+  const isStaleAgentplane = agentplaneSrcNewest > agentplaneDistNewest;
 
   // If we're in the monorepo, also check core dist because the CLI imports it.
   const repoRoot = path.resolve(agentplaneRoot, "..", "..");
   const coreRoot = path.join(repoRoot, "packages", "core");
-  const coreSrc = path.join(coreRoot, "src", "index.ts");
-  const coreDist = path.join(coreRoot, "dist", "index.js");
+  const coreSrcDir = path.join(coreRoot, "src");
+  const coreDistDir = path.join(coreRoot, "dist");
   let isStaleCore = false;
-  if ((await exists(coreSrc)) && (await exists(coreDist))) {
-    isStaleCore = (await mtimeMs(coreSrc)) > (await mtimeMs(coreDist));
+  if ((await exists(coreSrcDir)) && (await exists(coreDistDir))) {
+    const coreSrcNewest = await newestMtimeMsInDir(coreSrcDir);
+    const coreDistNewest = await newestMtimeMsInDir(coreDistDir);
+    isStaleCore = coreSrcNewest > coreDistNewest;
   }
 
   if ((isStaleAgentplane || isStaleCore) && !allowStale) {

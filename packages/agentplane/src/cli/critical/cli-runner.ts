@@ -1,4 +1,4 @@
-import { runCli } from "../run-cli.ts";
+import { runCli } from "../run-cli.js";
 
 async function main(): Promise<void> {
   const argv = process.argv.slice(2);

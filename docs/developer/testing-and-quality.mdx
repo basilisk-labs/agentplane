@@ -104,7 +104,13 @@ agentplane hooks install
 agentplane hooks uninstall
 ```
 
-By default, hooks run fast tests on pre-commit and the critical + full suites on pre-push. If a hook fails, fix the issue instead of skipping the hook.
+By default, hooks run:
+
+- `commit-msg`: commit subject enforcement (task suffix or `DEV`)
+- `pre-commit`: format + lint + fast unit tests
+- `pre-push`: release notes check + critical + full test suites
+
+If a hook fails, fix the issue instead of skipping the hook.
 
 ## CI
 
