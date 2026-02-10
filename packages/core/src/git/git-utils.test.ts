@@ -1,17 +1,40 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
-import { getStagedFiles, getUnstagedFiles, getUnstagedTrackedFiles } from "../index.js";
+import {
+  defaultConfig,
+  getStagedFiles,
+  getUnstagedFiles,
+  getUnstagedTrackedFiles,
+  saveConfig,
+} from "../index.js";
 
 const execFileAsync = promisify(execFile);
 
 async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-git-utils-test-"));
   await execFileAsync("git", ["init", "-q"], { cwd: root });
+  const agentplaneDir = path.join(root, ".agentplane");
+  await mkdir(agentplaneDir, { recursive: true });
+  await saveConfig(agentplaneDir, defaultConfig());
+  await execFileAsync("git", ["add", ".agentplane/config.json"], { cwd: root });
+  await execFileAsync(
+    "git",
+    [
+      "-c",
+      "user.email=agentplane@example.com",
+      "-c",
+      "user.name=Agentplane",
+      "commit",
+      "-m",
+      "init",
+    ],
+    { cwd: root },
+  );
   return root;
 }
 

@@ -1,7 +1,5 @@
 import path from "node:path";
 
-import { resolveProject } from "@agentplaneorg/core";
-
 import type { WorkflowMode } from "../../../agents/agents-template.js";
 import { mapCoreError } from "../../error-map.js";
 import { promptChoice, promptInput, promptYesNo } from "../../prompts.js";
@@ -314,10 +312,7 @@ async function cmdInit(opts: {
     const baseBranchFallback = "main";
     const { gitRoot, gitRootExisted } = await ensureGitRoot({ initRoot, baseBranchFallback });
 
-    const resolved = await resolveProject({
-      cwd: gitRoot,
-      rootOverride: gitRoot,
-    });
+    const resolved = { gitRoot, agentplaneDir: path.join(gitRoot, ".agentplane") };
     const initBaseBranch = await resolveInitBaseBranchForInit({
       gitRoot: resolved.gitRoot,
       baseBranchFallback,

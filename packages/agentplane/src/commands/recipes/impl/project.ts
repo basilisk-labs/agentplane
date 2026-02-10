@@ -1,8 +1,12 @@
 import { resolveProject } from "@agentplaneorg/core";
 
-function isNotGitRepoError(err: unknown): boolean {
+function isNoProjectError(err: unknown): boolean {
   if (err instanceof Error) {
-    return err.message.startsWith("Not a git repository");
+    return (
+      err.message.startsWith("Not an agentplane project") ||
+      err.message.startsWith("Not a git repository") ||
+      err.message.startsWith("Agentplane project root is not a git repository")
+    );
   }
   return false;
 }
@@ -17,7 +21,7 @@ export async function maybeResolveProject(opts: {
       rootOverride: opts.rootOverride ?? null,
     });
   } catch (err) {
-    if (isNotGitRepoError(err)) {
+    if (isNoProjectError(err)) {
       if (opts.rootOverride) throw err;
       return null;
     }

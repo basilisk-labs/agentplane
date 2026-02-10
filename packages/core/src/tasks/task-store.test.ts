@@ -4,9 +4,11 @@ import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  defaultConfig,
   createTask,
   listTasks,
   readTask,
+  saveConfig,
   setTaskDocSection,
   validateTaskDocMetadata,
 } from "../index.js";
@@ -14,6 +16,9 @@ import {
 async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-task-store-test-"));
   await mkdir(path.join(root, ".git"), { recursive: true });
+  const agentplaneDir = path.join(root, ".agentplane");
+  await mkdir(agentplaneDir, { recursive: true });
+  await saveConfig(agentplaneDir, defaultConfig());
   return root;
 }
 

@@ -144,6 +144,8 @@ describe("runCli", () => {
 
   it("hooks install maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["hooks", "install", "--root", root]);
@@ -200,6 +202,8 @@ describe("runCli", () => {
 
   it("hooks uninstall maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["hooks", "uninstall", "--root", root]);
@@ -346,6 +350,8 @@ describe("runCli", () => {
 
   it("hooks run pre-commit maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["hooks", "run", "pre-commit", "--root", root]);

@@ -6,6 +6,8 @@ import { describe, expect, it } from "vitest";
 import {
   computeTasksChecksum,
   createTask,
+  defaultConfig,
+  saveConfig,
   type TasksExportTask,
   writeTasksExport,
 } from "../index.js";
@@ -13,6 +15,9 @@ import {
 async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-tasks-export-test-"));
   await mkdir(path.join(root, ".git"), { recursive: true });
+  const agentplaneDir = path.join(root, ".agentplane");
+  await mkdir(agentplaneDir, { recursive: true });
+  await saveConfig(agentplaneDir, defaultConfig());
   return root;
 }
 

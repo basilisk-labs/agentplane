@@ -39,12 +39,13 @@ export type ResolvedProject = {
 
 export async function resolveProject(opts: ResolveProjectOptions): Promise<ResolvedProject> {
   const start = opts.rootOverride ? path.resolve(opts.rootOverride) : path.resolve(opts.cwd);
-  const gitRoot = await findGitRoot(start);
-  if (!gitRoot) {
+  // Intentionally do not search parent directories. agentplane is scoped to the
+  // explicit rootOverride, or to the current working directory.
+  if (!(await isGitRoot(start))) {
     throw new Error(`Not a git repository (start: ${start})`);
   }
   return {
-    gitRoot,
-    agentplaneDir: path.join(gitRoot, ".agentplane"),
+    gitRoot: start,
+    agentplaneDir: path.join(start, ".agentplane"),
   };
 }

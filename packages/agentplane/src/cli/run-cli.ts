@@ -330,7 +330,12 @@ async function maybeResolveProject(opts: {
       rootOverride: opts.rootOverride ?? null,
     });
   } catch (err) {
-    if (err instanceof Error && err.message.startsWith("Not a git repository")) {
+    if (
+      err instanceof Error &&
+      (err.message.startsWith("Not an agentplane project") ||
+        err.message.startsWith("Not a git repository") ||
+        err.message.startsWith("Agentplane project root is not a git repository"))
+    ) {
       return null;
     }
     throw err;

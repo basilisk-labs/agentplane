@@ -445,7 +445,7 @@ describe("runCli", () => {
     }
   });
 
-  it("maps resolveProject errors to E_GIT", async () => {
+  it("maps non-git roots to E_GIT", async () => {
     const notGitRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-not-git-"));
     const io = captureStdIO();
     try {

@@ -673,6 +673,8 @@ describe("runCli", () => {
 
   it("pr note maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -1259,6 +1261,8 @@ describe("runCli", () => {
 
   it("pr check maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["pr", "check", "202601010101-ABCDEF", "--root", root]);
@@ -1392,6 +1396,8 @@ describe("runCli", () => {
 
   it("integrate maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["integrate", "202601010101-ABCDEF", "--root", root]);
@@ -2152,6 +2158,8 @@ describe("runCli", () => {
 
   it("cleanup merged maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["cleanup", "merged", "--root", root]);

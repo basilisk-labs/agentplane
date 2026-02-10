@@ -45,8 +45,11 @@ describe("project-root", () => {
     expect(resolved.agentplaneDir).toBe(path.join(root, ".agentplane"));
   });
 
-  it("resolveProject throws when no git root is found", async () => {
+  it("resolveProject throws when cwd is not a git root (no parent discovery)", async () => {
     const root = await mkTmpDir();
-    await expect(resolveProject({ cwd: root })).rejects.toThrow(/Not a git repository/);
+    await mkdir(path.join(root, ".git"), { recursive: true });
+    const nested = path.join(root, "a", "b");
+    await mkdir(nested, { recursive: true });
+    await expect(resolveProject({ cwd: nested })).rejects.toThrow(/Not a git repository/);
   });
 });

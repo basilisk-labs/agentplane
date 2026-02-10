@@ -6,6 +6,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import {
+  defaultConfig,
   getBaseBranch,
   getPinnedBaseBranch,
   resolveBaseBranch,
@@ -20,6 +21,9 @@ async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-base-branch-test-"));
   await mkdir(path.join(root, ".git"), { recursive: true });
   await execFileAsync("git", ["init", "-q"], { cwd: root });
+  const agentplaneDir = path.join(root, ".agentplane");
+  await mkdir(agentplaneDir, { recursive: true });
+  await saveConfig(agentplaneDir, defaultConfig());
   return root;
 }
 

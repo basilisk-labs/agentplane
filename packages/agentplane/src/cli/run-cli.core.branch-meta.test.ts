@@ -91,6 +91,8 @@ describe("runCli", () => {
 
   it("branch base get maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["branch", "base", "get", "--root", root]);
@@ -205,6 +207,8 @@ describe("runCli", () => {
 
   it("branch base set maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+    await mkdir(path.join(root, ".agentplane"), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "config.json"), "{}", "utf8");
     const io = captureStdIO();
     try {
       const code = await runCli(["branch", "base", "set", "main", "--root", root]);

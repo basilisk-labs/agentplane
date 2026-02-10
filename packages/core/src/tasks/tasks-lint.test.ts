@@ -9,6 +9,7 @@ import {
   defaultConfig,
   lintTasksFile,
   lintTasksSnapshot,
+  saveConfig,
   writeTasksExport,
   type TasksExportSnapshot,
 } from "../index.js";
@@ -16,6 +17,9 @@ import {
 async function mkGitRepoRoot(): Promise<string> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-tasks-lint-test-"));
   await mkdir(path.join(root, ".git"), { recursive: true });
+  const agentplaneDir = path.join(root, ".agentplane");
+  await mkdir(agentplaneDir, { recursive: true });
+  await saveConfig(agentplaneDir, defaultConfig());
   return root;
 }
 
