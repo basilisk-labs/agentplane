@@ -66,9 +66,13 @@ jobs:
           tar -czf agentplane-upgrade.tar.gz -C packages/agentplane/assets .
           sha256sum agentplane-upgrade.tar.gz > agentplane-upgrade.tar.gz.sha256
       - run: printf "registry=https://registry.npmjs.org/\n" > "$NPM_CONFIG_USERCONFIG"
-      - run: npm publish --provenance --access public
+      # npm no longer allows implicitly moving `latest` to a lower semver than the
+      # current `latest` (e.g. publishing 0.2.5 after 0.3.0). Use an explicit tag
+      # so patch releases on an older minor line can still publish and take over
+      # the `latest` dist-tag when intended.
+      - run: npm publish --provenance --access public --tag latest
         working-directory: packages/core
-      - run: npm publish --provenance --access public
+      - run: npm publish --provenance --access public --tag latest
         working-directory: packages/agentplane
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
