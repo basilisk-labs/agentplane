@@ -101,9 +101,33 @@ export function validateArchiveEntries(entries: string[], symlinks: string[]): A
   return issues;
 }
 
+async function execFileCapture(
+  file: string,
+  args: string[],
+  opts?: Parameters<typeof execFile>[2],
+): Promise<{ stdout: string; stderr: string; error: Error | null }> {
+  return await new Promise((resolve) => {
+    execFile(file, args, opts ?? {}, (error, stdout, stderr) => {
+      resolve({ error: error ?? null, stdout: String(stdout ?? ""), stderr: String(stderr ?? "") });
+    });
+  });
+}
+
 async function listArchiveEntries(archivePath: string, type: ArchiveType): Promise<string[]> {
   if (type === "tar") {
-    const { stdout } = await execFileAsync("tar", ["-tzf", archivePath]);
+    const res = await execFileCapture("tar", ["-tzf", archivePath]);
+    const stdout = res.stdout;
+    // GNU tar may exit non-zero for warnings while still printing the member list.
+    if (res.error && !stdout.trim()) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_IO"),
+        code: "E_IO",
+        message:
+          "Failed to list tar archive entries.\n" +
+          `archive=${archivePath}\n` +
+          (res.stderr.trim() ? `stderr=${res.stderr.trim()}` : ""),
+      });
+    }
     return stdout
       .split("\n")
       .map((line) => line.trim())
@@ -118,7 +142,18 @@ async function listArchiveEntries(archivePath: string, type: ArchiveType): Promi
 
 async function listArchiveSymlinks(archivePath: string, type: ArchiveType): Promise<string[]> {
   if (type === "tar") {
-    const { stdout } = await execFileAsync("tar", ["-tvzf", archivePath]);
+    const res = await execFileCapture("tar", ["-tvzf", archivePath]);
+    const stdout = res.stdout;
+    if (res.error && !stdout.trim()) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_IO"),
+        code: "E_IO",
+        message:
+          "Failed to list tar archive symlinks.\n" +
+          `archive=${archivePath}\n` +
+          (res.stderr.trim() ? `stderr=${res.stderr.trim()}` : ""),
+      });
+    }
     return stdout
       .split("\n")
       .map((line) => line.trim())
