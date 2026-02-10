@@ -16,6 +16,10 @@ const execFileAsync = promisify(execFile);
 let agentplaneHome: string | null = null;
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
 const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
+const originalGitAuthorName = process.env.GIT_AUTHOR_NAME;
+const originalGitAuthorEmail = process.env.GIT_AUTHOR_EMAIL;
+const originalGitCommitterName = process.env.GIT_COMMITTER_NAME;
+const originalGitCommitterEmail = process.env.GIT_COMMITTER_EMAIL;
 const originalStdoutWrite = process.stdout.write.bind(process.stdout);
 const originalStderrWrite = process.stderr.write.bind(process.stderr);
 let stdioSilenceDepth = 0;
@@ -57,6 +61,11 @@ export function registerAgentplaneHome(): void {
     agentplaneHome = await mkdtemp(path.join(os.tmpdir(), "agentplane-home-"));
     process.env.AGENTPLANE_HOME = agentplaneHome;
     process.env.AGENTPLANE_NO_UPDATE_CHECK = "1";
+    // Keep tests hermetic: never rely on global git config for commit authorship.
+    process.env.GIT_AUTHOR_NAME ??= "agentplane-test";
+    process.env.GIT_AUTHOR_EMAIL ??= "agentplane-test@example.com";
+    process.env.GIT_COMMITTER_NAME ??= "agentplane-test";
+    process.env.GIT_COMMITTER_EMAIL ??= "agentplane-test@example.com";
   });
 
   afterAll(async () => {
@@ -73,6 +82,14 @@ export function registerAgentplaneHome(): void {
     } else {
       process.env.AGENTPLANE_NO_UPDATE_CHECK = originalNoUpdateCheck;
     }
+    if (originalGitAuthorName === undefined) delete process.env.GIT_AUTHOR_NAME;
+    else process.env.GIT_AUTHOR_NAME = originalGitAuthorName;
+    if (originalGitAuthorEmail === undefined) delete process.env.GIT_AUTHOR_EMAIL;
+    else process.env.GIT_AUTHOR_EMAIL = originalGitAuthorEmail;
+    if (originalGitCommitterName === undefined) delete process.env.GIT_COMMITTER_NAME;
+    else process.env.GIT_COMMITTER_NAME = originalGitCommitterName;
+    if (originalGitCommitterEmail === undefined) delete process.env.GIT_COMMITTER_EMAIL;
+    else process.env.GIT_COMMITTER_EMAIL = originalGitCommitterEmail;
   });
 }
 

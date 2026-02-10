@@ -29,5 +29,16 @@ jobs:
         run: bun run lint
       - name: Unit Tests (Fast)
         run: bun run test:fast
+        env:
+          # Ensure tests that create git commits do not rely on global git config in CI.
+          GIT_AUTHOR_NAME: agentplane-ci
+          GIT_AUTHOR_EMAIL: agentplane-ci@example.com
+          GIT_COMMITTER_NAME: agentplane-ci
+          GIT_COMMITTER_EMAIL: agentplane-ci@example.com
       - name: CLI E2E (Critical)
         run: bun run test:critical
+        env:
+          GIT_AUTHOR_NAME: agentplane-ci
+          GIT_AUTHOR_EMAIL: agentplane-ci@example.com
+          GIT_COMMITTER_NAME: agentplane-ci
+          GIT_COMMITTER_EMAIL: agentplane-ci@example.com
