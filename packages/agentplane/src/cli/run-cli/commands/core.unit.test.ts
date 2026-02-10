@@ -77,6 +77,57 @@ describe("core commands (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("role: renders JSON agent profile when built-in guide is missing", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(((chunk: unknown) => {
+      writes.push(String(chunk));
+      return true;
+    }) as unknown as typeof process.stdout.write);
+
+    mockResolveProject.mockResolvedValue({ agentplaneDir: "/repo/.agentplane" });
+    mockFileExists.mockResolvedValue(true);
+    mockReaddir.mockResolvedValue(["UPGRADER.json"]);
+    mockReadFile.mockResolvedValue(
+      JSON.stringify({
+        id: "UPGRADER",
+        role: "Semantic merge",
+        description: "Reconcile policy after upgrade",
+        inputs: ["run dir"],
+        outputs: ["reconciled files"],
+      }),
+    );
+    mockRenderRole.mockReturnValue(null);
+
+    const { runRole } = await import("./core.js");
+    const rc = await runRole(ctx, { role: "UPGRADER" });
+    expect(rc).toBe(0);
+    const out = writes.join("");
+    expect(out).toContain("### UPGRADER");
+    expect(out).toContain("Role: Semantic merge");
+    expect(out).toContain("Inputs:");
+    expect(out).toContain("Source: .agentplane/agents/UPGRADER.json");
+
+    writeSpy.mockRestore();
+  });
+
+  it("role: unknown role message includes discovered JSON roles when in a project", async () => {
+    mockResolveProject.mockResolvedValue({ agentplaneDir: "/repo/.agentplane" });
+    mockFileExists.mockResolvedValue(true);
+    mockReaddir.mockResolvedValue(["UPGRADER.json", "CODER.json"]);
+    mockRenderRole.mockReturnValue(null);
+    mockListRoles.mockReturnValue(["ORCHESTRATOR"]);
+
+    const { runRole } = await import("./core.js");
+    try {
+      await runRole(ctx, { role: "NOPE" });
+      expect.unreachable();
+    } catch (e) {
+      expect(String((e as { message?: unknown }).message)).toContain("Available roles:");
+      expect(String((e as { message?: unknown }).message)).toContain("ORCHESTRATOR");
+      expect(String((e as { message?: unknown }).message)).toContain("UPGRADER");
+    }
+  });
+
   it("agents: rejects missing agents dir, rejects empty list, and rejects duplicate ids", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(((chunk: unknown) => {

@@ -48,7 +48,115 @@ export const roleSpec: CommandSpec<RoleParsed> = {
   parse: (raw) => ({ role: String(raw.args.role ?? "") }),
 };
 
-function cmdRole(opts: { cwd: string; rootOverride?: string; role: string }): number {
+type AgentProfile = {
+  id?: string;
+  role?: string;
+  description?: string;
+  inputs?: unknown;
+  outputs?: unknown;
+  permissions?: unknown;
+  workflow?: unknown;
+};
+
+function normalizeRoleId(roleRaw: string): string {
+  return roleRaw.trim().toUpperCase();
+}
+
+async function listAgentProfileIds(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<{ agentplaneDir: string; ids: string[] } | null> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const agentsDir = path.join(resolved.agentplaneDir, "agents");
+    if (!(await fileExists(agentsDir))) return null;
+    const entriesRaw = await readdir(agentsDir);
+    const entries = entriesRaw.filter((n) => n.endsWith(".json")).toSorted();
+    const ids = entries.map((n) => n.replace(/\.json$/i, ""));
+    return { agentplaneDir: resolved.agentplaneDir, ids };
+  } catch {
+    // Best-effort: role should not fail if we're not in an agentplane project.
+    return null;
+  }
+}
+
+async function readAgentProfile(opts: {
+  cwd: string;
+  rootOverride?: string;
+  roleId: string;
+}): Promise<{ agentplaneDir: string; filename: string; profile: AgentProfile } | null> {
+  const listing = await listAgentProfileIds({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+  if (!listing) return null;
+
+  const roleId = normalizeRoleId(opts.roleId);
+  const candidates = [roleId, opts.roleId.trim()].filter(Boolean);
+  const idsLower = new Map<string, string>();
+  for (const id of listing.ids) idsLower.set(id.toLowerCase(), id);
+
+  let foundId: string | null = null;
+  for (const c of candidates) {
+    const exact = listing.ids.find((id) => id === c);
+    if (exact) {
+      foundId = exact;
+      break;
+    }
+    const ci = idsLower.get(c.toLowerCase());
+    if (ci) {
+      foundId = ci;
+      break;
+    }
+  }
+  if (!foundId) return null;
+
+  const filename = `${foundId}.json`;
+  const filePath = path.join(listing.agentplaneDir, "agents", filename);
+  const raw = JSON.parse(await readFile(filePath, "utf8")) as AgentProfile;
+  return { agentplaneDir: listing.agentplaneDir, filename, profile: raw };
+}
+
+function toStringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.map((x) => String(x ?? "").trim()).filter(Boolean);
+}
+
+function renderAgentProfileBlock(opts: {
+  filename: string;
+  roleId: string;
+  profile: AgentProfile;
+}): string {
+  const id = (typeof opts.profile.id === "string" ? opts.profile.id : "").trim() || opts.roleId;
+  const role = (typeof opts.profile.role === "string" ? opts.profile.role : "").trim();
+  const description = (
+    typeof opts.profile.description === "string" ? opts.profile.description : ""
+  ).trim();
+
+  const inputs = toStringList(opts.profile.inputs);
+  const outputs = toStringList(opts.profile.outputs);
+  const permissions = toStringList(opts.profile.permissions);
+  const workflow = toStringList(opts.profile.workflow);
+
+  const lines: string[] = [
+    `### ${id}`,
+    ...(role ? [`Role: ${role}`] : []),
+    ...(description ? [`Description: ${description}`] : []),
+    ...(inputs.length > 0 ? ["", "Inputs:", ...inputs.map((s) => `- ${s}`)] : []),
+    ...(outputs.length > 0 ? ["", "Outputs:", ...outputs.map((s) => `- ${s}`)] : []),
+    ...(permissions.length > 0 ? ["", "Permissions:", ...permissions.map((s) => `- ${s}`)] : []),
+    ...(workflow.length > 0 ? ["", "Workflow:", ...workflow.map((s) => `- ${s}`)] : []),
+    "",
+    `Source: .agentplane/agents/${opts.filename} (lower priority; see AGENTS.md)`,
+  ];
+  return lines.join("\n").trimEnd();
+}
+
+async function cmdRole(opts: {
+  cwd: string;
+  rootOverride?: string;
+  role: string;
+}): Promise<number> {
   try {
     const roleRaw = opts.role.trim();
     if (!roleRaw) {
@@ -58,17 +166,60 @@ function cmdRole(opts: { cwd: string; rootOverride?: string; role: string }): nu
         message: "Missing required argument: role",
       });
     }
-    const guide = renderRole(roleRaw);
-    if (!guide) {
-      const roles = listRoles();
-      const available = roles.length > 0 ? `\nAvailable roles: ${roles.join(", ")}` : "";
+
+    const normalizedRole = normalizeRoleId(roleRaw);
+    const guide = renderRole(normalizedRole);
+    const agentProfile = await readAgentProfile({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      roleId: normalizedRole,
+    });
+
+    if (!guide && !agentProfile) {
+      const builtin = listRoles();
+      const agentIds = await listAgentProfileIds({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+      });
+      const discovered = agentIds ? agentIds.ids : [];
+      const availableList = dedupeStrings([...builtin, ...discovered]).toSorted();
+      const available =
+        availableList.length > 0 ? `\nAvailable roles: ${availableList.join(", ")}` : "";
       throw usageError({
         spec: roleSpec,
         command: "role",
         message: `Unknown role: ${roleRaw}.${available}`,
       });
     }
-    process.stdout.write(`${guide}\n`);
+
+    if (guide) {
+      process.stdout.write(`${guide}\n`);
+      if (agentProfile) {
+        const block = renderAgentProfileBlock({
+          filename: agentProfile.filename,
+          roleId: normalizedRole,
+          profile: agentProfile.profile,
+        });
+        process.stdout.write(`\n## Agent profile\n\n${block}\n`);
+      }
+      return 0;
+    }
+
+    if (!agentProfile) {
+      // Defensive: this should be unreachable due to the earlier guard.
+      throw usageError({
+        spec: roleSpec,
+        command: "role",
+        message: `Unknown role: ${roleRaw}.`,
+      });
+    }
+
+    const block = renderAgentProfileBlock({
+      filename: agentProfile.filename,
+      roleId: normalizedRole,
+      profile: agentProfile.profile,
+    });
+    process.stdout.write(`${block}\n`);
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -77,8 +228,7 @@ function cmdRole(opts: { cwd: string; rootOverride?: string; role: string }): nu
 }
 
 export const runRole: CommandHandler<RoleParsed> = (ctx, p) => {
-  cmdRole({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, role: p.role });
-  return Promise.resolve(0);
+  return cmdRole({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, role: p.role });
 };
 
 type AgentsParsed = Record<string, never>;
