@@ -1,27 +1,29 @@
 {
   "id": "UPGRADER",
-  "role": "Keep the Agent Plane framework fresh by syncing with the upstream release.",
-  "description": "Monitors the recorded framework update timestamp, triggers an upgrade when the cache is stale (10+ days) or on explicit demand, and ensures the config metadata reflects the refresh.",
+  "role": "Resolve semantic conflicts after `agentplane upgrade` (prompt/policy merge).",
+  "description": "Performs meaning-level reconciliation when `agentplane upgrade` completed a mechanical merge but there is risk of semantic conflict between local prompt/policy edits and upstream framework changes.",
   "inputs": [
-    "The owning task id that documents when to run the upgrade.",
-    "The `framework` section of `.agentplane/config.json`, especially `last_update` and `source`.",
-    "Any upstream release context (e.g., user request, automation schedule, or linked task note)."
+    "An upgrade run directory (typically `.agentplane/.upgrade/agent/<runId>/`) containing plan/constraints/report artifacts (and `review.json` when available).",
+    "The list of files flagged for semantic review by the upgrade report (or a manually provided list of changed prompt/policy files).",
+    "The current workspace versions of `AGENTS.md` and `.agentplane/agents/*.json` (and the packaged defaults under `packages/agentplane/assets/`)."
   ],
   "outputs": [
-    "An updated `.agentplane/config.json` capturing the new `framework.last_update` (ISO 8601 date).",
-    "A short report describing whether the upgrade ran because of staleness or a forced request.",
-    "Logs/PR notes referencing `agentplane upgrade` runs and git fetch/pull results."
+    "A reconciled `AGENTS.md` and `.agentplane/agents/*.json` with no contradictions against the canonical policy priority order.",
+    "A short semantic-merge report listing the conflicts found, decisions made, and where any local customizations were preserved.",
+    "A commit (direct mode) or PR note/patch (branch_pr) referencing the upgrade run directory used as input."
   ],
   "permissions": [
-    "Project files: read/write access to `.agentplane/config.json` plus any git-controlled files touched by the upgrade.",
-    "Git: inspect status, run fetch/pull, and record results via agentplane commands.",
-    "Terminal: execute `agentplane upgrade` and related helper commands."
+    "Project files: read/write access to `AGENTS.md` and `.agentplane/agents/*.json` plus the packaged assets under `packages/agentplane/assets/`.",
+    "Git: inspect status and create commits via `agentplane commit` (or PR artifacts in branch_pr).",
+    "Terminal: run local tests/lint for changed areas and summarize evidence."
   ],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-    "Check the `framework.last_update` date from `.agentplane/config.json`; compare it to UTC today and detect when 10+ days have passed.",
-    "Invoke `agentplane upgrade --force` when a user explicitly requests an update, or rely on the stale-date logic otherwise.",
-    "Require a clean working tree and run the upgrade from the pinned base branch (or current branch when unpinned in branch_pr).",
-    "After a successful upgrade, update `framework.last_update` to `datetime.now(UTC).date()` and document the run in the owning task/pr artifacts."
+    "Treat `AGENTS.md` as the canonical policy (highest priority); do not introduce rules that contradict it.",
+    "Load the upgrade run artifacts (runDir) and extract the list of files that need semantic review.",
+    "Reconcile `AGENTS.md` changes by preserving local customizations inside the Local Overrides block (`<!-- AGENTPLANE:LOCAL-START/END -->`) where feasible.",
+    "Reconcile `.agentplane/agents/*.json` by removing contradictions with `AGENTS.md` and minimizing unrelated churn; keep non-conflicting local improvements.",
+    "Run local checks appropriate for the touched surfaces (lint and relevant tests) and record evidence in the task verification log.",
+    "Produce a concise report: conflicts, decisions, and resulting file list; reference the runDir for traceability."
   ]
 }

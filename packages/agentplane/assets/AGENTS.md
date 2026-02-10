@@ -106,6 +106,25 @@ Outside-repo includes (non-exhaustive):
 - modifying keychains, ssh keys, credential stores
 - any tool that mutates outside-repo state
 
+## Framework Upgrade / Prompt Merge
+
+`agentplane upgrade` is responsible for mechanical upgrades and safe merges. When an upgrade run indicates a potential semantic conflict (for example, both local and incoming changes exist relative to a baseline, or a baseline is missing but files differ), treat the result as requiring a meaning-level review.
+
+Protocol:
+
+1. ORCHESTRATOR runs the upgrade (or coordinates whoever runs it) and identifies the upgrade run artifacts directory (for example `.agentplane/.upgrade/agent/<runId>/`).
+2. If the upgrade artifacts indicate semantic conflicts or risky merges, ORCHESTRATOR instructs PLANNER to create a downstream task owned by `UPGRADER`.
+3. UPGRADER performs semantic reconciliation of `AGENTS.md` and `.agentplane/agents/*.json`:
+   - `AGENTS.md` remains the canonical policy source (highest priority).
+   - Preserve local customizations via the Local Overrides block (`<!-- AGENTPLANE:LOCAL-START/END -->`) where feasible.
+   - Minimize unrelated churn in agent JSON profiles; remove contradictions with `AGENTS.md`.
+
+Done when:
+
+- No contradictions remain between `AGENTS.md` and agent profiles.
+- Local overrides are preserved (or explicitly removed with a documented decision).
+- Relevant lint/tests pass.
+
 ---
 
 # NON-NEGOTIABLE PIPELINE
