@@ -41,40 +41,48 @@ type ParsedArgs = {
   allowNetwork: boolean;
 };
 
+type GlobalFlagKey = "help" | "version" | "noUpdateCheck" | "root" | "jsonErrors" | "allowNetwork";
+
+type GlobalFlagDef = {
+  key: GlobalFlagKey;
+  forms: readonly string[];
+  takesValue: boolean;
+  scoped: boolean;
+};
+
+const GLOBAL_FLAGS: readonly GlobalFlagDef[] = [
+  { key: "help", forms: ["--help", "-h"], takesValue: false, scoped: false },
+  { key: "version", forms: ["--version", "-v"], takesValue: false, scoped: false },
+  { key: "noUpdateCheck", forms: ["--no-update-check"], takesValue: false, scoped: false },
+  { key: "allowNetwork", forms: ["--allow-network"], takesValue: false, scoped: true },
+  { key: "jsonErrors", forms: ["--json-errors", "--json"], takesValue: false, scoped: true },
+  { key: "root", forms: ["--root"], takesValue: true, scoped: false },
+] as const;
+
+const GLOBAL_FLAG_FORMS = new Map<string, GlobalFlagDef>(
+  GLOBAL_FLAGS.flatMap((def) => def.forms.map((form) => [form, def] as const)),
+);
+
 function prescanJsonErrors(argv: readonly string[]): boolean {
   // If parseGlobalArgs throws (e.g. missing --root value), we still want to honor
-  // `--json` in the "scoped global" zone (before the command id).
+  // `--json` / `--json-errors` in the "scoped global" zone (before the command id).
   let hasRest = false;
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (!arg) continue;
 
-    // Global flags that do not accept values.
-    if (arg === "--help" || arg === "-h") continue;
-    if (arg === "--version" || arg === "-v") continue;
-    if (arg === "--no-update-check") continue;
-    if (arg === "--allow-network") continue;
-
-    // Scoped global: only before the command id.
-    if (arg === "--json-errors") {
-      if (!hasRest) return true;
-      continue;
-    }
-    if (arg === "--json") {
-      if (!hasRest) return true;
-      continue;
+    const def = GLOBAL_FLAG_FORMS.get(arg);
+    if (!def) {
+      // First non-global token is treated as the start of the command id.
+      hasRest = true;
+      break;
     }
 
-    // Global flags with values.
-    if (arg === "--root") {
+    if (def.key === "jsonErrors" && !hasRest) return true;
+    if (def.takesValue) {
       // Skip the value if present; do not throw on missing value here.
       i++;
-      continue;
     }
-
-    // First non-global token is treated as the start of the command id.
-    hasRest = true;
-    break;
   }
   return false;
 }
@@ -91,61 +99,59 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (!arg) continue;
-    if (arg === "--help" || arg === "-h") {
-      help = true;
+
+    const def = GLOBAL_FLAG_FORMS.get(arg);
+    if (!def) {
+      rest.push(arg);
       continue;
     }
-    if (arg === "--version" || arg === "-v") {
-      version = true;
+
+    // Scoped globals are only recognized before the command id token.
+    if (def.scoped && rest.length > 0) {
+      rest.push(arg);
       continue;
     }
-    if (arg === "--no-update-check") {
-      noUpdateCheck = true;
-      continue;
-    }
-    if (arg === "--allow-network") {
-      // Scoped global: only treat `--allow-network` as a global approval if it appears
-      // before the command id. This avoids accidental capture of command-specific flags.
-      if (rest.length === 0) {
+
+    switch (def.key) {
+      case "help": {
+        help = true;
+        break;
+      }
+      case "version": {
+        version = true;
+        break;
+      }
+      case "noUpdateCheck": {
+        noUpdateCheck = true;
+        break;
+      }
+      case "allowNetwork": {
         allowNetwork = true;
-        continue;
+        break;
       }
-      rest.push(arg);
-      continue;
-    }
-    if (arg === "--json-errors") {
-      // Scoped global: only treat `--json-errors` as "JSON errors" if it appears
-      // before the command id. This mirrors the existing `--json` behavior.
-      if (rest.length === 0) {
+      case "jsonErrors": {
         jsonErrors = true;
-        continue;
+        break;
       }
-      rest.push(arg);
-      continue;
-    }
-    if (arg === "--json") {
-      // Scoped global: only treat `--json` as "JSON errors" if it appears
-      // before the command id. This allows per-command `--json` (e.g. `help`).
-      if (rest.length === 0) {
-        jsonErrors = true;
-        continue;
+      case "root": {
+        const next = argv[i + 1];
+        if (!next) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Missing value after --root (expected repository path)",
+          });
+        }
+        root = next;
+        i++;
+        break;
       }
-      rest.push(arg);
-      continue;
+      default: {
+        // Exhaustive by construction; keep a defensive fallback.
+        rest.push(arg);
+        break;
+      }
     }
-    if (arg === "--root") {
-      const next = argv[i + 1];
-      if (!next)
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: "Missing value after --root (expected repository path)",
-        });
-      root = next;
-      i++;
-      continue;
-    }
-    rest.push(arg);
   }
   return { globals: { help, version, noUpdateCheck, root, jsonErrors, allowNetwork }, rest };
 }
