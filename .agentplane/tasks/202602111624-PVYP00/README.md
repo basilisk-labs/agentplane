@@ -1,7 +1,9 @@
 ---
 id: "202602111624-PVYP00"
 title: "Hook pipeline: remove pre-commit recursion on agentplane commit"
-status: "DOING"
+result_summary: "Pre-commit recursion risk removed via hook-safe test profile split"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "ffaf31f0eafdf68753b1aedbbbd803fc11c8560d"
+  message: "✅ PVYP00 hooks: split pre-commit tests to avoid recursive hook entry"
 comments:
   -
     author: "CODER"
     body: "Start: split hook-safe pre-commit test profile from hook integration tests to remove recursive commit hook entry."
+  -
+    author: "CODER"
+    body: "Verified: pre-commit now runs hook-safe tests (test:fast:hook), hook-integration suites moved to test:hooks, and lint/test/build checks pass in direct runs."
 events:
   -
     type: "status"
@@ -33,8 +40,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: split hook-safe pre-commit test profile from hook integration tests to remove recursive commit hook entry."
+  -
+    type: "status"
+    at: "2026-02-11T16:28:03.618Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-commit now runs hook-safe tests (test:fast:hook), hook-integration suites moved to test:hooks, and lint/test/build checks pass in direct runs."
 doc_version: 2
-doc_updated_at: "2026-02-11T16:24:47.022Z"
+doc_updated_at: "2026-02-11T16:28:03.618Z"
 doc_updated_by: "CODER"
 description: "Split pre-commit test profile to avoid running hook-integration tests that can invoke nested git hooks during agentplane commit."
 id_source: "generated"
