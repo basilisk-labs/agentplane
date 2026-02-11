@@ -71,9 +71,6 @@ export async function writeBackendStubs(opts: {
     id: "redmine",
     version: 1,
     settings: {
-      url: "https://redmine.example",
-      api_key: "replace-me",
-      project_id: "replace-me",
       owner_agent: "REDMINE",
       custom_fields: { task_id: 1 },
     },

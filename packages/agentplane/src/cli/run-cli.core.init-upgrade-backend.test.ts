@@ -308,6 +308,11 @@ describe("runCli", () => {
     const redmineText = await readFile(redmineBackendPath, "utf8");
     const redmine = JSON.parse(redmineText) as Record<string, unknown>;
     expect(redmine).toMatchObject({ id: "redmine", version: 1 });
+    const settings = (redmine.settings ?? {}) as Record<string, unknown>;
+    expect(settings.url).toBeUndefined();
+    expect(settings.api_key).toBeUndefined();
+    expect(settings.project_id).toBeUndefined();
+    expect(settings.owner_agent).toBe("REDMINE");
     const dotEnvPath = path.join(root, ".env");
     const dotEnvText = await readFile(dotEnvPath, "utf8");
     expect(dotEnvText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
