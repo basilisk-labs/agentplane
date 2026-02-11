@@ -35,13 +35,15 @@
     "LICENSE"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
     "build": "tsc -b",
     "typecheck": "tsc -b",
-    "prepack": "bun run clean && bun run build"
+    "prepack": "bun run clean && bun run build",
+    "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
     "ajv": "^8.17.1",

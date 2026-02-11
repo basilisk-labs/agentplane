@@ -43,7 +43,8 @@
     "LICENSE"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true}); require('node:fs').rmSync('tsconfig.tsbuildinfo',{force:true});\"",
@@ -51,7 +52,7 @@
     "typecheck": "tsc -b",
     "prepare": "npm run build",
     "prepack": "npm run clean && npm run build",
-    "prepublishOnly": "npm run prepack"
+    "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
     "@agentplaneorg/core": "0.2.17",

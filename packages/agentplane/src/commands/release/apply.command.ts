@@ -270,6 +270,36 @@ async function ensureNpmVersionsAvailable(gitRoot: string, version: string): Pro
   }
 }
 
+async function runReleasePrepublishGate(gitRoot: string): Promise<void> {
+  try {
+    await execFileAsync("bun", ["run", "release:prepublish"], {
+      cwd: gitRoot,
+      env: {
+        ...process.env,
+        GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
+        GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
+        GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
+        GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
+      },
+      maxBuffer: 200 * 1024 * 1024,
+    });
+  } catch (err) {
+    const details = String(
+      (err as { stderr?: string; stdout?: string; message?: string } | null)?.stderr ??
+        (err as { stdout?: string; message?: string } | null)?.stdout ??
+        (err as { message?: string } | null)?.message ??
+        "",
+    ).trim();
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        "Release prepublish gate failed. `agentplane release apply --push` requires a successful local `bun run release:prepublish` run before pushing the release tag." +
+        (details ? `\n\n${details}` : ""),
+    });
+  }
+}
+
 async function writeReleaseApplyReport(
   gitRoot: string,
   report: ReleaseApplyReport,
@@ -431,6 +461,7 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
       reason: "release apply --push validates npm version availability and pushes over network",
       interactive: Boolean(process.stdin.isTTY),
     });
+    await runReleasePrepublishGate(gitRoot);
     await ensureNpmVersionsAvailable(gitRoot, plan.nextVersion);
     npmVersionChecked = true;
   }
