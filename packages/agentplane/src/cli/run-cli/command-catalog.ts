@@ -46,7 +46,7 @@ import {
 import { branchStatusSpec } from "../../commands/branch/status.command.js";
 import { branchRemoveSpec } from "../../commands/branch/remove.command.js";
 
-import { recipesInstallSpec } from "../../commands/recipes/install.command.js";
+import { recipesInstallSpec } from "../../commands/recipes/install.spec.js";
 import { recipesListSpec } from "../../commands/recipes/list.command.js";
 import { recipesListRemoteSpec } from "../../commands/recipes/list-remote.command.js";
 import { recipesInfoSpec } from "../../commands/recipes/info.command.js";
@@ -80,7 +80,7 @@ import { blockSpec } from "../../commands/block.spec.js";
 import { verifySpec } from "../../commands/verify.spec.js";
 import { finishSpec } from "../../commands/finish.spec.js";
 import { readySpec } from "../../commands/ready.command.js";
-import { doctorSpec } from "../../commands/doctor.command.js";
+import { doctorSpec } from "../../commands/doctor.spec.js";
 
 import { docsCliSpec } from "../../commands/docs/cli.command.js";
 import { hooksSpec } from "../../commands/hooks/hooks.command.js";
@@ -231,7 +231,7 @@ export const COMMANDS = [
     },
   ),
 
-  entry(doctorSpec, () => import("../../commands/doctor.command.js").then((m) => m.runDoctor), {
+  entry(doctorSpec, () => import("../../commands/doctor.run.js").then((m) => m.runDoctor), {
     needsProject: true,
     needsConfig: false,
     needsTaskContext: false,
@@ -389,7 +389,7 @@ export const COMMANDS = [
     import("../../commands/recipes/cache-prune.command.js").then((m) => m.runRecipesCachePrune),
   ),
   entry(recipesInstallSpec, () =>
-    import("../../commands/recipes/install.command.js").then((m) => m.runRecipesInstall),
+    import("../../commands/recipes/install.run.js").then((m) => m.runRecipesInstall),
   ),
 
   entry(scenarioSpec, () =>
