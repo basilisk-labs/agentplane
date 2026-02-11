@@ -14,13 +14,17 @@ permissions:
   contents: write
   id-token: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   publish:
     if: >
       (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
       (github.event_name == 'workflow_dispatch')
     environment: npm
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       NPM_CONFIG_PROVENANCE: "true"
       NODE_AUTH_TOKEN: ""
@@ -57,6 +61,15 @@ jobs:
         with:
           node-version: "20"
       - run: npm i -g npm@11.5.1
+      - name: Cache Bun artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
       - run: bun install --frozen-lockfile --ignore-scripts
       # Server-side gate: do not publish if formatting/lint/tests fail.
       # Hooks are local and can be bypassed; publish must be deterministic.
