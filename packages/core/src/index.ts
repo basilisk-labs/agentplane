@@ -14,10 +14,17 @@ export {
   setByDottedKey,
   validateConfig,
   type AgentplaneConfig,
+  type ExecutionProfile,
   type LoadedConfig,
+  type ReasoningEffort,
   type StatusCommitPolicy,
   type WorkflowMode,
 } from "./config/config.js";
+
+export {
+  EXECUTION_PROFILE_PRESETS,
+  resolveExecutionProfilePreset,
+} from "./config/execution-profile.js";
 
 export {
   parseTaskReadme,
