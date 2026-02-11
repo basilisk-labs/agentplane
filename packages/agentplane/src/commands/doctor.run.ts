@@ -5,6 +5,7 @@ import { resolveProject } from "@agentplaneorg/core";
 
 import type { CommandHandler } from "../cli/spec/spec.js";
 import { warnMessage, successMessage } from "../cli/output.js";
+import { execFileAsync, gitEnv } from "./shared/git.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import type { DoctorParsed } from "./doctor.spec.js";
 
@@ -170,11 +171,87 @@ async function safeFixTaskIndex(repoRoot: string): Promise<{ changed: boolean; n
   }
 }
 
+type TaskSnapshotRecord = {
+  id?: unknown;
+  status?: unknown;
+  commit?: { hash?: unknown } | null;
+};
+
+async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<string[]> {
+  const tasksPath = path.join(repoRoot, ".agentplane", "tasks.json");
+  let raw = "";
+  try {
+    raw = await fs.readFile(tasksPath, "utf8");
+  } catch {
+    return [];
+  }
+
+  let parsed: { tasks?: unknown };
+  try {
+    parsed = JSON.parse(raw) as { tasks?: unknown };
+  } catch {
+    return [`Invalid JSON snapshot: ${path.relative(repoRoot, tasksPath)}`];
+  }
+  const all = Array.isArray(parsed.tasks) ? (parsed.tasks as TaskSnapshotRecord[]) : [];
+  const done = all.filter((t) => {
+    const status = typeof t.status === "string" ? t.status : "";
+    return status.toUpperCase() === "DONE";
+  });
+  if (done.length === 0) return [];
+
+  const problems: string[] = [];
+  const hashes = new Set<string>();
+  for (const task of done) {
+    const id = typeof task.id === "string" ? task.id : "<unknown>";
+    const hash = typeof task.commit?.hash === "string" ? task.commit.hash.trim() : "";
+    if (!hash) {
+      problems.push(
+        `DONE task is missing implementation commit hash: ${id} (finish with --commit <hash>).`,
+      );
+      continue;
+    }
+    hashes.add(hash);
+  }
+  if (hashes.size === 0) return problems;
+
+  const subjectByHash = new Map<string, string>();
+  for (const hash of hashes) {
+    try {
+      const { stdout } = await execFileAsync("git", ["show", "-s", "--format=%s", hash], {
+        cwd: repoRoot,
+        env: gitEnv(),
+      });
+      subjectByHash.set(hash, String(stdout ?? "").trim());
+    } catch {
+      subjectByHash.set(hash, "");
+    }
+  }
+
+  for (const task of done) {
+    const id = typeof task.id === "string" ? task.id : "<unknown>";
+    const hash = typeof task.commit?.hash === "string" ? task.commit.hash.trim() : "";
+    if (!hash) continue;
+    const subject = subjectByHash.get(hash) ?? "";
+    if (!subject) {
+      problems.push(`DONE task references unknown commit hash: ${id} -> ${hash}`);
+      continue;
+    }
+    if (/\bclose:/iu.test(subject)) {
+      problems.push(
+        `DONE task implementation commit points to a close commit: ${id} -> ${hash} (${subject})`,
+      );
+    }
+  }
+
+  return problems;
+}
+
 export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const repoRoot = resolved.gitRoot;
 
   const problems = await checkWorkspace(repoRoot);
+  problems.push(...(await checkDoneTaskCommitInvariants(repoRoot)));
   if (p.dev) {
     problems.push(...(await checkLayering(repoRoot)));
   }
