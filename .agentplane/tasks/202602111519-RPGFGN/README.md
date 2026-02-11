@@ -1,7 +1,9 @@
 ---
 id: "202602111519-RPGFGN"
 title: "T4: Enforce force_action approvals across all --force commands"
-status: "DOING"
+result_summary: "All force-capable commands now enforce the same approval policy."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -21,11 +23,16 @@ verification:
   updated_at: "2026-02-11T15:45:18.472Z"
   updated_by: "CODER"
   note: "Verified: Added force-action approval checks and --yes flags across lifecycle/task/branch force paths, with conservative-profile regression tests for start/finish and existing set-status coverage. Ran core CLI tests, lint, and builds."
-commit: null
+commit:
+  hash: "7524d3b6ba2e1c6feedabb26216467acb5b722d2"
+  message: "✅ RPGFGN approvals: enforce force-action checks across commands"
 comments:
   -
     author: "CODER"
     body: "Start: applying force approval checks across all commands that expose --force."
+  -
+    author: "CODER"
+    body: "Verified: Unified --force approval handling across lifecycle, task maintenance, and branch remove commands with explicit --yes paths and conservative-profile regression coverage."
 events:
   -
     type: "status"
@@ -40,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: Added force-action approval checks and --yes flags across lifecycle/task/branch force paths, with conservative-profile regression tests for start/finish and existing set-status coverage. Ran core CLI tests, lint, and builds."
+  -
+    type: "status"
+    at: "2026-02-11T15:45:58.096Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Unified --force approval handling across lifecycle, task maintenance, and branch remove commands with explicit --yes paths and conservative-profile regression coverage."
 doc_version: 2
-doc_updated_at: "2026-02-11T15:45:18.473Z"
+doc_updated_at: "2026-02-11T15:45:58.096Z"
 doc_updated_by: "CODER"
 description: "Apply unified force approval checks to every command supporting --force and standardize error/help text."
 id_source: "generated"
