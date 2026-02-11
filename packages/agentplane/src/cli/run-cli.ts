@@ -415,7 +415,9 @@ export async function runCli(argv: string[]): Promise<number> {
       await loadDotEnv(resolved.gitRoot);
     }
 
-    let projectPromise: Promise<ResolvedProject> | null = null;
+    let projectPromise: Promise<ResolvedProject> | null = resolved
+      ? Promise.resolve(resolved)
+      : null;
     const getResolvedProject = async (commandForErrorContext: string): Promise<ResolvedProject> => {
       projectPromise ??= resolveProject({ cwd, rootOverride: globals.root ?? null });
       try {
