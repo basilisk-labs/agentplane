@@ -8,8 +8,9 @@ import {
   writeDefaultConfig,
 } from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
+const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 
-describe("upgrade agent-assisted mode", () => {
+describeWhenNotHook("upgrade agent-assisted mode", () => {
   it("writes an upgrade plan and does not modify managed files", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

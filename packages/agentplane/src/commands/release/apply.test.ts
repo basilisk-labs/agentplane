@@ -9,6 +9,7 @@ import { runReleasePlan } from "./plan.command.js";
 import { runReleaseApply } from "./apply.command.js";
 
 const execFileAsync = promisify(execFile);
+const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 
 async function commitAll(root: string, message: string): Promise<void> {
   await execFileAsync("git", ["add", "-A"], { cwd: root });
@@ -24,7 +25,7 @@ async function listRuns(root: string): Promise<string[]> {
     .toSorted();
 }
 
-describe("release apply", () => {
+describeWhenNotHook("release apply", () => {
   it("bumps versions, commits, and tags using the latest plan", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

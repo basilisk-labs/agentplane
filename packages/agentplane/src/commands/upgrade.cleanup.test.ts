@@ -9,6 +9,7 @@ import {
   writeDefaultConfig,
 } from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
+const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 
 async function exists(absPath: string): Promise<boolean> {
   try {
@@ -19,7 +20,7 @@ async function exists(absPath: string): Promise<boolean> {
   }
 }
 
-describe("upgrade cleanup behavior", () => {
+describeWhenNotHook("upgrade cleanup behavior", () => {
   it("removes transient auto-upgrade artifacts and backups created during the run", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -8,13 +8,14 @@ import { mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helper
 import { runReleasePlan, releasePlanSpec } from "./plan.command.js";
 
 const execFileAsync = promisify(execFile);
+const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 
 async function commitAll(root: string, message: string): Promise<void> {
   await execFileAsync("git", ["add", "-A"], { cwd: root });
   await execFileAsync("git", ["commit", "-m", message], { cwd: root });
 }
 
-describe("release plan", () => {
+describeWhenNotHook("release plan", () => {
   it("writes a release plan dir with changes list and next patch version", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
