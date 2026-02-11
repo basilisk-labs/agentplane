@@ -1,7 +1,8 @@
 ---
 id: "202602112104-XCJ7RC"
 title: "Allow hierarchical commit scopes in commit policy"
-status: "DOING"
+result_summary: "Commit policy accepts hierarchical scopes"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "745d1e16724a9c9567a107b2c849f5843ac24891"
+  message: "🛠️ XCJ7RC git: support hierarchical commit scopes"
 comments:
   -
     author: "CODER"
     body: "Start: Extending commit subject validation to support hierarchical scope tokens."
+  -
+    author: "CODER"
+    body: "Verified: commit-policy tests, lint, and critical CLI tests pass with scope forms like core/guard and cli/run-cli."
 events:
   -
     type: "status"
@@ -34,8 +40,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Extending commit subject validation to support hierarchical scope tokens."
+  -
+    type: "status"
+    at: "2026-02-11T21:08:03.514Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: commit-policy tests, lint, and critical CLI tests pass with scope forms like core/guard and cli/run-cli."
 doc_version: 2
-doc_updated_at: "2026-02-11T21:06:27.840Z"
+doc_updated_at: "2026-02-11T21:08:03.514Z"
 doc_updated_by: "CODER"
 description: "Support scopes like core/guard and cli/run-cli in commit subject validation and cover with tests."
 id_source: "generated"
