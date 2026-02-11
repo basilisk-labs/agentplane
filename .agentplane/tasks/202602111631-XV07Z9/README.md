@@ -1,7 +1,9 @@
 ---
 id: "202602111631-XV07Z9"
 title: "T2: Add AGENTPLANE_HOOK_MODE test guard for side-effect suites"
-status: "DOING"
+result_summary: "Hook mode now skips side-effect test suites deterministically"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on:
@@ -20,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "be85de119d8b565d4e8e8046d7eb82dc17ad5d19"
+  message: "✅ XV07Z9 tests: guard side-effect suites in hook mode"
 comments:
   -
     author: "TESTER"
     body: "Start: add AGENTPLANE_HOOK_MODE guards to side-effect heavy test suites for deterministic hook operation."
+  -
+    author: "TESTER"
+    body: "Verified: release/upgrade side-effect suites now skip under AGENTPLANE_HOOK_MODE=1; normal fast suite still passes and hook-mode run is deterministic."
 events:
   -
     type: "status"
@@ -33,8 +40,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: add AGENTPLANE_HOOK_MODE guards to side-effect heavy test suites for deterministic hook operation."
+  -
+    type: "status"
+    at: "2026-02-11T16:35:11.721Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release/upgrade side-effect suites now skip under AGENTPLANE_HOOK_MODE=1; normal fast suite still passes and hook-mode run is deterministic."
 doc_version: 2
-doc_updated_at: "2026-02-11T16:33:51.660Z"
+doc_updated_at: "2026-02-11T16:35:11.721Z"
 doc_updated_by: "TESTER"
 description: "When AGENTPLANE_HOOK_MODE=1, skip or stub tests that create commit/release/upgrade side effects to keep hook path deterministic."
 id_source: "generated"
