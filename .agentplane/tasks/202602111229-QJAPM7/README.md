@@ -1,7 +1,8 @@
 ---
 id: "202602111229-QJAPM7"
 title: "Run release gate and publish next patch"
-status: "DOING"
+result_summary: "Patch release v0.2.17 published successfully."
+status: "DONE"
 priority: "high"
 owner: "INTEGRATOR"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-11T12:43:48.049Z"
   updated_by: "TESTER"
   note: "Verified: release prepublish gate passed, v0.2.17 tag pushed, publish workflow succeeded, and npm now serves @agentplaneorg/core and agentplane at 0.2.17."
-commit: null
+commit:
+  hash: "26acfac7d5db916123b06370a627f5be3a0634d5"
+  message: "✨ release: v0.2.17"
 comments:
   -
     author: "INTEGRATOR"
     body: "Start: running release prepublish gate and publishing the next patch release after hardening checks."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: executed release prepublish gate, generated notes for v0.2.17, applied release with push, observed successful Publish to npm workflow run 21905470910, and confirmed npm versions at 0.2.17."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: release prepublish gate passed, v0.2.17 tag pushed, publish workflow succeeded, and npm now serves @agentplaneorg/core and agentplane at 0.2.17."
+  -
+    type: "status"
+    at: "2026-02-11T12:44:36.776Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: executed release prepublish gate, generated notes for v0.2.17, applied release with push, observed successful Publish to npm workflow run 21905470910, and confirmed npm versions at 0.2.17."
 doc_version: 2
-doc_updated_at: "2026-02-11T12:43:48.056Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-11T12:44:36.776Z"
+doc_updated_by: "INTEGRATOR"
 description: "Run local CI-equivalent gate and publish the next patch release after hardening changes land."
 id_source: "generated"
 ---
