@@ -28,6 +28,7 @@ import {
   findIssueByTaskId as findIssueByTaskIdImpl,
   listTasksRemote as listTasksRemoteImpl,
 } from "./redmine/remote.js";
+import { readRedmineEnv } from "./redmine/env.js";
 import {
   BackendError,
   DEFAULT_DOC_UPDATED_BY,
@@ -73,30 +74,35 @@ export class RedmineBackend implements TaskBackend {
   statusMap: Record<string, unknown>;
   customFields: Record<string, unknown>;
   batchSize: number;
-  batchPause: number;
+  batchPauseMs: number;
   cache: LocalBackend | null;
   issueCache = new Map<string, Record<string, unknown>>();
   reverseStatus = new Map<number, string>();
 
   constructor(settings: RedmineSettings, opts: { cache?: LocalBackend | null }) {
-    const envUrl = firstNonEmptyString(process.env.AGENTPLANE_REDMINE_URL);
-    const envApiKey = firstNonEmptyString(process.env.AGENTPLANE_REDMINE_API_KEY);
-    const envProjectId = firstNonEmptyString(process.env.AGENTPLANE_REDMINE_PROJECT_ID);
-    const envAssignee = (process.env.AGENTPLANE_REDMINE_ASSIGNEE_ID ?? "").trim();
-    const envOwner = firstNonEmptyString(
-      process.env.AGENTPLANE_REDMINE_OWNER,
-      process.env.AGENTPLANE_REDMINE_OWNER_AGENT,
-    );
-
-    this.baseUrl = firstNonEmptyString(envUrl, settings.url).replaceAll(/\/+$/gu, "");
-    this.apiKey = firstNonEmptyString(envApiKey, settings.api_key);
-    this.projectId = firstNonEmptyString(envProjectId, settings.project_id);
-    this.assigneeId = envAssignee && /^\d+$/u.test(envAssignee) ? Number(envAssignee) : null;
+    const env = readRedmineEnv();
+    this.baseUrl = firstNonEmptyString(env.url, settings.url).replaceAll(/\/+$/gu, "");
+    this.apiKey = firstNonEmptyString(env.apiKey, settings.api_key);
+    this.projectId = firstNonEmptyString(env.projectId, settings.project_id);
+    this.assigneeId = env.assigneeId ?? null;
     this.statusMap = isRecord(settings.status_map) ? settings.status_map : {};
-    this.customFields = isRecord(settings.custom_fields) ? settings.custom_fields : {};
-    this.batchSize = typeof settings.batch_size === "number" ? settings.batch_size : 20;
-    this.batchPause = typeof settings.batch_pause === "number" ? settings.batch_pause : 0.5;
-    this.ownerAgent = firstNonEmptyString(envOwner, settings.owner_agent, "REDMINE");
+    this.customFields = {
+      ...(isRecord(settings.custom_fields) ? settings.custom_fields : {}),
+      ...env.customFields,
+    };
+    this.batchSize =
+      env.batch.size ??
+      (typeof settings.batch_size === "number" && Number.isFinite(settings.batch_size)
+        ? Math.max(1, Math.trunc(settings.batch_size))
+        : 20);
+    this.batchPauseMs =
+      env.batch.pauseMs ??
+      (typeof settings.batch_pause === "number" && Number.isFinite(settings.batch_pause)
+        ? settings.batch_pause >= 1
+          ? Math.trunc(settings.batch_pause)
+          : Math.round(settings.batch_pause * 1000)
+        : 500);
+    this.ownerAgent = firstNonEmptyString(env.ownerAgent, settings.owner_agent, "REDMINE");
     this.cache = opts.cache ?? null;
 
     const missingEnvKeys: string[] = [];
@@ -333,8 +339,8 @@ export class RedmineBackend implements TaskBackend {
   async writeTasks(tasks: TaskData[]): Promise<void> {
     for (const [index, task] of tasks.entries()) {
       await this.writeTask(task);
-      if (this.batchPause && this.batchSize > 0 && (index + 1) % this.batchSize === 0) {
-        await sleep(this.batchPause * 1000);
+      if (this.batchPauseMs > 0 && this.batchSize > 0 && (index + 1) % this.batchSize === 0) {
+        await sleep(this.batchPauseMs);
       }
     }
   }

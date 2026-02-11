@@ -651,6 +651,16 @@ describe("RedmineBackend (mocked)", () => {
   beforeEach(async () => {
     tempDir = await makeTempDir();
     originalEnv = { ...process.env };
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID;
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC;
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_VERSION;
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_AT;
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_BY;
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TAGS;
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_PRIORITY;
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_OWNER;
+    delete process.env.AGENTPLANE_REDMINE_BATCH_SIZE;
+    delete process.env.AGENTPLANE_REDMINE_BATCH_PAUSE;
     process.env.AGENTPLANE_REDMINE_URL = "https://redmine.example";
     process.env.AGENTPLANE_REDMINE_API_KEY = "key";
     process.env.AGENTPLANE_REDMINE_PROJECT_ID = "proj";
@@ -894,6 +904,65 @@ describe("RedmineBackend (mocked)", () => {
     expect(helper.issueToTask(makeIssue("immediate"), "202601300000-ABCD")?.priority).toBe("high");
     expect(helper.issueToTask(makeIssue("weird"), "202601300000-ABCD")?.priority).toBe("med");
     expect(helper.issueToTask(makeIssue(), "202601300000-ABCD")?.priority).toBe("med");
+  });
+
+  it("applies env overrides for custom field ids and batch tuning", () => {
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID = "11";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC = "12";
+    process.env.AGENTPLANE_REDMINE_BATCH_SIZE = "5";
+    process.env.AGENTPLANE_REDMINE_BATCH_PAUSE = "250";
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2 },
+        batch_size: 1,
+        batch_pause: 10,
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    ) as unknown as {
+      customFields: Record<string, unknown>;
+      batchSize: number;
+      batchPauseMs: number;
+    };
+    expect(backend.customFields.task_id).toBe(11);
+    expect(backend.customFields.doc).toBe(12);
+    expect(backend.batchSize).toBe(5);
+    expect(backend.batchPauseMs).toBe(250);
+  });
+
+  it("reads tags/priority/owner from custom fields when present", () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, tags: 2, priority: 3, owner: 4 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      issueToTask: (issue: Record<string, unknown>, taskIdOverride?: string) => TaskData | null;
+    };
+    const task = helper.issueToTask(
+      {
+        id: 1,
+        subject: "Issue",
+        description: "",
+        status: { id: 1 },
+        custom_fields: [
+          { id: 1, value: "202601300000-ABCD" },
+          { id: 2, value: '["backend","cli"]' },
+          { id: 3, value: "urgent" },
+          { id: 4, value: "CODER" },
+        ],
+      },
+      "202601300000-ABCD",
+    );
+    expect(task?.tags).toEqual(["backend", "cli"]);
+    expect(task?.priority).toBe("high");
+    expect(task?.owner).toBe("CODER");
   });
 
   it("throws when duplicate task_id values exist", async () => {

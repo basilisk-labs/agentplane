@@ -50,6 +50,9 @@ export function issueToTask(opts: {
   const commitVal = customFieldValue(opts.issue, opts.customFields.commit);
   const docVal = customFieldValue(opts.issue, opts.customFields.doc);
   const commentsVal = customFieldValue(opts.issue, opts.customFields.comments);
+  const tagsVal = customFieldValue(opts.issue, opts.customFields.tags);
+  const priorityFieldVal = customFieldValue(opts.issue, opts.customFields.priority);
+  const ownerFieldVal = customFieldValue(opts.issue, opts.customFields.owner);
   const docVersionVal = customFieldValue(opts.issue, opts.customFields.doc_version);
   const docUpdatedAtVal = customFieldValue(opts.issue, opts.customFields.doc_updated_at);
   const docUpdatedByVal = customFieldValue(opts.issue, opts.customFields.doc_updated_by);
@@ -61,7 +64,7 @@ export function issueToTask(opts: {
         : null;
 
   const priorityVal = isRecord(opts.issue.priority) ? opts.issue.priority : null;
-  const priorityName = normalizePriority(priorityVal?.name);
+  const priorityName = normalizePriority(priorityVal?.name ?? priorityFieldVal);
 
   const tags: string[] = [];
   if (Array.isArray(opts.issue.tags)) {
@@ -69,6 +72,19 @@ export function issueToTask(opts: {
       if (isRecord(tag) && tag.name) tags.push(toStringSafe(tag.name));
     }
   }
+  const tagsFromField = maybeParseJson(tagsVal);
+  if (Array.isArray(tagsFromField)) {
+    for (const tag of tagsFromField) {
+      const text = toStringSafe(tag).trim();
+      if (text) tags.push(text);
+    }
+  } else if (typeof tagsFromField === "string") {
+    for (const tag of tagsFromField.split(",")) {
+      const text = tag.trim();
+      if (text) tags.push(text);
+    }
+  }
+  const mergedTags = [...new Set(tags)];
 
   const task: TaskData = {
     id: toStringSafe(taskId),
@@ -76,8 +92,8 @@ export function issueToTask(opts: {
     description: toStringSafe(opts.issue.description),
     status: status ?? "TODO",
     priority: priorityName,
-    owner: opts.ownerAgent,
-    tags,
+    owner: toStringSafe(ownerFieldVal ?? opts.ownerAgent),
+    tags: mergedTags,
     depends_on: [],
     verify: maybeParseJson(verifyVal) as string[],
     commit: maybeParseJson(commitVal) as TaskData["commit"],
@@ -136,6 +152,9 @@ export function taskToIssuePayload(opts: {
   opts.appendCustomField(customFields, "doc_version", opts.task.doc_version);
   opts.appendCustomField(customFields, "doc_updated_at", opts.task.doc_updated_at);
   opts.appendCustomField(customFields, "doc_updated_by", opts.task.doc_updated_by);
+  opts.appendCustomField(customFields, "tags", opts.task.tags);
+  opts.appendCustomField(customFields, "priority", opts.task.priority);
+  opts.appendCustomField(customFields, "owner", opts.task.owner);
 
   if (customFields.length > 0) payload.custom_fields = customFields;
   return payload;
