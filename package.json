@@ -31,7 +31,7 @@
     "test:critical": "vitest run packages/agentplane/src/cli/run-cli.critical.*.test.ts --hookTimeout 60000 --testTimeout 60000",
     "test:full": "vitest run",
     "coverage": "vitest run --coverage",
-    "ci": "bun run format:check && bun run schemas:check && bun run agents:check && bun run typecheck && bun run lint && bun run coverage",
+    "ci": "bun run format:check && bun run schemas:check && bun run agents:check && bun run typecheck && bun run lint && bun run coverage && bun run coverage:significant",
     "ci:agentplane": "node scripts/ci-scope.mjs --scope agentplane",
     "ci:core": "node scripts/ci-scope.mjs --scope core",
     "ci:recipes": "node scripts/ci-scope.mjs --scope recipes",
@@ -49,7 +49,8 @@
     "agents:check": "node scripts/sync-agent-templates.mjs check",
     "agents:sync": "node scripts/sync-agent-templates.mjs sync",
     "schemas:check": "node scripts/sync-schemas.mjs check",
-    "schemas:sync": "node scripts/sync-schemas.mjs sync"
+    "schemas:sync": "node scripts/sync-schemas.mjs sync",
+    "coverage:significant": "node scripts/check-significant-coverage.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
