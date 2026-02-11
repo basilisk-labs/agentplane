@@ -36,10 +36,9 @@ const resolveTag = (tagArg) => {
   return null;
 };
 
-const getPackageVersion = (rootDir, pkgPath) => {
+const getPackageJson = (rootDir, pkgPath) => {
   const fullPath = path.join(rootDir, pkgPath, "package.json");
-  const content = JSON.parse(fs.readFileSync(fullPath, "utf8"));
-  return content.version;
+  return JSON.parse(fs.readFileSync(fullPath, "utf8"));
 };
 
 const run = () => {
@@ -54,10 +53,13 @@ const run = () => {
   }
   const version = match[1];
   const rootDir = process.cwd();
+  const agentplanePkg = getPackageJson(rootDir, "packages/agentplane");
+  const corePkg = getPackageJson(rootDir, "packages/core");
   const versions = {
-    agentplane: getPackageVersion(rootDir, "packages/agentplane"),
-    core: getPackageVersion(rootDir, "packages/core"),
+    agentplane: agentplanePkg.version,
+    core: corePkg.version,
   };
+  const coreDependency = agentplanePkg.dependencies?.["@agentplaneorg/core"] ?? null;
 
   const errors = [];
   if (versions.agentplane !== version) {
@@ -67,6 +69,13 @@ const run = () => {
   }
   if (versions.core !== version) {
     errors.push(`packages/core version ${versions.core} does not match tag ${version}.`);
+  }
+  if (coreDependency !== version) {
+    errors.push(
+      `packages/agentplane dependency @agentplaneorg/core=${String(
+        coreDependency,
+      )} does not match required release version ${version}.`,
+    );
   }
   if (errors.length > 0) {
     const details = ["Release version check failed:", ...errors.map((message) => `- ${message}`)];
