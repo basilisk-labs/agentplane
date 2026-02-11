@@ -1,6 +1,6 @@
 {
   "name": "agentplane",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "Agent Plane CLI for task workflows, recipes, and project automation.",
   "keywords": [
     "agentplane",
