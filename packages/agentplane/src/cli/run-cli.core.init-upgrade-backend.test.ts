@@ -587,15 +587,13 @@ describe("runCli", () => {
     await configureGitUser(root);
     const originalIsTTY = process.stdin.isTTY;
     Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
-    const choice = vi
-      .spyOn(prompts, "promptChoice")
-      .mockImplementation(async (_p, choices, def) => {
-        if (choices.includes("branch_pr")) return "branch_pr";
-        if (choices.includes("local")) return "local";
-        if (choices.includes("balanced")) return "balanced";
-        return def;
-      });
-    const yesNo = vi.spyOn(prompts, "promptYesNo").mockImplementation(async (prompt, def) => {
+    const choice = vi.spyOn(prompts, "promptChoice").mockImplementation((_p, choices, def) => {
+      if (choices.includes("branch_pr")) return "branch_pr";
+      if (choices.includes("local")) return "local";
+      if (choices.includes("balanced")) return "balanced";
+      return def;
+    });
+    const yesNo = vi.spyOn(prompts, "promptYesNo").mockImplementation((prompt, def) => {
       if (prompt.includes("Install managed git hooks")) return false;
       return def;
     });

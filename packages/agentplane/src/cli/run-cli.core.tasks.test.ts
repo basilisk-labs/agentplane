@@ -590,7 +590,6 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     const cfg = defaultConfig();
     (cfg as unknown as { execution?: { profile?: string } }).execution = {
-      ...((cfg as unknown as { execution?: Record<string, unknown> }).execution ?? {}),
       profile: "conservative",
     };
     await writeConfig(root, cfg);
