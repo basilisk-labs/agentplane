@@ -13,94 +13,22 @@ import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { CliError } from "../../../shared/errors.js";
 import { getVersion } from "../../../meta/version.js";
 import { cmdHooksInstall, ensureInitCommit } from "../../../commands/workflow.js";
-import { setPinnedBaseBranch } from "@agentplaneorg/core";
+import {
+  buildExecutionProfile,
+  setPinnedBaseBranch,
+  type ExecutionProfile,
+} from "@agentplaneorg/core";
 
 import { resolveInitBaseBranchForInit } from "./init/base-branch.js";
 import { collectInitConflicts, handleInitConflicts } from "./init/conflicts.js";
 import { ensureGitRoot } from "./init/git.js";
 import { maybeSyncIde } from "./init/ide-sync.js";
 import { maybeInstallBundledRecipes } from "./init/recipes.js";
-import {
-  ensureAgentplaneDirs,
-  type InitExecutionConfig,
-  writeBackendStubs,
-  writeInitConfig,
-} from "./init/write-config.js";
+import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./init/write-config.js";
 import { ensureAgentsFiles } from "./init/write-agents.js";
 import { ensureInitGitignore } from "./init/write-gitignore.js";
 import { ensureInitRedmineEnvTemplate } from "./init/write-env.js";
 import { renderInitSection, renderInitWelcome } from "./init/ui.js";
-
-type ExecutionProfile = "conservative" | "balanced" | "aggressive";
-
-function buildInitExecutionProfile(
-  profile: ExecutionProfile,
-  opts?: { strictUnsafeConfirm?: boolean },
-): InitExecutionConfig {
-  const shared = {
-    stop_conditions: [
-      "Missing required input blocks correctness.",
-      "Requested action expands scope or risk beyond approved plan.",
-      "Verification fails and remediation changes scope.",
-    ],
-    handoff_conditions: [
-      "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
-      "Task depends_on prerequisites are incomplete.",
-      "Specialized agent is required.",
-    ],
-  };
-  const byProfile: Record<ExecutionProfile, InitExecutionConfig> = {
-    conservative: {
-      profile: "conservative",
-      reasoning_effort: "high",
-      tool_budget: { discovery: 4, implementation: 8, verification: 8 },
-      ...shared,
-      unsafe_actions_requiring_explicit_user_ok: [
-        "Destructive git history operations.",
-        "Outside-repo read/write.",
-        "Credential, keychain, or SSH material changes.",
-        "Network actions when approvals are enabled.",
-      ],
-    },
-    balanced: {
-      profile: "balanced",
-      reasoning_effort: "medium",
-      tool_budget: { discovery: 6, implementation: 10, verification: 6 },
-      ...shared,
-      unsafe_actions_requiring_explicit_user_ok: [
-        "Destructive git history operations.",
-        "Outside-repo read/write.",
-        "Credential, keychain, or SSH material changes.",
-      ],
-    },
-    aggressive: {
-      profile: "aggressive",
-      reasoning_effort: "low",
-      tool_budget: { discovery: 10, implementation: 16, verification: 8 },
-      stop_conditions: [
-        "Requested action expands scope or risk beyond approved plan.",
-        "Verification fails and remediation changes scope.",
-      ],
-      handoff_conditions: [
-        "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
-        "Specialized agent is required.",
-      ],
-      unsafe_actions_requiring_explicit_user_ok: [
-        "Destructive git history operations.",
-        "Outside-repo read/write.",
-        "Credential, keychain, or SSH material changes.",
-      ],
-    },
-  };
-  const resolved = structuredClone(byProfile[profile]);
-  if (opts?.strictUnsafeConfirm === true) {
-    const extra = "Network actions when approvals are disabled.";
-    if (!resolved.unsafe_actions_requiring_explicit_user_ok.includes(extra)) {
-      resolved.unsafe_actions_requiring_explicit_user_ok.push(extra);
-    }
-  }
-  return resolved;
-}
 
 type InitFlags = {
   ide?: "codex" | "cursor" | "windsurf";
@@ -532,7 +460,7 @@ async function cmdInit(opts: {
     });
 
     await ensureAgentplaneDirs(resolved.agentplaneDir, backend);
-    const execution = buildInitExecutionProfile(executionProfile, { strictUnsafeConfirm });
+    const execution = buildExecutionProfile(executionProfile, { strictUnsafeConfirm });
     await writeInitConfig({
       agentplaneDir: resolved.agentplaneDir,
       gitRoot: resolved.gitRoot,
