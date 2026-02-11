@@ -1168,7 +1168,7 @@ agentplane pr update 202602030608-F1Q8AB
 
 ### doctor
 
-Check structural invariants of an agentplane workspace (and optionally apply safe fixes).
+Check workspace invariants for a normal agentplane installation (with optional dev source checks).
 
 Usage:
 
@@ -1179,6 +1179,7 @@ agentplane doctor [options]
 Options:
 
 - `--fix`: Apply safe fixes. (default=false)
+- `--dev`: Run monorepo source-layer checks (requires packages/agentplane/src). (default=false)
 
 Examples:
 
@@ -1186,7 +1187,13 @@ Examples:
 agentplane doctor
 ```
 
-- Check layering and workspace invariants.
+- Check installed workspace invariants.
+
+```sh
+agentplane doctor --dev
+```
+
+- Also run monorepo source-layer checks.
 
 ```sh
 agentplane doctor --fix
@@ -1598,6 +1605,8 @@ Options:
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
+- `--execution-profile <conservative|balanced|aggressive>`: Execution profile preset controlling autonomy, reasoning, and tool budgets. (choices=conservative|balanced|aggressive)
+- `--strict-unsafe-confirm <true|false>`: Require strict explicit confirmations for additional unsafe actions.
 - `--recipes <none|id1,id2,...>`: Optional bundled recipes selection (comma-separated), or 'none'.
 - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
 - `--backup`: Backup init conflicts before overwriting. (default=false)

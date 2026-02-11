@@ -32,9 +32,18 @@ If the folder is already a git repository, init pins the base branch to the curr
 
 During init, you choose:
 
+- workflow mode and task backend (`--workflow`, `--backend`)
+- execution profile (`--execution-profile conservative|balanced|aggressive`)
+- strict unsafe confirmation (`--strict-unsafe-confirm true|false`)
 - approval toggles (mapped to `agents.approvals.*` in `.agentplane/config.json`)
-- the task backend (`--backend local` by default, or `--backend redmine`)
 - IDE rules integration target (`--ide codex|cursor|windsurf`)
+
+Execution profile is persisted in `.agentplane/config.json` under `execution`:
+
+- `profile`: baseline autonomy style
+- `reasoning_effort`: default reasoning depth
+- `tool_budget`: discovery/implementation/verification budget hints
+- `unsafe_actions_requiring_explicit_user_ok`: strict unsafe-action gate
 
 You can switch backends later by updating `tasks_backend.config_path` in `.agentplane/config.json`.
 

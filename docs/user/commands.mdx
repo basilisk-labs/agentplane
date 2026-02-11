@@ -26,10 +26,20 @@ If the directory is not a git repository, `agentplane init` will initialize git,
 and create an install commit with the current Agentplane version. In existing repos, it pins the base
 branch to the current branch and commits the install artifacts it creates.
 
+Interactive init now uses grouped prompts:
+
+- Workflow and backend
+- Execution profile (`conservative|balanced|aggressive`)
+- Approval toggles (plan/network/verify)
+- Optional recipes
+
+`execution.profile` is stored in `.agentplane/config.json` and controls autonomy defaults,
+reasoning effort, tool budgets, and strictness for unsafe actions.
+
 Non-interactive:
 
 ```bash
-agentplane init --workflow direct --backend local --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes
+agentplane init --workflow direct --backend local --execution-profile balanced --strict-unsafe-confirm true --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes
 ```
 
 ## Config

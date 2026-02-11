@@ -24,6 +24,9 @@ agentplane init
 agentplane quickstart
 ```
 
+`agentplane init` is human-oriented: interactive onboarding includes workflow/backend selection,
+execution profile selection (`conservative|balanced|aggressive`), approval toggles, and optional recipes.
+
 Create your first task and run the workflow:
 
 ```bash
@@ -45,6 +48,7 @@ npx agentplane quickstart
 - `AGENTS.md` is created if missing and defines the policy/guardrails.
 - Built-in agent definitions are copied into `.agentplane/agents/`.
 - Optional recipes can install additional agents when you run `agentplane recipes install ...`.
+- `.agentplane/config.json` stores execution defaults under `execution` (profile, reasoning effort, tool budget, safety gates).
 
 ## Upgrade review reports
 
