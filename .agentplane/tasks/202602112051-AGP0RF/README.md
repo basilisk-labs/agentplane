@@ -5,7 +5,7 @@ status: "TODO"
 priority: "high"
 owner: "CODER"
 depends_on:
-  - "[\"202602112051-0VZMVY\"]"
+  - "202602112051-0VZMVY"
 tags:
   - "code"
   - "release"
@@ -21,7 +21,9 @@ verification:
   updated_at: null
   updated_by: null
   note: null
+commit: null
 comments: []
+events: []
 doc_version: 2
 doc_updated_at: "2026-02-11T20:51:47.431Z"
 doc_updated_by: "CODER"

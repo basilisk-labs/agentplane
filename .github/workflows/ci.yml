@@ -21,6 +21,12 @@ jobs:
         with:
           node-version: "20"
       - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Format (check)
+        run: bun run format:check
+      - name: Schemas (check)
+        run: bun run schemas:check
+      - name: Agent templates (check)
+        run: bun run agents:check
       # ESLint is configured with type-aware rules and project references.
       # A fresh checkout must build `dist/` first so types resolve correctly.
       - name: Build (required for type-aware lint)

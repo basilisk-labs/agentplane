@@ -5,7 +5,7 @@ status: "TODO"
 priority: "high"
 owner: "TESTER"
 depends_on:
-  - "[\"202602112051-A9ANGA\"]"
+  - "202602112051-A9ANGA"
 tags:
   - "testing"
   - "ci"
@@ -21,7 +21,9 @@ verification:
   updated_at: null
   updated_by: null
   note: null
+commit: null
 comments: []
+events: []
 doc_version: 2
 doc_updated_at: "2026-02-11T20:51:58.109Z"
 doc_updated_by: "TESTER"
