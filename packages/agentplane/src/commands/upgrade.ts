@@ -73,6 +73,7 @@ type UpgradeReviewRecord = {
   hasBaseline: boolean;
   changedCurrentVsBaseline: boolean | null;
   changedIncomingVsBaseline: boolean | null;
+  currentDiffersFromIncoming: boolean;
   needsSemanticReview: boolean;
   mergeApplied: boolean;
   mergePath:
@@ -847,7 +848,9 @@ export async function cmdUpgradeParsed(opts: {
       const baselineConflict =
         baselineText === null
           ? false
-          : Boolean(changedCurrentVsBaseline) && Boolean(changedIncomingVsBaseline);
+          : currentDiffersFromIncoming &&
+            Boolean(changedCurrentVsBaseline) &&
+            Boolean(changedIncomingVsBaseline);
       const noBaselineConflict = baselineText === null ? currentDiffersFromIncoming : false;
       const mergeNotAppliedConflict = mergeApplied ? false : currentDiffersFromIncoming;
       const needsSemanticReview = baselineConflict || noBaselineConflict || mergeNotAppliedConflict;
@@ -858,6 +861,7 @@ export async function cmdUpgradeParsed(opts: {
         hasBaseline,
         changedCurrentVsBaseline,
         changedIncomingVsBaseline,
+        currentDiffersFromIncoming,
         needsSemanticReview,
         mergeApplied,
         mergePath,
