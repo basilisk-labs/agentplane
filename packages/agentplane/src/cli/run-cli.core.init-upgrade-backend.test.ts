@@ -308,6 +308,36 @@ describe("runCli", () => {
     const redmineText = await readFile(redmineBackendPath, "utf8");
     const redmine = JSON.parse(redmineText) as Record<string, unknown>;
     expect(redmine).toMatchObject({ id: "redmine", version: 1 });
+    const dotEnvPath = path.join(root, ".env");
+    const dotEnvText = await readFile(dotEnvPath, "utf8");
+    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
+    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
+    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
+    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_OWNER_AGENT=REDMINE");
+  });
+
+  it("init --backend redmine keeps existing .env values and only appends missing keys", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    await writeFile(
+      path.join(root, ".env"),
+      "AGENTPLANE_REDMINE_URL=https://redmine.internal\nEXISTING=value\n",
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--backend", "redmine", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const dotEnvPath = path.join(root, ".env");
+    const dotEnvText = await readFile(dotEnvPath, "utf8");
+    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.internal");
+    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
+    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
+    expect(dotEnvText).toContain("EXISTING=value");
   });
 
   it("init bootstraps git repo and commits install when git is missing", async () => {

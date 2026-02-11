@@ -28,6 +28,7 @@ import {
 } from "./init/write-config.js";
 import { ensureAgentsFiles } from "./init/write-agents.js";
 import { ensureInitGitignore } from "./init/write-gitignore.js";
+import { ensureInitRedmineEnvTemplate } from "./init/write-env.js";
 import { renderInitSection, renderInitWelcome } from "./init/ui.js";
 
 type ExecutionProfile = "conservative" | "balanced" | "aggressive";
@@ -543,6 +544,9 @@ async function cmdInit(opts: {
       execution,
     });
     await writeBackendStubs({ backend, backendPath });
+    if (backend === "redmine") {
+      await ensureInitRedmineEnvTemplate({ gitRoot: resolved.gitRoot });
+    }
 
     const { installPaths } = await ensureAgentsFiles({
       gitRoot: resolved.gitRoot,
