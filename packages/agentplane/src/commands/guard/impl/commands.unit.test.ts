@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { CliError } from "../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
@@ -66,13 +67,21 @@ describe("guard/impl/commands", () => {
     mocks.mapCoreError.mockImplementation((err: unknown) =>
       err instanceof CliError
         ? err
-        : new CliError({ exitCode: 1, code: "E_IO", message: "mapped suggest usage" }),
+        : new CliError({
+            exitCode: exitCodeForError("E_IO"),
+            code: "E_IO",
+            message: "mapped suggest usage",
+          }),
     );
     await expect(
       cmdGuardSuggestAllow({ cwd: "/repo", format: "lines" }),
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
 
-    const mapped = new CliError({ exitCode: 1, code: "E_IO", message: "mapped suggest" });
+    const mapped = new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message: "mapped suggest",
+    });
     mocks.mapCoreError.mockReturnValue(mapped);
     mocks.loadCommandContext.mockRejectedValue(new Error("io"));
     await expect(
@@ -103,7 +112,11 @@ describe("guard/impl/commands", () => {
       }),
     ).resolves.toBe(0);
 
-    const mapped = new CliError({ exitCode: 1, code: "E_IO", message: "mapped commit" });
+    const mapped = new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message: "mapped commit",
+    });
     mocks.mapCoreError.mockReturnValue(mapped);
     mocks.guardCommitCheck.mockRejectedValue(new Error("oops"));
     await expect(
@@ -218,7 +231,11 @@ describe("guard/impl/commands", () => {
   it("cmdCommit maps unknown errors via mapCoreError when not git-commit shaped", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();
-    const mapped = new CliError({ exitCode: 1, code: "E_IO", message: "mapped" });
+    const mapped = new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message: "mapped",
+    });
     mocks.mapCoreError.mockReturnValue(mapped);
     ctx.git.commit.mockRejectedValue(new Error("boom"));
     await expect(
