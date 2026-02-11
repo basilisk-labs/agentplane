@@ -30,11 +30,17 @@
           "type": "object",
           "additionalProperties": true,
           "required": ["require_plan", "require_network", "require_verify"],
-          "default": { "require_plan": true, "require_network": true, "require_verify": true },
+          "default": {
+            "require_plan": true,
+            "require_network": true,
+            "require_verify": true,
+            "require_force": false
+          },
           "properties": {
             "require_plan": { "type": "boolean", "default": true },
             "require_network": { "type": "boolean", "default": true },
-            "require_verify": { "type": "boolean", "default": true }
+            "require_verify": { "type": "boolean", "default": true },
+            "require_force": { "type": "boolean", "default": false }
           }
         }
       }

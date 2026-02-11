@@ -24,6 +24,7 @@ export type AgentplaneConfig = {
       require_plan: boolean;
       require_network: boolean;
       require_verify: boolean;
+      require_force?: boolean;
     };
   };
   recipes?: {

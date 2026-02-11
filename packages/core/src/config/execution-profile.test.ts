@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "./config.js";
-import { buildExecutionProfile, resolveExecutionProfilePreset } from "./execution-profile.js";
+import {
+  applyExecutionToApprovals,
+  buildExecutionProfile,
+  resolveExecutionProfilePreset,
+} from "./execution-profile.js";
 
 describe("execution profile presets", () => {
   it("matches schema defaults for balanced profile", () => {
@@ -33,5 +37,39 @@ describe("execution profile presets", () => {
     expect(strict.unsafe_actions_requiring_explicit_user_ok).toContain(
       "Network actions when approvals are disabled.",
     );
+  });
+
+  it("conservative escalates network and force approvals", () => {
+    const execution = resolveExecutionProfilePreset("conservative");
+    const effective = applyExecutionToApprovals({
+      execution,
+      approvals: {
+        require_plan: false,
+        require_network: false,
+        require_verify: false,
+        require_force: false,
+      },
+    });
+    expect(effective.require_network).toBe(true);
+    expect(effective.require_force).toBe(true);
+  });
+
+  it("balanced keeps baseline approval settings", () => {
+    const execution = resolveExecutionProfilePreset("balanced");
+    const effective = applyExecutionToApprovals({
+      execution,
+      approvals: {
+        require_plan: true,
+        require_network: false,
+        require_verify: true,
+        require_force: false,
+      },
+    });
+    expect(effective).toEqual({
+      require_plan: true,
+      require_network: false,
+      require_verify: true,
+      require_force: false,
+    });
   });
 });

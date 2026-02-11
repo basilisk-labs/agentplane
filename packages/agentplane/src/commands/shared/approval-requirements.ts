@@ -1,4 +1,4 @@
-import type { AgentplaneConfig } from "@agentplaneorg/core";
+import { applyExecutionToApprovals, type AgentplaneConfig } from "@agentplaneorg/core";
 
 import { promptYesNo } from "../../cli/prompts.js";
 import { CliError } from "../../shared/errors.js";
@@ -20,16 +20,29 @@ export function getApprovalRequirements(opts: {
   config: AgentplaneConfig;
   action: ApprovalAction;
 }): ApprovalRequirement {
+  const effectiveApprovals = applyExecutionToApprovals({
+    execution: opts.config.execution,
+    approvals: {
+      require_plan: opts.config.agents?.approvals.require_plan === true,
+      require_network: opts.config.agents?.approvals.require_network === true,
+      require_verify: opts.config.agents?.approvals.require_verify === true,
+      require_force: opts.config.agents?.approvals.require_force === true,
+    },
+  });
+
   switch (opts.action) {
     case "network_access": {
-      const required = opts.config.agents?.approvals.require_network === true;
+      const required = effectiveApprovals.require_network === true;
       return {
         required,
         reason: "Network access requires explicit approval",
       };
     }
     case "force_action": {
-      return { required: false, reason: "Force action requires explicit approval" };
+      return {
+        required: effectiveApprovals.require_force === true,
+        reason: "Force action requires explicit approval",
+      };
     }
     case "policy_write": {
       return { required: false, reason: "Policy writes require explicit approval" };

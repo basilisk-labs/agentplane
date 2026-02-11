@@ -22,8 +22,10 @@ export {
 } from "./config/config.js";
 
 export {
+  applyExecutionToApprovals,
   buildExecutionProfile,
   EXECUTION_PROFILE_PRESETS,
+  type ApprovalSettings,
   resolveExecutionProfilePreset,
 } from "./config/execution-profile.js";
 

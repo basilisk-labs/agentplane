@@ -1,5 +1,12 @@
 import type { AgentplaneConfig, ExecutionProfile } from "./config.js";
 
+export type ApprovalSettings = {
+  require_plan: boolean;
+  require_network: boolean;
+  require_verify: boolean;
+  require_force?: boolean;
+};
+
 export const EXECUTION_PROFILE_PRESETS: Record<ExecutionProfile, AgentplaneConfig["execution"]> = {
   conservative: {
     profile: "conservative",
@@ -91,4 +98,30 @@ export function buildExecutionProfile(
     resolved.unsafe_actions_requiring_explicit_user_ok.push(strictItem);
   }
   return resolved;
+}
+
+export function applyExecutionToApprovals(opts: {
+  execution: AgentplaneConfig["execution"];
+  approvals: ApprovalSettings;
+}): Required<ApprovalSettings> {
+  const base: Required<ApprovalSettings> = {
+    require_plan: opts.approvals.require_plan === true,
+    require_network: opts.approvals.require_network === true,
+    require_verify: opts.approvals.require_verify === true,
+    require_force: opts.approvals.require_force === true,
+  };
+
+  if (opts.execution.profile === "conservative") {
+    return {
+      ...base,
+      require_network: true,
+      require_force: true,
+    };
+  }
+
+  if (opts.execution.profile === "balanced") {
+    return base;
+  }
+
+  return base;
 }

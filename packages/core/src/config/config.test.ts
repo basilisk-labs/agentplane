@@ -196,6 +196,14 @@ describe("config", () => {
           ).require_verify = "nope"),
         /require_verify must be boolean/,
       ],
+      [
+        "agents.approvals.require_force",
+        (raw) =>
+          ((
+            (raw.agents as Record<string, unknown>).approvals as Record<string, unknown>
+          ).require_force = "nope"),
+        /require_force must be boolean/,
+      ],
       ["recipes", (raw) => (raw.recipes = "nope"), /recipes must be object/],
       [
         "recipes.storage_default",
