@@ -9,19 +9,29 @@ import { loadCommandContext } from "./shared/task-backend.js";
 
 type DoctorParsed = {
   fix: boolean;
+  dev: boolean;
 };
 
 export const doctorSpec: CommandSpec<DoctorParsed> = {
   id: ["doctor"],
   group: "Quality",
   summary:
-    "Check structural invariants of an agentplane workspace (and optionally apply safe fixes).",
-  options: [{ kind: "boolean", name: "fix", default: false, description: "Apply safe fixes." }],
+    "Check workspace invariants for a normal agentplane installation (with optional dev source checks).",
+  options: [
+    { kind: "boolean", name: "fix", default: false, description: "Apply safe fixes." },
+    {
+      kind: "boolean",
+      name: "dev",
+      default: false,
+      description: "Run monorepo source-layer checks (requires packages/agentplane/src).",
+    },
+  ],
   examples: [
-    { cmd: "agentplane doctor", why: "Check layering and workspace invariants." },
+    { cmd: "agentplane doctor", why: "Check installed workspace invariants." },
+    { cmd: "agentplane doctor --dev", why: "Also run monorepo source-layer checks." },
     { cmd: "agentplane doctor --fix", why: "Apply safe-only fixes (idempotent)." },
   ],
-  parse: (raw) => ({ fix: raw.opts.fix === true }),
+  parse: (raw) => ({ fix: raw.opts.fix === true, dev: raw.opts.dev === true }),
 };
 
 type FileEntry = { absPath: string; relPath: string };
@@ -57,9 +67,59 @@ function extractImports(source: string): string[] {
   return imports.filter(Boolean);
 }
 
+async function pathExists(absPath: string): Promise<boolean> {
+  try {
+    await fs.access(absPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function isDirectory(absPath: string): Promise<boolean> {
+  try {
+    const st = await fs.stat(absPath);
+    return st.isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+async function checkWorkspace(repoRoot: string): Promise<string[]> {
+  const problems: string[] = [];
+  const requiredFiles = [
+    path.join(repoRoot, "AGENTS.md"),
+    path.join(repoRoot, ".agentplane", "config.json"),
+  ];
+  for (const filePath of requiredFiles) {
+    if (!(await pathExists(filePath))) {
+      problems.push(`Missing required file: ${path.relative(repoRoot, filePath)}`);
+    }
+  }
+
+  const agentsDir = path.join(repoRoot, ".agentplane", "agents");
+  if (!(await isDirectory(agentsDir))) {
+    problems.push("Missing required directory: .agentplane/agents");
+    return problems;
+  }
+
+  const entries = await fs.readdir(agentsDir);
+  const hasJson = entries.some((name) => name.endsWith(".json"));
+  if (!hasJson) {
+    problems.push("No agent profiles found in .agentplane/agents (*.json expected).");
+  }
+  return problems;
+}
+
 async function checkLayering(repoRoot: string): Promise<string[]> {
   const problems: string[] = [];
   const agentplaneSrcRoot = path.join(repoRoot, "packages", "agentplane", "src");
+  if (!(await isDirectory(agentplaneSrcRoot))) {
+    problems.push(
+      "Dev source checks requested but packages/agentplane/src was not found in this workspace.",
+    );
+    return problems;
+  }
 
   const cliRoot = path.join(agentplaneSrcRoot, "cli");
   const cliFiles = await listTsFiles(cliRoot);
@@ -140,7 +200,10 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const repoRoot = resolved.gitRoot;
 
-  const problems = await checkLayering(repoRoot);
+  const problems = await checkWorkspace(repoRoot);
+  if (p.dev) {
+    problems.push(...(await checkLayering(repoRoot)));
+  }
   if (problems.length > 0) {
     console.error(warnMessage(`doctor found ${problems.length} problem(s):`));
     for (const prob of problems) console.error(`- ${prob}`);

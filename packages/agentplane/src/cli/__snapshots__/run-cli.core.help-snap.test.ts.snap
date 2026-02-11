@@ -57,7 +57,7 @@ Commands:
     pr open  Create PR artifacts for a task.
     pr update  Update PR artifacts (diffstat and auto summary).
   Quality:
-    doctor  Check structural invariants of an agentplane workspace (and optionally apply safe fixes).
+    doctor  Check workspace invariants for a normal agentplane installation (with optional dev source checks).
   Recipes:
     recipes  Recipe management commands.
     recipes cache  Manage recipes cache.
