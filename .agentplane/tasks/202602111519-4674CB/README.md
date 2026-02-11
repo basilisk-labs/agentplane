@@ -1,7 +1,9 @@
 ---
 id: "202602111519-4674CB"
 title: "T11: ANSI-aware box width calculation in init UI"
-status: "DOING"
+result_summary: "Init UI box alignment is now ANSI-safe"
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -21,11 +23,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "51ae80e44a293bb7260f740dd6ce6a7de12badfa"
+  message: "✅ 4674CB init-ui: make ansi box width alignment robust"
 comments:
   -
     author: "CODER"
     body: "Start: make init UI box width ANSI-aware and add regression tests for colored rendering alignment."
+  -
+    author: "CODER"
+    body: "Verified: init UI now calculates box width by visible characters (ANSI stripped), and added regression test confirms border alignment when colors are enabled."
 events:
   -
     type: "status"
@@ -34,8 +41,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: make init UI box width ANSI-aware and add regression tests for colored rendering alignment."
+  -
+    type: "status"
+    at: "2026-02-11T16:13:27.898Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init UI now calculates box width by visible characters (ANSI stripped), and added regression test confirms border alignment when colors are enabled."
 doc_version: 2
-doc_updated_at: "2026-02-11T16:12:01.657Z"
+doc_updated_at: "2026-02-11T16:13:27.898Z"
 doc_updated_by: "CODER"
 description: "Fix ui.ts box width/padding for ANSI-colored lines via visible length helper and add tests."
 id_source: "generated"
