@@ -65,6 +65,21 @@ export async function cmdTaskSetStatus(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const config = ctx.config;
+    const executionProfile = String(
+      (config as { execution?: { profile?: string } }).execution?.profile ?? "balanced",
+    ).toLowerCase();
+    if (
+      opts.force &&
+      executionProfile === "conservative" &&
+      process.env.AGENTPLANE_EXECUTION_FORCE_OK !== "1"
+    ) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "Conservative execution profile blocks --force by default. Set AGENTPLANE_EXECUTION_FORCE_OK=1 to override.",
+      });
+    }
     const resolved = ctx.resolvedProject;
     const useStore = backendIsLocalFileBackend(ctx);
     const store = useStore ? getTaskStore(ctx) : null;

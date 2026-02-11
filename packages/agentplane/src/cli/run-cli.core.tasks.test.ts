@@ -586,6 +586,49 @@ describe("runCli", () => {
     }
   });
 
+  it("task set-status blocks --force in conservative execution profile", async () => {
+    const root = await mkGitRepoRoot();
+    const cfg = defaultConfig();
+    (cfg as unknown as { execution?: { profile?: string } }).execution = {
+      ...((cfg as unknown as { execution?: Record<string, unknown> }).execution ?? {}),
+      profile: "conservative",
+    };
+    await writeConfig(root, cfg);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Conservative force",
+          "--description",
+          "force should be blocked",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "set-status", taskId, "DOING", "--force", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Conservative execution profile blocks --force");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task update supports replace flags", async () => {
     const root = await mkGitRepoRoot();
     const ioNew = captureStdIO();
