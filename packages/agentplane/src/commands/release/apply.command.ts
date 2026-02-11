@@ -1,4 +1,4 @@
-import { readFile, writeFile, readdir } from "node:fs/promises";
+import { readFile, writeFile, readdir, mkdir } from "node:fs/promises";
 import path from "node:path";
 
 import { resolveProject, loadConfig } from "@agentplaneorg/core";
@@ -28,6 +28,25 @@ type ReleaseVersionPlan = {
   nextTag: string;
   nextVersion: string;
   bump: BumpKind;
+};
+
+type ReleaseApplyReport = {
+  applied_at: string;
+  plan_dir: string;
+  notes_path: string;
+  prev_version: string;
+  next_version: string;
+  prev_tag: string | null;
+  next_tag: string;
+  bump: BumpKind;
+  checks: {
+    clean_tracked_tree: true;
+    tag_absent: true;
+    notes_validated: true;
+    npm_version_available_checked: boolean;
+  };
+  commit: { hash: string; subject: string } | null;
+  push: { requested: boolean; remote: string; performed: boolean };
 };
 
 async function fileExists(p: string): Promise<boolean> {
@@ -251,6 +270,21 @@ async function ensureNpmVersionsAvailable(gitRoot: string, version: string): Pro
   }
 }
 
+async function writeReleaseApplyReport(
+  gitRoot: string,
+  report: ReleaseApplyReport,
+): Promise<string> {
+  const runId = new Date().toISOString().replaceAll(":", "-").replaceAll(".", "-");
+  const dir = path.join(gitRoot, ".agentplane", ".release", "apply");
+  await mkdir(dir, { recursive: true });
+  const reportPath = path.join(dir, `${runId}.json`);
+  const latestPath = path.join(dir, "latest.json");
+  const text = `${JSON.stringify(report, null, 2)}\n`;
+  await writeFile(reportPath, text, "utf8");
+  await writeFile(latestPath, text, "utf8");
+  return reportPath;
+}
+
 export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
   id: ["release", "apply"],
   group: "Release",
@@ -388,6 +422,7 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
   await ensureCleanTrackedTree(gitRoot);
   await ensureTagDoesNotExist(gitRoot, plan.nextTag);
 
+  let npmVersionChecked = false;
   if (flags.push) {
     const loaded = await loadConfig(resolved.agentplaneDir);
     await ensureNetworkApproved({
@@ -397,8 +432,10 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
       interactive: Boolean(process.stdin.isTTY),
     });
     await ensureNpmVersionsAvailable(gitRoot, plan.nextVersion);
+    npmVersionChecked = true;
   }
 
+  let releaseCommit: { hash: string; subject: string } | null = null;
   if (coreVersion === plan.prevVersion) {
     await Promise.all([
       replacePackageVersionInFile(corePkgPath, plan.nextVersion),
@@ -433,6 +470,11 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
   } else {
     const subject = `✨ release: ${plan.nextTag}`;
     await git.commit({ message: subject, env: cleanHookEnv() });
+    const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    releaseCommit = { hash: String(headHash ?? "").trim(), subject };
   }
 
   await execFileAsync("git", ["tag", plan.nextTag], { cwd: gitRoot, env: gitEnv() });
@@ -448,6 +490,26 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
   } else {
     process.stdout.write(`Next: git push <remote> HEAD && git push <remote> ${plan.nextTag}\n`);
   }
+
+  const reportPath = await writeReleaseApplyReport(gitRoot, {
+    applied_at: new Date().toISOString(),
+    plan_dir: path.relative(gitRoot, planDir),
+    notes_path: path.relative(gitRoot, notesPath),
+    prev_version: plan.prevVersion,
+    next_version: plan.nextVersion,
+    prev_tag: plan.prevTag,
+    next_tag: plan.nextTag,
+    bump: plan.bump,
+    checks: {
+      clean_tracked_tree: true,
+      tag_absent: true,
+      notes_validated: true,
+      npm_version_available_checked: npmVersionChecked,
+    },
+    commit: releaseCommit,
+    push: { requested: flags.push, remote: flags.remote, performed: flags.push },
+  });
+  process.stdout.write(`Release report: ${path.relative(gitRoot, reportPath)}\n`);
 
   return 0;
 };
