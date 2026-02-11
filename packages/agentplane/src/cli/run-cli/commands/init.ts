@@ -556,6 +556,7 @@ async function cmdInit(opts: {
       gitRoot: resolved.gitRoot,
       includeAgentPromptFiles: flags.gitignoreAgents === true,
     });
+    installPaths.push(".gitignore");
 
     if (flags.gitignoreAgents) {
       await setPinnedBaseBranch({
