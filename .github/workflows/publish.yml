@@ -62,6 +62,10 @@ jobs:
       # Hooks are local and can be bypassed; publish must be deterministic.
       - name: Format (check)
         run: bun run format:check
+      - name: Schemas (check)
+        run: bun run schemas:check
+      - name: Agent templates (check)
+        run: bun run agents:check
       - run: bun run --filter=@agentplaneorg/core build
       - run: bun run --filter=agentplane build
       - name: Lint
