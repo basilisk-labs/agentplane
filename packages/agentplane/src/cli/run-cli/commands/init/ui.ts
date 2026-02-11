@@ -7,13 +7,22 @@ function color(text: string, code: string): string {
   return `\u001B[${code}m${text}\u001B[0m`;
 }
 
+function stripAnsi(text: string): string {
+  return text.replaceAll(/\u001B\[[0-9;]*m/gu, "");
+}
+
+function visibleLen(text: string): number {
+  return stripAnsi(text).length;
+}
+
 function padLine(line: string, width: number): string {
-  if (line.length >= width) return line;
-  return `${line}${" ".repeat(width - line.length)}`;
+  const lineLen = visibleLen(line);
+  if (lineLen >= width) return line;
+  return `${line}${" ".repeat(width - lineLen)}`;
 }
 
 function box(lines: string[]): string {
-  const width = Math.max(...lines.map((line) => line.length), 0);
+  const width = Math.max(...lines.map((line) => visibleLen(line)), 0);
   const top = `┌${"─".repeat(width + 2)}┐`;
   const body = lines.map((line) => `│ ${padLine(line, width)} │`);
   const bottom = `└${"─".repeat(width + 2)}┘`;
