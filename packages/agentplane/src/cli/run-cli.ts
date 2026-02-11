@@ -2,6 +2,7 @@ import os from "node:os";
 import path from "node:path";
 
 import {
+  applyExecutionToApprovals,
   loadConfig,
   resolveProject,
   type LoadedConfig,
@@ -446,7 +447,16 @@ export async function runCli(argv: string[]): Promise<number> {
     if (resolved && matched?.entry.needsConfig !== false) {
       try {
         const loaded = await getLoadedConfig("update-check");
-        const requireNetwork = loaded.config.agents?.approvals.require_network === true;
+        const effectiveApprovals = applyExecutionToApprovals({
+          execution: loaded.config.execution,
+          approvals: {
+            require_plan: loaded.config.agents?.approvals.require_plan === true,
+            require_network: loaded.config.agents?.approvals.require_network === true,
+            require_verify: loaded.config.agents?.approvals.require_verify === true,
+            require_force: loaded.config.agents?.approvals.require_force === true,
+          },
+        });
+        const requireNetwork = effectiveApprovals.require_network === true;
         const explicitlyApproved = globals.allowNetwork;
         skipUpdateCheckForPolicy = requireNetwork && !explicitlyApproved;
       } catch {
