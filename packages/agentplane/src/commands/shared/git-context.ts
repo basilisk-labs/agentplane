@@ -153,6 +153,17 @@ export class GitContext {
     this.memo.headCommit = undefined;
   }
 
+  async commitAmendNoEdit(opts?: { env?: NodeJS.ProcessEnv }): Promise<void> {
+    await execFileAsync("git", ["commit", "--amend", "--no-edit"], {
+      cwd: this.gitRoot,
+      env: opts?.env ?? gitEnv(),
+      // Amend triggers hooks too; keep buffer aligned with regular commit.
+      maxBuffer: 50 * 1024 * 1024,
+    });
+    this.memo.status = undefined;
+    this.memo.headCommit = undefined;
+  }
+
   async headHashSubject(): Promise<{ hash: string; subject: string }> {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%H%x00%s"], {
       cwd: this.gitRoot,

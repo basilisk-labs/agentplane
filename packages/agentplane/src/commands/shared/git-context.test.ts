@@ -55,4 +55,30 @@ describe("commands/shared/GitContext", () => {
     await expect(git.statusChangedPaths()).resolves.toEqual(["a.txt"]);
     expect(mocked).toHaveBeenCalledTimes(1);
   });
+
+  it("runs amend --no-edit and invalidates memoized status/head", async () => {
+    const mocked = vi.mocked(execFileAsync);
+    mocked
+      .mockResolvedValueOnce({
+        stdout: Buffer.from(["?? a.txt", ""].join("\0"), "utf8"),
+        stderr: Buffer.from("", "utf8"),
+      } as never)
+      .mockResolvedValueOnce({ stdout: "", stderr: "" } as never)
+      .mockResolvedValueOnce({
+        stdout: Buffer.from(["?? b.txt", ""].join("\0"), "utf8"),
+        stderr: Buffer.from("", "utf8"),
+      } as never);
+
+    const git = new GitContext({ gitRoot: "/repo" });
+    await expect(git.statusChangedPaths()).resolves.toEqual(["a.txt"]);
+    await git.commitAmendNoEdit();
+    await expect(git.statusChangedPaths()).resolves.toEqual(["b.txt"]);
+
+    expect(mocked).toHaveBeenNthCalledWith(
+      2,
+      "git",
+      ["commit", "--amend", "--no-edit"],
+      expect.objectContaining({ cwd: "/repo" }),
+    );
+  });
 });

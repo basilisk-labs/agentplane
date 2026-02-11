@@ -6,7 +6,7 @@ import { CliError } from "../../shared/errors.js";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { commitFromComment } from "../guard/index.js";
+import { buildGitCommitEnv, commitFromComment } from "../guard/index.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
@@ -227,7 +227,7 @@ export async function cmdFinish(opts: {
           ),
         });
       }
-      await commitFromComment({
+      const committed = await commitFromComment({
         ctx,
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
@@ -246,6 +246,44 @@ export async function cmdFinish(opts: {
         quiet: opts.quiet,
         config: ctx.config,
       });
+
+      // commitFromComment creates the git commit and returns the actual head hash/subject.
+      // Refresh task commit metadata to this hash and amend the same commit in local mode so
+      // "task done" metadata does not require a manual follow-up close commit.
+      const taskAfterCommit = useStore
+        ? await store!.get(primaryTaskId)
+        : await loadTaskFromContext({ ctx, taskId: primaryTaskId });
+      const updatedAfterCommit: TaskData = {
+        ...taskAfterCommit,
+        commit: { hash: committed.hash, message: committed.message },
+        doc_version: 2,
+        doc_updated_at: nowIso(),
+        doc_updated_by: opts.author,
+      };
+      await (useStore
+        ? store!.update(primaryTaskId, () => updatedAfterCommit)
+        : ctx.taskBackend.writeTask(updatedAfterCommit));
+
+      if (useStore) {
+        const workflowReadmeRelPath = path.join(
+          ctx.config.paths.workflow_dir,
+          primaryTaskId,
+          "README.md",
+        );
+        await ctx.git.stage([workflowReadmeRelPath]);
+        const env = buildGitCommitEnv({
+          taskId: primaryTaskId,
+          agentId: executorAgent ?? undefined,
+          statusTo: "DONE",
+          allowTasks: true,
+          allowBase: false,
+          allowPolicy: false,
+          allowConfig: false,
+          allowHooks: false,
+          allowCI: false,
+        });
+        await ctx.git.commitAmendNoEdit({ env });
+      }
     }
 
     if (opts.statusCommit) {

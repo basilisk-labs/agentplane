@@ -7,6 +7,7 @@ import { GitContext } from "../shared/git-context.js";
 
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
+  buildGitCommitEnv: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
   backendIsLocalFileBackend: vi.fn(),
@@ -18,6 +19,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("../guard/index.js", () => ({
   commitFromComment: mocks.commitFromComment,
+  buildGitCommitEnv: mocks.buildGitCommitEnv,
 }));
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
@@ -107,6 +109,12 @@ describe("task finish (unit)", () => {
     mocks.readHeadCommit.mockResolvedValue({ hash: "h", message: "m" });
     mocks.readCommitInfo.mockResolvedValue({ hash: "hc", message: "mc" });
     mocks.nowIso.mockReturnValue("2026-02-09T00:00:00.000Z");
+    mocks.commitFromComment.mockResolvedValue({
+      hash: "new-hash",
+      message: "✅ T-1 task: verified",
+      staged: ["packages/agentplane"],
+    });
+    mocks.buildGitCommitEnv.mockReturnValue({});
   });
 
   it("rejects --commit-from-comment/--status-commit with multiple task ids", async () => {
@@ -304,14 +312,28 @@ describe("task finish (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("writes DONE status, commit metadata, comments, and meta fields; calls commitFromComment when enabled", async () => {
+  it("writes DONE status, then refreshes commit metadata from commitFromComment and amends in local mode", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
       writes.push(String(chunk));
       return true;
     });
 
-    const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["spike"],
+      comments: [{ author: "X", body: "old" }],
+    });
+    const writeTask = vi.fn<(t: TaskData) => Promise<void>>((t) => {
+      currentTask = { ...t };
+      return Promise.resolve();
+    });
+    const storeUpdate = vi.fn((_taskId: string, updater: (task: TaskData) => TaskData) => {
+      currentTask = updater(currentTask);
+      return currentTask;
+    });
+    const storeGet = vi.fn(() => currentTask);
     const ctx = mkCtx({
       taskBackend: {
         id: "mock",
@@ -322,14 +344,13 @@ describe("task finish (unit)", () => {
     });
     // Unit test: avoid depending on the direct-mode work lock file (work-start direct-work.json).
     ctx.config.workflow_mode = "branch_pr";
-    mocks.loadTaskFromContext.mockResolvedValue(
-      mkTask({
-        id: "T-1",
-        status: "DOING",
-        tags: ["spike"],
-        comments: [{ author: "X", body: "old" }],
-      }),
-    );
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      get: storeGet,
+      update: storeUpdate,
+    });
+    const stageSpy = vi.spyOn(ctx.git, "stage").mockResolvedValue();
+    const amendSpy = vi.spyOn(ctx.git, "commitAmendNoEdit").mockResolvedValue();
 
     const { cmdFinish } = await import("./finish.js");
     const rc = await cmdFinish({
@@ -356,22 +377,28 @@ describe("task finish (unit)", () => {
       quiet: false,
     });
     expect(rc).toBe(0);
-    expect(writeTask).toHaveBeenCalledTimes(1);
-    const next = writeTask.mock.calls[0]?.[0];
-    expect(next?.status).toBe("DONE");
-    expect(next?.commit).toEqual({ hash: "h", message: "m" });
-    expect(next?.comments?.at(-1)).toEqual({ author: "A", body: "Verified: this is long enough" });
-    expect(next?.result_summary).toBe("done");
-    expect(next?.risk_level).toBe("high");
-    expect(next?.breaking).toBe(true);
-    expect(next?.doc_updated_at).toBe("2026-02-09T00:00:00.000Z");
+    expect(storeUpdate).toHaveBeenCalledTimes(2);
+    expect(currentTask.status).toBe("DONE");
+    expect(currentTask.commit).toEqual({ hash: "new-hash", message: "✅ T-1 task: verified" });
+    expect(currentTask.comments?.at(-1)).toEqual({
+      author: "A",
+      body: "Verified: this is long enough",
+    });
+    expect(currentTask.result_summary).toBe("done");
+    expect(currentTask.risk_level).toBe("high");
+    expect(currentTask.breaking).toBe(true);
+    expect(currentTask.doc_updated_at).toBe("2026-02-09T00:00:00.000Z");
 
     expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
     const call = mocks.commitFromComment.mock.calls[0]?.[0] as { emoji?: string; taskId?: string };
     expect(call.taskId).toBe("T-1");
     expect(call.emoji).toBe("✅");
+    expect(stageSpy).toHaveBeenCalledWith([".agentplane/tasks/T-1/README.md"]);
+    expect(amendSpy).toHaveBeenCalledTimes(1);
     expect(writes.join("")).toContain("finished");
 
+    stageSpy.mockRestore();
+    amendSpy.mockRestore();
     writeSpy.mockRestore();
   });
 
