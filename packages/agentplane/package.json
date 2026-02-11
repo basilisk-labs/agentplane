@@ -55,7 +55,7 @@
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
-    "@agentplaneorg/core": "0.2.17",
+    "@agentplaneorg/core": "0.2.19",
     "yauzl": "^2.10.0"
   },
   "devDependencies": {
