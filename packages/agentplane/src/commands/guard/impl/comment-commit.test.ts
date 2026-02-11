@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { defaultConfig, type AgentplaneConfig } from "@agentplaneorg/core";
 
 import type { CliError } from "../../../shared/errors.js";
+import { captureStdIO } from "../../../cli/run-cli.test-helpers.js";
 import type { CommandContext } from "../../shared/task-backend.js";
 import { commitFromComment } from "./comment-commit.js";
 
@@ -216,5 +217,63 @@ describe("commitFromComment", () => {
     });
     expect(git.stage).toHaveBeenCalledWith([".agentplane/tasks.json"]);
     expect(result.staged).toEqual([".agentplane/tasks.json"]);
+  });
+
+  it("fails with invalid task id when suffix cannot be extracted", async () => {
+    const git = makeGit();
+    git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    const ctx = makeCtx(git);
+    await expect(
+      commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "",
+        commentBody: "Start: do work",
+        formattedComment: "Start: do work",
+        emoji: "🚧",
+        allow: ["src"],
+        autoAllow: false,
+        allowTasks: false,
+        requireClean: false,
+        quiet: true,
+        config: defaultConfig(),
+      }),
+    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+  });
+
+  it("auto-allow excludes protected non-task paths and prints success when quiet=false", async () => {
+    const git = makeGit();
+    git.statusChangedPaths.mockResolvedValue(["AGENTS.md", "src/app.ts"]);
+    git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    git.headHashSubject.mockResolvedValue({
+      hash: "feedface12345678",
+      subject: "🚧 2S7HGD task: mixed staged set",
+    });
+    const ctx = makeCtx(git);
+    const io = captureStdIO();
+    try {
+      const result = await commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "202602111631-2S7HGD",
+        commentBody: "Start: mixed staged set",
+        formattedComment: "Start: mixed staged set",
+        emoji: "🚧",
+        allow: [],
+        autoAllow: true,
+        allowTasks: false,
+        requireClean: false,
+        quiet: false,
+        config: defaultConfig(),
+      });
+      expect(git.stage).toHaveBeenCalledWith(["src/app.ts"]);
+      expect(result.staged).toEqual(["src/app.ts"]);
+      expect(io.stdout).toContain("committed");
+    } finally {
+      io.restore();
+    }
   });
 });

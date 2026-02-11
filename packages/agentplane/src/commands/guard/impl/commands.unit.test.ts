@@ -152,4 +152,39 @@ describe("guard/impl/commands", () => {
       }),
     ).rejects.toBe(mapped);
   });
+
+  it("cmdCommit non-close auto-allow resolves ctx when absent and uses inferred allowlist", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    (ctx.git.statusStagedPaths as ReturnType<typeof vi.fn>).mockResolvedValue(["src/app.ts"]);
+    mocks.loadCommandContext.mockResolvedValue(ctx);
+    mocks.suggestAllowPrefixes.mockReturnValue(["src"]);
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-5" });
+
+    const rc = await cmdCommit({
+      cwd: "/repo",
+      taskId: "T-5",
+      message: "✅ ABC123 task: auto allow",
+      close: false,
+      allow: [],
+      autoAllow: true,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    });
+    expect(rc).toBe(0);
+    expect(mocks.loadCommandContext).toHaveBeenCalled();
+    expect(mocks.guardCommitCheck).toHaveBeenCalledWith(
+      expect.objectContaining({ allow: ["src"] }),
+    );
+    expect(ctx.git.commit).toHaveBeenCalledWith({
+      message: "✅ ABC123 task: auto allow",
+      env: { AGENTPLANE_TASK_ID: "T-5" },
+    });
+  });
 });
