@@ -132,4 +132,92 @@ describe("buildCloseCommitMessage", () => {
     expect(msg.subject.startsWith("🧪")).toBe(true);
     expect(msg.body).toContain("Verify: not required (spike)");
   });
+
+  it("throws when task status is not DONE", async () => {
+    const { root, implHash } = await mkRepoWithImplCommit();
+    const task: TaskData = {
+      id: "202602081506-R18Y1Q",
+      title: "Not done",
+      description: "desc",
+      status: "DOING",
+      priority: "med",
+      owner: "ORCHESTRATOR",
+      depends_on: [],
+      tags: [],
+      verify: [],
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+      commit: { hash: implHash, message: "impl" },
+    };
+    await expect(buildCloseCommitMessage({ gitRoot: root, task })).rejects.toThrow(/not DONE/u);
+  });
+
+  it("throws when recorded implementation commit is missing", async () => {
+    const { root } = await mkRepoWithImplCommit();
+    const task: TaskData = {
+      id: "202602081506-R18Y1Q",
+      title: "Missing commit",
+      description: "desc",
+      status: "DONE",
+      priority: "med",
+      owner: "ORCHESTRATOR",
+      depends_on: [],
+      tags: [],
+      verify: [],
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+      commit: { hash: "   ", message: "impl" },
+    };
+    await expect(buildCloseCommitMessage({ gitRoot: root, task })).rejects.toThrow(
+      /missing recorded commit metadata/u,
+    );
+  });
+
+  it("writes verify fallback, notes, and +extra tag marker", async () => {
+    const { root, implHash } = await mkRepoWithImplCommit();
+    const task: TaskData = {
+      id: "202602081506-R18Y1Q",
+      title: "Coverage close message",
+      description: "desc",
+      status: "DONE",
+      priority: "med",
+      owner: "ORCHESTRATOR",
+      depends_on: [],
+      tags: ["cli", "code", "backend", "frontend", "testing"],
+      verify: [],
+      verification: { state: "ok", updated_at: nowIso(), updated_by: "TESTER", note: "" },
+      commit: { hash: implHash, message: "impl" },
+      breaking: true,
+      risk_level: "high",
+      result_summary:
+        "This summary is intentionally very long to exceed the close subject limit and verify truncation behavior in deterministic subject generation.",
+    };
+
+    const msg = await buildCloseCommitMessage({ gitRoot: root, task });
+    expect(msg.subject).toContain("[backend,cli,code,frontend,+1]");
+    expect(msg.subject.endsWith("... (202602081506-R18Y1Q) [backend,cli,code,frontend,+1]")).toBe(
+      true,
+    );
+    expect(msg.body).toContain("Verify: ok (see task verification note)");
+    expect(msg.body).toContain("Notes: breaking; risk=high");
+  });
+
+  it("uses verify command fallback and can emit no key files", async () => {
+    const { root, implHash } = await mkRepoWithImplCommit();
+    const task: TaskData = {
+      id: "202602081506-R18Y1Q",
+      title: "No key files",
+      description: "desc",
+      status: "DONE",
+      priority: "med",
+      owner: "ORCHESTRATOR",
+      depends_on: [],
+      tags: ["cli"],
+      verify: ["bun run test:unit", "bun run lint"],
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+      commit: { hash: implHash, message: "impl" },
+    };
+
+    const msg = await buildCloseCommitMessage({ gitRoot: root, task, keyFilesLimit: 0 });
+    expect(msg.body).toContain("Verify: bun run test:unit; bun run lint");
+    expect(msg.body).toContain("Key files: (none)");
+  });
 });
