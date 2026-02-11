@@ -572,6 +572,7 @@ async function cmdInit(opts: {
 
     if (hooks) {
       await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
+      installPaths.push(".agentplane/bin/agentplane");
     }
 
     const ideRes = await maybeSyncIde({
