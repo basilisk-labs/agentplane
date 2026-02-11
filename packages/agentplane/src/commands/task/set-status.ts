@@ -5,6 +5,7 @@ import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
 import { commitFromComment } from "../guard/index.js";
+import { ensureActionApproved } from "../shared/approval-requirements.js";
 import {
   listTasksMemo,
   loadCommandContext,
@@ -35,6 +36,7 @@ export async function cmdTaskSetStatus(opts: {
   body?: string;
   commit?: string;
   force: boolean;
+  yes: boolean;
   commitFromComment: boolean;
   commitEmoji?: string;
   commitAllow: string[];
@@ -65,19 +67,12 @@ export async function cmdTaskSetStatus(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const config = ctx.config;
-    const executionProfile = String(
-      (config as { execution?: { profile?: string } }).execution?.profile ?? "balanced",
-    ).toLowerCase();
-    if (
-      opts.force &&
-      executionProfile === "conservative" &&
-      process.env.AGENTPLANE_EXECUTION_FORCE_OK !== "1"
-    ) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message:
-          "Conservative execution profile blocks --force by default. Set AGENTPLANE_EXECUTION_FORCE_OK=1 to override.",
+    if (opts.force) {
+      await ensureActionApproved({
+        action: "force_action",
+        config,
+        yes: opts.yes,
+        reason: "task set-status --force",
       });
     }
     const resolved = ctx.resolvedProject;

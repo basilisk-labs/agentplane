@@ -12,6 +12,7 @@ export type TaskSetStatusParsed = {
   body?: string;
   commit?: string;
   force: boolean;
+  yes: boolean;
   commitFromComment: boolean;
   commitEmoji?: string;
   commitAllow: string[];
@@ -54,6 +55,12 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
       name: "force",
       default: false,
       description: "Allow unsafe transitions (and DONE without using agentplane finish).",
+    },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Auto-approve force-action approval checks when required.",
     },
     {
       kind: "boolean",
@@ -152,6 +159,7 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
       body: typeof raw.opts.body === "string" ? raw.opts.body : undefined,
       commit: typeof raw.opts.commit === "string" ? raw.opts.commit : undefined,
       force: raw.opts.force === true,
+      yes: raw.opts.yes === true,
       commitFromComment: raw.opts["commit-from-comment"] === true,
       commitEmoji:
         typeof raw.opts["commit-emoji"] === "string" ? raw.opts["commit-emoji"] : undefined,
@@ -177,6 +185,7 @@ export function makeRunTaskSetStatusHandler(getCtx: (cmd: string) => Promise<Com
       body: p.body,
       commit: p.commit,
       force: p.force,
+      yes: p.yes,
       commitFromComment: p.commitFromComment,
       commitEmoji: p.commitEmoji,
       commitAllow: p.commitAllow,

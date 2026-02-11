@@ -586,7 +586,7 @@ describe("runCli", () => {
     }
   });
 
-  it("task set-status blocks --force in conservative execution profile", async () => {
+  it("task set-status requires explicit approval for --force in conservative profile", async () => {
     const root = await mkGitRepoRoot();
     const cfg = defaultConfig();
     (cfg as unknown as { execution?: { profile?: string } }).execution = {
@@ -618,13 +618,42 @@ describe("runCli", () => {
       }
     }
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["task", "set-status", taskId, "DOING", "--force", "--root", root]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("Conservative execution profile blocks --force");
-    } finally {
-      io.restore();
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--force",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(3);
+        expect(io.stderr).toContain("Force action requires explicit approval");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "set-status",
+          taskId,
+          "DOING",
+          "--force",
+          "--yes",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
     }
   });
 
