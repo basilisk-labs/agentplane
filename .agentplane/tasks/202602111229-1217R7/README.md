@@ -1,7 +1,8 @@
 ---
 id: "202602111229-1217R7"
 title: "Harden release pre-publish checks"
-status: "DOING"
+result_summary: "Release pre-publish checks hardened and validated."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-02-11T12:35:23.429Z"
   updated_by: "TESTER"
   note: "Verified: release apply now blocks dirty tracked trees and existing tags, and publish flow validates npm version availability before publish/push."
-commit: null
+commit:
+  hash: "fcca57c8a7ec2092461603dbf415e4c60bf55255"
+  message: "✅ 1217R7 release: harden pre-publish guards"
 comments:
   -
     author: "CODER"
     body: "Start: implementing deterministic release pre-publish guards and regression tests for previously observed publish failures."
+  -
+    author: "CODER"
+    body: "Verified: added deterministic release guards for dirty tracked tree, pre-existing tag, and npm version availability; added regression tests and workflow check step."
 events:
   -
     type: "status"
@@ -40,9 +46,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: release apply now blocks dirty tracked trees and existing tags, and publish flow validates npm version availability before publish/push."
+  -
+    type: "status"
+    at: "2026-02-11T12:36:23.269Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: added deterministic release guards for dirty tracked tree, pre-existing tag, and npm version availability; added regression tests and workflow check step."
 doc_version: 2
-doc_updated_at: "2026-02-11T12:35:23.431Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-11T12:36:23.269Z"
+doc_updated_by: "CODER"
 description: "Identify root causes of previous release failures and add deterministic guards (duplicate version publish, dirty tree, CI gate parity) in release workflow."
 id_source: "generated"
 ---
