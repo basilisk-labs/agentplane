@@ -193,7 +193,7 @@ describe("runCli", () => {
     const agentsPath = path.join(root, "AGENTS.md");
     expect(await pathExists(configPath)).toBe(true);
     expect(await pathExists(backendPath)).toBe(true);
-    expect(await pathExists(redmineBackendPath)).toBe(true);
+    expect(await pathExists(redmineBackendPath)).toBe(false);
     expect(await pathExists(agentsPath)).toBe(true);
 
     const configText = await readFile(configPath, "utf8");
@@ -260,8 +260,21 @@ describe("runCli", () => {
     }
 
     const configPath = path.join(root, ".agentplane", "config.json");
+    const localBackendPath = path.join(root, ".agentplane", "backends", "local", "backend.json");
+    const redmineBackendPath = path.join(
+      root,
+      ".agentplane",
+      "backends",
+      "redmine",
+      "backend.json",
+    );
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"config_path": ".agentplane/backends/redmine/backend.json"');
+    expect(await pathExists(localBackendPath)).toBe(false);
+    expect(await pathExists(redmineBackendPath)).toBe(true);
+    const redmineText = await readFile(redmineBackendPath, "utf8");
+    const redmine = JSON.parse(redmineText) as Record<string, unknown>;
+    expect(redmine).toMatchObject({ id: "redmine", version: 1 });
   });
 
   it("init bootstraps git repo and commits install when git is missing", async () => {

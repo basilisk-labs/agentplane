@@ -18,13 +18,16 @@ export type InitExecutionConfig = {
   unsafe_actions_requiring_explicit_user_ok: string[];
 };
 
-export async function ensureAgentplaneDirs(agentplaneDir: string): Promise<void> {
+export async function ensureAgentplaneDirs(
+  agentplaneDir: string,
+  backend: "local" | "redmine",
+): Promise<void> {
   await mkdir(agentplaneDir, { recursive: true });
   await mkdir(path.join(agentplaneDir, "tasks"), { recursive: true });
   await mkdir(path.join(agentplaneDir, "agents"), { recursive: true });
   await mkdir(path.join(agentplaneDir, "cache"), { recursive: true });
-  await mkdir(path.join(agentplaneDir, "backends", "local"), { recursive: true });
-  await mkdir(path.join(agentplaneDir, "backends", "redmine"), { recursive: true });
+  await mkdir(path.join(agentplaneDir, "backends"), { recursive: true });
+  await mkdir(path.join(agentplaneDir, "backends", backend), { recursive: true });
 }
 
 export async function writeInitConfig(opts: {
@@ -56,8 +59,8 @@ export async function writeInitConfig(opts: {
 }
 
 export async function writeBackendStubs(opts: {
-  localBackendPath: string;
-  redmineBackendPath: string;
+  backend: "local" | "redmine";
+  backendPath: string;
 }): Promise<void> {
   const localBackendPayload = {
     id: "local",
@@ -75,6 +78,6 @@ export async function writeBackendStubs(opts: {
       custom_fields: { task_id: 1 },
     },
   };
-  await writeJsonStableIfChanged(opts.localBackendPath, localBackendPayload);
-  await writeJsonStableIfChanged(opts.redmineBackendPath, redmineBackendPayload);
+  const payload = opts.backend === "redmine" ? redmineBackendPayload : localBackendPayload;
+  await writeJsonStableIfChanged(opts.backendPath, payload);
 }

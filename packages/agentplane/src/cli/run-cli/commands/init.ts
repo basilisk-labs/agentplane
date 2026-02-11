@@ -519,10 +519,9 @@ async function cmdInit(opts: {
       path.join(resolved.agentplaneDir, "agents"),
       path.join(resolved.agentplaneDir, "cache"),
       path.join(resolved.agentplaneDir, "backends"),
-      path.join(resolved.agentplaneDir, "backends", "local"),
-      path.join(resolved.agentplaneDir, "backends", "redmine"),
+      path.join(resolved.agentplaneDir, "backends", backend),
     ];
-    const initFiles = [configPath, localBackendPath, redmineBackendPath];
+    const initFiles = [configPath, backendPath];
     const conflicts = await collectInitConflicts({ initDirs, initFiles });
     await handleInitConflicts({
       gitRoot: resolved.gitRoot,
@@ -531,7 +530,7 @@ async function cmdInit(opts: {
       force: flags.force === true,
     });
 
-    await ensureAgentplaneDirs(resolved.agentplaneDir);
+    await ensureAgentplaneDirs(resolved.agentplaneDir, backend);
     const execution = buildInitExecutionProfile(executionProfile, { strictUnsafeConfirm });
     await writeInitConfig({
       agentplaneDir: resolved.agentplaneDir,
@@ -543,7 +542,7 @@ async function cmdInit(opts: {
       requireVerifyApproval,
       execution,
     });
-    await writeBackendStubs({ localBackendPath, redmineBackendPath });
+    await writeBackendStubs({ backend, backendPath });
 
     const { installPaths } = await ensureAgentsFiles({
       gitRoot: resolved.gitRoot,
