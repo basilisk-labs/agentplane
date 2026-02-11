@@ -5,6 +5,7 @@ import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
 import { commitFromComment } from "../guard/index.js";
+import { ensureActionApproved } from "../shared/approval-requirements.js";
 import {
   listTasksMemo,
   loadCommandContext,
@@ -45,12 +46,22 @@ export async function cmdStart(opts: {
   commitRequireClean: boolean;
   confirmStatusCommit: boolean;
   force: boolean;
+  yes?: boolean;
   quiet: boolean;
 }): Promise<number> {
   try {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+
+    if (opts.force) {
+      await ensureActionApproved({
+        action: "force_action",
+        config: ctx.config,
+        yes: opts.yes === true,
+        reason: "start --force",
+      });
+    }
 
     if (opts.commitFromComment) {
       enforceStatusCommitPolicy({

@@ -1,5 +1,6 @@
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
+import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 export async function cmdTaskNormalize(opts: {
@@ -8,14 +9,20 @@ export async function cmdTaskNormalize(opts: {
   rootOverride?: string;
   quiet: boolean;
   force: boolean;
+  yes?: boolean;
 }): Promise<number> {
-  if (opts.force) {
-    // Force is accepted for parity; no additional checks in node CLI.
-  }
   try {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    if (opts.force) {
+      await ensureActionApproved({
+        action: "force_action",
+        config: ctx.config,
+        yes: opts.yes === true,
+        reason: "task normalize --force",
+      });
+    }
     if (ctx.taskBackend.normalizeTasks) {
       const result = await ctx.taskBackend.normalizeTasks();
       if (!opts.quiet) {

@@ -4,6 +4,7 @@ import path from "node:path";
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage } from "../../cli/output.js";
+import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
 export async function cmdTaskMigrate(opts: {
@@ -13,14 +14,20 @@ export async function cmdTaskMigrate(opts: {
   source?: string;
   quiet: boolean;
   force: boolean;
+  yes?: boolean;
 }): Promise<number> {
-  if (opts.force) {
-    // Force is accepted for parity; no additional checks in node CLI.
-  }
   try {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    if (opts.force) {
+      await ensureActionApproved({
+        action: "force_action",
+        config: ctx.config,
+        yes: opts.yes === true,
+        reason: "task migrate --force",
+      });
+    }
     const backend = ctx.taskBackend;
     const resolved = ctx.resolvedProject;
     const config = ctx.config;

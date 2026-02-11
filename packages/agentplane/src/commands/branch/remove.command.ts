@@ -7,6 +7,7 @@ export type BranchRemoveParsed = {
   branch: string | null;
   worktree: string | null;
   force: boolean;
+  yes: boolean;
   quiet: boolean;
 };
 
@@ -28,6 +29,12 @@ export const branchRemoveSpec: CommandSpec<BranchRemoveParsed> = {
       description: "Worktree path to remove (relative to repo root or absolute).",
     },
     { kind: "boolean", name: "force", default: false, description: "Force deletion." },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Auto-approve force-action approval checks when required.",
+    },
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],
   examples: [
@@ -58,6 +65,7 @@ export const branchRemoveSpec: CommandSpec<BranchRemoveParsed> = {
     branch: typeof raw.opts.branch === "string" ? raw.opts.branch : null,
     worktree: typeof raw.opts.worktree === "string" ? raw.opts.worktree : null,
     force: raw.opts.force === true,
+    yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,
   }),
 };
@@ -69,6 +77,7 @@ export const runBranchRemove: CommandHandler<BranchRemoveParsed> = async (ctx, p
     branch: p.branch ?? undefined,
     worktree: p.worktree ?? undefined,
     force: p.force,
+    yes: p.yes,
     quiet: p.quiet,
   });
 };

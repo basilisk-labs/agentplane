@@ -21,6 +21,7 @@ export function makeRunStartHandler(getCtx: (cmd: string) => Promise<CommandCont
       commitRequireClean: p.commitRequireClean,
       confirmStatusCommit: p.confirmStatusCommit,
       force: p.force,
+      yes: p.yes,
       quiet: p.quiet,
     });
   };

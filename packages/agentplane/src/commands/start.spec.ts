@@ -15,6 +15,7 @@ export type StartParsed = {
   commitRequireClean: boolean;
   confirmStatusCommit: boolean;
   force: boolean;
+  yes: boolean;
   quiet: boolean;
 };
 
@@ -100,6 +101,12 @@ export const startSpec: CommandSpec<StartParsed> = {
       default: false,
       description: "Override readiness checks and status transition restrictions.",
     },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Auto-approve force-action approval checks when required.",
+    },
     { kind: "boolean", name: "quiet", default: false, description: "Suppress output." },
   ],
   examples: [
@@ -131,6 +138,7 @@ export const startSpec: CommandSpec<StartParsed> = {
     commitRequireClean: raw.opts["commit-require-clean"] === true,
     confirmStatusCommit: raw.opts["confirm-status-commit"] === true,
     force: raw.opts.force === true,
+    yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,
   }),
 };

@@ -563,6 +563,83 @@ describe("runCli", () => {
     }
   });
 
+  it("start --force requires explicit approval in conservative profile", async () => {
+    const root = await mkGitRepoRoot();
+    const cfg = defaultConfig();
+    cfg.execution.profile = "conservative";
+    await writeConfig(root, cfg);
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Start force approval",
+          "--description",
+          "conservative force approval check",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    await approveTaskPlan(root, taskId);
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: force start should require explicit approval in conservative profile mode.",
+          "--force",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(3);
+        expect(io.stderr).toContain("Force action requires explicit approval");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "start",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Start: force start approved explicitly with yes in conservative profile mode.",
+          "--force",
+          "--yes",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
   it("start --commit-from-comment commits and updates status", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -1851,6 +1928,109 @@ describe("runCli", () => {
       io.restore();
       if (previous) process.env.AGENTPLANE_TASK_ID = previous;
       else delete process.env.AGENTPLANE_TASK_ID;
+    }
+  });
+
+  it("finish --force requires explicit approval in conservative profile", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+    await commitAll(root, "seed");
+    const cfg = defaultConfig();
+    cfg.execution.profile = "conservative";
+    await writeConfig(root, cfg);
+
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish force approval",
+          "--description",
+          "conservative force approval check for finish",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "verify",
+          taskId,
+          "--ok",
+          "--by",
+          "TESTER",
+          "--note",
+          "Ok to finish under conservative force-approval test.",
+          "--quiet",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: force finish requires explicit approval in conservative profile mode.",
+          "--result",
+          "force-finish-check",
+          "--force",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(3);
+        expect(io.stderr).toContain("Force action requires explicit approval");
+      } finally {
+        io.restore();
+      }
+    }
+
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: force finish proceeds with explicit yes approval in conservative profile mode.",
+          "--result",
+          "force-finish-check",
+          "--force",
+          "--yes",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
     }
   });
 

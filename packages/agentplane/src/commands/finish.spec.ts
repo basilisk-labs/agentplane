@@ -12,6 +12,7 @@ export type FinishParsed = {
   breaking: boolean;
   commit?: string;
   force: boolean;
+  yes: boolean;
   commitFromComment: boolean;
   commitEmoji?: string;
   commitAllow: string[];
@@ -82,6 +83,12 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       description: "Commit hash to record on the task (optional).",
     },
     { kind: "boolean", name: "force", default: false, description: "Force finish despite gates." },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Auto-approve force-action approval checks when required.",
+    },
     {
       kind: "boolean",
       name: "commit-from-comment",
@@ -211,6 +218,7 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     breaking: raw.opts.breaking === true,
     commit: raw.opts.commit as string | undefined,
     force: raw.opts.force === true,
+    yes: raw.opts.yes === true,
     commitFromComment: raw.opts["commit-from-comment"] === true,
     commitEmoji: raw.opts["commit-emoji"] as string | undefined,
     commitAllow: toStringList(raw.opts["commit-allow"]),

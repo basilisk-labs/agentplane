@@ -15,6 +15,7 @@ export type BlockParsed = {
   commitRequireClean: boolean;
   confirmStatusCommit: boolean;
   force: boolean;
+  yes: boolean;
   quiet: boolean;
 };
 
@@ -100,6 +101,12 @@ export const blockSpec: CommandSpec<BlockParsed> = {
       default: false,
       description: "Override status transition restrictions.",
     },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Auto-approve force-action approval checks when required.",
+    },
     { kind: "boolean", name: "quiet", default: false, description: "Suppress output." },
   ],
   examples: [
@@ -131,6 +138,7 @@ export const blockSpec: CommandSpec<BlockParsed> = {
     commitRequireClean: raw.opts["commit-require-clean"] === true,
     confirmStatusCommit: raw.opts["confirm-status-commit"] === true,
     force: raw.opts.force === true,
+    yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,
   }),
 };

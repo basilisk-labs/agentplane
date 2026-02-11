@@ -19,6 +19,7 @@ import {
 } from "../shared/task-backend.js";
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { nowIso } from "./shared.js";
+import { ensureActionApproved } from "../shared/approval-requirements.js";
 
 function insertMarkdownSectionBefore(opts: {
   body: string;
@@ -53,12 +54,21 @@ export async function cmdTaskScaffold(opts: {
   title?: string;
   overwrite: boolean;
   force: boolean;
+  yes?: boolean;
   quiet: boolean;
 }): Promise<number> {
   try {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    if (opts.force) {
+      await ensureActionApproved({
+        action: "force_action",
+        config: ctx.config,
+        yes: opts.yes === true,
+        reason: "task scaffold --force",
+      });
+    }
     const backend = ctx.taskBackend;
     const resolved = ctx.resolvedProject;
     const config = ctx.config;

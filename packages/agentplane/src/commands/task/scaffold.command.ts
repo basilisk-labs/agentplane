@@ -9,6 +9,7 @@ export type TaskScaffoldParsed = {
   title?: string;
   overwrite: boolean;
   force: boolean;
+  yes: boolean;
   quiet: boolean;
 };
 
@@ -35,6 +36,12 @@ export const taskScaffoldSpec: CommandSpec<TaskScaffoldParsed> = {
       name: "force",
       default: false,
       description: "Allow scaffolding even if the task is missing from the backend.",
+    },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Auto-approve force-action approval checks when required.",
     },
     {
       kind: "boolean",
@@ -65,6 +72,7 @@ export const taskScaffoldSpec: CommandSpec<TaskScaffoldParsed> = {
       title: typeof raw.opts.title === "string" ? raw.opts.title : undefined,
       overwrite: raw.opts.overwrite === true,
       force: raw.opts.force === true,
+      yes: raw.opts.yes === true,
       quiet: raw.opts.quiet === true,
     };
   },
@@ -80,6 +88,7 @@ export function makeRunTaskScaffoldHandler(getCtx: (cmd: string) => Promise<Comm
       title: p.title,
       overwrite: p.overwrite,
       force: p.force,
+      yes: p.yes,
       quiet: p.quiet,
     });
   };

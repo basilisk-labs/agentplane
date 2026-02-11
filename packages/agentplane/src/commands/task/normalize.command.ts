@@ -6,6 +6,7 @@ import { cmdTaskNormalize } from "./normalize.js";
 export type TaskNormalizeParsed = {
   quiet: boolean;
   force: boolean;
+  yes: boolean;
 };
 
 export const taskNormalizeSpec: CommandSpec<TaskNormalizeParsed> = {
@@ -25,6 +26,12 @@ export const taskNormalizeSpec: CommandSpec<TaskNormalizeParsed> = {
       default: false,
       description: "Accepted for parity; currently has no additional checks in the node CLI.",
     },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Auto-approve force-action approval checks when required.",
+    },
   ],
   examples: [
     { cmd: "agentplane task normalize", why: "Normalize tasks and print a short summary." },
@@ -33,6 +40,7 @@ export const taskNormalizeSpec: CommandSpec<TaskNormalizeParsed> = {
   parse: (raw) => ({
     quiet: raw.opts.quiet === true,
     force: raw.opts.force === true,
+    yes: raw.opts.yes === true,
   }),
 };
 
@@ -44,6 +52,7 @@ export function makeRunTaskNormalizeHandler(getCtx: (cmd: string) => Promise<Com
       rootOverride: ctx.rootOverride,
       quiet: p.quiet,
       force: p.force,
+      yes: p.yes,
     });
   };
 }

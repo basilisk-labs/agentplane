@@ -5,6 +5,7 @@ import { loadConfig, resolveProject } from "@agentplaneorg/core";
 import { mapCoreError } from "../../cli/error-map.js";
 import { successMessage, unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { gitBranchExists } from "../shared/git-ops.js";
 import { isPathWithin, resolvePathFallback } from "../shared/path.js";
@@ -15,6 +16,7 @@ export async function cmdBranchRemove(opts: {
   branch?: string;
   worktree?: string;
   force: boolean;
+  yes?: boolean;
   quiet: boolean;
 }): Promise<number> {
   const branch = (opts.branch ?? "").trim();
@@ -32,6 +34,14 @@ export async function cmdBranchRemove(opts: {
       rootOverride: opts.rootOverride ?? null,
     });
     const loaded = await loadConfig(resolved.agentplaneDir);
+    if (opts.force) {
+      await ensureActionApproved({
+        action: "force_action",
+        config: loaded.config,
+        yes: opts.yes === true,
+        reason: "branch remove --force",
+      });
+    }
 
     if (worktree) {
       const worktreePath = path.isAbsolute(worktree)

@@ -7,6 +7,7 @@ import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
 import { buildGitCommitEnv, commitFromComment } from "../guard/index.js";
+import { ensureActionApproved } from "../shared/approval-requirements.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
@@ -56,6 +57,7 @@ export async function cmdFinish(opts: {
   breaking: boolean;
   commit?: string;
   force: boolean;
+  yes?: boolean;
   commitFromComment: boolean;
   commitEmoji?: string;
   commitAllow: string[];
@@ -74,6 +76,14 @@ export async function cmdFinish(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    if (opts.force) {
+      await ensureActionApproved({
+        action: "force_action",
+        config: ctx.config,
+        yes: opts.yes === true,
+        reason: "finish --force",
+      });
+    }
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.verified;
     requireStructuredComment(opts.body, prefix, minChars);
     if (opts.commitFromComment || opts.statusCommit) {

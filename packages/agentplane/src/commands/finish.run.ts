@@ -26,6 +26,7 @@ export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandCon
       breaking: p.breaking,
       commit: p.commit,
       force: p.force,
+      yes: p.yes,
       commitFromComment: p.commitFromComment,
       commitEmoji: p.commitEmoji,
       commitAllow: p.commitAllow,

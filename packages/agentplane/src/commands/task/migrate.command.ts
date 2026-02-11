@@ -7,6 +7,7 @@ export type TaskMigrateParsed = {
   source?: string;
   quiet: boolean;
   force: boolean;
+  yes: boolean;
 };
 
 export const taskMigrateSpec: CommandSpec<TaskMigrateParsed> = {
@@ -32,6 +33,12 @@ export const taskMigrateSpec: CommandSpec<TaskMigrateParsed> = {
       default: false,
       description: "Accepted for parity; currently has no additional checks in the node CLI.",
     },
+    {
+      kind: "boolean",
+      name: "yes",
+      default: false,
+      description: "Auto-approve force-action approval checks when required.",
+    },
   ],
   examples: [
     { cmd: "agentplane task migrate", why: "Import from the default export path." },
@@ -44,6 +51,7 @@ export const taskMigrateSpec: CommandSpec<TaskMigrateParsed> = {
     source: typeof raw.opts.source === "string" ? raw.opts.source : undefined,
     quiet: raw.opts.quiet === true,
     force: raw.opts.force === true,
+    yes: raw.opts.yes === true,
   }),
 };
 
@@ -56,6 +64,7 @@ export function makeRunTaskMigrateHandler(getCtx: (cmd: string) => Promise<Comma
       source: p.source,
       quiet: p.quiet,
       force: p.force,
+      yes: p.yes,
     });
   };
 }
