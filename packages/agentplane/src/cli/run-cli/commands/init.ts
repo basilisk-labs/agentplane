@@ -20,9 +20,86 @@ import { collectInitConflicts, handleInitConflicts } from "./init/conflicts.js";
 import { ensureGitRoot } from "./init/git.js";
 import { maybeSyncIde } from "./init/ide-sync.js";
 import { maybeInstallBundledRecipes } from "./init/recipes.js";
-import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./init/write-config.js";
+import {
+  ensureAgentplaneDirs,
+  type InitExecutionConfig,
+  writeBackendStubs,
+  writeInitConfig,
+} from "./init/write-config.js";
 import { ensureAgentsFiles } from "./init/write-agents.js";
 import { ensureInitGitignore } from "./init/write-gitignore.js";
+import { renderInitSection, renderInitWelcome } from "./init/ui.js";
+
+type ExecutionProfile = "conservative" | "balanced" | "aggressive";
+
+function buildInitExecutionProfile(
+  profile: ExecutionProfile,
+  opts?: { strictUnsafeConfirm?: boolean },
+): InitExecutionConfig {
+  const shared = {
+    stop_conditions: [
+      "Missing required input blocks correctness.",
+      "Requested action expands scope or risk beyond approved plan.",
+      "Verification fails and remediation changes scope.",
+    ],
+    handoff_conditions: [
+      "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+      "Task depends_on prerequisites are incomplete.",
+      "Specialized agent is required.",
+    ],
+  };
+  const byProfile: Record<ExecutionProfile, InitExecutionConfig> = {
+    conservative: {
+      profile: "conservative",
+      reasoning_effort: "high",
+      tool_budget: { discovery: 4, implementation: 8, verification: 8 },
+      ...shared,
+      unsafe_actions_requiring_explicit_user_ok: [
+        "Destructive git history operations.",
+        "Outside-repo read/write.",
+        "Credential, keychain, or SSH material changes.",
+        "Network actions when approvals are enabled.",
+      ],
+    },
+    balanced: {
+      profile: "balanced",
+      reasoning_effort: "medium",
+      tool_budget: { discovery: 6, implementation: 10, verification: 6 },
+      ...shared,
+      unsafe_actions_requiring_explicit_user_ok: [
+        "Destructive git history operations.",
+        "Outside-repo read/write.",
+        "Credential, keychain, or SSH material changes.",
+      ],
+    },
+    aggressive: {
+      profile: "aggressive",
+      reasoning_effort: "low",
+      tool_budget: { discovery: 10, implementation: 16, verification: 8 },
+      stop_conditions: [
+        "Requested action expands scope or risk beyond approved plan.",
+        "Verification fails and remediation changes scope.",
+      ],
+      handoff_conditions: [
+        "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+        "Specialized agent is required.",
+      ],
+      unsafe_actions_requiring_explicit_user_ok: [
+        "Destructive git history operations.",
+        "Outside-repo read/write.",
+        "Credential, keychain, or SSH material changes.",
+      ],
+    },
+  };
+  const resolved = structuredClone(byProfile[profile]);
+  if (opts?.strictUnsafeConfirm === true) {
+    const extra = "Network actions when approvals are disabled.";
+    if (!resolved.unsafe_actions_requiring_explicit_user_ok.includes(extra)) {
+      resolved.unsafe_actions_requiring_explicit_user_ok.push(extra);
+    }
+  }
+  return resolved;
+}
 
 type InitFlags = {
   ide?: "codex" | "cursor" | "windsurf";
@@ -33,6 +110,8 @@ type InitFlags = {
   requirePlanApproval?: boolean;
   requireNetworkApproval?: boolean;
   requireVerifyApproval?: boolean;
+  executionProfile?: ExecutionProfile;
+  strictUnsafeConfirm?: boolean;
   recipes?: string[];
   force?: boolean;
   backup?: boolean;
@@ -117,6 +196,19 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
     {
       kind: "string",
+      name: "execution-profile",
+      valueHint: "<conservative|balanced|aggressive>",
+      choices: ["conservative", "balanced", "aggressive"],
+      description: "Execution profile preset controlling autonomy, reasoning, and tool budgets.",
+    },
+    {
+      kind: "string",
+      name: "strict-unsafe-confirm",
+      valueHint: "<true|false>",
+      description: "Require strict explicit confirmations for additional unsafe actions.",
+    },
+    {
+      kind: "string",
       name: "recipes",
       valueHint: "<none|id1,id2,...>",
       description: "Optional bundled recipes selection (comma-separated), or 'none'.",
@@ -195,6 +287,14 @@ export const initSpec: CommandSpec<InitParsed> = {
         requireVerifyRaw === undefined
           ? undefined
           : parseBooleanValueForInit("--require-verify-approval", requireVerifyRaw),
+      executionProfile: raw.opts["execution-profile"] as InitFlags["executionProfile"],
+      strictUnsafeConfirm:
+        (raw.opts["strict-unsafe-confirm"] as string | undefined) === undefined
+          ? undefined
+          : parseBooleanValueForInit(
+              "--strict-unsafe-confirm",
+              String(raw.opts["strict-unsafe-confirm"]),
+            ),
       recipes: recipesRaw === undefined ? undefined : parseRecipesSelectionForInit(recipesRaw),
       force: raw.opts.force === true,
       backup: raw.opts.backup === true,
@@ -232,6 +332,8 @@ async function cmdInit(opts: {
     requirePlanApproval: boolean;
     requireNetworkApproval: boolean;
     requireVerifyApproval: boolean;
+    executionProfile: ExecutionProfile;
+    strictUnsafeConfirm: boolean;
   } = {
     ide: "codex",
     workflow: "direct",
@@ -241,6 +343,8 @@ async function cmdInit(opts: {
     requirePlanApproval: true,
     requireNetworkApproval: true,
     requireVerifyApproval: true,
+    executionProfile: "balanced",
+    strictUnsafeConfirm: false,
   };
   let ide: InitIde = flags.ide ?? defaults.ide;
   let workflow: WorkflowMode = flags.workflow ?? defaults.workflow;
@@ -250,6 +354,8 @@ async function cmdInit(opts: {
   let requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
   let requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
   let requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
+  let executionProfile = flags.executionProfile ?? defaults.executionProfile;
+  let strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
   const isInteractive = process.stdin.isTTY && !flags.yes;
 
   if (
@@ -270,33 +376,74 @@ async function cmdInit(opts: {
   }
 
   if (isInteractive) {
+    process.stdout.write(renderInitWelcome());
+    process.stdout.write(
+      renderInitSection(
+        "Workflow",
+        "Choose how branches/backends/approvals should be initialized for this repository.",
+      ),
+    );
     ide = flags.ide ?? defaults.ide;
     if (!flags.workflow) {
-      const choice = await promptChoice("Select workflow mode", ["direct", "branch_pr"], workflow);
+      const choice = await promptChoice("Workflow mode", ["direct", "branch_pr"], workflow);
       workflow = choice === "branch_pr" ? "branch_pr" : "direct";
     }
     if (!flags.backend) {
-      const choice = await promptChoice("Select task backend", ["local", "redmine"], backend);
+      const choice = await promptChoice("Task backend", ["local", "redmine"], backend);
       backend = choice === "redmine" ? "redmine" : "local";
     }
     if (flags.hooks === undefined) {
-      hooks = await promptYesNo("Install git hooks?", hooks);
+      hooks = await promptYesNo("Install managed git hooks now?", hooks);
     }
+    process.stdout.write(
+      renderInitSection(
+        "Execution Profile",
+        "Set default autonomy/effort for agents. You can change this later in config.",
+      ),
+    );
+    if (!flags.executionProfile) {
+      executionProfile = (await promptChoice(
+        "Execution profile",
+        ["conservative", "balanced", "aggressive"],
+        executionProfile,
+      )) as ExecutionProfile;
+    }
+    if (flags.strictUnsafeConfirm === undefined) {
+      strictUnsafeConfirm = await promptYesNo(
+        "Require strict explicit confirmation for extra unsafe actions?",
+        strictUnsafeConfirm,
+      );
+    }
+    process.stdout.write(
+      renderInitSection(
+        "Approvals",
+        "Control whether plan/network/verification actions require explicit approval by default.",
+      ),
+    );
     if (flags.requirePlanApproval === undefined) {
-      requirePlanApproval = await promptYesNo("Require plan approval?", requirePlanApproval);
+      requirePlanApproval = await promptYesNo(
+        "Require plan approval before work starts?",
+        requirePlanApproval,
+      );
     }
     if (flags.requireNetworkApproval === undefined) {
       requireNetworkApproval = await promptYesNo(
-        "Require explicit approval for network access?",
+        "Require explicit approval for network actions?",
         requireNetworkApproval,
       );
     }
     if (flags.requireVerifyApproval === undefined) {
       requireVerifyApproval = await promptYesNo(
-        "Require explicit approval for verification?",
+        "Require explicit approval before recording verification?",
         requireVerifyApproval,
       );
     }
+    process.stdout.write(
+      renderInitSection(
+        "Recipes",
+        "Optional: install recipe packs now (comma-separated IDs) or choose none.",
+      ),
+    );
     if (!flags.recipes) {
       process.stdout.write(`${renderBundledRecipesHint()}\n`);
       const answer = await promptInput("Install optional recipes (comma separated, or none): ");
@@ -318,6 +465,8 @@ async function cmdInit(opts: {
     requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
     requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
     requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
+    executionProfile = flags.executionProfile ?? defaults.executionProfile;
+    strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
   }
 
   validateBundledRecipesSelection(recipes);
@@ -363,6 +512,7 @@ async function cmdInit(opts: {
     });
 
     await ensureAgentplaneDirs(resolved.agentplaneDir);
+    const execution = buildInitExecutionProfile(executionProfile, { strictUnsafeConfirm });
     await writeInitConfig({
       agentplaneDir: resolved.agentplaneDir,
       gitRoot: resolved.gitRoot,
@@ -371,6 +521,7 @@ async function cmdInit(opts: {
       requirePlanApproval,
       requireNetworkApproval,
       requireVerifyApproval,
+      execution,
     });
     await writeBackendStubs({ localBackendPath, redmineBackendPath });
 

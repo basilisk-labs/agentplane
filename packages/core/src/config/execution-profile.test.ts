@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { defaultConfig } from "./config.js";
-import { resolveExecutionProfilePreset } from "./execution-profile.js";
+import { buildExecutionProfile, resolveExecutionProfilePreset } from "./execution-profile.js";
 
 describe("execution profile presets", () => {
   it("matches schema defaults for balanced profile", () => {
@@ -25,6 +25,13 @@ describe("execution profile presets", () => {
     expect(aggressive.reasoning_effort).toBe("low");
     expect(aggressive.tool_budget.implementation).toBeGreaterThan(
       conservative.tool_budget.implementation,
+    );
+  });
+
+  it("adds strict unsafe confirmation item when requested", () => {
+    const strict = buildExecutionProfile("balanced", { strictUnsafeConfirm: true });
+    expect(strict.unsafe_actions_requiring_explicit_user_ok).toContain(
+      "Network actions when approvals are disabled.",
     );
   });
 });

@@ -5,6 +5,19 @@ import { defaultConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../../shared/write-if-changed.js";
 
+export type InitExecutionConfig = {
+  profile: "conservative" | "balanced" | "aggressive";
+  reasoning_effort: "low" | "medium" | "high";
+  tool_budget: {
+    discovery: number;
+    implementation: number;
+    verification: number;
+  };
+  stop_conditions: string[];
+  handoff_conditions: string[];
+  unsafe_actions_requiring_explicit_user_ok: string[];
+};
+
 export async function ensureAgentplaneDirs(agentplaneDir: string): Promise<void> {
   await mkdir(agentplaneDir, { recursive: true });
   await mkdir(path.join(agentplaneDir, "tasks"), { recursive: true });
@@ -22,6 +35,7 @@ export async function writeInitConfig(opts: {
   requirePlanApproval: boolean;
   requireNetworkApproval: boolean;
   requireVerifyApproval: boolean;
+  execution: InitExecutionConfig;
 }): Promise<void> {
   const rawConfig = defaultConfig() as unknown as Record<string, unknown>;
   setByDottedKey(rawConfig, "workflow_mode", opts.workflow);
@@ -37,6 +51,7 @@ export async function writeInitConfig(opts: {
     String(opts.requireNetworkApproval),
   );
   setByDottedKey(rawConfig, "agents.approvals.require_verify", String(opts.requireVerifyApproval));
+  setByDottedKey(rawConfig, "execution", JSON.stringify(opts.execution));
   await saveConfig(opts.agentplaneDir, rawConfig);
 }
 

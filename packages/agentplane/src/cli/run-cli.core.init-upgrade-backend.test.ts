@@ -199,6 +199,8 @@ describe("runCli", () => {
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "direct"');
     expect(configText).toContain('"config_path": ".agentplane/backends/local/backend.json"');
+    expect(configText).toContain('"profile": "balanced"');
+    expect(configText).toContain('"reasoning_effort": "medium"');
 
     const backendText = await readFile(backendPath, "utf8");
     const backend = JSON.parse(backendText) as Record<string, unknown>;
@@ -531,6 +533,10 @@ describe("runCli", () => {
         "no",
         "--require-verify-approval",
         "yes",
+        "--execution-profile",
+        "conservative",
+        "--strict-unsafe-confirm",
+        "true",
         "--root",
         root,
       ]);
@@ -546,6 +552,9 @@ describe("runCli", () => {
     expect(configText).toContain('"require_plan": true');
     expect(configText).toContain('"require_network": false');
     expect(configText).toContain('"require_verify": true');
+    expect(configText).toContain('"profile": "conservative"');
+    expect(configText).toContain('"reasoning_effort": "high"');
+    expect(configText).toContain('"Network actions when approvals are disabled."');
 
     const cursorPath = path.join(root, ".cursor", "rules", "agentplane.mdc");
     const windsurfPath = path.join(root, ".windsurf", "rules", "agentplane.md");
@@ -578,8 +587,18 @@ describe("runCli", () => {
     await configureGitUser(root);
     const originalIsTTY = process.stdin.isTTY;
     Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
-    const choice = vi.spyOn(prompts, "promptChoice").mockResolvedValue("branch_pr");
-    const yesNo = vi.spyOn(prompts, "promptYesNo").mockResolvedValue(true);
+    const choice = vi
+      .spyOn(prompts, "promptChoice")
+      .mockImplementation(async (_p, choices, def) => {
+        if (choices.includes("branch_pr")) return "branch_pr";
+        if (choices.includes("local")) return "local";
+        if (choices.includes("balanced")) return "balanced";
+        return def;
+      });
+    const yesNo = vi.spyOn(prompts, "promptYesNo").mockImplementation(async (prompt, def) => {
+      if (prompt.includes("Install managed git hooks")) return false;
+      return def;
+    });
     const promptInput = vi.spyOn(prompts, "promptInput").mockResolvedValue("");
     const io = captureStdIO();
     try {

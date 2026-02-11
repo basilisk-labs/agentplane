@@ -79,3 +79,16 @@ export function resolveExecutionProfilePreset(
 ): AgentplaneConfig["execution"] {
   return structuredClone(EXECUTION_PROFILE_PRESETS[profile]);
 }
+
+export function buildExecutionProfile(
+  profile: ExecutionProfile,
+  opts?: { strictUnsafeConfirm?: boolean },
+): AgentplaneConfig["execution"] {
+  const resolved = resolveExecutionProfilePreset(profile);
+  if (opts?.strictUnsafeConfirm !== true) return resolved;
+  const strictItem = "Network actions when approvals are disabled.";
+  if (!resolved.unsafe_actions_requiring_explicit_user_ok.includes(strictItem)) {
+    resolved.unsafe_actions_requiring_explicit_user_ok.push(strictItem);
+  }
+  return resolved;
+}

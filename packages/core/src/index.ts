@@ -22,6 +22,7 @@ export {
 } from "./config/config.js";
 
 export {
+  buildExecutionProfile,
   EXECUTION_PROFILE_PRESETS,
   resolveExecutionProfilePreset,
 } from "./config/execution-profile.js";
