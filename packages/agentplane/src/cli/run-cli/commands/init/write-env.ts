@@ -71,22 +71,27 @@ export async function ensureInitRedmineEnvTemplate(opts: { gitRoot: string }): P
   const missing = REDMINE_ENV_TEMPLATE.filter((entry) => !definedKeys.has(entry.key));
   if (missing.length === 0) return;
 
-  const lines: string[] = [];
-  lines.push("# agentplane: redmine backend configuration");
-  lines.push("# Required values:");
-  for (const entry of missing.filter((item) => item.required)) {
-    lines.push(`# ${entry.comment}`);
-    lines.push(`${entry.key}=${entry.value}`);
-  }
+  const required = missing.filter((item) => item.required);
   const optional = missing.filter((item) => !item.required);
-  if (optional.length > 0) {
-    lines.push("");
-    lines.push("# Optional values:");
-    for (const entry of optional) {
-      lines.push(`# ${entry.comment}`);
-      lines.push(`${entry.key}=${entry.value}`);
-    }
-  }
+
+  const requiredLines = required.flatMap((entry) => [
+    `# ${entry.comment}`,
+    `${entry.key}=${entry.value}`,
+  ]);
+  const optionalLines =
+    optional.length === 0
+      ? []
+      : [
+          "",
+          "# Optional values:",
+          ...optional.flatMap((entry) => [`# ${entry.comment}`, `${entry.key}=${entry.value}`]),
+        ];
+  const lines = [
+    "# agentplane: redmine backend configuration",
+    "# Required values:",
+    ...requiredLines,
+    ...optionalLines,
+  ];
 
   const block = `${lines.join("\n")}\n`;
   const prefix =
