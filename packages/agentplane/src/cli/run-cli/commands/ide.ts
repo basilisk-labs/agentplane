@@ -1,11 +1,10 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { mapCoreError } from "../../error-map.js";
 import { writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
-import { CliError } from "../../../shared/errors.js";
 import type { RunDeps } from "../command-catalog.js";
+import { wrapCommand } from "./wrap-command.js";
 
 type IdeSyncParsed = { ide?: "cursor" | "windsurf" };
 
@@ -35,7 +34,7 @@ export async function cmdIdeSync(opts: {
   ide?: "cursor" | "windsurf";
   deps: RunDeps;
 }): Promise<number> {
-  try {
+  return wrapCommand({ command: "ide sync", rootOverride: opts.rootOverride }, async () => {
     const resolved = await opts.deps.getResolvedProject("ide sync");
     const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
     const agentsText = await readFile(agentsPath, "utf8");
@@ -73,10 +72,7 @@ export async function cmdIdeSync(opts: {
       process.stdout.write(`${path.relative(resolved.gitRoot, windsurfPath)}\n`);
     }
     return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "ide sync", root: opts.rootOverride ?? null });
-  }
+  });
 }
 
 export function makeRunIdeSyncHandler(deps: RunDeps): CommandHandler<IdeSyncParsed> {

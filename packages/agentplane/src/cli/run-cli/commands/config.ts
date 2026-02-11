@@ -2,11 +2,10 @@ import path from "node:path";
 
 import { saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
-import { mapCoreError } from "../../error-map.js";
 import { usageError } from "../../spec/errors.js";
-import { CliError } from "../../../shared/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import type { RunDeps } from "../command-catalog.js";
+import { wrapCommand } from "./wrap-command.js";
 
 type ConfigShowParsed = Record<string, never>;
 
@@ -23,14 +22,11 @@ async function cmdConfigShow(opts: {
   rootOverride?: string;
   deps: RunDeps;
 }): Promise<number> {
-  try {
+  return wrapCommand({ command: "config show", rootOverride: opts.rootOverride }, async () => {
     const loaded = await opts.deps.getLoadedConfig("config show");
     process.stdout.write(`${JSON.stringify(loaded.raw, null, 2)}\n`);
     return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "config show", root: opts.rootOverride ?? null });
-  }
+  });
 }
 
 export function makeRunConfigShowHandler(deps: RunDeps): CommandHandler<ConfigShowParsed> {
@@ -64,24 +60,24 @@ async function cmdConfigSet(opts: {
   value: string;
   deps: RunDeps;
 }): Promise<number> {
-  try {
-    const resolved = await opts.deps.getResolvedProject("config set");
-    const loaded = await opts.deps.getLoadedConfig("config set");
-    const raw = { ...loaded.raw };
-    setByDottedKey(raw, opts.key, opts.value);
-    await saveConfig(resolved.agentplaneDir, raw);
-    process.stdout.write(
-      `${path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "config.json"))}\n`,
-    );
-    return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, {
+  return wrapCommand(
+    {
       command: "config set",
-      key: opts.key,
-      root: opts.rootOverride ?? null,
-    });
-  }
+      rootOverride: opts.rootOverride,
+      context: { key: opts.key },
+    },
+    async () => {
+      const resolved = await opts.deps.getResolvedProject("config set");
+      const loaded = await opts.deps.getLoadedConfig("config set");
+      const raw = { ...loaded.raw };
+      setByDottedKey(raw, opts.key, opts.value);
+      await saveConfig(resolved.agentplaneDir, raw);
+      process.stdout.write(
+        `${path.relative(resolved.gitRoot, path.join(resolved.agentplaneDir, "config.json"))}\n`,
+      );
+      return 0;
+    },
+  );
 }
 
 export function makeRunConfigSetHandler(deps: RunDeps): CommandHandler<ConfigSetParsed> {
@@ -110,14 +106,11 @@ async function cmdModeGet(opts: {
   rootOverride?: string;
   deps: RunDeps;
 }): Promise<number> {
-  try {
+  return wrapCommand({ command: "mode get", rootOverride: opts.rootOverride }, async () => {
     const loaded = await opts.deps.getLoadedConfig("mode get");
     process.stdout.write(`${loaded.config.workflow_mode}\n`);
     return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "mode get", root: opts.rootOverride ?? null });
-  }
+  });
 }
 
 export function makeRunModeGetHandler(deps: RunDeps): CommandHandler<ModeGetParsed> {
@@ -150,22 +143,22 @@ async function cmdModeSet(opts: {
   mode: "direct" | "branch_pr";
   deps: RunDeps;
 }): Promise<number> {
-  try {
-    const resolved = await opts.deps.getResolvedProject("mode set");
-    const loaded = await opts.deps.getLoadedConfig("mode set");
-    const raw = { ...loaded.raw };
-    setByDottedKey(raw, "workflow_mode", opts.mode);
-    await saveConfig(resolved.agentplaneDir, raw);
-    process.stdout.write(`${opts.mode}\n`);
-    return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, {
+  return wrapCommand(
+    {
       command: "mode set",
-      root: opts.rootOverride ?? null,
-      mode: opts.mode,
-    });
-  }
+      rootOverride: opts.rootOverride,
+      context: { mode: opts.mode },
+    },
+    async () => {
+      const resolved = await opts.deps.getResolvedProject("mode set");
+      const loaded = await opts.deps.getLoadedConfig("mode set");
+      const raw = { ...loaded.raw };
+      setByDottedKey(raw, "workflow_mode", opts.mode);
+      await saveConfig(resolved.agentplaneDir, raw);
+      process.stdout.write(`${opts.mode}\n`);
+      return 0;
+    },
+  );
 }
 
 export function makeRunModeSetHandler(deps: RunDeps): CommandHandler<ModeSetParsed> {

@@ -3,7 +3,6 @@ import path from "node:path";
 
 import { resolveProject } from "@agentplaneorg/core";
 
-import { mapCoreError } from "../../error-map.js";
 import { fileExists } from "../../fs-utils.js";
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
@@ -12,6 +11,7 @@ import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { listRoles, renderQuickstart, renderRole } from "../../command-guide.js";
 import type { RunDeps } from "../command-catalog.js";
 import { toStringList } from "../../spec/parse-utils.js";
+import { wrapCommand } from "./wrap-command.js";
 
 type QuickstartParsed = Record<string, never>;
 
@@ -24,19 +24,15 @@ export const quickstartSpec: CommandSpec<QuickstartParsed> = {
   parse: () => ({}),
 };
 
-function cmdQuickstart(opts: { cwd: string; rootOverride?: string }): number {
-  try {
+async function cmdQuickstart(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+  return wrapCommand({ command: "quickstart", rootOverride: opts.rootOverride }, () => {
     process.stdout.write(`${renderQuickstart()}\n`);
     return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "quickstart", root: opts.rootOverride ?? null });
-  }
+  });
 }
 
 export const runQuickstart: CommandHandler<QuickstartParsed> = (ctx) => {
-  cmdQuickstart({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
-  return Promise.resolve(0);
+  return cmdQuickstart({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
 };
 
 type RoleParsed = { role: string };
@@ -154,7 +150,7 @@ async function cmdRole(opts: {
   rootOverride?: string;
   role: string;
 }): Promise<number> {
-  try {
+  return wrapCommand({ command: "role", rootOverride: opts.rootOverride }, async () => {
     const roleRaw = opts.role.trim();
     if (!roleRaw) {
       throw usageError({
@@ -218,10 +214,7 @@ async function cmdRole(opts: {
     });
     process.stdout.write(`${block}\n`);
     return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapCoreError(err, { command: "role", root: opts.rootOverride ?? null });
-  }
+  });
 }
 
 export const runRole: CommandHandler<RoleParsed> = (ctx, p) => {
@@ -239,8 +232,8 @@ export const agentsSpec: CommandSpec<AgentsParsed> = {
 };
 
 export function makeRunAgentsHandler(deps: RunDeps): CommandHandler<AgentsParsed> {
-  return async (ctx) => {
-    try {
+  return async (ctx) =>
+    wrapCommand({ command: "agents", rootOverride: ctx.rootOverride }, async () => {
       const resolved = await deps.getResolvedProject("agents");
       const agentsDir = path.join(resolved.agentplaneDir, "agents");
       if (!(await fileExists(agentsDir))) {
@@ -296,9 +289,5 @@ export function makeRunAgentsHandler(deps: RunDeps): CommandHandler<AgentsParsed
         });
       }
       return 0;
-    } catch (err) {
-      if (err instanceof CliError) throw err;
-      throw mapCoreError(err, { command: "agents", root: ctx.rootOverride ?? null });
-    }
-  };
+    });
 }
