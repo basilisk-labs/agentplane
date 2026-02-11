@@ -43,7 +43,18 @@ This writes a plan directory under `.agentplane/.release/plan/<runId>/` with:
 
 Create `docs/releases/vX.Y.Z.md` based on the plan output.
 
-### 3) Apply the release (commit plus tag)
+### 3) Run the same CI gate locally (required)
+
+Before applying a release, run the same pass/fail checks as `.github/workflows/ci.yml`:
+
+```bash
+bun run release:ci-check
+```
+
+This ensures the local release candidate is validated against the same build/lint/test gate
+that GitHub CI enforces on `main`.
+
+### 4) Apply the release (commit plus tag)
 
 ```bash
 agentplane release apply

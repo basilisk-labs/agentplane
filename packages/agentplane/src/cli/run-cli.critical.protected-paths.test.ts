@@ -61,7 +61,7 @@ describe("critical: protected paths (staged)", () => {
     expect(init.code).toBe(0);
 
     await writeText(path.join(root, ".agentplane", "tasks.json"), "{}\n");
-    await execFileAsync("git", ["add", ".agentplane/tasks.json"], {
+    await execFileAsync("git", ["add", "-f", ".agentplane/tasks.json"], {
       cwd: root,
       env: cleanGitEnv(),
     });
