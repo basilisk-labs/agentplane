@@ -1,7 +1,9 @@
 ---
 id: "202602111519-1DZJPT"
 title: "T9: init --backend redmine generates .env.example contract"
-status: "DOING"
+result_summary: "Init redmine flow now uses .env.example contract with optional .env seeding"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -23,11 +25,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "8b031790036c730a93cf18016ddf81710b76dd8f"
+  message: "✅ 1DZJPT init: generate redmine env.example contract"
 comments:
   -
     author: "CODER"
     body: "Start: adjust init redmine flow to generate a commit-safe .env.example contract and align tests/docs accordingly."
+  -
+    author: "CODER"
+    body: "Verified: init now writes a Redmine .env.example contract, seeds .env only when absent, preserves existing .env values, and updated init backend tests/build pass."
 events:
   -
     type: "status"
@@ -36,8 +43,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: adjust init redmine flow to generate a commit-safe .env.example contract and align tests/docs accordingly."
+  -
+    type: "status"
+    at: "2026-02-11T16:10:00.543Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init now writes a Redmine .env.example contract, seeds .env only when absent, preserves existing .env values, and updated init backend tests/build pass."
 doc_version: 2
-doc_updated_at: "2026-02-11T16:07:22.395Z"
+doc_updated_at: "2026-02-11T16:10:00.543Z"
 doc_updated_by: "CODER"
 description: "Switch init redmine env template generation to .env.example (optionally seed .env), ensure gitignore and flow consistency."
 id_source: "generated"
