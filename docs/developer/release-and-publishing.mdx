@@ -77,6 +77,8 @@ Notes:
 
 - Patch releases can be applied without `--yes`.
 - Pushing requires `--yes` (safety gate).
+- `release apply` now requires a clean tracked working tree and fails early if the target tag already exists.
+- When using `--push`, `release apply` also checks npm registry availability for the target version before pushing.
 
 ## Trusted publishing (GitHub Actions)
 
@@ -100,6 +102,7 @@ On each release tag, the workflow enforces:
 
 - `docs/releases/vX.Y.Z.md` exists and follows the template.
 - `packages/agentplane/package.json` and `packages/core/package.json` versions match the tag.
+- `@agentplaneorg/core@X.Y.Z` and `agentplane@X.Y.Z` are not already published in npm.
 
 After publishing, the workflow creates a GitHub Release using `docs/releases/vX.Y.Z.md` as the body.
 

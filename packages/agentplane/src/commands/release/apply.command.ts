@@ -1,7 +1,7 @@
 import { readFile, writeFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
-import { resolveProject } from "@agentplaneorg/core";
+import { resolveProject, loadConfig } from "@agentplaneorg/core";
 
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
@@ -9,6 +9,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { GitContext } from "../shared/git-context.js";
+import { ensureNetworkApproved } from "../shared/network-approval.js";
 
 type BumpKind = "patch" | "minor" | "major";
 
@@ -189,6 +190,67 @@ async function maybeUpdateBunLockfile(gitRoot: string): Promise<void> {
   }
 }
 
+async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
+  const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  const dirty = String(stdout ?? "")
+    .split(/\r?\n/u)
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 0);
+  if (dirty.length === 0) return;
+
+  throw new CliError({
+    exitCode: exitCodeForError("E_GIT"),
+    code: "E_GIT",
+    message:
+      "Release apply requires a clean tracked working tree.\n" +
+      `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
+  });
+}
+
+async function ensureTagDoesNotExist(gitRoot: string, tag: string): Promise<void> {
+  try {
+    await execFileAsync("git", ["rev-parse", "-q", "--verify", `refs/tags/${tag}`], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message: `Tag already exists: ${tag}`,
+    });
+  } catch (err) {
+    const code = (err as { code?: number | string } | null)?.code;
+    if (code !== 1) throw err;
+  }
+}
+
+async function ensureNpmVersionsAvailable(gitRoot: string, version: string): Promise<void> {
+  const scriptPath = path.join(gitRoot, "scripts", "check-npm-version-availability.mjs");
+  try {
+    await execFileAsync("node", [scriptPath, "--version", version], {
+      cwd: gitRoot,
+      env: process.env,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  } catch (err) {
+    const details = String(
+      (err as { stderr?: string; stdout?: string; message?: string } | null)?.stderr ?? "",
+    ).trim();
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Pre-publish npm check failed for version ${version}. ` +
+        "Ensure this version is not already published for @agentplaneorg/core and agentplane." +
+        (details ? `\n\n${details}` : ""),
+    });
+  }
+}
+
 export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
   id: ["release", "apply"],
   group: "Release",
@@ -323,6 +385,19 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
   }
 
   const git = new GitContext({ gitRoot });
+  await ensureCleanTrackedTree(gitRoot);
+  await ensureTagDoesNotExist(gitRoot, plan.nextTag);
+
+  if (flags.push) {
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    await ensureNetworkApproved({
+      config: loaded.config,
+      yes: flags.yes,
+      reason: "release apply --push validates npm version availability and pushes over network",
+      interactive: Boolean(process.stdin.isTTY),
+    });
+    await ensureNpmVersionsAvailable(gitRoot, plan.nextVersion);
+  }
 
   if (coreVersion === plan.prevVersion) {
     await Promise.all([
@@ -360,21 +435,6 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
     await git.commit({ message: subject, env: cleanHookEnv() });
   }
 
-  // Create tag (idempotency: refuse to overwrite).
-  try {
-    await execFileAsync("git", ["rev-parse", "-q", "--verify", `refs/tags/${plan.nextTag}`], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    throw new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
-      message: `Tag already exists: ${plan.nextTag}`,
-    });
-  } catch (err) {
-    const code = (err as { code?: number | string } | null)?.code;
-    if (code !== 1) throw err;
-  }
   await execFileAsync("git", ["tag", plan.nextTag], { cwd: gitRoot, env: gitEnv() });
 
   process.stdout.write(`Release tag created: ${plan.nextTag}\n`);

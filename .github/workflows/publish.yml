@@ -50,6 +50,8 @@ jobs:
         run: node scripts/check-release-notes.mjs --tag "${{ steps.release_tag.outputs.tag }}"
       - name: Validate release versions
         run: node scripts/check-release-version.mjs --tag "${{ steps.release_tag.outputs.tag }}"
+      - name: Validate npm versions are not already published
+        run: node scripts/check-npm-version-availability.mjs
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.6"
