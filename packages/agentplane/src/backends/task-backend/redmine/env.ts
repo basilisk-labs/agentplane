@@ -1,4 +1,4 @@
-import { BackendError, redmineConfigMissingMessage } from "../shared.js";
+import { BackendError, redmineConfigInvalidEnvMessage } from "../shared.js";
 
 export type RedmineEnvConfig = {
   url?: string;
@@ -37,15 +37,15 @@ function parsePositiveIntEnv(
   const raw = nonEmptyEnv(key);
   if (!raw) return undefined;
   if (!/^\d+$/u.test(raw)) {
-    throw new BackendError(
-      redmineConfigMissingMessage(`${key} must be a positive integer`),
-      "E_BACKEND",
-    );
+    throw new BackendError(redmineConfigInvalidEnvMessage(key, "a positive integer"), "E_BACKEND");
   }
   const parsed = Number(raw);
   const min = opts?.min ?? (opts?.allowZero ? 0 : 1);
   if (!Number.isFinite(parsed) || parsed < min) {
-    throw new BackendError(redmineConfigMissingMessage(`${key} must be >= ${min}`), "E_BACKEND");
+    throw new BackendError(
+      redmineConfigInvalidEnvMessage(key, `an integer >= ${min}`),
+      "E_BACKEND",
+    );
   }
   return parsed;
 }

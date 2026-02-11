@@ -1944,6 +1944,33 @@ describe("loadTaskBackend", () => {
     );
   });
 
+  it("fails to load redmine backend when task-id custom field env key is missing", async () => {
+    const agentplaneDir = path.join(tempDir, ".agentplane");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.dirname(backendPath), { recursive: true });
+    await writeFile(
+      backendPath,
+      JSON.stringify({
+        id: "redmine",
+        settings: {},
+      }),
+      "utf8",
+    );
+    await writeFile(
+      path.join(tempDir, ".env"),
+      [
+        "AGENTPLANE_REDMINE_URL=https://redmine.env",
+        "AGENTPLANE_REDMINE_API_KEY=env-key",
+        "AGENTPLANE_REDMINE_PROJECT_ID=proj",
+      ].join("\n"),
+      "utf8",
+    );
+
+    await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow(
+      /AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID/u,
+    );
+  });
+
   it("ignores legacy module/class fields in backend config", async () => {
     const agentplaneDir = path.join(tempDir, ".agentplane");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");

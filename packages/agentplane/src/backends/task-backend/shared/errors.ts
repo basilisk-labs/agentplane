@@ -12,8 +12,13 @@ export class RedmineUnavailable extends BackendError {
   }
 }
 
-export function redmineConfigMissingMessage(detail: string): string {
-  return `Missing required Redmine configuration. Set ${detail} in environment variables (for example via .env).`;
+export function redmineConfigMissingEnvMessage(keys: string[] | string): string {
+  const list = Array.isArray(keys) ? keys : [keys];
+  return `Missing required Redmine configuration env key(s): ${list.join(", ")}. Set them in environment variables (for example via .env).`;
+}
+
+export function redmineConfigInvalidEnvMessage(key: string, expected: string): string {
+  return `Invalid Redmine configuration env value for ${key}. Expected ${expected}.`;
 }
 
 export function redmineIssueIdMissingMessage(): string {

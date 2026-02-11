@@ -40,7 +40,7 @@ import {
   mapLimit,
   missingTaskIdMessage,
   nowIso,
-  redmineConfigMissingMessage,
+  redmineConfigMissingEnvMessage,
   redmineIssueIdMissingMessage,
   sleep,
   toStringSafe,
@@ -110,11 +110,14 @@ export class RedmineBackend implements TaskBackend {
     if (!this.apiKey) missingEnvKeys.push("AGENTPLANE_REDMINE_API_KEY");
     if (!this.projectId) missingEnvKeys.push("AGENTPLANE_REDMINE_PROJECT_ID");
     if (missingEnvKeys.length > 0) {
-      throw new BackendError(redmineConfigMissingMessage(missingEnvKeys.join(", ")), "E_BACKEND");
+      throw new BackendError(redmineConfigMissingEnvMessage(missingEnvKeys), "E_BACKEND");
     }
 
     if (!this.customFields?.task_id) {
-      throw new BackendError(redmineConfigMissingMessage("custom_fields.task_id"), "E_BACKEND");
+      throw new BackendError(
+        redmineConfigMissingEnvMessage("AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID"),
+        "E_BACKEND",
+      );
     }
 
     for (const [key, value] of Object.entries(this.statusMap)) {
@@ -199,7 +202,10 @@ export class RedmineBackend implements TaskBackend {
 
   async setTaskDoc(taskId: string, doc: string, updatedBy?: string): Promise<void> {
     if (!this.customFields.doc) {
-      throw new BackendError(redmineConfigMissingMessage("custom_fields.doc"), "E_BACKEND");
+      throw new BackendError(
+        redmineConfigMissingEnvMessage("AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC"),
+        "E_BACKEND",
+      );
     }
     try {
       const issue = await this.findIssueByTaskId(taskId);
@@ -477,7 +483,10 @@ export class RedmineBackend implements TaskBackend {
   private taskIdFieldId(): unknown {
     const fieldId = this.customFields?.task_id;
     if (fieldId) return fieldId;
-    throw new BackendError(redmineConfigMissingMessage("custom_fields.task_id"), "E_BACKEND");
+    throw new BackendError(
+      redmineConfigMissingEnvMessage("AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID"),
+      "E_BACKEND",
+    );
   }
 
   private setIssueCustomFieldValue(

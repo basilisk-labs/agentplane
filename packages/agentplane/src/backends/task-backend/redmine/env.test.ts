@@ -56,6 +56,8 @@ describe("readRedmineEnv", () => {
   it("throws a backend error for invalid integer values", () => {
     process.env.AGENTPLANE_REDMINE_BATCH_SIZE = "invalid";
     expect(() => readRedmineEnv()).toThrow(BackendError);
-    expect(() => readRedmineEnv()).toThrow(/AGENTPLANE_REDMINE_BATCH_SIZE/u);
+    expect(() => readRedmineEnv()).toThrow(
+      /Invalid Redmine configuration env value for AGENTPLANE_REDMINE_BATCH_SIZE/u,
+    );
   });
 });
