@@ -1,3 +1,5 @@
+import { visibleLen } from "../../../shared/ansi.js";
+
 function useColor(): boolean {
   return process.stdout.isTTY === true && (process.env.TERM ?? "dumb") !== "dumb";
 }
@@ -5,24 +7,6 @@ function useColor(): boolean {
 function color(text: string, code: string): string {
   if (!useColor()) return text;
   return `\u001B[${code}m${text}\u001B[0m`;
-}
-
-function stripAnsi(text: string): string {
-  let out = "";
-  for (let i = 0; i < text.length; i += 1) {
-    const ch = text.codePointAt(i);
-    if (ch === 27 && text[i + 1] === "[") {
-      i += 2;
-      while (i < text.length && text[i] !== "m") i += 1;
-      continue;
-    }
-    out += text[i] ?? "";
-  }
-  return out;
-}
-
-function visibleLen(text: string): number {
-  return stripAnsi(text).length;
 }
 
 function padLine(line: string, width: number): string {
