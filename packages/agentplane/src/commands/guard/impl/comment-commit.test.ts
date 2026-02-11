@@ -164,4 +164,57 @@ describe("commitFromComment", () => {
     expect(result.message).toContain("2S7HGD task:");
     expect(result.staged).toEqual(["src/app.ts"]);
   });
+
+  it("fails when emoji is empty", async () => {
+    const git = makeGit();
+    git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    const ctx = makeCtx(git);
+    await expect(
+      commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "202602111631-2S7HGD",
+        commentBody: "Start: do work",
+        formattedComment: "Start: do work",
+        emoji: " ",
+        allow: ["src"],
+        autoAllow: false,
+        allowTasks: false,
+        requireClean: false,
+        quiet: true,
+        config: defaultConfig(),
+      }),
+    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+  });
+
+  it("auto-allow can stage task artifacts when allowTasks=true", async () => {
+    const git = makeGit();
+    git.statusChangedPaths.mockResolvedValue([".agentplane/tasks.json"]);
+    git.statusStagedPaths.mockResolvedValue([".agentplane/tasks.json"]);
+    git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    git.headHashSubject.mockResolvedValue({
+      hash: "abcdef1234567890",
+      subject: "🚧 2S7HGD task: update task artifacts",
+    });
+    const cfg = defaultConfig();
+    const ctx = makeCtx(git, { paths: cfg.paths });
+    const result = await commitFromComment({
+      ctx,
+      cwd: "/tmp/repo",
+      taskId: "202602111631-2S7HGD",
+      commentBody: "Start: update task artifacts",
+      formattedComment: "Start: update task artifacts",
+      emoji: "🚧",
+      allow: [],
+      autoAllow: true,
+      allowTasks: true,
+      requireClean: false,
+      quiet: true,
+      config: cfg,
+    });
+    expect(git.stage).toHaveBeenCalledWith([".agentplane/tasks.json"]);
+    expect(result.staged).toEqual([".agentplane/tasks.json"]);
+  });
 });
