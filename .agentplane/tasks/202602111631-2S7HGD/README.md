@@ -1,7 +1,9 @@
 ---
 id: "202602111631-2S7HGD"
 title: "T1: Add deterministic test:precommit allowlist and wire lefthook"
-status: "DOING"
+result_summary: "Pre-commit now uses deterministic allowlisted test profile"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "3ad6650bca2267ab1daec6fa35209112f7fb0722"
+  message: "✅ 2S7HGD hooks: add deterministic test:precommit allowlist"
 comments:
   -
     author: "CODER"
     body: "Start: implement deterministic test:precommit allowlist and switch pre-commit hook execution to it."
+  -
+    author: "CODER"
+    body: "Verified: pre-commit now executes deterministic test:precommit allowlist, hook integration remains in test:hooks, and lint/tests/build pass."
 events:
   -
     type: "status"
@@ -33,8 +40,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: implement deterministic test:precommit allowlist and switch pre-commit hook execution to it."
+  -
+    type: "status"
+    at: "2026-02-11T16:33:18.996Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-commit now executes deterministic test:precommit allowlist, hook integration remains in test:hooks, and lint/tests/build pass."
 doc_version: 2
-doc_updated_at: "2026-02-11T16:32:12.459Z"
+doc_updated_at: "2026-02-11T16:33:18.996Z"
 doc_updated_by: "CODER"
 description: "Create a strict test:precommit script with explicit test file allowlist (no hook/release side effects) and switch lefthook pre-commit to use it."
 id_source: "generated"
