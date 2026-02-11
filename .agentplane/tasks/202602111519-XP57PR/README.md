@@ -1,7 +1,9 @@
 ---
 id: "202602111519-XP57PR"
 title: "T2: execution.profile escalates approval requirements"
-status: "DOING"
+result_summary: "Execution profile now escalates approval requirements deterministically."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-02-11T15:29:15.534Z"
   updated_by: "CODER"
   note: "Verified: Added execution-to-approval escalation matrix, require_force schema support, and tests for conservative/balanced behavior. Ran targeted core+agentplane tests and package builds."
-commit: null
+commit:
+  hash: "3264d9758337e5879bfe329158533cdf9f278e55"
+  message: "✅ XP57PR approvals: add execution escalation matrix"
 comments:
   -
     author: "CODER"
     body: "Start: implementing execution profile approval escalation matrix and require_force config support."
+  -
+    author: "CODER"
+    body: "Verified: Implemented approval escalation matrix with conservative overrides for network/force, added require_force schema support, and validated via focused core/agentplane tests plus package builds."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: Added execution-to-approval escalation matrix, require_force schema support, and tests for conservative/balanced behavior. Ran targeted core+agentplane tests and package builds."
+  -
+    type: "status"
+    at: "2026-02-11T15:30:16.582Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Implemented approval escalation matrix with conservative overrides for network/force, added require_force schema support, and validated via focused core/agentplane tests plus package builds."
 doc_version: 2
-doc_updated_at: "2026-02-11T15:29:15.535Z"
+doc_updated_at: "2026-02-11T15:30:16.582Z"
 doc_updated_by: "CODER"
 description: "Implement applyExecutionToApprovals matrix and new agents.approvals.require_force schema/default wiring."
 id_source: "generated"
