@@ -107,6 +107,23 @@ Outside-repo includes (non-exhaustive):
 - modifying keychains, ssh keys, credential stores
 - any tool that mutates outside-repo state
 
+## Execution Profile
+
+`execution` settings in `.agentplane/config.json` define operational behavior defaults for agents:
+
+- `profile`: `conservative` / `balanced` / `aggressive`
+- `reasoning_effort`: `low` / `medium` / `high`
+- `tool_budget`: `{ discovery, implementation, verification }`
+- `stop_conditions`: conditions that force a stop/re-plan/escalation
+- `handoff_conditions`: conditions that trigger handoff to another role
+- `unsafe_actions_requiring_explicit_user_ok`: actions that require explicit user confirmation
+
+Scope and precedence:
+
+- These settings tune execution style only (autonomy, effort, budget, stop/handoff heuristics).
+- They MUST NOT override role authority boundaries, source-of-truth order, approval gates, or hard invariants defined in this `AGENTS.md`.
+- If `execution` config conflicts with policy, `AGENTS.md` policy wins.
+
 ## Framework Upgrade / Prompt Merge
 
 `agentplane upgrade` is responsible for mechanical upgrades and safe merges. When an upgrade run indicates a potential semantic conflict (for example, both local and incoming changes exist relative to a baseline, or a baseline is missing but files differ), treat the result as requiring a meaning-level review.
