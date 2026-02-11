@@ -99,8 +99,12 @@ export class RedmineBackend implements TaskBackend {
     this.ownerAgent = firstNonEmptyString(envOwner, settings.owner_agent, "REDMINE");
     this.cache = opts.cache ?? null;
 
-    if (!this.baseUrl || !this.apiKey || !this.projectId) {
-      throw new BackendError(redmineConfigMissingMessage("url, api_key, project_id"), "E_BACKEND");
+    const missingEnvKeys: string[] = [];
+    if (!this.baseUrl) missingEnvKeys.push("AGENTPLANE_REDMINE_URL");
+    if (!this.apiKey) missingEnvKeys.push("AGENTPLANE_REDMINE_API_KEY");
+    if (!this.projectId) missingEnvKeys.push("AGENTPLANE_REDMINE_PROJECT_ID");
+    if (missingEnvKeys.length > 0) {
+      throw new BackendError(redmineConfigMissingMessage(missingEnvKeys.join(", ")), "E_BACKEND");
     }
 
     if (!this.customFields?.task_id) {

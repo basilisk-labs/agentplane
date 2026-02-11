@@ -1783,9 +1783,6 @@ describe("loadTaskBackend", () => {
       JSON.stringify({
         id: "redmine",
         settings: {
-          url: "https://redmine.example",
-          api_key: "from-config",
-          project_id: "proj",
           custom_fields: { task_id: 1 },
         },
       }),
@@ -1793,9 +1790,11 @@ describe("loadTaskBackend", () => {
     );
     await writeFile(
       path.join(tempDir, ".env"),
-      ["AGENTPLANE_REDMINE_URL=https://redmine.env", 'AGENTPLANE_REDMINE_API_KEY="env-key"'].join(
-        "\n",
-      ),
+      [
+        "AGENTPLANE_REDMINE_URL=https://redmine.env",
+        'AGENTPLANE_REDMINE_API_KEY="env-key"',
+        "AGENTPLANE_REDMINE_PROJECT_ID=proj",
+      ].join("\n"),
       "utf8",
     );
     process.env.AGENTPLANE_REDMINE_API_KEY = "preserve";
@@ -1816,9 +1815,6 @@ describe("loadTaskBackend", () => {
       JSON.stringify({
         id: "redmine",
         settings: {
-          url: "https://redmine.example",
-          api_key: "from-config",
-          project_id: "proj",
           custom_fields: { task_id: 1 },
           cache_dir: "cache",
         },
@@ -1858,7 +1854,7 @@ describe("loadTaskBackend", () => {
     expect(local.root).toBe(path.join(tempDir, "custom-tasks"));
   });
 
-  it("loads redmine backend when .env is missing", async () => {
+  it("fails to load redmine backend when required env vars are missing", async () => {
     const agentplaneDir = path.join(tempDir, ".agentplane");
     const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
     await mkdir(path.dirname(backendPath), { recursive: true });
@@ -1867,9 +1863,6 @@ describe("loadTaskBackend", () => {
       JSON.stringify({
         id: "redmine",
         settings: {
-          url: "https://redmine.example",
-          api_key: "from-config",
-          project_id: "proj",
           custom_fields: { task_id: 1 },
         },
       }),
@@ -1877,8 +1870,9 @@ describe("loadTaskBackend", () => {
     );
     await rm(path.join(tempDir, ".env"), { force: true });
 
-    const result = await loadTaskBackend({ cwd: tempDir });
-    expect(result.backendId).toBe("redmine");
+    await expect(loadTaskBackend({ cwd: tempDir })).rejects.toThrow(
+      /AGENTPLANE_REDMINE_URL, AGENTPLANE_REDMINE_API_KEY, AGENTPLANE_REDMINE_PROJECT_ID/u,
+    );
   });
 
   it("ignores legacy module/class fields in backend config", async () => {
@@ -1911,9 +1905,6 @@ describe("loadTaskBackend", () => {
       JSON.stringify({
         id: "redmine",
         settings: {
-          url: "https://redmine.example",
-          api_key: "from-config",
-          project_id: "proj",
           custom_fields: { task_id: 1 },
         },
       }),

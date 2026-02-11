@@ -13,7 +13,7 @@ export class RedmineUnavailable extends BackendError {
 }
 
 export function redmineConfigMissingMessage(detail: string): string {
-  return `Missing required Redmine config: ${detail}`;
+  return `Missing required Redmine configuration. Set ${detail} in environment variables (for example via .env).`;
 }
 
 export function redmineIssueIdMissingMessage(): string {
