@@ -5,24 +5,25 @@ description: "The stable agentplane 1.0 CLI surface: commands, flags, exit codes
 
 This document freezes the public command surface for the Node.js CLI `agentplane` 1.0.
 
-Scope: command namespaces, subcommands, global flags, exit codes, and `--json` error output.
+Scope: command namespaces, subcommands, global flags, exit codes, and `--json-errors` output.
 
 ## 1) Invocation model
 
 ```
-agentplane [--root <path>] [--json] [--allow-network] <namespace> <command> [options]
-agentplane [--root <path>] [--json] [--allow-network] <command> [options]
+agentplane [--root <path>] [--json-errors] [--allow-network] <namespace> <command> [options]
+agentplane [--root <path>] [--json-errors] [--allow-network] <command> [options]
 ```
 
 - `--root <path>`: treat `<path>` as the project root (used for project discovery/path resolution).
-- `--json`: machine-readable output for errors (global). Some commands may also support `--json` for success output; see command docs.
+- `--json-errors`: machine-readable output for errors (global).
+- `--json`: success-output flag for help commands (`agentplane help --json`).
 - `--allow-network`: allow optional network operations that would otherwise be skipped when `config.agents.approvals.require_network=true` (currently used for update-check).
 
 ### 1.1 Global flag scoping (spec-driven CLI)
 
 Global flags are only recognized before the command id. For example:
 
-- `agentplane --json task list ...` enables JSON error output.
+- `agentplane --json-errors task list ...` enables JSON error output.
 - `agentplane help --json` emits JSON help (success output) and does not enable JSON error output.
 - `agentplane --allow-network config show` allows the update-check network request (when required by config).
 
@@ -41,9 +42,9 @@ The CLI uses stable exit codes for common failure classes:
 |    7 | Network error (only for commands that explicitly allow network) |
 |    1 | Any other error (unexpected/unclassified)                       |
 
-## 3) `--json` error format
+## 3) `--json-errors` format
 
-When `--json` is provided and an error occurs, the CLI prints a single JSON object to stdout:
+When `--json-errors` is provided and an error occurs, the CLI prints a single JSON object to stdout:
 
 ```json
 {
@@ -60,7 +61,7 @@ When `--json` is provided and an error occurs, the CLI prints a single JSON obje
 
 Rules:
 
-- JSON errors are written to stdout; human-readable diagnostics go to stderr only when `--json` is not set.
+- JSON errors are written to stdout; human-readable diagnostics go to stderr only when `--json-errors` is not set.
 - `error.code` is a stable string enum (`E_USAGE`, `E_VALIDATION`, `E_IO`, `E_GIT`, `E_BACKEND`, `E_NETWORK`, `E_INTERNAL`).
 - `context` is optional and must not include secrets.
 - No additional keys are emitted; the schema is exact.
