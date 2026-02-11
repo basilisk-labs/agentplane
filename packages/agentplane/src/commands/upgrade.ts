@@ -84,6 +84,25 @@ type UpgradeReviewRecord = {
     | "parseFailed";
 };
 
+async function safeRemovePath(targetPath: string): Promise<void> {
+  try {
+    await rm(targetPath, { recursive: true, force: true });
+  } catch {
+    // best-effort cleanup
+  }
+}
+
+async function cleanupAutoUpgradeArtifacts(opts: {
+  upgradeStateDir: string;
+  createdBackups: string[];
+}): Promise<void> {
+  for (const backupPath of opts.createdBackups) {
+    await safeRemovePath(backupPath);
+  }
+  // Keep durable state files at .upgrade root; remove transient per-run agent artifacts.
+  await safeRemovePath(path.join(opts.upgradeStateDir, "agent"));
+}
+
 const ASSETS_DIR_URL = new URL("../../assets/", import.meta.url);
 
 async function loadFrameworkManifestFromPath(manifestPath: string): Promise<FrameworkManifest> {
@@ -525,6 +544,7 @@ export async function cmdUpgradeParsed(opts: {
 
   let tempRoot: string | null = null;
   let extractRoot: string | null = null;
+  const createdBackups: string[] = [];
 
   try {
     tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-upgrade-"));
@@ -990,7 +1010,8 @@ export async function cmdUpgradeParsed(opts: {
     for (const rel of [...additions, ...updates]) {
       const destPath = path.join(resolved.gitRoot, rel);
       if (flags.backup && (await fileExists(destPath))) {
-        await backupPath(destPath);
+        const backup = await backupPath(destPath);
+        createdBackups.push(backup);
       }
       await mkdir(path.dirname(destPath), { recursive: true });
       const data = fileContents.get(rel);
@@ -1068,6 +1089,7 @@ export async function cmdUpgradeParsed(opts: {
       ) + "\n",
       "utf8",
     );
+    await cleanupAutoUpgradeArtifacts({ upgradeStateDir, createdBackups });
 
     process.stdout.write(
       `Upgrade applied: ${additions.length} add, ${updates.length} update, ${skipped.length} unchanged\n`,
