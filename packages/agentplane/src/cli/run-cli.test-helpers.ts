@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { gzipSync } from "node:zlib";
-import { afterAll, beforeAll } from "vitest";
+import { afterAll, afterEach, beforeAll } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
 
@@ -15,6 +15,7 @@ import { runCli } from "./run-cli.js";
 const execFileAsync = promisify(execFile);
 
 let agentplaneHome: string | null = null;
+const testRoots = new Set<string>();
 const originalAgentplaneHome = process.env.AGENTPLANE_HOME;
 const originalNoUpdateCheck = process.env.AGENTPLANE_NO_UPDATE_CHECK;
 const originalGitAuthorName = process.env.GIT_AUTHOR_NAME;
@@ -92,6 +93,17 @@ export function registerAgentplaneHome(): void {
     if (originalGitCommitterEmail === undefined) delete process.env.GIT_COMMITTER_EMAIL;
     else process.env.GIT_COMMITTER_EMAIL = originalGitCommitterEmail;
   });
+
+  afterEach(async () => {
+    const roots = [...testRoots];
+    testRoots.clear();
+    await Promise.all(
+      roots.map(async (root) => {
+        await rm(path.join(root, ".agentplane", ".upgrade"), { recursive: true, force: true });
+        await rm(path.join(root, ".agentplane", ".release"), { recursive: true, force: true });
+      }),
+    );
+  });
 }
 
 export function getAgentplaneHome(): string | null {
@@ -165,11 +177,14 @@ export async function mkGitRepoRoot(): Promise<string> {
   const template = await ensureGitTemplateRoot();
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
   await copyDirContents(template, root);
+  testRoots.add(root);
   return root;
 }
 
 export async function mkTempDir(): Promise<string> {
-  return await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+  const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
+  testRoots.add(root);
+  return root;
 }
 
 export async function writeDefaultConfig(root: string): Promise<void> {
