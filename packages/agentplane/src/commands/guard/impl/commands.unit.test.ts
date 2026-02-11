@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CliError } from "../../../shared/errors.js";
 
@@ -40,6 +40,95 @@ function mkCtx() {
 }
 
 describe("guard/impl/commands", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+  });
+
+  it("cmdGuardClean maps non-Cli errors with mapCoreError", async () => {
+    const { cmdGuardClean } = await import("./commands.js");
+    const mapped = new CliError({ exitCode: 5, code: "E_GIT", message: "mapped clean" });
+    mocks.mapCoreError.mockReturnValue(mapped);
+    mocks.loadCommandContext.mockRejectedValue(new Error("boom"));
+    await expect(cmdGuardClean({ cwd: "/repo", rootOverride: "/repo", quiet: true })).rejects.toBe(
+      mapped,
+    );
+    expect(mocks.mapCoreError).toHaveBeenCalledWith(
+      expect.any(Error),
+      expect.objectContaining({ command: "guard clean", root: "/repo" }),
+    );
+  });
+
+  it("cmdGuardSuggestAllow covers empty-index usage and maps unknown errors", async () => {
+    const { cmdGuardSuggestAllow } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue([]);
+    mocks.loadCommandContext.mockResolvedValue(ctx);
+    mocks.mapCoreError.mockImplementation((err: unknown) =>
+      err instanceof CliError
+        ? err
+        : new CliError({ exitCode: 1, code: "E_IO", message: "mapped suggest usage" }),
+    );
+    await expect(
+      cmdGuardSuggestAllow({ cwd: "/repo", format: "lines" }),
+    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+
+    const mapped = new CliError({ exitCode: 1, code: "E_IO", message: "mapped suggest" });
+    mocks.mapCoreError.mockReturnValue(mapped);
+    mocks.loadCommandContext.mockRejectedValue(new Error("io"));
+    await expect(
+      cmdGuardSuggestAllow({ cwd: "/repo", rootOverride: "/repo", format: "args" }),
+    ).rejects.toBe(mapped);
+    expect(mocks.mapCoreError).toHaveBeenCalledWith(
+      expect.any(Error),
+      expect.objectContaining({ command: "guard suggest-allow", root: "/repo" }),
+    );
+  });
+
+  it("cmdGuardCommit writes OK and maps unknown errors", async () => {
+    const { cmdGuardCommit } = await import("./commands.js");
+    await expect(
+      cmdGuardCommit({
+        cwd: "/repo",
+        taskId: "T-0",
+        message: "✅ ABC123 task: msg",
+        allow: ["src"],
+        allowBase: false,
+        allowTasks: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: false,
+        quiet: true,
+      }),
+    ).resolves.toBe(0);
+
+    const mapped = new CliError({ exitCode: 1, code: "E_IO", message: "mapped commit" });
+    mocks.mapCoreError.mockReturnValue(mapped);
+    mocks.guardCommitCheck.mockRejectedValue(new Error("oops"));
+    await expect(
+      cmdGuardCommit({
+        cwd: "/repo",
+        rootOverride: "/repo",
+        taskId: "T-0",
+        message: "✅ ABC123 task: msg",
+        allow: ["src"],
+        allowBase: false,
+        allowTasks: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: false,
+        quiet: true,
+      }),
+    ).rejects.toBe(mapped);
+    expect(mocks.mapCoreError).toHaveBeenCalledWith(
+      expect.any(Error),
+      expect.objectContaining({ command: "guard commit", root: "/repo" }),
+    );
+  });
+
   it("cmdCommit non-close path commits with env and provided ctx", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();
