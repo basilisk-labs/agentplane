@@ -50,8 +50,6 @@ jobs:
         run: node scripts/check-release-notes.mjs --tag "${{ steps.release_tag.outputs.tag }}"
       - name: Validate release versions
         run: node scripts/check-release-version.mjs --tag "${{ steps.release_tag.outputs.tag }}"
-      - name: Validate npm versions are not already published
-        run: node scripts/check-npm-version-availability.mjs
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.6"
@@ -80,10 +78,10 @@ jobs:
       # current `latest` (e.g. publishing 0.2.5 after 0.3.0). Use an explicit tag
       # so patch releases on an older minor line can still publish and take over
       # the `latest` dist-tag when intended.
-      - run: npm publish --provenance --access public --tag latest
-        working-directory: packages/core
-      - run: npm publish --provenance --access public --tag latest
-        working-directory: packages/agentplane
+      - name: Publish @agentplaneorg/core (idempotent)
+        run: node scripts/publish-package-if-needed.mjs --dir packages/core --tag latest
+      - name: Publish agentplane (idempotent)
+        run: node scripts/publish-package-if-needed.mjs --dir packages/agentplane --tag latest
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
