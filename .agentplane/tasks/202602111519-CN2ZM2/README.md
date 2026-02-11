@@ -1,7 +1,9 @@
 ---
 id: "202602111519-CN2ZM2"
 title: "T3: Replace task set-status force block with approvals"
-status: "DOING"
+result_summary: "task set-status force behavior is approval-gated and policy-consistent."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-02-11T15:34:30.698Z"
   updated_by: "CODER"
   note: "Verified: task set-status now routes --force through unified approval checks, adds --yes for explicit approval, and removes conservative env-var bypass logic. Ran core task CLI tests, lint, and package builds."
-commit: null
+commit:
+  hash: "ca83de5bcb55b081e638e41cd03b0e7ae5526c12"
+  message: "✅ CN2ZM2 task: gate set-status --force by approvals"
 comments:
   -
     author: "CODER"
     body: "Start: replacing local force blocking logic with unified approval checks in task set-status."
+  -
+    author: "CODER"
+    body: "Verified: Removed command-local conservative force blocking and now enforce --force approvals through shared approval requirements with explicit --yes support in task set-status."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: task set-status now routes --force through unified approval checks, adds --yes for explicit approval, and removes conservative env-var bypass logic. Ran core task CLI tests, lint, and package builds."
+  -
+    type: "status"
+    at: "2026-02-11T15:35:00.587Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Removed command-local conservative force blocking and now enforce --force approvals through shared approval requirements with explicit --yes support in task set-status."
 doc_version: 2
-doc_updated_at: "2026-02-11T15:34:30.699Z"
+doc_updated_at: "2026-02-11T15:35:00.587Z"
 doc_updated_by: "CODER"
 description: "Remove conservative force forbid path and enforce approval requirement for --force via unified helper."
 id_source: "generated"
