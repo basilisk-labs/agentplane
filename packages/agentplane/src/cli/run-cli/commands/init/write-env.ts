@@ -64,12 +64,10 @@ function collectDefinedEnvKeys(dotEnvText: string): Set<string> {
   return keys;
 }
 
-export async function ensureInitRedmineEnvTemplate(opts: { gitRoot: string }): Promise<void> {
-  const dotEnvPath = path.join(opts.gitRoot, ".env");
-  const existing = (await readTextIfExists(dotEnvPath)) ?? "";
+function buildTemplateBlock(existing: string): string {
   const definedKeys = collectDefinedEnvKeys(existing);
   const missing = REDMINE_ENV_TEMPLATE.filter((entry) => !definedKeys.has(entry.key));
-  if (missing.length === 0) return;
+  if (missing.length === 0) return existing;
 
   const required = missing.filter((item) => item.required);
   const optional = missing.filter((item) => !item.required);
@@ -96,6 +94,17 @@ export async function ensureInitRedmineEnvTemplate(opts: { gitRoot: string }): P
   const block = `${lines.join("\n")}\n`;
   const prefix =
     existing.length > 0 && !existing.endsWith("\n") ? "\n\n" : existing.length > 0 ? "\n" : "";
-  const next = `${existing}${prefix}${block}`;
-  await writeTextIfChanged(dotEnvPath, next);
+  return `${existing}${prefix}${block}`;
+}
+
+export async function ensureInitRedmineEnvTemplate(opts: { gitRoot: string }): Promise<void> {
+  const dotEnvExamplePath = path.join(opts.gitRoot, ".env.example");
+  const existingExample = (await readTextIfExists(dotEnvExamplePath)) ?? "";
+  const nextExample = buildTemplateBlock(existingExample);
+  await writeTextIfChanged(dotEnvExamplePath, nextExample);
+
+  const dotEnvPath = path.join(opts.gitRoot, ".env");
+  const existingEnv = await readTextIfExists(dotEnvPath);
+  if (existingEnv !== null) return;
+  await writeTextIfChanged(dotEnvPath, nextExample);
 }

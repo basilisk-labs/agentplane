@@ -354,15 +354,18 @@ describe("runCli", () => {
     expect(settings.api_key).toBeUndefined();
     expect(settings.project_id).toBeUndefined();
     expect(settings.owner_agent).toBe("REDMINE");
+    const dotEnvExamplePath = path.join(root, ".env.example");
+    const dotEnvExampleText = await readFile(dotEnvExamplePath, "utf8");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_OWNER_AGENT=REDMINE");
     const dotEnvPath = path.join(root, ".env");
     const dotEnvText = await readFile(dotEnvPath, "utf8");
     expect(dotEnvText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
-    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
-    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
-    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_OWNER_AGENT=REDMINE");
   });
 
-  it("init --backend redmine keeps existing .env values and only appends missing keys", async () => {
+  it("init --backend redmine keeps existing .env untouched and writes .env.example", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     await writeFile(
@@ -380,10 +383,12 @@ describe("runCli", () => {
 
     const dotEnvPath = path.join(root, ".env");
     const dotEnvText = await readFile(dotEnvPath, "utf8");
-    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.internal");
-    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
-    expect(dotEnvText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
-    expect(dotEnvText).toContain("EXISTING=value");
+    expect(dotEnvText).toBe("AGENTPLANE_REDMINE_URL=https://redmine.internal\nEXISTING=value\n");
+    const dotEnvExamplePath = path.join(root, ".env.example");
+    const dotEnvExampleText = await readFile(dotEnvExamplePath, "utf8");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_URL=https://redmine.example");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_API_KEY=replace-me");
+    expect(dotEnvExampleText).toContain("AGENTPLANE_REDMINE_PROJECT_ID=replace-me");
   });
 
   it("init bootstraps git repo and commits install when git is missing", async () => {

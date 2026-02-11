@@ -555,6 +555,9 @@ async function cmdInit(opts: {
       configPathAbs: configPath,
       backendPathAbs: backendPath,
     });
+    if (backend === "redmine") {
+      installPaths.push(".env.example");
+    }
 
     await ensureInitGitignore({
       gitRoot: resolved.gitRoot,
