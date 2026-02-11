@@ -30,7 +30,7 @@ function deriveCommitMessageFromComment(opts: {
       message: "Comment body is required to build a commit message from the task comment",
     });
   }
-  const summary = raw.replace(/^(start|blocked|verified):\s+/i, "").trim();
+  const summary = raw.replace(/^(start|blocked|verified):\s*/i, "").trim();
   if (!summary) {
     throw new CliError({
       exitCode: 2,

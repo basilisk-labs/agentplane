@@ -190,6 +190,54 @@ describe("commitFromComment", () => {
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
   });
 
+  it("fails when formatted comment is blank", async () => {
+    const git = makeGit();
+    git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    const ctx = makeCtx(git);
+    await expect(
+      commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "202602111631-2S7HGD",
+        commentBody: "Start: do work",
+        formattedComment: "   ",
+        emoji: "🚧",
+        allow: ["src"],
+        autoAllow: false,
+        allowTasks: false,
+        requireClean: false,
+        quiet: true,
+        config: defaultConfig(),
+      }),
+    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+  });
+
+  it("fails when formatted comment has only status prefix without summary", async () => {
+    const git = makeGit();
+    git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    const ctx = makeCtx(git);
+    await expect(
+      commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "202602111631-2S7HGD",
+        commentBody: "Start: do work",
+        formattedComment: "Start:",
+        emoji: "🚧",
+        allow: ["src"],
+        autoAllow: false,
+        allowTasks: false,
+        requireClean: false,
+        quiet: true,
+        config: defaultConfig(),
+      }),
+    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+  });
+
   it("auto-allow can stage task artifacts when allowTasks=true", async () => {
     const git = makeGit();
     git.statusChangedPaths.mockResolvedValue([".agentplane/tasks.json"]);
@@ -275,5 +323,32 @@ describe("commitFromComment", () => {
     } finally {
       io.restore();
     }
+  });
+
+  it("supports auto-allow=true with explicit allow list", async () => {
+    const git = makeGit();
+    git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    git.headHashSubject.mockResolvedValue({
+      hash: "aabbccddeeff0011",
+      subject: "🚧 2S7HGD task: explicit allow",
+    });
+    const ctx = makeCtx(git);
+    const result = await commitFromComment({
+      ctx,
+      cwd: "/tmp/repo",
+      taskId: "202602111631-2S7HGD",
+      commentBody: "Start: explicit allow",
+      formattedComment: "Start: explicit allow",
+      emoji: "🚧",
+      allow: ["src"],
+      autoAllow: true,
+      allowTasks: false,
+      requireClean: false,
+      quiet: true,
+      config: defaultConfig(),
+    });
+    expect(result.staged).toEqual(["src/app.ts"]);
   });
 });
