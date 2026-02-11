@@ -57,6 +57,28 @@ describe("agents-template", () => {
     }
   });
 
+  it("repo .agentplane/agents stays in sync with assets/agents", async () => {
+    const assetsAgentsDir = path.join(process.cwd(), "packages", "agentplane", "assets", "agents");
+    const repoAgentsDir = path.join(process.cwd(), ".agentplane", "agents");
+    const assetDirEntries = await readdir(assetsAgentsDir);
+    const assetEntries = assetDirEntries
+      .filter((entry) => entry.endsWith(".json"))
+      .toSorted((a, b) => a.localeCompare(b));
+    const repoDirEntries = await readdir(repoAgentsDir);
+    const repoEntries = repoDirEntries
+      .filter((entry) => entry.endsWith(".json"))
+      .toSorted((a, b) => a.localeCompare(b));
+    expect(repoEntries).toEqual(assetEntries);
+
+    for (const fileName of assetEntries) {
+      const assetRaw = await readFile(path.join(assetsAgentsDir, fileName), "utf8");
+      const repoRaw = await readFile(path.join(repoAgentsDir, fileName), "utf8");
+      const assetText = `${assetRaw.trimEnd()}\n`;
+      const repoText = `${repoRaw.trimEnd()}\n`;
+      expect(repoText).toBe(assetText);
+    }
+  });
+
   it("filters workflow-specific sections for direct mode", () => {
     const template = [
       "## A) direct mode (single checkout)",

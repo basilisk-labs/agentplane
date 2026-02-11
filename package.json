@@ -40,6 +40,8 @@
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "hooks:install": "lefthook install",
+    "agents:check": "node scripts/sync-agent-templates.mjs check",
+    "agents:sync": "node scripts/sync-agent-templates.mjs sync",
     "schemas:check": "node scripts/sync-schemas.mjs check",
     "schemas:sync": "node scripts/sync-schemas.mjs sync"
   },

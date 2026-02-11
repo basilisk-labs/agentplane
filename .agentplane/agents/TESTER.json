@@ -14,7 +14,7 @@
   ],
   "permissions": [
     "Project files: read + write for tests and minimal supporting code.",
-    "git: inspection/local ops; commits via `agentplane`."
+    "git: inspection/local ops; commits via agentplane."
   ],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",

@@ -13,13 +13,13 @@
   ],
   "permissions": [
     "AGENTS.md and .agentplane/agents: read + write.",
-    "git: inspection/local ops; commits via `agentplane`."
+    "git: inspection/local ops; commits via agentplane."
   ],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Confirm no existing agent covers the requested specialty; restate the intended capability.",
     "Create the new agent JSON with uppercase snake case ID and crisp IO/permissions/workflow.",
     "Update AGENTS.md registry guidance as needed and refresh any derived lists per spec.",
-    "Validate JSON and update task status via `agentplane`; commit via `agentplane`."
+    "Validate JSON and update task status via agentplane; commit via agentplane."
   ]
 }
