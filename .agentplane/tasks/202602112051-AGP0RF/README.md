@@ -1,7 +1,8 @@
 ---
 id: "202602112051-AGP0RF"
 title: "Add schemas/agents sync checks to publish workflow"
-status: "DOING"
+result_summary: "Publish workflow now enforces schema/agent drift checks"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "81772d2fc62fce777a6aed6e2ad33d992c35df01"
+  message: "🛠️ AGP0RF ci: add schema/agent checks to publish workflow"
 comments:
   -
     author: "CODER"
     body: "Start: Updating publish workflow with schema/agent drift checks before npm publish."
+  -
+    author: "CODER"
+    body: "Verified: schemas:check and agents:check pass; release apply tests continue to pass."
 events:
   -
     type: "status"
@@ -34,8 +40,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Updating publish workflow with schema/agent drift checks before npm publish."
+  -
+    type: "status"
+    at: "2026-02-11T20:57:29.323Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: schemas:check and agents:check pass; release apply tests continue to pass."
 doc_version: 2
-doc_updated_at: "2026-02-11T20:56:43.544Z"
+doc_updated_at: "2026-02-11T20:57:29.323Z"
 doc_updated_by: "CODER"
 description: "Add defense-in-depth checks in publish workflow so tag builds fail before npm publish when schema/agent templates drift."
 id_source: "generated"
