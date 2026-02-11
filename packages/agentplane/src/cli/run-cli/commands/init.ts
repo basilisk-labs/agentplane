@@ -376,6 +376,26 @@ async function cmdInit(opts: {
   }
 
   if (isInteractive) {
+    const askChoice = async (
+      label: string,
+      choices: string[],
+      defaultValue: string,
+    ): Promise<string> => {
+      const result = await promptChoice(`\n${label}`, choices, defaultValue);
+      process.stdout.write("\n");
+      return result;
+    };
+    const askYesNo = async (label: string, defaultValue: boolean): Promise<boolean> => {
+      const result = await promptYesNo(`\n${label}`, defaultValue);
+      process.stdout.write("\n");
+      return result;
+    };
+    const askInput = async (label: string): Promise<string> => {
+      const result = await promptInput(`\n${label}`);
+      process.stdout.write("\n");
+      return result;
+    };
+
     process.stdout.write(renderInitWelcome());
     process.stdout.write(
       renderInitSection(
@@ -385,15 +405,15 @@ async function cmdInit(opts: {
     );
     ide = flags.ide ?? defaults.ide;
     if (!flags.workflow) {
-      const choice = await promptChoice("Workflow mode", ["direct", "branch_pr"], workflow);
+      const choice = await askChoice("Workflow mode", ["direct", "branch_pr"], workflow);
       workflow = choice === "branch_pr" ? "branch_pr" : "direct";
     }
     if (!flags.backend) {
-      const choice = await promptChoice("Task backend", ["local", "redmine"], backend);
+      const choice = await askChoice("Task backend", ["local", "redmine"], backend);
       backend = choice === "redmine" ? "redmine" : "local";
     }
     if (flags.hooks === undefined) {
-      hooks = await promptYesNo("Install managed git hooks now?", hooks);
+      hooks = await askYesNo("Install managed git hooks now?", hooks);
     }
     process.stdout.write(
       renderInitSection(
@@ -402,14 +422,14 @@ async function cmdInit(opts: {
       ),
     );
     if (!flags.executionProfile) {
-      executionProfile = (await promptChoice(
+      executionProfile = (await askChoice(
         "Execution profile",
         ["conservative", "balanced", "aggressive"],
         executionProfile,
       )) as ExecutionProfile;
     }
     if (flags.strictUnsafeConfirm === undefined) {
-      strictUnsafeConfirm = await promptYesNo(
+      strictUnsafeConfirm = await askYesNo(
         "Require strict explicit confirmation for extra unsafe actions?",
         strictUnsafeConfirm,
       );
@@ -421,19 +441,19 @@ async function cmdInit(opts: {
       ),
     );
     if (flags.requirePlanApproval === undefined) {
-      requirePlanApproval = await promptYesNo(
+      requirePlanApproval = await askYesNo(
         "Require plan approval before work starts?",
         requirePlanApproval,
       );
     }
     if (flags.requireNetworkApproval === undefined) {
-      requireNetworkApproval = await promptYesNo(
+      requireNetworkApproval = await askYesNo(
         "Require explicit approval for network actions?",
         requireNetworkApproval,
       );
     }
     if (flags.requireVerifyApproval === undefined) {
-      requireVerifyApproval = await promptYesNo(
+      requireVerifyApproval = await askYesNo(
         "Require explicit approval before recording verification?",
         requireVerifyApproval,
       );
@@ -446,7 +466,7 @@ async function cmdInit(opts: {
     );
     if (!flags.recipes) {
       process.stdout.write(`${renderBundledRecipesHint()}\n`);
-      const answer = await promptInput("Install optional recipes (comma separated, or none): ");
+      const answer = await askInput("Install optional recipes (comma separated, or none): ");
       recipes = answer
         ? answer
             .split(",")

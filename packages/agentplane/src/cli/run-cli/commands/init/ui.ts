@@ -22,20 +22,19 @@ function box(lines: string[]): string {
 
 export function renderInitWelcome(): string {
   const logo = [
-    "   ___   ____ ____ _   _ _____ ",
-    "  / _ | / __// __// | / / ___/ ",
-    " / __ |/ _/ / _/ /  |/ / /__   ",
-    String.raw`/_/ |_|\__/ /___//_/|_/\___/   `,
-    "          agent/plane          ",
+    "░█▀█░█▀▀░█▀▀░█▀█░▀█▀░░░█░█▀█░█░░░█▀█░█▀█░█▀▀",
+    "░█▀█░█░█░█▀▀░█░█░░█░░▄▀░░█▀▀░█░░░█▀█░█░█░█▀▀",
+    "░▀░▀░▀▀▀░▀▀▀░▀░▀░░▀░░▀░░░▀░░░▀▀▀░▀░▀░▀░▀░▀▀▀",
   ].map((line) => color(line, "36"));
+  const subtitle = color("agent/plane", "36");
   const intro = [
     color("Bootstrap an agent-first workflow in this repository.", "1"),
     "This interactive setup runs once; daily work is executed by agents.",
   ];
-  return `${logo.join("\n")}\n\n${box(intro)}\n`;
+  return `${logo.join("\n")}\n${subtitle}\n\n${box(intro)}\n\n`;
 }
 
 export function renderInitSection(title: string, description: string): string {
   const header = color(`[${title}]`, "33");
-  return `${header}\n${description}\n`;
+  return `${header}\n${description}\n\n`;
 }
