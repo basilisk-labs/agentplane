@@ -15,6 +15,7 @@ async function readTextIfExists(filePath: string): Promise<string | null> {
 
 const RUNTIME_IGNORE_LINES = [
   "# agentplane: ignore runtime/transient workspace artifacts",
+  ".env",
   ".agentplane/worktrees",
   ".agentplane/cache",
   ".agentplane/recipes-cache",
