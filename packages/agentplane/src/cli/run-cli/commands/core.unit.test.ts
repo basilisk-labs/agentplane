@@ -130,7 +130,7 @@ describe("core commands (unit)", () => {
     }
   });
 
-  it("agents: rejects missing agents dir, rejects empty list, and rejects duplicate ids", async () => {
+  it("agents: rejects missing dir, empty list, and filename-vs-json id mismatch", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(((chunk: unknown) => {
       writes.push(String(chunk));
@@ -159,12 +159,14 @@ describe("core commands (unit)", () => {
     mockReadFile.mockImplementation((p) =>
       Promise.resolve(
         p.endsWith("a.json")
-          ? JSON.stringify({ id: "dup", role: "CODER" })
-          : JSON.stringify({ id: "dup", role: "TESTER" }),
+          ? JSON.stringify({ id: "WRONG", role: "CODER" })
+          : JSON.stringify({ id: "b", role: "TESTER" }),
       ),
     );
     await expect(runAgents(ctx, {})).rejects.toMatchObject({ code: "E_USAGE" });
-    expect(writes.join("")).toContain("dup");
+    const out = writes.join("");
+    expect(out).toContain("RAW_ID");
+    expect(out).toContain("WRONG");
 
     writeSpy.mockRestore();
   });
@@ -201,6 +203,7 @@ describe("core commands (unit)", () => {
     const out = writes.join("");
     expect(out).toContain("ID");
     expect(out).toContain("ROLE");
+    expect(out).not.toContain("RAW_ID");
     expect(out).toContain("a.json");
     expect(out).toContain("b.json");
 

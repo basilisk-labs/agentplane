@@ -56,6 +56,27 @@ type AgentProfile = {
   workflow?: unknown;
 };
 
+function parseAgentProfileJson(filePath: string, text: string): AgentProfile {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text) as unknown;
+  } catch {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Invalid agent profile JSON: ${filePath} (malformed JSON)`,
+    });
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `Invalid agent profile JSON: ${filePath} (expected object)`,
+    });
+  }
+  return parsed as AgentProfile;
+}
+
 function normalizeRoleId(roleRaw: string): string {
   return roleRaw.trim().toUpperCase();
 }
@@ -111,7 +132,7 @@ async function readAgentProfile(opts: {
 
   const filename = `${foundId}.json`;
   const filePath = path.join(listing.agentplaneDir, "agents", filename);
-  const raw = JSON.parse(await readFile(filePath, "utf8")) as AgentProfile;
+  const raw = parseAgentProfileJson(filePath, await readFile(filePath, "utf8"));
   return { agentplaneDir: listing.agentplaneDir, filename, profile: raw };
 }
 
@@ -253,39 +274,70 @@ export function makeRunAgentsHandler(deps: RunDeps): CommandHandler<AgentsParsed
         });
       }
 
-      const rows: [string, string, string][] = [];
+      const rows: { canonicalId: string; role: string; filename: string; rawId: string }[] = [];
       const seen = new Set<string>();
       const duplicates: string[] = [];
+      const mismatches: { filename: string; canonicalId: string; rawId: string }[] = [];
       for (const entry of entries) {
+        const canonicalId = entry.replace(/\.json$/i, "");
         const filePath = path.join(agentsDir, entry);
-        const raw = JSON.parse(await readFile(filePath, "utf8")) as Record<string, unknown>;
+        const raw = parseAgentProfileJson(filePath, await readFile(filePath, "utf8"));
         const rawId = typeof raw.id === "string" ? raw.id : "";
         const rawRole = typeof raw.role === "string" ? raw.role : "";
-        const agentId = rawId.trim() || "<missing-id>";
+        const normalizedRawId = rawId.trim();
         const role = rawRole.trim() || "-";
-        if (seen.has(agentId)) {
-          duplicates.push(agentId);
+        if (seen.has(canonicalId)) {
+          duplicates.push(canonicalId);
         } else {
-          seen.add(agentId);
+          seen.add(canonicalId);
         }
-        rows.push([agentId, role, entry]);
+        if (normalizedRawId.length > 0 && normalizedRawId !== canonicalId) {
+          mismatches.push({ filename: entry, canonicalId, rawId: normalizedRawId });
+        }
+        rows.push({ canonicalId, role, filename: entry, rawId: normalizedRawId });
       }
 
-      const widthId = Math.max(...rows.map((row) => row[0].length), "ID".length);
-      const widthFile = Math.max(...rows.map((row) => row[2].length), "FILE".length);
-      process.stdout.write(`${"ID".padEnd(widthId)}  ${"FILE".padEnd(widthFile)}  ROLE\n`);
-      process.stdout.write(`${"-".repeat(widthId)}  ${"-".repeat(widthFile)}  ----\n`);
-      for (const [agentId, role, filename] of rows) {
+      const showRawIdColumn = mismatches.length > 0;
+      const widthId = Math.max(...rows.map((row) => row.canonicalId.length), "ID".length);
+      const widthFile = Math.max(...rows.map((row) => row.filename.length), "FILE".length);
+      if (showRawIdColumn) {
+        const widthRawId = Math.max(...rows.map((row) => row.rawId.length), "RAW_ID".length);
         process.stdout.write(
-          `${agentId.padEnd(widthId)}  ${filename.padEnd(widthFile)}  ${role}\n`,
+          `${"ID".padEnd(widthId)}  ${"FILE".padEnd(widthFile)}  ${"RAW_ID".padEnd(widthRawId)}  ROLE\n`,
         );
+        process.stdout.write(
+          `${"-".repeat(widthId)}  ${"-".repeat(widthFile)}  ${"-".repeat(widthRawId)}  ----\n`,
+        );
+        for (const row of rows) {
+          process.stdout.write(
+            `${row.canonicalId.padEnd(widthId)}  ${row.filename.padEnd(widthFile)}  ${row.rawId.padEnd(widthRawId)}  ${row.role}\n`,
+          );
+        }
+      } else {
+        process.stdout.write(`${"ID".padEnd(widthId)}  ${"FILE".padEnd(widthFile)}  ROLE\n`);
+        process.stdout.write(`${"-".repeat(widthId)}  ${"-".repeat(widthFile)}  ----\n`);
+        for (const row of rows) {
+          process.stdout.write(
+            `${row.canonicalId.padEnd(widthId)}  ${row.filename.padEnd(widthFile)}  ${row.role}\n`,
+          );
+        }
       }
 
       if (duplicates.length > 0) {
         throw new CliError({
           exitCode: 2,
           code: "E_USAGE",
-          message: `Duplicate agent ids: ${dedupeStrings(duplicates).toSorted().join(", ")}`,
+          message: `Duplicate canonical agent ids: ${dedupeStrings(duplicates).toSorted().join(", ")}`,
+        });
+      }
+      if (mismatches.length > 0) {
+        const details = mismatches
+          .map((m) => `${m.filename}: raw id "${m.rawId}" != canonical "${m.canonicalId}"`)
+          .join("; ");
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message: `Agent profile id mismatch: ${details}`,
         });
       }
       return 0;
