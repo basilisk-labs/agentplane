@@ -45,6 +45,15 @@ describe("commit-policy", () => {
     expect(result.ok).toBe(true);
   });
 
+  it("accepts task subjects with hierarchical scopes", () => {
+    const result = validateCommitSubject({
+      subject: "✨ ABCDEF core/guard: tighten protected path checks",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks"],
+    });
+    expect(result.ok).toBe(true);
+  });
+
   it("rejects subjects that do not match the required template", () => {
     const result = validateCommitSubject({
       subject: "update tasks",
@@ -103,6 +112,14 @@ describe("commit-policy", () => {
   it("accepts non-task subjects without a suffix", () => {
     const result = validateCommitSubject({
       subject: "✨ ci: enforce full tests before push",
+      genericTokens: ["update", "tasks", "wip"],
+    });
+    expect(result.ok).toBe(true);
+  });
+
+  it("accepts non-task subjects with hierarchical scopes", () => {
+    const result = validateCommitSubject({
+      subject: "✨ cli/run-cli: simplify global flag parsing",
       genericTokens: ["update", "tasks", "wip"],
     });
     expect(result.ok).toBe(true);

@@ -4,6 +4,7 @@ export type CommitPolicyResult = {
 };
 
 const NON_TASK_SUFFIX = "DEV";
+const SCOPE_PATTERN = "[a-z][a-z0-9_-]*(?:/[a-z0-9_-]+)*";
 
 function stripPunctuation(input: string): string {
   return input.replaceAll(/[^\p{L}\p{N}\s-]/gu, " ");
@@ -40,7 +41,7 @@ function parseTaskSubjectTemplate(subject: string): {
   const rest = (match[3] ?? "").trim();
   if (!emoji || !suffix || !rest) return null;
 
-  const scopeMatch = /^([a-z][a-z0-9_-]*):\s+(.+)$/.exec(rest);
+  const scopeMatch = new RegExp(String.raw`^(${SCOPE_PATTERN}):\s+(.+)$`).exec(rest);
   if (!scopeMatch) return null;
   const scope = scopeMatch[1] ?? "";
   const summary = (scopeMatch[2] ?? "").trim();
@@ -58,7 +59,7 @@ function parseNonTaskSubjectTemplate(subject: string): {
   if (!trimmed) return null;
 
   // Non-task: `<emoji> <scope>: <summary>`
-  const match = /^(\S+)\s+([a-z][a-z0-9_-]*):\s+(.+)$/.exec(trimmed);
+  const match = new RegExp(String.raw`^(\S+)\s+(${SCOPE_PATTERN}):\s+(.+)$`).exec(trimmed);
   if (!match) return null;
   const emoji = match[1] ?? "";
   const scope = match[2] ?? "";
