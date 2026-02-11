@@ -263,7 +263,7 @@ export function renderQuickstart(): string {
     "## Global flags",
     "",
     "- `--root <path>`: treat <path> as project root",
-    "- `--json`: emit JSON-formatted errors",
+    "- `--json-errors`: emit JSON-formatted errors",
     "- `--help` / `-h`: show help",
     "- `--version`: show version",
     "- `--no-update-check`: skip checking npm for a newer CLI version",

@@ -55,7 +55,7 @@ const GLOBAL_FLAGS: readonly GlobalFlagDef[] = [
   { key: "version", forms: ["--version", "-v"], takesValue: false, scoped: false },
   { key: "noUpdateCheck", forms: ["--no-update-check"], takesValue: false, scoped: false },
   { key: "allowNetwork", forms: ["--allow-network"], takesValue: false, scoped: true },
-  { key: "jsonErrors", forms: ["--json-errors", "--json"], takesValue: false, scoped: true },
+  { key: "jsonErrors", forms: ["--json-errors"], takesValue: false, scoped: true },
   { key: "root", forms: ["--root"], takesValue: true, scoped: false },
 ] as const;
 
@@ -65,7 +65,7 @@ const GLOBAL_FLAG_FORMS = new Map<string, GlobalFlagDef>(
 
 function prescanJsonErrors(argv: readonly string[]): boolean {
   // If parseGlobalArgs throws (e.g. missing --root value), we still want to honor
-  // `--json` / `--json-errors` in the "scoped global" zone (before the command id).
+  // `--json-errors` in the "scoped global" zone (before the command id).
   let hasRest = false;
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];

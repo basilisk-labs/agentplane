@@ -367,10 +367,10 @@ describe("runCli", () => {
     }
   });
 
-  it("prints json error when --json is set", async () => {
+  it("prints json error when --json-errors is set", async () => {
     const io = captureStdIO();
     try {
-      const code = await runCli(["--json", "config", "set"]);
+      const code = await runCli(["--json-errors", "config", "set"]);
       expect(code).toBe(2);
       expect(io.stdout).toContain('"error"');
       expect(io.stdout).toContain('"code"');
@@ -402,15 +402,13 @@ describe("runCli", () => {
     }
   });
 
-  it("prints json error when --json is set and --root is missing a value", async () => {
+  it("does not enable json error mode when --json is used globally", async () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["--json", "--root"]);
       expect(code).toBe(2);
-      expect(io.stdout).toContain('"error"');
-      expect(io.stdout).toContain('"code": "E_USAGE"');
-      expect(io.stdout).toContain("Missing value after --root (expected repository path)");
-      expect(io.stderr.trim()).toBe("");
+      expect(io.stderr).toContain("Missing value after --root (expected repository path)");
+      expect(io.stdout.trim()).toBe("");
     } finally {
       io.restore();
     }
