@@ -1,7 +1,9 @@
 ---
 id: "202602111519-TBYG4Z"
 title: "T10: Deduplicate execution presets via core builder"
-status: "DOING"
+result_summary: "Init now uses core execution profile builder"
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -21,11 +23,16 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "8dafb481c5dab5074a156451502fb3ec95908bfd"
+  message: "✅ TBYG4Z init: reuse core execution profile builder"
 comments:
   -
     author: "CODER"
     body: "Start: replace duplicated init execution presets with core buildExecutionProfile integration."
+  -
+    author: "CODER"
+    body: "Verified: init no longer carries duplicated execution presets; it uses @agentplaneorg/core buildExecutionProfile and passes init regression tests plus both package builds."
 events:
   -
     type: "status"
@@ -34,8 +41,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: replace duplicated init execution presets with core buildExecutionProfile integration."
+  -
+    type: "status"
+    at: "2026-02-11T16:11:33.653Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init no longer carries duplicated execution presets; it uses @agentplaneorg/core buildExecutionProfile and passes init regression tests plus both package builds."
 doc_version: 2
-doc_updated_at: "2026-02-11T16:10:52.571Z"
+doc_updated_at: "2026-02-11T16:11:33.653Z"
 doc_updated_by: "CODER"
 description: "Remove init-local execution preset builder and reuse @agentplaneorg/core buildExecutionProfile."
 id_source: "generated"
