@@ -1,7 +1,8 @@
 ---
 id: "202602111519-6CT56C"
 title: "T1: Unified approval requirements API"
-status: "DOING"
+result_summary: "T1 completed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-02-11T15:22:19.839Z"
   updated_by: "TESTER"
   note: "Verified: unified approval requirements module added, network approval routed through ensureActionApproved, and shared approval tests pass."
-commit: null
+commit:
+  hash: "d3a6aa5f8fe8fa5f331c6b8c866317d3432c5b7b"
+  message: "✅ 6CT56C approval: add unified requirements layer"
 comments:
   -
     author: "CODER"
     body: "Start: introducing shared approval requirements API and unifying current network approval path without changing semantics."
+  -
+    author: "CODER"
+    body: "Verified: unified approval-requirements API is in place, with network approval now routed through ensureActionApproved and passing tests/lint."
 events:
   -
     type: "status"
@@ -39,9 +45,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: unified approval requirements module added, network approval routed through ensureActionApproved, and shared approval tests pass."
+  -
+    type: "status"
+    at: "2026-02-11T15:23:10.933Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: unified approval-requirements API is in place, with network approval now routed through ensureActionApproved and passing tests/lint."
 doc_version: 2
-doc_updated_at: "2026-02-11T15:22:19.840Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-02-11T15:23:10.933Z"
+doc_updated_by: "CODER"
 description: "Create shared approval-requirements layer with action enum and ensureActionApproved helper; consolidate network approval entrypoint."
 id_source: "generated"
 ---
