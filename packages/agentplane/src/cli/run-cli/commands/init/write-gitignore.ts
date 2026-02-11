@@ -13,14 +13,32 @@ async function readTextIfExists(filePath: string): Promise<string | null> {
   }
 }
 
-export async function ensureGitignoreAgents(opts: { gitRoot: string }): Promise<void> {
+const RUNTIME_IGNORE_LINES = [
+  "# agentplane: ignore runtime/transient workspace artifacts",
+  ".agentplane/worktrees",
+  ".agentplane/cache",
+  ".agentplane/recipes-cache",
+  ".agentplane/.upgrade",
+  ".agentplane/.release",
+  ".agentplane/upgrade",
+  ".agentplane/tasks.json",
+];
+
+const AGENT_PROMPT_IGNORE_LINES = [
+  "# agentplane: ignore local agent prompts/templates",
+  "AGENTS.md",
+  ".agentplane/agents/",
+];
+
+export async function ensureInitGitignore(opts: {
+  gitRoot: string;
+  includeAgentPromptFiles: boolean;
+}): Promise<void> {
   const gitignorePath = path.join(opts.gitRoot, ".gitignore");
   const existing = (await readTextIfExists(gitignorePath)) ?? "";
-  const ensuredLines = [
-    "# agentplane: ignore local agent prompts/templates",
-    "AGENTS.md",
-    ".agentplane/agents/",
-  ];
+  const ensuredLines = opts.includeAgentPromptFiles
+    ? [...RUNTIME_IGNORE_LINES, ...AGENT_PROMPT_IGNORE_LINES]
+    : [...RUNTIME_IGNORE_LINES];
 
   const existingLines = existing.split(/\r?\n/);
   const existingSet = new Set(existingLines.map((line) => line.trimEnd()));

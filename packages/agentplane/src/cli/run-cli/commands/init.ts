@@ -22,7 +22,7 @@ import { maybeSyncIde } from "./init/ide-sync.js";
 import { maybeInstallBundledRecipes } from "./init/recipes.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./init/write-config.js";
 import { ensureAgentsFiles } from "./init/write-agents.js";
-import { ensureGitignoreAgents } from "./init/write-gitignore.js";
+import { ensureInitGitignore } from "./init/write-gitignore.js";
 
 type InitFlags = {
   ide?: "codex" | "cursor" | "windsurf";
@@ -382,8 +382,12 @@ async function cmdInit(opts: {
       backendPathAbs: backendPath,
     });
 
+    await ensureInitGitignore({
+      gitRoot: resolved.gitRoot,
+      includeAgentPromptFiles: flags.gitignoreAgents === true,
+    });
+
     if (flags.gitignoreAgents) {
-      await ensureGitignoreAgents({ gitRoot: resolved.gitRoot });
       await setPinnedBaseBranch({
         cwd: resolved.gitRoot,
         rootOverride: resolved.gitRoot,

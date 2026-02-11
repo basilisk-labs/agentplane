@@ -206,6 +206,16 @@ describe("runCli", () => {
     expect(backend).toHaveProperty("settings");
     expect(backend).not.toHaveProperty("module");
     expect(backend).not.toHaveProperty("class");
+
+    const gitignorePath = path.join(root, ".gitignore");
+    const gitignore = await readFile(gitignorePath, "utf8");
+    expect(gitignore).toContain(".agentplane/worktrees");
+    expect(gitignore).toContain(".agentplane/cache");
+    expect(gitignore).toContain(".agentplane/recipes-cache");
+    expect(gitignore).toContain(".agentplane/.upgrade");
+    expect(gitignore).toContain(".agentplane/.release");
+    expect(gitignore).toContain(".agentplane/upgrade");
+    expect(gitignore).toContain(".agentplane/tasks.json");
   });
 
   it("init --gitignore-agents updates .gitignore and skips the install commit", async () => {
@@ -220,6 +230,9 @@ describe("runCli", () => {
 
     const gitignorePath = path.join(root, ".gitignore");
     const gitignore = await readFile(gitignorePath, "utf8");
+    expect(gitignore).toContain(".agentplane/.upgrade");
+    expect(gitignore).toContain(".agentplane/.release");
+    expect(gitignore).toContain(".agentplane/tasks.json");
     expect(gitignore).toContain("AGENTS.md");
     expect(gitignore).toContain(".agentplane/agents/");
 
@@ -805,7 +818,7 @@ describe("runCli", () => {
     expect(configText).toContain('"workflow_mode": "direct"');
   });
 
-  it("upgrade applies bundle changes and writes backups by default", async () => {
+  it("upgrade applies bundle changes and cleans backup artifacts by default", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
@@ -843,9 +856,9 @@ describe("runCli", () => {
     expect(agentsText).toContain("Updated");
 
     const agentEntries = await readdir(path.join(root, ".agentplane", "agents"));
-    expect(agentEntries.some((entry) => entry.startsWith("ORCHESTRATOR.json.bak-"))).toBe(true);
+    expect(agentEntries.some((entry) => entry.startsWith("ORCHESTRATOR.json.bak-"))).toBe(false);
     const rootEntries = await readdir(root);
-    expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(true);
+    expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
   });
 
   it("upgrade --dry-run reports changes without modifying files", async () => {
