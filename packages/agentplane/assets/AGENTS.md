@@ -118,10 +118,21 @@ Outside-repo includes (non-exhaustive):
 - `handoff_conditions`: conditions that trigger handoff to another role
 - `unsafe_actions_requiring_explicit_user_ok`: actions that require explicit user confirmation
 
-Scope and precedence:
+Approval escalation semantics:
 
-- These settings tune execution style only (autonomy, effort, budget, stop/handoff heuristics).
-- They MUST NOT override role authority boundaries, source-of-truth order, approval gates, or hard invariants defined in this `AGENTS.md`.
+- `execution` MAY raise approval requirements for specific actions (`network_access`, `force_action`).
+- `execution` does not add new CLI capabilities; it only changes whether explicit approval is required.
+- Capability boundaries remain defined by CLI commands + this policy.
+
+Profile matrix:
+
+- `conservative`: require approval for `network_access` and `force_action` (even if baseline approvals disable them).
+- `balanced`: use baseline approvals from `agents.approvals`.
+- `aggressive`: use baseline approvals from `agents.approvals`.
+
+Precedence:
+
+- Role authority boundaries, source-of-truth order, and hard invariants in this `AGENTS.md` still take precedence.
 - If `execution` config conflicts with policy, `AGENTS.md` policy wins.
 
 ## Framework Upgrade / Prompt Merge
