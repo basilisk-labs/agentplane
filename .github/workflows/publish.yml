@@ -79,9 +79,45 @@ jobs:
       # so patch releases on an older minor line can still publish and take over
       # the `latest` dist-tag when intended.
       - name: Publish @agentplaneorg/core (idempotent)
-        run: node scripts/publish-package-if-needed.mjs --dir packages/core --tag latest
+        working-directory: packages/core
+        run: |
+          set -euo pipefail
+          NAME=$(node -p "JSON.parse(require('node:fs').readFileSync('package.json','utf8')).name")
+          VERSION=$(node -p "JSON.parse(require('node:fs').readFileSync('package.json','utf8')).version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "skip: already published $NAME@$VERSION"
+            exit 0
+          fi
+          if npm publish --provenance --access public --tag latest; then
+            echo "published: $NAME@$VERSION"
+            exit 0
+          fi
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "skip-after-race: already published $NAME@$VERSION"
+            exit 0
+          fi
+          echo "publish failed for $NAME@$VERSION" >&2
+          exit 1
       - name: Publish agentplane (idempotent)
-        run: node scripts/publish-package-if-needed.mjs --dir packages/agentplane --tag latest
+        working-directory: packages/agentplane
+        run: |
+          set -euo pipefail
+          NAME=$(node -p "JSON.parse(require('node:fs').readFileSync('package.json','utf8')).name")
+          VERSION=$(node -p "JSON.parse(require('node:fs').readFileSync('package.json','utf8')).version")
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "skip: already published $NAME@$VERSION"
+            exit 0
+          fi
+          if npm publish --provenance --access public --tag latest; then
+            echo "published: $NAME@$VERSION"
+            exit 0
+          fi
+          if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+            echo "skip-after-race: already published $NAME@$VERSION"
+            exit 0
+          fi
+          echo "publish failed for $NAME@$VERSION" >&2
+          exit 1
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
