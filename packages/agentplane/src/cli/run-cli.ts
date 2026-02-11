@@ -2,7 +2,6 @@ import os from "node:os";
 import path from "node:path";
 
 import {
-  applyExecutionToApprovals,
   loadConfig,
   resolveProject,
   type LoadedConfig,
@@ -27,6 +26,7 @@ import { CliError, formatJsonError } from "../shared/errors.js";
 import type { CommandContext } from "../commands/shared/task-backend.js";
 import { resolveContext } from "../usecases/context/resolve-context.js";
 import { getVersion } from "../meta/version.js";
+import { getApprovalRequirements } from "../commands/shared/approval-requirements.js";
 import { parseCommandArgv } from "./spec/parse.js";
 import { helpSpec } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
@@ -447,16 +447,10 @@ export async function runCli(argv: string[]): Promise<number> {
     if (resolved && matched?.entry.needsConfig !== false) {
       try {
         const loaded = await getLoadedConfig("update-check");
-        const effectiveApprovals = applyExecutionToApprovals({
-          execution: loaded.config.execution,
-          approvals: {
-            require_plan: loaded.config.agents?.approvals.require_plan === true,
-            require_network: loaded.config.agents?.approvals.require_network === true,
-            require_verify: loaded.config.agents?.approvals.require_verify === true,
-            require_force: loaded.config.agents?.approvals.require_force === true,
-          },
-        });
-        const requireNetwork = effectiveApprovals.require_network === true;
+        const requireNetwork = getApprovalRequirements({
+          config: loaded.config,
+          action: "network_access",
+        }).required;
         const explicitlyApproved = globals.allowNetwork;
         skipUpdateCheckForPolicy = requireNetwork && !explicitlyApproved;
       } catch {
