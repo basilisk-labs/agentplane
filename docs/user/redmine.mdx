@@ -48,7 +48,8 @@ Expected variables (see `.env.example`):
 Priority:
 
 - Environment variables take precedence over backend config settings.
-- Backend config is used when the corresponding env var is not set.
+- Required connection values (`URL`, `API_KEY`, `PROJECT_ID`) are expected from environment variables.
+- Backend config is used for non-secret mapping/behavior settings.
 - Defaults apply last (for example, owner defaults to `REDMINE`).
 
 Parser notes:
