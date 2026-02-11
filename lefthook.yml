@@ -5,7 +5,7 @@ pre-commit:
     lint:
       run: bun run lint
     test-fast:
-      run: bun run test:fast
+      run: bun run test:fast:hook
 commit-msg:
   commands:
     commit-subject:

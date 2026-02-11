@@ -8,7 +8,17 @@ function color(text: string, code: string): string {
 }
 
 function stripAnsi(text: string): string {
-  return text.replaceAll(/\u001B\[[0-9;]*m/gu, "");
+  let out = "";
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text.codePointAt(i);
+    if (ch === 27 && text[i + 1] === "[") {
+      i += 2;
+      while (i < text.length && text[i] !== "m") i += 1;
+      continue;
+    }
+    out += text[i] ?? "";
+  }
+  return out;
 }
 
 function visibleLen(text: string): number {

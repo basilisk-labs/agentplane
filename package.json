@@ -14,6 +14,8 @@
     "typecheck": "tsc -b",
     "test": "bun run test:fast",
     "test:fast": "vitest run --exclude \"**/cli-smoke.test.ts\" --exclude \"**/run-cli*.test.ts\"",
+    "test:fast:hook": "vitest run --exclude \"**/cli-smoke.test.ts\" --exclude \"**/run-cli*.test.ts\" --exclude \"**/commands/workflow.test.ts\"",
+    "test:hooks": "vitest run packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts --hookTimeout 60000 --testTimeout 60000",
     "test:agentplane": "vitest run packages/agentplane/src --exclude \"**/cli-smoke.test.ts\" --exclude \"**/run-cli*.test.ts\"",
     "test:core": "vitest run packages/core/src",
     "test:recipes": "vitest run packages/recipes/src",
