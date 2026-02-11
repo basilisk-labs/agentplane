@@ -1,7 +1,9 @@
 ---
 id: "202602111519-3TDCPX"
 title: "T7: Redmine canonical env parser and env contract wiring"
-status: "DOING"
+result_summary: "Redmine backend now fully uses canonical env contract"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -21,11 +23,16 @@ verification:
   updated_at: "2026-02-11T15:55:27.608Z"
   updated_by: "CODER"
   note: "Verified: Added canonical readRedmineEnv parser, wired backend to env-derived custom fields/batch config, switched pause semantics to milliseconds, and updated mapping/tests so .env custom field keys influence behavior. Tests/lint/build pass."
-commit: null
+commit:
+  hash: "20dc649a4cbc1aa465b59fbd912d719621148b87"
+  message: "✅ 3TDCPX redmine: add canonical env parser and wiring"
 comments:
   -
     author: "CODER"
     body: "Start: implementing canonical Redmine env parsing and backend wiring."
+  -
+    author: "CODER"
+    body: "Verified: Added canonical Redmine env parser, wired backend to env-only contract including custom fields and batch settings, and validated with focused backend tests plus package builds."
 events:
   -
     type: "status"
@@ -40,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: Added canonical readRedmineEnv parser, wired backend to env-derived custom fields/batch config, switched pause semantics to milliseconds, and updated mapping/tests so .env custom field keys influence behavior. Tests/lint/build pass."
+  -
+    type: "status"
+    at: "2026-02-11T15:59:23.791Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Added canonical Redmine env parser, wired backend to env-only contract including custom fields and batch settings, and validated with focused backend tests plus package builds."
 doc_version: 2
-doc_updated_at: "2026-02-11T15:55:27.609Z"
+doc_updated_at: "2026-02-11T15:59:23.791Z"
 doc_updated_by: "CODER"
 description: "Implement redmine/env.ts parser and make backend consume all .env.example keys with strict parsing and correct units."
 id_source: "generated"
