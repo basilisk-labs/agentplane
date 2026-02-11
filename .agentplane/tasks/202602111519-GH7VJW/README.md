@@ -1,7 +1,9 @@
 ---
 id: "202602111519-GH7VJW"
 title: "T5: Network approvals honor execution escalation"
-status: "DOING"
+result_summary: "Network approvals are execution-aware across command paths."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-02-11T15:48:00.209Z"
   updated_by: "CODER"
   note: "Verified: update-check network gating now uses execution-aware effective approvals, so conservative profile requires explicit --allow-network even when require_network=false. Added run-cli core tests, then ran lint and builds."
-commit: null
+commit:
+  hash: "839f558c89711769ac804c2d874ac0e839462057"
+  message: "✅ GH7VJW network: apply execution-aware update-check gating"
 comments:
   -
     author: "CODER"
     body: "Start: aligning update-check and other network paths with execution-aware approval gating."
+  -
+    author: "CODER"
+    body: "Verified: All network policy gates now honor execution escalation, including update-check behavior under conservative profile, with explicit --allow-network override preserved."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: update-check network gating now uses execution-aware effective approvals, so conservative profile requires explicit --allow-network even when require_network=false. Added run-cli core tests, then ran lint and builds."
+  -
+    type: "status"
+    at: "2026-02-11T15:48:35.938Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: All network policy gates now honor execution escalation, including update-check behavior under conservative profile, with explicit --allow-network override preserved."
 doc_version: 2
-doc_updated_at: "2026-02-11T15:48:00.210Z"
+doc_updated_at: "2026-02-11T15:48:35.938Z"
 doc_updated_by: "CODER"
 description: "Route network checks through unified approval helper so conservative requires approval even when require_network=false."
 id_source: "generated"
