@@ -27,8 +27,8 @@ verification:
   updated_by: null
   note: null
 commit:
-  hash: "fe72b4e80319fc92f223cfcbdb2a2884b59681b2"
-  message: "✅ S52XTJ task: add redmine env-first regression tests and docs"
+  hash: "7f95eb9fdc768897ba0cfc23e6ecf085349712d0"
+  message: "✅ 6X0V0K task: close redmine env-first init hardening epic"
 comments:
   -
     author: "ORCHESTRATOR"
@@ -41,8 +41,14 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: redmine init and backend are now env-first, non-secret by default, and covered by regression tests/docs."
+  -
+    type: "status"
+    at: "2026-02-11T11:38:17.228Z"
+    author: "ORCHESTRATOR"
+    from: "DONE"
+    to: "DONE"
 doc_version: 2
-doc_updated_at: "2026-02-11T11:32:32.880Z"
+doc_updated_at: "2026-02-11T11:38:17.228Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement env-first Redmine init flow: no secrets in backend file, generate .env template, ensure gitignore safety, backend reads env, add tests/docs."
 id_source: "generated"

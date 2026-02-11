@@ -24,8 +24,8 @@ verification:
   updated_by: null
   note: null
 commit:
-  hash: "034fda0b0cca57caa3b7cd62738241dd57b28ca9"
-  message: "✅ ZQ0BR4 task: enforce env-first redmine runtime contract"
+  hash: "11c5d23716b2ccbc2432cc296ec2684ccf1725cb"
+  message: "✅ EKMK8Q task: ensure init always ignores .env"
 comments:
   -
     author: "CODER"
@@ -38,8 +38,14 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: init now ensures .env is added to .gitignore runtime rules by default."
+  -
+    type: "status"
+    at: "2026-02-11T11:38:10.798Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
 doc_version: 2
-doc_updated_at: "2026-02-11T11:30:39.718Z"
+doc_updated_at: "2026-02-11T11:38:10.798Z"
 doc_updated_by: "CODER"
 description: "Ensure init writes .env ignore rule so generated redmine secrets file is never accidentally tracked."
 id_source: "generated"

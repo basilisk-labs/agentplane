@@ -24,8 +24,8 @@ verification:
   updated_by: null
   note: null
 commit:
-  hash: "f501a0d5ffa705c76e234409da059aad149f1884"
-  message: "✅ ZTD2AP task: generate redmine .env template during init"
+  hash: "5636709e1e4b00296f8c9222893ebfd59147773c"
+  message: "✅ 13TMPK task: remove redmine secrets from backend stub"
 comments:
   -
     author: "CODER"
@@ -38,8 +38,14 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: redmine backend stub no longer stores connection secrets and remains env-driven."
+  -
+    type: "status"
+    at: "2026-02-11T11:38:10.227Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
 doc_version: 2
-doc_updated_at: "2026-02-11T11:27:52.447Z"
+doc_updated_at: "2026-02-11T11:38:10.227Z"
 doc_updated_by: "CODER"
 description: "Redmine backend.json written by init must contain only non-secret/general settings; connection credentials are sourced from environment."
 id_source: "generated"

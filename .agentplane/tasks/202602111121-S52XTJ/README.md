@@ -24,8 +24,8 @@ verification:
   updated_by: null
   note: null
 commit:
-  hash: "11c5d23716b2ccbc2432cc296ec2684ccf1725cb"
-  message: "✅ EKMK8Q task: ensure init always ignores .env"
+  hash: "fe72b4e80319fc92f223cfcbdb2a2884b59681b2"
+  message: "✅ S52XTJ task: add redmine env-first regression tests and docs"
 comments:
   -
     author: "TESTER"
@@ -38,8 +38,14 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: redmine env-first flow is covered by CLI/backend tests and documentation reflects non-secret backend config."
+  -
+    type: "status"
+    at: "2026-02-11T11:38:11.086Z"
+    author: "TESTER"
+    from: "DONE"
+    to: "DONE"
 doc_version: 2
-doc_updated_at: "2026-02-11T11:32:07.418Z"
+doc_updated_at: "2026-02-11T11:38:11.086Z"
 doc_updated_by: "TESTER"
 description: "Add regression tests for init redmine env flow and backend env contract; refresh docs for redmine setup."
 id_source: "generated"
