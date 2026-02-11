@@ -687,6 +687,27 @@ describe("runCli", () => {
     const commitMsgPath = path.join(hooksDir, "commit-msg");
     const commitMsg = await readFile(commitMsgPath, "utf8");
     expect(commitMsg).toContain("agentplane-hook");
+
+    const execFileAsync = promisify(execFile);
+    const { stdout: stagedAfterInit } = await execFileAsync(
+      "git",
+      ["status", "--short", "--untracked-files=no"],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(stagedAfterInit.trim()).toBe("");
+
+    const { stdout: commitFiles } = await execFileAsync(
+      "git",
+      ["show", "--name-only", "--pretty="],
+      {
+        cwd: root,
+        env: cleanGitEnv(),
+      },
+    );
+    expect(commitFiles).toContain(".agentplane/bin/agentplane");
   });
 
   it("init rejects missing flags in non-tty mode", async () => {
