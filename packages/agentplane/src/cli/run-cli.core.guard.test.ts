@@ -696,6 +696,53 @@ describe("runCli", () => {
     }
   });
 
+  it("commit wrapper compresses noisy pre-commit output into summary", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const hookLines = Array.from(
+      { length: 40 },
+      (_, i) => `HOOK_LINE_${String(i + 1).padStart(2, "0")}`,
+    );
+    const preCommit = [
+      "#!/bin/sh",
+      ...hookLines.map((line) => `echo "${line}" 1>&2`),
+      "exit 1",
+      "",
+    ].join("\n");
+    const hookPath = path.join(root, ".git", "hooks", "pre-commit");
+    await writeFile(hookPath, preCommit, "utf8");
+    await chmod(hookPath, 0o755);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit: hook failure summary",
+        "--allow",
+        "file.txt",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("error [E_GIT]");
+      expect(io.stderr).toContain("git commit failed");
+      expect(io.stderr).toContain("output_summary:");
+      expect(io.stderr).toContain("HOOK_LINE_01");
+      expect(io.stderr).toContain("HOOK_LINE_40");
+      expect(io.stderr).toContain("lines omitted");
+      expect(io.stderr).not.toContain("HOOK_LINE_20");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("commit wrapper supports --allow-base and --require-clean", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

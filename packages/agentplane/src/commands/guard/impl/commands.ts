@@ -9,6 +9,61 @@ import { buildCloseCommitMessage, taskReadmePathForTask } from "./close-message.
 import { buildGitCommitEnv } from "./env.js";
 import { guardCommitCheck, type GuardCommitOptions } from "./policy.js";
 
+type ExecFileLikeError = Error & {
+  cmd?: unknown;
+  code?: unknown;
+  stdout?: unknown;
+  stderr?: unknown;
+};
+
+function readText(value: unknown): string {
+  if (typeof value === "string") return value;
+  if (Buffer.isBuffer(value)) return value.toString("utf8");
+  return "";
+}
+
+function summarizeOutput(raw: string): string[] {
+  const lines = raw
+    .replaceAll("\r\n", "\n")
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .filter((line) => line.trim().length > 0)
+    .map((line) => (line.length > 180 ? `${line.slice(0, 180)} [truncated]` : line));
+
+  if (lines.length <= 12) return lines;
+  const head = lines.slice(0, 6);
+  const tail = lines.slice(-6);
+  return [...head, `[${lines.length - 12} lines omitted]`, ...tail];
+}
+
+function asCommitFailure(err: unknown): CliError | null {
+  if (err instanceof Error) {
+    const e = err as ExecFileLikeError;
+    const cmd = typeof e.cmd === "string" ? e.cmd : "";
+    if (cmd.startsWith("git commit")) {
+      const output = [readText(e.stderr), readText(e.stdout)]
+        .filter((part) => part.length > 0)
+        .join("\n");
+      const summary = summarizeOutput(output);
+      const code = typeof e.code === "number" ? e.code : null;
+      const lines = ["git commit failed (hook or commit policy).", `command: ${cmd}`];
+      if (typeof code === "number") {
+        lines.push(`exit_code: ${code}`);
+      }
+      if (summary.length > 0) lines.push("output_summary:");
+      lines.push(...summary.map((line) => `  ${line}`));
+
+      return new CliError({
+        exitCode: 5,
+        code: "E_GIT",
+        message: lines.join("\n"),
+      });
+    }
+    return null;
+  }
+  return null;
+}
+
 export async function cmdGuardClean(opts: {
   cwd: string;
   rootOverride?: string;
@@ -222,6 +277,8 @@ export async function cmdCommit(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
+    const commitFailure = asCommitFailure(err);
+    if (commitFailure) throw commitFailure;
     throw mapCoreError(err, { command: "commit", root: opts.rootOverride ?? null });
   }
 }
