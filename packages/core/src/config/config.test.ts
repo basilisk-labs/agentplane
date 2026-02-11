@@ -80,6 +80,20 @@ describe("config", () => {
     expect(validated.tasks.verify.required_tags).toEqual(["code", "backend"]);
   });
 
+  it("default execution profile values are present", () => {
+    const cfg = defaultConfig();
+    expect(cfg.execution.profile).toBe("balanced");
+    expect(cfg.execution.reasoning_effort).toBe("medium");
+    expect(cfg.execution.tool_budget).toEqual({
+      discovery: 6,
+      implementation: 10,
+      verification: 6,
+    });
+    expect(cfg.execution.stop_conditions.length).toBeGreaterThan(0);
+    expect(cfg.execution.handoff_conditions.length).toBeGreaterThan(0);
+    expect(cfg.execution.unsafe_actions_requiring_explicit_user_ok.length).toBeGreaterThan(0);
+  });
+
   it("setByDottedKey handles edge scalar parsing cases", () => {
     const cfg = defaultConfig() as unknown as Record<string, unknown>;
 
@@ -187,6 +201,48 @@ describe("config", () => {
         "recipes.storage_default",
         (raw) => ((raw.recipes as Record<string, unknown>).storage_default = "bad"),
         schemaPath("recipes.storage_default"),
+      ],
+      ["execution", (raw) => (raw.execution = "nope"), /execution must be object/],
+      [
+        "execution.profile",
+        (raw) => ((raw.execution as Record<string, unknown>).profile = "bad"),
+        schemaPath("execution.profile"),
+      ],
+      [
+        "execution.reasoning_effort",
+        (raw) => ((raw.execution as Record<string, unknown>).reasoning_effort = "bad"),
+        schemaPath("execution.reasoning_effort"),
+      ],
+      [
+        "execution.tool_budget",
+        (raw) => ((raw.execution as Record<string, unknown>).tool_budget = "bad"),
+        schemaPath("execution.tool_budget"),
+      ],
+      [
+        "execution.tool_budget.discovery",
+        (raw) =>
+          ((
+            (raw.execution as Record<string, unknown>).tool_budget as Record<string, unknown>
+          ).discovery = 0) as unknown,
+        schemaPath("execution.tool_budget.discovery"),
+      ],
+      [
+        "execution.stop_conditions",
+        (raw) => ((raw.execution as Record<string, unknown>).stop_conditions = [""]),
+        schemaPath("execution.stop_conditions"),
+      ],
+      [
+        "execution.handoff_conditions",
+        (raw) => ((raw.execution as Record<string, unknown>).handoff_conditions = [""]),
+        schemaPath("execution.handoff_conditions"),
+      ],
+      [
+        "execution.unsafe_actions_requiring_explicit_user_ok",
+        (raw) =>
+          ((raw.execution as Record<string, unknown>).unsafe_actions_requiring_explicit_user_ok = [
+            "",
+          ]),
+        schemaPath("execution.unsafe_actions_requiring_explicit_user_ok"),
       ],
       ["paths", (raw) => (raw.paths = "nope"), /paths must be object/],
       ["branch", (raw) => (raw.branch = "nope"), /branch must be object/],

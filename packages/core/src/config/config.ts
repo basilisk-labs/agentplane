@@ -11,6 +11,8 @@ import { atomicWriteFile } from "../fs/atomic-write.js";
 
 export type WorkflowMode = "direct" | "branch_pr";
 export type StatusCommitPolicy = "off" | "warn" | "confirm";
+export type ExecutionProfile = "conservative" | "balanced" | "aggressive";
+export type ReasoningEffort = "low" | "medium" | "high";
 
 export type AgentplaneConfig = {
   schema_version: 1;
@@ -26,6 +28,18 @@ export type AgentplaneConfig = {
   };
   recipes?: {
     storage_default: "link" | "copy" | "global";
+  };
+  execution: {
+    profile: ExecutionProfile;
+    reasoning_effort: ReasoningEffort;
+    tool_budget: {
+      discovery: number;
+      implementation: number;
+      verification: number;
+    };
+    stop_conditions: string[];
+    handoff_conditions: string[];
+    unsafe_actions_requiring_explicit_user_ok: string[];
   };
   paths: {
     agents_dir: string;

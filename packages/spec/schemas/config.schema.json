@@ -52,6 +52,96 @@
         }
       }
     },
+    "execution": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "profile",
+        "reasoning_effort",
+        "tool_budget",
+        "stop_conditions",
+        "handoff_conditions",
+        "unsafe_actions_requiring_explicit_user_ok"
+      ],
+      "default": {
+        "profile": "balanced",
+        "reasoning_effort": "medium",
+        "tool_budget": {
+          "discovery": 6,
+          "implementation": 10,
+          "verification": 6
+        },
+        "stop_conditions": [
+          "Missing required input blocks correctness.",
+          "Requested action expands scope or risk beyond approved plan.",
+          "Verification fails and remediation changes scope."
+        ],
+        "handoff_conditions": [
+          "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+          "Task depends_on prerequisites are incomplete.",
+          "Specialized agent is required."
+        ],
+        "unsafe_actions_requiring_explicit_user_ok": [
+          "Destructive git history operations.",
+          "Outside-repo read/write.",
+          "Credential, keychain, or SSH material changes."
+        ]
+      },
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": ["conservative", "balanced", "aggressive"],
+          "default": "balanced"
+        },
+        "reasoning_effort": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "default": "medium"
+        },
+        "tool_budget": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["discovery", "implementation", "verification"],
+          "default": {
+            "discovery": 6,
+            "implementation": 10,
+            "verification": 6
+          },
+          "properties": {
+            "discovery": { "type": "integer", "minimum": 1, "default": 6 },
+            "implementation": { "type": "integer", "minimum": 1, "default": 10 },
+            "verification": { "type": "integer", "minimum": 1, "default": 6 }
+          }
+        },
+        "stop_conditions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "default": [
+            "Missing required input blocks correctness.",
+            "Requested action expands scope or risk beyond approved plan.",
+            "Verification fails and remediation changes scope."
+          ]
+        },
+        "handoff_conditions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "default": [
+            "Role boundary reached (for example CODER -> TESTER/REVIEWER).",
+            "Task depends_on prerequisites are incomplete.",
+            "Specialized agent is required."
+          ]
+        },
+        "unsafe_actions_requiring_explicit_user_ok": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "default": [
+            "Destructive git history operations.",
+            "Outside-repo read/write.",
+            "Credential, keychain, or SSH material changes."
+          ]
+        }
+      }
+    },
     "paths": {
       "type": "object",
       "additionalProperties": true,
