@@ -22,12 +22,28 @@ function runNode(args) {
   });
 }
 
+function runBunx(args) {
+  return new Promise((resolve, reject) => {
+    const child = spawn("bunx", args, {
+      cwd: ROOT,
+      stdio: "inherit",
+      env: process.env,
+    });
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      if (code === 0) return resolve();
+      reject(new Error(`bunx ${args.join(" ")} failed with exit code ${code ?? "unknown"}`));
+    });
+  });
+}
+
 async function main() {
   const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-docs-"));
   const generatedPath = path.join(tempDir, "cli-reference.generated.mdx");
 
   try {
     await runNode([CLI_BIN, "docs", "cli", "--out", generatedPath]);
+    await runBunx(["prettier", "--write", generatedPath]);
     const [expected, actual] = await Promise.all([
       readFile(DOC_PATH, "utf8"),
       readFile(generatedPath, "utf8"),
