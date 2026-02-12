@@ -38,19 +38,18 @@ If `.git` does not exist in that folder, `init` creates a new git repository the
 
 ## Interactive choices in init
 
-- workflow mode: `direct` or `branch_pr`
-- task backend: `local` or `redmine`
-- approval toggles:
-  - `require_plan`
-  - `require_network`
-  - `require_verify`
-- execution profile preset
-- IDE integration target
+`agentplane init` now starts with a setup profile:
+
+- `prod` (default): compact flow with essential prompts only (typically setup profile + backend).
+- `dev`: full questionnaire (workflow, hooks, approvals, execution profile, recipes).
+
+Use `--setup-profile dev` to force full prompts.
 
 Non-interactive setup is available through flags:
 
 ```bash
 agentplane init \
+  --setup-profile prod \
   --workflow direct \
   --backend local \
   --execution-profile balanced \

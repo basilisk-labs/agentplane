@@ -7,6 +7,7 @@ description: "Patch release flow, CI parity checks, and GitHub-only npm publish 
 
 - Versioning follows SemVer.
 - `agentplane` and `@agentplaneorg/core` release together at the same version.
+- `packages/agentplane` dependency `@agentplaneorg/core` must match the same release version exactly.
 - Patch bump is default automation path.
 - Minor/major bump requires explicit approval.
 
@@ -33,6 +34,12 @@ agentplane release plan
 
 ```bash
 bun run release:prepublish
+```
+
+Optional fast parity check before the full gate:
+
+```bash
+bun run release:parity
 ```
 
 4. Apply release:
@@ -73,6 +80,7 @@ GitHub workflow `Publish to npm`:
 - uses OIDC trusted publishing
 - sets provenance
 - validates notes and version/tag parity
+- validates workspace parity (`core`, `agentplane`, and `@agentplaneorg/core` dependency)
 - runs format/sync/build/lint/full tests before publish
 - publishes `@agentplaneorg/core` first, then `agentplane`
 - uses idempotent publish steps to tolerate reruns
@@ -91,7 +99,7 @@ Trusted publishing must be configured in npm for repository workflow identity.
 - `release apply --push` blocked:
 - run `bun run release:prepublish` and fix failures
 - Tag/version mismatch:
-- ensure `vX.Y.Z` matches package versions
+- ensure `vX.Y.Z` matches package versions and run `bun run release:parity`
 - Package already published:
 - bump to next patch and regenerate notes
 - Publish workflow fails after partial publish:

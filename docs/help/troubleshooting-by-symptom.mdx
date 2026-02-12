@@ -83,6 +83,16 @@ description: "Common problems and how to fix them quickly."
 - Validate against `packages/spec/schemas/config.schema.json` in this repository.
 - If this is a fresh install and config is heavily drifted, re-run `agentplane init --yes` and re-apply minimal overrides.
 
+## Publish workflow fails with core dependency version mismatch
+
+**Symptom:** publish fails with a message like `@agentplaneorg/core=... does not match required release version`.
+
+**Fix:**
+
+- Run `bun run release:parity` locally before tagging/publishing.
+- If parity fails, re-run `agentplane release apply` to regenerate release changes from a fresh plan.
+- Confirm all three values match: `packages/core version`, `packages/agentplane version`, and `packages/agentplane -> dependencies["@agentplaneorg/core"]`.
+
 ## Recipe fails due to missing inputs
 
 **Symptom:** Recipe output shows "Pending Actions".
