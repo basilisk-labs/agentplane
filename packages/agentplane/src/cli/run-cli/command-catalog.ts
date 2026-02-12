@@ -27,6 +27,7 @@ import { taskMigrateSpec } from "../../commands/task/migrate.command.js";
 import { taskMigrateDocSpec } from "../../commands/task/migrate-doc.command.js";
 import { taskDeriveSpec } from "../../commands/task/derive.command.js";
 import { taskCloseDuplicateSpec } from "../../commands/task/close-duplicate.command.js";
+import { taskStartReadySpec } from "../../commands/task/start-ready.command.js";
 import { taskPlanSetSpec } from "../../commands/task/plan-set.command.js";
 import { taskPlanApproveSpec } from "../../commands/task/plan-approve.command.js";
 import { taskPlanRejectSpec } from "../../commands/task/plan-reject.command.js";
@@ -268,6 +269,11 @@ export const COMMANDS = [
   entry(taskCloseDuplicateSpec, (deps) =>
     import("../../commands/task/close-duplicate.command.js").then((m) =>
       m.makeRunTaskCloseDuplicateHandler(deps.getCtx),
+    ),
+  ),
+  entry(taskStartReadySpec, (deps) =>
+    import("../../commands/task/start-ready.command.js").then((m) =>
+      m.makeRunTaskStartReadyHandler(deps.getCtx),
     ),
   ),
   entry(taskAddSpec, (deps) =>

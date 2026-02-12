@@ -19,6 +19,7 @@ export { cmdTaskSetStatus } from "./set-status.js";
 export { cmdTaskShow } from "./show.js";
 export { cmdTaskDerive } from "./derive.js";
 export { cmdTaskCloseDuplicate } from "./close-duplicate.js";
+export { cmdTaskStartReady } from "./start-ready.js";
 
 export { cmdTaskExport } from "./export.js";
 export { cmdTaskLint } from "./lint.js";

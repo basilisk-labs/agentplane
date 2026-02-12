@@ -107,6 +107,7 @@ Commands:
     task search  Search tasks by text or regex with optional filters.
     task set-status  Change a task status (optionally committing from the comment body).
     task show  Print task metadata as JSON (frontmatter shape).
+    task start-ready  Run readiness checks and start a task in one deterministic command.
     task update  Update an existing task.
     task verify  Record verification results (ok/rework).
     task verify ok  Record verification as OK (updates Verification section and verification frontmatter).

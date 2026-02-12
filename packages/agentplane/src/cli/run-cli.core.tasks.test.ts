@@ -628,6 +628,116 @@ describe("runCli", () => {
     }
   });
 
+  it("task start-ready checks readiness and starts task in one command", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Ready task",
+          "--description",
+          "single-step start",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const ioStart = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: begin docs update through start-ready helper with deterministic checks.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioStart.stdout).toContain("ready");
+      expect(ioStart.stdout).toContain("started");
+    } finally {
+      ioStart.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.status).toBe("DOING");
+  });
+
+  it("task start-ready fails early when dependencies are not ready", async () => {
+    const root = await mkGitRepoRoot();
+    const config = defaultConfig();
+    config.agents.approvals.require_plan = false;
+    await writeConfig(root, config);
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Blocked by dependency",
+          "--description",
+          "should not start",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--depends-on",
+          "202601010101-MISSING",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const ioStart = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "start-ready",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Start: attempt task with unresolved dependency through helper command flow.",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(ioStart.stderr).toContain("Task is not ready");
+    } finally {
+      ioStart.restore();
+    }
+  });
+
   it("task set-status enforces readiness and accepts commit metadata", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
