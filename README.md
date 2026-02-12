@@ -7,7 +7,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/user/prerequisites.mdx)
 [![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/developer/cli-contract.mdx)
-[![Roadmap](https://img.shields.io/badge/Roadmap-ROADMAP.md-6b7280.svg)](ROADMAP.md)
 
 **Agents you can actually trust in a repository.**
 
@@ -148,6 +147,7 @@ The bulk of the guidance and API info lives in the docs:
 - 📌 **Workflow reference:** `docs/user/workflow.mdx`
 - ⚙️ **CLI commands:** `docs/user/commands.mdx`
 - 🧱 **Project layout:** `docs/developer/project-layout.mdx`
+- 📝 **Canonical changelog:** `docs/releases/v*.md` (source of truth for release history)
 - 💡 **Examples & recipes:** `agentplane-recipes/README.md`
 
 ## 💬 Community & Contributing
