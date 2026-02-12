@@ -52,6 +52,7 @@
           "developer/design-principles",
           "developer/architecture",
           "developer/project-layout",
+          "developer/documentation-information-architecture",
           "developer/cli-contract",
           "developer/typescript-esm-imports",
           {

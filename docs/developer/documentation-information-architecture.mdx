@@ -1,0 +1,77 @@
+---
+title: "Documentation information architecture"
+description: "Canonical ownership map for every docs section and how to keep docs aligned with code."
+---
+
+## Why this page exists
+
+This page defines where each topic lives, which code paths are the source of truth, and how to avoid duplicate or stale docs.
+
+Use it as the routing table before editing any documentation page.
+
+## Section boundaries
+
+### User guide
+
+Use `docs/user/*` for runtime behavior and operator workflows:
+
+- How to initialize and run Agent Plane in a repository.
+- What commands do in day-to-day use.
+- How tasks, approvals, statuses, and backends behave from a user perspective.
+
+### Developer guide
+
+Use `docs/developer/*` for implementation and maintenance details:
+
+- Package boundaries and architecture.
+- CLI contracts, parser behavior, and tests.
+- Release and publishing pipeline.
+- Contribution standards and quality gates.
+
+### Help
+
+Use `docs/help/*` for diagnosis and recovery:
+
+- Symptom-first troubleshooting.
+- Common failure patterns and exact fixes.
+- Shared terminology.
+
+## Canonical mapping
+
+| Topic                                 | Primary docs page(s)                                                        | Code source of truth                                                                     |
+| ------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Init flow and repository bootstrap    | `docs/user/setup.mdx`                                                       | `packages/agentplane/src/cli/run-cli/commands/init/*`                                    |
+| Config keys and defaults              | `docs/user/configuration.mdx`                                               | `packages/spec/schemas/config.schema.json`, `packages/core/src/config/config.ts`         |
+| Task lifecycle and status transitions | `docs/user/task-lifecycle.mdx`, `docs/user/workflow.mdx`                    | `packages/agentplane/src/commands/task/*`                                                |
+| Command usage guide                   | `docs/user/commands.mdx`                                                    | `packages/agentplane/src/commands/**/*.spec.ts`                                          |
+| Full CLI reference (generated)        | `docs/user/cli-reference.generated.mdx`                                     | `agentplane docs cli --out docs/user/cli-reference.generated.mdx`                        |
+| Backend behavior (local/redmine)      | `docs/user/backends*.mdx`, `docs/user/redmine.mdx`                          | `packages/agentplane/src/backends/task-backend/*`                                        |
+| Role and policy behavior              | `docs/user/agents.mdx`, `AGENTS.md`                                         | `AGENTS.md`, `packages/agentplane/assets/agents/*.json`                                  |
+| CLI architecture and contracts        | `docs/developer/cli-contract.mdx`, `docs/developer/cli-help-json.mdx`       | `packages/agentplane/src/cli/*`                                                          |
+| Release pipeline and publishing rules | `docs/developer/release-and-publishing.mdx`                                 | `.github/workflows/*`, `packages/agentplane/src/commands/release/*`, `scripts/*release*` |
+| Testing and quality gates             | `docs/developer/testing-and-quality.mdx`, `docs/developer/code-quality.mdx` | `package.json` scripts, `scripts/check-*.mjs`, `packages/**/src/**/*.test.ts`            |
+
+## Duplication rules
+
+1. Put normative command syntax in command specs and generated CLI reference.
+2. Keep narrative explanation in user/developer pages, but link to generated reference instead of copying long option lists.
+3. Do not duplicate policy text between docs pages and `AGENTS.md`; summarize and link.
+4. Treat release notes as historical records only, not as normative behavior docs.
+
+## Update workflow
+
+1. Find the owning page by using the mapping table above.
+2. Confirm behavior in code before editing text.
+3. Update navigation if a page is added, renamed, or removed:
+   - `docs/index.mdx`
+   - `docs/docs.json`
+   - `docs/README.md`
+4. If command output changed, regenerate `docs/user/cli-reference.generated.mdx`.
+5. Run the docs task verification checklist before closing the task.
+
+## Review checklist for this IA
+
+- Every topic has exactly one primary owner page.
+- Every owner page has a concrete code source path.
+- Navigation and landing pages point to the same structure.
+- No page claims behavior that is not present in code.
