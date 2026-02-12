@@ -6,7 +6,7 @@ import { CliError } from "../../shared/errors.js";
 import { readFile, rm } from "node:fs/promises";
 import path from "node:path";
 
-import { buildGitCommitEnv, commitFromComment } from "../guard/index.js";
+import { buildGitCommitEnv, cmdCommit, commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import {
   loadCommandContext,
@@ -72,6 +72,8 @@ export async function cmdFinish(opts: {
   statusCommitAutoAllow: boolean;
   statusCommitRequireClean: boolean;
   confirmStatusCommit: boolean;
+  closeCommit?: boolean;
+  closeUnstageOthers?: boolean;
   quiet: boolean;
 }): Promise<number> {
   try {
@@ -93,6 +95,20 @@ export async function cmdFinish(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: "--commit-from-comment/--status-commit requires exactly one task id",
+      });
+    }
+    if (opts.closeCommit && opts.taskIds.length !== 1) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--close-commit requires exactly one task id",
+      });
+    }
+    if (opts.closeCommit && (opts.commitFromComment || opts.statusCommit)) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--close-commit cannot be combined with --commit-from-comment/--status-commit",
       });
     }
     const primaryTaskId = opts.taskIds[0] ?? "";
@@ -335,6 +351,29 @@ export async function cmdFinish(opts: {
         requireClean: opts.statusCommitRequireClean,
         quiet: opts.quiet,
         config: ctx.config,
+      });
+    }
+
+    if (opts.closeCommit && primaryTaskId) {
+      await cmdCommit({
+        ctx,
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride,
+        taskId: primaryTaskId,
+        message: "",
+        close: true,
+        allow: [],
+        autoAllow: false,
+        allowTasks: true,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: true,
+        quiet: opts.quiet,
+        closeUnstageOthers: opts.closeUnstageOthers === true,
+        closeCheckOnly: false,
       });
     }
 

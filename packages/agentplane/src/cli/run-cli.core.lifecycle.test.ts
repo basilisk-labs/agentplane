@@ -1865,6 +1865,84 @@ describe("runCli", () => {
     expect(tasksJson).toContain(taskId);
   });
 
+  it("finish --close-commit creates deterministic close commit in the same command", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+
+    await writeFile(path.join(root, "file.txt"), "content", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+    const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Finish close commit",
+        "--description",
+        "Finish should optionally create close commit in one command",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    await runCliSilent([
+      "verify",
+      taskId,
+      "--ok",
+      "--by",
+      "TESTER",
+      "--note",
+      "Ok to finish with close commit path.",
+      "--quiet",
+      "--root",
+      root,
+    ]);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "finish",
+        taskId,
+        "--author",
+        "CODER",
+        "--body",
+        "Verified: finish close commit path writes done metadata and close commit in one invocation.",
+        "--result",
+        "finish close commit",
+        "--commit",
+        implHash.trim(),
+        "--close-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("✅ finished");
+    } finally {
+      io.restore();
+    }
+
+    const { stdout: headSubject } = await execFileAsync("git", ["show", "-s", "--format=%s"], {
+      cwd: root,
+    });
+    expect(headSubject).toContain("close:");
+  });
+
   it("finish persists result_summary/risk_level/breaking in task README frontmatter", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

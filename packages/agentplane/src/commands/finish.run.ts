@@ -39,6 +39,8 @@ export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandCon
       statusCommitAutoAllow: p.statusCommitAutoAllow,
       statusCommitRequireClean: p.statusCommitRequireClean,
       confirmStatusCommit: p.confirmStatusCommit,
+      closeCommit: p.closeCommit,
+      closeUnstageOthers: p.closeUnstageOthers,
       quiet: p.quiet,
     });
   };

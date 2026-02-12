@@ -25,6 +25,8 @@ export type FinishParsed = {
   statusCommitAutoAllow: boolean;
   statusCommitRequireClean: boolean;
   confirmStatusCommit: boolean;
+  closeCommit: boolean;
+  closeUnstageOthers: boolean;
   quiet: boolean;
 };
 
@@ -171,6 +173,20 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       description:
         "Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit).",
     },
+    {
+      kind: "boolean",
+      name: "close-commit",
+      default: false,
+      description:
+        "After finishing, run a deterministic close commit for the task README (single-task only).",
+    },
+    {
+      kind: "boolean",
+      name: "close-unstage-others",
+      default: false,
+      description:
+        "With --close-commit: unstage any currently staged paths before staging the task README.",
+    },
     { kind: "boolean", name: "quiet", default: false, description: "Suppress output." },
   ],
   examples: [
@@ -193,6 +209,30 @@ export const finishSpec: CommandSpec<FinishParsed> = {
         spec: finishSpec,
         command: "finish",
         message: "--commit-from-comment/--status-commit requires exactly one task id",
+      });
+    }
+    if (raw.opts["close-commit"] === true && taskIds.length !== 1) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: "--close-commit requires exactly one task id",
+      });
+    }
+    if (
+      raw.opts["close-commit"] === true &&
+      (raw.opts["commit-from-comment"] === true || raw.opts["status-commit"] === true)
+    ) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: "--close-commit cannot be combined with --commit-from-comment/--status-commit",
+      });
+    }
+    if (raw.opts["close-unstage-others"] === true && raw.opts["close-commit"] !== true) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: "--close-unstage-others requires --close-commit",
       });
     }
     const hasMeta =
@@ -231,6 +271,8 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     statusCommitAutoAllow: raw.opts["status-commit-auto-allow"] === true,
     statusCommitRequireClean: raw.opts["status-commit-require-clean"] === true,
     confirmStatusCommit: raw.opts["confirm-status-commit"] === true,
+    closeCommit: raw.opts["close-commit"] === true,
+    closeUnstageOthers: raw.opts["close-unstage-others"] === true,
     quiet: raw.opts.quiet === true,
   }),
 };

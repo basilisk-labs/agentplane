@@ -7,6 +7,7 @@ import { GitContext } from "../shared/git-context.js";
 
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
+  cmdCommit: vi.fn(),
   buildGitCommitEnv: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
@@ -19,6 +20,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("../guard/index.js", () => ({
   commitFromComment: mocks.commitFromComment,
+  cmdCommit: mocks.cmdCommit,
   buildGitCommitEnv: mocks.buildGitCommitEnv,
 }));
 vi.mock("../shared/task-backend.js", () => ({
@@ -97,6 +99,7 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
 describe("task finish (unit)", () => {
   beforeEach(() => {
     mocks.commitFromComment.mockReset();
+    mocks.cmdCommit.mockReset();
     mocks.loadCommandContext.mockReset();
     mocks.loadTaskFromContext.mockReset();
     mocks.backendIsLocalFileBackend.mockReset();
@@ -114,6 +117,7 @@ describe("task finish (unit)", () => {
       message: "✅ T-1 task: verified",
       staged: ["packages/agentplane"],
     });
+    mocks.cmdCommit.mockResolvedValue(0);
     mocks.buildGitCommitEnv.mockReturnValue({});
   });
 
@@ -141,6 +145,44 @@ describe("task finish (unit)", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject({ code: "E_USAGE" });
+  });
+
+  it("runs deterministic close commit when --close-commit is enabled", async () => {
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["meta"] }));
+
+    const { cmdFinish } = await import("./finish.js");
+    await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      closeCommit: true,
+      closeUnstageOthers: true,
+      quiet: true,
+    });
+
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        close: true,
+        closeUnstageOthers: true,
+      }),
+    );
   });
 
   it("rejects commit/status commit flags when primary task id is empty", async () => {
