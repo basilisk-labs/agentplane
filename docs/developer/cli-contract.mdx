@@ -3,29 +3,31 @@ title: "CLI Contract (Node.js 1.0)"
 description: "The stable agentplane 1.0 CLI surface: commands, flags, exit codes, and JSON errors."
 ---
 
-This document freezes the public command surface for the Node.js CLI `agentplane` 1.0.
+This document describes the stable CLI contract for `agentplane` command parsing and error behavior.
 
-Scope: command namespaces, subcommands, global flags, exit codes, and `--json-errors` output.
+Scope: global flags, parsing rules, exit codes, and JSON error output.
 
 ## 1) Invocation model
 
 ```
-agentplane [--root <path>] [--json-errors] [--allow-network] <namespace> <command> [options]
-agentplane [--root <path>] [--json-errors] [--allow-network] <command> [options]
+agentplane [global-flags] <command> [args/options]
 ```
 
-- `--root <path>`: treat `<path>` as the project root (used for project discovery/path resolution).
-- `--json-errors`: machine-readable output for errors (global).
-- `--json`: success-output flag for help commands (`agentplane help --json`).
-- `--allow-network`: allow optional network operations that would otherwise be skipped when `config.agents.approvals.require_network=true` (currently used for update-check).
+Supported global flags:
+
+- `--root <path>`: resolve project from an explicit root.
+- `--json-errors`: print machine-readable errors.
+- `--allow-network`: allow optional network actions that would otherwise be skipped by approval policy.
+- `--no-update-check`: skip update check call.
+- `--help`, `-h`, `--version`, `-v`.
 
 ### 1.1 Global flag scoping (spec-driven CLI)
 
-Global flags are only recognized before the command id. For example:
+Scoped global flags (`--json-errors`, `--allow-network`) are recognized only before the command id. For example:
 
 - `agentplane --json-errors task list ...` enables JSON error output.
-- `agentplane help --json` emits JSON help (success output) and does not enable JSON error output.
-- `agentplane --allow-network config show` allows the update-check network request (when required by config).
+- `agentplane help --json` emits JSON help output and does not enable JSON error mode.
+- `agentplane task list --json-errors` treats `--json-errors` as a command flag candidate, not global mode.
 
 ## 2) Exit codes
 
@@ -44,7 +46,7 @@ The CLI uses stable exit codes for common failure classes:
 
 ## 3) `--json-errors` format
 
-When `--json-errors` is provided and an error occurs, the CLI prints a single JSON object to stdout:
+When `--json-errors` is provided and a command fails, the CLI prints one JSON object to stdout:
 
 ```json
 {
@@ -66,103 +68,35 @@ Rules:
 - `context` is optional and must not include secrets.
 - No additional keys are emitted; the schema is exact.
 
-## 4) Namespaces and collision rules
+## 4) Command registry and loading
 
-Reserved namespaces (1.0):
+Command definitions are registered in `packages/agentplane/src/cli/run-cli/command-catalog.ts`.
+The catalog keeps command specs lightweight and loads command runtime handlers lazily.
 
-- `task`, `work`, `pr`, `branch`, `guard`, `hooks`, `commit`
-- `mode`, `config`, `verify`, `ready`, `integrate`, `cleanup`, `finish`, `start`, `block`
-- `ide`, `backend`, `recipes`, `scenario`, `upgrade`, `release`
+This split keeps `agentplane help` fast and reduces accidental startup cost from heavy imports.
 
-Collision resolution:
+## 5) Help and role surfaces
 
-- `sync` is reserved as a subcommand name in multiple domains and MUST be namespaced:
-  - IDE entrypoints: `agentplane ide sync`
-  - Backends: `agentplane backend sync <id>`
+- `agentplane quickstart` and `agentplane role <ROLE>` are generated from `packages/agentplane/src/cli/command-guide.ts`.
+- `agentplane role <ROLE>` can display:
+- built-in CLI role guide blocks
+- and project-local `.agentplane/agents/<ROLE>.json` profile details when available.
+- For unknown role requests, CLI prints known built-in roles and discovered project role ids.
 
-## 5) Command surface (1.0)
+## 6) Contract boundaries
 
-This table lists commands and required minimum flags. Implementation may add additional non-breaking flags.
+- `agentplane help --compact` is a human output convenience, not a machine schema.
+- `agentplane help --json` is machine-readable help output.
+- `--json-errors` is for failed command output only.
+- Command descriptions and examples may change, but option names, required flags, error shapes, and exit code mapping are treated as stable contract surface.
 
-### 5.1 Core (offline-first)
+## 7) Source references
 
-| Command                                | Purpose                                                 | Notes                                                                |
-| -------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------- |
-| `agentplane init`                      | Initialize `.agentplane/` in a repo                     | Bootstraps git if missing; pins base branch + creates install commit |
-| `agentplane quickstart`                | Print a built-in command guide                          | Helps onboard new users without external docs                        |
-| `agentplane role <role>`               | Print role-specific guidance                            | Uses the same built-in guide source                                  |
-| `agentplane config show`               | Print effective project config                          | JSON output                                                          |
-| `agentplane config set <key> <value>`  | Update project config                                   | Dotted keys; `--json` for structured values                          |
-| `agentplane mode get`                  | Print workflow mode                                     | `direct` \| `branch_pr`                                              |
-| `agentplane mode set <mode>`           | Change workflow mode                                    | Must not lose task data                                              |
-| `agentplane task <subcommand>`         | Task CRUD + exports + doc tools                         | See 5.3                                                              |
-| `agentplane start <task-id>`           | Mark task `DOING` + comment                             | Comment required                                                     |
-| `agentplane block <task-id>`           | Mark task `BLOCKED` + comment                           | Comment required                                                     |
-| `agentplane finish <task-id> [...]`    | Mark task(s) `DONE` + commit metadata                   | Typically after code commit                                          |
-| `agentplane verify <task-id>`          | Record verification results for the task                | Does not execute commands from task README; free-form verification   |
-| `agentplane ready <task-id>`           | Readiness check (deps DONE)                             | Non-zero exit on not-ready                                           |
-| `agentplane guard <subcommand>`        | Staging/commit guardrails                               | See 5.4                                                              |
-| `agentplane commit <task-id>`          | Guarded `git commit` wrapper                            | Enforces commit policy                                               |
-| `agentplane hooks install              | uninstall`                                              | Optional git hooks                                                   | Must be safe/idempotent |
-| `agentplane ide sync`                  | Generate IDE entrypoints from the agent policy document | Cursor + Windsurf                                                    |
-| `agentplane scenario list`             | List installed scenarios                                | Uses recipes registry                                                |
-| `agentplane scenario info <recipe:id>` | Show scenario details                                   | `<recipe-id>:<scenario-id>`                                          |
-| `agentplane scenario run <recipe:id>`  | Run scenario tools                                      | Logs to `.agentplane/recipes/<id>/runs/...`                          |
-| `agentplane recipes list`              | List installed recipes                                  | `--full` for metadata, `--tag <tag>` for tag filter                  |
-| `agentplane recipes info <id>`         | Show recipe metadata                                    | Basic manifest fields                                                |
-| `agentplane recipes explain <id>`      | Show detailed recipe info                               | Includes scenario details when available                             |
-| `agentplane recipes cache prune`       | Prune global recipe cache                               | Removes installed recipes not referenced by `recipes.json`           |
-| `agentplane release plan`              | Generate an agent-assisted release plan                 | Patch bump default; minor/major require `--yes`                      |
-| `agentplane release apply`             | Apply a prepared release plan                           | Validates notes, bumps versions, commits, and tags                   |
+- Parser and global flags:
+  - `packages/agentplane/src/cli/run-cli.ts`
+- Help/role guide text:
+  - `packages/agentplane/src/cli/command-guide.ts`
+- Command catalog:
+  - `packages/agentplane/src/cli/run-cli/command-catalog.ts`
 
-### 5.2 Explicit-network commands
-
-| Command                                  | Purpose                                         | Network |
-| ---------------------------------------- | ----------------------------------------------- | ------- |
-| `agentplane upgrade`                     | Update embedded templates/bundles from upstream | Yes     |
-| `agentplane recipes list-remote`         | List recipes from remote index                  | Yes     |
-| `agentplane recipes install --name <id>` | Install recipe by id from remote index          | Yes     |
-| `agentplane recipes install --url <url>` | Install recipe from URL                         | Yes     |
-
-### 5.3 `task` namespace
-
-Minimum subcommands (1.0):
-
-| Command                                         | Purpose                               |
-| ----------------------------------------------- | ------------------------------------- | -------------------------------------- |
-| `agentplane task new`                           | Create task with auto-generated id    |
-| `agentplane task update`                        | Update a task                         |
-| `agentplane task list`                          | List tasks                            |
-| `agentplane task show <task-id>`                | Show one task                         |
-| `agentplane task search <query>`                | Search tasks                          |
-| `agentplane task comment <task-id>`             | Add a comment                         |
-| `agentplane task set-status <task-id> <status>` | Update status with readiness checks   |
-| `agentplane task doc show                       | set <task-id>`                        | Task README metadata + section updates |
-| `agentplane task lint`                          | Validate export invariants + checksum |
-| `agentplane task export`                        | Export `tasks.json` snapshot          |
-
-### 5.4 `guard` namespace
-
-Minimum subcommands (1.0):
-
-| Command                                      | Purpose                                             |
-| -------------------------------------------- | --------------------------------------------------- |
-| `agentplane guard clean`                     | Fail if staged files exist                          |
-| `agentplane guard suggest-allow`             | Suggest minimal allowlist prefixes for staged files |
-| `agentplane guard commit <task-id> -m <msg>` | Validate staged files + planned commit message      |
-
-## 6) Compatibility notes
-
-- Node.js 1.0 uses `.agentplane/` as the project directory name.
-- The command surface is designed to be stable for tooling integrations, but output text is not guaranteed to match verbatim (except where schemas/specs require byte stability).
-
-## 7) Help (spec-driven)
-
-The help system is spec-driven for migrated commands (implemented under `packages/agentplane/src/cli/spec`):
-
-- `agentplane help` prints a grouped command list (spec-driven registry only).
-- `agentplane help <cmd...>` prints command help.
-- `--compact` prints minimal help (usage + options).
-- `--json` emits machine-readable JSON help.
-
-The JSON contract is specified in `docs/developer/cli-help-json.mdx`.
+For command-level help JSON schema details, see [CLI help JSON contract](cli-help-json).

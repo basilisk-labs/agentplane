@@ -3,7 +3,7 @@ title: "CLI Help JSON Contract (spec-driven CLI)"
 description: "The machine-readable JSON schema for `agentplane help --json` and `agentplane help <cmd...> --json`."
 ---
 
-This document specifies the JSON output contract for the spec-driven help system implemented under `packages/agentplane/src/cli/spec`.
+This document defines the JSON success-output contract for CLI help.
 
 Scope:
 
@@ -26,7 +26,6 @@ agentplane help --json
 ```
 
 Output: a single JSON array of `HelpJson` objects, one per registered command in the spec-driven registry.
-Output: a single JSON array of `HelpJson` objects, one per registered command in the spec-driven registry.
 
 ### 1.2 Command-level
 
@@ -40,7 +39,7 @@ Output: a single `HelpJson` object.
 
 ## 2) Schema (`HelpJson`)
 
-The JSON schema is stable and intentionally minimal to reduce token usage and ambiguity for automated consumers.
+The schema is stable and intentionally compact.
 
 ```ts
 type HelpJson = {
@@ -91,24 +90,29 @@ Rules:
   - `examples[]`: as declared by spec
   - `notes[]`: as declared by spec
 
-## 3) Examples
+## 3) Behavioral notes
 
-### 3.1 Simple command (task new)
+- `--json` is a help flag, not a global error mode flag.
+- `--json-errors` does not change help output schema. It only affects failure output.
+- `--compact` and `--json` are mutually useful but target different consumers:
+- `--compact`: short human-readable text
+- `--json`: machine-readable structure
+
+## 4) Minimal example
 
 ```json
 {
-  "id": ["task", "new"],
+  "id": ["task", "list"],
   "group": "Task",
-  "summary": "Create a new task (prints the generated task id).",
-  "usage": ["agentplane task new --title <text> --description <text> --owner <id> [options]"],
+  "summary": "List tasks (optionally filtered by status/owner/tag).",
+  "usage": ["agentplane task list [options]"],
   "args": [],
   "options": [
     {
-      "name": "title",
+      "name": "status",
       "kind": "string",
-      "required": true,
-      "valueHint": "<text>",
-      "description": "Task title."
+      "description": "Repeatable. Filter by status.",
+      "repeatable": true
     }
   ],
   "examples": [],
@@ -116,10 +120,11 @@ Rules:
 }
 ```
 
-### 3.2 Multi-synopsis command (recipes install)
+## 5) Source references
 
-`usage[]` contains multiple forms to avoid ambiguity between mutually exclusive sources.
-
-### 3.3 Positional + options (work start)
-
-`args[]` describes positional arguments and `options[]` describes required flags such as `--agent` and `--slug`.
+- Help spec:
+  - `packages/agentplane/src/cli/spec/help.ts`
+- Parser:
+  - `packages/agentplane/src/cli/spec/parse.ts`
+- CLI entry:
+  - `packages/agentplane/src/cli/run-cli.ts`
