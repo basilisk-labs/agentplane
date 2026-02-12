@@ -693,6 +693,7 @@ describe("runCli", () => {
         "update",
         taskId,
         "--replace-tags",
+        "--allow-primary-change",
         "--tag",
         "code",
         "--replace-depends-on",
@@ -715,7 +716,7 @@ describe("runCli", () => {
     expect(task.frontmatter.verify).toEqual(["bun run test"]);
   });
 
-  it("task update allows code tags without verify commands", async () => {
+  it("task update allows code primary without verify commands", async () => {
     const root = await mkGitRepoRoot();
     const ioNew = captureStdIO();
     let taskId = "";
@@ -742,14 +743,24 @@ describe("runCli", () => {
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["task", "update", taskId, "--tag", "code", "--root", root]);
+      const code = await runCli([
+        "task",
+        "update",
+        taskId,
+        "--replace-tags",
+        "--allow-primary-change",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
       expect(code).toBe(0);
     } finally {
       io.restore();
     }
 
     const task = await readTask({ cwd: root, rootOverride: root, taskId });
-    expect(task.frontmatter.tags).toEqual(["docs", "code"]);
+    expect(task.frontmatter.tags).toEqual(["code"]);
     expect(task.frontmatter.verify).toEqual([]);
   });
 
