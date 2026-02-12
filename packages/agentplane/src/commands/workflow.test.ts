@@ -509,6 +509,64 @@ describe("commands/workflow", () => {
     }
   });
 
+  it("task update blocks primary-tag changes unless explicitly allowed", async () => {
+    const root = await makeRepo();
+    const taskId = "202602050900-P1R1";
+    await cmdTaskAdd({
+      cwd: root,
+      taskIds: [taskId],
+      title: "Primary lock",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "CODER",
+      tags: ["docs"],
+      dependsOn: [],
+      verify: [],
+      commentAuthor: null,
+      commentBody: null,
+    });
+
+    await expect(
+      cmdTaskUpdate({
+        cwd: root,
+        taskId,
+        title: undefined,
+        description: undefined,
+        priority: undefined,
+        owner: undefined,
+        tags: ["code"],
+        replaceTags: true,
+        dependsOn: [],
+        replaceDependsOn: false,
+        verify: [],
+        replaceVerify: false,
+      }),
+    ).rejects.toThrow("Primary tag change is locked");
+
+    const io = captureStdIO();
+    try {
+      const code = await cmdTaskUpdate({
+        cwd: root,
+        taskId,
+        title: undefined,
+        description: undefined,
+        priority: undefined,
+        owner: undefined,
+        tags: ["code"],
+        replaceTags: true,
+        dependsOn: [],
+        replaceDependsOn: false,
+        verify: [],
+        replaceVerify: false,
+        allowPrimaryChange: true,
+      });
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task list and next apply filters and limits", async () => {
     const root = await makeRepo();
     await cmdTaskAdd({

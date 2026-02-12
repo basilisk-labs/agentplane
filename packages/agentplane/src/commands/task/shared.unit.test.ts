@@ -18,6 +18,7 @@ import {
   normalizeDependsOnInput,
   normalizeTaskStatus,
   parseTaskListFilters,
+  resolvePrimaryTag,
   requireStructuredComment,
   requiresVerify,
   taskTextBlob,
@@ -80,6 +81,36 @@ describe("task shared helpers", () => {
     expect(requiresVerify(["code"], [])).toBe(false);
     expect(requiresVerify(["  CoDe "], ["backend", "code"])).toBe(true);
     expect(requiresVerify(["docs"], ["code"])).toBe(false);
+  });
+
+  it("resolvePrimaryTag selects exactly one primary and supports fallback mode", () => {
+    const cfg = mkConfig();
+    const ctx = { config: cfg } as unknown as Parameters<typeof resolvePrimaryTag>[1];
+
+    expect(resolvePrimaryTag(["code", "backend"], ctx)).toEqual({
+      primary: "code",
+      matched: ["code"],
+      usedFallback: false,
+    });
+
+    expect(resolvePrimaryTag(["backend", "etl"], ctx)).toEqual({
+      primary: "meta",
+      matched: [],
+      usedFallback: true,
+    });
+  });
+
+  it("resolvePrimaryTag rejects missing primary in strict mode and multi-primary tags", () => {
+    const cfg = mkConfig();
+    (
+      (cfg.tasks as unknown as Record<string, unknown>).tags as Record<string, unknown>
+    ).strict_primary = true;
+    const strictCtx = { config: cfg } as unknown as Parameters<typeof resolvePrimaryTag>[1];
+    expect(() => resolvePrimaryTag(["backend"], strictCtx)).toThrow(CliError);
+
+    const relaxed = mkConfig();
+    const relaxedCtx = { config: relaxed } as unknown as Parameters<typeof resolvePrimaryTag>[1];
+    expect(() => resolvePrimaryTag(["code", "docs"], relaxedCtx)).toThrow(CliError);
   });
 
   it("appendTaskEvent filters invalid events and appends new event", () => {

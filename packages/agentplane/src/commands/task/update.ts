@@ -3,7 +3,14 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, unknownEntityMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { dedupeStrings, requiresVerify, toStringArray, warnIfUnknownOwner } from "./shared.js";
+import {
+  dedupeStrings,
+  requiresVerify,
+  readTaskTagPolicy,
+  resolvePrimaryTag,
+  toStringArray,
+  warnIfUnknownOwner,
+} from "./shared.js";
 
 export async function cmdTaskUpdate(opts: {
   ctx?: CommandContext;
@@ -20,6 +27,7 @@ export async function cmdTaskUpdate(opts: {
   replaceDependsOn: boolean;
   verify: string[];
   replaceVerify: boolean;
+  allowPrimaryChange?: boolean;
 }): Promise<number> {
   try {
     const ctx =
@@ -42,8 +50,24 @@ export async function cmdTaskUpdate(opts: {
       await warnIfUnknownOwner(ctx, opts.owner);
     }
 
+    const currentPrimary = resolvePrimaryTag(toStringArray(next.tags), ctx).primary;
     const existingTags = opts.replaceTags ? [] : dedupeStrings(toStringArray(next.tags));
     const mergedTags = dedupeStrings([...existingTags, ...opts.tags]);
+    const nextPrimary = resolvePrimaryTag(mergedTags, ctx).primary;
+    const tagPolicy = readTaskTagPolicy(ctx);
+    if (
+      currentPrimary !== nextPrimary &&
+      tagPolicy.lockPrimaryOnUpdate === true &&
+      opts.allowPrimaryChange !== true
+    ) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          `Primary tag change is locked (${currentPrimary} -> ${nextPrimary}). ` +
+          "Use --allow-primary-change to override explicitly.",
+      });
+    }
     next.tags = mergedTags;
 
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
@@ -71,6 +95,9 @@ export async function cmdTaskUpdate(opts: {
     process.stdout.write(`${successMessage("updated", opts.taskId)}\n`);
     return 0;
   } catch (err) {
+    if (err instanceof CliError) {
+      throw err;
+    }
     throw mapBackendError(err, { command: "task update", root: opts.rootOverride ?? null });
   }
 }

@@ -18,6 +18,7 @@ import { type TaskData, type TaskEvent } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { dedupeStrings } from "../../shared/strings.js";
 import { parseGitLogHashSubject } from "../../shared/git-log.js";
+import { isRecord } from "../../shared/guards.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 export { dedupeStrings } from "../../shared/strings.js";
@@ -106,6 +107,113 @@ export function requiresVerify(tags: string[], requiredTags: string[]): boolean 
   const required = new Set(requiredTags.map((tag) => tag.trim().toLowerCase()).filter(Boolean));
   if (required.size === 0) return false;
   return tags.some((tag) => required.has(tag.trim().toLowerCase()));
+}
+
+export type PrimaryTagResolution = {
+  primary: string;
+  matched: string[];
+  usedFallback: boolean;
+};
+
+export type TaskTagPolicy = {
+  primaryAllowlist: string[];
+  strictPrimary: boolean;
+  fallbackPrimary: string;
+  lockPrimaryOnUpdate: boolean;
+};
+
+type RawTaskTags = {
+  primary_allowlist?: unknown;
+  strict_primary?: unknown;
+  fallback_primary?: unknown;
+  lock_primary_on_update?: unknown;
+};
+
+function readStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+}
+
+function readBoolean(value: unknown, fallback: boolean): boolean {
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function readString(value: unknown, fallback: string): string {
+  if (typeof value !== "string") return fallback;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : fallback;
+}
+
+export function readTaskTagPolicy(ctx: CommandContext): TaskTagPolicy {
+  const tasks: Record<string, unknown> = isRecord(ctx.config.tasks) ? ctx.config.tasks : {};
+  const rawTagsCandidate = tasks.tags;
+  const rawTags: RawTaskTags = isRecord(rawTagsCandidate) ? (rawTagsCandidate as RawTaskTags) : {};
+  const fallbackAllowlist = ["code", "data", "research", "docs", "ops", "product", "meta"];
+  const normalizedAllowlist = dedupeStrings(
+    readStringArray(rawTags.primary_allowlist)
+      .map((tag) => tag.toLowerCase())
+      .filter(Boolean),
+  );
+
+  return {
+    primaryAllowlist: normalizedAllowlist.length > 0 ? normalizedAllowlist : fallbackAllowlist,
+    strictPrimary: readBoolean(rawTags.strict_primary, false),
+    fallbackPrimary: readString(rawTags.fallback_primary, "meta").toLowerCase(),
+    lockPrimaryOnUpdate: readBoolean(rawTags.lock_primary_on_update, true),
+  };
+}
+
+export function resolvePrimaryTag(tags: string[], ctx: CommandContext): PrimaryTagResolution {
+  const policy = readTaskTagPolicy(ctx);
+  const allowlist = policy.primaryAllowlist;
+  if (allowlist.length === 0) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: "tasks.tags.primary_allowlist must contain at least one tag.",
+    });
+  }
+
+  const normalizedTags = dedupeStrings(tags.map((t) => t.trim().toLowerCase()).filter(Boolean));
+  const matched = normalizedTags.filter((tag) => allowlist.includes(tag));
+  if (matched.length > 1) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message:
+        `Task must include exactly one primary tag from allowlist (${allowlist.join(", ")}); ` +
+        `found multiple: ${matched.join(", ")}`,
+    });
+  }
+  if (matched.length === 1) {
+    return { primary: matched[0], matched, usedFallback: false };
+  }
+
+  const strict = policy.strictPrimary;
+  if (strict) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_USAGE"),
+      code: "E_USAGE",
+      message:
+        `Task must include exactly one primary tag from allowlist (${allowlist.join(", ")}); ` +
+        "none found and strict_primary=true",
+    });
+  }
+
+  const fallback = policy.fallbackPrimary;
+  if (!fallback || !allowlist.includes(fallback)) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        `tasks.tags.fallback_primary=${JSON.stringify(policy.fallbackPrimary)} ` +
+        `must be present in tasks.tags.primary_allowlist (${allowlist.join(", ")}).`,
+    });
+  }
+  return { primary: fallback, matched, usedFallback: true };
 }
 
 export async function warnIfUnknownOwner(ctx: CommandContext, owner: string): Promise<void> {

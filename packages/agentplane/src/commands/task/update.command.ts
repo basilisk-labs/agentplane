@@ -18,6 +18,7 @@ export type TaskUpdateParsed = {
   replaceDependsOn: boolean;
   verify: string[];
   replaceVerify: boolean;
+  allowPrimaryChange: boolean;
 };
 
 export const taskUpdateSpec: CommandSpec<TaskUpdateParsed> = {
@@ -81,6 +82,12 @@ export const taskUpdateSpec: CommandSpec<TaskUpdateParsed> = {
       default: false,
       description: "Replace existing verify commands (instead of merging).",
     },
+    {
+      kind: "boolean",
+      name: "allow-primary-change",
+      default: false,
+      description: "Explicitly allow changing the task primary tag during update.",
+    },
   ],
   examples: [
     {
@@ -131,6 +138,7 @@ export const taskUpdateSpec: CommandSpec<TaskUpdateParsed> = {
       replaceDependsOn: raw.opts["replace-depends-on"] === true,
       verify,
       replaceVerify: raw.opts["replace-verify"] === true,
+      allowPrimaryChange: raw.opts["allow-primary-change"] === true,
     };
   },
 };
@@ -152,6 +160,7 @@ export function makeRunTaskUpdateHandler(getCtx: (cmd: string) => Promise<Comman
       replaceDependsOn: p.replaceDependsOn,
       verify: p.verify,
       replaceVerify: p.replaceVerify,
+      allowPrimaryChange: p.allowPrimaryChange,
     });
   };
 }
