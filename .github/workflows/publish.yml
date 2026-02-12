@@ -139,6 +139,8 @@ jobs:
           fi
           echo "publish failed for $NAME@$VERSION" >&2
           exit 1
+      - name: Post-publish npm smoke
+        run: bun run release:smoke:published
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
