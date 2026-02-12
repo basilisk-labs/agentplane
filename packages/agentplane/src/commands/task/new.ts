@@ -20,6 +20,29 @@ export type TaskNewParsed = {
   verify: string[];
 };
 
+function buildDefaultVerifyStepsDoc(opts: { primary: string; verifyCommands: string[] }): string {
+  const checks =
+    opts.verifyCommands.length > 0
+      ? opts.verifyCommands.map((command) => `- \`${command}\``).join("\n")
+      : "- Add explicit checks/commands for this task before approval.";
+  return [
+    "## Verify Steps",
+    "",
+    "### Scope",
+    `- Primary tag: \`${opts.primary}\``,
+    "",
+    "### Checks",
+    checks,
+    "",
+    "### Evidence / Commands",
+    "- Record executed commands and key outputs.",
+    "",
+    "### Pass criteria",
+    "- Steps are reproducible and produce expected results.",
+    "",
+  ].join("\n");
+}
+
 export async function runTaskNewParsed(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -69,9 +92,13 @@ export async function runTaskNewParsed(opts: {
     const requiresVerifySteps = requiresVerifyStepsByPrimary(p.tags, ctx.config);
     await warnIfUnknownOwner(ctx, p.owner);
     if (requiresVerifySteps) {
+      task.doc = buildDefaultVerifyStepsDoc({
+        primary: primary.primary,
+        verifyCommands: p.verify,
+      });
       process.stderr.write(
         `${warnMessage(
-          `task requires ## Verify Steps in README; run \`agentplane task scaffold ${taskId}\` and fill it before approving the plan`,
+          "task requires Verify Steps by primary tag; seeded a default ## Verify Steps section in README (review and refine before approval/start)",
         )}\n`,
       );
     }

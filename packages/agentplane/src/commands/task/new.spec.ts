@@ -70,7 +70,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     },
   ],
   notes: [
-    "This command may emit warnings for tasks that require Verify Steps in the README (config-dependent).",
+    "For verify-required primary tags, this command seeds a default ## Verify Steps section in README.",
   ],
   parse: (raw) => ({
     title: raw.opts.title as string,

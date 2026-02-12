@@ -174,6 +174,44 @@ describe("runCli", () => {
     }
   });
 
+  it("task new seeds Verify Steps in README for verify-required primary tags", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let id = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Code task",
+        "--description",
+        "Needs verify steps",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--verify",
+        "bun run test:fast",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      id = io.stdout.trim();
+      expect(io.stderr).toContain("seeded a default ## Verify Steps section");
+    } finally {
+      io.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("## Verify Steps");
+    expect(readme).toContain("Primary tag: `code`");
+    expect(readme).toContain("`bun run test:fast`");
+    expect(readme).not.toContain("<!-- TODO: FILL VERIFY STEPS -->");
+  });
+
   it("task add creates tasks with explicit ids", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
