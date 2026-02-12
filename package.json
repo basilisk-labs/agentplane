@@ -40,7 +40,7 @@
     "ci:testkit": "node scripts/ci-scope.mjs --scope testkit",
     "release:check": "bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && (cd packages/core && npm pack --dry-run) && (cd packages/agentplane && npm pack --dry-run)",
     "release:check:registry": "node scripts/check-npm-version-availability.mjs",
-    "release:ci-check": "bun run format:check && bun run schemas:check && bun run agents:check && bun run release:parity && bun run build && bun run lint && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:full",
+    "release:ci-check": "bun run format:check && bun run schemas:check && bun run agents:check && bun run release:parity && bun run build && bun run docs:cli:check && bun run lint && GIT_AUTHOR_NAME=agentplane-ci GIT_AUTHOR_EMAIL=agentplane-ci@example.com GIT_COMMITTER_NAME=agentplane-ci GIT_COMMITTER_EMAIL=agentplane-ci@example.com bun run test:full",
     "release:prepublish": "bun run release:ci-check && bun run release:check",
     "release:parity": "node scripts/check-release-parity.mjs",
     "lint": "eslint .",
@@ -52,7 +52,8 @@
     "agents:sync": "node scripts/sync-agent-templates.mjs sync",
     "schemas:check": "node scripts/sync-schemas.mjs check",
     "schemas:sync": "node scripts/sync-schemas.mjs sync",
-    "coverage:significant": "node scripts/check-significant-coverage.mjs"
+    "coverage:significant": "node scripts/check-significant-coverage.mjs",
+    "docs:cli:check": "node scripts/check-cli-reference-fresh.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

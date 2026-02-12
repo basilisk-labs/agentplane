@@ -46,6 +46,8 @@ jobs:
       # A fresh checkout must build `dist/` first so types resolve correctly.
       - name: Build (required for type-aware lint)
         run: bun run build
+      - name: CLI docs (generated reference check)
+        run: bun run docs:cli:check
       - name: Lint
         run: bun run lint
       - name: Unit Tests (Fast)

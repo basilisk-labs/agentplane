@@ -83,6 +83,8 @@ jobs:
         run: bun run release:parity
       - run: bun run --filter=@agentplaneorg/core build
       - run: bun run --filter=agentplane build
+      - name: CLI docs (generated reference check)
+        run: bun run docs:cli:check
       - name: Lint
         run: bun run lint
       - name: Tests (Full)
