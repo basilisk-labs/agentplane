@@ -3,42 +3,42 @@ title: "Overview"
 description: "Learn what Agent Plane is, what it is not, and how the core pieces fit together."
 ---
 
-## What Agent Plane Is
+## What Agent Plane is
 
-Agent Plane is a local, repo-scoped workflow framework for using OpenAI Codex in your IDE. The current Node.js 1.0 deliverable is a globally installable CLI named `agentplane` that provides:
+Agent Plane is a local CLI workflow for agent-driven development in a git repository.
 
-- JSON-defined agents
-- a task system with pluggable backends
-- workflow guardrails and commit rules so work stays planned, traceable, and reviewable
+You run `agentplane` once to initialize a repo, then agents use the same CLI for planning, execution, verification, and closure.
 
-## What Agent Plane Is Not
+## What it gives you
 
-- Not a remote service or runner. Everything happens inside your local repo.
-- Not an auto-commit bot. You stay in control of commands and commits.
-- Not a replacement for your IDE. It is a workflow layer on top of it.
+- A policy file in repo root: `AGENTS.md`.
+- A repo-local workspace in `.agentplane/`.
+- Task tracking with explicit ownership and dependencies.
+- Guarded commit and finish flows.
+- Optional backends, including local and Redmine.
 
-## Core Principles
+## What it does not do
 
-- Local-first: no external runtime or daemon is required.
-- Backend-driven truth: the canonical task source depends on the active backend.
-- Traceability: every task ties back to a stable ID and a commit.
-- Role clarity: each agent has a defined scope and permissions.
-- Explicit approvals: plan, network, and verification approvals are controlled via config (`agents.approvals.*`); closure approvals follow `closure_commit_requires_approval`.
+- It is not a hosted service. There is no remote runtime.
+- It is not a replacement for your editor. It sits on top of your existing IDE and terminal.
+- It does not hide git. You still see and control commit history.
 
-## Core Components
+## How the pieces fit
 
-- A global policy document (`AGENTS.md`) that defines roles, approvals, and workflow guardrails.
-- `.agentplane/`: project state directory created by `agentplane init` (config, tasks, caches, recipes).
-- `agentplane`: the Node.js CLI users run (`npx agentplane …` or `bun add -g agentplane`).
-- [`cli-contract`](../developer/cli-contract): the authoritative 1.0 command surface.
-- Schemas and examples for config, task exports, and PR metadata.
+1. `agentplane init` creates `AGENTS.md`, `.agentplane/config.json`, backend stubs, and agent templates.
+2. Agents create and run tasks through `agentplane task/start/verify/finish`.
+3. Policy and approvals are enforced from config plus `AGENTS.md`.
+4. Task artifacts and metadata stay inside the repository.
 
-## Where to Start
+## Source of truth model
 
-- Start with [Prerequisites](prerequisites) and [Setup](setup).
-- For commands, follow [`cli-contract`](../developer/cli-contract).
+- Workflow policy: `AGENTS.md`.
+- CLI behavior: command specs and runtime code.
+- Config schema/defaults: `packages/spec/schemas/config.schema.json`.
+- Current repo config: `.agentplane/config.json`.
 
-## Planned Expansions
+## Next steps
 
-- Add a visual summary of backend flow (local vs redmine) and canonical source switching.
-- Include a primer on the task ID format (`YYYYMMDDHHMM-<RAND>`).
+1. Read [Prerequisites](prerequisites).
+2. Run [Setup](setup).
+3. Use [Commands](commands) for daily operation and [CLI reference](cli-reference.generated) for exact flags.

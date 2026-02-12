@@ -3,57 +3,77 @@ title: "Setup"
 description: "Install the CLI, initialize a project, and run Agent Plane locally for development."
 ---
 
-## Install (Node.js 1.0)
-
-End users install and run the CLI as:
+## Install CLI
 
 ```bash
 npx agentplane --help
+```
+
+Or install globally:
+
+```bash
+npm i -g agentplane
 # or
 bun add -g agentplane
 agentplane --help
 ```
 
-## Initialize a project
+## Initialize repository
 
-Inside a git repository (or a new folder):
+Run from repository root:
 
 ```bash
 agentplane init
 ```
 
-This creates:
+`init` creates:
 
-- `AGENTS.md` at the repo root (the canonical workflow/policy document for agents).
-- `.agentplane/` (config, agents registry, tasks workflow artifacts, caches).
+- `AGENTS.md` in repo root.
+- `.agentplane/config.json`.
+- `.agentplane/agents/*`.
+- `.agentplane/backends/<selected-backend>/backend.json`.
+- `.agentplane/tasks/` workspace directories.
 
-If the folder is not a git repository, init will create one, pin the base branch, and commit the install artifacts.
-If the folder is already a git repository, init pins the base branch to the current branch and commits the install artifacts.
+If `.git` does not exist in that folder, `init` creates a new git repository there.
 
-During init, you choose:
+## Interactive choices in init
 
-- workflow mode and task backend (`--workflow`, `--backend`)
-- execution profile (`--execution-profile conservative|balanced|aggressive`)
-- strict unsafe confirmation (`--strict-unsafe-confirm true|false`)
-- approval toggles (mapped to `agents.approvals.*` in `.agentplane/config.json`)
-- IDE rules integration target (`--ide codex|cursor|windsurf`)
+- workflow mode: `direct` or `branch_pr`
+- task backend: `local` or `redmine`
+- approval toggles:
+  - `require_plan`
+  - `require_network`
+  - `require_verify`
+- execution profile preset
+- IDE integration target
 
-Execution profile is persisted in `.agentplane/config.json` under `execution`:
+Non-interactive setup is available through flags:
 
-- `profile`: baseline autonomy style
-- `reasoning_effort`: default reasoning depth
-- `tool_budget`: discovery/implementation/verification budget hints
-- `unsafe_actions_requiring_explicit_user_ok`: strict unsafe-action gate
+```bash
+agentplane init \
+  --workflow direct \
+  --backend local \
+  --execution-profile balanced \
+  --require-plan-approval true \
+  --require-network-approval true \
+  --require-verify-approval true \
+  --ide codex \
+  --yes
+```
 
-You can switch backends later by updating `tasks_backend.config_path` in `.agentplane/config.json`.
+## Redmine env files on init
 
-If you want to keep agent policy files out of git (not recommended for most team repos), use:
+If `--backend redmine` is selected, `init` writes a template to `.env.example` and creates `.env` when missing.
+
+Credentials are read from env at runtime; secrets are not stored in backend JSON.
+
+## Keep agent files out of git (optional)
 
 ```bash
 agentplane init --gitignore-agents
 ```
 
-This adds agent files (`AGENTS.md` and `.agentplane/agents/`) to `.gitignore` and skips the initial install commit.
+This appends ignores for `AGENTS.md` and `.agentplane/agents/` and skips the init commit.
 
 ## Upgrade a workspace
 
@@ -61,43 +81,24 @@ This adds agent files (`AGENTS.md` and `.agentplane/agents/`) to `.gitignore` an
 agentplane upgrade
 ```
 
-By default, upgrade runs in agent-assisted mode and does not modify files. Use it to inspect changes and produce a
-machine-readable review report under `.agentplane/.upgrade/`.
+Default mode is review-first and produces upgrade artifacts under `.agentplane/.upgrade/`.
 
-To apply managed-file updates automatically:
+To apply automatically:
 
 ```bash
 agentplane upgrade --auto
 ```
 
-Notes:
-
-- Network access is gated by config approvals; use `--yes` only when you explicitly allow the network prompt flow.
-- Upgrade writes upgrade artifacts under `.agentplane/.upgrade/` and should not touch user-owned task data under
-  `.agentplane/tasks/`.
-
-## Developing inside this repo (current)
-
-This repository contains the in-progress Node.js workspace under `packages/`. For local development:
+## Verify setup quickly
 
 ```bash
-bun install
-bun run --filter=@agentplaneorg/core build
-bun run --filter=agentplane build
-node packages/agentplane/bin/agentplane.js --help
+agentplane config show
+agentplane quickstart
+agentplane task list
 ```
 
-## Backend setup (when implemented)
-
-- Configure the active backend in `.agentplane/config.json` (`tasks_backend.config_path`).
-- Redmine credentials are loaded from `.env` without overriding already-set environment variables (see `redmine`).
-
-## Optional recipes
-
-Install optional recipes to enable extra workflows unrelated to core backends:
+## Install optional recipes
 
 ```bash
 agentplane recipes install --name viewer
 ```
-
-See `recipes-spec` for authoring or distributing recipes.

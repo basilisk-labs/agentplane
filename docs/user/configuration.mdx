@@ -5,55 +5,81 @@ description: "How .agentplane/config.json works and how to change it safely."
 
 ## Overview
 
-Agent Plane reads configuration from `.agentplane/config.json`. Use the CLI to view and update settings to avoid invalid edits. The file is validated against the config schema and missing fields are filled with schema defaults.
+Agent Plane reads `.agentplane/config.json` and validates it against the config schema.
+
+Use CLI commands to read and update values safely:
 
 ```bash
 agentplane config show
 agentplane config set workflow_mode branch_pr
 ```
 
-## Key sections
+## High-impact keys
 
 ### workflow_mode
 
-Controls workflow enforcement:
+- `direct`: single checkout workflow.
+- `branch_pr`: per-task branches and PR artifacts.
 
-- `direct` — single checkout; task branches are allowed (no worktrees).
-- `branch_pr` — per-task branches + worktrees with PR artifacts.
+### status_commit_policy
 
-### paths
+- `off`: do not gate status/comment-driven commits.
+- `warn`: allow, but warn when no explicit confirmation.
+- `confirm`: require explicit confirmation.
 
-Paths for core assets:
+### finish_auto_status_commit
 
-- `agents_dir` — `.agentplane/agents`
-- `tasks_path` — export-only snapshot (`.agentplane/tasks.json`, gitignored by default)
-- `workflow_dir` — `.agentplane/tasks`
-- `worktrees_dir` — `.agentplane/worktrees`
-
-### tasks
-
-- `id_suffix_length_default` — length of generated task suffix.
-- `tags.primary_allowlist` — allowed primary tags (one primary tag is resolved per task).
-- `tags.strict_primary` / `tags.fallback_primary` — behavior when no primary tag is present.
-- `verify.require_steps_for_primary` — primary tags that require `## Verify Steps` before plan approve/start.
-- `verify.require_verification_for_primary` — primary tags that require recorded verification (`agentplane verify ...`) before finish/integration.
-- `doc.sections` — section names for task README.
-- `doc.required_sections` — required doc sections.
-- `comments.*` — structured comment rules.
-
-### branch
-
-- `task_prefix` — task branch prefix (`task/<task-id>/<slug>`).
-
-### tasks_backend
-
-- `config_path` — path to the backend config file (local or remote backend).
+- `false` by default.
+- `init` sets it to `true` for `branch_pr`, `false` for `direct`.
 
 ### agents.approvals
 
-- `require_plan` — require explicit plan approval before work can proceed (enforced via task README state).
-- `require_network` — force approval before network use.
-- `require_verify` — require a recorded verification result before integration/closure (enforced via task README state).
+- `require_plan`
+- `require_network`
+- `require_verify`
+- `require_force`
+
+These keys control approval gates; they do not add or remove CLI capabilities.
+
+### paths
+
+- `paths.agents_dir`
+- `paths.workflow_dir`
+- `paths.worktrees_dir`
+- `paths.tasks_path` (export-only snapshot path)
+
+### tasks.tags (primary tag model)
+
+- `tasks.tags.primary_allowlist`
+- `tasks.tags.strict_primary`
+- `tasks.tags.fallback_primary`
+- `tasks.tags.lock_primary_on_update`
+
+Task policy resolves exactly one primary tag per task. Secondary tags remain free-form.
+
+### tasks.verify
+
+- `tasks.verify.require_steps_for_primary`
+- `tasks.verify.require_verification_for_primary`
+- `tasks.verify.spike_tag`
+- `tasks.verify.enforce_on_plan_approve`
+- `tasks.verify.enforce_on_start_when_no_plan`
+
+Compatibility note: `tasks.verify.required_tags` still exists in schema and may be present in older configs.
+Current enforcement should be documented and configured through primary-based keys.
+
+### tasks_backend
+
+- `tasks_backend.config_path` points to the active backend config file.
+
+### execution
+
+- `execution.profile`
+- `execution.reasoning_effort`
+- `execution.tool_budget`
+- `execution.stop_conditions`
+- `execution.handoff_conditions`
+- `execution.unsafe_actions_requiring_explicit_user_ok`
 
 ## Examples
 
@@ -63,8 +89,20 @@ Set primary tags that require Verify Steps:
 agentplane config set tasks.verify.require_steps_for_primary '["code","data","ops"]'
 ```
 
+Set primary tags that require recorded verification before finish:
+
+```bash
+agentplane config set tasks.verify.require_verification_for_primary '["code","data","ops"]'
+```
+
 Switch to branch workflow:
 
 ```bash
 agentplane config set workflow_mode branch_pr
+```
+
+Enable stricter force approvals:
+
+```bash
+agentplane config set agents.approvals.require_force true
 ```

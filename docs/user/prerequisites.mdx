@@ -5,31 +5,42 @@ description: "What you need installed and what assumptions Agent Plane makes abo
 
 ## Required
 
-- Git (any recent version).
-- Node.js 20 LTS+ and bun (recommended).
-- An IDE that can host your agent workflow (Codex, Cursor, Windsurf, or similar).
+- Git repository access.
+- Node.js 20 or newer.
+- `npm` or `bun` available in PATH.
 
 ## Recommended
 
-- A terminal with `zsh` or `bash`.
-- Familiarity with git status, add, and commit.
+- `zsh` or `bash` shell.
+- Working knowledge of `git status`, `git add`, and `git commit`.
+- One IDE where your agents run.
 
-## Environment Assumptions
+## Runtime assumptions
 
-- The repo is local and opened in your IDE.
-- There are no remote runtimes; commands run on your machine.
-- Edits outside the repo require explicit approval.
+- Work happens in a local repository checkout.
+- Agent Plane commands execute on your machine.
+- Outside-repo access and network access can require explicit approvals, based on config.
 
-## Backend Dependencies
+## Backend prerequisites
 
-- Local backend: no extra requirements beyond the repo.
-- Redmine backend: network access and a backend config with API credentials.
+### Local backend
 
-## Notes
+No external dependencies. Tasks live in `.agentplane/tasks`.
 
-- Agent Plane is offline-first by default; network use is gated by configuration approvals and explicit commands (see
-  `cli-contract`).
+### Redmine backend
 
-## Planned Expansions
+- Network access to your Redmine host.
+- Required env keys:
+  - `AGENTPLANE_REDMINE_URL`
+  - `AGENTPLANE_REDMINE_API_KEY`
+  - `AGENTPLANE_REDMINE_PROJECT_ID`
+- Optional env keys:
+  - `AGENTPLANE_REDMINE_OWNER_AGENT`
+  - `AGENTPLANE_REDMINE_ASSIGNEE_ID`
+  - custom field and batch keys from `.env.example`
 
-- Add a short checklist for Redmine API access and required custom fields.
+## Before you initialize
+
+1. Open the target repository root in terminal.
+2. Confirm node version with `node -v`.
+3. Confirm git works with `git status`.
