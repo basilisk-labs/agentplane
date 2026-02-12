@@ -12,6 +12,29 @@ async function exists(p) {
   }
 }
 
+async function maybeWarnGlobalBinaryInRepoCheckout() {
+  const cwd = process.cwd();
+  const repoCli = path.join(cwd, "packages", "agentplane", "src", "cli.ts");
+  const repoBin = path.join(cwd, "packages", "agentplane", "bin", "agentplane.js");
+  if (!(await exists(repoCli)) || !(await exists(repoBin))) return;
+
+  const thisBin = fileURLToPath(import.meta.url);
+  const normalizedThis = path.resolve(thisBin);
+  const normalizedRepo = path.resolve(repoBin);
+  if (normalizedThis === normalizedRepo) return;
+
+  process.stderr.write(
+    "warning: running global agentplane binary inside repository checkout.\n" +
+      "using global binary: " +
+      normalizedThis +
+      "\n" +
+      "expected local binary: " +
+      normalizedRepo +
+      "\n" +
+      "tip: run `node packages/agentplane/bin/agentplane.js ...` for repo-local changes.\n",
+  );
+}
+
 function isTestLikePath(absPath) {
   // The repo build does not emit test files to dist. If we treat test mtimes as
   // "src is newer than dist", we can block normal commits that only change tests.
@@ -106,5 +129,6 @@ async function assertDistUpToDate() {
   return true;
 }
 
+await maybeWarnGlobalBinaryInRepoCheckout();
 const ok = await assertDistUpToDate();
 if (ok) await import("../dist/cli.js");
