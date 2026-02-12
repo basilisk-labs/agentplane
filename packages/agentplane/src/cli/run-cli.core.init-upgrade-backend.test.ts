@@ -198,6 +198,8 @@ describe("runCli", () => {
 
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "direct"');
+    expect(configText).toContain('"status_commit_policy": "warn"');
+    expect(configText).toContain('"finish_auto_status_commit": false');
     expect(configText).toContain('"config_path": ".agentplane/backends/local/backend.json"');
     expect(configText).toContain('"profile": "balanced"');
     expect(configText).toContain('"reasoning_effort": "medium"');
@@ -676,6 +678,8 @@ describe("runCli", () => {
     const configPath = path.join(root, ".agentplane", "config.json");
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "branch_pr"');
+    expect(configText).toContain('"status_commit_policy": "confirm"');
+    expect(configText).toContain('"finish_auto_status_commit": true');
     expect(configText).toContain('"require_plan": true');
     expect(configText).toContain('"require_network": false');
     expect(configText).toContain('"require_verify": true');

@@ -44,6 +44,12 @@ export async function writeInitConfig(opts: {
   setByDottedKey(rawConfig, "workflow_mode", opts.workflow);
   setByDottedKey(
     rawConfig,
+    "status_commit_policy",
+    opts.workflow === "branch_pr" ? "confirm" : "warn",
+  );
+  setByDottedKey(rawConfig, "finish_auto_status_commit", String(opts.workflow === "branch_pr"));
+  setByDottedKey(
+    rawConfig,
     "tasks_backend.config_path",
     path.relative(opts.gitRoot, opts.backendConfigPathAbs),
   );

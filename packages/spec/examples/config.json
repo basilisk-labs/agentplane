@@ -2,7 +2,7 @@
   "schema_version": 1,
   "workflow_mode": "direct",
   "status_commit_policy": "warn",
-  "finish_auto_status_commit": true,
+  "finish_auto_status_commit": false,
   "agents": {
     "approvals": {
       "require_plan": true,
@@ -28,9 +28,17 @@
     "id_suffix_length_default": 6,
     "verify": {
       "required_tags": ["code", "backend", "frontend"],
+      "require_steps_for_primary": ["code", "data", "ops"],
+      "require_verification_for_primary": ["code", "data", "ops"],
       "spike_tag": "spike",
       "enforce_on_plan_approve": true,
       "enforce_on_start_when_no_plan": true
+    },
+    "tags": {
+      "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
+      "strict_primary": false,
+      "fallback_primary": "meta",
+      "lock_primary_on_update": true
     },
     "doc": {
       "sections": [

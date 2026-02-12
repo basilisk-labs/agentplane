@@ -55,9 +55,17 @@ export type AgentplaneConfig = {
     verify: {
       required_tags: string[];
       require_steps_for_tags?: string[];
+      require_steps_for_primary?: string[];
+      require_verification_for_primary?: string[];
       spike_tag: string;
       enforce_on_plan_approve: boolean;
       enforce_on_start_when_no_plan: boolean;
+    };
+    tags: {
+      primary_allowlist: string[];
+      strict_primary: boolean;
+      fallback_primary: string;
+      lock_primary_on_update: boolean;
     };
     doc: { sections: string[]; required_sections: string[] };
     comments: {

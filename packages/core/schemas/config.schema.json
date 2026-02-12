@@ -17,7 +17,7 @@
       "enum": ["off", "warn", "confirm"],
       "default": "warn"
     },
-    "finish_auto_status_commit": { "type": "boolean", "default": true },
+    "finish_auto_status_commit": { "type": "boolean", "default": false },
     "agents": {
       "type": "object",
       "additionalProperties": true,
@@ -198,10 +198,20 @@
     "tasks": {
       "type": "object",
       "additionalProperties": true,
-      "required": ["id_suffix_length_default", "verify", "doc", "comments"],
+      "required": ["id_suffix_length_default", "verify", "doc", "comments", "tags"],
       "default": {
         "id_suffix_length_default": 6,
-        "verify": { "required_tags": ["code", "backend", "frontend"] },
+        "verify": {
+          "required_tags": ["code", "backend", "frontend"],
+          "require_steps_for_primary": ["code", "data", "ops"],
+          "require_verification_for_primary": ["code", "data", "ops"]
+        },
+        "tags": {
+          "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
+          "strict_primary": false,
+          "fallback_primary": "meta",
+          "lock_primary_on_update": true
+        },
         "doc": {
           "sections": [
             "Summary",
@@ -258,9 +268,49 @@
               "items": { "type": "string", "minLength": 1 },
               "uniqueItems": true
             },
+            "require_steps_for_primary": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true,
+              "default": ["code", "data", "ops"]
+            },
+            "require_verification_for_primary": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true,
+              "default": ["code", "data", "ops"]
+            },
             "spike_tag": { "type": "string", "minLength": 1, "default": "spike" },
             "enforce_on_plan_approve": { "type": "boolean", "default": true },
             "enforce_on_start_when_no_plan": { "type": "boolean", "default": true }
+          }
+        },
+        "tags": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": [
+            "primary_allowlist",
+            "strict_primary",
+            "fallback_primary",
+            "lock_primary_on_update"
+          ],
+          "default": {
+            "primary_allowlist": ["code", "data", "research", "docs", "ops", "product", "meta"],
+            "strict_primary": false,
+            "fallback_primary": "meta",
+            "lock_primary_on_update": true
+          },
+          "properties": {
+            "primary_allowlist": {
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true,
+              "minItems": 1,
+              "default": ["code", "data", "research", "docs", "ops", "product", "meta"]
+            },
+            "strict_primary": { "type": "boolean", "default": false },
+            "fallback_primary": { "type": "string", "minLength": 1, "default": "meta" },
+            "lock_primary_on_update": { "type": "boolean", "default": true }
           }
         },
         "doc": {
