@@ -17,7 +17,8 @@ Configured in `.agentplane/config.json`.
 ### branch_pr
 
 - Task branches and worktrees are required.
-- Canonical task writes happen only on the base branch.
+- `agentplane work start` must run on base branch and must include `--worktree`.
+- Canonical task writes happen only on base branch.
 - INTEGRATOR performs verify, merge, and finish.
 
 ## Task Branches and Worktrees
@@ -38,8 +39,15 @@ Configured in `.agentplane/config.json`.
 
 ## Commands
 
-See [`cli-contract`](../developer/cli-contract) for the authoritative command surface. The 1.0 workflow uses:
+See [`cli-contract`](../developer/cli-contract) for the authoritative command surface.
 
-- `agentplane work start` (create task branch; worktree required in branch_pr)
-- `agentplane pr open|update|check|note`
-- `agentplane integrate` (branch_pr integration)
+Typical branch_pr flow:
+
+```bash
+agentplane work start <task-id> --agent CODER --slug <slug> --worktree
+agentplane pr open <task-id> --branch task/<task-id>/<slug> --author CODER
+agentplane pr update <task-id>
+agentplane pr check <task-id>
+agentplane integrate <task-id> --run-verify
+agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "<one line>"
+```

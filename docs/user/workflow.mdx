@@ -3,27 +3,41 @@ title: "Workflow"
 description: "How work moves from plan to completion in Agent Plane."
 ---
 
-## Lifecycle
+## Core flow
 
-1. **Plan**: create tasks and dependencies.
-2. **Start**: mark a task DOING with a structured comment.
-3. **Verify**: run checks (if any) and record a verification outcome.
-4. **Finish**: mark DONE and attach commit metadata.
+1. Plan and create task graph.
+2. Start work (`TODO -> DOING`) with a structured `Start:` comment.
+3. Implement changes.
+4. Record verification outcome with `agentplane verify`.
+5. Finish task (`DOING -> DONE`) with a structured `Verified:` comment and `--result`.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
 ## direct mode
 
 - Work in a single checkout.
-- Optional `agentplane work start` records a single active task lock for the current checkout (no per-task branches by default in direct mode).
+- `agentplane work start` records the active task lock for that checkout.
+- Per-task branches/worktrees are not required.
 
 ## branch_pr mode
 
 - One task per branch/worktree.
 - PR artifacts live under `.agentplane/tasks/<task-id>/pr/`.
-- Integration requires PR checks and PR artifacts (including `pr/verify.log`).
+- `agentplane work start ... --worktree` is required.
+- Integration runs through `agentplane integrate`.
 
 ## Status transitions
+
+Allowed transitions in normal mode:
+
+- `TODO -> DOING`
+- `TODO -> BLOCKED`
+- `DOING -> DONE`
+- `DOING -> BLOCKED`
+- `BLOCKED -> TODO`
+- `BLOCKED -> DOING`
+
+`DONE` is terminal unless `--force` is used.
 
 ```bash
 agentplane start <task-id> --author CODER --body "Start: ..."
@@ -31,12 +45,22 @@ agentplane block <task-id> --author CODER --body "Blocked: ..."
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome"
 ```
 
-## Commit guardrails
+## Status-commit policy
 
-- Use `agentplane guard commit` to validate message and paths.
-- Commit subjects must include the task ID suffix.
+Comment-driven status commits are only valid for major transitions:
 
-## Verification
+- `TODO -> DOING`
+- `DOING -> BLOCKED`
+- `BLOCKED -> DOING`
+- `DOING -> DONE`
+
+Subject format:
+
+`<emoji> <taskSuffix> <primary>: <status>`
+
+Body format includes `Task`, `Primary`, `Status`, `Comment`.
+
+## Verification model
 
 ```bash
 agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
@@ -44,13 +68,14 @@ agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 
 Notes:
 
-- `agentplane verify` is **record-only**: it does not execute any commands. It appends an entry to the task `## Verification` section.
-- In `branch_pr`, `agentplane integrate --run-verify` executes the task frontmatter `verify:` commands (if configured) and appends output to `pr/verify.log`.
+- `agentplane verify` is record-only. It writes to `## Verification`.
+- Verify requirements are primary-tag based (`tasks.verify.require_*_for_primary`).
+- In `branch_pr`, `agentplane integrate --run-verify` can execute `verify:` commands and append output to `pr/verify.log`.
 
 ## Spike tasks
 
-Use tag `spike` to mark a research-only task (no schema changes required). A spike should end with:
+Use tag `spike` for research tasks. A spike should end with:
 
-- A clear decision and findings in the task README.
-- Explicit exit criteria in `## Verify Steps`.
-- One or more implementation tasks derived from the spike (typically `depends_on: [<spike-id>]`).
+- decision and findings in README notes.
+- explicit exit criteria in `## Verify Steps`.
+- follow-up implementation tasks that depend on the spike.

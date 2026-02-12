@@ -19,7 +19,7 @@ A task moves through the same core stages in both modes:
 
 The differences between modes are about **where** work happens and **who** performs closure.
 
-## Lifecycle flow (all modes)
+## Lifecycle flow
 
 ```mermaid
 flowchart TD
@@ -32,7 +32,7 @@ flowchart TD
   F --> G[Verify: run checks (optional) + record outcome]
   G --> H[Commit with task suffix]
   H --> I[Finish: Verified comment + commit metadata]
-  I --> J[Export snapshot + update docs]
+  I --> J[Export snapshot if needed]
 ```
 
 ## direct mode (single checkout)
@@ -41,11 +41,11 @@ flowchart TD
 
 **Who closes the task:** the executor (often CODER/DOCS/TESTER) after the implementation commit.
 
-**Key artifacts:**
+**Key outputs:**
 
 - Task README and status updates are written directly in the repo.
 - Verification records are appended to the task README under `## Verification` via `agentplane verify ...`.
-- Optional PR artifacts are allowed but not required.
+- PR artifacts are optional in this mode.
 
 ### Sequence diagram (direct)
 
@@ -78,13 +78,13 @@ sequenceDiagram
   E->>CLI: task export (optional)
 ```
 
-## branch_pr mode (task branches + worktrees)
+## branch_pr mode
 
 **Where work happens:** in a per-task branch/worktree.
 
 **Who closes the task:** INTEGRATOR on the base branch after merge.
 
-**Key artifacts:**
+**Key outputs:**
 
 - PR artifacts are required under `.agentplane/tasks/<task-id>/pr/`.
 - Canonical task writes happen on the base branch only.
@@ -130,13 +130,24 @@ sequenceDiagram
   I->>CLI: task export (optional)
 ```
 
-## Lifecycle notes and guardrails
+## Guardrails and policies
 
 - **Approvals**: plan, network, and verification approvals are enforced via config (`agents.approvals.*`).
 - **Status comments**: start/block/finish require structured text (Start/Blocked/Verified).
+- **Allowed status transitions**:
+  - `TODO -> DOING|BLOCKED`
+  - `DOING -> DONE|BLOCKED`
+  - `BLOCKED -> TODO|DOING`
+- **Status-commit major transitions**:
+  - `TODO -> DOING`
+  - `DOING -> BLOCKED`
+  - `BLOCKED -> DOING`
+  - `DOING -> DONE`
 - **Two-stage verification**:
   - `## Verify Steps` is the ex-ante verification contract (criteria/protocol addressed to the verifier).
   - `## Verification` is the ex-post append-only record written by `agentplane verify ...`.
+- **Primary-tag verification policy**:
+  - Verify-step and verification requirements are controlled by `tasks.verify.require_steps_for_primary` and `tasks.verify.require_verification_for_primary`.
 - **branch_pr verify logs**: `agentplane integrate --run-verify` executes frontmatter `verify:` commands and appends output to `.agentplane/tasks/<task-id>/pr/verify.log`.
 - **Back-compat**: frontmatter `verify: string[]` remains supported as optional suggested commands; it is not required by the two-stage model.
 - **Commit policy**: commit subjects must include the task ID suffix.
