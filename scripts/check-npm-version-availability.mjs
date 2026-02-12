@@ -59,7 +59,10 @@ async function main() {
   const corePkg = path.join(root, "packages", "core", "package.json");
   const coreVersion = await readVersion(corePkg);
   const version = args.version || coreVersion;
-  await assertReleaseParity(root, { requiredVersion: version });
+  // Availability checks can run before the version bump is applied.
+  // Enforce local parity consistency, but do not require package.json to
+  // already match the target release version.
+  await assertReleaseParity(root);
   const pkgs = ["@agentplaneorg/core", "agentplane"];
 
   for (const name of pkgs) {
