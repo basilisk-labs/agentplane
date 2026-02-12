@@ -1,3 +1,4 @@
+import type { AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
 import type { Adapters } from "../../adapters/index.js";
 import { buildAdapters } from "../../adapters/index.js";
 import { loadCommandContext, type CommandContext } from "../../commands/shared/task-backend.js";
@@ -12,8 +13,15 @@ export type UsecaseContext = {
 export async function resolveContext(opts: {
   cwd: string;
   rootOverride?: string | null;
+  resolvedProject?: ResolvedProject;
+  config?: AgentplaneConfig;
 }): Promise<CommandContext> {
-  return await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  return await loadCommandContext({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    resolvedProject: opts.resolvedProject,
+    config: opts.config,
+  });
 }
 
 export function makeUsecaseContext(command: CommandContext): UsecaseContext {

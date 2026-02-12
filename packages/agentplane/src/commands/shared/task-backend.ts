@@ -1,4 +1,5 @@
 import path from "node:path";
+import type { AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
 
 import { CliError } from "../../shared/errors.js";
 import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
@@ -79,11 +80,16 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
 export async function loadCommandContext(opts: {
   cwd: string;
   rootOverride?: string | null;
+  resolvedProject?: ResolvedProject;
+  config?: AgentplaneConfig;
 }): Promise<CommandContext> {
-  const { backend, backendId, backendConfigPath, resolved, config } = await loadTaskBackend({
+  const backendLoaded = await loadTaskBackend({
     cwd: opts.cwd,
     rootOverride: opts.rootOverride ?? null,
+    resolvedProject: opts.resolvedProject,
+    config: opts.config,
   });
+  const { backend, backendId, backendConfigPath, resolved, config } = backendLoaded;
   return {
     resolvedProject: resolved,
     config,

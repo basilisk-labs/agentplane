@@ -1,7 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
-import { createTask } from "@agentplaneorg/core";
+import { createTask, loadConfig, resolveProject } from "@agentplaneorg/core";
 import { describe, expect, it } from "vitest";
 
 import { mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
@@ -56,5 +57,23 @@ describe("commands/shared/task-backend CommandContext", () => {
       exitCode: 4,
       code: "E_IO",
     });
+  });
+
+  it("loadCommandContext reuses preloaded resolved project/config when provided", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeLocalBackendConfig(root);
+
+    const resolved = await resolveProject({ cwd: root, rootOverride: root });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    const ctx = await loadCommandContext({
+      cwd: os.tmpdir(),
+      rootOverride: null,
+      resolvedProject: resolved,
+      config: loaded.config,
+    });
+
+    expect(ctx.resolvedProject.gitRoot).toBe(root);
+    expect(ctx.backendId).toBe("local");
   });
 });

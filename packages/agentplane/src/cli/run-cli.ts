@@ -544,7 +544,16 @@ export async function runCli(argv: string[]): Promise<number> {
 
     let ctxPromise: Promise<CommandContext> | null = null;
     const getCtx = async (commandForErrorContext: string): Promise<CommandContext> => {
-      ctxPromise ??= resolveContext({ cwd, rootOverride: globals.root ?? null });
+      ctxPromise ??= (async () => {
+        const resolvedProject = await getResolvedProject(commandForErrorContext);
+        const loadedConfig = await getLoadedConfig(commandForErrorContext);
+        return await resolveContext({
+          cwd,
+          rootOverride: globals.root ?? null,
+          resolvedProject,
+          config: loadedConfig.config,
+        });
+      })();
       try {
         return await ctxPromise;
       } catch (err) {

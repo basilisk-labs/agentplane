@@ -34,6 +34,51 @@ async function loadBackendConfig(configPath: string): Promise<BackendConfig | nu
   }
 }
 
+async function instantiateTaskBackend(opts: {
+  resolved: ResolvedProject;
+  config: AgentplaneConfig;
+}): Promise<{
+  backend: TaskBackend;
+  backendId: string;
+  resolved: ResolvedProject;
+  config: AgentplaneConfig;
+  backendConfigPath: string;
+}> {
+  const backendConfigPath = path.join(opts.resolved.gitRoot, opts.config.tasks_backend.config_path);
+  const backendConfig = await loadBackendConfig(backendConfigPath);
+  const normalized = normalizeBackendConfig(backendConfig);
+  const backendId = normalized.id;
+  const settings = normalized.settings;
+
+  if (backendId === "redmine") {
+    await loadDotEnv(opts.resolved.gitRoot);
+    const cacheDirRaw = resolveMaybeRelative(opts.resolved.gitRoot, settings.cache_dir);
+    const cacheDir =
+      cacheDirRaw ?? path.join(opts.resolved.gitRoot, opts.config.paths.workflow_dir);
+    const cache = cacheDir ? new LocalBackend({ dir: cacheDir }) : null;
+    const redmine = new RedmineBackend(settings as RedmineSettings, { cache });
+    return {
+      backend: redmine,
+      backendId,
+      resolved: opts.resolved,
+      config: opts.config,
+      backendConfigPath,
+    };
+  }
+
+  const localDir =
+    resolveMaybeRelative(opts.resolved.gitRoot, settings.dir) ??
+    path.join(opts.resolved.gitRoot, opts.config.paths.workflow_dir);
+  const local = new LocalBackend({ dir: localDir });
+  return {
+    backend: local,
+    backendId: "local",
+    resolved: opts.resolved,
+    config: opts.config,
+    backendConfigPath,
+  };
+}
+
 function resolveMaybeRelative(root: string, input: unknown): string | null {
   if (!input) return null;
   const raw = toStringSafe(input).trim();
@@ -58,6 +103,8 @@ function normalizeBackendConfig(raw: unknown): {
 export async function loadTaskBackend(opts: {
   cwd: string;
   rootOverride?: string | null;
+  resolvedProject?: ResolvedProject;
+  config?: AgentplaneConfig;
 }): Promise<{
   backend: TaskBackend;
   backendId: string;
@@ -65,26 +112,13 @@ export async function loadTaskBackend(opts: {
   config: AgentplaneConfig;
   backendConfigPath: string;
 }> {
-  const resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
-  const loaded = await loadConfig(resolved.agentplaneDir);
-  const backendConfigPath = path.join(resolved.gitRoot, loaded.config.tasks_backend.config_path);
-  const backendConfig = await loadBackendConfig(backendConfigPath);
-  const normalized = normalizeBackendConfig(backendConfig);
-  const backendId = normalized.id;
-  const settings = normalized.settings;
-
-  if (backendId === "redmine") {
-    await loadDotEnv(resolved.gitRoot);
-    const cacheDirRaw = resolveMaybeRelative(resolved.gitRoot, settings.cache_dir);
-    const cacheDir = cacheDirRaw ?? path.join(resolved.gitRoot, loaded.config.paths.workflow_dir);
-    const cache = cacheDir ? new LocalBackend({ dir: cacheDir }) : null;
-    const redmine = new RedmineBackend(settings as RedmineSettings, { cache });
-    return { backend: redmine, backendId, resolved, config: loaded.config, backendConfigPath };
+  const resolved =
+    opts.resolvedProject ??
+    (await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  if (opts.config) {
+    return await instantiateTaskBackend({ resolved, config: opts.config });
   }
-
-  const localDir =
-    resolveMaybeRelative(resolved.gitRoot, settings.dir) ??
-    path.join(resolved.gitRoot, loaded.config.paths.workflow_dir);
-  const local = new LocalBackend({ dir: localDir });
-  return { backend: local, backendId: "local", resolved, config: loaded.config, backendConfigPath };
+  const loadedConfig = await loadConfig(resolved.agentplaneDir);
+  const config = loadedConfig.config;
+  return await instantiateTaskBackend({ resolved, config });
 }
