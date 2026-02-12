@@ -1,7 +1,9 @@
 ---
 id: "202602120925-5DY3DV"
 title: "P1: init prod preset for compact agent UX"
-status: "DOING"
+result_summary: "Added setup-profile switch for init: compact prod interactive flow and full dev questionnaire."
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -19,11 +21,16 @@ verification:
   updated_at: "2026-02-12T10:09:55.233Z"
   updated_by: "CODER"
   note: "Verified: run-cli init suite passes with compact prod prompts and full dev prompts; lint/build pass."
-commit: null
+commit:
+  hash: "4be295eb3e048cbbf31fa4a92e1c7de4012feb65"
+  message: "✅ 5DY3DV init: add compact prod setup profile"
 comments:
   -
     author: "CODER"
     body: "Start: implement compact prod init flow and keep full dev questionnaire via setup-profile switch."
+  -
+    author: "CODER"
+    body: "Verified: init interactive tests cover prod compact and dev full questionnaire paths; lint/build pass."
 events:
   -
     type: "status"
@@ -38,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: run-cli init suite passes with compact prod prompts and full dev prompts; lint/build pass."
+  -
+    type: "status"
+    at: "2026-02-12T10:10:30.854Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init interactive tests cover prod compact and dev full questionnaire paths; lint/build pass."
 doc_version: 2
-doc_updated_at: "2026-02-12T10:09:55.234Z"
+doc_updated_at: "2026-02-12T10:10:30.854Z"
 doc_updated_by: "CODER"
 description: "Init asks 1-2 questions and configures execution/output defaults for installed workflow."
 id_source: "generated"
