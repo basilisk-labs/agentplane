@@ -3,32 +3,55 @@ title: "Project layout"
 description: "How the repository is structured and where key components live."
 ---
 
-## Overview
+## Top-level directories
 
-Agent Plane is a monorepo. The CLI is published as `agentplane`, and supporting packages live under `packages/`.
+- `packages/agentplane/`: published `agentplane` CLI package
+- `packages/core/`: published `@agentplaneorg/core` package
+- `packages/spec/`: canonical schemas and examples
+- `packages/recipes/`: recipe runtime helpers
+- `packages/testkit/`: shared test helpers
+- `docs/`: user and developer documentation
+- `scripts/`: repository maintenance and sync scripts
+- `.github/workflows/`: CI and publish pipelines
 
-## Root folders
+## CLI package layout
 
-- `packages/agentplane/` — Node.js CLI entrypoint (TypeScript + ESM).
-- `packages/core/` — core utilities (project resolution, config, task models).
-- `packages/recipes/` — recipe runtime helpers (internal).
-- Spec package — JSON schemas + examples for file formats.
-- `packages/testkit/` — internal test helpers.
-- `docs/` — developer documentation (Mintlify).
-- `.agentplane/` — project state directory for the Node.js CLI.
+- `packages/agentplane/src/cli/`: parser, help rendering, command wiring
+- `packages/agentplane/src/commands/`: command handlers and domain logic
+- `packages/agentplane/src/backends/`: task backend adapters
+- `packages/agentplane/assets/`: framework templates copied by `init` and used by `upgrade`
+- `packages/agentplane/dist/`: built output used by runtime and publish
 
-## Generated artifacts
+## Core and spec layout
 
-- `packages/**/dist/` — TypeScript build output (published in npm packages).
-- `.agentplane/tasks/` — task READMEs (source of truth for tasks).
-- `.agentplane/cache/` — cached metadata (update-check, task index).
-- `.agentplane/.runs/` — recipe run artifacts.
+- `packages/spec/schemas/*.schema.json`: canonical schema source
+- `packages/core/schemas/*.schema.json`: synchronized mirror for runtime package
+- `scripts/sync-schemas.mjs`: sync/check tool for schema parity
+- `scripts/sync-agent-templates.mjs`: sync/check tool for agent profile parity (`assets/agents` vs `.agentplane/agents` in this repository)
 
-## Where to start
+## Project runtime directories
 
-If you are contributing to the CLI:
+After `agentplane init`, a project uses:
 
-- `packages/agentplane/src/cli/run-cli.ts` for command routing and behavior.
-- `packages/agentplane/src/help.ts` for help output.
-- `packages/agentplane/src/backends/task-backend.ts` for task backends.
-- `packages/core/src/` for shared models and utilities.
+- `.agentplane/config.json`: runtime config
+- `.agentplane/agents/*.json`: local agent profiles
+- `.agentplane/tasks/<task-id>/README.md`: canonical task documents
+- `.agentplane/tasks.json`: export snapshot for external integrations
+- `.agentplane/cache/`: runtime cache (index/update-check metadata)
+- `.agentplane/.upgrade/`: temporary/diagnostic upgrade artifacts
+- `.agentplane/.release/`: temporary release planning artifacts
+
+## Build and release artifacts
+
+- `packages/**/dist/`: compiled package output
+- `docs/releases/v*.md`: release notes consumed by release commands
+- `agentplane-upgrade.tar.gz`: upgrade bundle generated in publish workflow
+
+## Quick orientation
+
+If you are changing command behavior:
+
+1. Start from `packages/agentplane/src/cli/run-cli.ts`.
+2. Follow command entry in `packages/agentplane/src/cli/run-cli/command-catalog.ts`.
+3. Edit handler in `packages/agentplane/src/commands/**`.
+4. Update docs and command tests in the same task.

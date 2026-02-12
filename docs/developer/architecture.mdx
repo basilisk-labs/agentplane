@@ -3,51 +3,70 @@ title: "Architecture"
 description: "How the CLI, backends, tasks, and recipes fit together."
 ---
 
-## Overview
+## What runs where
 
-Agent Plane is a CLI-first workflow framework. The CLI orchestrates task state, workflow guardrails, and optional automation. Core behavior is deterministic and offline-first, while optional features are shipped as recipes.
+Agent Plane has three layers with different responsibilities:
 
-## Core components
+1. CLI runtime (`packages/agentplane/src`)
+2. Shared models and config (`packages/core/src`)
+3. JSON schema/spec layer (`packages/spec/schemas`)
 
-### CLI (`agentplane`)
+The runtime layer owns command behavior. The core layer owns parsing and shared contracts. The spec layer is the canonical schema source, synchronized into `packages/core/schemas`.
 
-- Entry point: `packages/agentplane/src/cli/run-cli.ts`.
-- Parses commands and enforces guardrails.
-- Routes task operations to the configured backend.
+## CLI runtime map
 
-### Core library (`@agentplane/core`)
+- Command entry and global argument handling:
+  - `packages/agentplane/src/cli/run-cli.ts`
+- Command registry and lazy loading:
+  - `packages/agentplane/src/cli/run-cli/command-catalog.ts`
+- Command handlers:
+  - `packages/agentplane/src/commands/**`
+- Task backend integration:
+  - `packages/agentplane/src/backends/task-backend/load.ts`
+- Redmine backend implementation:
+  - `packages/agentplane/src/backends/task-backend/redmine-backend.ts`
 
-- Project resolution and configuration parsing.
-- Task README parsing and export helpers.
+## Core map
 
-### Task backends
+- Project resolution:
+  - `packages/core/src/project.ts`
+- Config parsing and defaults:
+  - `packages/core/src/config.ts`
+- Task document and snapshot primitives:
+  - `packages/core/src/task-*`
 
-- Local backend stores tasks under `.agentplane/tasks/`.
-- Remote backends (e.g., Redmine) are optional and require explicit sync.
+## Runtime data flow
 
-### Recipes
+1. CLI resolves project root and reads `.agentplane/config.json`.
+2. Command parser resolves command spec and validates flags.
+3. Handler loads backend via `tasks_backend.config_path`.
+4. Command mutates task state in backend storage.
+5. Optional exports write `.agentplane/tasks.json`.
+6. Task docs live in `.agentplane/tasks/<task-id>/README.md`.
 
-- Live under `.agentplane/recipes/`.
-- Provide scenarios, tools, and optional agents.
-- Must comply with safety rules and I/O allowlists.
+## Upgrade and policy flow
 
-## Data flow
+`agentplane upgrade` applies managed framework assets and can emit upgrade review artifacts. In agent mode it writes run artifacts under `.agentplane/.upgrade/agent/<runId>/`, including `review.json` for semantic merge decisions.
 
-1. CLI reads `.agentplane/config.json`.
-2. CLI resolves the active backend config.
-3. Task commands read/write through the backend.
-4. Export-only snapshots are written to `.agentplane/tasks.json` for integrations.
-5. Recipe runs write artifacts under `.agentplane/.runs/`.
+Policy enforcement happens in command handlers and guard flows:
 
-## Guardrails
+- commit subject and suffix validation
+- allowlist path checks
+- approval checks (network, force and other gated actions)
+- lifecycle gates (dependencies, verification constraints, plan rules)
 
-- Structured comments for start/block/finish actions.
-- Commit subject validation with task ID suffix.
-- PR artifacts required in `branch_pr` mode.
+## Release flow
+
+Release is split into planning and apply:
+
+1. `agentplane release plan` generates patch candidate and notes inputs.
+2. `agentplane release apply` updates versions and changelog artifacts.
+3. Local prepublish gates must pass before `--push`.
+4. npm publish is GitHub-only with provenance enforced by package scripts and workflow checks.
 
 ## Related docs
 
-- [Workflow](../user/workflow)
+- [Project layout](project-layout)
+- [CLI contract](cli-contract)
+- [Release and publishing](release-and-publishing)
 - [Tasks and backends](../user/tasks-and-backends)
-- [Backends deep dive](../user/backends)
-- [Recipes spec](recipes-spec)
