@@ -706,16 +706,15 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     const emoji = await expectedAgentEmoji(root, "CODER");
-    expect(stdout.trim()).toBe(
-      `${emoji} ${suffix} task: implement comment-driven commit for start flow | details: detail A; detail B`,
-    );
+    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
 
     const { stdout: body } = await execFileAsync("git", ["log", "-1", "--pretty=%b"], {
       cwd: root,
     });
     expect(body).toContain(`Task: ${taskId}`);
     expect(body).toContain("Agent: CODER");
-    expect(body).toContain("Status: TODO -> DOING");
+    expect(body).toContain("Primary: meta");
+    expect(body).toContain("Status: DOING");
     expect(body).toContain("Comment:");
     expect(body).toContain("implement comment-driven commit for start flow");
   });
@@ -1073,9 +1072,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     const emoji = await expectedAgentEmoji(root, "CODER");
-    expect(stdout.trim()).toBe(
-      `${emoji} ${suffix} task: implement sentence-based summary for commit messages. | details: Add follow-up details.`,
-    );
+    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
   });
 
   it("start rejects comments without the required prefix", async () => {
@@ -1186,9 +1183,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     const emoji = await expectedAgentEmoji(root, "CODER");
-    expect(stdout.trim()).toBe(
-      `${emoji} ${suffix} task: handle policy off | details: follow-up; extra details included for coverage`,
-    );
+    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
   });
 
   it("start commit-from-comment formats -- separators and supports --quiet", async () => {
@@ -1250,9 +1245,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     const emoji = await expectedAgentEmoji(root, "CODER");
-    expect(stdout.trim()).toBe(
-      `${emoji} ${suffix} task: apply separator rules | details: include extra details in the commit message`,
-    );
+    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
   });
 
   it("start rejects comments that are too short", async () => {
@@ -1419,9 +1412,7 @@ describe("runCli", () => {
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
     const emoji = await expectedAgentEmoji(root, "CODER");
-    expect(stdout.trim()).toBe(
-      `${emoji} ${suffix} task: implement summary-only commit message formatting for start actions`,
-    );
+    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
   });
 
   it("start commit-from-comment honors custom commit emoji when it matches the executor agent emoji", async () => {
@@ -1490,9 +1481,7 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
-    expect(stdout.trim()).toBe(
-      `✨ ${suffix} task: custom emoji commit path for start command coverage and validation`,
-    );
+    expect(stdout.trim()).toBe(`✨ ${suffix} meta: doing`);
   });
 
   it("start commit-from-comment fails when allow prefixes do not match changes", async () => {

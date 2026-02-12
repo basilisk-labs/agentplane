@@ -18,7 +18,7 @@ import {
   extractDocSection,
   isVerifyStepsFilled,
   nowIso,
-  requiresVerify,
+  requiresVerifyStepsByPrimary,
   toStringArray,
 } from "./shared.js";
 
@@ -178,10 +178,8 @@ export async function cmdTaskPlanApprove(opts: {
     const enforceVerifySteps = config.tasks.verify.enforce_on_plan_approve !== false;
     if (enforceVerifySteps) {
       const tags = toStringArray(task.tags);
-      const requireStepsTags =
-        config.tasks.verify.require_steps_for_tags ?? config.tasks.verify.required_tags;
       const spikeTag = (config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
-      const verifyRequired = requiresVerify(tags, requireStepsTags);
+      const verifyRequired = requiresVerifyStepsByPrimary(tags, config);
       const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
       if (verifyRequired || isSpike) {
         const verifySteps = extractDocSection(baseDoc, "Verify Steps");

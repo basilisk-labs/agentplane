@@ -5,7 +5,7 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
   dedupeStrings,
-  requiresVerify,
+  requiresVerifyStepsByPrimary,
   readTaskTagPolicy,
   resolvePrimaryTag,
   toStringArray,
@@ -72,11 +72,11 @@ export async function cmdTaskUpdate(opts: {
 
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
     const hasSpike = mergedTags.some((tag) => tag.trim().toLowerCase() === spikeTag);
-    const hasImplementationTags = requiresVerify(mergedTags, ctx.config.tasks.verify.required_tags);
+    const hasImplementationTags = requiresVerifyStepsByPrimary(mergedTags, ctx.config);
     if (hasSpike && hasImplementationTags) {
       process.stderr.write(
         `${warnMessage(
-          "spike is combined with code/backend/frontend tags; consider splitting spike vs implementation tasks",
+          "spike is combined with a primary tag that requires verify steps; consider splitting spike vs implementation tasks",
         )}\n`,
       );
     }

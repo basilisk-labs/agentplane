@@ -169,7 +169,9 @@ describe("task shared helpers", () => {
         verifyOn,
       ),
     ).not.toThrow();
-    expect(() => ensureVerificationSatisfiedIfRequired(base, verifyOn)).toThrow(CliError);
+    expect(() =>
+      ensureVerificationSatisfiedIfRequired({ ...base, tags: ["code"] }, verifyOn),
+    ).toThrow(CliError);
   });
 
   it("buildDependencyState computes missing and incomplete deps", () => {

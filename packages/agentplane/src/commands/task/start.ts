@@ -26,7 +26,7 @@ import {
   isVerifyStepsFilled,
   isTransitionAllowed,
   nowIso,
-  requiresVerify,
+  requiresVerifyStepsByPrimary,
   requireStructuredComment,
   resolvePrimaryTag,
   toStringArray,
@@ -77,10 +77,8 @@ export async function cmdStart(opts: {
       const enforce = ctx.config.tasks.verify.enforce_on_start_when_no_plan !== false;
       if (enforce) {
         const tags = toStringArray(task.tags);
-        const requireStepsTags =
-          ctx.config.tasks.verify.require_steps_for_tags ?? ctx.config.tasks.verify.required_tags;
         const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
-        const verifyRequired = requiresVerify(tags, requireStepsTags);
+        const verifyRequired = requiresVerifyStepsByPrimary(tags, ctx.config);
         const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
         const doc = typeof task.doc === "string" ? task.doc : "";
 

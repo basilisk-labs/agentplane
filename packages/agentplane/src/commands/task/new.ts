@@ -3,7 +3,12 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage, warnMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { nowIso, requiresVerify, resolvePrimaryTag, warnIfUnknownOwner } from "./shared.js";
+import {
+  nowIso,
+  requiresVerifyStepsByPrimary,
+  resolvePrimaryTag,
+  warnIfUnknownOwner,
+} from "./shared.js";
 
 export type TaskNewParsed = {
   title: string;
@@ -52,8 +57,6 @@ export async function runTaskNewParsed(opts: {
       id_source: "generated",
     };
 
-    const requireStepsTags =
-      ctx.config.tasks.verify.require_steps_for_tags ?? ctx.config.tasks.verify.required_tags;
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
     const primary = resolvePrimaryTag(p.tags, ctx);
     if (primary.usedFallback) {
@@ -63,7 +66,7 @@ export async function runTaskNewParsed(opts: {
         )}\n`,
       );
     }
-    const requiresVerifySteps = requiresVerify(p.tags, requireStepsTags);
+    const requiresVerifySteps = requiresVerifyStepsByPrimary(p.tags, ctx.config);
     await warnIfUnknownOwner(ctx, p.owner);
     if (requiresVerifySteps) {
       process.stderr.write(
@@ -73,11 +76,11 @@ export async function runTaskNewParsed(opts: {
       );
     }
     const hasSpike = p.tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
-    const hasImplementationTags = requiresVerify(p.tags, ctx.config.tasks.verify.required_tags);
+    const hasImplementationTags = requiresVerifyStepsByPrimary(p.tags, ctx.config);
     if (hasSpike && hasImplementationTags) {
       process.stderr.write(
         `${warnMessage(
-          "spike is combined with code/backend/frontend tags; consider splitting spike vs implementation tasks",
+          "spike is combined with a primary tag that requires verify steps; consider splitting spike vs implementation tasks",
         )}\n`,
       );
     }

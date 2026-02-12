@@ -122,6 +122,13 @@ export type TaskTagPolicy = {
   lockPrimaryOnUpdate: boolean;
 };
 
+type RawVerifyPolicy = {
+  require_steps_for_primary?: unknown;
+  require_verification_for_primary?: unknown;
+  require_steps_for_tags?: unknown;
+  required_tags?: unknown;
+};
+
 type RawTaskTags = {
   primary_allowlist?: unknown;
   strict_primary?: unknown;
@@ -147,8 +154,13 @@ function readString(value: unknown, fallback: string): string {
   return trimmed.length > 0 ? trimmed : fallback;
 }
 
-export function readTaskTagPolicy(ctx: CommandContext): TaskTagPolicy {
-  const tasks: Record<string, unknown> = isRecord(ctx.config.tasks) ? ctx.config.tasks : {};
+function configFromInput(input: CommandContext | AgentplaneConfig): AgentplaneConfig {
+  return "config" in input ? input.config : input;
+}
+
+export function readTaskTagPolicy(input: CommandContext | AgentplaneConfig): TaskTagPolicy {
+  const config = configFromInput(input);
+  const tasks: Record<string, unknown> = isRecord(config.tasks) ? config.tasks : {};
   const rawTagsCandidate = tasks.tags;
   const rawTags: RawTaskTags = isRecord(rawTagsCandidate) ? (rawTagsCandidate as RawTaskTags) : {};
   const fallbackAllowlist = ["code", "data", "research", "docs", "ops", "product", "meta"];
@@ -166,8 +178,45 @@ export function readTaskTagPolicy(ctx: CommandContext): TaskTagPolicy {
   };
 }
 
-export function resolvePrimaryTag(tags: string[], ctx: CommandContext): PrimaryTagResolution {
-  const policy = readTaskTagPolicy(ctx);
+function readVerifyPrimaryPolicy(config: AgentplaneConfig): {
+  requireStepsForPrimary: Set<string>;
+  requireVerificationForPrimary: Set<string>;
+} {
+  const tasks: Record<string, unknown> = isRecord(config.tasks) ? config.tasks : {};
+  const rawVerifyCandidate = tasks.verify;
+  const rawVerify: RawVerifyPolicy = isRecord(rawVerifyCandidate)
+    ? (rawVerifyCandidate as RawVerifyPolicy)
+    : {};
+
+  const explicitSteps = dedupeStrings(
+    readStringArray(rawVerify.require_steps_for_primary)
+      .map((tag) => tag.toLowerCase())
+      .filter(Boolean),
+  );
+  const legacySteps = dedupeStrings(
+    readStringArray(rawVerify.require_steps_for_tags ?? rawVerify.required_tags)
+      .map((tag) => tag.toLowerCase())
+      .filter(Boolean),
+  );
+  const requireStepsForPrimary = new Set(explicitSteps.length > 0 ? explicitSteps : legacySteps);
+
+  const explicitVerification = dedupeStrings(
+    readStringArray(rawVerify.require_verification_for_primary)
+      .map((tag) => tag.toLowerCase())
+      .filter(Boolean),
+  );
+  const requireVerificationForPrimary = new Set(
+    explicitVerification.length > 0 ? explicitVerification : [...requireStepsForPrimary.values()],
+  );
+
+  return { requireStepsForPrimary, requireVerificationForPrimary };
+}
+
+export function resolvePrimaryTagFromConfig(
+  tags: string[],
+  config: AgentplaneConfig,
+): PrimaryTagResolution {
+  const policy = readTaskTagPolicy(config);
   const allowlist = policy.primaryAllowlist;
   if (allowlist.length === 0) {
     throw new CliError({
@@ -214,6 +263,20 @@ export function resolvePrimaryTag(tags: string[], ctx: CommandContext): PrimaryT
     });
   }
   return { primary: fallback, matched, usedFallback: true };
+}
+
+export function requiresVerifyStepsByPrimary(tags: string[], config: AgentplaneConfig): boolean {
+  const primary = resolvePrimaryTagFromConfig(tags, config).primary;
+  return readVerifyPrimaryPolicy(config).requireStepsForPrimary.has(primary);
+}
+
+export function requiresVerificationByPrimary(tags: string[], config: AgentplaneConfig): boolean {
+  const primary = resolvePrimaryTagFromConfig(tags, config).primary;
+  return readVerifyPrimaryPolicy(config).requireVerificationForPrimary.has(primary);
+}
+
+export function resolvePrimaryTag(tags: string[], ctx: CommandContext): PrimaryTagResolution {
+  return resolvePrimaryTagFromConfig(tags, ctx.config);
 }
 
 export async function warnIfUnknownOwner(ctx: CommandContext, owner: string): Promise<void> {
@@ -267,6 +330,7 @@ export function ensureVerificationSatisfiedIfRequired(
   config: AgentplaneConfig,
 ): void {
   if (config.agents?.approvals?.require_verify !== true) return;
+  if (!requiresVerificationByPrimary(toStringArray(task.tags), config)) return;
 
   const state = task.verification?.state ?? "missing";
   if (state === "ok") return;
