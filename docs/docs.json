@@ -3,10 +3,7 @@
   "name": "Agent Plane",
   "theme": "mint",
   "description": "Offline-first workflow framework for using OpenAI Codex in your IDE.",
-  "logo": {
-    "light": "/assets/agentplane.svg",
-    "dark": "/assets/agentplane.svg"
-  },
+  "logo": "/assets/agentplane.svg",
   "favicon": "/assets/agentplane-favicon.svg",
   "colors": {
     "primary": "#0F766E"
@@ -20,62 +17,26 @@
   "navigation": {
     "groups": [
       {
-        "group": "User Guide",
+        "group": "Getting Started",
+        "pages": ["index", "overview", "prerequisites", "setup"]
+      },
+      {
+        "group": "Concepts",
         "pages": [
-          "index",
-          {
-            "group": "Getting Started",
-            "pages": ["user/overview", "user/prerequisites", "user/setup", "user/breaking-changes"]
-          },
-          {
-            "group": "Workflow",
-            "pages": [
-              "user/workflow",
-              "user/task-lifecycle",
-              "user/agents",
-              "user/branching-and-pr-artifacts"
-            ]
-          },
-          {
-            "group": "Tasks & Backends",
-            "pages": ["user/tasks-and-backends", "user/backends", "user/redmine"]
-          },
-          {
-            "group": "Configuration",
-            "pages": ["user/configuration", "user/commands", "user/cli-reference.generated"]
-          }
+          "architecture",
+          "workflow",
+          "agents",
+          "tasks-and-backends",
+          "branching-and-pr-artifacts"
         ]
       },
       {
-        "group": "Developer Guide",
-        "pages": [
-          "developer/design-principles",
-          "developer/architecture",
-          "developer/project-layout",
-          "developer/documentation-information-architecture",
-          "developer/cli-contract",
-          "developer/cli-help-json",
-          "developer/typescript-esm-imports",
-          {
-            "group": "Recipes",
-            "pages": [
-              "developer/recipes-spec",
-              "developer/recipes-how-it-works",
-              "developer/recipes-development",
-              "developer/recipes-safety"
-            ]
-          },
-          {
-            "group": "Quality",
-            "pages": ["developer/testing-and-quality", "developer/code-quality"]
-          },
-          "developer/release-and-publishing",
-          "developer/contributing"
-        ]
+        "group": "Reference",
+        "pages": ["commands", "cli-contract", "recipes-spec", "code-quality"]
       },
       {
         "group": "Help",
-        "pages": ["help/troubleshooting-by-symptom", "help/troubleshooting", "help/glossary"]
+        "pages": ["troubleshooting", "glossary", "redmine"]
       }
     ]
   }
