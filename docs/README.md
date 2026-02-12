@@ -15,3 +15,8 @@ When adding or moving pages, update these files together:
 - `docs/index.mdx`
 - `docs/docs.json`
 - `docs/README.md`
+
+Generated command reference:
+
+- `docs/user/cli-reference.generated.mdx` is generated from live CLI specs.
+- Refresh it with `agentplane docs cli --out docs/user/cli-reference.generated.mdx`.

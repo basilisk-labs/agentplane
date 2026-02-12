@@ -54,6 +54,7 @@
           "developer/project-layout",
           "developer/documentation-information-architecture",
           "developer/cli-contract",
+          "developer/cli-help-json",
           "developer/typescript-esm-imports",
           {
             "group": "Recipes",
