@@ -11,6 +11,8 @@ description: "Common problems and how to fix them quickly."
 
 - Run `agentplane --help` to confirm the correct syntax.
 - Check whether a subcommand is missing required flags.
+- For machine-readable output, use `--json-errors` before the command, for example:
+  - `agentplane --json-errors task show 202602120734-3M598S`
 
 ## Task doc changes rejected
 
@@ -20,6 +22,17 @@ description: "Common problems and how to fix them quickly."
 
 - Use `agentplane task doc set <task-id>` instead of editing README by hand.
 - Ensure required sections exist (Summary, Scope, Risks, Verify Steps, Rollback Plan).
+
+## `agentplane task show --compact` fails
+
+**Symptom:** CLI prints `Unknown option: --compact`.
+
+**Fix:**
+
+- `--compact` is supported by `help`, not by all commands.
+- Use:
+  - `agentplane task show <task-id>`
+  - `agentplane help task show --compact`
 
 ## Finish fails due to readiness
 
@@ -60,6 +73,16 @@ description: "Common problems and how to fix them quickly."
 - In branch_pr, use `agentplane work start <task-id> ... --worktree` to create a valid worktree.
 - Check that worktrees live under `.agentplane/worktrees`.
 
+## `config show` or `task list` fails with config validation error
+
+**Symptom:** command fails early with schema/type error (for example, invalid `base_branch` type in config).
+
+**Fix:**
+
+- Open `.agentplane/config.json` and correct invalid fields.
+- Validate against `packages/spec/schemas/config.schema.json` in this repository.
+- If this is a fresh install and config is heavily drifted, re-run `agentplane init --yes` and re-apply minimal overrides.
+
 ## Recipe fails due to missing inputs
 
 **Symptom:** Recipe output shows "Pending Actions".
@@ -78,13 +101,23 @@ description: "Common problems and how to fix them quickly."
 - Ensure the manifest allowlists the files you need to read/write.
 - Ensure network access is allowed in the manifest if required.
 
+## `agentplane doctor` reports failures on a normal install
+
+**Symptom:** doctor shows failed checks in a repository that does not contain framework source files.
+
+**Fix:**
+
+- Run doctor from the repository root that was initialized with `agentplane init`.
+- Doctor validates normal installation invariants by default.
+- If you are developing the framework itself, run doctor in that repository and keep generated/task artifacts in ignored paths.
+
 ## Sync fails for remote backend
 
 **Symptom:** `agentplane backend sync ...` errors or reports network failures.
 
 **Fix:**
 
-- Confirm backend settings in `.agentplane/backends/<id>/backend.json`.
+- For redmine, configure secrets in `.env` (`REDMINE_URL`, `REDMINE_API_KEY`) and keep backend JSON non-secret.
 - Retry with `--direction pull` to refresh local cache, for example:
   - `agentplane backend sync redmine --direction pull`
-- Check custom field mappings if using Redmine.
+- Check custom field env mappings if using Redmine.

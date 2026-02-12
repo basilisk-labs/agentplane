@@ -5,11 +5,20 @@ description: "Definitions for key terms used across Agent Plane documentation."
 
 ## Agent
 
-A role with a JSON-defined scope and workflow.
+A role profile loaded from `.agentplane/agents/<ID>.json`.
 
 ## Task ID
 
 A unique identifier like `202601031816-7F3K2Q` used to track work across backends.
+
+## Primary tag
+
+Exactly one policy-driving tag per task. The default allowlist is:
+`code`, `data`, `research`, `docs`, `ops`, `product`, `meta`.
+
+## Secondary tags
+
+Additional tags used for search and scope hints. They do not relax policy rules.
 
 ## Workflow Artifact
 
@@ -27,6 +36,10 @@ A separate checkout used for task branches in `branch_pr` mode.
 
 Config switch that chooses between `direct` and `branch_pr` workflows.
 
+## Status commit
+
+A commit that records major task state transitions. In current policy, this applies to transition points such as `doing -> blocked`, `doing -> done`, and `done -> verified`.
+
 ## Verify
 
 Recording (and optionally executing) verification for a task.
@@ -38,6 +51,10 @@ Recording (and optionally executing) verification for a task.
 
 Pre-commit checks that validate staged files and commit messages.
 
+## Approval requirement
+
+A policy gate that can require explicit approval for an action such as network access or `--force`, depending on config and execution profile.
+
 ## Backend
 
 Pluggable task store that defines the canonical source of truth (local or redmine).
@@ -45,3 +62,7 @@ Pluggable task store that defines the canonical source of truth (local or redmin
 ## Local Cache
 
 The `.agentplane/tasks/` folder when backend=redmine; used for offline work and sync.
+
+## Review report (`review.json`)
+
+Structured output from `agentplane upgrade` that marks files requiring semantic merge review (`needsSemanticReview`).

@@ -3,36 +3,68 @@ title: "Troubleshooting"
 description: "Fix common setup and workflow issues when using Agent Plane locally."
 ---
 
-## tasks.json mismatch or stale data
+## exported tasks.json looks stale
 
-- Cause: `tasks.json` is an exported view and may be stale.
-- Fix: re-run `agentplane task export` (writes `.agentplane/tasks.json`).
+- Why this happens: `.agentplane/tasks.json` is an export artifact, not the live task store.
+- What to do: run `agentplane task export` and then re-check your downstream tool.
 
-## Dirty working tree before commit
+## command fails with config validation errors
 
-- Cause: unrelated edits or forgotten files.
-- Fix: `git status --short`, then stash or commit only what belongs to the task.
+- Symptom: commands like `agentplane config show` or `agentplane task list` fail with a schema error.
+- Why this happens: `.agentplane/config.json` contains invalid values.
+- What to do:
+- Validate the config shape against `packages/spec/schemas/config.schema.json` in this repository.
+- Use `agentplane init --yes` to regenerate defaults if the repository can be reset to a clean baseline.
+- Re-apply only intentional local config changes.
 
-## Outdated task state
+## working tree is dirty before commit or finish
 
-- Cause: viewing stale data from cache or a previous export.
-- Fix: re-run `agentplane task list` or `agentplane task show`, then sync if needed.
+- Why this happens: task execution changed files outside your current scope, or generated artifacts were not cleaned.
+- What to do:
+- Inspect changes with `git status --short`.
+- Commit only task-owned files through `agentplane commit ... --allow ...`.
+- If artifacts are expected runtime/cache outputs, ensure they are covered by `.gitignore`.
 
-## Redmine unreachable
+## upgrade left untracked artifacts
 
-- Cause: network outage or API credentials expired.
-- Fix: keep working against the offline cache (when configured), then run `agentplane backend sync redmine` once connectivity returns.
+- Symptom: `git status` shows `.agentplane/.upgrade/*` after `agentplane upgrade`.
+- What to do:
+- On current versions, successful upgrade should clean temporary upgrade artifacts.
+- If artifacts remain, remove stale directories and re-run upgrade once.
+- Track this as a bug if reproducible on the latest patch version.
 
-## Redmine sync conflicts
+## redmine backend cannot connect
 
-- Cause: local cache diverged from Redmine.
-- Fix: re-run sync and choose a conflict strategy (`--conflict diff|prefer-local|prefer-remote|fail`) after reviewing the diff.
+- Why this happens: invalid `REDMINE_URL` or `REDMINE_API_KEY`, or network is unavailable.
+- What to do:
+- Fill project-local `.env` from `.env.example`.
+- Verify `REDMINE_URL` and `REDMINE_API_KEY`.
+- Retry `agentplane backend sync redmine --direction pull`.
 
-## agentplane command failures
+## redmine sync conflicts or drift
 
-- Cause: running outside a git repo, or missing Node.js 20+.
-- Fix: run inside a git repository (or pass `--root <path>`) and ensure Node.js 20+ is available.
+- Why this happens: local cache and remote Redmine tasks diverged.
+- What to do:
+- Pull latest remote state with `agentplane backend sync redmine --direction pull`.
+- If push still fails, run sync with an explicit conflict policy and inspect changed fields.
 
-## IDE or plugin stops responding
+## release apply stops before push
 
-- Fix: restart the IDE or reload the project, then re-run the last command manually.
+- Why this happens: `release:prepublish` gate failed (tests/lint/build/sync checks).
+- What to do:
+- Run `bun run release:prepublish`.
+- Fix reported errors first, then run `agentplane release apply --push` again.
+
+## init completed, but repo is not clean
+
+- Why this happens: hooks/assets were written after the init commit path, or local files were already present.
+- What to do:
+- Run `git status --short` and inspect only files created by init.
+- If this is a fresh repository and init still leaves tracked changes, upgrade to the latest patch release and retry.
+
+## ide integration not updated
+
+- Why this happens: AGENTS policy changed, but IDE mirror files were not regenerated.
+- What to do:
+- Run `agentplane ide sync`.
+- Re-open the IDE workspace to refresh loaded instructions.
