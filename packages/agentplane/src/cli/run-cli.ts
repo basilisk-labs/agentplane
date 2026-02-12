@@ -179,10 +179,23 @@ function matchCommandCatalog(tokens: readonly string[]): CatalogMatch | null {
   return best;
 }
 
+type NextAction = {
+  command: string;
+  reason: string;
+  reasonCode: string;
+};
+
+type ErrorGuidance = {
+  hint?: string;
+  nextAction?: NextAction;
+};
+
 function writeError(err: CliError, jsonErrors: boolean): void {
-  const hint = renderErrorHint(err);
+  const guidance = resolveErrorGuidance(err);
   if (jsonErrors) {
-    process.stdout.write(`${formatJsonError(err)}\n`);
+    process.stdout.write(
+      `${formatJsonError(err, { hint: guidance.hint, nextAction: guidance.nextAction })}\n`,
+    );
   } else {
     const header = `error [${err.code}]`;
     if (err.message.includes("\n")) {
@@ -190,8 +203,13 @@ function writeError(err: CliError, jsonErrors: boolean): void {
     } else {
       process.stderr.write(`${header}: ${err.message}\n`);
     }
-    if (hint) {
-      process.stderr.write(`hint: ${hint}\n`);
+    if (guidance.hint) {
+      process.stderr.write(`hint: ${guidance.hint}\n`);
+    }
+    if (guidance.nextAction) {
+      process.stderr.write(
+        `next_action: ${guidance.nextAction.command} (${guidance.nextAction.reason})\n`,
+      );
     }
   }
 }
@@ -204,33 +222,92 @@ function resolveAgentplaneHome(): string {
   return path.join(os.homedir(), ".agentplane");
 }
 
-function renderErrorHint(err: CliError): string | undefined {
+function resolveErrorGuidance(err: CliError): ErrorGuidance {
   const command = typeof err.context?.command === "string" ? err.context.command : undefined;
   const usage = command ? `agentplane help ${command} --compact` : "agentplane help";
   switch (err.code) {
     case "E_USAGE": {
-      return `See \`${usage}\` for usage.`;
+      return {
+        hint: `See \`${usage}\` for usage.`,
+        nextAction: {
+          command: usage,
+          reason: "inspect required arguments and flags",
+          reasonCode: "usage_help",
+        },
+      };
     }
     case "E_GIT": {
       if (command?.startsWith("branch")) {
-        return "Check git repo/branch; run `git branch` or pass --root <path>.";
+        return {
+          hint: "Check git repo/branch; run `git branch` or pass --root <path>.",
+          nextAction: {
+            command: "git branch",
+            reason: "inspect repository branch state",
+            reasonCode: "git_branch_state",
+          },
+        };
       }
       if (command === "guard commit" || command === "commit") {
-        return "Check git status/index; stage changes and retry.";
+        return {
+          hint: "Check git status/index; stage changes and retry.",
+          nextAction: {
+            command: "git status --short",
+            reason: "inspect staged/unstaged changes before commit",
+            reasonCode: "git_index_state",
+          },
+        };
       }
-      return "Check git repo context; pass --root <path> if needed.";
+      return {
+        hint: "Check git repo context; pass --root <path> if needed.",
+        nextAction: {
+          command: "git status --short --untracked-files=no",
+          reason: "confirm repository context and tracked changes",
+          reasonCode: "git_context",
+        },
+      };
     }
     case "E_NETWORK": {
-      return "Check network access and credentials.";
+      return {
+        hint: "Check network access and credentials.",
+        nextAction: {
+          command: "agentplane preflight --json",
+          reason: "recheck approvals and network requirements",
+          reasonCode: "network_gate",
+        },
+      };
     }
     case "E_BACKEND": {
       if (command?.includes("sync")) {
-        return "Check backend config under .agentplane/backends and retry.";
+        return {
+          hint: "Check backend config under .agentplane/backends and retry.",
+          nextAction: {
+            command: "agentplane config show",
+            reason: "verify backend config path and active settings",
+            reasonCode: "backend_sync_config",
+          },
+        };
       }
-      return "Check backend config under .agentplane/backends.";
+      return {
+        hint: "Check backend config under .agentplane/backends.",
+        nextAction: {
+          command: "agentplane config show",
+          reason: "inspect backend configuration",
+          reasonCode: "backend_config",
+        },
+      };
+    }
+    case "E_VALIDATION": {
+      return {
+        hint: "Fix invalid config/input shape and rerun.",
+        nextAction: {
+          command: "agentplane preflight --json",
+          reason: "pinpoint validation failure in one report",
+          reasonCode: "validation_preflight",
+        },
+      };
     }
     default: {
-      return undefined;
+      return {};
     }
   }
 }

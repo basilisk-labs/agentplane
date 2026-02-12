@@ -25,13 +25,24 @@ export class CliError extends Error {
   }
 }
 
-export function formatJsonError(err: CliError): string {
+export type JsonErrorGuidance = {
+  hint?: string;
+  nextAction?: {
+    command: string;
+    reason: string;
+    reasonCode?: string;
+  };
+};
+
+export function formatJsonError(err: CliError, guidance?: JsonErrorGuidance): string {
   return JSON.stringify(
     {
       error: {
         code: err.code,
         message: err.message,
         context: err.context ?? undefined,
+        hint: guidance?.hint,
+        next_action: guidance?.nextAction,
       },
     },
     null,

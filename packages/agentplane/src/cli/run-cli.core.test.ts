@@ -444,6 +444,8 @@ describe("runCli", () => {
       expect(code).toBe(2);
       expect(io.stdout).toContain('"error"');
       expect(io.stdout).toContain('"code"');
+      expect(io.stdout).toContain('"next_action"');
+      expect(io.stdout).toContain("agentplane help config set --compact");
     } finally {
       io.restore();
     }
@@ -456,6 +458,7 @@ describe("runCli", () => {
       expect(code).toBe(2);
       expect(io.stderr).toContain("Unknown command: nope");
       expect(io.stderr).toContain("Usage:");
+      expect(io.stderr).toContain("next_action: agentplane help");
     } finally {
       io.restore();
     }
@@ -492,6 +495,7 @@ describe("runCli", () => {
       expect(io.stdout).toContain('"error"');
       expect(io.stdout).toContain('"code": "E_USAGE"');
       expect(io.stdout).toContain("Missing value after --root (expected repository path)");
+      expect(io.stdout).toContain('"reasonCode": "usage_help"');
       expect(io.stderr.trim()).toBe("");
     } finally {
       io.restore();
