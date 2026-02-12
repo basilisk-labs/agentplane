@@ -297,6 +297,116 @@ describe("runCli", () => {
     expect(task.frontmatter.comments?.[0]?.body).toContain("All good");
   });
 
+  it("task close-duplicate closes duplicate task in one command", async () => {
+    const root = await mkGitRepoRoot();
+    const ids: string[] = [];
+    for (const title of ["Canonical task", "Duplicate task"]) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          title,
+          "--description",
+          "Task closure check",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        ids.push(io.stdout.trim());
+      } finally {
+        io.restore();
+      }
+    }
+
+    const canonicalId = ids[0] ?? "";
+    const duplicateId = ids[1] ?? "";
+    expect(canonicalId).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
+    expect(duplicateId).toMatch(/^\d{12}-[A-Z0-9]{6}$/);
+
+    const ioClose = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "close-duplicate",
+        duplicateId,
+        "--of",
+        canonicalId,
+        "--author",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      ioClose.restore();
+    }
+
+    const duplicate = await readTask({ cwd: root, rootOverride: root, taskId: duplicateId });
+    expect(duplicate.frontmatter.status).toBe("DONE");
+    expect(duplicate.frontmatter.result_summary).toBe(`Closed as duplicate of ${canonicalId}.`);
+    expect(duplicate.frontmatter.risk_level).toBe("low");
+    const comments = Array.isArray(duplicate.frontmatter.comments)
+      ? duplicate.frontmatter.comments
+      : [];
+    const lastBody = comments.at(-1)?.body ?? "";
+    expect(lastBody).toContain(`duplicate of ${canonicalId}`);
+  });
+
+  it("task close-duplicate rejects same task id in --of", async () => {
+    const root = await mkGitRepoRoot();
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Self duplicate",
+        "--description",
+        "Should fail",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const ioClose = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "close-duplicate",
+        taskId,
+        "--of",
+        taskId,
+        "--author",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(ioClose.stderr).toContain("Duplicate target must differ from task-id");
+    } finally {
+      ioClose.restore();
+    }
+  });
+
   it("task update appends tags and depends-on", async () => {
     const root = await mkGitRepoRoot();
     let taskId = "";
