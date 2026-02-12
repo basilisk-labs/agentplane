@@ -5,7 +5,9 @@ description: "How task backends work and where to find per-backend documentation
 
 ## Overview
 
-A backend defines where tasks are stored and how synchronization happens. Backends are first-class CLI features (not recipes). The CLI loads the configured backend from `.agentplane/config.json` and routes all task commands through it.
+A backend defines task storage and sync behavior.
+
+`agentplane` resolves backend config from `.agentplane/config.json` and routes task commands through that backend.
 
 ## Available backends
 
@@ -14,11 +16,7 @@ A backend defines where tasks are stored and how synchronization happens. Backen
 
 ## Remote backends
 
-Remote backends (for example Redmine) are optional and should be configured explicitly. They typically include:
-
-- Connection settings (URL, API key, project).
-- Custom field mappings for task metadata.
-- Sync direction and conflict policy.
+Remote backends are optional and must be configured explicitly.
 
 ## Sync model
 
@@ -31,8 +29,7 @@ agentplane backend sync <id> --direction push --yes
 
 The CLI may maintain a local cache and falls back to it when remote services are unavailable.
 
-Note: `agentplane sync` is a supported alias for backend sync, but the docs prefer the explicit
-`agentplane backend sync` form to avoid ambiguity with other domains.
+Prefer `agentplane backend sync` in docs and automation.
 
 ## Conflict strategies
 
@@ -43,11 +40,11 @@ Note: `agentplane sync` is a supported alias for backend sync, but the docs pref
 
 ## Backend configuration
 
-Backend config file path is stored in `.agentplane/config.json` under `tasks_backend.config_path`. During init you can choose `--backend local|redmine`, and you can switch later by updating this path.
+Backend config path lives in `.agentplane/config.json` at `tasks_backend.config_path`.
 
 ### Backend config format (standardized)
 
-Each backend config is a JSON file with a stable shape:
+Each backend config uses this shape:
 
 ```json
 {
@@ -60,19 +57,3 @@ Each backend config is a JSON file with a stable shape:
 ```
 
 Legacy fields like `module`/`class` are ignored by the loader.
-
-Example:
-
-```json
-{
-  "tasks_backend": {
-    "config_path": ".agentplane/backends/local/backend.json"
-  }
-}
-```
-
-## Adding a backend
-
-- Implement the backend interface in the CLI.
-- Provide a config template under `.agentplane/backends/<id>/`.
-- Document required fields and safety caveats.

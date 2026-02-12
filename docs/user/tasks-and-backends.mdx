@@ -3,22 +3,25 @@ title: "Tasks and backends"
 description: "How tasks are stored and how backends are configured."
 ---
 
-## Task storage
+## Task record model
 
-Tasks are stored under `.agentplane/tasks/` as README files with frontmatter. Each task includes:
+Each task record contains:
 
-- Status, owner, priority, tags.
-- Structured doc sections (Summary, Scope, Plan, Risks, Verify Steps, Verification, Rollback Plan, Notes).
-- Append-only events for status changes, comments, and verification (when recorded by CLI).
+- core metadata (`id`, `status`, `owner`, `priority`, `tags`, deps)
+- README doc sections
+- events and comments
+- optional commit metadata
 
-Semantics:
+For local backend, records are persisted under:
 
-- `## Verify Steps`: ex-ante verification contract (criteria/protocol addressed to the verifier).
-- `## Verification`: ex-post append-only log written by `agentplane verify ...`.
+- `.agentplane/tasks/<task-id>/README.md`
 
-See [Task lifecycle](task-lifecycle) for how these files are created and finalized.
+## Verification sections
 
-## Task export
+- `## Verify Steps` is the planned verification contract.
+- `## Verification` is the append-only result log written by `agentplane verify`.
+
+## Export snapshot
 
 An export-only snapshot is written to `.agentplane/tasks.json` for integrations (gitignored by default).
 
@@ -26,9 +29,11 @@ An export-only snapshot is written to `.agentplane/tasks.json` for integrations 
 agentplane task export
 ```
 
-## Backends
+Do not edit `.agentplane/tasks.json` manually.
 
-The active backend is configured in `.agentplane/config.json`:
+## Active backend
+
+Backend routing comes from `.agentplane/config.json`:
 
 ```json
 {
@@ -38,8 +43,7 @@ The active backend is configured in `.agentplane/config.json`:
 }
 ```
 
-- Local backend is the default (set during `agentplane init`).
-- Remote backends require explicit configuration and sync.
+`tasks_backend.config_path` points to backend config (`local` or `redmine`).
 
 ## Sync
 
@@ -48,12 +52,6 @@ agentplane backend sync <id> --direction pull
 agentplane backend sync <id> --direction push --yes
 ```
 
-Conflict strategies: `diff`, `prefer-local`, `prefer-remote`, `fail`.
+Conflict modes: `diff`, `prefer-local`, `prefer-remote`, `fail`.
 
-Note: `agentplane sync` is a supported alias for backend sync, but the docs prefer the explicit
-`agentplane backend sync` form to avoid ambiguity with other domains (for example `agentplane ide sync`).
-
-## Notes
-
-- Treat `.agentplane/tasks.json` as a derived snapshot.
-- Prefer `agentplane task doc set` for README updates.
+Use explicit `agentplane backend sync` in scripts to avoid ambiguity with other `sync` commands.

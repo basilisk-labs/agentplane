@@ -3,69 +3,43 @@ title: "Redmine Backend (Node.js 1.0)"
 description: "How Redmine works as a canonical tasks backend, including sync, env vars, and field mapping."
 ---
 
-## Summary
+## What this page covers
 
-Redmine is a canonical backend option for tasks. When enabled (select it during `agentplane init` or switch `tasks_backend.config_path`):
+This page is the quick operational checklist.
 
-- Redmine issues store the source of truth.
-- `.agentplane/tasks/` acts as an offline cache layer.
+For full contract details, required env keys, and backend JSON semantics, see [Redmine backend](backends/redmine).
 
-## Enablement model (1.0)
+## Quick start
 
-Redmine support is implemented in core for parity, and a recipe can be used to:
-
-- use the backend config template under `.agentplane/backends/redmine/backend.json` (created by init)
-- add optional Redmine-focused agents/scenarios
-
-## Sync
-
-Sync is explicit:
+1. Initialize with Redmine backend:
 
 ```bash
-agentplane backend sync redmine --direction push|pull
+agentplane init --backend redmine
 ```
 
-Conflict handling:
+2. Fill `.env` from `.env.example`.
 
-- `--conflict diff|prefer-local|prefer-remote|fail`
+3. Confirm backend config path:
 
-## Environment variables (`.env`)
+```bash
+agentplane config show
+```
 
-`agentplane` autoloads `.env` from the repo root:
+4. Pull then push sync:
 
-- it must not override already-set environment variables
-- it uses a single, consistent parser
+```bash
+agentplane backend sync redmine --direction pull
+agentplane backend sync redmine --direction push --yes
+```
 
-Expected variables (see `.env.example`):
+## Day-to-day sync pattern
 
-- `AGENTPLANE_REDMINE_URL`
-- `AGENTPLANE_REDMINE_API_KEY`
-- `AGENTPLANE_REDMINE_PROJECT_ID`
-- `AGENTPLANE_REDMINE_ASSIGNEE_ID`
-- `AGENTPLANE_REDMINE_OWNER` (optional)
-- `AGENTPLANE_REDMINE_OWNER_AGENT` (optional alias)
+- Pull before starting a task if remote state may have changed.
+- Push after important updates and before final closure.
+- Use `--conflict diff` first when diagnosing mismatches.
 
-Priority:
+## Failure handling
 
-- Environment variables take precedence over backend config settings.
-- Required connection values (`URL`, `API_KEY`, `PROJECT_ID`) are expected from environment variables.
-- Backend config is used for non-secret mapping/behavior settings.
-- Defaults apply last (for example, owner defaults to `REDMINE`).
-
-Parser notes:
-
-- Lines starting with `#` are ignored.
-- Quoted values support basic escapes (`\n`, `\r`, `\t`, `\"`, `\\`) when double-quoted.
-
-## Field mapping
-
-Task IDs map to a Redmine custom field (commonly named `task_id`) using the `YYYYMMDDHHMM-<RAND>` format. The rest of the task metadata (verify/commit/doc/comments/doc*version/doc_updated*\*) is mapped according to the backend config template.
-
-## Troubleshooting
-
-- Redmine unreachable: continue working against the cache (when configured) and sync later.
-- Missing/misconfigured custom fields: updates may fail or drop metadata; validate the backend config template.
-
-## Legacy note
-
-The repository currently contains a legacy Python Redmine backend. This page documents the target Node.js 1.0 behavior.
+- If connection fails, verify URL/API key/project env values first.
+- If writes fail, check custom field IDs in env.
+- If sync output looks stale, run pull and then inspect local task README metadata.
