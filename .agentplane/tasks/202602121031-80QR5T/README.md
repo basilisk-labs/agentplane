@@ -1,7 +1,9 @@
 ---
 id: "202602121031-80QR5T"
 title: "P1: finish --close-commit single-command lifecycle"
-status: "DOING"
+result_summary: "added finish --close-commit single-command lifecycle"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +20,16 @@ verification:
   updated_at: "2026-02-12T10:34:54.592Z"
   updated_by: "CODER"
   note: "Verified: finish unit and lifecycle tests pass for --close-commit path; help-snap tests pass; lint/build pass."
-commit: null
+commit:
+  hash: "d5df0d786ad3dc457aa23584c44ce11ee76a2b37"
+  message: "✅ 80QR5T lifecycle: add finish close-commit one-command flow"
 comments:
   -
     author: "CODER"
     body: "Start: add finish --close-commit to collapse finish and close-commit operations into one deterministic command path."
+  -
+    author: "CODER"
+    body: "Verified: finish now supports --close-commit and --close-unstage-others, covered by unit and lifecycle tests."
 events:
   -
     type: "status"
@@ -37,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: finish unit and lifecycle tests pass for --close-commit path; help-snap tests pass; lint/build pass."
+  -
+    type: "status"
+    at: "2026-02-12T10:36:51.498Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: finish now supports --close-commit and --close-unstage-others, covered by unit and lifecycle tests."
 doc_version: 2
-doc_updated_at: "2026-02-12T10:34:54.593Z"
+doc_updated_at: "2026-02-12T10:36:51.498Z"
 doc_updated_by: "CODER"
 description: "Add an atomic finish flag that performs finish and deterministic close commit in one command to reduce operator/agent command churn."
 id_source: "generated"
