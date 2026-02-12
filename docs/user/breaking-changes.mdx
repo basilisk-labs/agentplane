@@ -5,22 +5,26 @@ description: "What changed in the Node-first 1.0 release and how to upgrade your
 
 ## Summary
 
-Agent Plane 1.0 is Node-first. The CLI is `agentplane`, and the project state now lives under `.agentplane/`.
+Agent Plane is now driven by the Node CLI `agentplane` with repository state under `.agentplane/`.
 
 ## Key changes
 
-- **Project state directory**: 1.0 uses `.agentplane/` (no dash).
-- **Primary CLI**: use `agentplane` (Node.js).
-- **Init/upgrade flow**: initialize with `agentplane init` and update with `agentplane upgrade`.
-- **Recipes**: optional features (e.g., `redmine`, `viewer`) are installed as recipes.
+1. State directory is `.agentplane/`.
+2. Initialization and upgrades are done through `agentplane init` and `agentplane upgrade`.
+3. Task policy moved to primary-tag model:
+   - `tasks.tags.primary_allowlist`
+   - `tasks.verify.require_steps_for_primary`
+   - `tasks.verify.require_verification_for_primary`
+4. Comment-driven status commits are now limited to major transitions and use subject format:
+   - `<emoji> <suffix> <primary>: <status>`
+5. Redmine backend is env-first for credentials and field IDs.
 
 ## Migration checklist
 
-1. Install Node.js 20+ and the CLI (`npx agentplane` or `bun add -g agentplane`).
-2. Run `agentplane init` in your repo to create `.agentplane/`.
-3. Reinstall optional recipes as needed:
-   - `agentplane recipes install --name redmine`
-   - `agentplane recipes install --name viewer`
+1. Install/update CLI and run `agentplane init` in repo root.
+2. Review `.agentplane/config.json` and move verify policy to primary-tag keys.
+3. If using Redmine, populate `.env` from `.env.example` and verify custom field IDs.
+4. Regenerate docs or scripts that relied on legacy commit subject assumptions.
 
 ## Notes
 

@@ -3,67 +3,69 @@ title: "Agents"
 description: "Learn how agents are defined, how responsibilities are split, and how orchestration works."
 ---
 
-## Where Agents Live
+## Source of truth and precedence
 
-Agents are defined in JSON under `.agentplane/agents/` (core set + optional recipe-installed agents). A global policy document defines the rules that govern runs.
+Agent behavior is resolved in this order:
 
-Key sources of truth (highest to lowest priority):
+1. `AGENTS.md`
+2. `agentplane quickstart` and `agentplane role <ROLE>`
+3. `.agentplane/config.json`
+4. `.agentplane/agents/*.json`
 
-- `AGENTS.md`
-- `agentplane quickstart` / `agentplane role <ROLE>`
-- `.agentplane/config.json`
-- `.agentplane/agents/*.json`
+Profiles live under `.agentplane/agents/*.json`, but they cannot override higher-level policy.
 
 ## ORCHESTRATOR
 
 - Starts every run.
 - Translates a goal into a plan and requests approval.
-- Coordinates handoffs between specialists.
+- Creates exactly one top-level tracking task after approval.
 
 ## PLANNER
 
-- Owns the task backlog.
-- Uses `agentplane` to add/update tasks and enforce dependencies.
-- Creates the initial per-task workflow artifact.
-- Assigns each task to an existing agent id; if none fits, schedule CREATOR to add one before proceeding.
+- Owns downstream task creation and dependency graph updates.
+- Assigns owners from existing agent IDs.
+- If a role is missing, creates a CREATOR task first.
 
 ## CODER
 
 - Implements changes with tight diffs.
-- Runs local commands and summarizes key output.
-- Hands off to TESTER and DOCS as needed.
+- Executes required checks and records concrete outcomes.
 
 ## TESTER
 
-- Adds or updates automated tests for changed behavior.
-- Runs targeted tests and reports key results.
-- Avoids introducing new frameworks unless requested.
+- Verifies behavior and regression safety.
+- Prioritizes reproducible checks and failure diagnostics.
 
 ## DOCS
 
 - Updates user-facing documentation and task artifacts.
-- Keeps docs aligned with current behavior.
+- Keeps docs aligned with runtime behavior and CLI output.
 
 ## REVIEWER
 
-- Reviews diffs and PR artifacts.
-- Records findings by severity and suggests follow-ups.
+- Reviews risk, regressions, and policy compliance.
+- Records findings with severity and exact file references.
 
 ## INTEGRATOR
 
-- Merges task branches and closes tasks (required in `branch_pr`).
-- Runs verify steps and updates PR artifacts on the base branch.
+- Required closer in `branch_pr`.
+- Integrates task branches and performs final finish/export on base branch.
 
-## CREATOR and UPDATER
+## CREATOR
 
 - CREATOR adds new agents when no existing role fits the need.
-- UPDATER audits and proposes improvements only when explicitly requested.
+
+## UPGRADER
+
+- Handles semantic merge conflicts after `agentplane upgrade` when review artifacts require it.
+- Reconciles `AGENTS.md` and agent profiles without breaking policy precedence.
 
 ## REDMINE
 
 - Backend-aware executor that interacts with Redmine tasks only via `agentplane` flows.
-- Does not reassign issues that already have an assignee and respects configured custom fields.
+- Uses env-first backend configuration and respects configured custom field mappings.
 
 ## Notes
 
-- This page describes the target Node.js workflow; command details live in [`cli-contract`](../developer/cli-contract).
+- Role command guidance is available via `agentplane role <ROLE>`.
+- For policy details, read `AGENTS.md`.
