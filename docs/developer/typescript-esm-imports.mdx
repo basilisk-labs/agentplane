@@ -1,53 +1,40 @@
-# TypeScript ESM Imports: Why Source Files Use `.js` Specifiers
+---
+title: "TypeScript ESM imports"
+description: "Why TypeScript source imports local modules with .js specifiers in this repository."
+---
 
-Agentplane uses TypeScript compiled to Node.js ESM. In this setup, it is **expected** that TypeScript source files import other local modules using a `.js` extension, for example:
+Agentplane compiles TypeScript to Node.js ESM. Source files intentionally use `.js` specifiers for local imports:
 
 ```ts
 import { runCli } from "./run-cli.js";
 ```
 
-This is not a mistake and does not mean the repository contains `.js` sources.
+This is expected behavior, not a mixed JS/TS source tree.
 
-## The Runtime Rule (Node ESM)
+## Runtime rule (Node ESM)
 
-When running ESM in Node.js, module specifiers must be resolvable at runtime. Node does **not** resolve `.ts` files by default. After compilation, the emitted files are `.js`, so the runtime import must point at `.js`.
+Node resolves ESM module specifiers at runtime and does not resolve `.ts` by default.
+Compiled output is `.js`, so runtime import specifiers must point to `.js`.
 
-If we wrote:
+## TypeScript rule (NodeNext / ESM)
 
-```ts
-import { runCli } from "./run-cli.ts";
-```
+With Node ESM resolution mode, TypeScript maps `.js` specifiers back to `.ts` sources for type-checking.
+That keeps both compile-time and runtime paths valid.
 
-then the compiled output would still contain a `.ts` specifier unless a bundler rewrites it, and Node would fail at runtime.
+## Why editors may warn
 
-## The TypeScript Rule (NodeNext / ESM)
-
-With `moduleResolution` set to Node's ESM mode (commonly `NodeNext`), TypeScript understands that:
-
-- the source uses `.js` specifiers,
-- and those specifiers map to `.ts` sources during type-checking.
-
-So `./run-cli.js` in a TypeScript file is type-checked against `./run-cli.ts` (or `./run-cli/index.ts`, depending on layout), and the emitted import stays correct for Node runtime.
-
-## Why Your Editor Might Warn (Zed, etc.)
-
-Some editors or language-server configurations treat `.js` specifiers as "missing file" if they are not aware of the project's TypeScript ESM resolution settings.
+Some editors show false missing-file warnings if they are not using the repository TypeScript resolver settings.
 
 If you see warnings:
 
-- Confirm the editor is using the TypeScript language server (tsserver) and the repository `tsconfig.json`.
-- Ensure the editor is not using a Deno-style resolver or a generic JavaScript resolver.
+- verify editor uses project `tsconfig.json`
+- verify TypeScript language server is active
+- avoid alternate resolvers that do not follow NodeNext behavior
 
-Agentplane's authoritative signal is the repository checks:
+Repository checks are the source of truth:
 
 - `bun run typecheck`
 - `bun run lint`
 - `bun run test:full`
 
-If these pass, `.js` specifiers are being resolved correctly in the intended toolchain.
-
-## Summary
-
-- `.js` in TypeScript imports is intentional for Node ESM runtime correctness.
-- TypeScript resolves those `.js` specifiers to `.ts` sources in Node ESM resolution mode.
-- Editor warnings usually indicate a resolver mismatch, not a repository bug.
+If these pass, `.js` specifiers are configured correctly.

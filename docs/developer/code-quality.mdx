@@ -9,15 +9,17 @@ The rules below are **required** for any change that touches code under `package
 
 ## Required gates (must pass)
 
-Run with bun:
+Run from repo root:
 
 ```bash
 bun install
 bun run format:check
-bun run lint
+bun run schemas:check
+bun run agents:check
 bun run typecheck
-bun run test
+bun run lint
 bun run coverage
+bun run coverage:significant
 ```
 
 `bun run ci` is the recommended single command.
@@ -46,9 +48,12 @@ This repo installs `pre-commit` and `pre-push` hooks via `lefthook`. Hooks are a
 pre-commit:
 - bun run format:check
 - bun run lint
+- bun run test:precommit
 
 pre-push:
-- bun run ci
+- node scripts/check-release-notes.mjs
+- bun run test:critical
+- bun run test:full
 ```
 
 Hooks are installed automatically on `bun install` (via the root `postinstall` script). If you ever need to reinstall them:
@@ -61,7 +66,16 @@ bun run hooks:install
 
 ### CI (GitHub Actions)
 
-GitHub Actions runs `bun run ci` on every pull request and on pushes to `main`.
+GitHub CI runs explicit gates on pull requests and pushes to `main`:
+
+- `format:check`
+- `schemas:check`
+- `agents:check`
+- `build` (before lint, for type-aware linting)
+- `lint`
+- `test:fast`
+- `test:critical`
+- significant coverage guard for critical files
 
 ## Tests
 
@@ -71,8 +85,8 @@ GitHub Actions runs `bun run ci` on every pull request and on pushes to `main`.
 
 ## Coverage
 
-- Coverage is enforced via `vitest` with minimum thresholds in `vitest.config.ts`.
-- New code SHOULD increase or maintain overall coverage.
+- Coverage is enforced via `vitest` thresholds and additional significant-file checks in `scripts/check-significant-coverage.mjs`.
+- For high-risk files, repository policy expects branch coverage to stay above the configured floor.
 
 ## Critical file writes
 

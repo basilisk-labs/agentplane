@@ -18,6 +18,7 @@ Agent Plane is designed to make agent-driven development predictable and auditab
 
 - Start, block, verify, and finish are explicit operations.
 - Status comments are structured and traceable.
+- Status commits are allowed for major transitions and follow task primary-tag semantics.
 
 ### 3) Deterministic artifacts
 
@@ -32,15 +33,16 @@ Agent Plane is designed to make agent-driven development predictable and auditab
 ### 5) Offline-first by default
 
 - No network use unless explicitly required.
-- CLI should be safe to run locally without external dependencies.
+- Approval requirements can escalate by execution profile, but capabilities do not change.
 
 ### 6) Auditability
 
 - Every task has a doc, verify steps, and rollback plan.
 - Commits are tied to task IDs and include changelog detail.
+- Release flow is GitHub-only publish with provenance and repeatable CI gates.
 
 ## What this means for contributors
 
 - Prefer explicit configs and clear CLI output over implicit behavior.
 - Keep new functionality behind recipes when it is optional.
-- Extend docs when new commands or flows are added.
+- Keep docs aligned with command behavior in the same task where code changes are made.
