@@ -1,30 +1,51 @@
 ---
 title: "Recipes safety"
-description: "Safety rules and guardrails for recipe execution."
+description: "Safety rules for installing and running executable recipes."
 ---
 
-## Safety model
+Recipes are executable extensions. Treat every recipe as code you are about to run on your machine.
 
-Recipes are optional automation packs. They are powerful and must be constrained by explicit rules.
+## Baseline safety rules
 
-## Core rules
+- Install only from trusted source or reviewed archive.
+- Read `manifest.json` before first install.
+- Review declared tools, runtimes, and permissions.
+- Prefer project-local writes over global side effects.
 
-- No network use unless the manifest explicitly allows it.
-- Do not write outside the manifest allowlist.
-- Do not edit `.agentplane/tasks/**` directly; use the CLI.
-- Do not invent missing inputs; surface pending actions.
+## Network and approval model
 
-## Inputs
+- Remote install paths (`--name`, `--url`) are network actions.
+- If approvals require network confirmation, pass `--yes` only when intentional.
+- Prefer local archive install for reproducible audits.
 
-If required inputs are missing, the recipe should stop and list the missing fields. Do not guess or infer values.
+## Filesystem safety
 
-## Tool execution
+- Keep writes inside repository workspace unless explicitly required.
+- Do not let recipes mutate task data directly outside CLI workflow commands.
+- Use cache and run artifact directories for generated outputs.
 
-- Use tools declared in the manifest.
-- Respect `reads` and `writes` allowlists.
-- Report output artifacts clearly.
+## Secret handling
 
-## Review and approval
+- Keep secrets in `.env` or environment variables, not in recipe files.
+- Never store tokens in committed recipe manifests or scenario definitions.
+- Redact sensitive values from logs and reports.
 
-- Always review generated outputs before applying changes.
-- When in doubt, require explicit user confirmation.
+## Execution review
+
+Before running a scenario:
+
+1. Check scenario steps and referenced tools.
+2. Confirm expected output paths.
+3. Confirm required inputs are present.
+
+After running:
+
+1. Check `report.json` and step logs.
+2. Validate file changes before commit.
+3. Remove transient artifacts if not needed.
+
+## Team policy recommendation
+
+- Gate recipe additions via code review.
+- Keep an allowlist of approved recipe ids and versions.
+- Re-validate recipes after major CLI updates.

@@ -1,44 +1,50 @@
 ---
 title: "Recipes development"
-description: "How to build, validate, and ship recipes."
+description: "Practical workflow for authoring and validating recipes."
 ---
 
-## Recipe layout
+## Authoring checklist
 
-Each recipe lives under `.agentplane/recipes/<slug>/` and includes:
+1. Create recipe directory with `manifest.json`.
+2. Add `tools/` and `scenarios/` only when needed.
+3. Keep ids stable (`recipe id`, `tool id`, `scenario id`).
+4. Document required env keys in recipe README.
+5. Keep outputs deterministic and machine-readable.
 
-- `manifest.json`
-- `scenarios/*.md`
-- `scenarios/*.inputs.json`
-- `tools/` (optional)
-- `README.md` (recommended)
+## Minimal local validation
 
-## Manifest rules
+1. Build archive (`.tar.gz` or `.zip`).
+2. Install locally:
+   - `agentplane recipes install --path <archive>`
+3. Verify visibility:
+   - `agentplane recipes list`
+   - `agentplane scenario list`
+4. Execute target scenario:
+   - `agentplane scenario run <recipe:scenario>`
+5. Inspect run artifacts under `.agentplane/recipes/<id>/runs/`.
 
-- `schema_version` must be `recipe-manifest@1`.
-- `slug` must match the folder name.
-- `entrypoints` must include `ide` and/or `cli`.
-- Each scenario must define `id`, `path`, and `inputs_schema`.
+## Designing scenarios
 
-## Inventory refresh
+- Prefer short, composable steps.
+- Keep each step focused on one tool responsibility.
+- Explicitly define expected outputs and failure messages.
+- Do not hide required inputs behind implicit defaults.
 
-Refresh the recipe index and review available entries:
+## Designing tools
 
-```bash
-agentplane recipes list-remote --refresh
-agentplane recipes list
-```
+- Declare minimal permissions in manifest.
+- Keep tool side effects inside project-local directories when possible.
+- Prefer stable stdout/stderr output formats for downstream automation.
+- Exit non-zero on failures and include actionable error text.
 
-## Safety and I/O rules
+## Distribution and upgrades
 
-- Do not write outside the manifest allowlist.
-- Do not use network unless explicitly allowed in the manifest.
-- Never edit `.agentplane/tasks/**` directly; use `agentplane` when required.
+- Bump recipe version on each behavioral change.
+- Keep backward-compatible upgrades when possible.
+- Avoid removing scenario ids without migration path.
 
-## Running a scenario
+## Integration notes
 
-```bash
-agentplane scenario run <recipe:scenario>
-```
-
-If the recipe includes tools, they run with inputs from the scenario form or JSON file.
+- Recipe-provided agents are namespaced on install to avoid id collisions.
+- Use `--on-conflict` policy explicitly when testing collision behavior.
+- Validate both local archive installs and remote index installs before release.
