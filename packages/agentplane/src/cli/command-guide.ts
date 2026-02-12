@@ -99,7 +99,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       '- Update tasks: `agentplane task update <task-id> --title "..." --description "..." --priority med --owner <ROLE> --depends-on <task-id>`',
       "- Scaffold artifacts: `agentplane task scaffold <task-id>`",
       '- Plan lifecycle: `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>` -> `agentplane task plan approve <task-id> --by <id>`',
-      "- Verify Steps discipline: if a task has verify-required tags (default: code/backend/frontend), fill `## Verify Steps` before plan approval.",
+      "- Verify Steps discipline: if a task primary tag is verify-required (default: code/data/ops), fill `## Verify Steps` before plan approval.",
       '- Task docs (when planning needs it): `agentplane task doc set <task-id> --section Summary --text "..."`',
     ],
   },
@@ -252,7 +252,7 @@ export function renderQuickstart(): string {
     "",
     "- Show the current config: `agentplane config show`",
     "- Set a value by dotted key: `agentplane config set workflow_mode branch_pr`",
-    '- Set JSON values (lists/objects): `agentplane config set tasks.verify.required_tags \'["code","backend"]\'`',
+    '- Set JSON values (lists/objects): `agentplane config set tasks.verify.require_steps_for_primary \'["code","data","ops"]\'`',
     "",
     "## Role/phase command guide (when to use what)",
     "",
@@ -277,6 +277,7 @@ export function renderQuickstart(): string {
     "",
     "Notes:",
     "- `suffix` is the task ID segment after the last dash.",
-    "- When using comment-driven flags, the subject is auto-built as `<emoji> <suffix> <scope>: <summary>`, and the body is auto-built from your status/finish comment.",
+    "- When using comment-driven flags, the subject is auto-built as `<emoji> <suffix> <primary>: <status>` and only for major transitions (TODO->DOING, DOING->BLOCKED, BLOCKED->DOING, DOING->DONE).",
+    "- Comment-driven commit bodies are structured: `Task`, `Primary`, `Status`, `Comment`.",
   ].join("\n");
 }

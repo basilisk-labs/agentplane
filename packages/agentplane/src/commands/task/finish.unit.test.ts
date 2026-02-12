@@ -227,7 +227,7 @@ describe("task finish (unit)", () => {
 
   it("uses readCommitInfo when --commit is provided; otherwise uses readHeadCommit", async () => {
     const ctx = mkCtx();
-    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["spike"] }));
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["code"] }));
 
     const { cmdFinish } = await import("./finish.js");
     await cmdFinish({
@@ -407,7 +407,7 @@ describe("task finish (unit)", () => {
     ctx.config.agents = {
       approvals: { require_plan: false, require_network: true, require_verify: true },
     };
-    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["spike"] }));
+    mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["code"] }));
 
     const { cmdFinish } = await import("./finish.js");
     await expect(

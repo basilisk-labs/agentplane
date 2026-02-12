@@ -425,7 +425,7 @@ If config sets `agents.approvals.require_plan=true`:
 - `## Verify Steps` is the **ex-ante verification contract**: instructions and pass criteria addressed to the verifier.
 - `## Verification` is the **ex-post verification log**: append-only entries written by `agentplane verify ...`.
 - Do not hand-edit `## Verification` entries. Treat them as audit records.
-- For tasks with verify-required tags (default: `code`, `backend`, `frontend`) and for `spike`, `agentplane task plan approve`
+- For tasks with verify-required primary tags (default: `code`, `data`, `ops`) and for `spike`, `agentplane task plan approve`
   will block until `## Verify Steps` is filled (the placeholder `<!-- TODO: FILL VERIFY STEPS -->` is treated as empty).
 - Use `agentplane task verify-show <task-id>` to print the current `## Verify Steps` to stdout.
 
@@ -471,8 +471,9 @@ Use comment-driven flags (where supported by agentplane), e.g.:
 
 In this mode:
 
-- agentplane builds the commit subject as `<emoji> <suffix> <scope>: <summary>` from the status/finish body.
-- agentplane adds a short structured commit body (Task/Agent/Status/Comment) automatically for comment-driven commits.
+- agentplane builds the commit subject as `<emoji> <suffix> <primary>: <status>` for major transitions only.
+- major transitions for status/comment-driven commits: `TODO->DOING`, `DOING->BLOCKED`, `BLOCKED->DOING`, `DOING->DONE`.
+- agentplane adds a short structured commit body (`Task` / `Primary` / `Status` / `Comment`) automatically for comment-driven commits.
 
 ## Commit subject format (enforced)
 

@@ -33,7 +33,10 @@ Paths for core assets:
 ### tasks
 
 - `id_suffix_length_default` — length of generated task suffix.
-- `verify.required_tags` — tags that require verify commands (e.g., `code`, `backend`).
+- `tags.primary_allowlist` — allowed primary tags (one primary tag is resolved per task).
+- `tags.strict_primary` / `tags.fallback_primary` — behavior when no primary tag is present.
+- `verify.require_steps_for_primary` — primary tags that require `## Verify Steps` before plan approve/start.
+- `verify.require_verification_for_primary` — primary tags that require recorded verification (`agentplane verify ...`) before finish/integration.
 - `doc.sections` — section names for task README.
 - `doc.required_sections` — required doc sections.
 - `comments.*` — structured comment rules.
@@ -54,10 +57,10 @@ Paths for core assets:
 
 ## Examples
 
-Set required verify tags:
+Set primary tags that require Verify Steps:
 
 ```bash
-agentplane config set tasks.verify.required_tags '["code","backend"]'
+agentplane config set tasks.verify.require_steps_for_primary '["code","data","ops"]'
 ```
 
 Switch to branch workflow:

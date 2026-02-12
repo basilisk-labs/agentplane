@@ -958,6 +958,58 @@ describe("runCli", () => {
     }
   });
 
+  it("task set-status --commit-from-comment rejects non-major transitions", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root, { status_commit_policy: "warn" });
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Transition task",
+        "--description",
+        "non-major transition check",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "docs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "set-status",
+        taskId,
+        "BLOCKED",
+        "--author",
+        "CODER",
+        "--body",
+        "Blocked: dependency is not ready for this transition test case",
+        "--commit-from-comment",
+        "--confirm-status-commit",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("major transitions");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("start warns on status_commit_policy=warn without confirmation", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
