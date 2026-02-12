@@ -445,6 +445,61 @@ describe("runCli", () => {
     }
   });
 
+  it("task close-noop closes bookkeeping tasks in one command", async () => {
+    const root = await mkGitRepoRoot();
+    let taskId = "";
+    {
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Bookkeeping-only task",
+          "--description",
+          "No code work",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = io.stdout.trim();
+      } finally {
+        io.restore();
+      }
+    }
+
+    const ioClose = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "close-noop",
+        taskId,
+        "--author",
+        "ORCHESTRATOR",
+        "--note",
+        "duplicate tracking artifact",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      ioClose.restore();
+    }
+
+    const task = await readTask({ cwd: root, rootOverride: root, taskId });
+    expect(task.frontmatter.status).toBe("DONE");
+    expect(task.frontmatter.result_summary).toBe("No-op closure recorded.");
+    expect(task.frontmatter.risk_level).toBe("low");
+    const comments = Array.isArray(task.frontmatter.comments) ? task.frontmatter.comments : [];
+    expect(String(comments.at(-1)?.body ?? "")).toContain("no-op bookkeeping");
+  });
+
   it("task update appends tags and depends-on", async () => {
     const root = await mkGitRepoRoot();
     let taskId = "";

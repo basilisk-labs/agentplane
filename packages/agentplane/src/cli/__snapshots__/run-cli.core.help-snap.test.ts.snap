@@ -85,6 +85,7 @@ Commands:
     ready  Report dependency readiness details for a task.
     task add  Create one or more tasks with explicit ids (prints the created task ids).
     task close-duplicate  Close a task as a duplicate of another task with no-op bookkeeping metadata.
+    task close-noop  Close a task as a verified no-op in one command.
     task comment  Append a comment to a task.
     task derive  Derive an implementation task from a spike task (adds depends_on on the spike).
     task doc  Task doc commands (show/set).
