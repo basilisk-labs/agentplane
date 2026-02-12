@@ -26,6 +26,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Core
   - [agents](#agents)
   - [help](#help)
+  - [preflight](#preflight)
   - [quickstart](#quickstart)
   - [role](#role)
 - Docs
@@ -82,6 +83,8 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Task
   - [ready](#ready)
   - [task add](#task-add)
+  - [task close-duplicate](#task-close-duplicate)
+  - [task close-noop](#task-close-noop)
   - [task comment](#task-comment)
   - [task derive](#task-derive)
   - [task doc](#task-doc)
@@ -104,6 +107,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task search](#task-search)
   - [task set-status](#task-set-status)
   - [task show](#task-show)
+  - [task start-ready](#task-start-ready)
   - [task update](#task-update)
   - [task verify](#task-verify)
   - [task verify ok](#task-verify-ok)
@@ -547,6 +551,28 @@ agentplane help task new --json
 
 - Show JSON help for a command.
 
+### preflight
+
+Run aggregated preflight checks and print a deterministic readiness report.
+
+Usage:
+
+```text
+agentplane preflight [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable JSON report. (default=false)
+
+Examples:
+
+```sh
+agentplane preflight --json
+```
+
+- Produce one-shot agent-readable preflight.
+
 ### quickstart
 
 Print CLI quickstart and command cheat sheet.
@@ -554,8 +580,12 @@ Print CLI quickstart and command cheat sheet.
 Usage:
 
 ```text
-agentplane quickstart
+agentplane quickstart [options]
 ```
+
+Options:
+
+- `--json`: Emit compact machine-readable output for agent runtimes. (default=false)
 
 Examples:
 
@@ -572,8 +602,12 @@ Show role-specific workflow guidance.
 Usage:
 
 ```text
-agentplane role <role>
+agentplane role <role> [options]
 ```
+
+Options:
+
+- `--json`: Emit compact machine-readable role payload. (default=false)
 
 Examples:
 
@@ -623,6 +657,8 @@ Options:
 
 - `-m, --message <message>`: Commit subject (must follow policy). Required unless --close is used.
 - `--close`: Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages only the task README. (default=false)
+- `--unstage-others`: With --close: unstage any currently staged paths before staging the task README. (default=false)
+- `--check-only`: With --close: run preflight checks and print the planned close commit subject without creating a commit. (default=false)
 - `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). (repeatable)
 - `--auto-allow`: Infer --allow prefixes from staged paths (only when no explicit --allow is provided). (default=false)
 - `--allow-tasks`: Allow task workflow artifacts (tasks/ and .agentplane/tasks/). (default=false)
@@ -933,6 +969,8 @@ Options:
 - `--status-commit-auto-allow`: Auto-allow inferred allowlist paths if none are provided (used with --status-commit). (default=false)
 - `--status-commit-require-clean`: Require a clean working tree for the status commit (used with --status-commit). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
+- `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
+- `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the task README. (default=false)
 - `--quiet`: Suppress output. (default=false)
 
 Examples:
@@ -1602,6 +1640,7 @@ agentplane init [options]
 
 Options:
 
+- `--setup-profile <prod|dev>`: Interactive preset. prod asks only essential questions; dev asks the full setup questionnaire. (choices=prod|dev)
 - `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
 - `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
 - `--backend <local|redmine>`: Task backend (default: local). (choices=local|redmine)
@@ -1753,6 +1792,59 @@ agentplane task add 202602030608-F1Q8AB 202602030608-ZZZZZZ --title "Refactor CL
 ```
 
 - Create multiple tasks with shared metadata.
+
+### task close-duplicate
+
+Close a task as a duplicate of another task with no-op bookkeeping metadata.
+
+Usage:
+
+```text
+agentplane task close-duplicate <task-id> --of <task-id> --author <id> [options]
+```
+
+Options:
+
+- `--of <task-id>`: Canonical task id that this task duplicates. (required)
+- `--author <id>`: Comment author id (e.g. ORCHESTRATOR). (required)
+- `--note <text>`: Optional short reason appended to the closure comment.
+- `--force`: Force closure despite gates. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
+- `--quiet`: Suppress output. (default=false)
+
+Examples:
+
+```sh
+agentplane task close-duplicate 202602120845-VKGC27 --of 202602120845-RWJ8K3 --author ORCHESTRATOR
+```
+
+- Close accidental duplicate task in one command.
+
+### task close-noop
+
+Close a task as a verified no-op in one command.
+
+Usage:
+
+```text
+agentplane task close-noop <task-id> --author <id> [options]
+```
+
+Options:
+
+- `--author <id>`: Comment author id (e.g. ORCHESTRATOR). (required)
+- `--note <text>`: Optional closure note.
+- `--force`: Override status/verification gates. (default=false)
+- `--yes`: Auto-approve force-action checks when required. (default=false)
+- `--quiet`: Suppress output. (default=false)
+
+Examples:
+
+```sh
+agentplane task close-noop 202602030608-F1Q8AB --author ORCHESTRATOR --note "Duplicate tracking artifact"
+```
+
+- Close bookkeeping-only tasks without manual verify+finish choreography.
 
 ### task comment
 
@@ -2025,7 +2117,7 @@ Options:
 
 Notes:
 
-- This command may emit warnings for tasks that require Verify Steps in the README (config-dependent).
+- For verify-required primary tags, this command seeds a default ## Verify Steps section in README.
 
 Examples:
 
@@ -2344,6 +2436,32 @@ agentplane task show 202602030608-F1Q8AB
 
 - Show task metadata.
 
+### task start-ready
+
+Run readiness checks and start a task in one deterministic command.
+
+Usage:
+
+```text
+agentplane task start-ready <task-id> --author <id> --body <text> [options]
+```
+
+Options:
+
+- `--author <id>`: Comment author id (e.g. CODER). (required)
+- `--body <text>`: Structured Start comment body. (required)
+- `--force`: Override readiness and transition checks. (default=false)
+- `--yes`: Auto-approve force-action checks when required. (default=false)
+- `--quiet`: Suppress output. (default=false)
+
+Examples:
+
+```sh
+agentplane task start-ready 202602030608-F1Q8AB --author CODER --body "Start: implement parser hardening"
+```
+
+- Check readiness and transition to DOING without command chaining.
+
 ### task update
 
 Update an existing task.
@@ -2366,6 +2484,7 @@ Options:
 - `--replace-depends-on`: Replace existing dependencies (instead of merging). (default=false)
 - `--verify <command>`: Repeatable. Adds verification command(s) (use --replace-verify to replace). (repeatable)
 - `--replace-verify`: Replace existing verify commands (instead of merging). (default=false)
+- `--allow-primary-change`: Explicitly allow changing the task primary tag during update. (default=false)
 
 Examples:
 
