@@ -6,15 +6,31 @@ import { CliError } from "../../../shared/errors.js";
 import { GitContext } from "../../shared/git-context.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 
+function normalizeAllowPrefixes(prefixes: string[]): string[] {
+  const unique = [
+    ...new Set(prefixes.map((prefix) => normalizeGitPathPrefix(prefix)).filter(Boolean)),
+  ].toSorted((a, b) => (a.length === b.length ? a.localeCompare(b) : a.length - b.length));
+
+  // "." is repo-wide and makes all other prefixes redundant.
+  if (unique.includes(".")) return ["."];
+
+  const compact: string[] = [];
+  for (const prefix of unique) {
+    if (compact.some((existing) => gitPathIsUnderPrefix(prefix, existing))) continue;
+    compact.push(prefix);
+  }
+  return compact;
+}
+
 export function suggestAllowPrefixes(paths: string[]): string[] {
   const out = new Set<string>();
   for (const filePath of paths) {
     if (!filePath) continue;
     const idx = filePath.lastIndexOf("/");
-    if (idx <= 0) out.add(filePath);
-    else out.add(filePath.slice(0, idx));
+    if (idx <= 0) out.add(normalizeGitPathPrefix(filePath));
+    else out.add(normalizeGitPathPrefix(filePath.slice(0, idx)));
   }
-  return [...out].toSorted((a, b) => a.localeCompare(b));
+  return [...out].filter(Boolean).toSorted((a, b) => a.localeCompare(b));
 }
 
 export async function gitStatusChangedPaths(opts: {
@@ -71,7 +87,14 @@ export async function stageAllowlist(opts: {
     });
   }
 
-  const allow = opts.allow.map((prefix) => normalizeGitPathPrefix(prefix));
+  const allow = normalizeAllowPrefixes(opts.allow);
+  if (allow.length === 0) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Provide at least one allowed prefix",
+    });
+  }
   const denied = new Set<string>();
   if (!opts.allowTasks) denied.add(opts.tasksPath);
 

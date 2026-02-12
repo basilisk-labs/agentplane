@@ -26,8 +26,15 @@ vi.mock("../../shared/task-backend.js", () => ({
 describe("guard/impl/allow", () => {
   it("suggestAllowPrefixes returns sorted unique prefixes", async () => {
     const { suggestAllowPrefixes } = await import("./allow.js");
-    const out = suggestAllowPrefixes(["src/a.ts", "README.md", "src/b.ts", "docs/r.md"]);
-    expect(out).toEqual(["docs", "README.md", "src"]);
+    const out = suggestAllowPrefixes([
+      "src/a.ts",
+      "README.md",
+      "src/b.ts",
+      "docs/r.md",
+      "./docs/x.md",
+      "src//nested/z.ts",
+    ]);
+    expect(out).toEqual(["docs", "README.md", "src", "src/nested"]);
   });
 
   it("gitStatusChangedPaths resolves project and delegates to GitContext", async () => {
@@ -91,6 +98,24 @@ describe("guard/impl/allow", () => {
         stage: vi.fn(),
       },
     };
+    const ctxEmptyAllow = {
+      git: {
+        statusChangedPaths: vi.fn().mockResolvedValue(["src/a.ts"]),
+        stage: vi.fn(),
+      },
+    };
+    await expect(
+      stageAllowlist({
+        ctx: ctxEmptyAllow as never,
+        allow: [],
+        allowTasks: false,
+        tasksPath: ".agentplane/tasks.json",
+      }),
+    ).rejects.toMatchObject<CliError>({
+      code: "E_USAGE",
+      message: "Provide at least one allowed prefix",
+    });
+
     await expect(
       stageAllowlist({
         ctx: ctx as never,
@@ -134,7 +159,7 @@ describe("guard/impl/allow", () => {
     };
     const staged = await stageAllowlist({
       ctx: ctxOk as never,
-      allow: ["src", "./src"],
+      allow: ["src", "./src", "src/a.ts", "src//"],
       allowTasks: false,
       tasksPath: ".agentplane/tasks.json",
     });
