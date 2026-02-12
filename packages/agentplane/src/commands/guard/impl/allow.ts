@@ -26,9 +26,15 @@ export function suggestAllowPrefixes(paths: string[]): string[] {
   const out = new Set<string>();
   for (const filePath of paths) {
     if (!filePath) continue;
-    const idx = filePath.lastIndexOf("/");
-    if (idx <= 0) out.add(normalizeGitPathPrefix(filePath));
-    else out.add(normalizeGitPathPrefix(filePath.slice(0, idx)));
+    const trimmed = filePath.trim();
+    if (!trimmed) continue;
+    const idx = trimmed.lastIndexOf("/");
+    const rawPrefix = idx <= 0 ? trimmed : trimmed.slice(0, idx);
+    const normalized = normalizeGitPathPrefix(rawPrefix);
+    if (!normalized) continue;
+    out.add(
+      rawPrefix.startsWith("/") && !normalized.startsWith("/") ? `/${normalized}` : normalized,
+    );
   }
   return [...out].filter(Boolean).toSorted((a, b) => a.localeCompare(b));
 }
