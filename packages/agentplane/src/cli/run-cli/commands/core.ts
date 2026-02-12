@@ -16,26 +16,53 @@ import type { RunDeps } from "../command-catalog.js";
 import { toStringList } from "../../spec/parse-utils.js";
 import { wrapCommand } from "./wrap-command.js";
 
-type QuickstartParsed = Record<string, never>;
+type QuickstartParsed = { json: boolean };
 
 export const quickstartSpec: CommandSpec<QuickstartParsed> = {
   id: ["quickstart"],
   group: "Core",
   summary: "Print CLI quickstart and command cheat sheet.",
-  options: [],
+  options: [
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit compact machine-readable output for agent runtimes.",
+    },
+  ],
   examples: [{ cmd: "agentplane quickstart", why: "Show quickstart." }],
-  parse: () => ({}),
+  parse: (raw) => ({ json: raw.opts.json === true }),
 };
 
-async function cmdQuickstart(opts: { cwd: string; rootOverride?: string }): Promise<number> {
+async function cmdQuickstart(opts: {
+  cwd: string;
+  rootOverride?: string;
+  json: boolean;
+}): Promise<number> {
   return wrapCommand({ command: "quickstart", rootOverride: opts.rootOverride }, () => {
-    process.stdout.write(`${renderQuickstart()}\n`);
+    const text = renderQuickstart();
+    if (opts.json) {
+      const lines = text
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+      const payload = {
+        source_of_truth: {
+          workflow_policy: "AGENTS.md",
+          cli_syntax: "quickstart/role output",
+        },
+        lines,
+      };
+      process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+      return 0;
+    }
+    process.stdout.write(`${text}\n`);
     return 0;
   });
 }
 
-export const runQuickstart: CommandHandler<QuickstartParsed> = (ctx) => {
-  return cmdQuickstart({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
+export const runQuickstart: CommandHandler<QuickstartParsed> = (ctx, p) => {
+  return cmdQuickstart({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, json: p.json });
 };
 
 type PreflightParsed = { json: boolean };
@@ -282,15 +309,23 @@ export const runPreflight: CommandHandler<PreflightParsed> = (ctx, p) => {
   return cmdPreflight({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, json: p.json });
 };
 
-type RoleParsed = { role: string };
+type RoleParsed = { role: string; json: boolean };
 
 export const roleSpec: CommandSpec<RoleParsed> = {
   id: ["role"],
   group: "Core",
   summary: "Show role-specific workflow guidance.",
   args: [{ name: "role", required: true, valueHint: "<role>" }],
+  options: [
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit compact machine-readable role payload.",
+    },
+  ],
   examples: [{ cmd: "agentplane role ORCHESTRATOR", why: "Show ORCHESTRATOR guide." }],
-  parse: (raw) => ({ role: String(raw.args.role ?? "") }),
+  parse: (raw) => ({ role: String(raw.args.role ?? ""), json: raw.opts.json === true }),
 };
 
 type AgentProfile = {
@@ -417,6 +452,7 @@ async function cmdRole(opts: {
   cwd: string;
   rootOverride?: string;
   role: string;
+  json: boolean;
 }): Promise<number> {
   return wrapCommand({ command: "role", rootOverride: opts.rootOverride }, async () => {
     const roleRaw = opts.role.trim();
@@ -454,6 +490,23 @@ async function cmdRole(opts: {
     }
 
     if (guide) {
+      if (opts.json) {
+        const payload: Record<string, unknown> = {
+          role: normalizedRole,
+          builtin_guide: guide
+            .split("\n")
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0),
+        };
+        if (agentProfile) {
+          payload.agent_profile = {
+            filename: agentProfile.filename,
+            profile: agentProfile.profile,
+          };
+        }
+        process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+        return 0;
+      }
       process.stdout.write(`${guide}\n`);
       if (agentProfile) {
         const block = renderAgentProfileBlock({
@@ -480,13 +533,29 @@ async function cmdRole(opts: {
       roleId: normalizedRole,
       profile: agentProfile.profile,
     });
+    if (opts.json) {
+      process.stdout.write(
+        `${JSON.stringify(
+          {
+            role: normalizedRole,
+            agent_profile: {
+              filename: agentProfile.filename,
+              profile: agentProfile.profile,
+            },
+          },
+          null,
+          2,
+        )}\n`,
+      );
+      return 0;
+    }
     process.stdout.write(`${block}\n`);
     return 0;
   });
 }
 
 export const runRole: CommandHandler<RoleParsed> = (ctx, p) => {
-  return cmdRole({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, role: p.role });
+  return cmdRole({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, role: p.role, json: p.json });
 };
 
 type AgentsParsed = Record<string, never>;

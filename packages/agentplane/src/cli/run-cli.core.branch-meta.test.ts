@@ -391,6 +391,25 @@ describe("runCli", () => {
     }
   });
 
+  it("quickstart --json emits compact machine-readable payload", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["quickstart", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        source_of_truth?: { workflow_policy?: string };
+        lines?: string[];
+      };
+      expect(payload.source_of_truth?.workflow_policy).toBe("AGENTS.md");
+      expect(Array.isArray(payload.lines)).toBe(true);
+      expect((payload.lines ?? []).some((line) => line.includes("agentplane init"))).toBe(true);
+    } finally {
+      io.restore();
+    }
+  });
+
   it("preflight --json aggregates readiness in one command", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -440,6 +459,24 @@ describe("runCli", () => {
       expect(code).toBe(0);
       expect(io.stdout).toContain("### CODER");
       expect(io.stdout).toContain("agentplane start");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("role --json emits compact role payload", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["role", "CODER", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as { role?: string; builtin_guide?: string[] };
+      expect(payload.role).toBe("CODER");
+      expect(Array.isArray(payload.builtin_guide)).toBe(true);
+      expect((payload.builtin_guide ?? []).some((line) => line.includes("agentplane start"))).toBe(
+        true,
+      );
     } finally {
       io.restore();
     }
