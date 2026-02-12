@@ -391,6 +391,46 @@ describe("runCli", () => {
     }
   });
 
+  it("preflight --json aggregates readiness in one command", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as Record<string, unknown>;
+      expect(payload.project_detected).toBe(true);
+      expect(payload.config_loaded).toMatchObject({ ok: true });
+      expect(payload.quickstart_loaded).toMatchObject({ ok: true });
+      expect(payload.task_list_loaded).toMatchObject({ ok: true });
+      expect(payload.current_branch).toMatchObject({ ok: true });
+      expect(payload.workflow_mode).toBe("direct");
+      expect(Array.isArray(payload.next_actions)).toBe(true);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("preflight --json in non-project suggests init", async () => {
+    const root = await mkTempDir();
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        project_detected?: unknown;
+        next_actions?: { command?: string }[];
+      };
+      expect(payload.project_detected).toBe(false);
+      const commands = Array.isArray(payload.next_actions)
+        ? payload.next_actions.map((v) => String(v.command ?? ""))
+        : [];
+      expect(commands).toContain("agentplane init");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("role prints role guidance", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

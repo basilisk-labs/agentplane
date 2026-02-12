@@ -1,8 +1,11 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveProject, type AgentplaneConfig } from "@agentplaneorg/core";
 
+import { loadTaskBackend } from "../../../backends/task-backend.js";
+import { GitContext } from "../../../commands/shared/git-context.js";
+import { gitCurrentBranch } from "../../../commands/shared/git-ops.js";
 import { fileExists } from "../../fs-utils.js";
 import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
@@ -33,6 +36,250 @@ async function cmdQuickstart(opts: { cwd: string; rootOverride?: string }): Prom
 
 export const runQuickstart: CommandHandler<QuickstartParsed> = (ctx) => {
   return cmdQuickstart({ cwd: ctx.cwd, rootOverride: ctx.rootOverride });
+};
+
+type PreflightParsed = { json: boolean };
+
+type NextAction = { command: string; reason: string };
+
+type Probe = { ok: boolean; error?: string };
+
+type PreflightReport = {
+  project_detected: boolean;
+  config_loaded: Probe;
+  quickstart_loaded: Probe;
+  task_list_loaded: Probe & { count?: number };
+  working_tree_clean_tracked: Probe & { value?: boolean };
+  current_branch: Probe & { value?: string };
+  workflow_mode: "direct" | "branch_pr" | "unknown";
+  approvals: {
+    require_plan: boolean | "unknown";
+    require_verify: boolean | "unknown";
+    require_network: boolean | "unknown";
+  };
+  outside_repo_needed: false;
+  next_actions: NextAction[];
+};
+
+function compactError(err: unknown): string {
+  if (err instanceof Error) {
+    const first = (err.message ?? "").split("\n", 1)[0] ?? "";
+    return first.trim() || err.name;
+  }
+  return String(err);
+}
+
+function probeYesNo(probe: Probe): string {
+  return probe.ok ? "yes" : "no";
+}
+
+function probeValueOrUnknown(probe: { ok: boolean; value?: string | boolean }): string {
+  return probe.ok && probe.value !== undefined ? String(probe.value) : "unknown";
+}
+
+function inferWorkflowMode(config: AgentplaneConfig | null): "direct" | "branch_pr" | "unknown" {
+  if (!config) return "unknown";
+  return config.workflow_mode === "direct" || config.workflow_mode === "branch_pr"
+    ? config.workflow_mode
+    : "unknown";
+}
+
+function inferApprovals(config: AgentplaneConfig | null): PreflightReport["approvals"] {
+  if (!config) {
+    return {
+      require_plan: "unknown",
+      require_verify: "unknown",
+      require_network: "unknown",
+    };
+  }
+  const approvals = config.agents?.approvals;
+  if (!approvals) {
+    return {
+      require_plan: "unknown",
+      require_verify: "unknown",
+      require_network: "unknown",
+    };
+  }
+  return {
+    require_plan: approvals.require_plan,
+    require_verify: approvals.require_verify,
+    require_network: approvals.require_network,
+  };
+}
+
+async function buildPreflightReport(opts: {
+  cwd: string;
+  rootOverride?: string;
+}): Promise<PreflightReport> {
+  const nextActions: NextAction[] = [];
+  const quickstartText = renderQuickstart();
+  const quickstartLoaded: Probe = {
+    ok: quickstartText.trim().length > 0,
+    error:
+      quickstartText.trim().length > 0 ? undefined : "quickstart renderer returned empty output",
+  };
+
+  let resolved: {
+    gitRoot: string;
+    agentplaneDir: string;
+  } | null = null;
+  try {
+    resolved = await resolveProject({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null });
+  } catch (err) {
+    nextActions.push({
+      command: "agentplane init",
+      reason: `project not resolved (${compactError(err)})`,
+    });
+  }
+
+  let config: AgentplaneConfig | null = null;
+  let configLoaded: Probe = { ok: false, error: "project not resolved" };
+  if (resolved) {
+    try {
+      const loaded = await loadConfig(resolved.agentplaneDir);
+      config = loaded.config;
+      configLoaded = { ok: true };
+    } catch (err) {
+      const message = compactError(err);
+      configLoaded = { ok: false, error: message };
+      nextActions.push({
+        command: "agentplane config show",
+        reason: `config failed validation (${message})`,
+      });
+    }
+  }
+
+  let taskListLoaded: PreflightReport["task_list_loaded"] = {
+    ok: false,
+    error: "project not resolved",
+  };
+  if (resolved) {
+    try {
+      const loaded = await loadTaskBackend({
+        cwd: opts.cwd,
+        rootOverride: opts.rootOverride ?? null,
+      });
+      const tasks = await loaded.backend.listTasks();
+      taskListLoaded = { ok: true, count: tasks.length };
+    } catch (err) {
+      const message = compactError(err);
+      taskListLoaded = { ok: false, error: message };
+      nextActions.push({
+        command: "agentplane task list",
+        reason: `task backend unavailable (${message})`,
+      });
+    }
+  }
+
+  let workingTree: PreflightReport["working_tree_clean_tracked"] = {
+    ok: false,
+    error: "project not resolved",
+  };
+  let branch: PreflightReport["current_branch"] = {
+    ok: false,
+    error: "project not resolved",
+  };
+  if (resolved) {
+    try {
+      const git = new GitContext({ gitRoot: resolved.gitRoot });
+      const [staged, unstagedTracked] = await Promise.all([
+        git.statusStagedPaths(),
+        git.statusUnstagedTrackedPaths(),
+      ]);
+      workingTree = { ok: true, value: staged.length === 0 && unstagedTracked.length === 0 };
+      if (!workingTree.value) {
+        nextActions.push({
+          command: "git status --short --untracked-files=no",
+          reason: "tracked changes detected",
+        });
+      }
+    } catch (err) {
+      const message = compactError(err);
+      workingTree = { ok: false, error: message };
+      nextActions.push({
+        command: "git status --short --untracked-files=no",
+        reason: `cannot inspect git status (${message})`,
+      });
+    }
+
+    try {
+      const current = await gitCurrentBranch(resolved.gitRoot);
+      branch = { ok: true, value: current };
+    } catch (err) {
+      branch = { ok: false, error: compactError(err) };
+    }
+  }
+
+  return {
+    project_detected: resolved !== null,
+    config_loaded: configLoaded,
+    quickstart_loaded: quickstartLoaded,
+    task_list_loaded: taskListLoaded,
+    working_tree_clean_tracked: workingTree,
+    current_branch: branch,
+    workflow_mode: inferWorkflowMode(config),
+    approvals: inferApprovals(config),
+    outside_repo_needed: false,
+    next_actions: nextActions,
+  };
+}
+
+export const preflightSpec: CommandSpec<PreflightParsed> = {
+  id: ["preflight"],
+  group: "Core",
+  summary: "Run aggregated preflight checks and print a deterministic readiness report.",
+  options: [
+    {
+      kind: "boolean",
+      name: "json",
+      default: false,
+      description: "Emit machine-readable JSON report.",
+    },
+  ],
+  examples: [
+    { cmd: "agentplane preflight --json", why: "Produce one-shot agent-readable preflight." },
+  ],
+  parse: (raw) => ({ json: raw.opts.json === true }),
+};
+
+async function cmdPreflight(opts: {
+  cwd: string;
+  rootOverride?: string;
+  json: boolean;
+}): Promise<number> {
+  return wrapCommand({ command: "preflight", rootOverride: opts.rootOverride }, async () => {
+    const report = await buildPreflightReport({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    if (opts.json) {
+      process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+      return 0;
+    }
+    process.stdout.write("Preflight Summary\n");
+    process.stdout.write(`- project detected: ${report.project_detected ? "yes" : "no"}\n`);
+    process.stdout.write(`- config loaded: ${probeYesNo(report.config_loaded)}\n`);
+    process.stdout.write(`- quickstart loaded: ${probeYesNo(report.quickstart_loaded)}\n`);
+    process.stdout.write(`- task list loaded: ${probeYesNo(report.task_list_loaded)}\n`);
+    process.stdout.write(
+      `- working tree clean (tracked-only): ${probeValueOrUnknown(report.working_tree_clean_tracked)}\n`,
+    );
+    process.stdout.write(`- current git branch: ${probeValueOrUnknown(report.current_branch)}\n`);
+    process.stdout.write(`- workflow_mode: ${report.workflow_mode}\n`);
+    process.stdout.write("- approval gates:\n");
+    process.stdout.write(`  - require_plan: ${String(report.approvals.require_plan)}\n`);
+    process.stdout.write(`  - require_verify: ${String(report.approvals.require_verify)}\n`);
+    process.stdout.write(`  - require_network: ${String(report.approvals.require_network)}\n`);
+    process.stdout.write("- outside-repo: not needed\n");
+    if (report.next_actions.length > 0) {
+      process.stdout.write("Next actions:\n");
+      for (const action of report.next_actions) {
+        process.stdout.write(`- ${action.command}: ${action.reason}\n`);
+      }
+    }
+    return 0;
+  });
+}
+
+export const runPreflight: CommandHandler<PreflightParsed> = (ctx, p) => {
+  return cmdPreflight({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, json: p.json });
 };
 
 type RoleParsed = { role: string };

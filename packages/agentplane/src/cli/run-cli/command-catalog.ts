@@ -2,7 +2,7 @@ import type { CommandHandler, CommandSpec } from "../spec/spec.js";
 import type { HelpJson } from "../spec/help-render.js";
 
 import { initSpec } from "./commands/init.js";
-import { agentsSpec, quickstartSpec, roleSpec } from "./commands/core.js";
+import { agentsSpec, preflightSpec, quickstartSpec, roleSpec } from "./commands/core.js";
 import { configSetSpec, configShowSpec, modeGetSpec, modeSetSpec } from "./commands/config.js";
 import { ideSyncSpec } from "./commands/ide.js";
 
@@ -168,6 +168,11 @@ export const COMMANDS = [
     },
   ),
   entry(quickstartSpec, () => import("./commands/core.js").then((m) => m.runQuickstart), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(preflightSpec, () => import("./commands/core.js").then((m) => m.runPreflight), {
     needsProject: false,
     needsConfig: false,
     needsTaskContext: false,

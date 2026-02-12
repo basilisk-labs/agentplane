@@ -27,6 +27,7 @@ Commands:
   Core:
     agents  List agent definitions under .agentplane/agents.
     help  Show help for a command.
+    preflight  Run aggregated preflight checks and print a deterministic readiness report.
     quickstart  Print CLI quickstart and command cheat sheet.
     role  Show role-specific workflow guidance.
   Docs:
@@ -83,6 +84,7 @@ Commands:
   Task:
     ready  Report dependency readiness details for a task.
     task add  Create one or more tasks with explicit ids (prints the created task ids).
+    task close-duplicate  Close a task as a duplicate of another task with no-op bookkeeping metadata.
     task comment  Append a comment to a task.
     task derive  Derive an implementation task from a spike task (adds depends_on on the spike).
     task doc  Task doc commands (show/set).
