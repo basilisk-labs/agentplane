@@ -5,6 +5,7 @@ import { resolveProject } from "@agentplaneorg/core";
 
 import type { CommandHandler } from "../cli/spec/spec.js";
 import { warnMessage, successMessage } from "../cli/output.js";
+import { RUNTIME_GITIGNORE_LINES } from "../shared/runtime-artifacts.js";
 import { execFileAsync, gitEnv } from "./shared/git.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import type { DoctorParsed } from "./doctor.spec.js";
@@ -150,14 +151,21 @@ async function safeFixGitignore(repoRoot: string): Promise<{ changed: boolean; n
   }
 
   const lines = existing.split(/\r?\n/);
-  const entry = ".agentplane/.upgrade/";
-  if (lines.some((l) => l.trim() === entry)) {
-    return { changed: false, note: "OK: .gitignore already ignores .agentplane/.upgrade/." };
+  const existingSet = new Set(lines.map((line) => line.trimEnd()));
+  const missing = RUNTIME_GITIGNORE_LINES.filter((line) => !existingSet.has(line));
+  if (missing.length === 0) {
+    return { changed: false, note: "OK: .gitignore already contains agentplane runtime ignores." };
   }
 
-  const next = `${existing.trimEnd()}\n${entry}\n`;
+  const nextLines = [...lines];
+  if (nextLines.length > 0 && nextLines.at(-1) !== "") nextLines.push("");
+  nextLines.push(...missing, "");
+  const next = `${nextLines.join("\n")}`.replaceAll(/\n{2,}$/g, "\n");
   await fs.writeFile(gitignorePath, next, "utf8");
-  return { changed: true, note: "Fixed: added .agentplane/.upgrade/ to .gitignore." };
+  return {
+    changed: true,
+    note: `Fixed: added agentplane runtime ignores to .gitignore (${missing.length} lines).`,
+  };
 }
 
 async function safeFixTaskIndex(repoRoot: string): Promise<{ changed: boolean; note: string }> {
