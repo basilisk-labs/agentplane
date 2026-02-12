@@ -79,6 +79,8 @@ jobs:
         run: bun run schemas:check
       - name: Agent templates (check)
         run: bun run agents:check
+      - name: Release parity (check)
+        run: bun run release:parity
       - run: bun run --filter=@agentplaneorg/core build
       - run: bun run --filter=agentplane build
       - name: Lint

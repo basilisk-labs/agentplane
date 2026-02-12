@@ -29,7 +29,11 @@ describeWhenNotHook("release plan", () => {
     );
     await writeFile(
       path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify({ name: "agentplane", version: "0.2.6" }, null, 2) + "\n",
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        null,
+        2,
+      ) + "\n",
       "utf8",
     );
     await commitAll(root, "seed");

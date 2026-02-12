@@ -61,6 +61,24 @@ async function readPackageVersion(pkgJsonPath: string): Promise<string> {
   return version;
 }
 
+async function readCoreDependencyVersion(pkgJsonPath: string): Promise<string> {
+  const raw = JSON.parse(await readFile(pkgJsonPath, "utf8")) as {
+    dependencies?: Record<string, unknown>;
+  };
+  const value = raw.dependencies?.["@agentplaneorg/core"];
+  const version = typeof value === "string" ? value.trim() : "";
+  if (!version) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Missing dependency @agentplaneorg/core in ${pkgJsonPath}. ` +
+        "Release planning requires packages/agentplane to pin @agentplaneorg/core to the same version.",
+    });
+  }
+  return version;
+}
+
 async function getLatestSemverTag(gitRoot: string): Promise<string | null> {
   try {
     const { stdout } = await execFileAsync(
@@ -215,9 +233,10 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
 
   const corePkgPath = path.join(gitRoot, "packages", "core", "package.json");
   const agentplanePkgPath = path.join(gitRoot, "packages", "agentplane", "package.json");
-  const [coreVersion, agentplaneVersion] = await Promise.all([
+  const [coreVersion, agentplaneVersion, coreDependencyVersion] = await Promise.all([
     readPackageVersion(corePkgPath),
     readPackageVersion(agentplanePkgPath),
+    readCoreDependencyVersion(agentplanePkgPath),
   ]);
   if (coreVersion !== agentplaneVersion) {
     throw new CliError({
@@ -226,6 +245,16 @@ export const runReleasePlan: CommandHandler<ReleasePlanParsed> = async (ctx, fla
       message:
         `Package versions must match before release planning. ` +
         `packages/core=${coreVersion} packages/agentplane=${agentplaneVersion}`,
+    });
+  }
+  if (coreDependencyVersion !== coreVersion) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        "Release dependency parity check failed before planning. " +
+        `packages/agentplane dependency @agentplaneorg/core=${coreDependencyVersion} ` +
+        `must match packages/core version ${coreVersion}.`,
     });
   }
 

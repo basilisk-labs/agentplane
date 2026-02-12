@@ -41,7 +41,11 @@ describeWhenNotHook("release apply", () => {
     );
     await writeFile(
       path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify({ name: "agentplane", version: "0.2.6" }, null, 2) + "\n",
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        null,
+        2,
+      ) + "\n",
       "utf8",
     );
     await commitAll(root, "seed");
@@ -84,7 +88,13 @@ describeWhenNotHook("release apply", () => {
     expect(rcApply).toBe(0);
 
     const coreText = await readFile(path.join(root, "packages", "core", "package.json"), "utf8");
+    const agentplaneText = await readFile(
+      path.join(root, "packages", "agentplane", "package.json"),
+      "utf8",
+    );
     expect(coreText).toContain('"version": "0.2.7"');
+    expect(agentplaneText).toContain('"version": "0.2.7"');
+    expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
 
     const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
       cwd: root,
@@ -119,7 +129,11 @@ describeWhenNotHook("release apply", () => {
     );
     await writeFile(
       path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify({ name: "agentplane", version: "0.2.6" }, null, 2) + "\n",
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        null,
+        2,
+      ) + "\n",
       "utf8",
     );
     await commitAll(root, "seed");
@@ -161,7 +175,11 @@ describeWhenNotHook("release apply", () => {
     );
     await writeFile(
       path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify({ name: "agentplane", version: "0.2.6" }, null, 2) + "\n",
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        null,
+        2,
+      ) + "\n",
       "utf8",
     );
     await commitAll(root, "seed");

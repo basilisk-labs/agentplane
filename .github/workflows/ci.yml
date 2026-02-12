@@ -40,6 +40,8 @@ jobs:
         run: bun run schemas:check
       - name: Agent templates (check)
         run: bun run agents:check
+      - name: Release parity (check)
+        run: bun run release:parity
       # ESLint is configured with type-aware rules and project references.
       # A fresh checkout must build `dist/` first so types resolve correctly.
       - name: Build (required for type-aware lint)

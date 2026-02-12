@@ -2,6 +2,7 @@ import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
+import { assertReleaseParity } from "./lib/release-version-parity.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -56,16 +57,9 @@ async function main() {
   const root = process.cwd();
   const args = parseArgs(process.argv.slice(2));
   const corePkg = path.join(root, "packages", "core", "package.json");
-  const cliPkg = path.join(root, "packages", "agentplane", "package.json");
-  const [coreVersion, cliVersion] = await Promise.all([readVersion(corePkg), readVersion(cliPkg)]);
-
-  if (coreVersion !== cliVersion) {
-    throw new Error(
-      `Package versions must match before publish checks. core=${coreVersion} agentplane=${cliVersion}`,
-    );
-  }
-
+  const coreVersion = await readVersion(corePkg);
   const version = args.version || coreVersion;
+  await assertReleaseParity(root, { requiredVersion: version });
   const pkgs = ["@agentplaneorg/core", "agentplane"];
 
   for (const name of pkgs) {

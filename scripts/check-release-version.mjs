@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import path from "node:path";
+import { assertReleaseParity } from "./lib/release-version-parity.mjs";
 
 const parseArgs = (args) => {
   let tagArg = null;
@@ -36,11 +36,6 @@ const resolveTag = (tagArg) => {
   return null;
 };
 
-const getPackageJson = (rootDir, pkgPath) => {
-  const fullPath = path.join(rootDir, pkgPath, "package.json");
-  return JSON.parse(fs.readFileSync(fullPath, "utf8"));
-};
-
 const run = () => {
   const { tagArg } = parseArgs(process.argv.slice(2));
   const tag = resolveTag(tagArg);
@@ -52,35 +47,11 @@ const run = () => {
     throw new Error(`Tag ${tag} does not match vX.Y.Z format.`);
   }
   const version = match[1];
-  const rootDir = process.cwd();
-  const agentplanePkg = getPackageJson(rootDir, "packages/agentplane");
-  const corePkg = getPackageJson(rootDir, "packages/core");
-  const versions = {
-    agentplane: agentplanePkg.version,
-    core: corePkg.version,
-  };
-  const coreDependency = agentplanePkg.dependencies?.["@agentplaneorg/core"] ?? null;
-
-  const errors = [];
-  if (versions.agentplane !== version) {
-    errors.push(
-      `packages/agentplane version ${versions.agentplane} does not match tag ${version}.`,
-    );
-  }
-  if (versions.core !== version) {
-    errors.push(`packages/core version ${versions.core} does not match tag ${version}.`);
-  }
-  if (coreDependency !== version) {
-    errors.push(
-      `packages/agentplane dependency @agentplaneorg/core=${String(
-        coreDependency,
-      )} does not match required release version ${version}.`,
-    );
-  }
-  if (errors.length > 0) {
-    const details = ["Release version check failed:", ...errors.map((message) => `- ${message}`)];
-    throw new Error(details.join("\n"));
-  }
+  return assertReleaseParity(process.cwd(), { requiredVersion: version });
 };
 
-run();
+run().catch((error) => {
+  const message = error instanceof Error ? error.message : String(error);
+  process.stderr.write(`${message}\n`);
+  process.exitCode = 1;
+});

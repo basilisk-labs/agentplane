@@ -130,6 +130,24 @@ async function readPackageVersion(pkgJsonPath: string): Promise<string> {
   return version;
 }
 
+async function readCoreDependencyVersion(pkgJsonPath: string): Promise<string> {
+  const raw = JSON.parse(await readFile(pkgJsonPath, "utf8")) as {
+    dependencies?: Record<string, unknown>;
+  };
+  const value = raw.dependencies?.["@agentplaneorg/core"];
+  const version = typeof value === "string" ? value.trim() : "";
+  if (!version) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Missing dependency @agentplaneorg/core in ${pkgJsonPath}. ` +
+        "Release parity requires packages/agentplane to pin @agentplaneorg/core to the same version.",
+    });
+  }
+  return version;
+}
+
 async function replacePackageVersionInFile(
   pkgJsonPath: string,
   nextVersion: string,
@@ -144,6 +162,35 @@ async function replacePackageVersionInFile(
     });
   }
   await writeFile(pkgJsonPath, replaced, "utf8");
+}
+
+async function replaceAgentplanePackageMetadata(
+  pkgJsonPath: string,
+  nextVersion: string,
+): Promise<void> {
+  const text = await readFile(pkgJsonPath, "utf8");
+  const withVersion = text.replace(/"version"\s*:\s*"[^"]*"/u, `"version": "${nextVersion}"`);
+  if (withVersion === text) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Failed to update version in ${pkgJsonPath} (missing "version" field).`,
+    });
+  }
+  const withDependency = withVersion.replace(
+    /("@agentplaneorg\/core"\s*:\s*")[^"]*(")/u,
+    `$1${nextVersion}$2`,
+  );
+  if (withDependency === withVersion) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Failed to update @agentplaneorg/core dependency in ${pkgJsonPath}. ` +
+        "Ensure packages/agentplane/package.json declares this dependency.",
+    });
+  }
+  await writeFile(pkgJsonPath, withDependency, "utf8");
 }
 
 function cleanHookEnv(): NodeJS.ProcessEnv {
@@ -434,9 +481,10 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
 
   const corePkgPath = path.join(gitRoot, "packages", "core", "package.json");
   const agentplanePkgPath = path.join(gitRoot, "packages", "agentplane", "package.json");
-  const [coreVersion, agentplaneVersion] = await Promise.all([
+  const [coreVersion, agentplaneVersion, coreDependencyVersion] = await Promise.all([
     readPackageVersion(corePkgPath),
     readPackageVersion(agentplanePkgPath),
+    readCoreDependencyVersion(agentplanePkgPath),
   ]);
   if (coreVersion !== agentplaneVersion) {
     throw new CliError({
@@ -445,6 +493,16 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
       message:
         `Package versions must match before applying a release. ` +
         `packages/core=${coreVersion} packages/agentplane=${agentplaneVersion}`,
+    });
+  }
+  if (coreDependencyVersion !== coreVersion) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        "Release dependency parity check failed before apply. " +
+        `packages/agentplane dependency @agentplaneorg/core=${coreDependencyVersion} ` +
+        `must match packages/core version ${coreVersion}.`,
     });
   }
 
@@ -470,9 +528,11 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
   if (coreVersion === plan.prevVersion) {
     await Promise.all([
       replacePackageVersionInFile(corePkgPath, plan.nextVersion),
-      replacePackageVersionInFile(agentplanePkgPath, plan.nextVersion),
+      replaceAgentplanePackageMetadata(agentplanePkgPath, plan.nextVersion),
     ]);
-  } else if (coreVersion !== plan.nextVersion) {
+  } else if (coreVersion === plan.nextVersion) {
+    await replaceAgentplanePackageMetadata(agentplanePkgPath, plan.nextVersion);
+  } else {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
