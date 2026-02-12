@@ -1,7 +1,15 @@
 import type { HelpJson } from "./help-render.js";
 
-function escInline(text: string): string {
+function escCode(text: string): string {
   return text.replaceAll("`", "\\`");
+}
+
+function escText(text: string): string {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll("`", "\\`");
 }
 
 function toAnchor(text: string): string {
@@ -50,8 +58,8 @@ export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
     const groupHeader = ["", `## ${group}`];
     const commandBlocks = specs.flatMap((s) => {
       const summaryLines = s.description
-        ? ["", escInline(s.summary), "", escInline(s.description)]
-        : ["", escInline(s.summary)];
+        ? ["", escText(s.summary), "", escText(s.description)]
+        : ["", escText(s.summary)];
 
       const usageLines = ["", "Usage:", "", "```text", ...(s.usage ?? []), "```"];
 
@@ -78,13 +86,13 @@ export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
                   o.deprecated ? `deprecated=${o.deprecated}` : null,
                 ].filter((x): x is string => x !== null);
                 const suffix = meta.length > 0 ? ` (${meta.join(", ")})` : "";
-                return `- \`${escInline(head)}\`: ${escInline(o.description)}${escInline(suffix)}`;
+                return `- \`${escCode(head)}\`: ${escText(o.description)}${escText(suffix)}`;
               }),
             ];
 
       const notesLines =
         s.notes && s.notes.length > 0
-          ? ["", "Notes:", "", ...s.notes.map((n) => `- ${escInline(n)}`)]
+          ? ["", "Notes:", "", ...s.notes.map((n) => `- ${escText(n)}`)]
           : [];
 
       const examplesLines =
@@ -94,7 +102,7 @@ export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
               "Examples:",
               "",
               ...s.examples.flatMap((ex) => {
-                const why = ex.why ? [`- ${escInline(ex.why)}`] : [];
+                const why = ex.why ? [`- ${escText(ex.why)}`] : [];
                 return ["```sh", ex.cmd, "```", ...why];
               }),
             ]
