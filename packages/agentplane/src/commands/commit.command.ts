@@ -25,6 +25,8 @@ export function makeRunCommitHandler(getCtx: (cmd: string) => Promise<CommandCon
       allowCI: p.allowCI,
       requireClean: p.requireClean,
       quiet: p.quiet,
+      closeUnstageOthers: p.closeUnstageOthers,
+      closeCheckOnly: p.closeCheckOnly,
     });
   };
 }

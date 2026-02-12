@@ -3,6 +3,7 @@ import { successMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 import { loadTaskFromContext } from "../../shared/task-backend.js";
+import { execFileAsync, gitEnv } from "../../shared/git.js";
 
 import { suggestAllowPrefixes } from "./allow.js";
 import { buildCloseCommitMessage, taskReadmePathForTask } from "./close-message.js";
@@ -151,6 +152,8 @@ export async function cmdCommit(opts: {
   allowCI: boolean;
   requireClean: boolean;
   quiet: boolean;
+  closeUnstageOthers: boolean;
+  closeCheckOnly: boolean;
 }): Promise<number> {
   try {
     if (opts.close) {
@@ -158,13 +161,23 @@ export async function cmdCommit(opts: {
         opts.ctx ??
         (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
 
-      // Make the close commit deterministic: require empty index, then stage only the task README.
-      const staged = await ctx.git.statusStagedPaths();
-      if (staged.length > 0) {
+      // Make the close commit deterministic: start from a clean index unless --unstage-others is used.
+      let staged = await ctx.git.statusStagedPaths();
+      if (staged.length > 0 && opts.closeUnstageOthers) {
+        if (!opts.closeCheckOnly) {
+          await execFileAsync("git", ["restore", "--staged", "--", "."], {
+            cwd: ctx.resolvedProject.gitRoot,
+            env: gitEnv(),
+          });
+        }
+        staged = opts.closeCheckOnly ? staged : await ctx.git.statusStagedPaths();
+      }
+      if (staged.length > 0 && !opts.closeUnstageOthers) {
         throw new CliError({
           exitCode: 5,
           code: "E_GIT",
-          message: "Staged files exist (close commit requires an empty index)",
+          message:
+            "Staged files exist (close commit requires an empty index; rerun with --unstage-others to auto-unstage).",
         });
       }
 
@@ -178,6 +191,19 @@ export async function cmdCommit(opts: {
       const readmeRel = readmeAbs.startsWith(ctx.resolvedProject.gitRoot)
         ? readmeAbs.slice(ctx.resolvedProject.gitRoot.length + 1)
         : readmeAbs;
+      if (opts.closeCheckOnly) {
+        if (!opts.quiet) {
+          const stagedCount = staged.length;
+          const suffix =
+            stagedCount > 0 && opts.closeUnstageOthers
+              ? `; would unstage ${stagedCount} path(s)`
+              : "";
+          process.stdout.write(
+            `${successMessage("close preflight", opts.taskId, `subject=${msg.subject}${suffix}`)}\n`,
+          );
+        }
+        return 0;
+      }
       await ctx.git.stage([readmeRel]);
 
       // Close commits should not require manual --allow flags:

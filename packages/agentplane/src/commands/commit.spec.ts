@@ -15,6 +15,8 @@ export type CommitParsed = {
   allowCI: boolean;
   requireClean: boolean;
   quiet: boolean;
+  closeUnstageOthers: boolean;
+  closeCheckOnly: boolean;
 };
 
 export const commitSpec: CommandSpec<CommitParsed> = {
@@ -36,6 +38,20 @@ export const commitSpec: CommandSpec<CommitParsed> = {
       default: false,
       description:
         "Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages only the task README.",
+    },
+    {
+      kind: "boolean",
+      name: "unstage-others",
+      default: false,
+      description:
+        "With --close: unstage any currently staged paths before staging the task README.",
+    },
+    {
+      kind: "boolean",
+      name: "check-only",
+      default: false,
+      description:
+        "With --close: run preflight checks and print the planned close commit subject without creating a commit.",
     },
     {
       kind: "string",
@@ -112,6 +128,18 @@ export const commitSpec: CommandSpec<CommitParsed> = {
         message: "Use either --message or --close (not both).",
       });
     }
+    if (!close && raw.opts["unstage-others"] === true) {
+      throw usageError({
+        spec: commitSpec,
+        message: "--unstage-others requires --close.",
+      });
+    }
+    if (!close && raw.opts["check-only"] === true) {
+      throw usageError({
+        spec: commitSpec,
+        message: "--check-only requires --close.",
+      });
+    }
     const allow = raw.opts.allow;
     if (Array.isArray(allow) && allow.some((s) => typeof s === "string" && s.trim() === "")) {
       throw usageError({ spec: commitSpec, message: "Invalid value for --allow: empty." });
@@ -135,5 +163,7 @@ export const commitSpec: CommandSpec<CommitParsed> = {
     allowCI: raw.opts["allow-ci"] === true,
     requireClean: raw.opts["require-clean"] === true,
     quiet: raw.opts.quiet === true,
+    closeUnstageOthers: raw.opts["unstage-others"] === true,
+    closeCheckOnly: raw.opts["check-only"] === true,
   }),
 };

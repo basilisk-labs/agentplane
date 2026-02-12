@@ -893,9 +893,147 @@ describe("runCli", () => {
       const code = await runCli(["commit", "202602081506-R18Y1Q", "--close", "--root", root]);
       expect(code).toBe(5);
       expect(io.stderr).toContain("close commit requires an empty index");
+      expect(io.stderr).toContain("--unstage-others");
     } finally {
       io.restore();
     }
+  });
+
+  it("commit wrapper --close supports --unstage-others", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+
+    await writeFile(path.join(root, "src.txt"), "impl\n", "utf8");
+    await execFileAsync("git", ["add", "src.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "impl"], { cwd: root });
+    const implRes = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const implHash = implRes.stdout.trim();
+
+    const taskId = "202602081506-R18Y1Q";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Close commit with index cleanup",
+        result_summary: "close duplicate bookkeeping",
+        description: "desc",
+        status: "DONE",
+        priority: "high",
+        owner: "ORCHESTRATOR",
+        depends_on: [],
+        tags: ["docs"],
+        verify: ["manual"],
+        verification: {
+          state: "ok",
+          updated_at: "2026-02-08T00:00:00.000Z",
+          updated_by: "TESTER",
+          note: "Verified: manual check",
+        },
+        commit: { hash: implHash, message: "✨ R18Y1Q docs: impl" },
+        doc_version: 2,
+        doc_updated_at: "2026-02-08T00:00:00.000Z",
+        doc_updated_by: "TESTER",
+      },
+      "## Summary\n\nTest task\n",
+    );
+    await writeFile(path.join(taskDir, "README.md"), readme, "utf8");
+
+    await writeFile(path.join(root, "noise.txt"), "noise\n", "utf8");
+    await execFileAsync("git", ["add", "noise.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["commit", taskId, "--close", "--unstage-others", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("committed");
+    } finally {
+      io.restore();
+    }
+
+    const showRes = await execFileAsync("git", ["show", "--name-only", "--format="], {
+      cwd: root,
+    });
+    const changed = showRes.stdout
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    expect(changed).toEqual([`.agentplane/tasks/${taskId}/README.md`]);
+  });
+
+  it("commit wrapper --close supports --check-only", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    const execFileAsync = promisify(execFile);
+
+    await writeFile(path.join(root, "seed.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    const implRes = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const implHash = implRes.stdout.trim();
+
+    const taskId = "202602081506-R18Y1Q";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Close preflight check",
+        result_summary: "check close",
+        description: "desc",
+        status: "DONE",
+        priority: "high",
+        owner: "ORCHESTRATOR",
+        depends_on: [],
+        tags: ["docs"],
+        verify: ["manual"],
+        verification: {
+          state: "ok",
+          updated_at: "2026-02-08T00:00:00.000Z",
+          updated_by: "TESTER",
+          note: "Verified: manual check",
+        },
+        commit: { hash: implHash, message: "✨ R18Y1Q docs: impl" },
+        doc_version: 2,
+        doc_updated_at: "2026-02-08T00:00:00.000Z",
+        doc_updated_by: "TESTER",
+      },
+      "## Summary\n\nTest task\n",
+    );
+    await writeFile(path.join(taskDir, "README.md"), readme, "utf8");
+
+    await writeFile(path.join(root, "noise.txt"), "noise\n", "utf8");
+    await execFileAsync("git", ["add", "noise.txt"], { cwd: root });
+
+    const beforeRes = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const before = beforeRes.stdout.trim();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        taskId,
+        "--close",
+        "--check-only",
+        "--unstage-others",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("close preflight");
+      expect(io.stdout).toContain("would unstage 1 path(s)");
+    } finally {
+      io.restore();
+    }
+    const afterRes = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    const after = afterRes.stdout.trim();
+    expect(after).toBe(before);
   });
 
   it("commit wrapper requires a message", async () => {
