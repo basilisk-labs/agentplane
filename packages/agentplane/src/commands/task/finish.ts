@@ -26,6 +26,8 @@ import {
   readCommitInfo,
   readHeadCommit,
   requireStructuredComment,
+  resolvePrimaryTag,
+  toStringArray,
 } from "./shared.js";
 
 async function clearDirectWorkLockIfMatches(opts: {
@@ -86,14 +88,6 @@ export async function cmdFinish(opts: {
     }
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.verified;
     requireStructuredComment(opts.body, prefix, minChars);
-    if (opts.commitFromComment || opts.statusCommit) {
-      enforceStatusCommitPolicy({
-        policy: ctx.config.status_commit_policy,
-        action: "finish",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
-      });
-    }
     if ((opts.commitFromComment || opts.statusCommit) && opts.taskIds.length !== 1) {
       throw new CliError({
         exitCode: 2,
@@ -133,6 +127,7 @@ export async function cmdFinish(opts: {
     const breaking = opts.breaking === true;
 
     let primaryStatusFrom: string | null = null;
+    let primaryTag: string | null = null;
     for (const taskId of opts.taskIds) {
       const task = useStore ? await store!.get(taskId) : await loadTaskFromContext({ ctx, taskId });
 
@@ -153,6 +148,7 @@ export async function cmdFinish(opts: {
         primaryStatusFrom === null
       ) {
         primaryStatusFrom = String(task.status || "TODO").toUpperCase();
+        primaryTag = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
       }
 
       ensureVerificationSatisfiedIfRequired(task, ctx.config);
@@ -212,6 +208,17 @@ export async function cmdFinish(opts: {
         : ctx.taskBackend.writeTask(nextTask));
     }
 
+    if (opts.commitFromComment || opts.statusCommit) {
+      enforceStatusCommitPolicy({
+        policy: ctx.config.status_commit_policy,
+        action: "finish",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+        statusFrom: primaryStatusFrom ?? "UNKNOWN",
+        statusTo: "DONE",
+      });
+    }
+
     // tasks.json is export-only; generated via `agentplane task export`.
 
     let executorAgent: string | null = null;
@@ -242,6 +249,7 @@ export async function cmdFinish(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
+        primaryTag: primaryTag ?? "meta",
         executorAgent: executorAgent ?? undefined,
         author: opts.author,
         statusFrom: primaryStatusFrom ?? undefined,
@@ -313,6 +321,7 @@ export async function cmdFinish(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: primaryTaskId,
+        primaryTag: primaryTag ?? "meta",
         executorAgent: executorAgent ?? undefined,
         author: opts.author,
         statusFrom: primaryStatusFrom ?? undefined,

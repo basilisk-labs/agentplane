@@ -5,6 +5,16 @@ export type CommitPolicyResult = {
 
 const NON_TASK_SUFFIX = "DEV";
 const SCOPE_PATTERN = "[a-z][a-z0-9_-]*(?:/[a-z0-9_-]+)*";
+const STATUS_SUMMARY_TOKENS = new Set([
+  "todo",
+  "doing",
+  "blocked",
+  "done",
+  "verified",
+  "finished",
+  "exported",
+  "status-transition",
+]);
 
 function stripPunctuation(input: string): string {
   return input.replaceAll(/[^\p{L}\p{N}\s-]/gu, " ");
@@ -140,8 +150,12 @@ export function validateCommitSubject(opts: {
   const tokenSet = new Set(opts.genericTokens.map((t) => t.toLowerCase()));
   const nonGenericCount = words.filter((w) => !tokenSet.has(w)).length;
 
-  // Require at least two words in the summary and at least one non-generic token.
-  if (words.length < 2 || nonGenericCount < 1) errors.push("commit subject is too generic");
+  const isStatusSummary = words.length === 1 && STATUS_SUMMARY_TOKENS.has(words[0] ?? "");
+  // Require at least two words in the summary and at least one non-generic token,
+  // except status-style one-word summaries used by status commits.
+  if (!isStatusSummary && (words.length < 2 || nonGenericCount < 1)) {
+    errors.push("commit subject is too generic");
+  }
 
   return { ok: errors.length === 0, errors };
 }

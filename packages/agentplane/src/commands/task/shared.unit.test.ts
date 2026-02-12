@@ -13,6 +13,7 @@ import {
   ensureVerificationSatisfiedIfRequired,
   extractDocSection,
   formatTaskLine,
+  isMajorStatusCommitTransition,
   isTransitionAllowed,
   isVerifyStepsFilled,
   normalizeDependsOnInput,
@@ -219,19 +220,47 @@ describe("task shared helpers", () => {
     ).not.toThrow();
   });
 
-  it("enforceStatusCommitPolicy supports off/warn/confirm", () => {
+  it("enforceStatusCommitPolicy supports off/warn/confirm for major transitions", () => {
     const stderrSpy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
 
     expect(() =>
-      enforceStatusCommitPolicy({ policy: "off", action: "start", confirmed: false, quiet: false }),
+      enforceStatusCommitPolicy({
+        policy: "off",
+        action: "start",
+        confirmed: false,
+        quiet: false,
+        statusFrom: "TODO",
+        statusTo: "DOING",
+      }),
     ).not.toThrow();
 
     // warn: prints only when not quiet and not confirmed
-    enforceStatusCommitPolicy({ policy: "warn", action: "start", confirmed: false, quiet: true });
+    enforceStatusCommitPolicy({
+      policy: "warn",
+      action: "start",
+      confirmed: false,
+      quiet: true,
+      statusFrom: "TODO",
+      statusTo: "DOING",
+    });
     expect(stderrSpy).not.toHaveBeenCalled();
-    enforceStatusCommitPolicy({ policy: "warn", action: "start", confirmed: true, quiet: false });
+    enforceStatusCommitPolicy({
+      policy: "warn",
+      action: "start",
+      confirmed: true,
+      quiet: false,
+      statusFrom: "TODO",
+      statusTo: "DOING",
+    });
     expect(stderrSpy).not.toHaveBeenCalled();
-    enforceStatusCommitPolicy({ policy: "warn", action: "start", confirmed: false, quiet: false });
+    enforceStatusCommitPolicy({
+      policy: "warn",
+      action: "start",
+      confirmed: false,
+      quiet: false,
+      statusFrom: "TODO",
+      statusTo: "DOING",
+    });
     expect(stderrSpy).toHaveBeenCalled();
 
     expect(() =>
@@ -240,6 +269,8 @@ describe("task shared helpers", () => {
         action: "finish",
         confirmed: false,
         quiet: false,
+        statusFrom: "DOING",
+        statusTo: "DONE",
       }),
     ).toThrow(CliError);
     expect(() =>
@@ -248,10 +279,34 @@ describe("task shared helpers", () => {
         action: "finish",
         confirmed: true,
         quiet: false,
+        statusFrom: "DOING",
+        statusTo: "DONE",
       }),
     ).not.toThrow();
 
     stderrSpy.mockRestore();
+  });
+
+  it("enforceStatusCommitPolicy rejects non-major transitions", () => {
+    expect(() =>
+      enforceStatusCommitPolicy({
+        policy: "warn",
+        action: "task set-status",
+        confirmed: true,
+        quiet: true,
+        statusFrom: "TODO",
+        statusTo: "BLOCKED",
+      }),
+    ).toThrow(CliError);
+  });
+
+  it("isMajorStatusCommitTransition maps allowed transitions", () => {
+    expect(isMajorStatusCommitTransition("todo", "doing")).toBe(true);
+    expect(isMajorStatusCommitTransition("doing", "blocked")).toBe(true);
+    expect(isMajorStatusCommitTransition("blocked", "doing")).toBe(true);
+    expect(isMajorStatusCommitTransition("doing", "done")).toBe(true);
+    expect(isMajorStatusCommitTransition("done", "verified")).toBe(true);
+    expect(isMajorStatusCommitTransition("todo", "blocked")).toBe(false);
   });
 
   it("defaultCommitEmojiForStatus maps known statuses", () => {

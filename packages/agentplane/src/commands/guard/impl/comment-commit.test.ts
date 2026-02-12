@@ -56,6 +56,7 @@ describe("commitFromComment", () => {
         ctx,
         cwd: "/tmp/repo",
         taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
         commentBody: "Start: implement test",
         formattedComment: "Start: implement test",
         emoji: "🚧",
@@ -72,6 +73,7 @@ describe("commitFromComment", () => {
         ctx,
         cwd: "/tmp/repo",
         taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
         commentBody: "Start: implement test",
         formattedComment: "Start: implement test",
         emoji: "🚧",
@@ -95,6 +97,7 @@ describe("commitFromComment", () => {
         ctx,
         cwd: "/tmp/repo",
         taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
         commentBody: "Start: implement test",
         formattedComment: "Start: implement test",
         emoji: "🚧",
@@ -111,6 +114,7 @@ describe("commitFromComment", () => {
         ctx,
         cwd: "/tmp/repo",
         taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
         commentBody: "Start: implement test",
         formattedComment: "Start: implement test",
         emoji: "🚧",
@@ -131,7 +135,7 @@ describe("commitFromComment", () => {
     git.statusUnstagedTrackedPaths.mockResolvedValue([]);
     git.headHashSubject.mockResolvedValue({
       hash: "1234567890abcdef",
-      subject: "🚧 2S7HGD task: implement commit from comment",
+      subject: "🚧 2S7HGD code: doing",
     });
 
     const ctx = makeCtx(git);
@@ -139,6 +143,7 @@ describe("commitFromComment", () => {
       ctx,
       cwd: "/tmp/repo",
       taskId: "202602111631-2S7HGD",
+      primaryTag: "code",
       executorAgent: "CODER",
       author: "CODER",
       statusFrom: "TODO",
@@ -157,12 +162,13 @@ describe("commitFromComment", () => {
     expect(git.stage).toHaveBeenCalledWith(["src/app.ts"]);
     expect(git.commit).toHaveBeenCalledTimes(1);
     const commitCall = git.commit.mock.calls[0]?.[0];
-    expect(commitCall?.message).toBe("🚧 2S7HGD task: implement commit from comment");
+    expect(commitCall?.message).toBe("🚧 2S7HGD code: doing");
     expect(commitCall?.body).toContain("Task: 202602111631-2S7HGD");
-    expect(commitCall?.body).toContain("Status: TODO -> DOING");
+    expect(commitCall?.body).toContain("Primary: code");
+    expect(commitCall?.body).toContain("Status: DOING");
     expect(commitCall?.body).toContain("Comment: Start: implement commit from comment");
     expect(result.hash).toBe("1234567890abcdef");
-    expect(result.message).toContain("2S7HGD task:");
+    expect(result.message).toContain("2S7HGD code:");
     expect(result.staged).toEqual(["src/app.ts"]);
   });
 
@@ -177,6 +183,7 @@ describe("commitFromComment", () => {
         ctx,
         cwd: "/tmp/repo",
         taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
         commentBody: "Start: do work",
         formattedComment: "Start: do work",
         emoji: " ",
@@ -190,52 +197,60 @@ describe("commitFromComment", () => {
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
   });
 
-  it("fails when formatted comment is blank", async () => {
+  it("accepts blank formatted comment and falls back to raw comment for body", async () => {
     const git = makeGit();
     git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
     git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    git.headHashSubject.mockResolvedValue({
+      hash: "1234567890abcdef",
+      subject: "🚧 2S7HGD code: doing",
+    });
     const ctx = makeCtx(git);
-    await expect(
-      commitFromComment({
-        ctx,
-        cwd: "/tmp/repo",
-        taskId: "202602111631-2S7HGD",
-        commentBody: "Start: do work",
-        formattedComment: "   ",
-        emoji: "🚧",
-        allow: ["src"],
-        autoAllow: false,
-        allowTasks: false,
-        requireClean: false,
-        quiet: true,
-        config: defaultConfig(),
-      }),
-    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+    const result = await commitFromComment({
+      ctx,
+      cwd: "/tmp/repo",
+      taskId: "202602111631-2S7HGD",
+      primaryTag: "code",
+      commentBody: "Start: do work",
+      formattedComment: "   ",
+      emoji: "🚧",
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      requireClean: false,
+      quiet: true,
+      config: defaultConfig(),
+    });
+    expect(result.message).toContain("2S7HGD code: doing");
   });
 
-  it("fails when formatted comment has only status prefix without summary", async () => {
+  it("accepts formatted comment with only prefix for body while keeping status-based subject", async () => {
     const git = makeGit();
     git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
     git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     git.statusUnstagedTrackedPaths.mockResolvedValue([]);
+    git.headHashSubject.mockResolvedValue({
+      hash: "1234567890abcdef",
+      subject: "🚧 2S7HGD code: doing",
+    });
     const ctx = makeCtx(git);
-    await expect(
-      commitFromComment({
-        ctx,
-        cwd: "/tmp/repo",
-        taskId: "202602111631-2S7HGD",
-        commentBody: "Start: do work",
-        formattedComment: "Start:",
-        emoji: "🚧",
-        allow: ["src"],
-        autoAllow: false,
-        allowTasks: false,
-        requireClean: false,
-        quiet: true,
-        config: defaultConfig(),
-      }),
-    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+    const result = await commitFromComment({
+      ctx,
+      cwd: "/tmp/repo",
+      taskId: "202602111631-2S7HGD",
+      primaryTag: "code",
+      commentBody: "Start: do work",
+      formattedComment: "Start:",
+      emoji: "🚧",
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      requireClean: false,
+      quiet: true,
+      config: defaultConfig(),
+    });
+    expect(result.message).toContain("2S7HGD code: doing");
   });
 
   it("auto-allow can stage task artifacts when allowTasks=true", async () => {
@@ -253,6 +268,7 @@ describe("commitFromComment", () => {
       ctx,
       cwd: "/tmp/repo",
       taskId: "202602111631-2S7HGD",
+      primaryTag: "code",
       commentBody: "Start: update task artifacts",
       formattedComment: "Start: update task artifacts",
       emoji: "🚧",
@@ -278,6 +294,7 @@ describe("commitFromComment", () => {
         ctx,
         cwd: "/tmp/repo",
         taskId: "",
+        primaryTag: "code",
         commentBody: "Start: do work",
         formattedComment: "Start: do work",
         emoji: "🚧",
@@ -307,6 +324,7 @@ describe("commitFromComment", () => {
         ctx,
         cwd: "/tmp/repo",
         taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
         commentBody: "Start: mixed staged set",
         formattedComment: "Start: mixed staged set",
         emoji: "🚧",
@@ -339,6 +357,7 @@ describe("commitFromComment", () => {
       ctx,
       cwd: "/tmp/repo",
       taskId: "202602111631-2S7HGD",
+      primaryTag: "code",
       commentBody: "Start: explicit allow",
       formattedComment: "Start: explicit allow",
       emoji: "🚧",

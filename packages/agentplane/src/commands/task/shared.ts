@@ -383,7 +383,18 @@ export function enforceStatusCommitPolicy(opts: {
   action: string;
   confirmed: boolean;
   quiet: boolean;
+  statusFrom: string;
+  statusTo: string;
 }): void {
+  if (!isMajorStatusCommitTransition(opts.statusFrom, opts.statusTo)) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        `${opts.action}: status/comment-driven commit is allowed only for major transitions ` +
+        `(got ${opts.statusFrom.toUpperCase()} -> ${opts.statusTo.toUpperCase()})`,
+    });
+  }
   if (opts.policy === "off") return;
   if (opts.policy === "warn") {
     if (!opts.quiet && !opts.confirmed) {
@@ -404,6 +415,24 @@ export function enforceStatusCommitPolicy(opts: {
         "(pass --confirm-status-commit to proceed)",
     });
   }
+}
+
+const MAJOR_STATUS_COMMIT_TRANSITIONS = new Set([
+  "READY->DOING",
+  "TODO->DOING",
+  "DOING->BLOCKED",
+  "BLOCKED->DOING",
+  "DOING->DONE",
+  "DONE->VERIFIED",
+  "VERIFIED->FINISHED",
+  "VERIFIED->EXPORTED",
+]);
+
+export function isMajorStatusCommitTransition(statusFrom: string, statusTo: string): boolean {
+  const from = statusFrom.trim().toUpperCase();
+  const to = statusTo.trim().toUpperCase();
+  if (!from || !to) return false;
+  return MAJOR_STATUS_COMMIT_TRANSITIONS.has(`${from}->${to}`);
 }
 
 export async function readCommitInfo(

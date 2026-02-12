@@ -28,6 +28,7 @@ import {
   nowIso,
   requiresVerify,
   requireStructuredComment,
+  resolvePrimaryTag,
   toStringArray,
 } from "./shared.js";
 
@@ -60,15 +61,6 @@ export async function cmdStart(opts: {
         config: ctx.config,
         yes: opts.yes === true,
         reason: "start --force",
-      });
-    }
-
-    if (opts.commitFromComment) {
-      enforceStatusCommitPolicy({
-        policy: ctx.config.status_commit_policy,
-        action: "start",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
       });
     }
 
@@ -128,6 +120,17 @@ export async function cmdStart(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: `Refusing status transition ${currentStatus} -> DOING (use --force to override)`,
+      });
+    }
+
+    if (opts.commitFromComment) {
+      enforceStatusCommitPolicy({
+        policy: ctx.config.status_commit_policy,
+        action: "start",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+        statusFrom: currentStatus,
+        statusTo: "DOING",
       });
     }
 
@@ -219,6 +222,7 @@ export async function cmdStart(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
+        primaryTag: resolvePrimaryTag(toStringArray(task.tags), ctx).primary,
         executorAgent,
         author: opts.author,
         statusFrom: currentStatus,

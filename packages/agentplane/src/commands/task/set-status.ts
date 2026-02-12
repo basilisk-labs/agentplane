@@ -24,6 +24,8 @@ import {
   normalizeTaskStatus,
   nowIso,
   readCommitInfo,
+  resolvePrimaryTag,
+  toStringArray,
 } from "./shared.js";
 
 export async function cmdTaskSetStatus(opts: {
@@ -81,15 +83,6 @@ export async function cmdTaskSetStatus(opts: {
     const task = useStore
       ? await store!.get(opts.taskId)
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
-    if (opts.commitFromComment) {
-      enforceStatusCommitPolicy({
-        policy: config.status_commit_policy,
-        action: "task set-status",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
-      });
-    }
-
     const currentStatus = String(task.status || "TODO").toUpperCase();
     if (!opts.force && !isTransitionAllowed(currentStatus, nextStatus)) {
       throw new CliError({
@@ -120,6 +113,17 @@ export async function cmdTaskSetStatus(opts: {
           message: `Task is not ready: ${task.id} (use --force to override)`,
         });
       }
+    }
+
+    if (opts.commitFromComment) {
+      enforceStatusCommitPolicy({
+        policy: config.status_commit_policy,
+        action: "task set-status",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+        statusFrom: currentStatus,
+        statusTo: nextStatus,
+      });
     }
 
     const existingComments = Array.isArray(task.comments)
@@ -176,6 +180,7 @@ export async function cmdTaskSetStatus(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
+        primaryTag: resolvePrimaryTag(toStringArray(task.tags), ctx).primary,
         author: opts.author,
         statusFrom: currentStatus,
         statusTo: nextStatus,

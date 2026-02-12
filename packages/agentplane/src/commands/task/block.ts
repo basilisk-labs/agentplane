@@ -22,6 +22,8 @@ import {
   isTransitionAllowed,
   nowIso,
   requireStructuredComment,
+  resolvePrimaryTag,
+  toStringArray,
 } from "./shared.js";
 
 export async function cmdBlock(opts: {
@@ -56,15 +58,6 @@ export async function cmdBlock(opts: {
       });
     }
 
-    if (opts.commitFromComment) {
-      enforceStatusCommitPolicy({
-        policy: ctx.config.status_commit_policy,
-        action: "block",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
-      });
-    }
-
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.blocked;
     requireStructuredComment(opts.body, prefix, minChars);
 
@@ -80,6 +73,17 @@ export async function cmdBlock(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: `Refusing status transition ${currentStatus} -> BLOCKED (use --force to override)`,
+      });
+    }
+
+    if (opts.commitFromComment) {
+      enforceStatusCommitPolicy({
+        policy: ctx.config.status_commit_policy,
+        action: "block",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+        statusFrom: currentStatus,
+        statusTo: "BLOCKED",
       });
     }
 
@@ -144,6 +148,7 @@ export async function cmdBlock(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
+        primaryTag: resolvePrimaryTag(toStringArray(task.tags), ctx).primary,
         executorAgent,
         author: opts.author,
         statusFrom: currentStatus,

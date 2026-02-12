@@ -76,6 +76,15 @@ describe("commit-policy", () => {
     expect(result.errors.join("\n")).toContain("commit subject is too generic");
   });
 
+  it("accepts one-word status summaries for task status commits", () => {
+    const result = validateCommitSubject({
+      subject: "🚧 ABCDEF code: doing",
+      taskId: "202601010101-ABCDEF",
+      genericTokens: ["update", "tasks", "done", "wip"],
+    });
+    expect(result.ok).toBe(true);
+  });
+
   it("rejects empty subject", () => {
     const result = validateCommitSubject({
       subject: "   ",
