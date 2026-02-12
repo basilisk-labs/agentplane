@@ -31,6 +31,7 @@ import { ensureInitRedmineEnvTemplate } from "./init/write-env.js";
 import { renderInitSection, renderInitWelcome } from "./init/ui.js";
 
 type InitFlags = {
+  setupProfile?: "prod" | "dev";
   ide?: "codex" | "cursor" | "windsurf";
   workflow?: "direct" | "branch_pr";
   backend?: "local" | "redmine";
@@ -76,6 +77,14 @@ export const initSpec: CommandSpec<InitParsed> = {
   description:
     "Creates .agentplane/ config, backend stubs, and agent templates in the target directory. If the target directory is not a git repository, it initializes one and (by default) writes an initial install commit. Use --gitignore-agents to keep agent templates local (gitignored) and skip the install commit. In interactive mode it prompts for missing inputs; use --yes for non-interactive mode.",
   options: [
+    {
+      kind: "string",
+      name: "setup-profile",
+      valueHint: "<prod|dev>",
+      choices: ["prod", "dev"],
+      description:
+        "Interactive preset. prod asks only essential questions; dev asks the full setup questionnaire.",
+    },
     {
       kind: "string",
       name: "ide",
@@ -200,6 +209,7 @@ export const initSpec: CommandSpec<InitParsed> = {
     const recipesRaw = raw.opts.recipes as string | undefined;
 
     return {
+      setupProfile: raw.opts["setup-profile"] as InitFlags["setupProfile"],
       ide: raw.opts.ide as InitFlags["ide"],
       workflow: raw.opts.workflow as InitFlags["workflow"],
       backend: raw.opts.backend as InitFlags["backend"],
@@ -285,6 +295,7 @@ async function cmdInit(opts: {
   let requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
   let executionProfile = flags.executionProfile ?? defaults.executionProfile;
   let strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
+  let setupProfile: "prod" | "dev" = flags.setupProfile ?? "prod";
   const isInteractive = process.stdin.isTTY && !flags.yes;
 
   if (
@@ -328,12 +339,24 @@ async function cmdInit(opts: {
     process.stdout.write(renderInitWelcome());
     process.stdout.write(
       renderInitSection(
+        "Setup Profile",
+        "Choose how much init should ask. prod keeps the flow compact; dev exposes full controls.",
+      ),
+    );
+    if (!flags.setupProfile) {
+      setupProfile = (await askChoice("Setup profile", ["prod", "dev"], setupProfile)) as
+        | "prod"
+        | "dev";
+    }
+
+    process.stdout.write(
+      renderInitSection(
         "Workflow",
         "Choose how branches/backends/approvals should be initialized for this repository.",
       ),
     );
     ide = flags.ide ?? defaults.ide;
-    if (!flags.workflow) {
+    if (!flags.workflow && setupProfile === "dev") {
       const choice = await askChoice("Workflow mode", ["direct", "branch_pr"], workflow);
       workflow = choice === "branch_pr" ? "branch_pr" : "direct";
     }
@@ -341,67 +364,83 @@ async function cmdInit(opts: {
       const choice = await askChoice("Task backend", ["local", "redmine"], backend);
       backend = choice === "redmine" ? "redmine" : "local";
     }
-    if (flags.hooks === undefined) {
-      hooks = await askYesNo("Install managed git hooks now?", hooks);
-    }
-    process.stdout.write(
-      renderInitSection(
-        "Execution Profile",
-        "Set default autonomy/effort for agents. You can change this later in config.",
-      ),
-    );
-    if (!flags.executionProfile) {
-      executionProfile = (await askChoice(
-        "Execution profile",
-        ["conservative", "balanced", "aggressive"],
-        executionProfile,
-      )) as ExecutionProfile;
-    }
-    if (flags.strictUnsafeConfirm === undefined) {
-      strictUnsafeConfirm = await askYesNo(
-        "Require strict explicit confirmation for extra unsafe actions?",
-        strictUnsafeConfirm,
+    if (setupProfile === "dev") {
+      if (flags.hooks === undefined) {
+        hooks = await askYesNo("Install managed git hooks now?", hooks);
+      }
+      process.stdout.write(
+        renderInitSection(
+          "Execution Profile",
+          "Set default autonomy/effort for agents. You can change this later in config.",
+        ),
       );
-    }
-    process.stdout.write(
-      renderInitSection(
-        "Approvals",
-        "Control whether plan/network/verification actions require explicit approval by default.",
-      ),
-    );
-    if (flags.requirePlanApproval === undefined) {
-      requirePlanApproval = await askYesNo(
-        "Require plan approval before work starts?",
-        requirePlanApproval,
+      if (!flags.executionProfile) {
+        executionProfile = (await askChoice(
+          "Execution profile",
+          ["conservative", "balanced", "aggressive"],
+          executionProfile,
+        )) as ExecutionProfile;
+      }
+      if (flags.strictUnsafeConfirm === undefined) {
+        strictUnsafeConfirm = await askYesNo(
+          "Require strict explicit confirmation for extra unsafe actions?",
+          strictUnsafeConfirm,
+        );
+      }
+      process.stdout.write(
+        renderInitSection(
+          "Approvals",
+          "Control whether plan/network/verification actions require explicit approval by default.",
+        ),
       );
-    }
-    if (flags.requireNetworkApproval === undefined) {
-      requireNetworkApproval = await askYesNo(
-        "Require explicit approval for network actions?",
-        requireNetworkApproval,
+      if (flags.requirePlanApproval === undefined) {
+        requirePlanApproval = await askYesNo(
+          "Require plan approval before work starts?",
+          requirePlanApproval,
+        );
+      }
+      if (flags.requireNetworkApproval === undefined) {
+        requireNetworkApproval = await askYesNo(
+          "Require explicit approval for network actions?",
+          requireNetworkApproval,
+        );
+      }
+      if (flags.requireVerifyApproval === undefined) {
+        requireVerifyApproval = await askYesNo(
+          "Require explicit approval before recording verification?",
+          requireVerifyApproval,
+        );
+      }
+      process.stdout.write(
+        renderInitSection(
+          "Recipes",
+          "Optional: install recipe packs now (comma-separated IDs) or choose none.",
+        ),
       );
-    }
-    if (flags.requireVerifyApproval === undefined) {
-      requireVerifyApproval = await askYesNo(
-        "Require explicit approval before recording verification?",
-        requireVerifyApproval,
+      if (!flags.recipes) {
+        process.stdout.write(`${renderBundledRecipesHint()}\n`);
+        const answer = await askInput("Install optional recipes (comma separated, or none): ");
+        recipes = answer
+          ? answer
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean)
+          : [];
+      }
+    } else {
+      hooks = flags.hooks ?? defaults.hooks;
+      recipes = flags.recipes ?? defaults.recipes;
+      requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
+      requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
+      requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
+      executionProfile = flags.executionProfile ?? defaults.executionProfile;
+      strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
+      process.stdout.write(
+        renderInitSection(
+          "Defaults Applied",
+          "Using compact prod defaults for hooks, approvals, execution profile, and recipes.",
+        ),
       );
-    }
-    process.stdout.write(
-      renderInitSection(
-        "Recipes",
-        "Optional: install recipe packs now (comma-separated IDs) or choose none.",
-      ),
-    );
-    if (!flags.recipes) {
-      process.stdout.write(`${renderBundledRecipesHint()}\n`);
-      const answer = await askInput("Install optional recipes (comma separated, or none): ");
-      recipes = answer
-        ? answer
-            .split(",")
-            .map((item) => item.trim())
-            .filter(Boolean)
-        : [];
     }
   }
 

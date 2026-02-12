@@ -743,6 +743,7 @@ describe("runCli", () => {
       if (choices.includes("branch_pr")) return "branch_pr";
       if (choices.includes("local")) return "local";
       if (choices.includes("balanced")) return "balanced";
+      if (choices.includes("prod")) return "prod";
       return def;
     });
     const yesNo = vi.spyOn(prompts, "promptYesNo").mockImplementation((prompt, def) => {
@@ -753,6 +754,38 @@ describe("runCli", () => {
     const io = captureStdIO();
     try {
       const code = await runCli(["init", "--root", root]);
+      expect(code).toBe(0);
+      expect(choice).toHaveBeenCalled();
+      expect(yesNo).not.toHaveBeenCalled();
+      expect(promptInput).not.toHaveBeenCalled();
+    } finally {
+      Object.defineProperty(process.stdin, "isTTY", { value: originalIsTTY, configurable: true });
+      choice.mockRestore();
+      yesNo.mockRestore();
+      promptInput.mockRestore();
+      io.restore();
+    }
+  });
+
+  it("init --setup-profile dev keeps full interactive questionnaire", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const originalIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, "isTTY", { value: true, configurable: true });
+    const choice = vi.spyOn(prompts, "promptChoice").mockImplementation((_p, choices, def) => {
+      if (choices.includes("branch_pr")) return "branch_pr";
+      if (choices.includes("local")) return "local";
+      if (choices.includes("balanced")) return "balanced";
+      return def;
+    });
+    const yesNo = vi.spyOn(prompts, "promptYesNo").mockImplementation((prompt, def) => {
+      if (prompt.includes("Install managed git hooks")) return false;
+      return def;
+    });
+    const promptInput = vi.spyOn(prompts, "promptInput").mockResolvedValue("");
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--root", root, "--setup-profile", "dev"]);
       expect(code).toBe(0);
       expect(choice).toHaveBeenCalled();
       expect(yesNo).toHaveBeenCalled();
