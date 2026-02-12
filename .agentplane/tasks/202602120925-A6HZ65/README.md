@@ -1,7 +1,9 @@
 ---
 id: "202602120925-A6HZ65"
 title: "P2: cross-command resolved-context cache"
-status: "DOING"
+result_summary: "Context resolution now reuses cached resolved project/config when building command context, reducing duplicate project/config loads."
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -19,11 +21,16 @@ verification:
   updated_at: "2026-02-12T10:16:37.016Z"
   updated_by: "CODER"
   note: "Verified: task-backend and run-cli core task/branch suites pass after context-cache wiring; lint/build pass."
-commit: null
+commit:
+  hash: "ff22f77137797d6dc0ef79958f971ba337b92a9d"
+  message: "✅ A6HZ65 perf: reuse resolved context for task backend loading"
 comments:
   -
     author: "CODER"
     body: "Start: remove duplicate context resolution by reusing cached resolved project/config when constructing command task context."
+  -
+    author: "CODER"
+    body: "Verified: task-backend and core task/branch CLI tests pass; lint/build pass."
 events:
   -
     type: "status"
@@ -38,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: task-backend and run-cli core task/branch suites pass after context-cache wiring; lint/build pass."
+  -
+    type: "status"
+    at: "2026-02-12T10:17:12.645Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task-backend and core task/branch CLI tests pass; lint/build pass."
 doc_version: 2
-doc_updated_at: "2026-02-12T10:16:37.017Z"
+doc_updated_at: "2026-02-12T10:17:12.645Z"
 doc_updated_by: "CODER"
 description: "Short-lived cache for resolved project/config context across repeated CLI invocations."
 id_source: "generated"
