@@ -77,7 +77,8 @@ const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
   },
   {
     operation: "INTEGRATOR: commit closure",
-    command: "`agentplane commit <task-id> --close`",
+    command:
+      "`agentplane commit <task-id> --close [--check-only] [--unstage-others]` / duplicate no-op close: `agentplane task close-duplicate <task-id> --of <canonical-task-id> --author <ROLE>`",
   },
 ];
 
@@ -112,7 +113,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- Verify Steps: `agentplane task verify-show <task-id>` (use as the verification contract before recording results).",
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / close: `agentplane commit <task-id> --close`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / close: `agentplane commit <task-id> --close [--check-only] [--unstage-others]`',
     ],
   },
   {
@@ -124,7 +125,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- Verify Steps: `agentplane task verify-show <task-id>` (treat as the verification contract).",
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / close: `agentplane commit <task-id> --close`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / close: `agentplane commit <task-id> --close [--check-only] [--unstage-others]`',
     ],
   },
   {
@@ -132,7 +133,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       '- Task docs: `agentplane task doc set <task-id> --section Summary --text "..."` (repeat per section or use `--file`)',
       '- PR notes: `agentplane pr note <task-id> --author DOCS --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / close: `agentplane commit <task-id> --close`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / close: `agentplane commit <task-id> --close [--check-only] [--unstage-others]`',
     ],
   },
   {

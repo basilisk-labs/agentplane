@@ -151,6 +151,11 @@ sequenceDiagram
 - **branch_pr verify logs**: `agentplane integrate --run-verify` executes frontmatter `verify:` commands and appends output to `.agentplane/tasks/<task-id>/pr/verify.log`.
 - **Back-compat**: frontmatter `verify: string[]` remains supported as optional suggested commands; it is not required by the two-stage model.
 - **Commit policy**: commit subjects must include the task ID suffix.
+- **Duplicate closure shortcut**: for accidental duplicate tasks, use one command:
+  - `agentplane task close-duplicate <task-id> --of <canonical-task-id> --author <ROLE>`
+- **Close commit preflight/index cleanup**:
+  - `agentplane commit <task-id> --close --check-only` shows the generated close subject without creating a commit.
+  - `agentplane commit <task-id> --close --unstage-others` auto-unstages unrelated index entries before creating the deterministic close commit.
 - **Docs updates**: task README sections are updated via `agentplane task doc set`.
 - **Exports**: task snapshots are updated only via `agentplane` commands.
 
