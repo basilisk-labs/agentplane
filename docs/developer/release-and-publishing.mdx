@@ -1,140 +1,104 @@
 ---
 title: "Release and publishing"
-description: "How to version and publish the CLI and core packages."
+description: "Patch release flow, CI parity checks, and GitHub-only npm publish with provenance."
 ---
 
-## Versioning
+## Release policy
 
-Use semantic versioning. The CLI depends on `@agentplaneorg/core`, so bump versions together when APIs change.
-The CLI `--version` output is sourced from `packages/agentplane/package.json`.
+- Versioning follows SemVer.
+- `agentplane` and `@agentplaneorg/core` release together at the same version.
+- Patch bump is default automation path.
+- Minor/major bump requires explicit approval.
 
-## Release notes (required)
+## Notes policy
 
-Every release **must** include English, human‑readable notes in `docs/releases/vX.Y.Z.md`.
+Every release requires notes in `docs/releases/vX.Y.Z.md`.
 
-- The file must exist in the commit **before** the tag is created.
-- Use `docs/releases/TEMPLATE.md` as the starting point.
-- Keep the bullets outcome‑focused and user‑readable (not just raw commit lists).
+Requirements:
 
-The publish workflow fails if release notes are missing or empty.
+- English text
+- minimum three bullets
+- human-readable summary, not raw git log dump
 
-## Standard release workflow (recommended)
+## Standard flow
 
-Agent Plane supports an agent-assisted release flow that separates:
-
-- generating a structured changes list and target version (plan)
-- writing human release notes (DOCS)
-- applying the version bump plus tagging for publish (apply)
-
-### 1) Generate a release plan
-
-Patch bumps are the default. Minor/major bumps require explicit approval via `--yes`.
+1. Generate release plan:
 
 ```bash
 agentplane release plan
 ```
 
-This writes a plan directory under `.agentplane/.release/plan/<runId>/` with:
-
-- the computed `nextTag` and bump kind
-- a machine-readable changes list for release notes authoring
-
-### 2) Write release notes (DOCS)
-
-Create `docs/releases/vX.Y.Z.md` based on the plan output.
-
-### 3) Run the same CI gate locally (required)
-
-Before applying a release, run the same pass/fail checks as `.github/workflows/ci.yml`:
+2. Draft notes from plan artifacts.
+3. Run local release gate (must match publish prerequisites):
 
 ```bash
-bun run release:ci-check
+bun run release:prepublish
 ```
 
-This ensures the local release candidate is validated against the same build/lint/test gate
-that GitHub CI enforces on `main`.
-
-### 4) Apply the release (commit plus tag)
+4. Apply release:
 
 ```bash
 agentplane release apply
 ```
 
-This command:
-
-- validates that release notes exist and are non-empty
-- bumps workspace package versions together
-- creates a release commit
-- creates the git tag `vX.Y.Z`
-
-To push the release commit and tag:
+5. Push tag and commit when ready:
 
 ```bash
 agentplane release apply --push --yes
 ```
 
-Notes:
+## What `release:prepublish` covers
 
-- Patch releases can be applied without `--yes`.
-- Pushing requires `--yes` (safety gate).
-- `release apply` now requires a clean tracked working tree and fails early if the target tag already exists.
-- When using `--push`, `release apply` also checks npm registry availability for the target version before pushing.
+`bun run release:prepublish` includes:
 
-## Trusted publishing (GitHub Actions)
+- `release:ci-check`:
+- format check
+- schema sync check
+- agent template sync check
+- build
+- lint
+- full test suite
+- `release:check`:
+- package builds
+- npm dry-run pack for both packages
 
-To enable npm trusted publishing, configure the npm package to trust the GitHub Actions workflow
-in this repository. Create a workflow named `publish.yml` under `.github/workflows/` and register
-it in the npm “Trusted Publishers” settings for each package (`@agentplaneorg/core` and `agentplane`).
+## Publishing policy
 
-Use GitHub-hosted runners and allow the workflow to request an OIDC token (`id-token: write`).
-The workflow should publish from `packages/core` first, then `packages/agentplane`.
-Trusted publishing requires npm 11.5.1 or newer in the workflow runtime.
+npm publish is GitHub-only.
+Local `npm publish` is blocked by `prepublishOnly` through `scripts/enforce-github-publish.mjs`.
 
-If you publish under the `@agentplaneorg` scope, make sure the `agentplaneorg` npm organization exists
-and you have owner rights before publishing.
+GitHub workflow `Publish to npm`:
 
-## Release trigger
+- runs on `v*` tags
+- uses OIDC trusted publishing
+- sets provenance
+- validates notes and version/tag parity
+- runs format/sync/build/lint/full tests before publish
+- publishes `@agentplaneorg/core` first, then `agentplane`
+- uses idempotent publish steps to tolerate reruns
 
-Publishing is triggered automatically for tags that match `v*`. Use annotated or lightweight tags — both
-are supported. The workflow also supports manual runs via `workflow_dispatch` if needed.
+## Provenance requirements
 
-On each release tag, the workflow enforces:
+Both packages set:
 
-- `docs/releases/vX.Y.Z.md` exists and follows the template.
-- `packages/agentplane/package.json` and `packages/core/package.json` versions match the tag.
-- `@agentplaneorg/core@X.Y.Z` and `agentplane@X.Y.Z` are not already published in npm.
+- `publishConfig.access = public`
+- `publishConfig.provenance = true`
 
-After publishing, the workflow creates a GitHub Release using `docs/releases/vX.Y.Z.md` as the body.
+Trusted publishing must be configured in npm for repository workflow identity.
 
-## Local guardrail
+## Failure points and fixes
 
-The `pre-push` hook checks that release notes exist when pushing a release tag.
+- `release apply --push` blocked:
+- run `bun run release:prepublish` and fix failures
+- Tag/version mismatch:
+- ensure `vX.Y.Z` matches package versions
+- Package already published:
+- bump to next patch and regenerate notes
+- Publish workflow fails after partial publish:
+- rerun workflow, idempotent checks should skip already-published packages
 
-## Global install check
+## Post-release checks
 
-```bash
-npm i -g agentplane@latest
-agentplane --help
-```
-
-## Notes
-
-- Ensure `dist/` is up to date before publishing (monorepo development requires building packages before commits that affect published artifacts).
-- Keep metadata in `package.json` accurate (description, keywords, repository, etc.).
-
-## Emergency manual publish (discouraged)
-
-If trusted publishing is unavailable, you can publish manually, but treat this as a controlled, explicit action with extra verification:
-
-1. Build and pack:
-
-   ```bash
-   bun run release:check
-   ```
-
-2. Publish order:
-
-   ```bash
-   cd packages/core && npm publish --access public
-   cd ../agentplane && npm publish --access public
-   ```
+- verify npm versions for both packages
+- verify GitHub release body matches `docs/releases/vX.Y.Z.md`
+- verify upgrade bundle artifacts exist in release assets

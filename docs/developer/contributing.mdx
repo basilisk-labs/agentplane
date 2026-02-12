@@ -7,7 +7,7 @@ description: "How to contribute changes to Agent Plane."
 
 ```bash
 bun install
-bun run test
+bun run test:fast
 ```
 
 ## Workflow expectations
@@ -15,12 +15,13 @@ bun run test
 - Use `agentplane` CLI for task operations (no manual edits to tasks).
 - Keep commits tied to a task ID.
 - Follow the configured workflow mode (`direct` or `branch_pr`).
+- For code changes, keep `dist/` in sync before commit when required by hooks.
 
 ## Where to change things
 
 - CLI behavior: `packages/agentplane/src/cli/run-cli.ts`
 - Core logic: `packages/core/src/`
-- Task backends: `packages/agentplane/src/backends/task-backend.ts`
+- Task backends: `packages/agentplane/src/backends/task-backend/`
 - Documentation: `docs/`
 
 ## Testing
@@ -53,9 +54,11 @@ Run full checks when touching multiple areas:
 
 ```bash
 bun run format:check
+bun run schemas:check
+bun run agents:check
+bun run build
 bun run lint
-bun run typecheck
-bun run test
+bun run test:full
 ```
 
 ## Documentation updates
@@ -63,8 +66,10 @@ bun run test
 - Keep docs in English.
 - Update `docs/docs.json` when adding pages.
 - Prefer clear, actionable examples.
+- Keep docs changes in the same task that changes behavior.
 
 ## Submitting changes
 
 - Ensure the working tree is clean except for intended changes.
 - Provide a brief verification summary in task comments.
+- Do not bypass hooks; fix failures locally before push.
