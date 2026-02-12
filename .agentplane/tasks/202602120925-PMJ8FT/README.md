@@ -1,7 +1,9 @@
 ---
 id: "202602120925-PMJ8FT"
 title: "P1: central runtime artifact cleanup policy"
-status: "DOING"
+result_summary: "Unified runtime artifact ignore policy across init and doctor; added backup artifact ignore patterns."
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -19,11 +21,16 @@ verification:
   updated_at: "2026-02-12T10:05:53.017Z"
   updated_by: "CODER"
   note: "Verified: doctor, upgrade cleanup, and init gitignore tests pass; lint and agentplane build pass."
-commit: null
+commit:
+  hash: "8c490c82284070d21f03d4770debd45f2bf73c9e"
+  message: "✅ PMJ8FT infra: unify runtime artifact ignore policy"
 comments:
   -
     author: "CODER"
     body: "Start: unify runtime artifact ignore/cleanup policy across init, doctor, and upgrade to reduce noisy git status in installed repositories."
+  -
+    author: "CODER"
+    body: "Verified: runtime ignore lines are centralized and reused by init/doctor; upgrade cleanup and init/doctor tests pass, lint/build pass."
 events:
   -
     type: "status"
@@ -38,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: doctor, upgrade cleanup, and init gitignore tests pass; lint and agentplane build pass."
+  -
+    type: "status"
+    at: "2026-02-12T10:06:43.242Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: runtime ignore lines are centralized and reused by init/doctor; upgrade cleanup and init/doctor tests pass, lint/build pass."
 doc_version: 2
-doc_updated_at: "2026-02-12T10:05:53.018Z"
+doc_updated_at: "2026-02-12T10:06:43.242Z"
 doc_updated_by: "CODER"
 description: "Ensure upgrade/release/cache transient artifacts are cleaned or ignored to avoid noisy statuses."
 id_source: "generated"
