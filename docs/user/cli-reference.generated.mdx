@@ -309,6 +309,7 @@ Options:
 - `--branch <name>`: Branch name to delete.
 - `--worktree <path>`: Worktree path to remove (relative to repo root or absolute).
 - `--force`: Force deletion. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
 Examples:
@@ -884,6 +885,7 @@ Options:
 - `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
 - `--force`: Override status transition restrictions. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--quiet`: Suppress output. (default=false)
 
 Examples:
@@ -919,6 +921,7 @@ Options:
 - `--breaking`: Optional. Mark the change as breaking in task metadata. (default=false)
 - `--commit <hash>`: Commit hash to record on the task (optional).
 - `--force`: Force finish despite gates. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--commit-from-comment`: Create a commit using the comment body (requires exactly one task id). (default=false)
 - `--commit-emoji <emoji>`: Override the commit emoji (used with --commit-from-comment).
 - `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the commit (used with --commit-from-comment). (repeatable)
@@ -967,6 +970,7 @@ Options:
 - `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
 - `--force`: Override readiness checks and status transition restrictions. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--quiet`: Suppress output. (default=false)
 
 Examples:
@@ -1952,6 +1956,7 @@ Options:
 - `--source <path>`: Path to a tasks export JSON file (defaults to config.paths.tasks_path).
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
 - `--force`: Accepted for parity; currently has no additional checks in the node CLI. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
 
 Examples:
 
@@ -2076,6 +2081,7 @@ Options:
 
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
 - `--force`: Accepted for parity; currently has no additional checks in the node CLI. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
 
 Examples:
 
@@ -2200,6 +2206,7 @@ Options:
 - `--title <text>`: Optional. Title used when scaffolding a missing task with --force.
 - `--overwrite`: Overwrite an existing README.md if it already exists. (default=false)
 - `--force`: Allow scaffolding even if the task is missing from the backend. (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
 
 Examples:
@@ -2289,6 +2296,7 @@ Options:
 - `--body <text>`: Optional. Comment/event body (requires --author).
 - `--commit <hash>`: Optional. Record an existing commit hash/message into task metadata.
 - `--force`: Allow unsafe transitions (and DONE without using agentplane finish). (default=false)
+- `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--commit-from-comment`: Create a git commit from the provided comment body (requires --body). (default=false)
 - `--commit-emoji <emoji>`: Optional. Emoji prefix used for commit-from-comment.
 - `--commit-allow <path-prefix>`: Repeatable. Allowlist prefix for commit-from-comment staging. (repeatable)

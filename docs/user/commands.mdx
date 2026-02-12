@@ -22,9 +22,7 @@ agentplane quickstart
 agentplane init
 ```
 
-If the directory is not a git repository, `agentplane init` will initialize git, pin the base branch,
-and create an install commit with the current Agentplane version. In existing repos, it pins the base
-branch to the current branch and commits the install artifacts it creates.
+If the directory is not a git repository, `agentplane init` initializes git in that directory.
 
 Interactive init now uses grouped prompts:
 
@@ -33,8 +31,7 @@ Interactive init now uses grouped prompts:
 - Approval toggles (plan/network/verify)
 - Optional recipes
 
-`execution.profile` is stored in `.agentplane/config.json` and controls autonomy defaults,
-reasoning effort, tool budgets, and strictness for unsafe actions.
+`execution.profile` is stored in `.agentplane/config.json`.
 
 Non-interactive:
 
@@ -80,14 +77,28 @@ agentplane backend sync redmine --direction push --yes
 
 ```bash
 agentplane start <task-id> --author CODER --body "Start: ..."
+agentplane block <task-id> --author CODER --body "Blocked: ..."
 agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome"
 ```
 
+Status transitions (normal mode) are strict:
+
+- `TODO -> DOING|BLOCKED`
+- `DOING -> DONE|BLOCKED`
+- `BLOCKED -> TODO|DOING`
+
+Status/comment-driven commits are allowed only on major transitions:
+
+- `TODO -> DOING`
+- `DOING -> BLOCKED`
+- `BLOCKED -> DOING`
+- `DOING -> DONE`
+
 ## Branching (branch_pr)
 
 ```bash
-agentplane work start <task-id> --agent CODER --slug <slug> [--worktree]
+agentplane work start <task-id> --agent CODER --slug <slug> --worktree
 agentplane pr open <task-id>
 agentplane pr update <task-id>
 agentplane pr check <task-id>
