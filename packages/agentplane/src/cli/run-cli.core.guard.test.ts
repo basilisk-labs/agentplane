@@ -1049,6 +1049,46 @@ describe("runCli", () => {
     }
   });
 
+  it("commit wrapper rejects --unstage-others without --close", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit: docs update",
+        "--unstage-others",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--unstage-others requires --close");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("commit wrapper rejects --check-only without --close", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit: docs update",
+        "--check-only",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--check-only requires --close");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("commit wrapper requires a task id", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
