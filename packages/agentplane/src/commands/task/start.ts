@@ -7,7 +7,6 @@ import { CliError } from "../../shared/errors.js";
 import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import {
-  listTasksMemo,
   loadCommandContext,
   loadTaskFromContext,
   type CommandContext,
@@ -18,7 +17,6 @@ import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
 import {
   appendTaskEvent,
-  buildDependencyState,
   ensurePlanApprovedIfRequired,
   enforceStatusCommitPolicy,
   defaultCommitEmojiForAgentId,
@@ -28,6 +26,7 @@ import {
   nowIso,
   requiresVerifyStepsByPrimary,
   requireStructuredComment,
+  resolveTaskDependencyState,
   resolvePrimaryTag,
   toStringArray,
 } from "./shared.js";
@@ -122,6 +121,14 @@ export async function cmdStart(opts: {
     }
 
     if (opts.commitFromComment) {
+      if (ctx.config.commit_automation === "finish_only") {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message:
+            "start: --commit-from-comment is disabled by commit_automation='finish_only' (allowed only in finish).",
+        });
+      }
       enforceStatusCommitPolicy({
         policy: ctx.config.status_commit_policy,
         action: "start",
@@ -133,10 +140,8 @@ export async function cmdStart(opts: {
     }
 
     if (!opts.force) {
-      const allTasks = await listTasksMemo(ctx);
-      const depState = buildDependencyState(allTasks);
-      const dep = depState.get(task.id);
-      if (dep && (dep.missing.length > 0 || dep.incomplete.length > 0)) {
+      const dep = await resolveTaskDependencyState(task, ctx.taskBackend);
+      if (dep.missing.length > 0 || dep.incomplete.length > 0) {
         if (!opts.quiet) {
           if (dep.missing.length > 0) {
             process.stderr.write(`${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`);

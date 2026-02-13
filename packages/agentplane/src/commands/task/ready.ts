@@ -2,7 +2,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { successMessage, unknownEntityMessage, warnMessage } from "../../cli/output.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
-import { buildDependencyState } from "./shared.js";
+import { resolveTaskDependencyState } from "./shared.js";
 
 export async function cmdReady(opts: {
   ctx?: CommandContext;
@@ -14,14 +14,17 @@ export async function cmdReady(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const tasks = await ctx.taskBackend.listTasks();
-    const depState = buildDependencyState(tasks);
-    const task = tasks.find((item) => item.id === opts.taskId);
+    const task = await ctx.taskBackend.getTask(opts.taskId);
     const warnings: string[] = [];
+    let dep: {
+      dependsOn: string[];
+      missing: string[];
+      incomplete: string[];
+    } | null = null;
     if (task) {
-      const dep = depState.get(task.id);
-      const missing = dep?.missing ?? [];
-      const incomplete = dep?.incomplete ?? [];
+      dep = await resolveTaskDependencyState(task, ctx.taskBackend);
+      const missing = dep.missing;
+      const incomplete = dep.incomplete;
       if (missing.length > 0) {
         warnings.push(`${task.id}: missing deps: ${missing.join(", ")}`);
       }
@@ -40,7 +43,6 @@ export async function cmdReady(opts: {
       const status = String(task.status || "TODO").toUpperCase();
       const title = task.title?.trim() || "(untitled task)";
       const owner = task.owner?.trim() || "-";
-      const dep = depState.get(task.id);
       const dependsOn = dep?.dependsOn ?? [];
       process.stdout.write(`Task: ${task.id} [${status}] ${title}\n`);
       process.stdout.write(`Owner: ${owner}\n`);

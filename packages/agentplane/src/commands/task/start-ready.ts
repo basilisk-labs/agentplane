@@ -2,7 +2,6 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
-import { cmdReady } from "./ready.js";
 import { cmdStart } from "./start.js";
 
 export async function cmdTaskStartReady(opts: {
@@ -20,19 +19,6 @@ export async function cmdTaskStartReady(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    const readyCode = await cmdReady({
-      ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
-    });
-    if (readyCode !== 0 && !opts.force) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Task is not ready: ${opts.taskId} (resolve dependencies or use --force)`,
-      });
-    }
     return await cmdStart({
       ctx,
       cwd: opts.cwd,

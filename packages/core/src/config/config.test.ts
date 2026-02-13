@@ -161,6 +161,7 @@ describe("config", () => {
     const cases: [string, (raw: Record<string, unknown>) => void, RegExp][] = [
       ["workflow_mode", (raw) => (raw.workflow_mode = "nope"), /workflow_mode/],
       ["status_commit_policy", (raw) => (raw.status_commit_policy = "bad"), /status_commit_policy/],
+      ["commit_automation", (raw) => (raw.commit_automation = "bad"), /commit_automation/],
       [
         "finish_auto_status_commit",
         (raw) => (raw.finish_auto_status_commit = "nope"),

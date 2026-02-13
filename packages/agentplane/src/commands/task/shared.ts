@@ -14,7 +14,7 @@ import {
 } from "../../cli/output.js";
 import { fileExists } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
-import { type TaskData, type TaskEvent } from "../../backends/task-backend.js";
+import { type TaskBackend, type TaskData, type TaskEvent } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { dedupeStrings } from "../../shared/strings.js";
 import { parseGitLogHashSubject } from "../../shared/git-log.js";
@@ -354,6 +354,34 @@ export type DependencyState = {
   incomplete: string[];
 };
 
+export async function resolveTaskDependencyState(
+  task: TaskData,
+  backend: Pick<TaskBackend, "getTask" | "getTasks">,
+): Promise<DependencyState> {
+  const dependsOn = dedupeStrings(toStringArray(task.depends_on));
+  if (dependsOn.length === 0) {
+    return { dependsOn, missing: [], incomplete: [] };
+  }
+
+  const loaded = backend.getTasks
+    ? await backend.getTasks(dependsOn)
+    : await Promise.all(dependsOn.map(async (depId) => await backend.getTask(depId)));
+
+  const missing: string[] = [];
+  const incomplete: string[] = [];
+  for (const [idx, depId] of dependsOn.entries()) {
+    const dep = loaded[idx] ?? null;
+    if (!dep) {
+      missing.push(depId);
+      continue;
+    }
+    const status = String(dep.status || "TODO").toUpperCase();
+    if (status !== "DONE") incomplete.push(depId);
+  }
+
+  return { dependsOn, missing, incomplete };
+}
+
 export function buildDependencyState(tasks: TaskData[]): Map<string, DependencyState> {
   const byId = new Map(tasks.map((task) => [task.id, task]));
   const state = new Map<string, DependencyState>();
@@ -487,9 +515,6 @@ const MAJOR_STATUS_COMMIT_TRANSITIONS = new Set([
   "DOING->BLOCKED",
   "BLOCKED->DOING",
   "DOING->DONE",
-  "DONE->VERIFIED",
-  "VERIFIED->FINISHED",
-  "VERIFIED->EXPORTED",
 ]);
 
 export function isMajorStatusCommitTransition(statusFrom: string, statusTo: string): boolean {

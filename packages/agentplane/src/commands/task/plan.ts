@@ -58,6 +58,10 @@ async function loadPlanTask(opts: {
   return { ctx, backend: backend as PlanBackend, task, useStore, store };
 }
 
+function normalizeForComparison(text: string): string {
+  return text.replaceAll("\r\n", "\n").trim();
+}
+
 export async function cmdTaskPlanSet(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -113,20 +117,30 @@ export async function cmdTaskPlanSet(opts: {
       ? String(task.doc ?? "")
       : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
     const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+    const currentPlan = extractDocSection(baseDoc, "Plan") ?? "";
+    const planChanged = normalizeForComparison(currentPlan) !== normalizeForComparison(text);
     const nextDoc = ensureDocSections(
       setMarkdownSection(baseDoc, "Plan", text),
       config.tasks.doc.required_sections,
     );
+    const docChanged = nextDoc !== baseDoc;
+
+    const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");
+    if (!planChanged && !docChanged && !updatedBy) {
+      process.stdout.write(`${readmePath}\n`);
+      return 0;
+    }
 
     const nextTask: TaskData = {
       ...task,
       doc: nextDoc,
-      plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+      ...(planChanged
+        ? { plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null } }
+        : {}),
       ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
     };
     await (useStore ? store!.update(opts.taskId, () => nextTask) : backend.writeTask(nextTask));
 
-    const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");
     process.stdout.write(`${readmePath}\n`);
     return 0;
   } catch (err) {

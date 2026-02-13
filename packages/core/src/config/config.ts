@@ -11,6 +11,7 @@ import { atomicWriteFile } from "../fs/atomic-write.js";
 
 export type WorkflowMode = "direct" | "branch_pr";
 export type StatusCommitPolicy = "off" | "warn" | "confirm";
+export type CommitAutomation = "manual" | "finish_only";
 export type ExecutionProfile = "conservative" | "balanced" | "aggressive";
 export type ReasoningEffort = "low" | "medium" | "high";
 
@@ -18,6 +19,7 @@ export type AgentplaneConfig = {
   schema_version: 1;
   workflow_mode: WorkflowMode;
   status_commit_policy: StatusCommitPolicy;
+  commit_automation: CommitAutomation;
   finish_auto_status_commit: boolean;
   agents?: {
     approvals: {

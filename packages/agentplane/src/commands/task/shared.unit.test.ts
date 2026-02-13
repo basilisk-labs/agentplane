@@ -307,7 +307,7 @@ describe("task shared helpers", () => {
     expect(isMajorStatusCommitTransition("doing", "blocked")).toBe(true);
     expect(isMajorStatusCommitTransition("blocked", "doing")).toBe(true);
     expect(isMajorStatusCommitTransition("doing", "done")).toBe(true);
-    expect(isMajorStatusCommitTransition("done", "verified")).toBe(true);
+    expect(isMajorStatusCommitTransition("done", "verified")).toBe(false);
     expect(isMajorStatusCommitTransition("todo", "blocked")).toBe(false);
   });
 

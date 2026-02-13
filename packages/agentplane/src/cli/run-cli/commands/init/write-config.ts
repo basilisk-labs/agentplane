@@ -47,7 +47,9 @@ export async function writeInitConfig(opts: {
     "status_commit_policy",
     opts.workflow === "branch_pr" ? "confirm" : "warn",
   );
-  setByDottedKey(rawConfig, "finish_auto_status_commit", String(opts.workflow === "branch_pr"));
+  setByDottedKey(rawConfig, "commit_automation", "finish_only");
+  // Keep status commits explicit by default in all modes to reduce commit noise.
+  setByDottedKey(rawConfig, "finish_auto_status_commit", "false");
   setByDottedKey(
     rawConfig,
     "tasks_backend.config_path",

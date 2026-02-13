@@ -77,6 +77,14 @@ export async function cmdBlock(opts: {
     }
 
     if (opts.commitFromComment) {
+      if (ctx.config.commit_automation === "finish_only") {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message:
+            "block: --commit-from-comment is disabled by commit_automation='finish_only' (allowed only in finish).",
+        });
+      }
       enforceStatusCommitPolicy({
         policy: ctx.config.status_commit_policy,
         action: "block",

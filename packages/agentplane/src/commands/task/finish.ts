@@ -90,7 +90,15 @@ export async function cmdFinish(opts: {
     }
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.verified;
     requireStructuredComment(opts.body, prefix, minChars);
-    if ((opts.commitFromComment || opts.statusCommit) && opts.taskIds.length !== 1) {
+    const autoStatusCommit =
+      (ctx.config.finish_auto_status_commit === true ||
+        ctx.config.commit_automation === "finish_only") &&
+      !opts.commitFromComment &&
+      !opts.statusCommit &&
+      opts.closeCommit !== true &&
+      opts.taskIds.length === 1;
+    const statusCommitRequested = opts.statusCommit || autoStatusCommit;
+    if ((opts.commitFromComment || statusCommitRequested) && opts.taskIds.length !== 1) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
@@ -112,7 +120,7 @@ export async function cmdFinish(opts: {
       });
     }
     const primaryTaskId = opts.taskIds[0] ?? "";
-    if ((opts.commitFromComment || opts.statusCommit) && !primaryTaskId) {
+    if ((opts.commitFromComment || statusCommitRequested) && !primaryTaskId) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
@@ -160,7 +168,7 @@ export async function cmdFinish(opts: {
 
       if (
         taskId === primaryTaskId &&
-        (opts.commitFromComment || opts.statusCommit) &&
+        (opts.commitFromComment || statusCommitRequested) &&
         primaryStatusFrom === null
       ) {
         primaryStatusFrom = String(task.status || "TODO").toUpperCase();
@@ -224,11 +232,11 @@ export async function cmdFinish(opts: {
         : ctx.taskBackend.writeTask(nextTask));
     }
 
-    if (opts.commitFromComment || opts.statusCommit) {
+    if (opts.commitFromComment || statusCommitRequested) {
       enforceStatusCommitPolicy({
         policy: ctx.config.status_commit_policy,
         action: "finish",
-        confirmed: opts.confirmStatusCommit,
+        confirmed: opts.confirmStatusCommit || autoStatusCommit,
         quiet: opts.quiet,
         statusFrom: primaryStatusFrom ?? "UNKNOWN",
         statusTo: "DONE",
@@ -238,7 +246,7 @@ export async function cmdFinish(opts: {
     // tasks.json is export-only; generated via `agentplane task export`.
 
     let executorAgent: string | null = null;
-    if (opts.commitFromComment || opts.statusCommit) {
+    if (opts.commitFromComment || statusCommitRequested) {
       const mode = ctx.config.workflow_mode;
       executorAgent = opts.author;
       if (mode === "direct") {
@@ -320,7 +328,7 @@ export async function cmdFinish(opts: {
       }
     }
 
-    if (opts.statusCommit) {
+    if (statusCommitRequested) {
       if (typeof opts.statusCommitEmoji === "string" && opts.statusCommitEmoji.trim() !== "✅") {
         throw new CliError({
           exitCode: 2,

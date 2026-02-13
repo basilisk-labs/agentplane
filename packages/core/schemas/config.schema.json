@@ -17,6 +17,11 @@
       "enum": ["off", "warn", "confirm"],
       "default": "warn"
     },
+    "commit_automation": {
+      "type": "string",
+      "enum": ["manual", "finish_only"],
+      "default": "manual"
+    },
     "finish_auto_status_commit": { "type": "boolean", "default": false },
     "agents": {
       "type": "object",
