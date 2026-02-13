@@ -108,7 +108,7 @@ describe("upgrade merge behavior", () => {
       files?: { relPath?: string; needsSemanticReview?: boolean }[];
     };
     expect(
-      lastReview.files?.some((f) => f.relPath === "AGENTS.md" && f.needsSemanticReview === true),
+      lastReview.files?.some((f) => f.relPath === "AGENTS.md" && f.needsSemanticReview === false),
     ).toBe(true);
     expect(
       lastReview.files?.some(

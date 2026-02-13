@@ -80,12 +80,8 @@ describeWhenNotHook("upgrade agent-assisted mode", () => {
       files?: { relPath?: string; needsSemanticReview?: boolean }[];
     };
     expect(review.counts?.total).toBe(1);
-    expect(review.counts?.needsSemanticReview).toBe(1);
+    expect(review.counts?.needsSemanticReview).toBe(0);
     expect(review.files?.[0]?.relPath).toBe("AGENTS.md");
-    expect(review.files?.[0]?.needsSemanticReview).toBe(true);
-
-    // Snapshots are written for files requiring semantic review.
-    const proposedSnapshot = path.join(agentDir, latest, "snapshots", "proposed", "AGENTS.md");
-    expect(await readFile(proposedSnapshot, "utf8")).toContain("# Incoming");
+    expect(review.files?.[0]?.needsSemanticReview).toBe(false);
   }, 20_000);
 });

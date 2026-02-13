@@ -137,7 +137,7 @@ Precedence:
 
 ## Framework Upgrade / Prompt Merge
 
-`agentplane upgrade` is responsible for mechanical upgrades and safe merges. When an upgrade run indicates a potential semantic conflict (for example, both local and incoming changes exist relative to a baseline, or a baseline is missing but files differ), treat the result as requiring a meaning-level review.
+`agentplane upgrade` is responsible for mechanical upgrades and safe merges. Treat prompt-merge as required only for unresolved semantic conflicts (for example, both local and incoming changes exist relative to a baseline and cannot be safely reconciled automatically, or merge parsing fails). If local files did not change relative to baseline, the upgrade may apply incoming framework updates without semantic review.
 
 Trigger:
 
@@ -145,6 +145,7 @@ Trigger:
   - Agent mode: `.agentplane/.upgrade/agent/<runId>/review.json`
   - Auto mode: `.agentplane/.upgrade/last-review.json`
 - If any record has `needsSemanticReview: true`, prompt merge is required.
+- `needsSemanticReview: false` means the change was mechanically safe (including cases where local files were unchanged vs baseline and incoming updates were applied directly).
 
 Protocol:
 

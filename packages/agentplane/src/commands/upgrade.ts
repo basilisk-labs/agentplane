@@ -851,9 +851,13 @@ export async function cmdUpgradeParsed(opts: {
           : currentDiffersFromIncoming &&
             Boolean(changedCurrentVsBaseline) &&
             Boolean(changedIncomingVsBaseline);
-      const noBaselineConflict = baselineText === null ? currentDiffersFromIncoming : false;
-      const mergeNotAppliedConflict = mergeApplied ? false : currentDiffersFromIncoming;
-      const needsSemanticReview = baselineConflict || noBaselineConflict || mergeNotAppliedConflict;
+      const unresolvedLocalEditsConflict =
+        baselineText === null
+          ? false
+          : currentDiffersFromIncoming && Boolean(changedCurrentVsBaseline) && !mergeApplied;
+      const parseFailedConflict = mergePath === "parseFailed";
+      const needsSemanticReview =
+        baselineConflict || unresolvedLocalEditsConflict || parseFailedConflict;
 
       reviewRecords.push({
         relPath: rel,
