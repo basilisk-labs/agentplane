@@ -446,6 +446,51 @@ export function isTransitionAllowed(current: string, next: string): boolean {
   return false;
 }
 
+export function ensureStatusTransitionAllowed(opts: {
+  currentStatus: string;
+  nextStatus: string;
+  force: boolean;
+}): void {
+  if (opts.force) return;
+  if (isTransitionAllowed(opts.currentStatus, opts.nextStatus)) return;
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message:
+      `Refusing status transition ${opts.currentStatus} -> ${opts.nextStatus} ` +
+      "(use --force to override)",
+  });
+}
+
+export function ensureCommentCommitAllowed(opts: {
+  enabled: boolean;
+  config: AgentplaneConfig;
+  action: string;
+  confirmed: boolean;
+  quiet: boolean;
+  statusFrom: string;
+  statusTo: string;
+}): void {
+  if (!opts.enabled) return;
+  if (opts.config.commit_automation === "finish_only") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        `${opts.action}: --commit-from-comment is disabled by commit_automation='finish_only' ` +
+        "(allowed only in finish).",
+    });
+  }
+  enforceStatusCommitPolicy({
+    policy: opts.config.status_commit_policy,
+    action: opts.action,
+    confirmed: opts.confirmed,
+    quiet: opts.quiet,
+    statusFrom: opts.statusFrom,
+    statusTo: opts.statusTo,
+  });
+}
+
 export function requireStructuredComment(body: string, prefix: string, minChars: number): void {
   const normalized = body.trim();
   if (!normalized.toLowerCase().startsWith(prefix.toLowerCase())) {

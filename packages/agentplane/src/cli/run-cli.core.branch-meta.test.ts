@@ -415,9 +415,10 @@ describe("runCli", () => {
     await writeDefaultConfig(root);
     const io = captureStdIO();
     try {
-      const code = await runCli(["preflight", "--json", "--root", root]);
+      const code = await runCli(["preflight", "--json", "--mode", "full", "--root", root]);
       expect(code).toBe(0);
       const payload = JSON.parse(io.stdout) as Record<string, unknown>;
+      expect(payload.mode).toBe("full");
       expect(payload.project_detected).toBe(true);
       expect(payload.config_loaded).toMatchObject({ ok: true });
       expect(payload.quickstart_loaded).toMatchObject({ ok: true });
@@ -425,6 +426,25 @@ describe("runCli", () => {
       expect(payload.current_branch).toMatchObject({ ok: true });
       expect(payload.workflow_mode).toBe("direct");
       expect(Array.isArray(payload.next_actions)).toBe(true);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("preflight --json uses quick mode by default and skips task backend probe", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        mode?: unknown;
+        task_list_loaded?: { ok?: unknown; error?: string };
+      };
+      expect(payload.mode).toBe("quick");
+      expect(payload.task_list_loaded?.ok).toBe(false);
+      expect(payload.task_list_loaded?.error).toContain("skipped in quick mode");
     } finally {
       io.restore();
     }

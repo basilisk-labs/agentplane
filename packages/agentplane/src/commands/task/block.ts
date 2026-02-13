@@ -18,8 +18,8 @@ import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 import {
   appendTaskEvent,
   defaultCommitEmojiForAgentId,
-  enforceStatusCommitPolicy,
-  isTransitionAllowed,
+  ensureCommentCommitAllowed,
+  ensureStatusTransitionAllowed,
   nowIso,
   requireStructuredComment,
   resolvePrimaryTag,
@@ -68,32 +68,20 @@ export async function cmdBlock(opts: {
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
 
     const currentStatus = String(task.status || "TODO").toUpperCase();
-    if (!opts.force && !isTransitionAllowed(currentStatus, "BLOCKED")) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Refusing status transition ${currentStatus} -> BLOCKED (use --force to override)`,
-      });
-    }
-
-    if (opts.commitFromComment) {
-      if (ctx.config.commit_automation === "finish_only") {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message:
-            "block: --commit-from-comment is disabled by commit_automation='finish_only' (allowed only in finish).",
-        });
-      }
-      enforceStatusCommitPolicy({
-        policy: ctx.config.status_commit_policy,
-        action: "block",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
-        statusFrom: currentStatus,
-        statusTo: "BLOCKED",
-      });
-    }
+    ensureStatusTransitionAllowed({
+      currentStatus,
+      nextStatus: "BLOCKED",
+      force: opts.force,
+    });
+    ensureCommentCommitAllowed({
+      enabled: opts.commitFromComment,
+      config: ctx.config,
+      action: "block",
+      confirmed: opts.confirmStatusCommit,
+      quiet: opts.quiet,
+      statusFrom: currentStatus,
+      statusTo: "BLOCKED",
+    });
 
     const formattedComment = opts.commitFromComment
       ? formatCommentBodyForCommit(opts.body, ctx.config)

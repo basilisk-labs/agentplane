@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -446,6 +446,33 @@ describe("LocalBackend", () => {
     expect(Object.keys(parsed.byId)).toHaveLength(1);
     expect(parsed.byId[task.id]?.task.id).toBe(task.id);
     expect(Object.values(parsed.byPath)).toContain(task.id);
+  });
+
+  it("does not rewrite task index cache when nothing changed", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const task: TaskData = {
+      id: "202601300003-ABCD",
+      title: "Index stable",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "tester",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await backend.writeTask(task);
+    await backend.listTasks();
+    const indexPath = path.join(tempDir, ".cache", "tasks-index.v2.json");
+    const firstStat = await stat(indexPath);
+    const firstMtime = firstStat.mtimeMs;
+
+    await new Promise((resolve) => setTimeout(resolve, 15));
+    await backend.listTasks();
+    const secondStat = await stat(indexPath);
+    const secondMtime = secondStat.mtimeMs;
+
+    expect(secondMtime).toBe(firstMtime);
   });
 
   it("defaults doc_updated_by to last comment author", async () => {

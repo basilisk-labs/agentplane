@@ -18,11 +18,11 @@ import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 import {
   appendTaskEvent,
   ensurePlanApprovedIfRequired,
-  enforceStatusCommitPolicy,
+  ensureCommentCommitAllowed,
+  ensureStatusTransitionAllowed,
   defaultCommitEmojiForAgentId,
   extractDocSection,
   isVerifyStepsFilled,
-  isTransitionAllowed,
   nowIso,
   requiresVerifyStepsByPrimary,
   requireStructuredComment,
@@ -112,32 +112,20 @@ export async function cmdStart(opts: {
     ensurePlanApprovedIfRequired(task, ctx.config);
 
     const currentStatus = String(task.status || "TODO").toUpperCase();
-    if (!opts.force && !isTransitionAllowed(currentStatus, "DOING")) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Refusing status transition ${currentStatus} -> DOING (use --force to override)`,
-      });
-    }
-
-    if (opts.commitFromComment) {
-      if (ctx.config.commit_automation === "finish_only") {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message:
-            "start: --commit-from-comment is disabled by commit_automation='finish_only' (allowed only in finish).",
-        });
-      }
-      enforceStatusCommitPolicy({
-        policy: ctx.config.status_commit_policy,
-        action: "start",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
-        statusFrom: currentStatus,
-        statusTo: "DOING",
-      });
-    }
+    ensureStatusTransitionAllowed({
+      currentStatus,
+      nextStatus: "DOING",
+      force: opts.force,
+    });
+    ensureCommentCommitAllowed({
+      enabled: opts.commitFromComment,
+      config: ctx.config,
+      action: "start",
+      confirmed: opts.confirmStatusCommit,
+      quiet: opts.quiet,
+      statusFrom: currentStatus,
+      statusTo: "DOING",
+    });
 
     if (!opts.force) {
       const dep = await resolveTaskDependencyState(task, ctx.taskBackend);

@@ -76,13 +76,14 @@ export class LocalBackend implements TaskBackend {
     const entries = await readdir(this.root, { withFileTypes: true }).catch(() => []);
     const indexPath = resolveTaskIndexPath(this.root);
     const cachedIndex = await loadTaskIndex(indexPath);
-    const cachedByPath = new Map<string, TaskIndexEntry>();
+    const cachedEntryByPath = new Map<string, TaskIndexEntry>();
     if (cachedIndex) {
       for (const [readmePath, taskId] of Object.entries(cachedIndex.byPath)) {
         const entry = cachedIndex.byId[taskId];
-        if (entry) cachedByPath.set(readmePath, entry);
+        if (entry) cachedEntryByPath.set(readmePath, entry);
       }
     }
+    let indexDirty = cachedIndex === null;
     const nextById: Record<string, TaskIndexEntry> = {};
     const nextByPath: Record<string, string> = {};
     const seen = new Set<string>();
@@ -110,10 +111,11 @@ export class LocalBackend implements TaskBackend {
       }
       if (!stats.isFile()) return null;
 
-      const cached = cachedByPath.get(readme);
+      const cached = cachedEntryByPath.get(readme);
       if (cached?.mtimeMs === stats.mtimeMs) {
         return { task: cached.task, index: cached, mtimeMs: stats.mtimeMs, readme };
       }
+      indexDirty = true;
 
       let text = "";
       try {
@@ -154,10 +156,29 @@ export class LocalBackend implements TaskBackend {
         nextByPath[entry.readmePath] = taskId;
       }
     }
-    try {
-      await saveTaskIndex(indexPath, { schema_version: 2, byId: nextById, byPath: nextByPath });
-    } catch {
-      // Best-effort cache; ignore failures.
+
+    if (cachedIndex && indexDirty === false) {
+      const cachedPaths = Object.keys(cachedIndex.byPath);
+      const nextPaths = Object.keys(nextByPath);
+      if (cachedPaths.length === nextPaths.length) {
+        for (const readmePath of nextPaths) {
+          if (cachedIndex.byPath[readmePath] === nextByPath[readmePath]) {
+            continue;
+          }
+          indexDirty = true;
+          break;
+        }
+      } else {
+        indexDirty = true;
+      }
+    }
+
+    if (indexDirty) {
+      try {
+        await saveTaskIndex(indexPath, { schema_version: 2, byId: nextById, byPath: nextByPath });
+      } catch {
+        // Best-effort cache; ignore failures.
+      }
     }
     return tasks;
   }

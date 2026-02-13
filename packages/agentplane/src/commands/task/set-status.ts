@@ -17,8 +17,8 @@ import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js
 import {
   appendTaskEvent,
   defaultCommitEmojiForStatus,
-  enforceStatusCommitPolicy,
-  isTransitionAllowed,
+  ensureCommentCommitAllowed,
+  ensureStatusTransitionAllowed,
   normalizeTaskStatus,
   nowIso,
   readCommitInfo,
@@ -83,13 +83,11 @@ export async function cmdTaskSetStatus(opts: {
       ? await store!.get(opts.taskId)
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const currentStatus = String(task.status || "TODO").toUpperCase();
-    if (!opts.force && !isTransitionAllowed(currentStatus, nextStatus)) {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Refusing status transition ${currentStatus} -> ${nextStatus} (use --force to override)`,
-      });
-    }
+    ensureStatusTransitionAllowed({
+      currentStatus,
+      nextStatus,
+      force: opts.force,
+    });
 
     if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
       const dep = await resolveTaskDependencyState(task, ctx.taskBackend);
@@ -112,24 +110,15 @@ export async function cmdTaskSetStatus(opts: {
       }
     }
 
-    if (opts.commitFromComment) {
-      if (config.commit_automation === "finish_only") {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message:
-            "task set-status: --commit-from-comment is disabled by commit_automation='finish_only' (allowed only in finish).",
-        });
-      }
-      enforceStatusCommitPolicy({
-        policy: config.status_commit_policy,
-        action: "task set-status",
-        confirmed: opts.confirmStatusCommit,
-        quiet: opts.quiet,
-        statusFrom: currentStatus,
-        statusTo: nextStatus,
-      });
-    }
+    ensureCommentCommitAllowed({
+      enabled: opts.commitFromComment,
+      config,
+      action: "task set-status",
+      confirmed: opts.confirmStatusCommit,
+      quiet: opts.quiet,
+      statusFrom: currentStatus,
+      statusTo: nextStatus,
+    });
 
     const existingComments = Array.isArray(task.comments)
       ? task.comments.filter(

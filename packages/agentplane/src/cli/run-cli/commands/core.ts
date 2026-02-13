@@ -65,13 +65,15 @@ export const runQuickstart: CommandHandler<QuickstartParsed> = (ctx, p) => {
   return cmdQuickstart({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, json: p.json });
 };
 
-type PreflightParsed = { json: boolean };
+type PreflightMode = "quick" | "full";
+type PreflightParsed = { json: boolean; mode: PreflightMode };
 
 type NextAction = { command: string; reason: string };
 
 type Probe = { ok: boolean; error?: string };
 
 type PreflightReport = {
+  mode: PreflightMode;
   project_detected: boolean;
   config_loaded: Probe;
   quickstart_loaded: Probe;
@@ -137,6 +139,7 @@ function inferApprovals(config: AgentplaneConfig | null): PreflightReport["appro
 async function buildPreflightReport(opts: {
   cwd: string;
   rootOverride?: string;
+  mode: PreflightMode;
 }): Promise<PreflightReport> {
   const nextActions: NextAction[] = [];
   const quickstartText = renderQuickstart();
@@ -178,9 +181,9 @@ async function buildPreflightReport(opts: {
 
   let taskListLoaded: PreflightReport["task_list_loaded"] = {
     ok: false,
-    error: "project not resolved",
+    error: opts.mode === "quick" ? "skipped in quick mode" : "project not resolved",
   };
-  if (resolved) {
+  if (opts.mode === "full" && resolved) {
     try {
       const loaded = await loadTaskBackend({
         cwd: opts.cwd,
@@ -238,6 +241,7 @@ async function buildPreflightReport(opts: {
   }
 
   return {
+    mode: opts.mode,
     project_detected: resolved !== null,
     config_loaded: configLoaded,
     quickstart_loaded: quickstartLoaded,
@@ -257,6 +261,21 @@ export const preflightSpec: CommandSpec<PreflightParsed> = {
   summary: "Run aggregated preflight checks and print a deterministic readiness report.",
   options: [
     {
+      kind: "string",
+      name: "mode",
+      valueHint: "<quick|full>",
+      choices: ["quick", "full"],
+      default: "quick",
+      description:
+        "Preflight depth. quick skips backend task-list probe; full includes backend readiness.",
+    },
+    {
+      kind: "boolean",
+      name: "full",
+      default: false,
+      description: "Shortcut for --mode full.",
+    },
+    {
       kind: "boolean",
       name: "json",
       default: false,
@@ -265,22 +284,36 @@ export const preflightSpec: CommandSpec<PreflightParsed> = {
   ],
   examples: [
     { cmd: "agentplane preflight --json", why: "Produce one-shot agent-readable preflight." },
+    {
+      cmd: "agentplane preflight --json --mode full",
+      why: "Run full preflight including backend task-list probe.",
+    },
   ],
-  parse: (raw) => ({ json: raw.opts.json === true }),
+  parse: (raw) => ({
+    json: raw.opts.json === true,
+    mode:
+      raw.opts.full === true ? "full" : ((raw.opts.mode as PreflightMode | undefined) ?? "quick"),
+  }),
 };
 
 async function cmdPreflight(opts: {
   cwd: string;
   rootOverride?: string;
   json: boolean;
+  mode: PreflightMode;
 }): Promise<number> {
   return wrapCommand({ command: "preflight", rootOverride: opts.rootOverride }, async () => {
-    const report = await buildPreflightReport({ cwd: opts.cwd, rootOverride: opts.rootOverride });
+    const report = await buildPreflightReport({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+      mode: opts.mode,
+    });
     if (opts.json) {
       process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
       return 0;
     }
     process.stdout.write("Preflight Summary\n");
+    process.stdout.write(`- mode: ${report.mode}\n`);
     process.stdout.write(`- project detected: ${report.project_detected ? "yes" : "no"}\n`);
     process.stdout.write(`- config loaded: ${probeYesNo(report.config_loaded)}\n`);
     process.stdout.write(`- quickstart loaded: ${probeYesNo(report.quickstart_loaded)}\n`);
@@ -306,7 +339,7 @@ async function cmdPreflight(opts: {
 }
 
 export const runPreflight: CommandHandler<PreflightParsed> = (ctx, p) => {
-  return cmdPreflight({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, json: p.json });
+  return cmdPreflight({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, json: p.json, mode: p.mode });
 };
 
 type RoleParsed = { role: string; json: boolean };
