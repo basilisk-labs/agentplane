@@ -18,10 +18,6 @@ commit-msg:
         node packages/agentplane/bin/agentplane.js hooks run commit-msg -- "$msg"
 pre-push:
   commands:
-    release-notes:
-      run: node scripts/check-release-notes.mjs
+    run:
+      run: node scripts/run-pre-push-hook.mjs
       use_stdin: true
-    test-critical:
-      run: bun run test:critical
-    test-full:
-      run: bun run test:full

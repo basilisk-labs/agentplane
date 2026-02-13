@@ -48,6 +48,45 @@ type InitFlags = {
   yes: boolean;
 };
 
+type SetupProfilePreset = "prod" | "prod-strict" | "dev" | "dev-safe";
+
+const setupProfilePresets: Record<
+  SetupProfilePreset,
+  {
+    mode: "prod" | "dev";
+    description: string;
+    defaultHooks: boolean;
+    defaultStrictUnsafeConfirm: boolean;
+  }
+> = {
+  prod: {
+    mode: "prod",
+    description:
+      "Production bootstrap: compact flow with default managed-file and approval settings.",
+    defaultHooks: false,
+    defaultStrictUnsafeConfirm: false,
+  },
+  "prod-strict": {
+    mode: "prod",
+    description:
+      "Production bootstrap + strict defaults for safer installs (hooks on, strict unsafe confirmations).",
+    defaultHooks: true,
+    defaultStrictUnsafeConfirm: true,
+  },
+  dev: {
+    mode: "dev",
+    description: "Developer bootstrap: full questionnaire for every init aspect.",
+    defaultHooks: false,
+    defaultStrictUnsafeConfirm: false,
+  },
+  "dev-safe": {
+    mode: "dev",
+    description: "Developer bootstrap with explicit unsafe-action confirmation by default.",
+    defaultHooks: false,
+    defaultStrictUnsafeConfirm: true,
+  },
+};
+
 function parseBooleanValueForInit(flag: string, value: string): boolean {
   const normalized = value.trim().toLowerCase();
   if (["1", "true", "yes", "y", "on"].includes(normalized)) return true;
@@ -83,7 +122,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       valueHint: "<prod|dev>",
       choices: ["prod", "dev"],
       description:
-        "Interactive preset. prod asks only essential questions; dev asks the full setup questionnaire.",
+        "Interactive preset. prod is the default and asks only essential questions; dev asks the full setup questionnaire.",
     },
     {
       kind: "string",
@@ -296,6 +335,7 @@ async function cmdInit(opts: {
   let executionProfile = flags.executionProfile ?? defaults.executionProfile;
   let strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
   let setupProfile: "prod" | "dev" = flags.setupProfile ?? "prod";
+  let setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "prod";
   const isInteractive = process.stdin.isTTY && !flags.yes;
 
   if (
@@ -337,22 +377,37 @@ async function cmdInit(opts: {
     };
 
     process.stdout.write(renderInitWelcome());
+    const presetLines = Object.entries(setupProfilePresets).map(
+      ([id, preset]) => `- ${id}: ${preset.description}`,
+    );
     process.stdout.write(
       renderInitSection(
-        "Setup Profile",
-        "Choose how much init should ask. prod keeps the flow compact; dev exposes full controls.",
+        "Setup Preset",
+        "Choose a bootstrap preset. It controls what questions are shown and safe defaults used.",
       ),
     );
-    if (!flags.setupProfile) {
-      setupProfile = (await askChoice("Setup profile", ["prod", "dev"], setupProfile)) as
-        | "prod"
-        | "dev";
+    process.stdout.write(`${presetLines.join("\n")}\n\n`);
+    if (flags.setupProfile) {
+      setupProfilePreset = flags.setupProfile;
+    } else {
+      const selected = await askChoice(
+        "Setup preset",
+        ["prod", "prod-strict", "dev", "dev-safe"],
+        "prod",
+      );
+      setupProfilePreset = selected as SetupProfilePreset;
+    }
+    const selectedPreset = setupProfilePresets[setupProfilePreset];
+    setupProfile = selectedPreset.mode;
+    if (flags.hooks === undefined) hooks = selectedPreset.defaultHooks;
+    if (flags.strictUnsafeConfirm === undefined) {
+      strictUnsafeConfirm = selectedPreset.defaultStrictUnsafeConfirm;
     }
 
     process.stdout.write(
       renderInitSection(
         "Workflow",
-        "Choose how branches/backends/approvals should be initialized for this repository.",
+        "Choose how this repository will be orchestrated: direct means one branch, branch_pr means PR-first tasks.",
       ),
     );
     ide = flags.ide ?? defaults.ide;
@@ -428,13 +483,13 @@ async function cmdInit(opts: {
           : [];
       }
     } else {
-      hooks = flags.hooks ?? defaults.hooks;
+      hooks = flags.hooks ?? selectedPreset.defaultHooks;
       recipes = flags.recipes ?? defaults.recipes;
       requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
       requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
       requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
       executionProfile = flags.executionProfile ?? defaults.executionProfile;
-      strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
+      strictUnsafeConfirm = flags.strictUnsafeConfirm ?? selectedPreset.defaultStrictUnsafeConfirm;
       process.stdout.write(
         renderInitSection(
           "Defaults Applied",

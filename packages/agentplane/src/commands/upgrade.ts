@@ -770,6 +770,64 @@ export async function cmdUpgradeParsed(opts: {
       const currentTextForReview = existingBuf ? existingBuf.toString("utf8") : null;
       const baselineKey = toBaselineKey(rel);
       const baselineText = baselineKey ? await readBaselineText(baselineKey) : null;
+      const hasBaseline = baselineText !== null;
+      const changedCurrentVsBaseline =
+        hasBaseline && currentTextForReview !== null
+          ? textChangedForType({
+              type: entry.type,
+              aText: currentTextForReview,
+              bText: baselineText,
+            })
+          : null;
+      const changedIncomingVsBaseline = hasBaseline
+        ? textChangedForType({
+            type: entry.type,
+            aText: incomingTextOriginal,
+            bText: baselineText,
+          })
+        : null;
+      const currentAndIncomingEqual =
+        currentTextForReview === null
+          ? false
+          : textChangedForType({
+              type: entry.type,
+              aText: currentTextForReview,
+              bText: incomingTextOriginal,
+            }) === false;
+      // Fast-path: if incoming already equals local, semantic merge/snapshots are unnecessary.
+      if (currentTextForReview !== null && currentAndIncomingEqual) {
+        skipped.push(rel);
+        reviewRecords.push({
+          relPath: rel,
+          mergeStrategy: entry.merge_strategy,
+          hasBaseline,
+          changedCurrentVsBaseline,
+          changedIncomingVsBaseline,
+          currentDiffersFromIncoming: false,
+          needsSemanticReview: false,
+          mergeApplied: false,
+          mergePath: "none",
+        });
+        continue;
+      }
+
+      // No local edits vs baseline: file can be safely replaced with incoming without semantic merge.
+      if (currentTextForReview !== null && changedCurrentVsBaseline === false) {
+        updates.push(rel);
+        fileContents.set(rel, data);
+        reviewRecords.push({
+          relPath: rel,
+          mergeStrategy: entry.merge_strategy,
+          hasBaseline,
+          changedCurrentVsBaseline,
+          changedIncomingVsBaseline,
+          currentDiffersFromIncoming: true,
+          needsSemanticReview: false,
+          mergeApplied: false,
+          mergePath: "none",
+        });
+        continue;
+      }
 
       let mergeApplied = false;
       let mergePath: UpgradeReviewRecord["mergePath"] = "none";
@@ -817,22 +875,6 @@ export async function cmdUpgradeParsed(opts: {
             mergePath = "parseFailed";
           }
         }
-      }
-
-      const hasBaseline = baselineText !== null;
-      let changedCurrentVsBaseline: boolean | null = null;
-      let changedIncomingVsBaseline: boolean | null = null;
-      if (baselineText !== null) {
-        changedCurrentVsBaseline = textChangedForType({
-          type: entry.type,
-          aText: currentTextForReview,
-          bText: baselineText,
-        });
-        changedIncomingVsBaseline = textChangedForType({
-          type: entry.type,
-          aText: incomingTextOriginal,
-          bText: baselineText,
-        });
       }
 
       const proposedText = data.toString("utf8");

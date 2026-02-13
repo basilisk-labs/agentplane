@@ -113,7 +113,7 @@ By default, hooks run:
   - Status/comment-driven task commits derive `<emoji>` from the executor agent id and enforce it via `AGENTPLANE_AGENT_ID`
   - Finish commits must use `✅` (enforced via `AGENTPLANE_STATUS_TO=DONE`)
 - `pre-commit`: format + lint + `test:precommit`
-- `pre-push`: release notes check + `test:critical` + `test:full`
+- `pre-push`: release notes check + `test:critical`. `test:full` runs automatically for tag pushes (release flow) or when `AGENTPLANE_HOOKS_RELEASE=1`/`AGENTPLANE_HOOKS_FULL=1`.
 
 If a hook fails, fix the issue instead of skipping the hook.
 

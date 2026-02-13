@@ -53,7 +53,7 @@ pre-commit:
 pre-push:
 - node scripts/check-release-notes.mjs
 - bun run test:critical
-- bun run test:full
+- bun run test:full on release/tag pushes (or with `AGENTPLANE_HOOKS_RELEASE=1` / `AGENTPLANE_HOOKS_FULL=1`)
 ```
 
 Hooks are installed automatically on `bun install` (via the root `postinstall` script). If you ever need to reinstall them:
