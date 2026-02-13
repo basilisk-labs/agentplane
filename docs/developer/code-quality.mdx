@@ -46,8 +46,8 @@ This repo installs `pre-commit` and `pre-push` hooks via `lefthook`. Hooks are a
 
 ```bash
 pre-commit:
-- bun run format:check
-- bun run lint
+- staged-only prettier --check
+- staged-only eslint
 - bun run test:precommit
 
 pre-push:
@@ -63,6 +63,7 @@ bun run hooks:install
 ```
 
 > Do not bypass hooks with `git commit --no-verify`. Fix the failures and rerun.
+> `commit-msg` enforces fresh `dist` when staged changes touch `packages/*/src/**` (or `packages/agentplane/bin/agentplane.js`). For non-code commits (docs/config), stale-dist blocking is skipped.
 
 ### CI (GitHub Actions)
 

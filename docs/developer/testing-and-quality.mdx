@@ -112,8 +112,10 @@ By default, hooks run:
   - Non-task commits: `<emoji> <scope>: <summary>` (optional explicit `DEV` suffix allowed)
   - Status/comment-driven task commits derive `<emoji>` from the executor agent id and enforce it via `AGENTPLANE_AGENT_ID`
   - Finish commits must use `✅` (enforced via `AGENTPLANE_STATUS_TO=DONE`)
-- `pre-commit`: format + lint + `test:precommit`
+- `pre-commit`: staged-only format/lint checks + `test:precommit`
 - `pre-push`: release notes check + `test:critical`. `test:full` runs automatically for tag pushes (release flow) or when `AGENTPLANE_HOOKS_RELEASE=1`/`AGENTPLANE_HOOKS_FULL=1`.
+
+`commit-msg` stale-dist guard is path-aware: it is enforced for staged `packages/agentplane/src/**`, `packages/core/src/**`, and `packages/agentplane/bin/agentplane.js` changes; docs-only/config-only commits skip this guard.
 
 If a hook fails, fix the issue instead of skipping the hook.
 
