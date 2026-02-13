@@ -198,4 +198,68 @@ describe("upgrade merge behavior", () => {
     expect(agentsReview?.currentDiffersFromIncoming).toBe(false);
     expect(agentsReview?.needsSemanticReview).toBe(false);
   });
+
+  it("updates directly when current equals baseline (no local edits)", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const baselineDir = path.join(root, ".agentplane", ".upgrade", "baseline");
+    await mkdir(baselineDir, { recursive: true });
+    const baselineAgents = "# Installed baseline\n";
+    await writeFile(path.join(baselineDir, "AGENTS.md"), baselineAgents, "utf8");
+
+    const agentsPath = path.join(root, "AGENTS.md");
+    await writeFile(agentsPath, baselineAgents, "utf8");
+    const incomingAgents = "# New upstream\n";
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [
+            {
+              path: "AGENTS.md",
+              type: "markdown",
+              merge_strategy: "agents_policy_markdown",
+              required: true,
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "AGENTS.md": incomingAgents,
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "auto",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+    expect(await readFile(agentsPath, "utf8")).toBe(incomingAgents);
+
+    const lastReviewPath = path.join(root, ".agentplane", ".upgrade", "last-review.json");
+    const lastReview = JSON.parse(await readFile(lastReviewPath, "utf8")) as {
+      files?: {
+        relPath?: string;
+        changedCurrentVsBaseline?: boolean | null;
+        needsSemanticReview?: boolean;
+        mergeApplied?: boolean;
+      }[];
+    };
+    const agentsReview = lastReview.files?.find((f) => f.relPath === "AGENTS.md");
+    expect(agentsReview?.changedCurrentVsBaseline).toBe(false);
+    expect(agentsReview?.needsSemanticReview).toBe(false);
+    expect(agentsReview?.mergeApplied).toBe(false);
+  });
 });

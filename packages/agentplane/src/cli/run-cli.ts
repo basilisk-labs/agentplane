@@ -489,9 +489,6 @@ export async function runCli(argv: string[]): Promise<number> {
       matched?.entry.needsProject === false
         ? null
         : await maybeResolveProject({ cwd, rootOverride: globals.root });
-    if (resolved) {
-      await loadDotEnv(resolved.gitRoot);
-    }
 
     let projectPromise: Promise<ResolvedProject> | null = resolved
       ? Promise.resolve(resolved)
@@ -509,6 +506,7 @@ export async function runCli(argv: string[]): Promise<number> {
     const getLoadedConfig = async (commandForErrorContext: string): Promise<LoadedConfig> => {
       configPromise ??= (async () => {
         const project = await getResolvedProject(commandForErrorContext);
+        await loadDotEnv(project.gitRoot);
         return await loadConfig(project.agentplaneDir);
       })();
       try {

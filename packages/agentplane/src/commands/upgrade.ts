@@ -947,7 +947,16 @@ export async function cmdUpgradeParsed(opts: {
       return 0;
     }
 
+    const needsReview = reviewRecords.filter((r) => r.needsSemanticReview);
+
     if (flags.mode === "agent") {
+      // Fast no-op path: nothing to apply and no semantic review candidates.
+      // Skip generating per-run artifacts to keep agent-mode upgrades cheap.
+      if (additions.length === 0 && updates.length === 0 && needsReview.length === 0) {
+        process.stdout.write("Upgrade plan: no managed changes detected\n");
+        return 0;
+      }
+
       const agentDir = path.join(upgradeStateDir, "agent");
       const runId = new Date().toISOString().replaceAll(":", "-").replaceAll(".", "-");
       const runDir = path.join(agentDir, runId);
@@ -1012,7 +1021,6 @@ export async function cmdUpgradeParsed(opts: {
         "utf8",
       );
 
-      const needsReview = reviewRecords.filter((r) => r.needsSemanticReview);
       await writeFile(
         path.join(runDir, "review.json"),
         JSON.stringify(

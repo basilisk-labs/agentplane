@@ -300,7 +300,11 @@ export const COMMANDS = [
       m.makeRunTaskSetStatusHandler(deps.getCtx),
     ),
   ),
-  entry(taskDocSpec, () => import("../../commands/task/doc.command.js").then((m) => m.runTaskDoc)),
+  entry(taskDocSpec, () => import("../../commands/task/doc.command.js").then((m) => m.runTaskDoc), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
   entry(taskDocShowSpec, (deps) =>
     import("../../commands/task/doc-show.command.js").then((m) =>
       m.makeRunTaskDocShowHandler(deps.getCtx),
@@ -357,8 +361,14 @@ export const COMMANDS = [
       m.makeRunTaskPlanRejectHandler(deps.getCtx),
     ),
   ),
-  entry(taskVerifySpec, () =>
-    import("../../commands/task/verify.command.js").then((m) => m.runTaskVerify),
+  entry(
+    taskVerifySpec,
+    () => import("../../commands/task/verify.command.js").then((m) => m.runTaskVerify),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(taskVerifyOkSpec, (deps) =>
     import("../../commands/task/verify-ok.command.js").then((m) =>
@@ -387,11 +397,23 @@ export const COMMANDS = [
     ),
   ),
 
-  entry(recipesSpec, () =>
-    import("../../commands/recipes/recipes.command.js").then((m) => m.runRecipes),
+  entry(
+    recipesSpec,
+    () => import("../../commands/recipes/recipes.command.js").then((m) => m.runRecipes),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
-  entry(recipesCacheSpec, () =>
-    import("../../commands/recipes/cache.command.js").then((m) => m.runRecipesCache),
+  entry(
+    recipesCacheSpec,
+    () => import("../../commands/recipes/cache.command.js").then((m) => m.runRecipesCache),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(recipesListSpec, () =>
     import("../../commands/recipes/list.command.js").then((m) => m.runRecipesList),
@@ -415,8 +437,14 @@ export const COMMANDS = [
     import("../../commands/recipes/install.run.js").then((m) => m.runRecipesInstall),
   ),
 
-  entry(scenarioSpec, () =>
-    import("../../commands/scenario/scenario.command.js").then((m) => m.runScenario),
+  entry(
+    scenarioSpec,
+    () => import("../../commands/scenario/scenario.command.js").then((m) => m.runScenario),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(scenarioListSpec, () =>
     import("../../commands/scenario/list.command.js").then((m) => m.runScenarioList),
@@ -428,8 +456,14 @@ export const COMMANDS = [
     import("../../commands/scenario/run.command.js").then((m) => m.runScenarioRun),
   ),
 
-  entry(branchBaseSpec, () =>
-    import("../../commands/branch/base.command.js").then((m) => m.runBranchBase),
+  entry(
+    branchBaseSpec,
+    () => import("../../commands/branch/base.command.js").then((m) => m.runBranchBase),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(branchBaseGetSpec, () =>
     import("../../commands/branch/base.command.js").then((m) => m.runBranchBaseGet),
@@ -450,10 +484,17 @@ export const COMMANDS = [
     import("../../commands/branch/remove.command.js").then((m) => m.runBranchRemove),
   ),
 
-  entry(backendSpec, (deps) =>
-    import("../../commands/backend/sync.command.js").then((m) =>
-      m.makeRunBackendHandler(deps.getCtx),
-    ),
+  entry(
+    backendSpec,
+    (deps) =>
+      import("../../commands/backend/sync.command.js").then((m) =>
+        m.makeRunBackendHandler(deps.getCtx),
+      ),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(backendSyncSpec, (deps) =>
     import("../../commands/backend/sync.command.js").then((m) =>
@@ -464,8 +505,15 @@ export const COMMANDS = [
     import("../../commands/sync.command.js").then((m) => m.makeRunSyncHandler(deps.getCtx)),
   ),
 
-  entry(prSpec, (deps) =>
-    import("../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx)),
+  entry(
+    prSpec,
+    (deps) =>
+      import("../../commands/pr/pr.command.js").then((m) => m.makeRunPrHandler(deps.getCtx)),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(prOpenSpec, (deps) =>
     import("../../commands/pr/pr.command.js").then((m) => m.makeRunPrOpenHandler(deps.getCtx)),
@@ -504,13 +552,24 @@ export const COMMANDS = [
     import("../../commands/ready.command.js").then((m) => m.makeRunReadyHandler(deps.getCtx)),
   ),
 
-  entry(docsCliSpec, (deps) =>
-    import("../../commands/docs/cli.command.js").then((m) =>
-      m.makeRunDocsCliHandler(deps.getHelpJsonForDocs),
-    ),
+  entry(
+    docsCliSpec,
+    (deps) =>
+      import("../../commands/docs/cli.command.js").then((m) =>
+        m.makeRunDocsCliHandler(deps.getHelpJsonForDocs),
+      ),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
 
-  entry(hooksSpec, () => import("../../commands/hooks/hooks.command.js").then((m) => m.runHooks)),
+  entry(hooksSpec, () => import("../../commands/hooks/hooks.command.js").then((m) => m.runHooks), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
   entry(hooksInstallSpec, () =>
     import("../../commands/hooks/install.command.js").then((m) => m.runHooksInstall),
   ),
@@ -521,8 +580,14 @@ export const COMMANDS = [
     import("../../commands/hooks/run.command.js").then((m) => m.runHooksRun),
   ),
 
-  entry(cleanupSpec, () =>
-    import("../../commands/cleanup/merged.command.js").then((m) => m.runCleanup),
+  entry(
+    cleanupSpec,
+    () => import("../../commands/cleanup/merged.command.js").then((m) => m.runCleanup),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(cleanupMergedSpec, (deps) =>
     import("../../commands/cleanup/merged.command.js").then((m) =>
@@ -530,7 +595,11 @@ export const COMMANDS = [
     ),
   ),
 
-  entry(guardSpec, () => import("../../commands/guard/guard.command.js").then((m) => m.runGuard)),
+  entry(guardSpec, () => import("../../commands/guard/guard.command.js").then((m) => m.runGuard), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
   entry(guardCleanSpec, () =>
     import("../../commands/guard/clean.command.js").then((m) => m.runGuardClean),
   ),

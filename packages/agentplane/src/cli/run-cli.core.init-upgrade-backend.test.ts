@@ -191,10 +191,22 @@ describe("runCli", () => {
       "backend.json",
     );
     const agentsPath = path.join(root, "AGENTS.md");
+    const baselineAgentsPath = path.join(root, ".agentplane", ".upgrade", "baseline", "AGENTS.md");
+    const baselineCoderPath = path.join(
+      root,
+      ".agentplane",
+      ".upgrade",
+      "baseline",
+      "agents",
+      "CODER.json",
+    );
     expect(await pathExists(configPath)).toBe(true);
     expect(await pathExists(backendPath)).toBe(true);
     expect(await pathExists(redmineBackendPath)).toBe(false);
     expect(await pathExists(agentsPath)).toBe(true);
+    expect(await pathExists(baselineAgentsPath)).toBe(true);
+    expect(await pathExists(baselineCoderPath)).toBe(true);
+    expect(await readFile(baselineAgentsPath, "utf8")).toBe(await readFile(agentsPath, "utf8"));
 
     const configText = await readFile(configPath, "utf8");
     expect(configText).toContain('"workflow_mode": "direct"');

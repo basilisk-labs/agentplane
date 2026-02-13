@@ -129,23 +129,24 @@ export const prNoteSpec: CommandSpec<PrNoteParsed> = {
   }),
 };
 
+function runPrRootGroup(_ctx: CommandCtx, p: PrGroupParsed): Promise<number> {
+  const input = p.cmd.join(" ");
+  const candidates = ["open", "update", "check", "note"];
+  const suggestion = suggestOne(input, candidates);
+  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
+  const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
+  throw usageError({
+    spec: prSpec,
+    command: "pr",
+    message: `${msg}${suffix}`,
+    context: { command: "pr" },
+  });
+}
+
 export function makeRunPrHandler(
-  getCtx: (cmd: string) => Promise<CommandContext>,
+  _getCtx: (cmd: string) => Promise<CommandContext>,
 ): CommandHandler<PrGroupParsed> {
-  return async (_ctx, p) => {
-    await getCtx("pr");
-    const input = p.cmd.join(" ");
-    const candidates = ["open", "update", "check", "note"];
-    const suggestion = suggestOne(input, candidates);
-    const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-    const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-    throw usageError({
-      spec: prSpec,
-      command: "pr",
-      message: `${msg}${suffix}`,
-      context: { command: "pr" },
-    });
-  };
+  return runPrRootGroup;
 }
 
 export function makeRunPrOpenHandler(getCtx: (cmd: string) => Promise<CommandContext>) {

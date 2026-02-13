@@ -1,4 +1,4 @@
-import type { CommandCtx, CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
+import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { suggestOne } from "../../cli/spec/suggest.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -57,22 +57,20 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
   }),
 };
 
-export function makeRunBackendHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
-  const handler: CommandHandler<BackendRootParsed> = async (_ctx, p) => {
-    // Resolve context once for consistent error mapping and approval gating.
-    await getCtx("backend");
-    const input = p.cmd.join(" ");
-    const suggestion = suggestOne(input, ["sync"]);
-    const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
-    const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
-    throw usageError({
-      spec: backendSyncSpec,
-      message: `${msg}${suffix}`,
-      context: { command: "backend sync" },
-    });
-  };
+function runBackendRootGroup(_ctx: CommandCtx, p: BackendRootParsed): Promise<number> {
+  const input = p.cmd.join(" ");
+  const suggestion = suggestOne(input, ["sync"]);
+  const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
+  const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
+  throw usageError({
+    spec: backendSyncSpec,
+    message: `${msg}${suffix}`,
+    context: { command: "backend sync" },
+  });
+}
 
-  return handler;
+export function makeRunBackendHandler(_getCtx: (cmd: string) => Promise<CommandContext>) {
+  return runBackendRootGroup;
 }
 
 export function makeRunBackendSyncHandler(getCtx: (cmd: string) => Promise<CommandContext>) {

@@ -1,9 +1,7 @@
 pre-commit:
   commands:
-    format:
-      run: bun run format:check
-    lint:
-      run: bun run lint
+    checks:
+      run: node scripts/run-pre-commit-hook.mjs
     test-fast:
       run: bun run test:precommit
 commit-msg:
@@ -12,10 +10,7 @@ commit-msg:
       # Enforce the emoji-based commit subject policy for all commits.
       # - Task commits must be performed via agentplane (sets AGENTPLANE_TASK_ID).
       # - Non-task commits must use: `✨ <scope>: <summary>` (explicit `DEV` suffix is also allowed).
-      run: |
-        set -euo pipefail
-        msg="$(git rev-parse --git-path COMMIT_EDITMSG)"
-        node packages/agentplane/bin/agentplane.js hooks run commit-msg -- "$msg"
+      run: node scripts/run-commit-msg-hook.mjs
 pre-push:
   commands:
     run:

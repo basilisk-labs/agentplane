@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -9,6 +9,15 @@ import {
 } from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
+
+async function exists(absPath: string): Promise<boolean> {
+  try {
+    await access(absPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 describeWhenNotHook("upgrade agent-assisted mode", () => {
   it("writes an upgrade plan and does not modify managed files", async () => {
@@ -84,4 +93,52 @@ describeWhenNotHook("upgrade agent-assisted mode", () => {
     expect(review.files?.[0]?.relPath).toBe("AGENTS.md");
     expect(review.files?.[0]?.needsSemanticReview).toBe(false);
   }, 20_000);
+
+  it("returns fast no-op in agent mode when there are no managed changes", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const agentsMdPath = path.join(root, "AGENTS.md");
+    const sameAgents = "# Same policy\n";
+    await writeFile(agentsMdPath, sameAgents, "utf8");
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [
+            {
+              path: "AGENTS.md",
+              type: "markdown",
+              merge_strategy: "agents_policy_markdown",
+              required: true,
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "AGENTS.md": sameAgents,
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "agent",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+    expect(await readFile(agentsMdPath, "utf8")).toBe(sameAgents);
+
+    const agentDir = path.join(root, ".agentplane", ".upgrade", "agent");
+    expect(await exists(agentDir)).toBe(false);
+  });
 });

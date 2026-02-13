@@ -103,6 +103,25 @@ describe("runCli", () => {
     }
   });
 
+  it("does not load .env for group/root commands that do not require project context", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const marker = "AGENTPLANE_TEST_SKIP_DOTENV";
+    delete process.env[marker];
+    await writeFile(path.join(root, ".env"), `${marker}=from-dotenv\n`, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["pr", "--root", root]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Usage:");
+      expect(process.env[marker]).toBeUndefined();
+    } finally {
+      delete process.env[marker];
+      io.restore();
+    }
+  });
+
   it("prints update notice when npm has a newer version", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
