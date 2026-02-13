@@ -6,12 +6,27 @@ description: "How work moves from plan to completion in Agent Plane."
 ## Core flow
 
 1. Plan and create task graph.
-2. Start work (`TODO -> DOING`) with a structured `Start:` comment.
-3. Implement changes.
-4. Record verification outcome with `agentplane verify`.
-5. Finish task (`DOING -> DONE`) with a structured `Verified:` comment and `--result`.
+2. (Recommended) run preflight for deterministic readiness.
+3. Start work (`TODO -> DOING`) with a structured `Start:` comment.
+4. Implement changes.
+5. Record verification outcome with `agentplane verify`.
+6. Finish task (`DOING -> DONE`) with a structured `Verified:` comment and `--result`.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
+
+## Preflight before work
+
+Use quick mode for low-latency checks:
+
+```bash
+agentplane preflight
+```
+
+Use full mode when you need backend/task-list readiness validation:
+
+```bash
+agentplane preflight --mode full
+```
 
 ## direct mode
 

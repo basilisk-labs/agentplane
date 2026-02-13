@@ -133,6 +133,9 @@ sequenceDiagram
 ## Guardrails and policies
 
 - **Approvals**: plan, network, and verification approvals are enforced via config (`agents.approvals.*`).
+- **Preflight depth**:
+  - `agentplane preflight` uses quick mode by default (fast, no backend task-list probe).
+  - `agentplane preflight --mode full` adds backend task-list readiness checks.
 - **Status comments**: start/block/finish require structured text (Start/Blocked/Verified).
 - **Allowed status transitions**:
   - `TODO -> DOING|BLOCKED`

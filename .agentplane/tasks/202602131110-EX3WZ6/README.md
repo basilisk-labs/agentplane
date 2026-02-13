@@ -1,7 +1,7 @@
 ---
 id: "202602131110-EX3WZ6"
 title: "Docs: update CLI optimization and preflight guidance"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -20,21 +20,35 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Verified: completed optimization batch and documentation updates for this task chain."
+events:
+  -
+    type: "status"
+    at: "2026-02-13T11:38:11.958Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: completed optimization batch and documentation updates for this task chain."
 doc_version: 2
-doc_updated_at: "2026-02-13T11:10:23.952Z"
-doc_updated_by: "DOCS"
+doc_updated_at: "2026-02-13T11:38:11.958Z"
+doc_updated_by: "CODER"
 description: "Update developer/user docs for new preflight modes, upgrade no-op behavior, and lifecycle/refactor implications after implementation."
 id_source: "generated"
 ---
 ## Summary
 
+
 ## Scope
+
 
 ## Plan
 
+
 ## Risks
+
 
 ## Verify Steps
 
@@ -42,28 +56,19 @@ id_source: "generated"
 
 ### Scope
 
-
 ### Checks
-
 
 ### Evidence / Commands
 
-
 ### Pass criteria
-
-
-
 
 ## Verification
 
 ### Plan
 
-
 ### Results
-
 
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
-

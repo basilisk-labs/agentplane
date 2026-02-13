@@ -46,7 +46,11 @@ The runtime layer owns command behavior. The core layer owns parsing and shared 
 
 ## Upgrade and policy flow
 
-`agentplane upgrade` applies managed framework assets and can emit upgrade review artifacts. In agent mode it writes run artifacts under `.agentplane/.upgrade/agent/<runId>/`, including `review.json` for semantic merge decisions.
+`agentplane upgrade` applies managed framework assets and can emit upgrade review artifacts.
+
+- In agent mode, run artifacts are created under `.agentplane/.upgrade/agent/<runId>/` only when a plan is needed (changes to add/update or semantic-review candidates).
+- When there are no managed changes, agent mode exits via fast no-op and does not create per-run artifacts.
+- For managed files with baseline and no local edits (`current == baseline`), auto mode replaces with incoming directly without semantic merge.
 
 Policy enforcement happens in command handlers and guard flows:
 

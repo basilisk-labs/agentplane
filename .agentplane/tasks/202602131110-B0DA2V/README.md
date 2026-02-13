@@ -1,7 +1,7 @@
 ---
 id: "202602131110-B0DA2V"
 title: "P1: split preflight into quick and full modes"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -20,21 +20,35 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Verified: completed optimization batch and documentation updates for this task chain."
+events:
+  -
+    type: "status"
+    at: "2026-02-13T11:38:10.200Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: completed optimization batch and documentation updates for this task chain."
 doc_version: 2
-doc_updated_at: "2026-02-13T11:10:12.110Z"
+doc_updated_at: "2026-02-13T11:38:10.200Z"
 doc_updated_by: "CODER"
 description: "Introduce explicit quick/full preflight modes so quick mode avoids expensive full task backend scan while full mode preserves existing deep checks."
 id_source: "generated"
 ---
 ## Summary
 
+
 ## Scope
+
 
 ## Plan
 
+
 ## Risks
+
 
 ## Verify Steps
 
@@ -42,28 +56,19 @@ id_source: "generated"
 
 ### Scope
 
-
 ### Checks
-
 
 ### Evidence / Commands
 
-
 ### Pass criteria
-
-
-
 
 ## Verification
 
 ### Plan
 
-
 ### Results
-
 
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
-

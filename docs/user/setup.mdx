@@ -80,12 +80,33 @@ This appends ignores for `AGENTS.md` and `.agentplane/agents/` and skips the ini
 agentplane upgrade
 ```
 
-Default mode is review-first and produces upgrade artifacts under `.agentplane/.upgrade/`.
+Default mode is review-first (`--agent`):
+
+- if there are no managed changes, upgrade exits fast with `Upgrade plan: no managed changes detected`;
+- in this no-op case it does not create per-run artifacts under `.agentplane/.upgrade/agent/*`;
+- semantic merge is only required when upstream and local changes conflict.
 
 To apply automatically:
 
 ```bash
 agentplane upgrade --auto
+```
+
+## Preflight modes
+
+Quick preflight is now the default and is optimized for fast readiness checks:
+
+```bash
+agentplane preflight
+agentplane preflight --json
+```
+
+For full backend/task-list probing, use full mode:
+
+```bash
+agentplane preflight --mode full
+# or
+agentplane preflight --full
 ```
 
 ## Verify setup quickly

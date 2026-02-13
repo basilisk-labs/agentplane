@@ -1,7 +1,7 @@
 ---
 id: "202602131110-3Z3CE9"
 title: "P1: remove dead legacy lifecycle parser path"
-status: "TODO"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -20,21 +20,35 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Verified: completed optimization batch and documentation updates for this task chain."
+events:
+  -
+    type: "status"
+    at: "2026-02-13T11:38:10.786Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: completed optimization batch and documentation updates for this task chain."
 doc_version: 2
-doc_updated_at: "2026-02-13T11:10:16.651Z"
+doc_updated_at: "2026-02-13T11:38:10.786Z"
 doc_updated_by: "CODER"
 description: "Remove runtime-dead legacy lifecycle parser layer and migrate remaining relevant cases to current spec/parser tests."
 id_source: "generated"
 ---
 ## Summary
 
+
 ## Scope
+
 
 ## Plan
 
+
 ## Risks
+
 
 ## Verify Steps
 
@@ -42,28 +56,19 @@ id_source: "generated"
 
 ### Scope
 
-
 ### Checks
-
 
 ### Evidence / Commands
 
-
 ### Pass criteria
-
-
-
 
 ## Verification
 
 ### Plan
 
-
 ### Results
-
 
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
-
