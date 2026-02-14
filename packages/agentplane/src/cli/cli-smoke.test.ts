@@ -94,6 +94,8 @@ async function makeRecipeArchive(): Promise<{ archivePath: string; cleanup: () =
 describe("agentplane CLI smoke", () => {
   it("runs init, task, finish, recipe, and work start flow", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-smoke-"));
+    const previousAgentplaneHome = process.env.AGENTPLANE_HOME;
+    process.env.AGENTPLANE_HOME = path.join(root, ".agentplane-home");
     try {
       await initGitRepo(root);
 
@@ -188,7 +190,12 @@ describe("agentplane CLI smoke", () => {
 
       const recipe = await makeRecipeArchive();
       try {
-        const install = await runCliWithOutput(root, ["recipes", "install", recipe.archivePath]);
+        const install = await runCliWithOutput(root, [
+          "recipes",
+          "install",
+          recipe.archivePath,
+          "--yes",
+        ]);
         expect(install.code).toBe(0);
       } finally {
         await recipe.cleanup();
@@ -216,6 +223,8 @@ describe("agentplane CLI smoke", () => {
       ]);
       expect(work.code).toBe(0);
     } finally {
+      if (previousAgentplaneHome === undefined) delete process.env.AGENTPLANE_HOME;
+      else process.env.AGENTPLANE_HOME = previousAgentplaneHome;
       await rm(root, { recursive: true, force: true });
     }
   }, 15_000);

@@ -32,6 +32,10 @@ function hasAnyFileWithExt(files, extensions) {
   return files.some((file) => extensions.some((ext) => file.endsWith(ext)));
 }
 
+function filesWithExt(files, extensions) {
+  return files.filter((file) => extensions.some((ext) => file.endsWith(ext)));
+}
+
 const root = repoRoot();
 const files = stagedFiles();
 
@@ -49,14 +53,14 @@ const prettierExts = [
   ".mdx",
 ];
 if (hasAnyFileWithExt(files, prettierExts)) {
-  run(localBin(root, "prettier"), ["--check", ...files]);
+  run(localBin(root, "prettier"), ["--check", ...filesWithExt(files, prettierExts)]);
 } else {
   process.stdout.write("pre-commit: no staged files for Prettier, skipping.\n");
 }
 
 const eslintExts = [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"];
 if (hasAnyFileWithExt(files, eslintExts)) {
-  run(localBin(root, "eslint"), files);
+  run(localBin(root, "eslint"), filesWithExt(files, eslintExts));
 } else {
   process.stdout.write("pre-commit: no staged files for ESLint, skipping.\n");
 }
