@@ -563,6 +563,8 @@ agentplane preflight [options]
 
 Options:
 
+- `--mode <quick|full>`: Preflight depth. quick skips backend task-list probe; full includes backend readiness. (choices=quick|full, default=quick)
+- `--full`: Shortcut for --mode full. (default=false)
 - `--json`: Emit machine-readable JSON report. (default=false)
 
 Examples:
@@ -572,6 +574,12 @@ agentplane preflight --json
 ```
 
 - Produce one-shot agent-readable preflight.
+
+```sh
+agentplane preflight --json --mode full
+```
+
+- Run full preflight including backend task-list probe.
 
 ### quickstart
 
