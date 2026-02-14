@@ -33,6 +33,10 @@ function fallbackEmojiForAgentId(agentId: string): string {
   return FALLBACK_EMOJIS[idx] ?? "🧩";
 }
 
+/**
+ * Resolve commit emoji for an agent.
+ * Priority: explicit `commit_emoji` in agent JSON -> well-known map/hash fallback.
+ */
 export async function resolveCommitEmojiForAgent(opts: {
   agentsDirAbs: string;
   agentId: string;
