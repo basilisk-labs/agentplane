@@ -1,4 +1,5 @@
 import { mapBackendError } from "../../cli/error-map.js";
+import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
@@ -19,7 +20,7 @@ export async function cmdTaskStartReady(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-    return await cmdStart({
+    const result = await cmdStart({
       ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
@@ -36,6 +37,10 @@ export async function cmdTaskStartReady(opts: {
       yes: opts.yes,
       quiet: opts.quiet,
     });
+    if (!opts.quiet) {
+      process.stdout.write(`${successMessage("ready", opts.taskId)}\n`);
+    }
+    return result;
   } catch (err) {
     if (err instanceof CliError) throw err;
     throw mapBackendError(err, { command: "task start-ready", root: opts.rootOverride ?? null });
