@@ -31,7 +31,7 @@ import { ensureInitRedmineEnvTemplate } from "./init/write-env.js";
 import { renderInitSection, renderInitWelcome } from "./init/ui.js";
 
 type InitFlags = {
-  setupProfile?: "prod" | "dev";
+  setupProfile?: SetupProfilePreset;
   ide?: "codex" | "cursor" | "windsurf";
   workflow?: "direct" | "branch_pr";
   backend?: "local" | "redmine";
@@ -119,10 +119,10 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "setup-profile",
-      valueHint: "<prod|dev>",
-      choices: ["prod", "dev"],
+      valueHint: "<prod|prod-strict|dev|dev-safe>",
+      choices: ["prod", "prod-strict", "dev", "dev-safe"],
       description:
-        "Interactive preset. prod is the default and asks only essential questions; dev asks the full setup questionnaire.",
+        "Interactive preset. prod is default; prod-strict enables stricter defaults, dev asks the full questionnaire, and dev-safe adds stricter unsafe-action confirmations.",
     },
     {
       kind: "string",
@@ -334,7 +334,7 @@ async function cmdInit(opts: {
   let requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
   let executionProfile = flags.executionProfile ?? defaults.executionProfile;
   let strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
-  let setupProfile: "prod" | "dev" = flags.setupProfile ?? "prod";
+  let setupProfile: "prod" | "dev" = setupProfilePresets[flags.setupProfile ?? "prod"].mode;
   let setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "prod";
   const isInteractive = process.stdin.isTTY && !flags.yes;
 

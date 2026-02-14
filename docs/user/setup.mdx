@@ -41,9 +41,11 @@ If `.git` does not exist in that folder, `init` creates a new git repository the
 `agentplane init` now starts with a setup profile:
 
 - `prod` (default): compact flow with essential prompts only (typically setup profile + backend).
+- `prod-strict`: compact flow with stricter defaults (hooks on, strict unsafe confirmations).
 - `dev`: full questionnaire (workflow, hooks, approvals, execution profile, recipes).
+- `dev-safe`: full questionnaire with stricter unsafe-action confirmations by default.
 
-Use `--setup-profile dev` to force full prompts.
+Use `--setup-profile dev` (or `dev-safe`) to force full prompts.
 
 Non-interactive setup is available through flags:
 
