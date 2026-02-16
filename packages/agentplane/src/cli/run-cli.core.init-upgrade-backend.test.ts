@@ -898,6 +898,18 @@ describe("runCli", () => {
     }
   });
 
+  it("init accepts setup-profile strict variants", async () => {
+    const root1 = await mkGitRepoRoot();
+    await configureGitUser(root1);
+    let code = await runCli(["init", "--yes", "--setup-profile", "prod-strict", "--root", root1]);
+    expect(code).toBe(0);
+
+    const root2 = await mkGitRepoRoot();
+    await configureGitUser(root2);
+    code = await runCli(["init", "--yes", "--setup-profile", "dev-safe", "--root", root2]);
+    expect(code).toBe(0);
+  });
+
   it("init rejects invalid --workflow values", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
