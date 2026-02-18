@@ -1,7 +1,8 @@
 import type { Props } from "@theme/Root";
 import Head from "@docusaurus/Head";
 import Root from "@theme-original/Root";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+
+const gtmContainerId = "GTM-P4FNLHQF";
 
 const organizationJsonLd = {
   "@context": "https://schema.org",
@@ -27,11 +28,6 @@ const websiteJsonLd = {
 };
 
 export default function RootWrapper(props: Props) {
-  const { siteConfig } = useDocusaurusContext();
-  const customFields = siteConfig.customFields as Record<string, unknown> | undefined;
-  const gtmContainerId =
-    typeof customFields?.gtmContainerId === "string" ? customFields.gtmContainerId : "";
-
   return (
     <>
       <Head>
