@@ -13,7 +13,7 @@ const prettierConfig = require("eslint-config-prettier");
 const tsconfigProjects = [
   "./tsconfig.eslint.json",
   "./packages/*/tsconfig.json",
-  "./website/tsconfig.json",
+  "./website/tsconfig.eslint.json",
 ];
 
 /** @type {import("eslint").Linter.FlatConfig[]} */

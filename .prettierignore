@@ -7,3 +7,5 @@ agentplane-recipes
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+website/.docusaurus
+website/build

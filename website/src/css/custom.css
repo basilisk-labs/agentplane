@@ -19,7 +19,7 @@
   --ifm-font-family-monospace:
     "Geist Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, monospace;
   --font-pixel: "Geist Pixel";
-  --ifm-font-size-base: 17px;
+  --ifm-font-size-base: 16px;
   --ifm-heading-font-family: var(--ifm-font-family-base);
   --ifm-heading-color: rgb(var(--fg));
   --ifm-font-color-base: rgb(var(--fg));
@@ -43,6 +43,7 @@ html,
 body {
   background-color: rgb(var(--bg));
   color: rgb(var(--fg));
+  font-feature-settings: "ss01" 1;
 }
 
 a {
@@ -70,28 +71,32 @@ a {
 
 .theme-doc-markdown.markdown {
   max-width: var(--content-width);
+  position: relative;
 }
 
 .theme-doc-markdown.markdown > h1:first-child {
-  font-size: clamp(3.1rem, 5vw, 4.4rem);
+  font-size: clamp(2.6rem, 4.5vw, 3.7rem);
   letter-spacing: -0.03em;
   line-height: 1;
 }
 
 .theme-doc-markdown.markdown h2 {
-  font-size: clamp(2rem, 3.3vw, 2.7rem);
+  border-top: 1px solid rgb(var(--border));
+  font-size: clamp(1.55rem, 2.6vw, 2.05rem);
   letter-spacing: -0.02em;
-  margin-top: 3.8rem;
+  margin-top: 3.2rem;
+  padding-top: 0.8rem;
 }
 
 .theme-doc-markdown.markdown h3 {
-  font-size: clamp(1.35rem, 2.2vw, 1.62rem);
-  margin-top: 2.2rem;
+  font-size: clamp(1.12rem, 1.7vw, 1.35rem);
+  margin-top: 1.95rem;
 }
 
 .theme-doc-markdown.markdown p,
 .theme-doc-markdown.markdown li {
-  line-height: 1.58;
+  font-size: 0.96rem;
+  line-height: 1.5;
 }
 
 .theme-doc-markdown.markdown hr {
@@ -109,8 +114,40 @@ a {
   font-weight: 500;
 }
 
+.theme-doc-markdown.markdown h2::after,
+.theme-doc-markdown.markdown h3::after {
+  animation: pixel-blink 2.4s steps(2, end) infinite;
+  color: rgb(var(--faint));
+  display: inline-block;
+  font-family: var(--font-pixel), var(--ifm-font-family-monospace);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  margin-left: 0.7rem;
+  vertical-align: middle;
+}
+
+.theme-doc-markdown.markdown h2::after {
+  content: "TRACE";
+}
+
+.theme-doc-markdown.markdown h3::after {
+  content: "SYNC";
+}
+
 .theme-doc-sidebar-container {
   border-right: 1px solid rgb(var(--border));
+}
+
+.menu__list-item-collapsible > .menu__link {
+  font-family: var(--font-pixel), var(--ifm-font-family-monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.menu__list .menu__link {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.82rem;
 }
 
 .menu__link--active {
@@ -131,6 +168,53 @@ a {
   background-size: 64px 64px;
 }
 
+.theme-doc-markdown.markdown::before,
+.theme-doc-markdown.markdown::after {
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--muted));
+  font-family: var(--font-pixel), var(--ifm-font-family-monospace);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  padding: 0.22rem 0.42rem;
+  position: absolute;
+}
+
+.theme-doc-markdown.markdown::before {
+  animation: pixel-shift 4.8s steps(3, end) infinite;
+  content: "POL-01";
+  right: 0;
+  top: -1.6rem;
+}
+
+.theme-doc-markdown.markdown::after {
+  animation: pixel-shift 5.2s steps(3, end) infinite reverse;
+  content: "WF-02";
+  top: -1.6rem;
+}
+
+@keyframes pixel-blink {
+  0%,
+  38%,
+  100% {
+    opacity: 1;
+  }
+
+  52% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes pixel-shift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-1px);
+  }
+}
+
 @media (max-width: 996px) {
   .theme-doc-markdown.markdown {
     max-width: 100%;
@@ -138,6 +222,11 @@ a {
 
   .theme-doc-sidebar-container {
     border-right: none;
+  }
+
+  .theme-doc-markdown.markdown::before,
+  .theme-doc-markdown.markdown::after {
+    display: none;
   }
 }
 
@@ -147,6 +236,24 @@ a {
   }
 
   .theme-doc-markdown.markdown > h1:first-child {
-    font-size: clamp(2.35rem, 9vw, 3.1rem);
+    font-size: clamp(2rem, 9vw, 2.6rem);
+  }
+
+  .menu__list .menu__link {
+    font-size: 0.8rem;
+  }
+
+  .theme-doc-markdown.markdown p,
+  .theme-doc-markdown.markdown li {
+    font-size: 0.94rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-doc-markdown.markdown::before,
+  .theme-doc-markdown.markdown::after,
+  .theme-doc-markdown.markdown h2::after,
+  .theme-doc-markdown.markdown h3::after {
+    animation: none;
   }
 }

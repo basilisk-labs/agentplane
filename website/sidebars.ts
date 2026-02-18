@@ -27,11 +27,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Website & Discovery",
-      items: ["user/website-ia", "user/agent-discovery", "user/indexing-and-webmaster-operations"],
-    },
-    {
-      type: "category",
       label: "Developer Guide",
       items: [
         "developer/design-principles",

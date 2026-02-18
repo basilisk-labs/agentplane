@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": ["node"]
+  },
+  "include": ["./docusaurus.config.ts", "./sidebars.ts", "./src/**/*.ts", "./src/**/*.tsx"],
+  "exclude": ["./.docusaurus", "./build", "./node_modules"]
+}
