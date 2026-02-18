@@ -55,7 +55,13 @@
     "schemas:check": "node scripts/sync-schemas.mjs check",
     "schemas:sync": "node scripts/sync-schemas.mjs sync",
     "coverage:significant": "node scripts/check-significant-coverage.mjs",
-    "docs:cli:check": "node scripts/check-cli-reference-fresh.mjs"
+    "docs:cli:check": "node scripts/check-cli-reference-fresh.mjs",
+    "docs:site:generate": "node scripts/generate-website-docs.mjs",
+    "docs:site:typecheck": "bun run --cwd website typecheck",
+    "docs:site:build": "bun run --cwd website build",
+    "docs:site:start": "bun run --cwd website start",
+    "docs:site:check:design": "node scripts/check-design-language.mjs",
+    "docs:site:check": "bun run docs:site:generate && bun run docs:site:typecheck && bun run docs:site:build && bun run docs:site:check:design"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

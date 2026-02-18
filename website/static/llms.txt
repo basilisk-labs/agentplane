@@ -1,0 +1,17 @@
+# AgentPlane
+
+site: https://agentplane.org
+docs: https://agentplane.org/docs
+blog: https://agentplane.org/blog
+repo: https://github.com/basilisk-labs/agentplane
+
+summary: Deterministic workflow framework for policy-driven agent execution in repositories.
+capabilities: task planning, approval-gated execution, verification workflows, release/publish automation.
+
+index:
+- https://agentplane.org/docs/user/overview
+- https://agentplane.org/docs/user/workflow
+- https://agentplane.org/docs/user/commands
+- https://agentplane.org/docs/user/website-ia
+- https://agentplane.org/docs/developer/architecture
+- https://agentplane.org/docs/developer/cli-contract

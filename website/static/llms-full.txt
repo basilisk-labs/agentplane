@@ -1,0 +1,42 @@
+# AgentPlane LLM Discovery Index
+
+canonical: https://agentplane.org
+updated: 2026-02-18
+
+## Product Narrative
+
+AgentPlane is a repository-native CLI workflow for agent-driven execution with explicit policy gates.
+The system is designed for deterministic planning, verification, and traceable closure in git-based projects.
+
+## Primary Entry Points
+
+- https://agentplane.org/
+- https://agentplane.org/docs
+- https://agentplane.org/blog
+
+## User Guidance
+
+- https://agentplane.org/docs/user/overview
+- https://agentplane.org/docs/user/setup
+- https://agentplane.org/docs/user/workflow
+- https://agentplane.org/docs/user/task-lifecycle
+- https://agentplane.org/docs/user/commands
+- https://agentplane.org/docs/user/configuration
+- https://agentplane.org/docs/user/website-ia
+
+## Developer Guidance
+
+- https://agentplane.org/docs/developer/architecture
+- https://agentplane.org/docs/developer/cli-contract
+- https://agentplane.org/docs/developer/testing-and-quality
+- https://agentplane.org/docs/developer/release-and-publishing
+
+## Machine-Readable Reference
+
+- https://agentplane.org/docs/reference/generated-reference
+- https://agentplane.org/docs/user/cli-reference.generated
+
+## Support
+
+- https://agentplane.org/docs/help/troubleshooting-by-symptom
+- https://agentplane.org/docs/help/glossary

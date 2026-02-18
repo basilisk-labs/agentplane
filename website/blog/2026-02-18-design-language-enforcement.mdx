@@ -1,0 +1,24 @@
+---
+slug: design-language-enforcement
+title: "Design language enforcement in CI"
+authors: [team]
+tags: [workflow, operations]
+---
+
+AgentPlane website styling now follows `DESIGN.md` as an executable contract.
+
+<!-- truncate -->
+
+The docs pipeline runs a design compliance check that rejects:
+
+1. Non-zero border radius patterns.
+2. Box shadows outside allowed constraints.
+3. Disallowed gradient usage outside approved overlay scope.
+
+This keeps visual drift controlled and review discussions focused on content and structure.
+
+Related docs:
+
+- [Design principles](/docs/developer/design-principles)
+- [Website information architecture](/docs/user/website-ia)
+- [Testing and quality](/docs/developer/testing-and-quality)

@@ -1,0 +1,47 @@
+---
+title: "Website information architecture"
+description: "Canonical section model for the public website, docs navigation, and blog discovery flow."
+---
+
+## Purpose
+
+This page defines the public website structure used by the Docusaurus deployment on `agentplane.org`.
+It keeps marketing, technical docs, and blog content aligned to one routing model.
+
+## Top-level routes
+
+1. `/` — product narrative and conversion entry point.
+2. `/docs` — canonical documentation sourced from repository `docs/`.
+3. `/blog` — editorial stream for releases, implementation notes, and migration guides.
+
+## Home page section contract
+
+The home page must map each section to concrete docs pages:
+
+1. **Getting Started**
+   Links: `docs/user/overview`, `docs/user/prerequisites`, `docs/user/setup`.
+2. **Workflow Model**
+   Links: `docs/user/workflow`, `docs/user/task-lifecycle`, `docs/user/agents`.
+3. **Reference**
+   Links: `docs/user/commands`, `docs/user/configuration`, `docs/reference/generated-reference`.
+4. **Developer Track**
+   Links: `docs/developer/architecture`, `docs/developer/cli-contract`, `docs/developer/release-and-publishing`.
+5. **Support**
+   Links: `docs/help/troubleshooting-by-symptom`, `docs/help/glossary`.
+
+## Blog scope
+
+Blog posts should be limited to:
+
+1. Release announcements with migration notes.
+2. Workflow deep dives and architecture rationale.
+3. Operational guidance for CI, policy, and verification changes.
+
+Posts must link back to canonical docs pages and avoid duplicating full reference material.
+
+## SEO and discovery requirements
+
+1. Every top-level section must have stable title and meta description.
+2. Home page claims must link to verifiable docs artifacts.
+3. Blog posts must include author, date, tags, and canonical URL.
+4. Search and crawler endpoints (`sitemap.xml`, `robots.txt`, `llms.txt`) must be kept in the deploy artifact.
