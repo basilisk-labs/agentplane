@@ -1,39 +1,51 @@
 ---
-title: "Agent Plane Documentation"
-description: "User and developer documentation for the Agent Plane CLI, workflows, and recipes."
+title: "AgentPlane Documentation"
+description: "User and developer documentation for AgentPlane CLI workflows, governance, and release operations."
 ---
 
-This site contains the full Agent Plane user and developer guide.
+This documentation is organized for two paths:
 
-## Documentation map
+- operator path (`User Guide`) for daily usage;
+- implementation path (`Developer Guide`) for internals, contracts, and publishing.
 
-### Start here
+## Quick Start
 
 1. [Overview](user/overview)
 2. [Prerequisites](user/prerequisites)
 3. [Setup](user/setup)
-4. [Breaking changes](user/breaking-changes)
+4. [Workflow](user/workflow)
+5. [Task lifecycle](user/task-lifecycle)
 
-### Core workflow
+## User Guide
+
+### Core Workflow
 
 1. [Workflow](user/workflow)
 2. [Task lifecycle](user/task-lifecycle)
 3. [Agents](user/agents)
 4. [Branching and PR artifacts](user/branching-and-pr-artifacts)
-5. [Tasks and backends](user/tasks-and-backends)
-6. [Backends deep dive](user/backends)
-7. [Website information architecture](user/website-ia)
-8. [Agent discovery endpoints](user/agent-discovery)
-9. [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
 
-### Reference
+### Backends and Configuration
 
-1. [Configuration](user/configuration)
-2. [Commands (practical guide)](user/commands)
-3. [CLI reference (generated)](user/cli-reference.generated)
-4. [Redmine backend](user/redmine)
+1. [Tasks and backends](user/tasks-and-backends)
+2. [Backends deep dive](user/backends)
+3. [Local backend](user/backends/local)
+4. [Redmine backend](user/backends/redmine)
+5. [Configuration](user/configuration)
 
-### Developer guide
+### CLI Reference
+
+1. [Commands (practical guide)](user/commands)
+2. [CLI reference (generated)](user/cli-reference.generated)
+3. [Breaking changes](user/breaking-changes)
+
+## Website and Discovery
+
+1. [Website information architecture](user/website-ia)
+2. [Agent discovery endpoints](user/agent-discovery)
+3. [Indexing and webmaster operations](user/indexing-and-webmaster-operations)
+
+## Developer Guide
 
 1. [Design principles](developer/design-principles)
 2. [Architecture](developer/architecture)
@@ -51,14 +63,13 @@ This site contains the full Agent Plane user and developer guide.
 14. [Release and publishing](developer/release-and-publishing)
 15. [Contributing](developer/contributing)
 
-### Help
+## Release Notes
+
+- Use the sidebar `Release Notes` section.
+- Notes are ordered by version descending (latest first).
+
+## Help
 
 1. [Troubleshooting by symptom](help/troubleshooting-by-symptom)
 2. [Troubleshooting](help/troubleshooting)
 3. [Glossary](help/glossary)
-
-## Notes
-
-- `cli-contract` is the stable CLI surface reference.
-- `documentation-information-architecture` defines section ownership and source mapping.
-- Release notes are stored under `docs/releases/` and are required for tags `vX.Y.Z`.

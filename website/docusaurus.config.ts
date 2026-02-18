@@ -36,6 +36,7 @@ const config: Config = {
         docs: {
           path: "../docs",
           exclude: ["**/README.md"],
+          sidebarPath: "./sidebars.ts",
           routeBasePath: "/docs",
           editUrl: "https://github.com/basilisk-labs/agentplane/tree/main/",
         },
