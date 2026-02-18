@@ -38,7 +38,8 @@ If two sources conflict, prefer the higher-priority source.
 
 ## CLI invocation
 
-All commands in this policy are written as `agentplane ...` and MUST use the `agentplane` CLI available on `PATH`.
+All commands in this policy are written as `agentplane ...`.
+Use the `agentplane` CLI from `PATH` when available; if not, use the repo-local entrypoint (for example `node packages/agentplane/bin/agentplane.js ...`).
 
 ## Scope boundary
 
@@ -67,8 +68,8 @@ Execution agents are defined by JSON files under `.agentplane/agents/*.json`. Th
 
 **Enforcement status:**
 
-- Current: warn-only in CLI (`task new` / `task update`) when `owner` does not exist in `.agentplane/agents`.
-- Planned: upgrade to lint/CI gate once the workflow is stable.
+- Current: hard validation in CLI (`task new` / `task update`) when `owner` does not exist in `.agentplane/agents` (command fails with `E_VALIDATION`).
+- Planned: keep the CLI gate and add CI lint for drift detection/reporting.
 
 ## Definitions (remove ambiguity)
 
@@ -282,6 +283,7 @@ ORCHESTRATOR MUST produce:
   - Atomic tasks, each with one specific owner from existing agent IDs
   - Prefer the minimum number of executable tasks; do not split work by role labels alone
   - Split only when there is an independent deliverable, a different required owner, or a real dependency/verification boundary
+  - Do not create executable tasks solely for scaffolding/docs handoffs/status bookkeeping
 - **Approvals**
   - Whether network and/or outside-repo actions will be needed
   - Any requested overrides (see Override Protocol)
@@ -531,7 +533,7 @@ Rules:
 - Do all work in the current checkout.
 - In `direct` (single working directory), agentplane uses a single-stream workflow in the current checkout. `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches).
 - Do not use worktrees in `direct`. `agentplane work start ... --worktree` is `branch_pr`-only.
-- If you only need artifacts/docs without switching branches, prefer `agentplane task scaffold <task-id>`.
+- Use `agentplane task scaffold <task-id>` only for backfill/import/manual repair; for normal updates use `agentplane task doc set` / `agentplane task plan set`.
 
 Recommended cadence:
 

@@ -247,7 +247,7 @@ export async function createRecipeArchive(opts?: {
     description: opts?.description ?? "Provides a local viewer for task artifacts.",
     agents: [{ id: "RECIPE_AGENT", summary: "Recipe agent", file: "agents/recipe.json" }],
     tools: [
-      { id: "RECIPE_TOOL", summary: "Recipe tool", runtime: "bash", entrypoint: "tools/run.sh" },
+      { id: "RECIPE_TOOL", summary: "Recipe tool", runtime: "node", entrypoint: "tools/run.js" },
     ],
     scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
   };
@@ -273,11 +273,10 @@ export async function createRecipeArchive(opts?: {
   const toolsDir = path.join(recipeDir, "tools");
   await mkdir(toolsDir, { recursive: true });
   await writeFile(
-    path.join(toolsDir, "run.sh"),
+    path.join(toolsDir, "run.js"),
     [
-      "#!/usr/bin/env bash",
-      "set -euo pipefail",
-      'echo "ok" > "$AGENTPLANE_RUN_DIR/artifact.txt"',
+      'const fs = require("node:fs");',
+      'fs.writeFileSync(process.env.AGENTPLANE_RUN_DIR + "/artifact.txt", "ok");',
     ].join("\n"),
     "utf8",
   );

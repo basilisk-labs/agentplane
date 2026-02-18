@@ -1,2 +1,12 @@
-# Auto detect text files and perform LF normalization
+# Auto detect text files and keep normalized line endings.
 * text=auto
+*.md text eol=lf working-tree-encoding=UTF-8
+*.txt text eol=lf working-tree-encoding=UTF-8
+*.json text eol=lf working-tree-encoding=UTF-8
+*.yaml text eol=lf working-tree-encoding=UTF-8
+*.yml text eol=lf working-tree-encoding=UTF-8
+*.ts text eol=lf working-tree-encoding=UTF-8
+*.tsx text eol=lf working-tree-encoding=UTF-8
+*.js text eol=lf working-tree-encoding=UTF-8
+*.mjs text eol=lf working-tree-encoding=UTF-8
+*.cjs text eol=lf working-tree-encoding=UTF-8

@@ -20,4 +20,5 @@ coverage
 .agentplane/.release
 .agentplane/upgrade
 .agentplane/tasks.json
+.agentplane/.npm-cache
 # Keep the external recipes repo out of the main repo index.

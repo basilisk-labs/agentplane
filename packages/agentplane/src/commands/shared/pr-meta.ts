@@ -1,4 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 import { execFileAsync } from "./git.js";
@@ -21,6 +22,21 @@ export type PrMeta = {
   last_verified_at: string | null;
   verify?: { status?: "pass" | "fail" | "skipped"; command?: string };
 };
+
+export type ShellInvocation = {
+  command: string;
+  args: string[];
+};
+
+export function resolveShellInvocation(command: string): ShellInvocation {
+  if (os.platform() === "win32") {
+    const rawComspec = process.env.ComSpec ?? process.env.COMSPEC;
+    const shellCommand =
+      rawComspec && rawComspec !== "undefined" && rawComspec !== "null" ? rawComspec : "cmd.exe";
+    return { command: shellCommand, args: ["/d", "/s", "/c", command] };
+  }
+  return { command: "sh", args: ["-lc", command] };
+}
 
 export function parsePrMeta(raw: string, taskId: string): PrMeta {
   let parsed: unknown;
@@ -67,8 +83,9 @@ export async function runShellCommand(
   code: number;
   output: string;
 }> {
+  const invocation = resolveShellInvocation(command);
   try {
-    const { stdout, stderr } = await execFileAsync("sh", ["-lc", command], {
+    const { stdout, stderr } = await execFileAsync(invocation.command, invocation.args, {
       cwd,
       env: process.env,
       maxBuffer: 10 * 1024 * 1024,
