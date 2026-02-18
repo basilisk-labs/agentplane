@@ -25,6 +25,8 @@ module.exports = [
       "**/coverage/**",
       ".agentplane/**",
       "agentplane-recipes/**",
+      "website/.docusaurus/**",
+      "website/build/**",
       "**/*.d.ts",
     ],
   },
