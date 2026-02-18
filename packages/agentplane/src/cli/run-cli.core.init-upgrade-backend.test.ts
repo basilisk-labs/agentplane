@@ -58,6 +58,10 @@ import * as prompts from "./prompts.js";
 registerAgentplaneHome();
 let restoreStdIO: (() => void) | null = null;
 
+function normalizeSlashes(value: string): string {
+  return value.replaceAll("\\", "/");
+}
+
 beforeEach(() => {
   restoreStdIO = silenceStdIO();
 });
@@ -139,8 +143,9 @@ describe("runCli", () => {
     try {
       const code = await runCli(["ide", "sync", "--root", root]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(".cursor/rules/agentplane.mdc");
-      expect(io.stdout).toContain(".windsurf/rules/agentplane.md");
+      const output = normalizeSlashes(io.stdout);
+      expect(output).toContain(".cursor/rules/agentplane.mdc");
+      expect(output).toContain(".windsurf/rules/agentplane.md");
     } finally {
       io.restore();
     }
@@ -209,13 +214,17 @@ describe("runCli", () => {
     expect(await readFile(baselineAgentsPath, "utf8")).toBe(await readFile(agentsPath, "utf8"));
 
     const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"workflow_mode": "direct"');
-    expect(configText).toContain('"status_commit_policy": "warn"');
-    expect(configText).toContain('"commit_automation": "finish_only"');
-    expect(configText).toContain('"finish_auto_status_commit": false');
-    expect(configText).toContain('"config_path": ".agentplane/backends/local/backend.json"');
-    expect(configText).toContain('"profile": "balanced"');
-    expect(configText).toContain('"reasoning_effort": "medium"');
+    const config = JSON.parse(configText) as Record<string, unknown>;
+    expect(config.workflow_mode).toBe("direct");
+    expect(config.status_commit_policy).toBe("warn");
+    expect(config.commit_automation).toBe("finish_only");
+    expect(config.finish_auto_status_commit).toBe(false);
+    expect((config.tasks_backend as Record<string, unknown>)?.config_path).toBe(
+      ".agentplane/backends/local/backend.json",
+    );
+    const execution = config.execution as Record<string, unknown>;
+    expect(execution?.profile).toBe("balanced");
+    expect(execution?.reasoning_effort).toBe("medium");
 
     const backendText = await readFile(backendPath, "utf8");
     const backend = JSON.parse(backendText) as Record<string, unknown>;
@@ -377,7 +386,10 @@ describe("runCli", () => {
       "backend.json",
     );
     const configText = await readFile(configPath, "utf8");
-    expect(configText).toContain('"config_path": ".agentplane/backends/redmine/backend.json"');
+    const config = JSON.parse(configText) as Record<string, unknown>;
+    expect((config.tasks_backend as Record<string, unknown>)?.config_path).toBe(
+      ".agentplane/backends/redmine/backend.json",
+    );
     expect(await pathExists(localBackendPath)).toBe(false);
     expect(await pathExists(redmineBackendPath)).toBe(true);
     const redmineText = await readFile(redmineBackendPath, "utf8");
@@ -952,8 +964,9 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--yes", "--root", root]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("Init conflicts detected");
-      expect(io.stderr).toContain(".agentplane/config.json");
+      const error = normalizeSlashes(io.stderr);
+      expect(error).toContain("Init conflicts detected");
+      expect(error).toContain(".agentplane/config.json");
     } finally {
       io.restore();
     }
@@ -995,11 +1008,12 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--yes", "--root", root]);
       expect(code).toBe(4);
-      expect(io.stderr).toContain("Init conflicts detected");
-      expect(io.stderr).toContain(".agentplane/config.json");
-      expect(io.stderr).toContain(".agentplane/backends/local/backend.json");
-      expect(io.stderr).toContain("--force");
-      expect(io.stderr).toContain("--backup");
+      const error = normalizeSlashes(io.stderr);
+      expect(error).toContain("Init conflicts detected");
+      expect(error).toContain(".agentplane/config.json");
+      expect(error).toContain(".agentplane/backends/local/backend.json");
+      expect(error).toContain("--force");
+      expect(error).toContain("--backup");
     } finally {
       io.restore();
     }
