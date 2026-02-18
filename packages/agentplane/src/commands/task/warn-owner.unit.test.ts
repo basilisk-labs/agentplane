@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { captureStdIO } from "../../cli/run-cli.test-helpers.js";
 import { defaultConfig } from "@agentplaneorg/core";
 import type { CommandContext } from "../shared/task-backend.js";
 
@@ -34,73 +33,45 @@ function mkCtx(): CommandContext {
 describe("warnIfUnknownOwner", () => {
   it("memoizes agent ids listing within one ctx instance", async () => {
     const { warnIfUnknownOwner } = await import("./shared.js");
-    const io = captureStdIO();
-    try {
-      mocks.fileExists.mockResolvedValue(true);
-      mocks.readdir.mockResolvedValue(["CODER.json", "TESTER.json"]);
+    mocks.fileExists.mockResolvedValue(true);
+    mocks.readdir.mockResolvedValue(["CODER.json", "TESTER.json"]);
 
-      const ctx = mkCtx();
-      await warnIfUnknownOwner(ctx, "NOPE");
-      await warnIfUnknownOwner(ctx, "NOPE");
-      expect(mocks.readdir).toHaveBeenCalledTimes(1);
-    } finally {
-      io.restore();
-    }
+    const ctx = mkCtx();
+    await expect(warnIfUnknownOwner(ctx, "NOPE")).rejects.toMatchObject({ code: "E_VALIDATION" });
+    await expect(warnIfUnknownOwner(ctx, "NOPE")).rejects.toMatchObject({ code: "E_VALIDATION" });
+    expect(mocks.readdir).toHaveBeenCalledTimes(1);
   });
 
-  it("warns when owner is not present in .agentplane/agents", async () => {
+  it("fails when owner is not present in .agentplane/agents", async () => {
     const { warnIfUnknownOwner } = await import("./shared.js");
-    const io = captureStdIO();
-    try {
-      mocks.fileExists.mockResolvedValue(true);
-      mocks.readdir.mockResolvedValue(["CODER.json", "TESTER.json"]);
-
-      await warnIfUnknownOwner(mkCtx(), "NOPE");
-      expect(io.stderr).toContain("unknown task owner id: NOPE");
-    } finally {
-      io.restore();
-    }
+    mocks.fileExists.mockResolvedValue(true);
+    mocks.readdir.mockResolvedValue(["CODER.json", "TESTER.json"]);
+    await expect(warnIfUnknownOwner(mkCtx(), "NOPE")).rejects.toMatchObject({
+      code: "E_VALIDATION",
+    });
+    await expect(warnIfUnknownOwner(mkCtx(), "NOPE")).rejects.toThrow(
+      "unknown task owner id: NOPE",
+    );
   });
 
-  it("does not warn when owner is present", async () => {
+  it("passes when owner is present", async () => {
     const { warnIfUnknownOwner } = await import("./shared.js");
-    const io = captureStdIO();
-    try {
-      mocks.fileExists.mockResolvedValue(true);
-      mocks.readdir.mockResolvedValue(["CODER.json"]);
-
-      await warnIfUnknownOwner(mkCtx(), "CODER");
-      expect(io.stderr).toBe("");
-    } finally {
-      io.restore();
-    }
+    mocks.fileExists.mockResolvedValue(true);
+    mocks.readdir.mockResolvedValue(["CODER.json"]);
+    await expect(warnIfUnknownOwner(mkCtx(), "CODER")).resolves.toBeUndefined();
   });
 
-  it("does not warn when agents dir is missing", async () => {
+  it("does not fail when agents dir is missing", async () => {
     const { warnIfUnknownOwner } = await import("./shared.js");
-    const io = captureStdIO();
-    try {
-      mocks.fileExists.mockResolvedValue(false);
-      mocks.readdir.mockResolvedValue(["CODER.json"]);
-
-      await warnIfUnknownOwner(mkCtx(), "NOPE");
-      expect(io.stderr).toBe("");
-    } finally {
-      io.restore();
-    }
+    mocks.fileExists.mockResolvedValue(false);
+    mocks.readdir.mockResolvedValue(["CODER.json"]);
+    await expect(warnIfUnknownOwner(mkCtx(), "NOPE")).resolves.toBeUndefined();
   });
 
-  it("does not warn when there are no agent json files", async () => {
+  it("does not fail when there are no agent json files", async () => {
     const { warnIfUnknownOwner } = await import("./shared.js");
-    const io = captureStdIO();
-    try {
-      mocks.fileExists.mockResolvedValue(true);
-      mocks.readdir.mockResolvedValue(["README.md"]);
-
-      await warnIfUnknownOwner(mkCtx(), "NOPE");
-      expect(io.stderr).toBe("");
-    } finally {
-      io.restore();
-    }
+    mocks.fileExists.mockResolvedValue(true);
+    mocks.readdir.mockResolvedValue(["README.md"]);
+    await expect(warnIfUnknownOwner(mkCtx(), "NOPE")).resolves.toBeUndefined();
   });
 });

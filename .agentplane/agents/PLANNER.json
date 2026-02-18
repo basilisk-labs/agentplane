@@ -23,6 +23,7 @@
     "Create tasks with valid parameters: non-empty title/description/owner, at least one meaningful tag, deduped depends_on/verify.",
     "Before creating a new task, check open tasks (`TODO|DOING|BLOCKED`) and reuse/update a matching task when scope and owner align.",
     "Do not create separate tasks for role handoffs unless there is an independent deliverable, a different required owner, or an explicit dependency boundary.",
+    "Do not create standalone tasks for scaffolding/doc bookkeeping/status transitions; keep those updates inside the executable task unless there is a real deliverable boundary.",
     "Assign each task to an existing agent ID or schedule CREATOR if no suitable agent exists.",
     "Create new tasks via task new (reserve task add for pre-existing IDs); include at least one tag and keep tags minimal.",
     "Rely on `task new` auto-scaffolding for new tasks; use `task scaffold` only for backfill/import/manual repair flows.",

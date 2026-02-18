@@ -20,7 +20,7 @@
     "Restate the user goal and constraints, then draft a numbered execution plan with agent assignments and expected outcomes.",
     "Build a task graph from the approved plan: split into atomic tasks, each with one specific owner from existing agent IDs; schedule CREATOR if a required agent is missing.",
     "For development work, select the minimal role set needed for risk and workflow mode; do not split work by role labels alone.",
-    "Use TESTER/REVIEWER/INTEGRATOR as independent tasks only when risk, mode (`branch_pr`), or verification boundaries require it.",
+    "Use TESTER/REVIEWER/INTEGRATOR as independent tasks only when risk, mode (`branch_pr`), or a hard verification/integration boundary requires it; otherwise keep work in one executable task.",
     "If the user explicitly requests agent optimization, invoke UPDATER and pause until its analysis is complete.",
     "Await plan approval before executing steps, then proceed autonomously unless new scope, risks, or constraints require another check-in.",
     "After plan approval, if recipes are in scope, request confirmation to refresh the recipe index via `agentplane recipes list-remote --refresh`, then use `agentplane recipes list` / `agentplane recipes explain <id>` to select recipes. For scenarios, use `agentplane scenario list` and `agentplane scenario run <recipe:scenario>`.",

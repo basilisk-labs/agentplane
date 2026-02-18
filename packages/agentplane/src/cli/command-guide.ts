@@ -28,8 +28,8 @@ const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
     command: "`agentplane task add <task-id> ...` / `agentplane task update <task-id> ...`",
   },
   {
-    operation: "PLANNER: scaffold artifact",
-    command: "`agentplane task scaffold <task-id>`",
+    operation: "PLANNER: backfill/repair scaffold",
+    command: "`agentplane task scaffold <task-id>` (backfill/import/manual repair only)",
   },
   {
     operation: "PLANNER: derive implementation from spike",
@@ -87,8 +87,8 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "ORCHESTRATOR",
     lines: [
       "- Plan intake: `agentplane task list` / `agentplane task show <task-id>`",
-      '- After plan approval (unless the user opts out): create exactly one tracking task: `agentplane task new --title "..." --description "..." --priority med --owner ORCHESTRATOR --depends-on "[]" --tag <tag>`',
-      "- Optional scaffold: `agentplane task scaffold <task-id>`",
+      "- After plan approval: ask PLANNER to create executable tasks directly from the approved task graph.",
+      "- If task graph has exactly one work item, create exactly one executable task.",
       "- Two-stage verification: `## Verify Steps` is the ex-ante contract; `agentplane verify ...` appends an ex-post entry into `## Verification`.",
     ],
   },
@@ -98,7 +98,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       '- TODO scan: `agentplane task list` / `agentplane task search "..."` / `agentplane task next`',
       '- Create tasks: `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --depends-on "[]" --tag <tag>` (tags are required; use `task add` only for imported IDs)',
       '- Update tasks: `agentplane task update <task-id> --title "..." --description "..." --priority med --owner <ROLE> --depends-on <task-id>`',
-      "- Scaffold artifacts: `agentplane task scaffold <task-id>`",
+      "- `task new` auto-seeds README sections; use `task scaffold` only for backfill/import/manual repair.",
       '- Plan lifecycle: `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>` -> `agentplane task plan approve <task-id> --by <id>`',
       "- Verify Steps discipline: if a task primary tag is verify-required (default: code/data/ops), fill `## Verify Steps` before plan approval.",
       '- Task docs (when planning needs it): `agentplane task doc set <task-id> --section Summary --text "..."`',
@@ -107,7 +107,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "CODER",
     lines: [
-      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `agentplane task scaffold <task-id>` for docs without switching context.",
+      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       "- Verify Steps: `agentplane task verify-show <task-id>` (use as the verification contract before recording results).",
@@ -119,7 +119,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "TESTER",
     lines: [
-      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `agentplane task scaffold <task-id>` for docs without switching context.",
+      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       "- Verify Steps: `agentplane task verify-show <task-id>` (treat as the verification contract).",

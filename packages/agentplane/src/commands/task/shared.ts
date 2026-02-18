@@ -286,14 +286,15 @@ export async function warnIfUnknownOwner(ctx: CommandContext, owner: string): Pr
   const ids = await listAgentIdsMemo(ctx);
   if (ids.length === 0) return;
 
-  if (!ids.includes(trimmed)) {
-    process.stderr.write(
-      `${warnMessage(
-        `unknown task owner id: ${trimmed} (not found under ${ctx.config.paths.agents_dir}; ` +
-          `pick an existing agent id or create ${ctx.config.paths.agents_dir}/${trimmed}.json)`,
-      )}\n`,
-    );
-  }
+  if (ids.includes(trimmed)) return;
+
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message:
+      `unknown task owner id: ${trimmed} (not found under ${ctx.config.paths.agents_dir}; ` +
+      `pick an existing agent id or create ${ctx.config.paths.agents_dir}/${trimmed}.json)`,
+  });
 }
 
 export function appendTaskEvent(task: TaskData, event: TaskEvent): TaskEvent[] {

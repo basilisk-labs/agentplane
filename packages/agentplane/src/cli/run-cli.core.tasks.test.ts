@@ -174,6 +174,40 @@ describe("runCli", () => {
     }
   });
 
+  it("task new fails when owner is not registered in .agentplane/agents", async () => {
+    const root = await mkGitRepoRoot();
+    const agentsDir = path.join(root, ".agentplane", "agents");
+    await mkdir(agentsDir, { recursive: true });
+    await writeFile(
+      path.join(agentsDir, "CODER.json"),
+      JSON.stringify({ id: "CODER", role: "Coder", workflow: [] }, null, 2),
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Unknown owner",
+        "--description",
+        "Should fail fast",
+        "--priority",
+        "med",
+        "--owner",
+        "NOPE",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("unknown task owner id: NOPE");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("task new seeds Verify Steps in README for verify-required primary tags", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
