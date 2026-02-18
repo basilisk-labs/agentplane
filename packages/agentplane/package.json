@@ -1,6 +1,6 @@
 {
   "name": "agentplane",
-  "version": "0.2.23",
+  "version": "0.2.24",
   "description": "Agent Plane CLI for task workflows, recipes, and project automation.",
   "keywords": [
     "agentplane",
@@ -55,7 +55,7 @@
     "prepublishOnly": "node ../../scripts/enforce-github-publish.mjs && npm run prepack"
   },
   "dependencies": {
-    "@agentplaneorg/core": "0.2.23",
+    "@agentplaneorg/core": "0.2.24",
     "yauzl": "^2.10.0"
   },
   "devDependencies": {
