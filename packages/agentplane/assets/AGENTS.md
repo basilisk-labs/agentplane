@@ -15,6 +15,18 @@ This policy is designed to be the single, authoritative instruction set the agen
 
 # GLOBAL RULES
 
+## Language of artifacts
+
+- All repository-facing artifacts, including task titles, task descriptions, generated docs, notes, and comments must be in English unless the user explicitly requests another language for a specific task.
+- User-facing chat responses should follow the user's language preference (here: Russian), while disk artifacts remain English-first by default.
+
+## Cross-platform and encoding
+
+- All textual files in this repository must use UTF-8.
+- Repos should keep source text files normalized and portable; avoid OS-local path and shell assumptions in core runtime logic.
+- Treat path handling and process invocation as platform-sensitive; abstract platform-specific behavior behind explicit utilities.
+- Encode new scripts and docs using UTF-8 and avoid legacy code-page text in repository files.
+
 ## Sources of truth (priority order)
 
 1. `AGENTS.md` (this file)
@@ -35,8 +47,8 @@ All commands in this policy are written as `agentplane ...` and MUST use the `ag
 
 ## Agent roles (authority boundaries)
 
-- **ORCHESTRATOR**: the only role allowed to initiate a run; owns user-facing plan + approval gates; may create exactly one top-level tracking task after the user approves the overall plan.
-- **PLANNER**: the sole creator of downstream tasks; may reprioritize tasks; may adjust decomposition (within approved scope).
+- **ORCHESTRATOR**: the only role allowed to initiate a run; owns user-facing plan + approval gates; does not create task artifacts.
+- **PLANNER**: the sole creator of executable tasks; may reprioritize tasks; may adjust task graph planning (within approved scope).
 - **CREATOR**: creates a new specialized agent definition only when required by the approved plan.
 - **INTEGRATOR**: the only role allowed to integrate/merge into base branch (for `branch_pr`), finish tasks on base, and run exports.
 
@@ -46,9 +58,9 @@ No other role may assume another role’s authority.
 
 Execution agents are defined by JSON files under `.agentplane/agents/*.json`. The file basename (without `.json`) is the agent ID (e.g. `CODER`, `TESTER`, `REVIEWER`, `DOCS`).
 
-**Contract (downstream task assignment):**
+**Contract (executable task assignment):**
 
-- Every downstream task created by PLANNER MUST set `owner` to an existing execution agent ID from `.agentplane/agents/*.json`.
+- Every executable task created by PLANNER MUST set `owner` to an existing execution agent ID from `.agentplane/agents/*.json`.
 - If no suitable execution agent exists, PLANNER MUST:
   - create a dedicated CREATOR task to add the missing agent definition, and
   - make all tasks that require that new agent depend on the CREATOR task via `depends_on: [<creator-task-id>]`.
@@ -150,7 +162,7 @@ Trigger:
 Protocol:
 
 1. ORCHESTRATOR runs the upgrade (or coordinates whoever runs it) and identifies the upgrade run artifacts directory (for example `.agentplane/.upgrade/agent/<runId>/`).
-2. If the upgrade review report indicates semantic conflicts (`needsSemanticReview: true` for any file), ORCHESTRATOR instructs PLANNER to create a downstream task owned by `UPGRADER`.
+2. If the upgrade review report indicates semantic conflicts (`needsSemanticReview: true` for any file), ORCHESTRATOR instructs PLANNER to create an executable task owned by `UPGRADER`.
 3. UPGRADER performs semantic reconciliation of `AGENTS.md` and `.agentplane/agents/*.json`:
    - `AGENTS.md` remains the canonical policy source (highest priority).
    - Preserve local customizations via the Local Overrides block (`<!-- AGENTPLANE:LOCAL-START/END -->`) where feasible.
@@ -174,10 +186,10 @@ Done when:
 # NON-NEGOTIABLE PIPELINE
 
 1. **Preflight** (ORCHESTRATOR, mandatory; read-only)
-2. **Plan + decomposition** (no execution; read-only)
+2. **Plan + task graph planning** (no execution; read-only)
 3. **Explicit user approval** (overall plan + any requested overrides)
-4. **Create tracking task** (one top-level task)
-5. **Create and plan downstream tasks** (PLANNER)
+4. **Create executable task graph** (PLANNER)
+5. **Plan and document created tasks**
 6. **Execute tasks under mode-specific workflow**
 7. **Verify**
 8. **Finish**
@@ -246,7 +258,7 @@ Do not output the full contents of config or quickstart unless the user explicit
 # STARTUP RULE
 
 - Always begin work by engaging ORCHESTRATOR.
-- ORCHESTRATOR starts by producing a top-level plan + task decomposition.
+- ORCHESTRATOR starts by producing an execution plan + task graph plan.
 - **Before explicit user approval, do not perform mutating actions.**
   - Allowed: read-only inspection (including preflight).
   - Prohibited: creating/updating tasks, editing files, starting/finishing tasks, commits, branching, verify runs that mutate task state, network use, outside-repo access.
@@ -255,7 +267,7 @@ Do not output the full contents of config or quickstart unless the user explicit
 
 # ORCHESTRATION FLOW
 
-## 1) Plan & decomposition (no execution)
+## 1) Plan & task graph planning (no execution)
 
 ORCHESTRATOR MUST produce:
 
@@ -266,8 +278,10 @@ ORCHESTRATOR MUST produce:
   - Only if required; each assumption must be testable/confirmable
 - **Steps**
   - Ordered, executable steps
-- **Decomposition**
-  - Atomic tasks assignable to existing agents
+- **Task graph planning**
+  - Atomic tasks, each with one specific owner from existing agent IDs
+  - Prefer the minimum number of executable tasks; do not split work by role labels alone
+  - Split only when there is an independent deliverable, a different required owner, or a real dependency/verification boundary
 - **Approvals**
   - Whether network and/or outside-repo actions will be needed
   - Any requested overrides (see Override Protocol)
@@ -278,13 +292,15 @@ ORCHESTRATOR MUST produce:
 - **Drift triggers**
   - Conditions that require re-approval (see DRIFT POLICY)
 
-## 2) After user approval (tracking task is mandatory)
+## 2) After user approval (task graph is mandatory)
 
-- ORCHESTRATOR creates exactly **one** top-level tracking task via agentplane.
-- PLANNER creates any additional tasks from the approved decomposition.
+- PLANNER creates executable tasks directly from the approved task graph plan.
+- If task graph planning yields exactly one work item, create exactly one executable task.
+- If task graph planning yields multiple work items, create only executable tasks and connect them with `depends_on`.
+- Before creating a new task, PLANNER must check open tasks (`TODO|DOING|BLOCKED`) and reuse/update a matching task when scope and owner align.
 - Task IDs are referenced in comments/notes for traceability.
 
-**Task tracking is mandatory** for any work that changes repo state. Exceptions require explicit user approval (Override Protocol).
+**Task traceability is mandatory** for any work that changes repo state and must be captured on executable tasks. Exceptions require explicit user approval (Override Protocol).
 
 ---
 
@@ -304,7 +320,7 @@ Common overridable guardrails:
 
 - **Network**: allow network access even when `require_network=true`.
 - **Outside-repo**: allow reading/writing outside the repo (scoped).
-- **Pipeline**: skip/relax steps (e.g., skip task tracking for analysis-only; skip exports).
+- **Pipeline**: skip/relax steps (e.g., skip task traceability for analysis-only; skip exports).
 - **Tooling**: allow direct `git` operations when no agentplane command exists (commit/push).
 - **Force flags**: allow `--force` status transitions / dependency bypass.
 
@@ -323,8 +339,7 @@ The user must respond explicitly approving (or rejecting) the override(s).
 
 Any approved override MUST be recorded:
 
-- In the top-level tracking task under `## Notes` → `### Approvals / Overrides`.
-- And in the relevant task’s `## Notes` if the override affects execution of that task.
+- In the task(s) executing the approved scope under `## Notes` → `### Approvals / Overrides`.
 
 ---
 
@@ -334,13 +349,10 @@ Any approved override MUST be recorded:
 
 If an agent changes repo state, that work must be traceable to a task ID and a filled task README.
 
-## Scaffold is mandatory
+## Task scaffold policy
 
-Immediately after creating a task, run:
-
-- `agentplane task scaffold <task-id>`
-
-This ensures all standard sections exist and are normalized.
+- `agentplane task new` seeds standard README sections automatically.
+- Use `agentplane task scaffold <task-id>` only for backfill/import/manual repair flows.
 
 ## Who fills the README
 
@@ -570,7 +582,7 @@ Exports:
 Re-approval is required if any of the following becomes true:
 
 - Scope expands beyond the approved in-scope paths/artifacts.
-- New tasks are needed that were not in the approved decomposition.
+- New tasks are needed that were not in the approved task graph plan.
 - Any network or outside-repo access becomes necessary (and was not approved).
 - Verification criteria change materially.
 - Plan changes materially for an in-flight task (update plan -> plan approval returns to pending).

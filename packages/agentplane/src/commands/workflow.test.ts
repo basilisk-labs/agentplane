@@ -339,6 +339,64 @@ describe("commands/workflow", () => {
     const backend = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
     const tasks = await backend.backend.listTasks();
     expect(tasks.length).toBe(1);
+    const created = tasks[0];
+    if (!created) throw new Error("expected created task");
+    const readmePath = path.join(root, ".agentplane", "tasks", created.id, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("## Verify Steps");
+    expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+  });
+
+  it("task new rejects empty required fields after trimming", async () => {
+    const root = await makeRepo();
+    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+    await expect(
+      runTaskNewParsed({
+        ctx,
+        cwd: root,
+        parsed: {
+          title: "   ",
+          description: "Desc",
+          owner: "CODER",
+          priority: "med",
+          tags: ["backend"],
+          dependsOn: [],
+          verify: [],
+        },
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    await expect(
+      runTaskNewParsed({
+        ctx,
+        cwd: root,
+        parsed: {
+          title: "Title",
+          description: "  ",
+          owner: "CODER",
+          priority: "med",
+          tags: ["backend"],
+          dependsOn: [],
+          verify: [],
+        },
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+
+    await expect(
+      runTaskNewParsed({
+        ctx,
+        cwd: root,
+        parsed: {
+          title: "Title",
+          description: "Desc",
+          owner: "   ",
+          priority: "med",
+          tags: ["backend"],
+          dependsOn: [],
+          verify: [],
+        },
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
   it("task new rejects backends without generateTaskId", async () => {

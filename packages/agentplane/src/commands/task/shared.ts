@@ -354,6 +354,71 @@ export type DependencyState = {
   incomplete: string[];
 };
 
+function hasDependsOnCycle(dependsOnMap: Map<string, string[]>): string[] | null {
+  const visiting = new Set<string>();
+  const visited = new Set<string>();
+  const stack: string[] = [];
+
+  function dfs(taskId: string): string[] | null {
+    if (visited.has(taskId)) return null;
+    if (visiting.has(taskId)) {
+      const start = stack.indexOf(taskId);
+      return start === -1 ? [taskId] : [...stack.slice(start), taskId];
+    }
+
+    visiting.add(taskId);
+    stack.push(taskId);
+    const deps = dependsOnMap.get(taskId) ?? [];
+    for (const depId of deps) {
+      const cycle = dfs(depId);
+      if (cycle) return cycle;
+    }
+    stack.pop();
+    visiting.delete(taskId);
+    visited.add(taskId);
+    return null;
+  }
+
+  for (const taskId of dependsOnMap.keys()) {
+    const cycle = dfs(taskId);
+    if (cycle) return cycle;
+  }
+  return null;
+}
+
+export async function ensureTaskDependsOnGraphIsAcyclic(opts: {
+  backend: Pick<TaskBackend, "listTasks">;
+  taskId: string;
+  dependsOn: string[];
+}): Promise<void> {
+  const nextDepends = dedupeStrings(opts.dependsOn);
+  if (nextDepends.includes(opts.taskId)) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `depends_on cannot include task itself (${opts.taskId})`,
+    });
+  }
+
+  const allTasks = await opts.backend.listTasks();
+  const depMap = new Map<string, string[]>();
+  for (const task of allTasks) {
+    const taskId = String(task.id || "").trim();
+    if (!taskId) continue;
+    if (taskId === opts.taskId) continue;
+    depMap.set(taskId, dedupeStrings(toStringArray(task.depends_on)));
+  }
+  depMap.set(opts.taskId, nextDepends);
+
+  const cycle = hasDependsOnCycle(depMap);
+  if (!cycle) return;
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: `depends_on cycle detected: ${cycle.join(" -> ")}`,
+  });
+}
+
 export async function resolveTaskDependencyState(
   task: TaskData,
   backend: Pick<TaskBackend, "getTask" | "getTasks">,

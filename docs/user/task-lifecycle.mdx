@@ -17,6 +17,9 @@ A task moves through the same core stages in both modes:
 8. **Finish**: the task is closed with a Verified note and commit metadata.
 9. **Export (optional)**: export a task snapshot for integrations (for example `agentplane task export`).
 
+Task creation targets executable work only.
+Task graph planning splits work into atomic tasks, each assigned to one specific owner.
+
 The differences between modes are about **where** work happens and **who** performs closure.
 
 ## Lifecycle flow
@@ -63,7 +66,7 @@ sequenceDiagram
   U->>O: Request change
   O->>U: Plan + approval request
   U-->>O: Approve
-  O->>P: Decompose tasks
+  O->>P: Plan executable task graph
   P->>CLI: task new / update
   CLI->>B: Write task + deps
   E->>CLI: start <task-id>
@@ -107,7 +110,7 @@ sequenceDiagram
   U->>O: Request change
   O->>U: Plan + approval request
   U-->>O: Approve
-  O->>P: Decompose tasks
+  O->>P: Plan executable task graph
   P->>CLI: task new / update
   CLI->>B: Write task + deps
   E->>CLI: work start <task-id>

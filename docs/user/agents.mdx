@@ -18,11 +18,14 @@ Profiles live under `.agentplane/agents/*.json`, but they cannot override higher
 
 - Starts every run.
 - Translates a goal into a plan and requests approval.
-- Creates exactly one top-level tracking task after approval.
+- Creates no non-executable tasks.
 
 ## PLANNER
 
-- Owns downstream task creation and dependency graph updates.
+- Owns executable task creation and dependency graph updates.
+- For a single work item, creates exactly one task.
+- Reuses matching open tasks when scope and owner align.
+- Splits tasks only at real ownership/dependency boundaries.
 - Assigns owners from existing agent IDs.
 - If a role is missing, creates a CREATOR task first.
 

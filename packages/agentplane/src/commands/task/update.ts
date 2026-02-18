@@ -5,6 +5,7 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import {
   dedupeStrings,
+  ensureTaskDependsOnGraphIsAcyclic,
   requiresVerifyStepsByPrimary,
   readTaskTagPolicy,
   resolvePrimaryTag,
@@ -85,6 +86,11 @@ export async function cmdTaskUpdate(opts: {
       ? []
       : dedupeStrings(toStringArray(next.depends_on));
     const mergedDepends = dedupeStrings([...existingDepends, ...opts.dependsOn]);
+    await ensureTaskDependsOnGraphIsAcyclic({
+      backend: ctx.taskBackend,
+      taskId: opts.taskId,
+      dependsOn: mergedDepends,
+    });
     next.depends_on = mergedDepends;
 
     const existingVerify = opts.replaceVerify ? [] : dedupeStrings(toStringArray(next.verify));

@@ -10,6 +10,7 @@ import {
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
   ensurePlanApprovedIfRequired,
+  ensureTaskDependsOnGraphIsAcyclic,
   ensureVerificationSatisfiedIfRequired,
   extractDocSection,
   formatTaskLine,
@@ -179,6 +180,30 @@ describe("task shared helpers", () => {
     const b = mkTask({ id: "B", status: "DONE" });
     const state = buildDependencyState([a, b]);
     expect(state.get("A")).toEqual({ dependsOn: ["B", "C"], missing: ["C"], incomplete: [] });
+  });
+
+  it("ensureTaskDependsOnGraphIsAcyclic rejects self dependency and dependency cycles", async () => {
+    await expect(
+      ensureTaskDependsOnGraphIsAcyclic({
+        backend: { listTasks: () => Promise.resolve([]) },
+        taskId: "A",
+        dependsOn: ["A"],
+      }),
+    ).rejects.toThrow("depends_on cannot include task itself");
+
+    await expect(
+      ensureTaskDependsOnGraphIsAcyclic({
+        backend: {
+          listTasks: () =>
+            Promise.resolve([
+              mkTask({ id: "A", depends_on: ["B"] }),
+              mkTask({ id: "B", depends_on: [] }),
+            ]),
+        },
+        taskId: "B",
+        dependsOn: ["A"],
+      }),
+    ).rejects.toThrow("depends_on cycle detected");
   });
 
   it("formatTaskLine includes optional extras (owner/prio/deps/tags/verify) and defaults title", () => {
