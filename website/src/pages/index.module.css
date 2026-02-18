@@ -35,10 +35,16 @@
   right: 10px;
 }
 
-.logo {
-  height: 4.5rem;
+.logoIcon {
+  height: 4rem;
   margin: 0;
-  width: 4.5rem;
+  width: 4rem;
+}
+
+.wordmark {
+  height: auto;
+  max-width: 24rem;
+  width: min(100%, 24rem);
 }
 
 .pixelTag {
@@ -46,22 +52,6 @@
   font-family: var(--font-pixel), var(--ifm-font-family-monospace);
   font-size: 0.68rem;
   letter-spacing: 0.1em;
-}
-
-.title {
-  font-size: clamp(2.3rem, 7vw, 4.5rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  margin: 0;
-  text-transform: lowercase;
-}
-
-.slash {
-  animation: slashBlink 1.45s ease-in-out infinite;
-  color: rgb(var(--accent));
-  display: inline-block;
-  margin: 0 0.12em;
 }
 
 .subtitle {
@@ -116,24 +106,6 @@
   padding-left: 0.72rem;
 }
 
-@keyframes slashBlink {
-  0%,
-  45%,
-  100% {
-    opacity: 1;
-  }
-
-  65% {
-    opacity: 0.35;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .slash {
-    animation: none;
-  }
-}
-
 @media (max-width: 768px) {
   .heroSheet {
     gap: 0.84rem;
@@ -145,7 +117,7 @@
     white-space: normal;
   }
 
-  .title {
-    font-size: clamp(2.05rem, 12vw, 2.9rem);
+  .wordmark {
+    max-width: 18rem;
   }
 }

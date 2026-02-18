@@ -9,7 +9,7 @@ const config: Config = {
   title: "AgentPlane",
   tagline: "Deterministic agent workflows with auditable guardrails.",
   titleDelimiter: "·",
-  favicon: "img/favicon.ico",
+  favicon: "img/agentplane-favicon.svg",
   future: {
     v4: true,
   },
@@ -58,7 +58,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: "img/logo.svg",
+    image: "img/header.png",
     metadata: [
       {
         name: "keywords",
@@ -76,7 +76,7 @@ const config: Config = {
         content:
           "Deterministic agent workflows with auditable policy gates and repository-native task execution.",
       },
-      { property: "og:image", content: "https://agentplane.org/img/logo.svg" },
+      { property: "og:image", content: "https://agentplane.org/img/header.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "AgentPlane" },
       {
@@ -84,7 +84,7 @@ const config: Config = {
         content:
           "Deterministic workflow framework for policy-driven agent execution in repositories.",
       },
-      { name: "twitter:image", content: "https://agentplane.org/img/logo.svg" },
+      { name: "twitter:image", content: "https://agentplane.org/img/header.png" },
     ],
     colorMode: {
       defaultMode: "light",
@@ -92,10 +92,12 @@ const config: Config = {
       respectPrefersColorScheme: false,
     },
     navbar: {
-      title: "AgentPlane",
+      title: "",
       logo: {
         alt: "AgentPlane Logo",
-        src: "img/logo.svg",
+        src: "img/agentplane.svg",
+        width: 160,
+        height: 32,
       },
       items: [
         { to: "/docs", label: "Docs", position: "left" },

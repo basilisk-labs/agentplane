@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
-import Heading from "@theme/Heading";
 import styles from "./index.module.css";
 
 export default function Home(): ReactNode {
@@ -13,12 +12,12 @@ export default function Home(): ReactNode {
       <main className={styles.placeholderPage}>
         <section className={`${styles.heroSheet} grid-paper`}>
           <span className={styles.pixelTag}>WF-01</span>
-          <img className={styles.logo} src="/img/logo.svg" alt="AgentPlane" />
-          <Heading as="h1" className={styles.title}>
-            agent
-            <span className={styles.slash}>/</span>
-            plane
-          </Heading>
+          <img
+            className={styles.logoIcon}
+            src="/img/agentplane-favicon.svg"
+            alt="AgentPlane mark"
+          />
+          <img className={styles.wordmark} src="/img/agentplane.svg" alt="agent/plane" />
           <p className={styles.subtitle}>
             Public site is being rebuilt. Documentation and workflow references stay available.
           </p>
