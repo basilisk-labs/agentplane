@@ -99,6 +99,8 @@ jobs:
         run: bun run agents:check
       - name: Release parity (check)
         run: bun run release:parity
+      - name: Build (required for package entrypoint resolution)
+        run: bun run build
       - name: Unit tests (platform-critical)
         run: bun test packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
         env:
