@@ -1,0 +1,81 @@
+:root {
+  --bg: 255 255 255;
+  --fg: 10 10 10;
+  --muted: 90 90 90;
+  --faint: 120 120 120;
+  --border: 230 230 230;
+  --grid: 0 0 0;
+  --accent: 13 148 136;
+  --ifm-background-color: rgb(var(--bg));
+  --ifm-color-primary: rgb(var(--accent));
+  --ifm-color-primary-dark: rgb(var(--accent));
+  --ifm-color-primary-darker: rgb(var(--accent));
+  --ifm-color-primary-darkest: rgb(var(--accent));
+  --ifm-color-primary-light: rgb(var(--accent));
+  --ifm-color-primary-lighter: rgb(var(--accent));
+  --ifm-color-primary-lightest: rgb(var(--accent));
+  --ifm-font-family-base:
+    "Geist Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ifm-font-family-monospace:
+    "Geist Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  --font-pixel: "Geist Pixel";
+  --ifm-font-size-base: 17px;
+  --ifm-heading-font-family: var(--ifm-font-family-base);
+  --ifm-heading-color: rgb(var(--fg));
+  --ifm-font-color-base: rgb(var(--fg));
+  --ifm-code-font-size: 95%;
+  --ifm-global-radius: 0;
+  --ifm-button-border-radius: 0;
+  --ifm-navbar-background-color: rgb(var(--bg));
+  --ifm-navbar-shadow: none;
+  --ifm-footer-background-color: rgb(var(--bg));
+  --ifm-footer-color: rgb(var(--muted));
+  --ifm-link-color: rgb(var(--fg));
+  --ifm-link-hover-color: rgb(var(--accent));
+  --ifm-toc-border-color: rgb(var(--border));
+  --ifm-hr-border-color: rgb(var(--border));
+  --ifm-blockquote-border-left-color: rgb(var(--border));
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.04);
+}
+
+html,
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+}
+
+a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.14em;
+}
+
+.navbar {
+  border-bottom: 1px solid rgb(var(--border));
+}
+
+.footer {
+  border-top: 1px solid rgb(var(--border));
+}
+
+.menu__link {
+  border-radius: 0;
+}
+
+.button {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+main {
+  background-image:
+    linear-gradient(to right, rgb(var(--grid) / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--grid) / 0.05) 1px, transparent 1px);
+  background-position: top left;
+  background-size: 64px 64px;
+}
+
+@media (max-width: 768px) {
+  main {
+    background-image: none;
+  }
+}

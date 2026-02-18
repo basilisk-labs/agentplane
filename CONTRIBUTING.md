@@ -109,6 +109,54 @@ Improving documentation is highly appreciated:
 Documentation changes also go through pull requests and should keep the
 structure and tone of existing docs.
 
+### 5.1 Docs runtime and source of truth
+
+- Public docs are built by Docusaurus from repository root `docs/` (canonical source).
+- Marketing and runtime shell live under `website/`.
+- Do not introduce a second docs source directory under `website/`.
+- Generated reference docs are produced by:
+
+```bash
+bun run docs:site:generate
+```
+
+### 5.2 Split CI contours
+
+The repository uses split website checks:
+
+- `Core CI`: heavy code/test contour for core repository changes.
+- `Docs CI`: website/docs/design contour for docs and site presentation updates.
+
+Before opening a PR for docs/site work, run:
+
+```bash
+bun run docs:site:check
+```
+
+This command runs generation, typecheck, static build, and DESIGN.md compliance checks.
+
+### 5.3 DESIGN.md compliance
+
+- `DESIGN.md` is a contract, not inspiration.
+- Do not add rounded design motifs, shadows, or visual styles that contradict the constraints.
+- If design rules need to change, update `DESIGN.md` first, then implementation.
+
+### 5.4 Blog publishing rules
+
+- Blog entries live in `website/blog/`.
+- Every post must include frontmatter (`slug`, `title`, `authors`, `tags`) and a truncation marker.
+- Posts should link to canonical docs pages rather than duplicating long technical references.
+
+### 5.5 Discovery and indexing artifacts
+
+Ensure these files stay valid in production output:
+
+- `website/static/robots.txt`
+- `website/static/llms.txt`
+- `website/static/llms-full.txt`
+
+When docs routes change, update discovery files accordingly.
+
 ## 6. License and copyright
 
 By contributing to Agent Plane, you agree that:

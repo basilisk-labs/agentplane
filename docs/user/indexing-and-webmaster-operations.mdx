@@ -1,0 +1,58 @@
+---
+title: "Indexing and webmaster operations"
+description: "Operational checklist for search indexing, analytics activation, and production crawler readiness."
+---
+
+## Scope
+
+This checklist covers production indexing for `agentplane.org` after website deployment.
+
+## DNS and HTTPS prechecks
+
+1. Ensure apex and `www` records point to GitHub Pages targets.
+2. Keep Cloudflare records in DNS-only mode for GitHub Pages endpoints.
+3. Confirm GitHub Pages custom domain is set to `agentplane.org`.
+4. Enable HTTPS enforcement in GitHub Pages after certificate issuance.
+
+## Search Console (Google)
+
+1. Add `agentplane.org` as **Domain property**.
+2. Verify ownership using Cloudflare DNS TXT record.
+3. Submit sitemap: `https://agentplane.org/sitemap.xml`.
+4. Request indexing for:
+   - `/`
+   - `/docs`
+   - `/blog`
+5. Monitor coverage and enhancement reports weekly after launch.
+
+## Bing Webmaster
+
+1. Add site in Bing Webmaster Tools.
+2. Verify ownership (DNS TXT or Search Console import).
+3. Submit sitemap: `https://agentplane.org/sitemap.xml`.
+
+## Analytics activation
+
+1. Create GTM web container and GA4 property.
+2. Set environment variables for website runtime:
+   - `GTM_CONTAINER_ID`
+   - `GA_MEASUREMENT_ID`
+3. Rebuild and redeploy website.
+4. Validate events in GA4 DebugView:
+   - page views (`/`, `/docs/*`, `/blog/*`)
+   - outbound clicks to GitHub/docs CTAs.
+
+## Crawler endpoints validation
+
+Validate the following are reachable on production:
+
+1. `/robots.txt`
+2. `/sitemap.xml`
+3. `/llms.txt`
+4. `/llms-full.txt`
+
+## Post-release monitoring
+
+1. Check indexed page growth in Search Console.
+2. Inspect top queries and CTR for docs/blog pages.
+3. Track broken links via docs CI and resolve in next patch.

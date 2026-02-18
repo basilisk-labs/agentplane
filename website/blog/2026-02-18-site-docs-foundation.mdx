@@ -1,0 +1,22 @@
+---
+slug: site-docs-foundation
+title: "Website foundation: one runtime, canonical docs"
+authors: [team]
+tags: [workflow, operations]
+---
+
+The public website now runs on one Docusaurus runtime with canonical content from repository `docs/`.
+
+<!-- truncate -->
+
+Key decisions:
+
+1. `agentplane.org` hosts both marketing pages and docs (`/docs`).
+2. The docs source of truth remains in root `docs/` and is reused directly at build time.
+3. Generated reference content is refreshed during docs CI before static site build.
+
+Related docs:
+
+- [Website information architecture](/docs/user/website-ia)
+- [Workflow](/docs/user/workflow)
+- [Configuration](/docs/user/configuration)

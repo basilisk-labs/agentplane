@@ -1,0 +1,14 @@
+release:
+  label: Release
+  permalink: /release
+  description: Release announcements and migration notes.
+
+workflow:
+  label: Workflow
+  permalink: /workflow
+  description: Task lifecycle, approvals, and operational process.
+
+operations:
+  label: Operations
+  permalink: /operations
+  description: CI, deployment, and reliability guidance.

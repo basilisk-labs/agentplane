@@ -1,0 +1,23 @@
+---
+slug: publication-gates-and-release-flow
+title: "Publication gates and release flow for agentplane.org"
+authors: [team]
+tags: [release, operations]
+---
+
+Before publishing to production, the website now uses explicit gates:
+
+<!-- truncate -->
+
+1. Docs build and typecheck.
+2. Design language compliance.
+3. CI contour split validation (docs-only vs core changes).
+4. GitHub Pages deployment workflow and domain verification.
+
+This release framing keeps deployment deterministic and auditable.
+
+Related docs:
+
+- [Release and publishing](/docs/developer/release-and-publishing)
+- [Task lifecycle](/docs/user/task-lifecycle)
+- [Branching and PR artifacts](/docs/user/branching-and-pr-artifacts)
