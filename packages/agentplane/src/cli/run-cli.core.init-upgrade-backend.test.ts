@@ -219,9 +219,9 @@ describe("runCli", () => {
     expect(config.status_commit_policy).toBe("warn");
     expect(config.commit_automation).toBe("finish_only");
     expect(config.finish_auto_status_commit).toBe(false);
-    expect((config.tasks_backend as Record<string, unknown>)?.config_path).toBe(
-      ".agentplane/backends/local/backend.json",
-    );
+    expect(
+      normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
+    ).toBe(".agentplane/backends/local/backend.json");
     const execution = config.execution as Record<string, unknown>;
     expect(execution?.profile).toBe("balanced");
     expect(execution?.reasoning_effort).toBe("medium");
@@ -387,9 +387,9 @@ describe("runCli", () => {
     );
     const configText = await readFile(configPath, "utf8");
     const config = JSON.parse(configText) as Record<string, unknown>;
-    expect((config.tasks_backend as Record<string, unknown>)?.config_path).toBe(
-      ".agentplane/backends/redmine/backend.json",
-    );
+    expect(
+      normalizeSlashes(String((config.tasks_backend as Record<string, unknown>)?.config_path)),
+    ).toBe(".agentplane/backends/redmine/backend.json");
     expect(await pathExists(localBackendPath)).toBe(false);
     expect(await pathExists(redmineBackendPath)).toBe(true);
     const redmineText = await readFile(redmineBackendPath, "utf8");
