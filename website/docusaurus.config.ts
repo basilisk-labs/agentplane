@@ -101,7 +101,11 @@ const config: Config = {
         height: 32,
       },
       items: [
-        { to: "/docs", label: "Docs", position: "left" },
+        { to: "/docs/user/overview", label: "Getting Started", position: "left" },
+        { to: "/docs/user/workflow", label: "Workflows", position: "left" },
+        { to: "/docs/user/commands", label: "Reference", position: "left" },
+        { to: "/docs/developer/architecture", label: "Developer", position: "left" },
+        { to: "/docs/releases", label: "Release Notes", position: "left" },
         { to: "/blog", label: "Blog", position: "left" },
         {
           href: "https://github.com/basilisk-labs/agentplane",

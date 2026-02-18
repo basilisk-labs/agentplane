@@ -5,16 +5,23 @@ const sidebars: SidebarsConfig = {
     "index",
     {
       type: "category",
-      label: "User Guide",
+      label: "Getting Started",
+      items: ["user/overview", "user/prerequisites", "user/setup", "user/breaking-changes"],
+    },
+    {
+      type: "category",
+      label: "Workflows",
       items: [
-        "user/overview",
-        "user/prerequisites",
-        "user/setup",
-        "user/breaking-changes",
         "user/workflow",
         "user/task-lifecycle",
         "user/agents",
         "user/branching-and-pr-artifacts",
+      ],
+    },
+    {
+      type: "category",
+      label: "Backends & Config",
+      items: [
         "user/tasks-and-backends",
         "user/backends",
         "user/backends/local",

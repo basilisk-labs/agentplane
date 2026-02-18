@@ -19,7 +19,7 @@
   --ifm-font-family-monospace:
     "Geist Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, monospace;
   --font-pixel: "Geist Pixel";
-  --ifm-font-size-base: 16px;
+  --ifm-font-size-base: 15px;
   --ifm-heading-font-family: var(--ifm-font-family-base);
   --ifm-heading-color: rgb(var(--fg));
   --ifm-font-color-base: rgb(var(--fg));
@@ -75,27 +75,27 @@ a {
 }
 
 .theme-doc-markdown.markdown > h1:first-child {
-  font-size: clamp(2.6rem, 4.5vw, 3.7rem);
+  font-size: clamp(2.25rem, 4vw, 3.1rem);
   letter-spacing: -0.03em;
   line-height: 1;
 }
 
 .theme-doc-markdown.markdown h2 {
   border-top: 1px solid rgb(var(--border));
-  font-size: clamp(1.55rem, 2.6vw, 2.05rem);
+  font-size: clamp(1.4rem, 2.2vw, 1.8rem);
   letter-spacing: -0.02em;
   margin-top: 3.2rem;
   padding-top: 0.8rem;
 }
 
 .theme-doc-markdown.markdown h3 {
-  font-size: clamp(1.12rem, 1.7vw, 1.35rem);
+  font-size: clamp(1.04rem, 1.45vw, 1.2rem);
   margin-top: 1.95rem;
 }
 
 .theme-doc-markdown.markdown p,
 .theme-doc-markdown.markdown li {
-  font-size: 0.96rem;
+  font-size: 0.9rem;
   line-height: 1.5;
 }
 
@@ -140,14 +140,14 @@ a {
 
 .menu__list-item-collapsible > .menu__link {
   font-family: var(--font-pixel), var(--ifm-font-family-monospace);
-  font-size: 0.7rem;
+  font-size: 0.66rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .menu__list .menu__link {
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 }
 
 .menu__link--active {
@@ -236,16 +236,16 @@ a {
   }
 
   .theme-doc-markdown.markdown > h1:first-child {
-    font-size: clamp(2rem, 9vw, 2.6rem);
+    font-size: clamp(1.85rem, 8vw, 2.3rem);
   }
 
   .menu__list .menu__link {
-    font-size: 0.8rem;
+    font-size: 0.76rem;
   }
 
   .theme-doc-markdown.markdown p,
   .theme-doc-markdown.markdown li {
-    font-size: 0.94rem;
+    font-size: 0.88rem;
   }
 }
 
