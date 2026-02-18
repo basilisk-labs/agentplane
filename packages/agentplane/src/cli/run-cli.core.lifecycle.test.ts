@@ -312,6 +312,20 @@ describe("runCli", () => {
     ]);
     expect(codeSet).toBe(0);
 
+    const codeResetVerifySteps = await runCli([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "<!-- TODO: FILL VERIFY STEPS -->",
+      "--root",
+      root,
+    ]);
+    expect(codeResetVerifySteps).toBe(0);
+
     const ioApprove = captureStdIO();
     try {
       const codeApprove = await runCli([
@@ -393,6 +407,20 @@ describe("runCli", () => {
     } finally {
       ioNew.restore();
     }
+
+    const codeResetVerifySteps = await runCli([
+      "task",
+      "doc",
+      "set",
+      taskId,
+      "--section",
+      "Verify Steps",
+      "--text",
+      "<!-- TODO: FILL VERIFY STEPS -->",
+      "--root",
+      root,
+    ]);
+    expect(codeResetVerifySteps).toBe(0);
 
     const ioStart = captureStdIO();
     try {

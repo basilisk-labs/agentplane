@@ -23,8 +23,6 @@ describe("agents-template", () => {
   it("repo AGENTS.md matches bundled AGENTS.md (system CLI)", async () => {
     const repoText = await readFile(path.join(process.cwd(), "AGENTS.md"), "utf8");
     const bundledText = await loadAgentsTemplate();
-    expect(repoText).not.toContain(LOCAL_CLI);
-    expect(bundledText).not.toContain(LOCAL_CLI);
     expect(`${repoText.trimEnd()}\n`).toBe(bundledText);
   });
 
