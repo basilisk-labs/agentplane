@@ -236,6 +236,25 @@ describe("runCli", () => {
     expect(gitignore).toContain(".agentplane/tasks.json");
   });
 
+  it("init --setup-profile vibecoder --yes applies compact autonomous defaults", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--setup-profile", "vibecoder", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const configPath = path.join(root, ".agentplane", "config.json");
+    const configText = await readFile(configPath, "utf8");
+    expect(configText).toContain('"require_plan": false');
+    expect(configText).toContain('"require_network": false');
+    expect(configText).toContain('"require_verify": false');
+    expect(configText).toContain('"profile": "aggressive"');
+  });
+
   it("init --gitignore-agents updates .gitignore and skips the install commit", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -757,7 +776,7 @@ describe("runCli", () => {
       if (choices.includes("branch_pr")) return "branch_pr";
       if (choices.includes("local")) return "local";
       if (choices.includes("balanced")) return "balanced";
-      if (choices.includes("prod")) return "prod";
+      if (choices.includes("manager")) return "manager";
       return def;
     });
     const yesNo = vi.spyOn(prompts, "promptYesNo").mockImplementation((prompt, def) => {
@@ -769,6 +788,7 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--root", root]);
       expect(code).toBe(0);
+      expect(io.stdout).not.toContain("[Workflow]");
       expect(choice).toHaveBeenCalled();
       expect(yesNo).not.toHaveBeenCalled();
       expect(promptInput).not.toHaveBeenCalled();
@@ -781,7 +801,7 @@ describe("runCli", () => {
     }
   });
 
-  it("init --setup-profile dev keeps full interactive questionnaire", async () => {
+  it("init --setup-profile developer keeps full interactive questionnaire", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     const originalIsTTY = process.stdin.isTTY;
@@ -799,8 +819,9 @@ describe("runCli", () => {
     const promptInput = vi.spyOn(prompts, "promptInput").mockResolvedValue("");
     const io = captureStdIO();
     try {
-      const code = await runCli(["init", "--root", root, "--setup-profile", "dev"]);
+      const code = await runCli(["init", "--root", root, "--setup-profile", "developer"]);
       expect(code).toBe(0);
+      expect(io.stdout).toContain("[Workflow]");
       expect(choice).toHaveBeenCalled();
       expect(yesNo).toHaveBeenCalled();
       expect(promptInput).toHaveBeenCalled();

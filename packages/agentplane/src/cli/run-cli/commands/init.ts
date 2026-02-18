@@ -31,7 +31,7 @@ import { ensureInitRedmineEnvTemplate } from "./init/write-env.js";
 import { renderInitSection, renderInitWelcome } from "./init/ui.js";
 
 type InitFlags = {
-  setupProfile?: "prod" | "dev";
+  setupProfile?: "developer" | "vibecoder" | "manager" | "enterprise";
   ide?: "codex" | "cursor" | "windsurf";
   workflow?: "direct" | "branch_pr";
   backend?: "local" | "redmine";
@@ -48,42 +48,64 @@ type InitFlags = {
   yes: boolean;
 };
 
-type SetupProfilePreset = "prod" | "prod-strict" | "dev" | "dev-safe";
+type SetupProfilePreset = "developer" | "vibecoder" | "manager" | "enterprise";
 
 const setupProfilePresets: Record<
   SetupProfilePreset,
   {
-    mode: "prod" | "dev";
+    mode: "compact" | "full";
     description: string;
     defaultHooks: boolean;
     defaultStrictUnsafeConfirm: boolean;
+    defaultRequirePlanApproval: boolean;
+    defaultRequireNetworkApproval: boolean;
+    defaultRequireVerifyApproval: boolean;
+    defaultExecutionProfile: ExecutionProfile;
   }
 > = {
-  prod: {
-    mode: "prod",
+  developer: {
+    mode: "full",
     description:
-      "Production bootstrap: compact flow with default managed-file and approval settings.",
-    defaultHooks: false,
-    defaultStrictUnsafeConfirm: false,
-  },
-  "prod-strict": {
-    mode: "prod",
-    description:
-      "Production bootstrap + strict defaults for safer installs (hooks on, strict unsafe confirmations).",
+      "I am Developer (full setup questionnaire; hooks on; explicit unsafe confirmations on).",
     defaultHooks: true,
     defaultStrictUnsafeConfirm: true,
+    defaultRequirePlanApproval: true,
+    defaultRequireNetworkApproval: true,
+    defaultRequireVerifyApproval: true,
+    defaultExecutionProfile: "balanced",
   },
-  dev: {
-    mode: "dev",
-    description: "Developer bootstrap: full questionnaire for every init aspect.",
+  vibecoder: {
+    mode: "compact",
+    description:
+      "I am Vibecoder (compact setup; hooks off; approvals off; aggressive execution defaults).",
     defaultHooks: false,
     defaultStrictUnsafeConfirm: false,
+    defaultRequirePlanApproval: false,
+    defaultRequireNetworkApproval: false,
+    defaultRequireVerifyApproval: false,
+    defaultExecutionProfile: "aggressive",
   },
-  "dev-safe": {
-    mode: "dev",
-    description: "Developer bootstrap with explicit unsafe-action confirmation by default.",
+  manager: {
+    mode: "compact",
+    description:
+      "I am Manager / Product owner (compact setup; oversight defaults with approvals on, hooks off).",
     defaultHooks: false,
+    defaultStrictUnsafeConfirm: false,
+    defaultRequirePlanApproval: true,
+    defaultRequireNetworkApproval: true,
+    defaultRequireVerifyApproval: true,
+    defaultExecutionProfile: "balanced",
+  },
+  enterprise: {
+    mode: "full",
+    description:
+      "I am Enterprise / Regulated team (full setup; strict approvals, hooks on, conservative execution).",
+    defaultHooks: true,
     defaultStrictUnsafeConfirm: true,
+    defaultRequirePlanApproval: true,
+    defaultRequireNetworkApproval: true,
+    defaultRequireVerifyApproval: true,
+    defaultExecutionProfile: "conservative",
   },
 };
 
@@ -119,10 +141,10 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "setup-profile",
-      valueHint: "<prod|dev>",
-      choices: ["prod", "dev"],
+      valueHint: "<developer|vibecoder|manager|enterprise>",
+      choices: ["developer", "vibecoder", "manager", "enterprise"],
       description:
-        "Interactive preset. prod is the default and asks only essential questions; dev asks the full setup questionnaire.",
+        "Persona preset for init defaults and dialog depth (compact vs full questionnaire).",
     },
     {
       kind: "string",
@@ -218,6 +240,10 @@ export const initSpec: CommandSpec<InitParsed> = {
   ],
   examples: [
     { cmd: "agentplane init", why: "Interactive setup (prompts for missing values)." },
+    {
+      cmd: "agentplane init --setup-profile vibecoder --yes",
+      why: "Non-interactive fast setup for autonomous defaults (hooks off, approvals off).",
+    },
     {
       cmd: "agentplane init --workflow direct --backend local --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes",
       why: "Non-interactive setup with explicit policy flags.",
@@ -334,8 +360,10 @@ async function cmdInit(opts: {
   let requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
   let executionProfile = flags.executionProfile ?? defaults.executionProfile;
   let strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
-  let setupProfile: "prod" | "dev" = flags.setupProfile ?? "prod";
-  let setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "prod";
+  let setupProfile: "compact" | "full" = flags.setupProfile
+    ? setupProfilePresets[flags.setupProfile].mode
+    : "compact";
+  let setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "manager";
   const isInteractive = process.stdin.isTTY && !flags.yes;
 
   if (
@@ -382,8 +410,8 @@ async function cmdInit(opts: {
     );
     process.stdout.write(
       renderInitSection(
-        "Setup Preset",
-        "Choose a bootstrap preset. It controls what questions are shown and safe defaults used.",
+        "Who Are You?",
+        "Pick the persona that best matches your working style. This sets defaults and controls compact vs full questionnaire.",
       ),
     );
     process.stdout.write(`${presetLines.join("\n")}\n\n`);
@@ -391,9 +419,9 @@ async function cmdInit(opts: {
       setupProfilePreset = flags.setupProfile;
     } else {
       const selected = await askChoice(
-        "Setup preset",
-        ["prod", "prod-strict", "dev", "dev-safe"],
-        "prod",
+        "Who are you?",
+        ["developer", "vibecoder", "manager", "enterprise"],
+        "manager",
       );
       setupProfilePreset = selected as SetupProfilePreset;
     }
@@ -403,23 +431,42 @@ async function cmdInit(opts: {
     if (flags.strictUnsafeConfirm === undefined) {
       strictUnsafeConfirm = selectedPreset.defaultStrictUnsafeConfirm;
     }
+    if (flags.requirePlanApproval === undefined) {
+      requirePlanApproval = selectedPreset.defaultRequirePlanApproval;
+    }
+    if (flags.requireNetworkApproval === undefined) {
+      requireNetworkApproval = selectedPreset.defaultRequireNetworkApproval;
+    }
+    if (flags.requireVerifyApproval === undefined) {
+      requireVerifyApproval = selectedPreset.defaultRequireVerifyApproval;
+    }
+    if (!flags.executionProfile) {
+      executionProfile = selectedPreset.defaultExecutionProfile;
+    }
+    const shouldPromptWorkflow = !flags.workflow && setupProfile === "full";
+    const shouldPromptBackend = !flags.backend;
 
-    process.stdout.write(
-      renderInitSection(
-        "Workflow",
-        "Choose how this repository will be orchestrated: direct means one branch, branch_pr means PR-first tasks.",
-      ),
-    );
     ide = flags.ide ?? defaults.ide;
-    if (!flags.workflow && setupProfile === "dev") {
+    if (shouldPromptWorkflow) {
+      process.stdout.write(
+        renderInitSection(
+          "Workflow",
+          "Choose how this repository will be orchestrated: direct means one branch, branch_pr means PR-first tasks.",
+        ),
+      );
       const choice = await askChoice("Workflow mode", ["direct", "branch_pr"], workflow);
       workflow = choice === "branch_pr" ? "branch_pr" : "direct";
     }
-    if (!flags.backend) {
+    if (shouldPromptBackend) {
+      if (shouldPromptWorkflow || setupProfile === "full") {
+        process.stdout.write(
+          renderInitSection("Task Backend", "Choose where task data is stored and managed."),
+        );
+      }
       const choice = await askChoice("Task backend", ["local", "redmine"], backend);
       backend = choice === "redmine" ? "redmine" : "local";
     }
-    if (setupProfile === "dev") {
+    if (setupProfile === "full") {
       if (flags.hooks === undefined) {
         hooks = await askYesNo("Install managed git hooks now?", hooks);
       }
@@ -485,31 +532,35 @@ async function cmdInit(opts: {
     } else {
       hooks = flags.hooks ?? selectedPreset.defaultHooks;
       recipes = flags.recipes ?? defaults.recipes;
-      requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
-      requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
-      requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
-      executionProfile = flags.executionProfile ?? defaults.executionProfile;
+      requirePlanApproval = flags.requirePlanApproval ?? selectedPreset.defaultRequirePlanApproval;
+      requireNetworkApproval =
+        flags.requireNetworkApproval ?? selectedPreset.defaultRequireNetworkApproval;
+      requireVerifyApproval =
+        flags.requireVerifyApproval ?? selectedPreset.defaultRequireVerifyApproval;
+      executionProfile = flags.executionProfile ?? selectedPreset.defaultExecutionProfile;
       strictUnsafeConfirm = flags.strictUnsafeConfirm ?? selectedPreset.defaultStrictUnsafeConfirm;
       process.stdout.write(
         renderInitSection(
           "Defaults Applied",
-          "Using compact prod defaults for hooks, approvals, execution profile, and recipes.",
+          `Using compact ${setupProfilePreset} defaults for hooks, approvals, execution profile, and recipes.`,
         ),
       );
     }
   }
 
   if (flags.yes) {
+    const yesPreset = setupProfilePresets[setupProfilePreset];
     ide = flags.ide ?? defaults.ide;
     workflow = flags.workflow ?? defaults.workflow;
     backend = flags.backend ?? defaults.backend;
-    hooks = flags.hooks ?? defaults.hooks;
+    hooks = flags.hooks ?? yesPreset.defaultHooks;
     recipes = flags.recipes ?? defaults.recipes;
-    requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
-    requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
-    requireVerifyApproval = flags.requireVerifyApproval ?? defaults.requireVerifyApproval;
-    executionProfile = flags.executionProfile ?? defaults.executionProfile;
-    strictUnsafeConfirm = flags.strictUnsafeConfirm ?? defaults.strictUnsafeConfirm;
+    requirePlanApproval = flags.requirePlanApproval ?? yesPreset.defaultRequirePlanApproval;
+    requireNetworkApproval =
+      flags.requireNetworkApproval ?? yesPreset.defaultRequireNetworkApproval;
+    requireVerifyApproval = flags.requireVerifyApproval ?? yesPreset.defaultRequireVerifyApproval;
+    executionProfile = flags.executionProfile ?? yesPreset.defaultExecutionProfile;
+    strictUnsafeConfirm = flags.strictUnsafeConfirm ?? yesPreset.defaultStrictUnsafeConfirm;
   }
 
   validateBundledRecipesSelection(recipes);
