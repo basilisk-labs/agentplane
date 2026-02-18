@@ -211,11 +211,11 @@ async function validateReleaseNotes(notesPath: string): Promise<void> {
     });
   }
   const bulletCount = content.split(/\r?\n/u).filter((line) => /^\s*[-*]\s+\S+/u.test(line)).length;
-  if (bulletCount < 3) {
+  if (bulletCount < 1) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
-      message: `Release notes must include at least 3 bullet points in ${notesPath}.`,
+      message: `Release notes must include at least one bullet point in ${notesPath}.`,
     });
   }
   if (/[\u0400-\u04FF]/u.test(content)) {
@@ -380,7 +380,9 @@ export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
       kind: "boolean",
       name: "push",
       default: false,
-      description: "Push the release commit and tag to the remote (requires --yes).",
+      description:
+        "Mandatory for real releases: push commit and tag so GitHub publish workflow can publish to npm " +
+        "(requires --yes). Local tests can skip with AGENTPLANE_RELEASE_DRY_RUN=1.",
     },
     {
       kind: "string",
@@ -405,6 +407,13 @@ export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
     };
   },
   validate: (p) => {
+    if (!p.push && process.env.AGENTPLANE_RELEASE_DRY_RUN !== "1") {
+      throw usageError({
+        spec: releaseApplySpec,
+        command: "release apply",
+        message: "Release publish is mandatory. Run `agentplane release apply --push --yes`.",
+      });
+    }
     if (p.push && p.yes !== true) {
       throw usageError({
         spec: releaseApplySpec,
@@ -437,6 +446,14 @@ export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
 };
 
 export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, flags) => {
+  if (!flags.push && process.env.AGENTPLANE_RELEASE_DRY_RUN !== "1") {
+    throw usageError({
+      spec: releaseApplySpec,
+      command: "release apply",
+      message: "Release publish is mandatory. Run `agentplane release apply --push --yes`.",
+    });
+  }
+
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const gitRoot = resolved.gitRoot;
 

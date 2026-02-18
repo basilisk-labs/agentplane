@@ -4,7 +4,7 @@ import path from "node:path";
 const run = () => {
   const args = process.argv.slice(2);
   let tagArg = null;
-  let minBullets = 3;
+  let minBullets = 1;
   for (let i = 0; i < args.length; i += 1) {
     const value = args[i];
     if (value === "--tag" && args[i + 1]) {

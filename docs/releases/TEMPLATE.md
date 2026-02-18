@@ -1,5 +1,5 @@
 # Release Notes — vX.Y.Z
 
-- Describe the most important user-facing improvement.
-- Highlight any workflow or reliability gains.
-- Call out documentation or usability updates that matter to users.
+- Add user-facing improvements as bullet points.
+- Add as many bullets as needed; no fixed maximum or fixed target count.
+- Prefer outcome-focused wording over raw commit summaries.

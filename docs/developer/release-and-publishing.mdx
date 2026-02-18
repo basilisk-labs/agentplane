@@ -18,7 +18,8 @@ Every release requires notes in `docs/releases/vX.Y.Z.md`.
 Requirements:
 
 - English text
-- minimum three bullets
+- at least one bullet
+- no fixed maximum bullet count
 - human-readable summary, not raw git log dump
 
 ## Standard flow
@@ -42,13 +43,13 @@ Optional fast parity check before the full gate:
 bun run release:parity
 ```
 
-4. Apply release:
+4. Apply release and publish (mandatory):
 
 ```bash
-agentplane release apply
+AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release apply
 ```
 
-5. Push tag and commit when ready:
+5. Real release:
 
 ```bash
 agentplane release apply --push --yes

@@ -141,7 +141,7 @@ function releaseInstructions(opts: {
     `Write English release notes as \`docs/releases/${opts.nextTag}.md\`.\n\n` +
     `Rules:\n` +
     `- Use human-readable bullets focused on outcomes and user-facing improvements.\n` +
-    `- Minimum: 3 bullet points.\n` +
+    `- Include as many bullets as needed; do not enforce a fixed bullet count.\n` +
     `- Do not include Cyrillic.\n` +
     `- Use \`docs/releases/TEMPLATE.md\` as the structure.\n\n` +
     `Inputs:\n` +
