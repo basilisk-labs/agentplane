@@ -33,6 +33,7 @@
     "test:full": "vitest run",
     "coverage": "vitest run --coverage",
     "ci": "bun run format:check && bun run schemas:check && bun run agents:check && bun run release:parity && bun run typecheck && bun run lint && bun run coverage && bun run coverage:significant",
+    "ci:local": "node scripts/run-local-ci.mjs",
     "ci:agentplane": "node scripts/ci-scope.mjs --scope agentplane",
     "ci:core": "node scripts/ci-scope.mjs --scope core",
     "ci:recipes": "node scripts/ci-scope.mjs --scope recipes",

@@ -6,7 +6,6 @@ status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on:
-  - "202602111121-6X0V0K"
   - "202602111121-EKMK8Q"
 tags:
   - "testing"

@@ -6,7 +6,6 @@ status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
-  - "202602111121-6X0V0K"
   - "202602111121-ZTD2AP"
 tags:
   - "cli"

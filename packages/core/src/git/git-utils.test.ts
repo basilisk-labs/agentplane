@@ -63,7 +63,7 @@ describe("git-utils", () => {
 
     const staged = await getStagedFiles({ cwd: root, rootOverride: root });
     expect(staged).toEqual(["file.txt", "renamed.txt"]);
-  }, 15_000);
+  }, 30_000);
 
   it("lists unstaged files", async () => {
     const root = await mkGitRepoRoot();

@@ -5,8 +5,7 @@ result_summary: "Init includes hook shim in install commit, preventing leftover 
 status: "DONE"
 priority: "high"
 owner: "CODER"
-depends_on:
-  - "202602111218-2NVTB0"
+depends_on: []
 tags:
   - "cli"
   - "init"

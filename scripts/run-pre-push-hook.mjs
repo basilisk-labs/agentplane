@@ -31,9 +31,9 @@ const isReleasePush = envRelease || envFull || hasReleaseTagPush();
 const mode = isReleasePush ? "release" : "standard";
 process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
 
-run("node", ["scripts/check-release-notes.mjs"]);
-run("bun", ["run", "test:critical"]);
+run("bun", ["run", "ci:local"]);
 
 if (isReleasePush) {
-  run("bun", ["run", "test:full"]);
+  run("node", ["scripts/check-release-notes.mjs"]);
+  run("bun", ["run", "release:prepublish"]);
 }
