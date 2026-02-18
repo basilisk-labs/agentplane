@@ -36,6 +36,7 @@
   --ifm-hr-border-color: rgb(var(--border));
   --ifm-blockquote-border-left-color: rgb(var(--border));
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.04);
+  --content-width: 74ch;
 }
 
 html,
@@ -47,6 +48,7 @@ body {
 a {
   text-decoration-thickness: 1px;
   text-underline-offset: 0.14em;
+  transition: color 180ms ease;
 }
 
 .navbar {
@@ -66,16 +68,85 @@ a {
   box-shadow: none;
 }
 
-main {
+.theme-doc-markdown.markdown {
+  max-width: var(--content-width);
+}
+
+.theme-doc-markdown.markdown > h1:first-child {
+  font-size: clamp(3.1rem, 5vw, 4.4rem);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.theme-doc-markdown.markdown h2 {
+  font-size: clamp(2rem, 3.3vw, 2.7rem);
+  letter-spacing: -0.02em;
+  margin-top: 3.8rem;
+}
+
+.theme-doc-markdown.markdown h3 {
+  font-size: clamp(1.35rem, 2.2vw, 1.62rem);
+  margin-top: 2.2rem;
+}
+
+.theme-doc-markdown.markdown p,
+.theme-doc-markdown.markdown li {
+  line-height: 1.58;
+}
+
+.theme-doc-markdown.markdown hr {
+  border-top: 1px solid rgb(var(--border));
+}
+
+.theme-doc-markdown.markdown pre {
+  border: 1px solid rgb(var(--border));
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.theme-doc-markdown.markdown code {
+  border-radius: 0;
+  font-weight: 500;
+}
+
+.theme-doc-sidebar-container {
+  border-right: 1px solid rgb(var(--border));
+}
+
+.menu__link--active {
+  color: rgb(var(--accent));
+  font-weight: 600;
+}
+
+.theme-edit-this-page,
+.theme-last-updated {
+  color: rgb(var(--faint));
+  font-size: 0.8rem;
+}
+
+.grid-paper {
   background-image:
-    linear-gradient(to right, rgb(var(--grid) / 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(var(--grid) / 0.05) 1px, transparent 1px);
-  background-position: top left;
+    linear-gradient(to right, rgb(var(--grid) / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(var(--grid) / 0.06) 1px, transparent 1px);
   background-size: 64px 64px;
 }
 
+@media (max-width: 996px) {
+  .theme-doc-markdown.markdown {
+    max-width: 100%;
+  }
+
+  .theme-doc-sidebar-container {
+    border-right: none;
+  }
+}
+
 @media (max-width: 768px) {
-  main {
+  .grid-paper {
     background-image: none;
+  }
+
+  .theme-doc-markdown.markdown > h1:first-child {
+    font-size: clamp(2.35rem, 9vw, 3.1rem);
   }
 }
