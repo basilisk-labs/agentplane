@@ -18,6 +18,21 @@ bun add -g agentplane
 agentplane --help
 ```
 
+If the shell says `agentplane` is not recognized (common on fresh Windows setup), use:
+
+```bash
+npx agentplane --help
+```
+
+Quick checks on Windows:
+
+```powershell
+where agentplane
+npm config get prefix
+```
+
+If `where agentplane` returns nothing, reopen the terminal after global install or use `npx agentplane ...`.
+
 ## Initialize repository
 
 Run from repository root:
