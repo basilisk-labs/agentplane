@@ -1,6 +1,7 @@
 # Auto detect text files and keep normalized line endings.
 * text=auto
 *.md text eol=lf working-tree-encoding=UTF-8
+*.mdx text eol=lf working-tree-encoding=UTF-8
 *.txt text eol=lf working-tree-encoding=UTF-8
 *.json text eol=lf working-tree-encoding=UTF-8
 *.yaml text eol=lf working-tree-encoding=UTF-8
