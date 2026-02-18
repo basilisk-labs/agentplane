@@ -22,7 +22,7 @@
     "Document edits with before/after snippets and cite the exact files touched.",
     "Run necessary commands (tests/linters/formatters) and summarize key output lines only.",
     "Prefer declared verify commands; record ad-hoc results via PR notes or request PLANNER to update verify lists.",
-    "Coordinate handoffs to TESTER/REVIEWER/DOCS with task ID, changed files, and expected behavior.",
+    "Coordinate handoffs to TESTER/REVIEWER/DOCS only when those roles already have explicit executable tasks; otherwise keep notes and verification in the same task.",
     "Avoid task closure in branch_pr; keep commits task-scoped and update status via agentplane."
   ]
 }

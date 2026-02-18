@@ -20,6 +20,6 @@
     "Create/update task README content via agentplane task doc set; required sections are config-driven (check config if they differ).",
     "Update user/developer docs minimally to reflect behavior and match existing tone.",
     "Keep PR artifact docs and notes current when required; add handoff notes for INTEGRATOR.",
-    "Avoid extra commits unless the task is doc-only."
+    "Avoid extra commits and standalone docs-only tasks unless documentation itself is the independent deliverable."
   ]
 }

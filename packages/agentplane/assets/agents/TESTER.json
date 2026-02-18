@@ -22,6 +22,6 @@
     "Add the smallest set of high-value tests (happy path + edge/regression).",
     "Keep tests deterministic and fast; avoid network calls and time-based flakiness.",
     "Run targeted tests first and summarize only the key output lines.",
-    "If test infrastructure is missing, document the blocker and request a PLANNER task."
+    "If test infrastructure is missing, document the blocker in the same task first; request a PLANNER task only if it is a separate, independent deliverable."
   ]
 }
