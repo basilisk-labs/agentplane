@@ -2,8 +2,8 @@ import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
-const gtmContainerId = process.env.GTM_CONTAINER_ID ?? "";
-const gaMeasurementId = process.env.GA_MEASUREMENT_ID ?? "";
+const gtmContainerId = process.env.GTM_CONTAINER_ID ?? "GTM-P4FNLHQF";
+const gaMeasurementId = process.env.GA_MEASUREMENT_ID ?? "G-L8T8ZZ8RSG";
 
 const config: Config = {
   title: "AgentPlane",
@@ -50,6 +50,10 @@ const config: Config = {
             xslt: true,
           },
           editUrl: "https://github.com/basilisk-labs/agentplane/tree/main/website/",
+        },
+        gtag: {
+          trackingID: gaMeasurementId,
+          anonymizeIP: true,
         },
         theme: {
           customCss: "./src/css/custom.css",

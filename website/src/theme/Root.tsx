@@ -31,8 +31,6 @@ export default function RootWrapper(props: Props) {
   const customFields = siteConfig.customFields as Record<string, unknown> | undefined;
   const gtmContainerId =
     typeof customFields?.gtmContainerId === "string" ? customFields.gtmContainerId : "";
-  const gaMeasurementId =
-    typeof customFields?.gaMeasurementId === "string" ? customFields.gaMeasurementId : "";
 
   return (
     <>
@@ -49,19 +47,6 @@ export default function RootWrapper(props: Props) {
               })(window,document,'script','dataLayer','${gtmContainerId}');
             `}
           </script>
-        ) : null}
-        {gaMeasurementId ? (
-          <>
-            <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} />
-            <script>
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${gaMeasurementId}', { anonymize_ip: true });
-              `}
-            </script>
-          </>
         ) : null}
       </Head>
       {gtmContainerId ? (
