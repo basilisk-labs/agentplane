@@ -30,9 +30,9 @@ flowchart TD
   B --> C{Approval granted?}
   C -- No --> B
   C -- Yes --> D[Create task: PLANNER assigns owner + deps]
-  D --> E[Start: executor sets DOING + Start comment]
+  D --> E[Start: executor sets DOING and Start comment]
   E --> F[Implement changes + docs]
-  F --> G[Verify: run checks (optional) + record outcome]
+  F --> G[Verify: run checks and record outcome]
   G --> H[Commit with task suffix]
   H --> I[Finish: Verified comment + commit metadata]
   I --> J[Export snapshot if needed]

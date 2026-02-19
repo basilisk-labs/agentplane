@@ -113,6 +113,11 @@ const config: Config = {
         { to: "/blog", label: "Blog", position: "left" },
         { to: "/docs/releases", label: "Release Notes", position: "right" },
         {
+          href: "https://www.npmjs.com/package/agentplane",
+          label: "npm",
+          position: "right",
+        },
+        {
           href: "https://github.com/basilisk-labs/agentplane",
           label: "GitHub",
           position: "right",
