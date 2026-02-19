@@ -19,10 +19,12 @@ const config: Config = {
   onBrokenLinks: "throw",
   onBrokenAnchors: "warn",
   markdown: {
+    mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: "throw",
     },
   },
+  themes: ["@docusaurus/theme-mermaid"],
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -108,8 +110,8 @@ const config: Config = {
         { to: "/docs/user/workflow", label: "Workflows", position: "left" },
         { to: "/docs/user/commands", label: "Reference", position: "left" },
         { to: "/docs/developer/architecture", label: "Developer", position: "left" },
-        { to: "/docs/releases", label: "Release Notes", position: "left" },
         { to: "/blog", label: "Blog", position: "left" },
+        { to: "/docs/releases", label: "Release Notes", position: "right" },
         {
           href: "https://github.com/basilisk-labs/agentplane",
           label: "GitHub",

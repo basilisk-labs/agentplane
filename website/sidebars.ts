@@ -2,15 +2,14 @@ import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
 const sidebars: SidebarsConfig = {
   docsSidebar: [
-    "index",
     {
       type: "category",
-      label: "Getting Started",
+      label: "◈ Getting Started",
       items: ["user/overview", "user/prerequisites", "user/setup", "user/breaking-changes"],
     },
     {
       type: "category",
-      label: "Workflows",
+      label: "◉ Workflows",
       items: [
         "user/workflow",
         "user/task-lifecycle",
@@ -20,7 +19,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Backends & Config",
+      label: "◌ Backends & Config",
       items: [
         "user/tasks-and-backends",
         "user/backends",
@@ -34,7 +33,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Developer Guide",
+      label: "◍ Developer Guide",
       items: [
         "developer/design-principles",
         "developer/architecture",
@@ -55,7 +54,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Release Notes",
+      label: "◎ Release Notes",
       items: [
         "releases/index",
         "releases/v0.2.24",
@@ -94,7 +93,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "Help",
+      label: "◇ Help",
       items: ["help/troubleshooting-by-symptom", "help/troubleshooting", "help/glossary"],
     },
   ],
