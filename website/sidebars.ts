@@ -1,4 +1,42 @@
 import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
+import fs from "node:fs";
+import path from "node:path";
+
+const releaseDocPattern = /^v(\d+)\.(\d+)\.(\d+)\.md$/;
+
+function compareSemverDesc(a: number[], b: number[]): number {
+  for (let index = 0; index < 3; index += 1) {
+    const left = a[index] ?? 0;
+    const right = b[index] ?? 0;
+    if (left !== right) return right - left;
+  }
+  return 0;
+}
+
+function resolveReleaseDocItems(): string[] {
+  const releaseDir = path.resolve(process.cwd(), "../docs/releases");
+  const entries = fs.readdirSync(releaseDir, { withFileTypes: true });
+  return entries
+    .filter((entry) => entry.isFile())
+    .map((entry) => entry.name)
+    .map((name) => {
+      const match = releaseDocPattern.exec(name);
+      if (!match) return null;
+      const major = Number(match[1]);
+      const minor = Number(match[2]);
+      const patch = Number(match[3]);
+      if ([major, minor, patch].some((value) => Number.isNaN(value))) return null;
+      return {
+        item: `releases/${name.replace(/\.md$/, "")}`,
+        version: [major, minor, patch],
+      };
+    })
+    .filter(Boolean)
+    .toSorted((left, right) => compareSemverDesc(left.version, right.version))
+    .map((entry) => entry.item);
+}
+
+const releaseDocItems = resolveReleaseDocItems();
 
 const sidebars: SidebarsConfig = {
   docsSidebar: [
@@ -55,41 +93,7 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "◎ Release Notes",
-      items: [
-        "releases/index",
-        "releases/v0.2.24",
-        "releases/v0.2.23",
-        "releases/v0.2.22",
-        "releases/v0.2.21",
-        "releases/v0.2.20",
-        "releases/v0.2.19",
-        "releases/v0.2.18",
-        "releases/v0.2.17",
-        "releases/v0.2.16",
-        "releases/v0.2.15",
-        "releases/v0.2.14",
-        "releases/v0.2.13",
-        "releases/v0.2.12",
-        "releases/v0.2.11",
-        "releases/v0.2.10",
-        "releases/v0.2.9",
-        "releases/v0.2.8",
-        "releases/v0.2.7",
-        "releases/v0.2.6",
-        "releases/v0.2.5",
-        "releases/v0.2.4",
-        "releases/v0.2.3",
-        "releases/v0.2.2",
-        "releases/v0.2.1",
-        "releases/v0.2.0",
-        "releases/v0.1.9",
-        "releases/v0.1.8",
-        "releases/v0.1.7",
-        "releases/v0.1.6",
-        "releases/v0.1.5",
-        "releases/v0.1.4",
-        "releases/v0.1.3",
-      ],
+      items: ["releases/index", ...releaseDocItems],
     },
     {
       type: "category",
