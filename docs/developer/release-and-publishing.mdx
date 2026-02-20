@@ -77,14 +77,20 @@ Local `npm publish` is blocked by `prepublishOnly` through `scripts/enforce-gith
 
 GitHub workflow `Publish to npm`:
 
-- runs on `v*` tags
+- runs automatically on `main` when release candidate inputs change:
+- `packages/core/package.json`
+- `packages/agentplane/package.json`
+- `docs/releases/**`
 - uses OIDC trusted publishing
 - sets provenance
+- waits for green `Core CI` and `Docs CI` workflows for the exact target commit SHA
 - validates notes and version/tag parity
 - validates workspace parity (`core`, `agentplane`, and `@agentplaneorg/core` dependency)
-- runs format/sync/build/lint/full tests before publish
+- runs release-specific checks (`release:check`, release notes/version validation, origin tag existence)
 - publishes `@agentplaneorg/core` first, then `agentplane`
-- uses idempotent publish steps to tolerate reruns
+- uses detect-and-skip logic for already-published versions to tolerate reruns
+
+`Pre-publish Checks` workflow remains available as a manual matrix gate (`workflow_dispatch`) for explicit validation runs.
 
 ## Provenance requirements
 

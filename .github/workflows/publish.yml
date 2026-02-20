@@ -33,6 +33,7 @@ jobs:
       version: ${{ steps.detect.outputs.version }}
       tag: ${{ steps.detect.outputs.tag }}
       ref: ${{ steps.ref.outputs.ref }}
+      sha: ${{ steps.detect.outputs.sha }}
     steps:
       - name: Resolve ref
         id: ref
@@ -62,6 +63,7 @@ jobs:
             exit 1
           fi
 
+          SHA=$(git rev-parse HEAD)
           VERSION="$VERSION_CLI"
           TAG="v${VERSION}"
           NOTES="docs/releases/${TAG}.md"
@@ -85,63 +87,74 @@ jobs:
           else
             echo "should_publish=true" >> "$GITHUB_OUTPUT"
           fi
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-  verify:
+  ci-gate:
     needs: detect
     if: needs.detect.outputs.should_publish == 'true'
-    name: Release checks (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-24.04
-          - windows-latest
-    env:
-      GIT_AUTHOR_NAME: agentplane-ci
-      GIT_AUTHOR_EMAIL: agentplane-ci@example.com
-      GIT_COMMITTER_NAME: agentplane-ci
-      GIT_COMMITTER_EMAIL: agentplane-ci@example.com
+    name: Wait for green CI gates
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - name: Wait for Core CI and Docs CI
+        uses: actions/github-script@v7
         with:
-          ref: ${{ needs.detect.outputs.ref }}
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: "1.3.6"
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - name: Cache Bun artifacts
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.bun/install/cache
-            ~/.cache/bun
-          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bun-
-      - run: bun install --frozen-lockfile --ignore-scripts
-      - name: Full release checks (Linux)
-        if: matrix.os == 'ubuntu-24.04'
-        run: bun run release:ci-check
-      - name: Windows release checks
-        if: matrix.os == 'windows-latest'
-        run: |
-          bun run format:check
-          bun run schemas:check
-          bun run agents:check
-          bun run release:parity
-          bun run build
-          bun run docs:cli:check
-          bun run lint:core
-          bun test packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
+          script: |
+            const sha = "${{ needs.detect.outputs.sha }}";
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const required = ["Core CI", "Docs CI"];
+            const maxAttempts = 90;
+            const sleepMs = 20_000;
+
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+            for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
+                owner,
+                repo,
+                head_sha: sha,
+                event: "push",
+                per_page: 100,
+              });
+
+              const statusMap = new Map();
+              for (const name of required) {
+                const run = data.workflow_runs.find((candidate) => candidate.name === name);
+                if (!run) {
+                  statusMap.set(name, "missing");
+                  continue;
+                }
+                if (run.status !== "completed") {
+                  statusMap.set(name, run.status);
+                  continue;
+                }
+                statusMap.set(name, run.conclusion ?? "unknown");
+              }
+
+              const pending = required.filter((name) => {
+                const state = statusMap.get(name);
+                return state === "missing" || state === "queued" || state === "in_progress" || state === "requested" || state === "waiting" || state === "pending";
+              });
+              const failed = required.filter((name) => statusMap.get(name) !== "success" && !pending.includes(name));
+
+              core.info(`CI gate status for ${sha}: ${JSON.stringify(Object.fromEntries(statusMap.entries()))}`);
+
+              if (failed.length > 0) {
+                core.setFailed(`Required workflows failed for ${sha}: ${failed.map((name) => `${name}=${statusMap.get(name)}`).join(", ")}`);
+                return;
+              }
+              if (pending.length === 0) return;
+
+              await sleep(sleepMs);
+            }
+
+            core.setFailed(`Timed out waiting for required workflows for ${sha}.`);
 
   publish:
-    needs: [detect, verify]
+    needs: [detect, ci-gate]
     if: needs.detect.outputs.should_publish == 'true'
     environment: npm
     runs-on: ubuntu-24.04
