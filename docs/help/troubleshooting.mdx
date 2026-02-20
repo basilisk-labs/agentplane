@@ -46,6 +46,7 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 - Why this happens: local cache and remote Redmine tasks diverged.
 - What to do:
 - Pull latest remote state with `agentplane backend sync redmine --direction pull`.
+- Note: if you omit direction, sync defaults to `push`.
 - If push still fails, run sync with an explicit conflict policy and inspect changed fields.
 
 ## release apply stops before push

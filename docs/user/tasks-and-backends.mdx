@@ -48,9 +48,14 @@ Backend routing comes from `.agentplane/config.json`:
 ## Sync
 
 ```bash
+agentplane sync redmine
+agentplane sync redmine --direction pull
+agentplane sync redmine --direction push --yes
 agentplane backend sync <id> --direction pull
 agentplane backend sync <id> --direction push --yes
 ```
+
+`sync`/`backend sync` default to `--direction push` when omitted.
 
 Conflict modes: `diff`, `prefer-local`, `prefer-remote`, `fail`.
 

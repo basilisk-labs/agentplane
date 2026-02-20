@@ -69,9 +69,12 @@ agentplane task lint
 For remote backends (for example Redmine), use explicit sync:
 
 ```bash
+agentplane sync redmine
 agentplane backend sync redmine --direction pull
 agentplane backend sync redmine --direction push --yes
 ```
+
+`sync` and `backend sync` default to `--direction push`; prefer explicit `--direction pull` when refreshing local state from Redmine.
 
 ## Workflow
 
