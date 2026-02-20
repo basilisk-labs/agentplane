@@ -1,6 +1,7 @@
 import type { Props } from "@theme/Root";
 import Head from "@docusaurus/Head";
 import Root from "@theme-original/Root";
+import type { ReactElement } from "react";
 
 const gtmContainerId = "GTM-P4FNLHQF";
 
@@ -27,7 +28,9 @@ const websiteJsonLd = {
   },
 };
 
-export default function RootWrapper(props: Props) {
+const ThemeRoot = Root as (props: Props) => ReactElement;
+
+export default function RootWrapper(props: Props): ReactElement {
   return (
     <>
       <Head>
@@ -55,7 +58,7 @@ export default function RootWrapper(props: Props) {
           />
         </noscript>
       ) : null}
-      <Root {...props} />
+      <ThemeRoot {...props} />
     </>
   );
 }

@@ -11,3 +11,4 @@
 *.js text eol=lf working-tree-encoding=UTF-8
 *.mjs text eol=lf working-tree-encoding=UTF-8
 *.cjs text eol=lf working-tree-encoding=UTF-8
+*.css text eol=lf working-tree-encoding=UTF-8

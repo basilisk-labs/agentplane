@@ -4,7 +4,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 const gtmContainerId = process.env.GTM_CONTAINER_ID ?? "GTM-P4FNLHQF";
 const gaMeasurementId = process.env.GA_MEASUREMENT_ID ?? "G-L8T8ZZ8RSG";
 
-const config: Config = {
+const config = {
   title: "AgentPlane",
   tagline: "Deterministic agent workflows with auditable guardrails.",
   titleDelimiter: "·",
@@ -170,6 +170,6 @@ const config: Config = {
     gtmContainerId,
     gaMeasurementId,
   },
-};
+} satisfies Config;
 
 export default config;
