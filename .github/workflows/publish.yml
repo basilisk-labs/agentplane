@@ -82,14 +82,16 @@ jobs:
             exit 1
           fi
 
-          if [ "$CORE_PUBLISHED" = "true" ]; then
-            echo "should_publish=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "should_publish=true" >> "$GITHUB_OUTPUT"
-          fi
-          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          {
+            if [ "$CORE_PUBLISHED" = "true" ]; then
+              echo "should_publish=false"
+            else
+              echo "should_publish=true"
+            fi
+            echo "sha=$SHA"
+            echo "version=$VERSION"
+            echo "tag=$TAG"
+          } >> "$GITHUB_OUTPUT"
 
   ci-gate:
     needs: detect
