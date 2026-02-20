@@ -10,7 +10,7 @@ const organizationJsonLd = {
   "@type": "Organization",
   name: "AgentPlane",
   url: "https://agentplane.org",
-  logo: "https://agentplane.org/img/agentplane-favicon.svg",
+  logo: "https://agentplane.org/img/android-chrome-512x512.png",
   sameAs: ["https://github.com/basilisk-labs/agentplane"],
 };
 

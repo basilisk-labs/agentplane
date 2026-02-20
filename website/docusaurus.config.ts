@@ -8,7 +8,7 @@ const config = {
   title: "AgentPlane",
   tagline: "Deterministic agent workflows with auditable guardrails.",
   titleDelimiter: "·",
-  favicon: "img/agentplane-favicon.svg",
+  favicon: "img/favicon.ico",
   future: {
     v4: true,
   },
@@ -64,7 +64,7 @@ const config = {
   ],
 
   themeConfig: {
-    image: "img/header.png",
+    image: "img/og-image.png",
     metadata: [
       {
         name: "keywords",
@@ -82,7 +82,7 @@ const config = {
         content:
           "Deterministic agent workflows with auditable policy gates and repository-native task execution.",
       },
-      { property: "og:image", content: "https://agentplane.org/img/header.png" },
+      { property: "og:image", content: "https://agentplane.org/img/og-image.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "AgentPlane" },
       {
@@ -90,7 +90,8 @@ const config = {
         content:
           "Deterministic workflow framework for policy-driven agent execution in repositories.",
       },
-      { name: "twitter:image", content: "https://agentplane.org/img/header.png" },
+      { name: "twitter:image", content: "https://agentplane.org/img/twitter-card.png" },
+      { name: "twitter:site", content: "@agentplaneorg" },
     ],
     colorMode: {
       defaultMode: "light",
@@ -170,6 +171,41 @@ const config = {
     gtmContainerId,
     gaMeasurementId,
   },
+  headTags: [
+    {
+      tagName: "link",
+      attributes: {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/img/favicon-32x32.png",
+      },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/img/favicon-16x16.png",
+      },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/img/apple-touch-icon.png",
+      },
+    },
+    {
+      tagName: "link",
+      attributes: {
+        rel: "manifest",
+        href: "/site.webmanifest",
+      },
+    },
+  ],
 } satisfies Config;
 
 export default config;

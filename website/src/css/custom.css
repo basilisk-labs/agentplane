@@ -239,6 +239,58 @@ a {
   content: none;
 }
 
+/* Blog: bright-minimal variant within project visual system */
+.blog-list-page main,
+.blog-post-page main,
+.theme-blog-list-page main,
+.theme-blog-post-page main {
+  background-color: rgb(var(--accent) / 0.03);
+}
+
+.blog-list-page article,
+.theme-blog-list-page article {
+  background-color: rgb(var(--bg));
+  border: 1px solid rgb(var(--border));
+  border-top: 2px solid rgb(var(--accent) / 0.35);
+  padding: 1rem 1.15rem;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.blog-list-page article:hover,
+.theme-blog-list-page article:hover {
+  border-color: rgb(var(--accent) / 0.55);
+  transform: translateY(-1px);
+}
+
+.blog-list-page h2 a,
+.theme-blog-list-page h2 a,
+.blog-post-page h1,
+.theme-blog-post-page h1 {
+  letter-spacing: -0.02em;
+}
+
+.blog-list-page .margin-bottom--sm,
+.theme-blog-list-page .margin-bottom--sm,
+.blog-post-page .margin-bottom--sm,
+.theme-blog-post-page .margin-bottom--sm {
+  color: rgb(var(--muted));
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.pagination-nav__link {
+  border: 1px solid rgb(var(--border));
+  border-radius: 0;
+}
+
+.pagination-nav__link:hover {
+  border-color: rgb(var(--accent) / 0.65);
+}
+
 @keyframes pixel-blink {
   0%,
   38%,

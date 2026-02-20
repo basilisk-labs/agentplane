@@ -1,0 +1,59 @@
+---
+title: "Blog redesign plan"
+description: "Bright-minimal redesign plan for the AgentPlane blog."
+---
+
+## Goal
+
+Ship a blog style that feels brighter and more editorial while staying minimal and consistent with AgentPlane visual rules.
+
+## Design direction
+
+1. Keep strict structure and low-noise typography.
+2. Add controlled color accents and soft gradients only in blog context.
+3. Increase visual hierarchy: stronger titles, cleaner metadata, better card rhythm.
+4. Keep readability first: narrow content width, high contrast, predictable spacing.
+
+## Scope
+
+In scope:
+
+1. Blog list and blog post pages (`/blog`, `/blog/*`).
+2. Card, title, metadata, pagination, and inline content accents.
+3. Motion limited to subtle hover/focus transitions.
+
+Out of scope:
+
+1. Docs pages and docs sidebar styles.
+2. Navbar/footer information architecture.
+3. SEO structure and feed format.
+
+## Implementation phases
+
+1. **Foundation**
+   1. Add blog-only CSS tokens and container rules.
+   2. Improve typography scale for blog headings and excerpts.
+2. **Visual system**
+   1. Introduce minimal accent backgrounds for cards and tags.
+   2. Standardize borders and spacing rhythm.
+3. **Polish**
+   1. Tune hover/focus states for accessibility.
+   2. Validate desktop/mobile balance and remove visual noise.
+
+## Acceptance criteria
+
+1. Blog pages are visually distinct from docs but still recognizably AgentPlane.
+2. No violations of project design constraints (no heavy shadows, no rounded UI drift).
+3. `bun run docs:site:check` passes.
+4. Mobile layout remains readable without horizontal overflow.
+
+## Risks
+
+1. Over-styling may conflict with minimalism.
+2. Blog theme drift from docs can reduce brand coherence.
+3. Future Docusaurus class changes can break overly specific selectors.
+
+## Rollback
+
+1. Revert blog-specific CSS block in `website/src/css/custom.css`.
+2. Keep content files unchanged.

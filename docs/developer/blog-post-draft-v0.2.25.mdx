@@ -1,0 +1,18 @@
+---
+title: "Draft blog post for release 0.2.25"
+description: "Prepared short English post for the 0.2.25 release."
+---
+
+## Draft (English)
+
+**Title:** AgentPlane 0.2.25: safer commits, cleaner release flow
+
+AgentPlane `0.2.25` is focused on reliability in day-to-day team workflows.
+
+The headline improvement is safer commit behavior for agents: commit scope is now pushed toward explicit allowlists, so accidental staging of unrelated files is much less likely in practice.
+
+We also tightened release operations and documentation checks. The release pipeline now behaves more predictably, with stronger pre-publish validation and clearer CI gates around publish steps. This reduces the chance of publishing a version that has not passed the full expected checks.
+
+On the docs side, we improved website/documentation consistency and quality checks so broken or drifting content is caught earlier.
+
+If you use AgentPlane in a multi-agent environment, `0.2.25` is mainly about trust: each automation step should touch only what it is supposed to touch, and release actions should be auditable end-to-end.

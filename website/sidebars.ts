@@ -87,6 +87,8 @@ const sidebars: SidebarsConfig = {
         "developer/testing-and-quality",
         "developer/code-quality",
         "developer/release-and-publishing",
+        "developer/blog-redesign-plan",
+        "developer/blog-post-draft-v0.2.25",
         "developer/contributing",
       ],
     },
