@@ -21,8 +21,8 @@ export default function Home(): ReactNode {
           <p className={styles.subtitle}>
             Public site is being rebuilt. Documentation and workflow references stay available.
           </p>
-          <pre className={styles.artifact} aria-label="Workflow artifact">
-            <code>Preflight → Plan → Approve → Execute → Verify → Export</code>
+          <pre className={styles.artifact} aria-label="Install command">
+            <code>npm i -g agentplane</code>
           </pre>
           <Link className={styles.docsLink} to="/docs">
             Open docs at /docs

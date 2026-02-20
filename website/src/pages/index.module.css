@@ -85,11 +85,14 @@
 
 .artifact {
   border: 1px solid rgb(var(--border));
-  color: rgb(var(--muted));
+  color: rgb(var(--fg));
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.84rem;
+  font-size: clamp(1.25rem, 4vw, 2.2rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
   margin: 0;
-  padding: 0.6rem 0.72rem;
+  padding: 0.8rem 0.95rem;
   white-space: nowrap;
   width: fit-content;
 }
