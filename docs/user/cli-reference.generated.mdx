@@ -667,8 +667,8 @@ Options:
 - `--close`: Generate a deterministic close commit message from task snapshot + verification + recorded implementation commit; stages only the task README. (default=false)
 - `--unstage-others`: With --close: unstage any currently staged paths before staging the task README. (default=false)
 - `--check-only`: With --close: run preflight checks and print the planned close commit subject without creating a commit. (default=false)
-- `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). (repeatable)
-- `--auto-allow`: Infer --allow prefixes from staged paths (only when no explicit --allow is provided). (default=false)
+- `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
+- `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
 - `--allow-tasks`: Allow task workflow artifacts (tasks/ and .agentplane/tasks/). (default=false)
 - `--allow-base`: Allow base branch edits. (default=false)
 - `--allow-policy`: Allow policy edits (e.g. AGENTS.md). (default=false)
@@ -685,12 +685,6 @@ agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist g
 ```
 
 - Create a commit after validating allowlist and subject policy.
-
-```sh
-agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --auto-allow
-```
-
-- Infer allowlist prefixes from staged paths.
 
 ```sh
 agentplane commit 202602030608-F1Q8AB --close
@@ -743,8 +737,8 @@ agentplane guard commit <task-id> --message <message> [options]
 Options:
 
 - `-m, --message <message>`: Commit subject (must follow policy). (required)
-- `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). (repeatable)
-- `--auto-allow`: Infer --allow prefixes from staged paths (only when no explicit --allow is provided). (default=false)
+- `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
+- `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
 - `--allow-tasks`: Allow task workflow artifacts (tasks/ and .agentplane/tasks/). (default=false)
 - `--allow-base`: Allow base branch edits. (default=false)
 - `--allow-policy`: Allow policy edits (e.g. AGENTS.md). (default=false)
@@ -761,12 +755,6 @@ agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allow
 ```
 
 - Validate staged changes are covered by allowlist and policy.
-
-```sh
-agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --auto-allow
-```
-
-- Infer allowlist prefixes from staged paths.
 
 ### guard suggest-allow
 
@@ -924,8 +912,8 @@ Options:
 - `--body <text>`: Structured comment body (must match the configured Blocked: prefix). (required)
 - `--commit-from-comment`: Create a status commit using the comment body. (default=false)
 - `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
-- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). (repeatable)
-- `--commit-auto-allow`: Auto-allow inferred allowlist paths if none are provided (used with --commit-from-comment). (default=false)
+- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
+- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
 - `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
 - `--force`: Override status transition restrictions. (default=false)
@@ -968,13 +956,13 @@ Options:
 - `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--commit-from-comment`: Create a commit using the comment body (requires exactly one task id). (default=false)
 - `--commit-emoji <emoji>`: Override the commit emoji (used with --commit-from-comment).
-- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the commit (used with --commit-from-comment). (repeatable)
-- `--commit-auto-allow`: Auto-allow inferred allowlist paths if none are provided (used with --commit-from-comment). (default=false)
+- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
+- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
 - `--commit-require-clean`: Require a clean working tree for the commit (used with --commit-from-comment). (default=false)
 - `--status-commit`: Create a separate status commit (requires exactly one task id). (default=false)
 - `--status-commit-emoji <emoji>`: Override the status commit emoji (used with --status-commit).
-- `--status-commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --status-commit). (repeatable)
-- `--status-commit-auto-allow`: Auto-allow inferred allowlist paths if none are provided (used with --status-commit). (default=false)
+- `--status-commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --status-commit). Use minimal prefixes; '.' is rejected. (repeatable)
+- `--status-commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --status-commit-allow prefixes. (default=false, deprecated=disabled)
 - `--status-commit-require-clean`: Require a clean working tree for the status commit (used with --status-commit). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
 - `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
@@ -1011,8 +999,8 @@ Options:
 - `--body <text>`: Structured comment body (must match the configured Start: prefix). (required)
 - `--commit-from-comment`: Create a status commit using the comment body. (default=false)
 - `--commit-emoji <emoji>`: Override the status commit emoji (used with --commit-from-comment).
-- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). (repeatable)
-- `--commit-auto-allow`: Auto-allow inferred allowlist paths if none are provided (used with --commit-from-comment). (default=false)
+- `--commit-allow <path-prefix>`: Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected. (repeatable)
+- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
 - `--commit-require-clean`: Require a clean working tree for the status commit (used with --commit-from-comment). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment). (default=false)
 - `--force`: Override readiness checks and status transition restrictions. (default=false)
@@ -2406,8 +2394,8 @@ Options:
 - `--yes`: Auto-approve force-action approval checks when required. (default=false)
 - `--commit-from-comment`: Create a git commit from the provided comment body (requires --body). (default=false)
 - `--commit-emoji <emoji>`: Optional. Emoji prefix used for commit-from-comment.
-- `--commit-allow <path-prefix>`: Repeatable. Allowlist prefix for commit-from-comment staging. (repeatable)
-- `--commit-auto-allow`: Auto-derive allowlist prefixes from staged paths (commit-from-comment). (default=false)
+- `--commit-allow <path-prefix>`: Repeatable. Allowlist prefix for commit-from-comment staging. Use minimal prefixes; '.' is rejected. (repeatable)
+- `--commit-auto-allow`: Deprecated. Disabled for safety; pass explicit --commit-allow prefixes. (default=false, deprecated=disabled)
 - `--commit-allow-tasks`: Allow committing under .agentplane/tasks when commit-from-comment is used. (default=true)
 - `--commit-require-clean`: Require a clean working tree before commit-from-comment. (default=false)
 - `--confirm-status-commit`: Confirm status-commit when status_commit_policy requires confirmation. (default=false)

@@ -101,6 +101,14 @@ export async function stageAllowlist(opts: {
       message: "Provide at least one allowed prefix",
     });
   }
+  if (allow.includes(".")) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message:
+        "Repo-wide allowlist ('.') is not allowed; choose minimal prefixes (tip: `agentplane guard suggest-allow --format args`).",
+    });
+  }
   const denied = new Set<string>();
   if (!opts.allowTasks) denied.add(opts.tasksPath);
 
@@ -117,8 +125,7 @@ export async function stageAllowlist(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message:
-        "No changes matched allowed prefixes (use --commit-auto-allow or update --commit-allow)",
+      message: "No changes matched allowed prefixes (update --commit-allow)",
     });
   }
 

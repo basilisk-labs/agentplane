@@ -14,6 +14,20 @@ description: "Common problems and how to fix them quickly."
 - For machine-readable output, use `--json-errors` before the command, for example:
   - `agentplane --json-errors task show 202602120734-3M598S`
 
+## Commit command fails with allowlist error
+
+**Symptom:** `commit` / `guard commit` / `start|block|finish --commit-from-comment` fails with allowlist-related `E_USAGE`.
+
+**Fix:**
+
+- Pass explicit allowlist prefixes:
+  - `--allow <path-prefix>`
+  - `--commit-allow <path-prefix>`
+  - `--status-commit-allow <path-prefix>`
+- Do not use repo-wide `.` prefix; it is blocked by policy.
+- Generate candidate prefixes from staged files:
+  - `agentplane guard suggest-allow --format args`
+
 ## Task doc changes rejected
 
 **Symptom:** Guardrails complain about missing doc metadata or manual edits.

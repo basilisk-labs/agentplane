@@ -23,6 +23,17 @@ export function allowlistRule(ctx: PolicyContext): PolicyResult {
   }
 
   const allow = allowRaw.map((p) => normalizeGitPathPrefix(p));
+  if (allow.includes(".")) {
+    return {
+      ok: false,
+      errors: [
+        gitError(
+          "Repo-wide allowlist ('.') is not allowed; choose minimal prefixes (tip: `agentplane guard suggest-allow --format args`).",
+        ),
+      ],
+      warnings: [],
+    };
+  }
 
   const errors: string[] = [];
   for (const filePath of staged) {

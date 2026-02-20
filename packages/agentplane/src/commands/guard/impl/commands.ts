@@ -246,21 +246,12 @@ export async function cmdCommit(opts: {
       return 0;
     }
 
-    let allow = opts.allow;
-    if (opts.autoAllow && allow.length === 0) {
-      const ctx =
-        opts.ctx ??
-        (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
-      const staged = await ctx.git.statusStagedPaths();
-      const prefixes = suggestAllowPrefixes(staged);
-      if (prefixes.length === 0) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: "No staged files (git index empty)",
-        });
-      }
-      allow = prefixes;
+    if (opts.autoAllow) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--auto-allow is disabled; pass explicit --allow <path-prefix>.",
+      });
     }
 
     await guardCommitCheck({
@@ -269,7 +260,7 @@ export async function cmdCommit(opts: {
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
       message: opts.message,
-      allow,
+      allow: opts.allow,
       allowBase: opts.allowBase,
       allowTasks: opts.allowTasks,
       allowPolicy: opts.allowPolicy,

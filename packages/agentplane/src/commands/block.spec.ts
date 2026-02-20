@@ -1,5 +1,9 @@
 import type { CommandSpec } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
+import {
+  findRepoWideAllowPrefixes,
+  repoWideAllowPrefixMessage,
+} from "../shared/allow-prefix-policy.js";
 
 import { toStringList } from "../cli/spec/parse-utils.js";
 
@@ -64,14 +68,14 @@ export const blockSpec: CommandSpec<BlockParsed> = {
       valueHint: "<path-prefix>",
       repeatable: true,
       description:
-        "Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment).",
+        "Repeatable. Allowlist path prefixes to stage for the status commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected.",
     },
     {
       kind: "boolean",
       name: "commit-auto-allow",
       default: false,
-      description:
-        "Auto-allow inferred allowlist paths if none are provided (used with --commit-from-comment).",
+      description: "Deprecated. Disabled for safety; pass explicit --commit-allow prefixes.",
+      deprecated: "disabled",
     },
     {
       kind: "boolean",
@@ -122,9 +126,29 @@ export const blockSpec: CommandSpec<BlockParsed> = {
   validateRaw: (raw) => {
     const author = typeof raw.opts.author === "string" ? raw.opts.author.trim() : "";
     const body = typeof raw.opts.body === "string" ? raw.opts.body.trim() : "";
+    const commitAllow = toStringList(raw.opts["commit-allow"]);
     if (!author)
       throw usageError({ spec: blockSpec, message: "Invalid value for --author: empty." });
     if (!body) throw usageError({ spec: blockSpec, message: "Invalid value for --body: empty." });
+    if (findRepoWideAllowPrefixes(commitAllow).length > 0) {
+      throw usageError({
+        spec: blockSpec,
+        message: repoWideAllowPrefixMessage("--commit-allow"),
+      });
+    }
+    if (raw.opts["commit-auto-allow"] === true) {
+      throw usageError({
+        spec: blockSpec,
+        message: "--commit-auto-allow is disabled; pass explicit --commit-allow <path-prefix>.",
+      });
+    }
+    if (raw.opts["commit-from-comment"] === true && commitAllow.length === 0) {
+      throw usageError({
+        spec: blockSpec,
+        message:
+          "--commit-from-comment requires --commit-allow <path-prefix> (tip: `agentplane guard suggest-allow --format args`).",
+      });
+    }
   },
   parse: (raw) => ({
     taskId: typeof raw.args["task-id"] === "string" ? raw.args["task-id"] : "",

@@ -2,6 +2,10 @@ import type { CommandSpec } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
 
 import { toStringList } from "../cli/spec/parse-utils.js";
+import {
+  findRepoWideAllowPrefixes,
+  repoWideAllowPrefixMessage,
+} from "../shared/allow-prefix-policy.js";
 
 export type FinishParsed = {
   taskIds: string[];
@@ -109,14 +113,14 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       valueHint: "<path-prefix>",
       repeatable: true,
       description:
-        "Repeatable. Allowlist path prefixes to stage for the commit (used with --commit-from-comment).",
+        "Repeatable. Allowlist path prefixes to stage for the commit (used with --commit-from-comment). Use minimal prefixes; '.' is rejected.",
     },
     {
       kind: "boolean",
       name: "commit-auto-allow",
       default: false,
-      description:
-        "Auto-allow inferred allowlist paths if none are provided (used with --commit-from-comment).",
+      description: "Deprecated. Disabled for safety; pass explicit --commit-allow prefixes.",
+      deprecated: "disabled",
     },
     {
       kind: "boolean",
@@ -150,14 +154,14 @@ export const finishSpec: CommandSpec<FinishParsed> = {
       valueHint: "<path-prefix>",
       repeatable: true,
       description:
-        "Repeatable. Allowlist path prefixes to stage for the status commit (used with --status-commit).",
+        "Repeatable. Allowlist path prefixes to stage for the status commit (used with --status-commit). Use minimal prefixes; '.' is rejected.",
     },
     {
       kind: "boolean",
       name: "status-commit-auto-allow",
       default: false,
-      description:
-        "Auto-allow inferred allowlist paths if none are provided (used with --status-commit).",
+      description: "Deprecated. Disabled for safety; pass explicit --status-commit-allow prefixes.",
+      deprecated: "disabled",
     },
     {
       kind: "boolean",
@@ -204,11 +208,60 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     const taskIds = Array.isArray(ids) ? ids : [];
     const commitFromComment = raw.opts["commit-from-comment"] === true;
     const statusCommit = raw.opts["status-commit"] === true;
+    const commitAllow = toStringList(raw.opts["commit-allow"]);
+    const statusCommitAllow = toStringList(raw.opts["status-commit-allow"]);
+    const commitAutoAllow = raw.opts["commit-auto-allow"] === true;
+    const statusCommitAutoAllow = raw.opts["status-commit-auto-allow"] === true;
+    if (findRepoWideAllowPrefixes(commitAllow).length > 0) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: repoWideAllowPrefixMessage("--commit-allow"),
+      });
+    }
+    if (findRepoWideAllowPrefixes(statusCommitAllow).length > 0) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: repoWideAllowPrefixMessage("--status-commit-allow"),
+      });
+    }
+    if (commitAutoAllow) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: "--commit-auto-allow is disabled; pass explicit --commit-allow <path-prefix>.",
+      });
+    }
+    if (statusCommitAutoAllow) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message:
+          "--status-commit-auto-allow is disabled; pass explicit --status-commit-allow <path-prefix>.",
+      });
+    }
     if ((commitFromComment || statusCommit) && taskIds.length !== 1) {
       throw usageError({
         spec: finishSpec,
         command: "finish",
         message: "--commit-from-comment/--status-commit requires exactly one task id",
+      });
+    }
+    if (commitFromComment && commitAllow.length === 0) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message:
+          "--commit-from-comment requires --commit-allow <path-prefix> (tip: `agentplane guard suggest-allow --format args`).",
+      });
+    }
+    if (statusCommit && statusCommitAllow.length === 0) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message:
+          "--status-commit requires --status-commit-allow <path-prefix> (tip: `agentplane guard suggest-allow --format args`).",
       });
     }
     if (raw.opts["close-commit"] === true && taskIds.length !== 1) {

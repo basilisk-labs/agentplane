@@ -1,9 +1,13 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  findRepoWideAllowPrefixes,
+  repoWideAllowPrefixMessage,
+} from "../../shared/allow-prefix-policy.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
-import { cmdGuardCommit, suggestAllowPrefixes } from "./index.js";
+import { cmdGuardCommit } from "./index.js";
 
 export type GuardCommitParsed = {
   taskId: string;
@@ -39,14 +43,15 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
       name: "allow",
       valueHint: "<path-prefix>",
       repeatable: true,
-      description: "Repeatable. Allowed path prefix (git-path).",
+      description:
+        "Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: `agentplane guard suggest-allow --format args`).",
     },
     {
       kind: "boolean",
       name: "auto-allow",
       default: false,
-      description:
-        "Infer --allow prefixes from staged paths (only when no explicit --allow is provided).",
+      description: "Deprecated. Disabled for safety; pass explicit --allow prefixes.",
+      deprecated: "disabled",
     },
     {
       kind: "boolean",
@@ -82,10 +87,6 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
       cmd: 'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane',
       why: "Validate staged changes are covered by allowlist and policy.",
     },
-    {
-      cmd: 'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --auto-allow',
-      why: "Infer allowlist prefixes from staged paths.",
-    },
   ],
   validateRaw: (raw) => {
     const msg = typeof raw.opts.message === "string" ? raw.opts.message.trim() : "";
@@ -95,6 +96,20 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
     const allow = raw.opts.allow;
     if (Array.isArray(allow) && allow.some((s) => typeof s === "string" && s.trim() === "")) {
       throw usageError({ spec: guardCommitSpec, message: "Invalid value for --allow: empty." });
+    }
+    const allowList = Array.isArray(allow)
+      ? (allow as string[])
+      : typeof allow === "string"
+        ? [allow]
+        : [];
+    if (findRepoWideAllowPrefixes(allowList).length > 0) {
+      throw usageError({ spec: guardCommitSpec, message: repoWideAllowPrefixMessage("--allow") });
+    }
+    if (raw.opts["auto-allow"] === true) {
+      throw usageError({
+        spec: guardCommitSpec,
+        message: "--auto-allow is disabled; pass explicit --allow <path-prefix>.",
+      });
     }
   },
   parse: (raw) => ({
@@ -120,19 +135,12 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
 export function makeRunGuardCommitHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
   return async (ctx: CommandCtx, p: GuardCommitParsed): Promise<number> => {
     const cmdCtx = await getCtx("guard commit");
-
-    let allow = p.allow;
-    if (p.autoAllow && allow.length === 0) {
-      const staged = await cmdCtx.git.statusStagedPaths();
-      const prefixes = suggestAllowPrefixes(staged);
-      if (prefixes.length === 0) {
-        throw new CliError({
-          exitCode: 5,
-          code: "E_GIT",
-          message: "No staged files (git index empty)",
-        });
-      }
-      allow = prefixes;
+    if (p.autoAllow) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--auto-allow is disabled; pass explicit --allow <path-prefix>.",
+      });
     }
 
     return await cmdGuardCommit({
@@ -141,7 +149,7 @@ export function makeRunGuardCommitHandler(getCtx: (cmd: string) => Promise<Comma
       rootOverride: ctx.rootOverride,
       taskId: p.taskId,
       message: p.message,
-      allow,
+      allow: p.allow,
       allowBase: p.allowBase,
       allowTasks: p.allowTasks,
       allowPolicy: p.allowPolicy,

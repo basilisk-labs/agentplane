@@ -87,11 +87,10 @@ describe("commitFromComment", () => {
     ).rejects.toThrow("Provide at least one --commit-allow");
   });
 
-  it("fails when auto-allow resolves only protected tasks path", async () => {
+  it("rejects auto-allow mode", async () => {
     const git = makeGit();
-    git.statusChangedPaths.mockResolvedValue([".agentplane/tasks.json"]);
     const cfg = defaultConfig();
-    const ctx = makeCtx(git, { paths: cfg.paths });
+    const ctx = makeCtx(git);
     await expect(
       commitFromComment({
         ctx,
@@ -125,7 +124,7 @@ describe("commitFromComment", () => {
         quiet: true,
         config: cfg,
       }),
-    ).rejects.toThrow("Provide at least one --commit-allow");
+    ).rejects.toThrow("--commit-auto-allow is disabled");
   });
 
   it("commits using derived message/body from comment metadata", async () => {
@@ -253,34 +252,27 @@ describe("commitFromComment", () => {
     expect(result.message).toContain("2S7HGD code: doing");
   });
 
-  it("auto-allow can stage task artifacts when allowTasks=true", async () => {
+  it("rejects auto-allow even when allowTasks=true", async () => {
     const git = makeGit();
-    git.statusChangedPaths.mockResolvedValue([".agentplane/tasks.json"]);
-    git.statusStagedPaths.mockResolvedValue([".agentplane/tasks.json"]);
-    git.statusUnstagedTrackedPaths.mockResolvedValue([]);
-    git.headHashSubject.mockResolvedValue({
-      hash: "abcdef1234567890",
-      subject: "🚧 2S7HGD task: update task artifacts",
-    });
     const cfg = defaultConfig();
     const ctx = makeCtx(git, { paths: cfg.paths });
-    const result = await commitFromComment({
-      ctx,
-      cwd: "/tmp/repo",
-      taskId: "202602111631-2S7HGD",
-      primaryTag: "code",
-      commentBody: "Start: update task artifacts",
-      formattedComment: "Start: update task artifacts",
-      emoji: "🚧",
-      allow: [],
-      autoAllow: true,
-      allowTasks: true,
-      requireClean: false,
-      quiet: true,
-      config: cfg,
-    });
-    expect(git.stage).toHaveBeenCalledWith([".agentplane/tasks.json"]);
-    expect(result.staged).toEqual([".agentplane/tasks.json"]);
+    await expect(
+      commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
+        commentBody: "Start: update task artifacts",
+        formattedComment: "Start: update task artifacts",
+        emoji: "🚧",
+        allow: [],
+        autoAllow: true,
+        allowTasks: true,
+        requireClean: false,
+        quiet: true,
+        config: cfg,
+      }),
+    ).rejects.toThrow("--commit-auto-allow is disabled");
   });
 
   it("fails with invalid task id when suffix cannot be extracted", async () => {
@@ -308,66 +300,129 @@ describe("commitFromComment", () => {
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
   });
 
-  it("auto-allow excludes protected non-task paths and prints success when quiet=false", async () => {
+  it("fails when primary tag is empty", async () => {
     const git = makeGit();
-    git.statusChangedPaths.mockResolvedValue(["AGENTS.md", "src/app.ts"]);
+    git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
     git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     git.statusUnstagedTrackedPaths.mockResolvedValue([]);
-    git.headHashSubject.mockResolvedValue({
-      hash: "feedface12345678",
-      subject: "🚧 2S7HGD task: mixed staged set",
-    });
     const ctx = makeCtx(git);
-    const io = captureStdIO();
-    try {
-      const result = await commitFromComment({
+    await expect(
+      commitFromComment({
         ctx,
         cwd: "/tmp/repo",
         taskId: "202602111631-2S7HGD",
-        primaryTag: "code",
-        commentBody: "Start: mixed staged set",
-        formattedComment: "Start: mixed staged set",
+        primaryTag: "   ",
+        commentBody: "Start: do work",
+        formattedComment: "Start: do work",
         emoji: "🚧",
-        allow: [],
-        autoAllow: true,
+        allow: ["src"],
+        autoAllow: false,
         allowTasks: false,
         requireClean: false,
-        quiet: false,
+        quiet: true,
         config: defaultConfig(),
-      });
-      expect(git.stage).toHaveBeenCalledWith(["src/app.ts"]);
-      expect(result.staged).toEqual(["src/app.ts"]);
-      expect(io.stdout).toContain("committed");
+      }),
+    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+    await expect(
+      commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "202602111631-2S7HGD",
+        primaryTag: "   ",
+        commentBody: "Start: do work",
+        formattedComment: "Start: do work",
+        emoji: "🚧",
+        allow: ["src"],
+        autoAllow: false,
+        allowTasks: false,
+        requireClean: false,
+        quiet: true,
+        config: defaultConfig(),
+      }),
+    ).rejects.toThrow("Primary tag is required");
+  });
+
+  it("rejects auto-allow before commit output is produced", async () => {
+    const git = makeGit();
+    const ctx = makeCtx(git);
+    const io = captureStdIO();
+    try {
+      await expect(
+        commitFromComment({
+          ctx,
+          cwd: "/tmp/repo",
+          taskId: "202602111631-2S7HGD",
+          primaryTag: "code",
+          commentBody: "Start: mixed staged set",
+          formattedComment: "Start: mixed staged set",
+          emoji: "🚧",
+          allow: [],
+          autoAllow: true,
+          allowTasks: false,
+          requireClean: false,
+          quiet: false,
+          config: defaultConfig(),
+        }),
+      ).rejects.toThrow("--commit-auto-allow is disabled");
+      expect(io.stdout.trim()).toBe("");
     } finally {
       io.restore();
     }
   });
 
-  it("supports auto-allow=true with explicit allow list", async () => {
+  it("rejects auto-allow even with explicit allow list", async () => {
+    const git = makeGit();
+    const ctx = makeCtx(git);
+    await expect(
+      commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
+        commentBody: "Start: explicit allow",
+        formattedComment: "Start: explicit allow",
+        emoji: "🚧",
+        allow: ["src"],
+        autoAllow: true,
+        allowTasks: false,
+        requireClean: false,
+        quiet: true,
+        config: defaultConfig(),
+      }),
+    ).rejects.toThrow("--commit-auto-allow is disabled");
+  });
+
+  it("prints commit summary when quiet=false", async () => {
     const git = makeGit();
     git.statusChangedPaths.mockResolvedValue(["src/app.ts"]);
     git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     git.statusUnstagedTrackedPaths.mockResolvedValue([]);
     git.headHashSubject.mockResolvedValue({
-      hash: "aabbccddeeff0011",
-      subject: "🚧 2S7HGD task: explicit allow",
+      hash: "1234567890abcdef",
+      subject: "🚧 2S7HGD code: doing",
     });
     const ctx = makeCtx(git);
-    const result = await commitFromComment({
-      ctx,
-      cwd: "/tmp/repo",
-      taskId: "202602111631-2S7HGD",
-      primaryTag: "code",
-      commentBody: "Start: explicit allow",
-      formattedComment: "Start: explicit allow",
-      emoji: "🚧",
-      allow: ["src"],
-      autoAllow: true,
-      allowTasks: false,
-      requireClean: false,
-      quiet: true,
-      config: defaultConfig(),
-    });
-    expect(result.staged).toEqual(["src/app.ts"]);
+    const io = captureStdIO();
+    try {
+      await commitFromComment({
+        ctx,
+        cwd: "/tmp/repo",
+        taskId: "202602111631-2S7HGD",
+        primaryTag: "code",
+        commentBody: "Start: do work",
+        formattedComment: "Start: do work",
+        emoji: "🚧",
+        allow: ["src"],
+        autoAllow: false,
+        allowTasks: false,
+        requireClean: false,
+        quiet: false,
+        config: defaultConfig(),
+      });
+      expect(io.stdout).toContain("committed");
+      expect(io.stdout).toContain("staged=src/app.ts");
+    } finally {
+      io.restore();
+    }
   });
 });

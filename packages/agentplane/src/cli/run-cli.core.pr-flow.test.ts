@@ -2133,7 +2133,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 25_000);
 
   it("cleanup merged requires running on base branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");

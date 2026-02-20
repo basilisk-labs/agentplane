@@ -42,6 +42,12 @@ describe("policy/evaluatePolicy", () => {
     expect(res.errors.map((e) => e.message).join("\n")).toContain("--allow");
   });
 
+  it("rejects repo-wide allowlist prefix", () => {
+    const res = evaluatePolicy(makeCtx({ allow: { prefixes: ["."] } }));
+    expect(res.ok).toBe(false);
+    expect(res.errors.map((e) => e.message).join("\n")).toContain("Repo-wide allowlist");
+  });
+
   it("rejects protected policy paths without override", () => {
     const res = evaluatePolicy(
       makeCtx({

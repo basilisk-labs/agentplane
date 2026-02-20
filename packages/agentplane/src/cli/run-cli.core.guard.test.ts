@@ -188,7 +188,7 @@ describe("runCli", () => {
     }
   });
 
-  it("guard commit supports --auto-allow", async () => {
+  it("guard commit rejects --auto-allow", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "file.txt"), "x", "utf8");
     const execFileAsync = promisify(execFile);
@@ -206,8 +206,8 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("OK");
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--auto-allow is disabled");
     } finally {
       io.restore();
     }
@@ -232,6 +232,32 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(5);
       expect(io.stderr).toContain("Provide at least one --allow");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("guard commit rejects repo-wide allowlist prefix", async () => {
+    const root = await mkGitRepoRoot();
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF guard: add checks",
+        "--allow",
+        ".",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("cannot be repo-wide");
     } finally {
       io.restore();
     }
@@ -307,7 +333,7 @@ describe("runCli", () => {
         "-m",
         "✨ ABCDEF guard: protect paths",
         "--allow",
-        ".",
+        "AGENTS.md",
         "--root",
         root,
       ]);
@@ -334,7 +360,7 @@ describe("runCli", () => {
         "-m",
         "✨ ABCDEF guard: protect paths",
         "--allow",
-        ".",
+        "AGENTS.md",
         "--allow-policy",
         "--root",
         root,
@@ -390,7 +416,7 @@ describe("runCli", () => {
         "-m",
         "✨ ABCDEF guard: add checks",
         "--allow",
-        ".",
+        "file.txt",
         "--require-clean",
         "--root",
         root,
@@ -418,7 +444,7 @@ describe("runCli", () => {
         "-m",
         "✨ ABCDEF guard: tracked-only clean",
         "--allow",
-        ".",
+        "file.txt",
         "--require-clean",
         "--root",
         root,
@@ -572,7 +598,7 @@ describe("runCli", () => {
         "-m",
         "✨ ABCDEF commit: protected policy",
         "--allow",
-        ".",
+        "AGENTS.md",
         "--root",
         root,
       ]);
@@ -600,7 +626,7 @@ describe("runCli", () => {
         "-m",
         "✨ ABCDEF commit: protected policy",
         "--allow",
-        ".",
+        "AGENTS.md",
         "--allow-policy",
         "--root",
         root,
@@ -642,6 +668,33 @@ describe("runCli", () => {
     }
   });
 
+  it("commit wrapper rejects repo-wide allowlist prefix", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit: reject repo wide",
+        "--allow",
+        ".",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("cannot be repo-wide");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("commit wrapper supports --quiet", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -670,7 +723,7 @@ describe("runCli", () => {
     }
   });
 
-  it("commit wrapper supports auto-allow", async () => {
+  it("commit wrapper rejects auto-allow", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
@@ -690,7 +743,8 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--auto-allow is disabled");
     } finally {
       io.restore();
     }

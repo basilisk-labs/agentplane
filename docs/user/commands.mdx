@@ -82,6 +82,16 @@ agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome"
 ```
 
+For any commit-capable command (`commit`, `guard commit`, `start/block/finish ... --commit-from-comment`):
+
+- Always pass explicit allowlist prefixes (`--allow` / `--commit-allow` / `--status-commit-allow`).
+- Repo-wide prefix `.` is rejected by policy.
+- Fast path to build safe prefixes from current index:
+
+```bash
+agentplane guard suggest-allow --format args
+```
+
 Status transitions (normal mode) are strict:
 
 - `TODO -> DOING|BLOCKED`

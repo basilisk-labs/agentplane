@@ -90,14 +90,7 @@ export async function cmdFinish(opts: {
     }
     const { prefix, min_chars: minChars } = ctx.config.tasks.comments.verified;
     requireStructuredComment(opts.body, prefix, minChars);
-    const autoStatusCommit =
-      (ctx.config.finish_auto_status_commit === true ||
-        ctx.config.commit_automation === "finish_only") &&
-      !opts.commitFromComment &&
-      !opts.statusCommit &&
-      opts.closeCommit !== true &&
-      opts.taskIds.length === 1;
-    const statusCommitRequested = opts.statusCommit || autoStatusCommit;
+    const statusCommitRequested = opts.statusCommit;
     if ((opts.commitFromComment || statusCommitRequested) && opts.taskIds.length !== 1) {
       throw new CliError({
         exitCode: 2,
@@ -125,6 +118,35 @@ export async function cmdFinish(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: "--commit-from-comment/--status-commit requires exactly one task id",
+      });
+    }
+    if (opts.commitAutoAllow) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--commit-auto-allow is disabled; pass explicit --commit-allow <path-prefix>.",
+      });
+    }
+    if (opts.statusCommitAutoAllow) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "--status-commit-auto-allow is disabled; pass explicit --status-commit-allow <path-prefix>.",
+      });
+    }
+    if (opts.commitFromComment && opts.commitAllow.length === 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--commit-from-comment requires --commit-allow <path-prefix>",
+      });
+    }
+    if (statusCommitRequested && opts.statusCommitAllow.length === 0) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "--status-commit requires --status-commit-allow <path-prefix>",
       });
     }
 
@@ -236,7 +258,7 @@ export async function cmdFinish(opts: {
       enforceStatusCommitPolicy({
         policy: ctx.config.status_commit_policy,
         action: "finish",
-        confirmed: opts.confirmStatusCommit || autoStatusCommit,
+        confirmed: opts.confirmStatusCommit,
         quiet: opts.quiet,
         statusFrom: primaryStatusFrom ?? "UNKNOWN",
         statusTo: "DONE",
@@ -282,7 +304,7 @@ export async function cmdFinish(opts: {
         formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
         emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DONE"),
         allow: opts.commitAllow,
-        autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
+        autoAllow: false,
         allowTasks: opts.commitAllowTasks,
         requireClean: opts.commitRequireClean,
         quiet: opts.quiet,
@@ -354,7 +376,7 @@ export async function cmdFinish(opts: {
         formattedComment: formatCommentBodyForCommit(opts.body, ctx.config),
         emoji: opts.statusCommitEmoji ?? defaultCommitEmojiForStatus("DONE"),
         allow: opts.statusCommitAllow,
-        autoAllow: opts.statusCommitAutoAllow || opts.statusCommitAllow.length === 0,
+        autoAllow: false,
         allowTasks: true,
         requireClean: opts.statusCommitRequireClean,
         quiet: opts.quiet,

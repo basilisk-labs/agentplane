@@ -976,6 +976,8 @@ describe("runCli", () => {
         "--body",
         "Start: blocked by confirm policy because comment is long enough",
         "--commit-from-comment",
+        "--commit-allow",
+        ".agentplane/tasks",
         "--root",
         root,
       ]);
@@ -1027,6 +1029,8 @@ describe("runCli", () => {
         "--body",
         "Blocked: dependency is not ready for this transition test case",
         "--commit-from-comment",
+        "--commit-allow",
+        ".agentplane/tasks",
         "--confirm-status-commit",
         "--root",
         root,
@@ -1092,7 +1096,7 @@ describe("runCli", () => {
     }
   });
 
-  it("start commit-from-comment supports auto-allow and sentence formatting", async () => {
+  it("start commit-from-comment rejects auto-allow", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
@@ -1123,11 +1127,6 @@ describe("runCli", () => {
       ioNew.restore();
     }
     await approveTaskPlan(root, taskId);
-    await startDirectWork(root, taskId, "CODER");
-
-    const commentBody =
-      "Start: implement sentence-based summary for commit messages. Add follow-up details.";
-
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -1136,23 +1135,17 @@ describe("runCli", () => {
         "--author",
         "CODER",
         "--body",
-        commentBody,
+        "Start: implement sentence-based summary for commit messages. Add follow-up details.",
         "--commit-from-comment",
         "--commit-auto-allow",
-        "--confirm-status-commit",
         "--root",
         root,
       ]);
-      expect(code).toBe(0);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("--commit-auto-allow is disabled");
     } finally {
       io.restore();
     }
-
-    const execFileAsync = promisify(execFile);
-    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
-    const suffix = extractTaskSuffix(taskId);
-    const emoji = await expectedAgentEmoji(root, "CODER");
-    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
   });
 
   it("start rejects comments without the required prefix", async () => {
@@ -2419,7 +2412,6 @@ describe("runCli", () => {
         "✅",
         "--commit-allow",
         "docs/",
-        "--commit-auto-allow",
         "--commit-allow-tasks",
         "--commit-require-clean",
         "--status-commit",
@@ -2427,7 +2419,6 @@ describe("runCli", () => {
         "✅",
         "--status-commit-allow",
         "docs/",
-        "--status-commit-auto-allow",
         "--status-commit-require-clean",
         "--confirm-status-commit",
         "--quiet",

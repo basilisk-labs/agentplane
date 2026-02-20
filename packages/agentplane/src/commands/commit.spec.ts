@@ -1,5 +1,9 @@
 import type { CommandSpec } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
+import {
+  findRepoWideAllowPrefixes,
+  repoWideAllowPrefixMessage,
+} from "../shared/allow-prefix-policy.js";
 
 export type CommitParsed = {
   taskId: string;
@@ -58,14 +62,15 @@ export const commitSpec: CommandSpec<CommitParsed> = {
       name: "allow",
       valueHint: "<path-prefix>",
       repeatable: true,
-      description: "Repeatable. Allowed path prefix (git-path).",
+      description:
+        "Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: `agentplane guard suggest-allow --format args`).",
     },
     {
       kind: "boolean",
       name: "auto-allow",
       default: false,
-      description:
-        "Infer --allow prefixes from staged paths (only when no explicit --allow is provided).",
+      description: "Deprecated. Disabled for safety; pass explicit --allow prefixes.",
+      deprecated: "disabled",
     },
     {
       kind: "boolean",
@@ -100,10 +105,6 @@ export const commitSpec: CommandSpec<CommitParsed> = {
     {
       cmd: 'agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane',
       why: "Create a commit after validating allowlist and subject policy.",
-    },
-    {
-      cmd: 'agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --auto-allow',
-      why: "Infer allowlist prefixes from staged paths.",
     },
     {
       cmd: "agentplane commit 202602030608-F1Q8AB --close",
@@ -143,6 +144,20 @@ export const commitSpec: CommandSpec<CommitParsed> = {
     const allow = raw.opts.allow;
     if (Array.isArray(allow) && allow.some((s) => typeof s === "string" && s.trim() === "")) {
       throw usageError({ spec: commitSpec, message: "Invalid value for --allow: empty." });
+    }
+    const allowList = Array.isArray(allow)
+      ? (allow as string[])
+      : typeof allow === "string"
+        ? [allow]
+        : [];
+    if (findRepoWideAllowPrefixes(allowList).length > 0) {
+      throw usageError({ spec: commitSpec, message: repoWideAllowPrefixMessage("--allow") });
+    }
+    if (raw.opts["auto-allow"] === true) {
+      throw usageError({
+        spec: commitSpec,
+        message: "--auto-allow is disabled; pass explicit --allow <path-prefix>.",
+      });
     }
   },
   parse: (raw) => ({

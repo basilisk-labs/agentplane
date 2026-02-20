@@ -115,6 +115,22 @@ describe("guard/impl/allow", () => {
       code: "E_USAGE",
       message: "Provide at least one allowed prefix",
     });
+    await expect(
+      stageAllowlist({
+        ctx: ctxEmptyAllow as never,
+        allow: ["."],
+        allowTasks: false,
+        tasksPath: ".agentplane/tasks.json",
+      }),
+    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+    await expect(
+      stageAllowlist({
+        ctx: ctxEmptyAllow as never,
+        allow: ["."],
+        allowTasks: false,
+        tasksPath: ".agentplane/tasks.json",
+      }),
+    ).rejects.toThrow("Repo-wide allowlist");
 
     await expect(
       stageAllowlist({

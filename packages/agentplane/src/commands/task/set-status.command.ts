@@ -1,6 +1,10 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { toStringList } from "../../cli/spec/parse-utils.js";
+import {
+  findRepoWideAllowPrefixes,
+  repoWideAllowPrefixMessage,
+} from "../../shared/allow-prefix-policy.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { cmdTaskSetStatus } from "./set-status.js";
@@ -79,13 +83,15 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
       name: "commit-allow",
       valueHint: "<path-prefix>",
       repeatable: true,
-      description: "Repeatable. Allowlist prefix for commit-from-comment staging.",
+      description:
+        "Repeatable. Allowlist prefix for commit-from-comment staging. Use minimal prefixes; '.' is rejected.",
     },
     {
       kind: "boolean",
       name: "commit-auto-allow",
       default: false,
-      description: "Auto-derive allowlist prefixes from staged paths (commit-from-comment).",
+      description: "Deprecated. Disabled for safety; pass explicit --commit-allow prefixes.",
+      deprecated: "disabled",
     },
     {
       kind: "boolean",
@@ -147,6 +153,25 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
       throw usageError({
         spec: taskSetStatusSpec,
         message: "Invalid value for --commit-allow: empty.",
+      });
+    }
+    if (findRepoWideAllowPrefixes(allow).length > 0) {
+      throw usageError({
+        spec: taskSetStatusSpec,
+        message: repoWideAllowPrefixMessage("--commit-allow"),
+      });
+    }
+    if (raw.opts["commit-auto-allow"] === true) {
+      throw usageError({
+        spec: taskSetStatusSpec,
+        message: "--commit-auto-allow is disabled; pass explicit --commit-allow <path-prefix>.",
+      });
+    }
+    if (raw.opts["commit-from-comment"] === true && allow.length === 0) {
+      throw usageError({
+        spec: taskSetStatusSpec,
+        message:
+          "--commit-from-comment requires --commit-allow <path-prefix> (tip: `agentplane guard suggest-allow --format args`).",
       });
     }
   },
