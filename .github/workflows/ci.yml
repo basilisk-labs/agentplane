@@ -62,7 +62,7 @@ jobs:
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
       - name: Lint
-        run: bun run lint
+        run: bun run lint:core
       - name: Unit Tests (Fast)
         run: bun run test:fast
         env:

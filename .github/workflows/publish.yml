@@ -137,7 +137,7 @@ jobs:
           bun run release:parity
           bun run build
           bun run docs:cli:check
-          bun run lint
+          bun run lint:core
           bun test packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
 
   publish:
