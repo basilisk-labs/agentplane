@@ -63,7 +63,7 @@ a {
 
 .navbar__item.navbar__link {
   border: 1px solid transparent;
-  border-radius: 2px;
+  border-radius: 0;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.76rem;
   line-height: 1.2;

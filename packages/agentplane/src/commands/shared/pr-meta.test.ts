@@ -6,14 +6,17 @@ import { resolveShellInvocation, runShellCommand } from "./pr-meta.js";
 
 describe("pr-meta shell invocations", () => {
   let originalComspec: string | undefined;
+  let originalComSpec: string | undefined;
 
   beforeEach(() => {
     originalComspec = process.env.COMSPEC;
+    originalComSpec = process.env.ComSpec;
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
     process.env.COMSPEC = originalComspec;
+    process.env.ComSpec = originalComSpec;
   });
 
   it("uses POSIX shell on non-Windows", () => {
@@ -26,6 +29,8 @@ describe("pr-meta shell invocations", () => {
 
   it("uses cmd.exe on Windows", () => {
     vi.spyOn(os, "platform").mockReturnValue("win32");
+    delete process.env.COMSPEC;
+    delete process.env.ComSpec;
     expect(resolveShellInvocation("echo hello")).toEqual({
       command: "cmd.exe",
       args: ["/d", "/s", "/c", "echo hello"],
@@ -34,6 +39,7 @@ describe("pr-meta shell invocations", () => {
 
   it("uses COMSPEC when provided", () => {
     vi.spyOn(os, "platform").mockReturnValue("win32");
+    delete process.env.ComSpec;
     process.env.COMSPEC = "custom-cmd.exe";
     expect(resolveShellInvocation("echo hello")).toEqual({
       command: "custom-cmd.exe",
@@ -43,6 +49,8 @@ describe("pr-meta shell invocations", () => {
 
   it("uses current shell invocation for command execution", async () => {
     vi.spyOn(os, "platform").mockReturnValue("win32");
+    delete process.env.COMSPEC;
+    delete process.env.ComSpec;
     const execFileAsync = vi.spyOn(git, "execFileAsync").mockResolvedValue({
       stdout: "ok",
       stderr: "",
