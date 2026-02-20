@@ -1,4 +1,16 @@
 export const COMMAND_SNIPPETS = {
+  core: {
+    taskList: "agentplane task list",
+    taskShow: "agentplane task show <task-id>",
+    taskNew:
+      'agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag>',
+    startTask: 'agentplane start <task-id> --author <ROLE> --body "Start: ..."',
+    verifyTask: 'agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."',
+    finishTask:
+      'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev> --close-commit',
+    quickstart: "agentplane quickstart",
+    role: "agentplane role <ROLE>",
+  },
   sync: {
     pullConfigured: "agentplane sync --direction pull",
     pushConfiguredWithYes: "agentplane sync --direction push --yes",

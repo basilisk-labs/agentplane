@@ -38,7 +38,7 @@ export async function cmdBackendSyncParsed(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: `Configured backend is "${backendId}", not "${opts.flags.backendId}"`,
-        context: { command: "backend sync" },
+        context: { command: "backend sync", reason_code: "sync_backend_mismatch" },
       });
     }
     if (!backend.sync) {
@@ -86,7 +86,7 @@ export async function cmdSyncParsed(opts: {
         exitCode: 2,
         code: "E_USAGE",
         message: `Configured backend is "${backendId}", not "${opts.flags.backendId}"`,
-        context: { command: "sync" },
+        context: { command: "sync", reason_code: "sync_backend_mismatch" },
       });
     }
     if (!backend.sync) {

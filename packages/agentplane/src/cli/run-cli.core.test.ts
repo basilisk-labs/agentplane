@@ -125,6 +125,18 @@ describe("runCli", () => {
     }
   });
 
+  it("rejects unsupported trailing tokens after --help", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["sync", "redmine", "--help", "--bogus"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Unsupported flag(s) after --help");
+      expect(io.stderr).toContain("agentplane help help --compact");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("prints version on --version", async () => {
     const pkg = JSON.parse(
       readFileSync(path.join(process.cwd(), "packages/agentplane/package.json"), "utf8"),

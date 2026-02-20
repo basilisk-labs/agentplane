@@ -225,15 +225,12 @@ function resolveAgentplaneHome(): string {
 
 function resolveErrorGuidance(err: CliError): ErrorGuidance {
   const command = typeof err.context?.command === "string" ? err.context.command : undefined;
+  const reasonCode =
+    typeof err.context?.reason_code === "string" ? String(err.context.reason_code) : undefined;
   const usage = command ? `agentplane help ${command} --compact` : "agentplane help";
   switch (err.code) {
     case "E_USAGE": {
-      if (
-        command &&
-        command.includes("sync") &&
-        err.message.startsWith('Configured backend is "') &&
-        err.message.includes('", not "')
-      ) {
+      if (reasonCode === "sync_backend_mismatch") {
         return {
           hint: "Configured backend id mismatch. Check active backend and retry with a matching id.",
           nextAction: {
@@ -489,9 +486,29 @@ export async function runCli(argv: string[]): Promise<number> {
     if (globals.help) {
       const matchedHelp = matchCommandCatalog(rest);
       if (matchedHelp) {
-        const helpTail = rest
-          .slice(matchedHelp.consumed)
-          .filter((token) => HELP_TAIL_OPTIONS.has(token));
+        const rawHelpTail = rest.slice(matchedHelp.consumed);
+        const commandFlags = new Set<string>();
+        for (const opt of matchedHelp.entry.spec.options ?? []) {
+          const optRecord = opt as Record<string, unknown>;
+          const long = typeof optRecord.name === "string" ? optRecord.name.trim() : "";
+          if (long) commandFlags.add(`--${long}`);
+          const short = typeof optRecord.alias === "string" ? optRecord.alias.trim() : "";
+          if (short) commandFlags.add(`-${short}`);
+        }
+        const invalidHelpTail = rawHelpTail.filter(
+          (token) =>
+            token.startsWith("-") && !HELP_TAIL_OPTIONS.has(token) && !commandFlags.has(token),
+        );
+        if (invalidHelpTail.length > 0) {
+          throw usageError({
+            spec: helpSpec,
+            command: "help",
+            message: `Unsupported flag(s) after --help: ${invalidHelpTail.join(", ")}.`,
+          });
+        }
+        const helpTail = rawHelpTail.filter(
+          (token) => token.startsWith("-") && HELP_TAIL_OPTIONS.has(token),
+        );
         return await runCli2HelpFast(["help", ...matchedHelp.entry.spec.id, ...helpTail]);
       }
       return await runCli2HelpFast(["help", ...rest]);
