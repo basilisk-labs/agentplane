@@ -29,6 +29,31 @@ export function doneRatioForStatus(status: string): number | null {
   return 0;
 }
 
+function inferStatusFromIssue(issue: Record<string, unknown>): string {
+  const statusVal = isRecord(issue.status) ? issue.status : null;
+  const statusName = toStringSafe(statusVal?.name).trim().toLowerCase();
+  const doneRatio = typeof issue.done_ratio === "number" ? issue.done_ratio : null;
+  const isClosed = statusVal?.is_closed === true;
+
+  // Redmine defaults (without explicit status_map) commonly use these ids.
+  const statusId = typeof statusVal?.id === "number" ? statusVal.id : null;
+  if (statusId === 2) return "DOING";
+  if (statusId === 3 || statusId === 5 || statusId === 6) return "DONE";
+
+  if (isClosed || (doneRatio !== null && doneRatio >= 100)) return "DONE";
+  if (statusName.includes("progress") || statusName.includes("doing")) return "DOING";
+  if (
+    statusName.includes("done") ||
+    statusName.includes("closed") ||
+    statusName.includes("resolved") ||
+    statusName.includes("complete")
+  ) {
+    return "DONE";
+  }
+  if (doneRatio !== null && doneRatio > 0) return "DOING";
+  return "TODO";
+}
+
 export function issueToTask(opts: {
   issue: Record<string, unknown>;
   taskIdOverride?: string;
@@ -44,7 +69,7 @@ export function issueToTask(opts: {
   const status =
     statusId !== null && opts.reverseStatus.has(statusId)
       ? opts.reverseStatus.get(statusId)
-      : "TODO";
+      : inferStatusFromIssue(opts.issue);
 
   const verifyVal = customFieldValue(opts.issue, opts.customFields.verify);
   const commitVal = customFieldValue(opts.issue, opts.customFields.commit);

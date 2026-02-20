@@ -780,6 +780,88 @@ describe("RedmineBackend (mocked)", () => {
     expect(cached).toHaveLength(1);
   });
 
+  it("infers DOING and DONE from Redmine status when status_map is missing", async () => {
+    const issues: Record<string, unknown>[] = [
+      {
+        id: 101,
+        subject: "In progress issue",
+        description: "",
+        status: { id: 2, name: "In Progress" },
+        custom_fields: [{ id: 1, value: "202601300000-DOING1" }],
+      },
+      {
+        id: 102,
+        subject: "Closed issue",
+        description: "",
+        status: { id: 5, name: "Closed", is_closed: true },
+        custom_fields: [{ id: 1, value: "202601300000-DONE01" }],
+      },
+    ];
+
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      const reqUrl = new URL(url);
+      const pathname = reqUrl.pathname.replace(/^\//u, "");
+      const method = init?.method ?? "GET";
+      if (pathname === "issues.json" && method === "GET") {
+        return Response.json({ issues, total_count: issues.length }, { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    });
+
+    const cache = new LocalBackend({ dir: tempDir });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache },
+    );
+
+    const tasks = await backend.listTasks();
+    const byId = new Map(tasks.map((task) => [task.id, task.status]));
+    expect(byId.get("202601300000-DOING1")).toBe("DOING");
+    expect(byId.get("202601300000-DONE01")).toBe("DONE");
+  });
+
+  it("falls back to status inference when status_map is partial", async () => {
+    const issues: Record<string, unknown>[] = [
+      {
+        id: 201,
+        subject: "Started",
+        description: "",
+        status: { id: 2, name: "In Progress" },
+        custom_fields: [{ id: 1, value: "202601300000-DOING2" }],
+      },
+    ];
+
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      const reqUrl = new URL(url);
+      const pathname = reqUrl.pathname.replace(/^\//u, "");
+      const method = init?.method ?? "GET";
+      if (pathname === "issues.json" && method === "GET") {
+        return Response.json({ issues, total_count: issues.length }, { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    });
+
+    const cache = new LocalBackend({ dir: tempDir });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1, DONE: 5 },
+        custom_fields: { task_id: 1 },
+      },
+      { cache },
+    );
+
+    const tasks = await backend.listTasks();
+    expect(tasks[0]?.status).toBe("DOING");
+  });
+
   it("creates issues on writeTask and writes custom fields", async () => {
     const issues: Record<string, unknown>[] = [];
     let createdPayload: Record<string, unknown> | null = null;
