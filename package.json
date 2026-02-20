@@ -49,6 +49,7 @@
     "lint": "bun run lint:core && bun run lint:website",
     "lint:core": "eslint packages scripts eslint.config.cjs vitest.config.ts",
     "lint:website": "eslint website",
+    "workflows:lint": "node scripts/run-workflows-lint.mjs",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
