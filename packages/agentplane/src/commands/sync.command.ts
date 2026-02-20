@@ -1,4 +1,5 @@
 import type { CommandCtx, CommandSpec } from "../cli/spec/spec.js";
+import { COMMAND_SNIPPETS } from "../cli/command-snippets.js";
 import type { CommandContext } from "./shared/task-backend.js";
 import { cmdSyncParsed, type SyncParsed } from "./backend.js";
 
@@ -37,8 +38,14 @@ export const syncSpec: CommandSpec<SyncParsed> = {
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],
   examples: [
-    { cmd: "agentplane sync --direction pull", why: "Pull from backend (configured backend id)." },
-    { cmd: "agentplane sync redmine --direction push --yes", why: "Push to redmine backend." },
+    {
+      cmd: COMMAND_SNIPPETS.sync.pullConfigured,
+      why: "Pull from backend (configured backend id).",
+    },
+    {
+      cmd: COMMAND_SNIPPETS.sync.pushRedmineExplicitWithYes,
+      why: "Push to redmine backend.",
+    },
   ],
   parse: (raw) => ({
     backendId: raw.args.id ? String(raw.args.id) : null,

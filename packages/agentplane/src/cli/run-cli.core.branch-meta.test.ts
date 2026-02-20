@@ -566,6 +566,39 @@ describe("runCli", () => {
     }
   });
 
+  it("backend sync defaults direction to push when omitted", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const sync = vi.fn().mockImplementation(() => Promise.resolve());
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", sync }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["backend", "sync", "redmine", "--yes", "--root", root]);
+      expect(code).toBe(0);
+      expect(sync).toHaveBeenCalledWith({
+        direction: "push",
+        conflict: "diff",
+        quiet: false,
+        confirm: true,
+      });
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("sync rejects backend id mismatches", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -588,6 +621,8 @@ describe("runCli", () => {
       const code = await runCli(["sync", "local", "--direction", "push", "--root", root]);
       expect(code).toBe(2);
       expect(io.stderr).toContain('Configured backend is "redmine", not "local"');
+      expect(io.stderr).toContain("Configured backend id mismatch");
+      expect(io.stderr).toContain("next_action: agentplane config show");
     } finally {
       io.restore();
       spy.mockRestore();
@@ -753,10 +788,6 @@ describe("runCli", () => {
       { args: ["sync", "--wat"], cmd: "sync" },
       { args: ["sync", "a", "b"], cmd: "sync" },
       { args: ["backend", "sync"], cmd: "backend sync" },
-      {
-        args: ["backend", "sync", "redmine", "--direction"],
-        cmd: "backend sync",
-      },
       {
         args: ["backend", "sync", "redmine", "--direction", "noop"],
         cmd: "backend sync",

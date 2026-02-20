@@ -63,6 +63,7 @@ const GLOBAL_FLAGS: readonly GlobalFlagDef[] = [
 const GLOBAL_FLAG_FORMS = new Map<string, GlobalFlagDef>(
   GLOBAL_FLAGS.flatMap((def) => def.forms.map((form) => [form, def] as const)),
 );
+const HELP_TAIL_OPTIONS = new Set(["--compact", "--json"]);
 
 function prescanJsonErrors(argv: readonly string[]): boolean {
   // If parseGlobalArgs throws (e.g. missing --root value), we still want to honor
@@ -227,6 +228,21 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
   const usage = command ? `agentplane help ${command} --compact` : "agentplane help";
   switch (err.code) {
     case "E_USAGE": {
+      if (
+        command &&
+        command.includes("sync") &&
+        err.message.startsWith('Configured backend is "') &&
+        err.message.includes('", not "')
+      ) {
+        return {
+          hint: "Configured backend id mismatch. Check active backend and retry with a matching id.",
+          nextAction: {
+            command: "agentplane config show",
+            reason: "inspect active backend id before running sync",
+            reasonCode: "sync_backend_mismatch",
+          },
+        };
+      }
       return {
         hint: `See \`${usage}\` for usage.`,
         nextAction: {
@@ -471,6 +487,13 @@ export async function runCli(argv: string[]): Promise<number> {
     // - agentplane --help
     // - agentplane <cmd...> --help [--compact|--json]
     if (globals.help) {
+      const matchedHelp = matchCommandCatalog(rest);
+      if (matchedHelp) {
+        const helpTail = rest
+          .slice(matchedHelp.consumed)
+          .filter((token) => HELP_TAIL_OPTIONS.has(token));
+        return await runCli2HelpFast(["help", ...matchedHelp.entry.spec.id, ...helpTail]);
+      }
       return await runCli2HelpFast(["help", ...rest]);
     }
     if (rest.length === 0) {

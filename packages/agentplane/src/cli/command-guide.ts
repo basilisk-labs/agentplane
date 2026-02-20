@@ -1,3 +1,5 @@
+import { COMMAND_SNIPPETS } from "./command-snippets.js";
+
 type CheatSheetRow = {
   operation: string;
   command: string;
@@ -161,7 +163,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "REDMINE",
     lines: [
-      "- Sync before/after updates: `agentplane sync redmine --direction pull` / `agentplane sync redmine --direction push --yes`",
+      `- Sync before/after updates: \`${COMMAND_SNIPPETS.sync.pullRedmineExplicit}\` / \`${COMMAND_SNIPPETS.sync.pushRedmineExplicitWithYes}\``,
       "- Then use normal task/doc commands (`agentplane task list` / `agentplane task show` / `agentplane task update` / `agentplane task doc set`) as needed.",
     ],
   },

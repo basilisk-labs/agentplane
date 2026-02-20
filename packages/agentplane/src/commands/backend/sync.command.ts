@@ -1,4 +1,5 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
+import { COMMAND_SNIPPETS } from "../../cli/command-snippets.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { suggestOne } from "../../cli/spec/suggest.js";
 import type { CommandContext } from "../shared/task-backend.js";
@@ -12,7 +13,7 @@ export const backendSpec: CommandSpec<BackendRootParsed> = {
   summary: "Backend-related operations.",
   description: "This is a command group. Use a subcommand such as `agentplane backend sync ...`.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
-  examples: [{ cmd: "agentplane backend sync local --direction pull", why: "Sync the backend." }],
+  examples: [{ cmd: COMMAND_SNIPPETS.backendSync.pullLocal, why: "Sync the backend." }],
   parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
 };
 
@@ -27,8 +28,8 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
       name: "direction",
       valueHint: "<push|pull>",
       choices: ["push", "pull"],
-      required: true,
-      description: "Sync direction.",
+      default: "push",
+      description: "Sync direction (default: push).",
     },
     {
       kind: "string",
@@ -42,15 +43,15 @@ export const backendSyncSpec: CommandSpec<BackendSyncParsed> = {
     { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
   ],
   examples: [
-    { cmd: "agentplane backend sync local --direction pull", why: "Pull from backend." },
+    { cmd: COMMAND_SNIPPETS.backendSync.pullLocal, why: "Pull from backend." },
     {
-      cmd: "agentplane backend sync redmine --direction push --yes",
+      cmd: COMMAND_SNIPPETS.backendSync.pushRedmineWithYes,
       why: "Push to a networked backend with explicit approval.",
     },
   ],
   parse: (raw) => ({
     backendId: String(raw.args.id),
-    direction: raw.opts.direction as BackendSyncParsed["direction"],
+    direction: (raw.opts.direction ?? "push") as BackendSyncParsed["direction"],
     conflict: (raw.opts.conflict ?? "diff") as BackendSyncParsed["conflict"],
     yes: raw.opts.yes === true,
     quiet: raw.opts.quiet === true,

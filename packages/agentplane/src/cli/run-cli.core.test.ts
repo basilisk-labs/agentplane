@@ -88,6 +88,43 @@ describe("runCli", () => {
     }
   });
 
+  it("prints command help when --help is trailing after positional args/options", async () => {
+    const cases: { argv: string[]; usage: string }[] = [
+      { argv: ["sync", "redmine", "--help"], usage: "agentplane sync [<id>] [options]" },
+      {
+        argv: ["backend", "sync", "redmine", "--help"],
+        usage: "agentplane backend sync <id> [options]",
+      },
+      {
+        argv: ["sync", "--direction", "pull", "--help"],
+        usage: "agentplane sync [<id>] [options]",
+      },
+    ];
+
+    for (const entry of cases) {
+      const io = captureStdIO();
+      try {
+        const code = await runCli(entry.argv);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain(entry.usage);
+      } finally {
+        io.restore();
+      }
+    }
+  });
+
+  it("preserves help output mode flags for trailing --help", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["sync", "redmine", "--help", "--compact"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Usage:");
+      expect(io.stdout).not.toContain("Examples:");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("prints version on --version", async () => {
     const pkg = JSON.parse(
       readFileSync(path.join(process.cwd(), "packages/agentplane/package.json"), "utf8"),
