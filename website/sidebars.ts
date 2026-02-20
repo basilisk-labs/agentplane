@@ -31,7 +31,7 @@ function resolveReleaseDocItems(): string[] {
         version: [major, minor, patch],
       };
     })
-    .filter(Boolean)
+    .filter((entry): entry is { item: string; version: number[] } => entry !== null)
     .toSorted((left, right) => compareSemverDesc(left.version, right.version))
     .map((entry) => entry.item);
 }

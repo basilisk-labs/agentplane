@@ -32,6 +32,9 @@ runStep("CLI docs freshness (check)", () =>
     AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
   }),
 );
+runStep("Docs site pipeline (generate + typecheck + build + design)", () =>
+  run("bun", ["run", "docs:site:check"]),
+);
 runStep("Workflows lint (actionlint)", () => run("bun", ["run", "workflows:lint"]));
 runStep("Lint (core)", () => run("bun", ["run", "lint:core"]));
 runStep("Unit tests (fast)", () => run("bun", ["run", "test:fast"], testEnv));
