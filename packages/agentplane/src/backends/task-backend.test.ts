@@ -787,14 +787,14 @@ describe("RedmineBackend (mocked)", () => {
         subject: "In progress issue",
         description: "",
         status: { id: 2, name: "In Progress" },
-        custom_fields: [{ id: 1, value: "202601300000-DOING1" }],
+        custom_fields: [{ id: 1, value: "202601300000-D2GNQ1" }],
       },
       {
         id: 102,
         subject: "Closed issue",
         description: "",
         status: { id: 5, name: "Closed", is_closed: true },
-        custom_fields: [{ id: 1, value: "202601300000-DONE01" }],
+        custom_fields: [{ id: 1, value: "202601300000-D2NEQ1" }],
       },
     ];
 
@@ -821,8 +821,8 @@ describe("RedmineBackend (mocked)", () => {
 
     const tasks = await backend.listTasks();
     const byId = new Map(tasks.map((task) => [task.id, task.status]));
-    expect(byId.get("202601300000-DOING1")).toBe("DOING");
-    expect(byId.get("202601300000-DONE01")).toBe("DONE");
+    expect(byId.get("202601300000-D2GNQ1")).toBe("DOING");
+    expect(byId.get("202601300000-D2NEQ1")).toBe("DONE");
   });
 
   it("falls back to status inference when status_map is partial", async () => {
@@ -832,7 +832,7 @@ describe("RedmineBackend (mocked)", () => {
         subject: "Started",
         description: "",
         status: { id: 2, name: "In Progress" },
-        custom_fields: [{ id: 1, value: "202601300000-DOING2" }],
+        custom_fields: [{ id: 1, value: "202601300000-D2GNQ2" }],
       },
     ];
 
