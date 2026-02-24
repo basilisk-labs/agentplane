@@ -51,6 +51,14 @@ if (afterFormat) {
 }
 
 run("bun", ["run", "ci:local"]);
+const afterCi = trackedChangesShort();
+if (afterCi) {
+  process.stderr.write(
+    "\npre-push blocked: ci:local changed tracked files. Commit or revert those changes and push again.\n",
+  );
+  process.stderr.write(`${afterCi}\n`);
+  throw new Error("pre-push blocked due to post-ci tracked file mutations");
+}
 
 if (isReleasePush) {
   run("node", ["scripts/check-release-notes.mjs"]);
