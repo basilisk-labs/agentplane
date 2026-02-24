@@ -35,8 +35,27 @@ async function readPackages() {
   return rows;
 }
 
+function renderPackagesTable(rows) {
+  const header = ["Package", "Version", "Folder"];
+  const body = rows.map((row) => [
+    `\`${row.name}\``,
+    `\`${row.version}\``,
+    `\`packages/${row.id}\``,
+  ]);
+  const allRows = [header, ...body];
+  const widths = header.map((_, index) =>
+    Math.max(...allRows.map((cells) => String(cells[index] ?? "").length)),
+  );
+
+  const formatRow = (cells) =>
+    `| ${cells.map((cell, i) => String(cell).padEnd(widths[i], " ")).join(" | ")} |`;
+  const separator = `| ${widths.map((w) => "-".repeat(Math.max(3, w))).join(" | ")} |`;
+  return [formatRow(header), separator, ...body.map((cells) => formatRow(cells))];
+}
+
 async function main() {
   const packages = await readPackages();
+  const packageTable = renderPackagesTable(packages);
   const lines = [
     "---",
     "title: Generated Reference",
@@ -48,9 +67,7 @@ async function main() {
     "",
     "## Packages",
     "",
-    "| Package | Version | Folder |",
-    "| --- | --- | --- |",
-    ...packages.map((pkg) => `| \`${pkg.name}\` | \`${pkg.version}\` | \`packages/${pkg.id}\` |`),
+    ...packageTable,
     "",
     "## Update Contract",
     "",
