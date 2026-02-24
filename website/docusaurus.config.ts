@@ -44,6 +44,7 @@ const config = {
         blog: {
           showReadingTime: true,
           routeBasePath: "/blog",
+          blogListComponent: "@site/src/pages/blog/index.tsx",
           blogTitle: "AgentPlane Blog",
           blogDescription: "Release notes, workflow deep dives, and implementation guidance.",
           feedOptions: {
