@@ -145,12 +145,12 @@ Sync the configured backend (push or pull).
 Usage:
 
 ```text
-agentplane backend sync <id> --direction <push|pull> [options]
+agentplane backend sync <id> [options]
 ```
 
 Options:
 
-- `--direction <push|pull>`: Sync direction. (required, choices=push|pull)
+- `--direction <push|pull>`: Sync direction (default: push). (choices=push|pull, default=push)
 - `--conflict <diff|prefer-local|prefer-remote|fail>`: Conflict handling policy (default: diff). (choices=diff|prefer-local|prefer-remote|fail, default=diff)
 - `--yes`: Auto-approve network access. (default=false)
 - `--quiet`: Reduce output noise. (default=false)
