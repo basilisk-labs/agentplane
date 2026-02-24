@@ -1,31 +1,57 @@
 ---
 slug: roadmap-0-5-agentplane-runner
-title: "Roadmap 0.1 -> 0.5: From Baseline CLI to Agentplane Runner"
+title: "Roadmap 0.1 -> 0.5: Operational Path to Agentplane Runner"
 authors: [team]
 tags: [workflow, operations]
 ---
 
 ![Agentplane roadmap abstract illustration](/img/blog/roadmap-kandinsky-agentplane.svg)
 
-This roadmap defines the next product arc from baseline workflow discipline to autonomous multi-agent execution.
+AgentPlane started as a deterministic CLI workflow layer for repository-native task execution. This roadmap defines how it evolves from baseline discipline to autonomous multi-agent execution while preserving auditability and policy control.
+
+<!-- truncate -->
+
+## Why Now
+
+Three constraints shape the roadmap:
+
+- Teams want stronger automation without losing control of repository state.
+- Prompt quality and execution quality must be treated as system design, not ad-hoc tuning.
+- Extensibility must be explicit so teams can evolve agents, tools, and scenarios without forking core behavior.
+
+The roadmap is structured to reduce risk by sequencing foundation, contracts, extension, and autonomy in that order.
+
+## Version-by-Version Roadmap
 
 ## 0.1 Foundation and Baseline Workflow
 
-- Initial Agentplane CLI baseline and repository structure.
-- First end-to-end local task lifecycle.
-- Core conventions for task tracking, verification logs, and exports.
+- Establish the initial AgentPlane CLI baseline and project structure.
+- Define the first end-to-end task lifecycle for local execution.
+- Introduce core task tracking, verification logging, and export conventions.
+
+Operational outcome:
+
+- Teams can run a deterministic local workflow with explicit task state and auditable transitions.
 
 ## 0.2 Architecture and Codebase Formalization
 
-- Formalized architecture boundaries and code contracts.
-- Modularization for simpler scaling and lower coupling.
-- Formalized operational processes at the CLI level.
+- Formalize architecture boundaries and core codebase contracts.
+- Modularize subsystems to keep scaling simple and predictable.
+- Formalize operational processes at the CLI level.
+
+Operational outcome:
+
+- Lower coupling and clearer responsibility boundaries across CLI, policy, and backend layers.
 
 ## 0.3 Prompt System Improvements
 
-- Better prompt determinism and execution quality.
-- Formalized process contracts at the agent-prompt level.
-- Claude Code-compatible prompt version.
+- Improve agent prompts for better determinism and execution quality.
+- Formalize process contracts at the agent-prompt level.
+- Deliver a dedicated Claude Code-compatible version.
+
+Operational outcome:
+
+- More stable agent behavior under real repository constraints and clearer role-level execution contracts.
 
 ## 0.4 Recipes and Plugin Extension Model
 
@@ -33,49 +59,49 @@ This roadmap defines the next product arc from baseline workflow discipline to a
 - Define recipe packaging, versioning, and compatibility rules.
 - Add recipe discovery, installation, and validation flows in CLI.
 
+Operational outcome:
+
+- Extension becomes first-class: teams can introduce domain-specific capability without patching core internals.
+
 ## 0.5 Agentplane Runner
 
-- Autonomous task execution with coordinated custom-agent swarms.
-- Deterministic orchestration primitives for safe multi-agent runs.
-- Stronger observability around execution, verification, and outcomes.
+- Build Agentplane Runner for autonomous task execution.
+- Enable coordinated swarm-style execution by custom agents.
+- Provide orchestration primitives for reliable multi-agent runs.
 
-## Illustration System for Roadmap Posts
+Operational outcome:
 
-For this roadmap, we introduced a new editorial visual system:
+- Autonomous execution moves from manual orchestration to controlled, policy-aware runtime behavior.
 
-- Kandinsky-inspired abstraction in strict black and white.
-- AgentPlane-native motifs (workflow arrows, CLI fragments, audit/process cues).
-- Deterministic code generation (fixed seed) for reproducibility.
+## Operational Impact for Users
 
-The style contract is now specified in `DESIGN.md` under the editorial illustrations section.
+Across versions, users should expect:
 
-## Code-Based Illustration Generation: Evaluated Options
+- Faster execution loops with clearer policy boundaries.
+- Better reproducibility for planning, implementation, and verification paths.
+- Lower overhead when introducing custom automation patterns.
+- Stronger traceability from intent to repository mutation.
 
-We evaluated three practical approaches:
+## Risks and Open Questions
 
-1. Deterministic SVG generation script (chosen).
-2. Procedural Canvas/PNG generation with Node renderers.
-3. AI image generation pipeline + post-processing to style constraints.
+Primary delivery risks:
 
-### Option trade-offs
+- Over-complex extension surfaces can reduce adoption if plugin contracts are not strict enough.
+- Autonomous execution can increase failure blast radius if guardrails are not enforced at runtime.
+- Prompt formalization must remain aligned with real execution constraints, not only prompt style.
 
-| Option                       | Strengths                                                   | Weaknesses                                         | Fit for Agentplane |
-| ---------------------------- | ----------------------------------------------------------- | -------------------------------------------------- | ------------------ |
-| Deterministic SVG script     | Versionable, diff-friendly, reproducible, zero binary churn | More manual composition logic                      | Best default       |
-| Procedural Canvas/PNG        | Flexible rendering effects, easy pixel noise/textures       | Binary assets, harder code review diffs            | Good fallback      |
-| AI generation + post-process | Fast ideation and variation volume                          | Low determinism, style drift risk, review friction | Exploration only   |
+Open questions that will shape implementation detail:
 
-## Chosen Implementation
+- Runner execution model under mixed local/remote tool constraints.
+- Cross-recipe compatibility guarantees and version pinning strategy.
+- Default observability contract for multi-agent runs.
 
-We implemented a deterministic SVG generator:
+## What to Expect Next
 
-- Script: `scripts/generate-roadmap-illustration.mjs`
-- Output: `website/static/img/blog/roadmap-kandinsky-agentplane.svg`
+Near-term focus remains on roadmap execution through explicit contracts:
 
-Regenerate locally:
+- finalize editorial and technical contract surfaces for roadmap communication,
+- ship incremental milestones with deterministic verification,
+- publish follow-up release notes as each roadmap segment lands.
 
-```bash
-node scripts/generate-roadmap-illustration.mjs
-```
-
-This gives us a repeatable visual pipeline aligned with the engineering-first design language.
+The direction is straightforward: stronger determinism, safer extensibility, and autonomous execution without sacrificing governance.
