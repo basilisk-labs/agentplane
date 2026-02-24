@@ -20,9 +20,9 @@
 
 ## 0.4 Recipes and Plugin Extension Model
 
-- Implement recipes as reusable execution packages.
-- Add a plugin mechanism to extend the framework.
-- Support custom agents, tools/SKILLS, and scenarios via plugins.
+- Support custom agents, tools/SKILLS, and scenarios through recipes.
+- Define recipe packaging, versioning, and compatibility rules.
+- Add recipe discovery, installation, and validation flows in CLI.
 
 ## 0.5 Agentplane Runner
 
