@@ -1,0 +1,81 @@
+---
+slug: roadmap-0-5-agentplane-runner
+title: "Roadmap 0.1 -> 0.5: From Baseline CLI to Agentplane Runner"
+authors: [team]
+tags: [workflow, operations]
+---
+
+![Agentplane roadmap abstract illustration](/img/blog/roadmap-kandinsky-agentplane.svg)
+
+This roadmap defines the next product arc from baseline workflow discipline to autonomous multi-agent execution.
+
+## 0.1 Foundation and Baseline Workflow
+
+- Initial Agentplane CLI baseline and repository structure.
+- First end-to-end local task lifecycle.
+- Core conventions for task tracking, verification logs, and exports.
+
+## 0.2 Architecture and Codebase Formalization
+
+- Formalized architecture boundaries and code contracts.
+- Modularization for simpler scaling and lower coupling.
+- Formalized operational processes at the CLI level.
+
+## 0.3 Prompt System Improvements
+
+- Better prompt determinism and execution quality.
+- Formalized process contracts at the agent-prompt level.
+- Claude Code-compatible prompt version.
+
+## 0.4 Recipes and Plugin Extension Model
+
+- Support custom agents, tools/SKILLS, and scenarios through recipes.
+- Define recipe packaging, versioning, and compatibility rules.
+- Add recipe discovery, installation, and validation flows in CLI.
+
+## 0.5 Agentplane Runner
+
+- Autonomous task execution with coordinated custom-agent swarms.
+- Deterministic orchestration primitives for safe multi-agent runs.
+- Stronger observability around execution, verification, and outcomes.
+
+## Illustration System for Roadmap Posts
+
+For this roadmap, we introduced a new editorial visual system:
+
+- Kandinsky-inspired abstraction in strict black and white.
+- AgentPlane-native motifs (workflow arrows, CLI fragments, audit/process cues).
+- Deterministic code generation (fixed seed) for reproducibility.
+
+The style contract is now specified in `DESIGN.md` under the editorial illustrations section.
+
+## Code-Based Illustration Generation: Evaluated Options
+
+We evaluated three practical approaches:
+
+1. Deterministic SVG generation script (chosen).
+2. Procedural Canvas/PNG generation with Node renderers.
+3. AI image generation pipeline + post-processing to style constraints.
+
+### Option trade-offs
+
+| Option                       | Strengths                                                   | Weaknesses                                         | Fit for Agentplane |
+| ---------------------------- | ----------------------------------------------------------- | -------------------------------------------------- | ------------------ |
+| Deterministic SVG script     | Versionable, diff-friendly, reproducible, zero binary churn | More manual composition logic                      | Best default       |
+| Procedural Canvas/PNG        | Flexible rendering effects, easy pixel noise/textures       | Binary assets, harder code review diffs            | Good fallback      |
+| AI generation + post-process | Fast ideation and variation volume                          | Low determinism, style drift risk, review friction | Exploration only   |
+
+## Chosen Implementation
+
+We implemented a deterministic SVG generator:
+
+- Script: `scripts/generate-roadmap-illustration.mjs`
+- Output: `website/static/img/blog/roadmap-kandinsky-agentplane.svg`
+
+Regenerate locally:
+
+```bash
+node scripts/generate-roadmap-illustration.mjs
+```
+
+This gives us a repeatable visual pipeline aligned with the engineering-first design language.

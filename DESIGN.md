@@ -258,6 +258,44 @@ Artifacts should be limited to **one per section**.
 
 ---
 
+## 10. Editorial Illustrations (Roadmap/Blog)
+
+### 10.1 Style goal
+
+Editorial illustrations for roadmap and strategy posts use a **Kandinsky-inspired abstraction** adapted to AgentPlane's engineering language.
+
+### 10.2 Hard style constraints
+
+- Monochrome only: black/white + opacity (no accent colors).
+- Geometric composition first: circles, lines, triangles, rectangles.
+- Add AgentPlane-native motifs inside the abstraction:
+  - workflow arrows (`PLAN -> ... -> EXPORT`),
+  - CLI command fragments in monospace,
+  - task/status markers and grid anchors.
+- Keep the illustration structural, not decorative wallpaper.
+
+### 10.3 Composition rules
+
+- Dense center of gravity with asymmetrical balance.
+- At least one strong focal node (target/rings, black dot, or bold block).
+- Include an engineering-sheet frame or calibration marks.
+- Background remains white; texture comes from sparse grid lines and overlap.
+
+### 10.4 Rendering and delivery rules
+
+- Default deliverable: SVG generated from code for deterministic output.
+- Target canvas: `1600x900` for blog hero usage.
+- Preserve crisp strokes and avoid raster effects.
+- Keep assets in `website/static/img/blog/`.
+
+### 10.5 Reproducibility
+
+- Prefer script-generated illustrations with a fixed seed.
+- A generated illustration must be reproducible by re-running its script.
+- Document generation entrypoint in blog/dev docs when introducing a new style.
+
+---
+
 ## 10. Motion & Microinteractions
 
 ### 10.1 Motion principles
