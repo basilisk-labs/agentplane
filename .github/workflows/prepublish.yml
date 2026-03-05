@@ -80,8 +80,10 @@ jobs:
         run: bun run agents:check
       - name: Release parity (check)
         run: bun run release:parity
-      - name: Build
-        run: bun run build
+      - name: Build packages (dist + manifests)
+        run: |
+          bun run --filter=@agentplaneorg/core build
+          bun run --filter=agentplane build
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
       - name: Lint

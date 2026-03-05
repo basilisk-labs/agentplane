@@ -55,10 +55,11 @@ jobs:
         run: bun run agents:check
       - name: Release parity (check)
         run: bun run release:parity
-      # ESLint is configured with type-aware rules and project references.
-      # A fresh checkout must build `dist/` first so types resolve correctly.
-      - name: Build (required for type-aware lint)
-        run: bun run build
+      # Build package dist + manifests so stale-dist checks pass in CLI/docs gates.
+      - name: Build packages (dist + manifests)
+        run: |
+          bun run --filter=@agentplaneorg/core build
+          bun run --filter=agentplane build
       - name: CLI docs (generated reference check)
         run: bun run docs:cli:check
       - name: Lint
@@ -137,8 +138,10 @@ jobs:
         run: bun run agents:check
       - name: Release parity (check)
         run: bun run release:parity
-      - name: Build (required for package entrypoint resolution)
-        run: bun run build
+      - name: Build packages (dist + manifests)
+        run: |
+          bun run --filter=@agentplaneorg/core build
+          bun run --filter=agentplane build
       - name: Unit tests (platform-critical)
         run: bun test packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
         env:
