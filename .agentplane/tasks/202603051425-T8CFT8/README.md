@@ -1,7 +1,8 @@
 ---
 id: "202603051425-T8CFT8"
 title: "Improve release notes detail and coverage"
-status: "DOING"
+result_summary: "Release notes format and validation upgraded for detailed change coverage"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-05T15:06:23.190Z"
   updated_by: "CODER"
   note: "Verified: release plan/apply tests pass; detailed notes guidance and stricter bullet coverage checks are enforced end-to-end."
-commit: null
+commit:
+  hash: "6f8250d95ad5f48e64c83cbfe24062feb8110e64"
+  message: "✨ T8CFT8 release: enforce detailed notes coverage"
 comments:
   -
     author: "CODER"
     body: "Start: enforce detailed human-readable release notes with broader bullet coverage and aligned validation/test updates."
+  -
+    author: "CODER"
+    body: "Verified: release notes generation now enforces richer human-language detail and stronger bullet coverage checks across plan, apply, and hook validation."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: release plan/apply tests pass; detailed notes guidance and stricter bullet coverage checks are enforced end-to-end."
+  -
+    type: "status"
+    at: "2026-03-05T15:08:05.175Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release notes generation now enforces richer human-language detail and stronger bullet coverage checks across plan, apply, and hook validation."
 doc_version: 2
-doc_updated_at: "2026-03-05T15:06:23.192Z"
+doc_updated_at: "2026-03-05T15:08:05.175Z"
 doc_updated_by: "CODER"
 description: "Make release notes generation enforce richer bullet coverage and detailed human-language summaries of all release differences."
 id_source: "generated"
