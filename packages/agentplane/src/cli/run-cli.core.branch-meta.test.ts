@@ -417,7 +417,17 @@ describe("runCli", () => {
     try {
       const code = await runCli(["preflight", "--json", "--mode", "full", "--root", root]);
       expect(code).toBe(0);
-      const payload = JSON.parse(io.stdout) as Record<string, unknown>;
+      const payload = JSON.parse(io.stdout) as {
+        mode?: unknown;
+        project_detected?: unknown;
+        config_loaded?: { ok?: unknown };
+        quickstart_loaded?: { ok?: unknown };
+        task_list_loaded?: { ok?: unknown };
+        current_branch?: { ok?: unknown };
+        workflow_mode?: unknown;
+        harness_health?: { status?: string; reasons?: string[] };
+        next_actions?: unknown;
+      };
       expect(payload.mode).toBe("full");
       expect(payload.project_detected).toBe(true);
       expect(payload.config_loaded).toMatchObject({ ok: true });
@@ -425,6 +435,8 @@ describe("runCli", () => {
       expect(payload.task_list_loaded).toMatchObject({ ok: true });
       expect(payload.current_branch).toMatchObject({ ok: true });
       expect(payload.workflow_mode).toBe("direct");
+      expect(payload.harness_health?.status).toBe("warn");
+      expect(payload.harness_health?.reasons).toContain("workflow_contract_invalid");
       expect(Array.isArray(payload.next_actions)).toBe(true);
     } finally {
       io.restore();
@@ -441,10 +453,15 @@ describe("runCli", () => {
       const payload = JSON.parse(io.stdout) as {
         mode?: unknown;
         task_list_loaded?: { ok?: unknown; error?: string };
+        harness_health?: { status?: string; reasons?: string[] };
       };
       expect(payload.mode).toBe("quick");
       expect(payload.task_list_loaded?.ok).toBe(false);
       expect(payload.task_list_loaded?.error).toContain("skipped in quick mode");
+      expect(payload.harness_health?.status).toBe("warn");
+      expect(payload.harness_health?.reasons).toEqual(
+        expect.arrayContaining(["workflow_contract_invalid"]),
+      );
     } finally {
       io.restore();
     }
@@ -461,9 +478,12 @@ describe("runCli", () => {
       expect(code).toBe(0);
       const payload = JSON.parse(io.stdout) as {
         workflow_loaded?: { ok?: boolean; error?: string };
+        harness_health?: { status?: string; reasons?: string[] };
       };
       expect(payload.workflow_loaded?.ok).toBe(true);
       expect(payload.workflow_loaded?.error).toContain("workflow checks disabled");
+      expect(payload.harness_health?.status).toBe("ok");
+      expect(payload.harness_health?.reasons).toEqual([]);
     } finally {
       io.restore();
       if (prev === undefined) delete process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT;

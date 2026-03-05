@@ -92,6 +92,10 @@ type PreflightReport = {
     require_verify: boolean | "unknown";
     require_network: boolean | "unknown";
   };
+  harness_health: {
+    status: "ok" | "warn";
+    reasons: string[];
+  };
   outside_repo_needed: false;
   next_actions: NextAction[];
 };
@@ -148,6 +152,7 @@ async function buildPreflightReport(opts: {
   mode: PreflightMode;
 }): Promise<PreflightReport> {
   const nextActions: NextAction[] = [];
+  const harnessHealthReasons: string[] = [];
   const quickstartText = renderQuickstart();
   const quickstartLoaded: Probe = {
     ok: quickstartText.trim().length > 0,
@@ -182,6 +187,7 @@ async function buildPreflightReport(opts: {
         command: "agentplane config show",
         reason: `config failed validation (${message})`,
       });
+      harnessHealthReasons.push("config_unavailable");
     }
   }
 
@@ -204,6 +210,7 @@ async function buildPreflightReport(opts: {
         command: "agentplane task list",
         reason: `task backend unavailable (${message})`,
       });
+      harnessHealthReasons.push("task_backend_unavailable");
     }
   }
 
@@ -227,6 +234,7 @@ async function buildPreflightReport(opts: {
                 .join(", "),
             };
         if (!workflowValidation.ok) {
+          harnessHealthReasons.push("workflow_contract_invalid");
           nextActions.push({
             command: "agentplane workflow build --validate --dry-run",
             reason: "workflow contract is invalid",
@@ -235,6 +243,7 @@ async function buildPreflightReport(opts: {
       } catch (err) {
         const message = compactError(err);
         workflowLoaded = { ok: false, error: message };
+        harnessHealthReasons.push("workflow_contract_unreadable");
         nextActions.push({
           command: "agentplane workflow build --validate --dry-run",
           reason: `cannot validate workflow (${message})`,
@@ -260,6 +269,7 @@ async function buildPreflightReport(opts: {
       ]);
       workingTree = { ok: true, value: staged.length === 0 && unstagedTracked.length === 0 };
       if (!workingTree.value) {
+        harnessHealthReasons.push("working_tree_dirty");
         nextActions.push({
           command: "git status --short --untracked-files=no",
           reason: "tracked changes detected",
@@ -268,6 +278,7 @@ async function buildPreflightReport(opts: {
     } catch (err) {
       const message = compactError(err);
       workingTree = { ok: false, error: message };
+      harnessHealthReasons.push("working_tree_unreadable");
       nextActions.push({
         command: "git status --short --untracked-files=no",
         reason: `cannot inspect git status (${message})`,
@@ -293,6 +304,10 @@ async function buildPreflightReport(opts: {
     current_branch: branch,
     workflow_mode: inferWorkflowMode(config),
     approvals: inferApprovals(config),
+    harness_health: {
+      status: harnessHealthReasons.length === 0 ? "ok" : "warn",
+      reasons: dedupeStrings(harnessHealthReasons),
+    },
     outside_repo_needed: false,
     next_actions: nextActions,
   };
@@ -367,6 +382,10 @@ async function cmdPreflight(opts: {
     );
     process.stdout.write(`- current git branch: ${probeValueOrUnknown(report.current_branch)}\n`);
     process.stdout.write(`- workflow_mode: ${report.workflow_mode}\n`);
+    process.stdout.write(`- harness engeneering health: ${report.harness_health.status}\n`);
+    if (report.harness_health.reasons.length > 0) {
+      process.stdout.write(`  - reasons: ${report.harness_health.reasons.join(", ")}\n`);
+    }
     process.stdout.write("- approval gates:\n");
     process.stdout.write(`  - require_plan: ${String(report.approvals.require_plan)}\n`);
     process.stdout.write(`  - require_verify: ${String(report.approvals.require_verify)}\n`);
