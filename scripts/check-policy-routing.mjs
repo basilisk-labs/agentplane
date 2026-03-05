@@ -78,6 +78,12 @@ function main() {
   if (!text.includes("MUST NOT load unrelated policy files")) {
     errors.push("Missing strict routing guard: MUST NOT load unrelated policy files");
   }
+  if (!text.includes("MUST NOT use unconditional policy module loading")) {
+    errors.push("Missing strict routing guard: MUST NOT use unconditional policy module loading");
+  }
+  if (/-\s*IF\s+always\s*->\s*LOAD\s+`/i.test(text)) {
+    errors.push("Unconditional policy loading is forbidden: found `IF always -> LOAD ...`");
+  }
 
   const wildcardInlineCode = collectPaths(text, /`([^`]*\*[^`]*)`/g);
   for (const wildcard of wildcardInlineCode) {

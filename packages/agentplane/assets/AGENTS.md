@@ -62,8 +62,8 @@ Recommended verification baselines:
 
 Routing is strict. Load only files required by matching conditions.
 
-- IF always -> LOAD `.agentplane/policy/security.must.md`
-- IF always -> LOAD `.agentplane/policy/dod.core.md`
+- IF task includes mutating action (file edits, task-state changes, commits, merge/integrate, release/publish) -> LOAD `.agentplane/policy/security.must.md`
+- IF task includes mutating action (file edits, task-state changes, commits, merge/integrate, release/publish) -> LOAD `.agentplane/policy/dod.core.md`
 - IF `workflow_mode=direct` -> LOAD `.agentplane/policy/workflow.direct.md`
 - IF `workflow_mode=branch_pr` -> LOAD `.agentplane/policy/workflow.branch_pr.md`
 - IF task touches release/version/publish paths or `agentplane release ...` -> LOAD `.agentplane/policy/workflow.release.md`
@@ -75,6 +75,7 @@ Routing is strict. Load only files required by matching conditions.
 Routing constraints:
 
 - MUST NOT load unrelated policy files outside matched rules.
+- MUST NOT use unconditional policy module loading (`IF always -> LOAD ...`).
 - MUST keep loaded-policy set minimal (target: 2-4 files per task).
 - If routing is ambiguous, ask one clarifying question before loading extra modules.
 
