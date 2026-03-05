@@ -30,6 +30,24 @@ function assertFilesExist(repoRoot, paths, label, errors) {
   }
 }
 
+function listFilesRecursive(dirPath, relPrefix = "") {
+  if (!fs.existsSync(dirPath)) return [];
+  const entries = fs.readdirSync(dirPath).toSorted((a, b) => a.localeCompare(b));
+  const out = [];
+  for (const entry of entries) {
+    if (entry.startsWith(".")) continue;
+    const abs = path.join(dirPath, entry);
+    const rel = relPrefix ? `${relPrefix}/${entry}` : entry;
+    const st = fs.statSync(abs);
+    if (st.isDirectory()) {
+      out.push(...listFilesRecursive(abs, rel));
+      continue;
+    }
+    if (st.isFile()) out.push(rel);
+  }
+  return out;
+}
+
 function main() {
   const repoRoot = process.cwd();
   const agentsPath = path.join(repoRoot, "AGENTS.md");
@@ -61,6 +79,11 @@ function main() {
     errors.push("Missing strict routing guard: MUST NOT load unrelated policy files");
   }
 
+  const wildcardInlineCode = collectPaths(text, /`([^`]*\*[^`]*)`/g);
+  for (const wildcard of wildcardInlineCode) {
+    errors.push(`Wildcard paths are not allowed in AGENTS.md: ${wildcard}`);
+  }
+
   const loadPaths = collectPaths(text, /->\s*LOAD\s+`([^`]+)`/g);
   const docPaths = collectPaths(text, /-\s*DOC\s+`([^`]+)`/g);
   const examplePaths = collectPaths(text, /-\s*EXAMPLE\s+`([^`]+)`/g);
@@ -75,9 +98,27 @@ function main() {
     errors.push(`Expected at least 3 EXAMPLE paths, got ${examplePaths.length}`);
   }
 
+  const incidentsPath = ".agentplane/policy/incidents.md";
+  if (!docPaths.includes(incidentsPath)) {
+    errors.push(`Missing canonical DOC path: ${incidentsPath}`);
+  }
+  if (!loadPaths.includes(incidentsPath)) {
+    errors.push(`Missing LOAD rule for incidents path: ${incidentsPath}`);
+  }
+
   assertFilesExist(repoRoot, [...new Set(loadPaths)], "LOAD", errors);
   assertFilesExist(repoRoot, [...new Set(docPaths)], "DOC", errors);
   assertFilesExist(repoRoot, [...new Set(examplePaths)], "EXAMPLE", errors);
+
+  const policyDir = path.join(repoRoot, ".agentplane", "policy");
+  const incidentFiles = listFilesRecursive(policyDir).filter((relPath) =>
+    /incident/i.test(path.basename(relPath)),
+  );
+  if (incidentFiles.length !== 1 || incidentFiles[0] !== "incidents.md") {
+    errors.push(
+      `Policy incidents must use a single file (.agentplane/policy/incidents.md). Found: ${incidentFiles.join(", ") || "none"}`,
+    );
+  }
 
   if (errors.length > 0) {
     throw new Error(`Policy routing check failed:\n- ${errors.join("\n- ")}`);

@@ -8,7 +8,7 @@ default_initiator: ORCHESTRATOR
 
 `AGENTS.md` is the policy gateway for agents in this repository.
 It is intentionally compact and only defines hard constraints, task-entry rules, and routing to canonical policy modules.
-Detailed and situational procedures live in `.agentplane/policy/*.md`.
+Detailed procedures live in canonical modules listed in `## CANONICAL DOCS`.
 
 ---
 
@@ -18,9 +18,9 @@ Priority order (highest first):
 
 1. Enforcement: CI, tests, linters, hooks, CLI validations.
 2. Policy gateway: `AGENTS.md`.
-3. Canonical policy modules: `.agentplane/policy/*.md`.
+3. Canonical policy modules listed in `## CANONICAL DOCS`.
 4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `.agentplane/config.json`.
-5. Examples: `.agentplane/policy/examples/*`.
+5. Reference examples listed in `## REFERENCE EXAMPLES`.
 
 Conflict rule:
 
@@ -67,9 +67,10 @@ Routing is strict. Load only files required by matching conditions.
 - IF `workflow_mode=direct` -> LOAD `.agentplane/policy/workflow.direct.md`
 - IF `workflow_mode=branch_pr` -> LOAD `.agentplane/policy/workflow.branch_pr.md`
 - IF task touches release/version/publish paths or `agentplane release ...` -> LOAD `.agentplane/policy/workflow.release.md`
-- IF task modifies code paths (`packages/**`, `scripts/**`) -> LOAD `.agentplane/policy/dod.code.md`
-- IF task modifies docs/policy-only paths (`docs/**`, `AGENTS.md`, `.agentplane/policy/**`) -> LOAD `.agentplane/policy/dod.docs.md`
-- IF task modifies policy files (`AGENTS.md`, `.agentplane/policy/**`) -> LOAD `.agentplane/policy/governance.md`
+- IF task modifies code paths (under `packages/` or `scripts/`) -> LOAD `.agentplane/policy/dod.code.md`
+- IF task modifies docs/policy-only paths (under `docs/`, `AGENTS.md`, or files under `.agentplane/policy/`) -> LOAD `.agentplane/policy/dod.docs.md`
+- IF task modifies policy files (`AGENTS.md` or files under `.agentplane/policy/`) -> LOAD `.agentplane/policy/governance.md`
+- IF task modifies `.agentplane/policy/incidents.md` -> LOAD `.agentplane/policy/incidents.md`
 
 Routing constraints:
 
@@ -110,7 +111,7 @@ A task is done only when all are true:
 5. Verification evidence is recorded.
 6. No unintended tracked changes remain.
 
-Detailed DoD rules are in `.agentplane/policy/dod.*.md`.
+Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/dod.code.md`, and `.agentplane/policy/dod.docs.md`.
 
 ---
 
@@ -125,6 +126,7 @@ Detailed DoD rules are in `.agentplane/policy/dod.*.md`.
 - DOC `.agentplane/policy/dod.code.md`
 - DOC `.agentplane/policy/dod.docs.md`
 - DOC `.agentplane/policy/governance.md`
+- DOC `.agentplane/policy/incidents.md`
 
 ---
 
@@ -138,5 +140,6 @@ Detailed DoD rules are in `.agentplane/policy/dod.*.md`.
 
 ## CHANGE CONTROL
 
-- Follow stabilization and policy-budget rules in `.agentplane/policy/governance.md`.
+- Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.
+- Record situational incident rules only in `.agentplane/policy/incidents.md`.
 - Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.

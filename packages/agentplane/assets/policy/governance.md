@@ -1,18 +1,34 @@
 # Policy Governance
 
-## Stabilization loop
+## Incident source of truth
 
-When a recurring failure appears, apply this sequence:
+- `.agentplane/policy/incidents.md` is the single incident registry.
+- Incident-derived and situational rules MUST be added only to `incidents.md`.
+- MUST NOT create additional incident policy files under `.agentplane/policy/`.
 
-1. Capture failure mode with concrete evidence.
-2. Add or refine a MUST/MUST NOT rule.
-3. Add a reference example that demonstrates the correct pattern.
-4. Add or update automated enforcement (CI/test/lint/script).
+## Stabilization criteria
+
+Use `stabilized` only when one of these is true:
+
+1. The same failure class recurs at least 2 times in 30 days.
+2. A single Sev-1 / production-blocking failure has reproducible steps and evidence.
+
+Promotion from `incidents.md` into canonical policy modules is allowed only when:
+
+1. The incident is `stabilized`.
+2. Enforcement is defined (`CI`, `test`, `lint`, or policy check script).
+3. `AGENTS.md` load rules are updated if routing behavior changes.
+
+## Canonical module immutability
+
+- Canonical modules are immutable by default during feature delivery tasks.
+- Canonical modules MAY be changed only in a dedicated policy task with explicit user approval.
+- Every canonical policy edit MUST include `bun run policy:routing:check` in verification evidence.
 
 ## Policy budget
 
 - `AGENTS.md` MUST remain a compact gateway (target <= 250 lines).
-- Detailed procedures MUST be placed in `.agentplane/policy/*.md`.
+- Detailed procedures MUST be placed in canonical modules listed in `AGENTS.md`.
 - If a policy change needs >20 new lines in `AGENTS.md`, move detail to a module and keep only routing + hard gate in gateway.
 
 ## Rule quality
