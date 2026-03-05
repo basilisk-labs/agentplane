@@ -1,7 +1,9 @@
 ---
 id: "202603051205-MA6CBP"
 title: "Add reason-code taxonomy map and CLI decoding hints"
-status: "DOING"
+result_summary: "CLI now emits centralized reason-code decode in text and JSON errors."
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +20,16 @@ verification:
   updated_at: "2026-03-05T12:07:38.954Z"
   updated_by: "CODER"
   note: "Targeted tests and typecheck passed"
-commit: null
+commit:
+  hash: "283724e192c9cf1edab760dba7a98206ca6f555d"
+  message: "🚧 MA6CBP cli: add reason-code taxonomy map and decode output"
 comments:
   -
     author: "CODER"
     body: "Start: implement reason-code taxonomy map and CLI decode output."
+  -
+    author: "CODER"
+    body: "Verified: reason-code taxonomy and CLI decode integrated with tests."
 events:
   -
     type: "status"
@@ -37,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted tests and typecheck passed"
+  -
+    type: "status"
+    at: "2026-03-05T12:18:37.180Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: reason-code taxonomy and CLI decode integrated with tests."
 doc_version: 2
-doc_updated_at: "2026-03-05T12:07:38.955Z"
+doc_updated_at: "2026-03-05T12:18:37.180Z"
 doc_updated_by: "CODER"
 description: "Introduce centralized reason-code metadata and show human-readable decode in CLI errors."
 id_source: "generated"
