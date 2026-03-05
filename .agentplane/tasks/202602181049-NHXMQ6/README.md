@@ -1,7 +1,9 @@
 ---
 id: "202602181049-NHXMQ6"
 title: "Align local pre-push with CI, run full verify, prep patch release"
-status: "DOING"
+result_summary: "Local CI parity verified and patch-release checks green"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -14,15 +16,20 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-05T11:04:15.797Z"
+  updated_by: "CODER"
+  note: "Local verify parity passed after docs regen"
+commit:
+  hash: "356d55672c4f822265dc02d98c9749786aea9ab3"
+  message: "🚧 NHXMQ6 docs: refresh generated CLI reference"
 comments:
   -
     author: "CODER"
     body: "Start: align local pre-push with CI commands, clear docs format warnings, run full verify suite, and prepare a patch release candidate with validated artifacts."
+  -
+    author: "CODER"
+    body: "Verified: local pre-push is now aligned with CI contours, full verification gates were executed successfully, and patch-release readiness checks are green with regenerated CLI docs."
 events:
   -
     type: "status"
@@ -31,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: align local pre-push with CI commands, clear docs format warnings, run full verify suite, and prepare a patch release candidate with validated artifacts."
+  -
+    type: "verify"
+    at: "2026-03-05T11:04:15.797Z"
+    author: "CODER"
+    state: "ok"
+    note: "Local verify parity passed after docs regen"
+  -
+    type: "status"
+    at: "2026-03-05T11:04:15.846Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: local pre-push is now aligned with CI contours, full verification gates were executed successfully, and patch-release readiness checks are green with regenerated CLI docs."
 doc_version: 2
-doc_updated_at: "2026-02-18T10:50:04.120Z"
+doc_updated_at: "2026-03-05T11:04:15.846Z"
 doc_updated_by: "CODER"
 description: "Make local pre-push checks mirror GitHub CI (including format checks), run full verification suite, and prepare patch release artifacts."
 id_source: "generated"
@@ -64,6 +84,18 @@ Risk 1: local parity may miss OS-specific differences; mitigate by matching comm
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-05T11:04:15.797Z — VERIFY — ok
+
+By: CODER
+
+Note: Local verify parity passed after docs regen
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-18T10:50:04.120Z, excerpt_hash=sha256:debca76fc4ca05c4ed96e142d0b9f559a487399970b65419f2555bb3ed913472
+
+Details:
+
+Executed and passed: bun run format:check, bun run lint, bun run typecheck, bun run test:cli:core, node scripts/run-pre-push-hook.mjs, and bun run release:check. Refreshed generated docs/user/cli-reference.generated.mdx to satisfy freshness guard.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
