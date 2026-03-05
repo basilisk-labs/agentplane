@@ -79,6 +79,13 @@
       "required": true
     },
     {
+      "path": ".agentplane/policy/check-routing.mjs",
+      "source_path": "policy/check-routing.mjs",
+      "type": "text",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
       "path": ".agentplane/policy/dod.code.md",
       "source_path": "policy/dod.code.md",
       "type": "markdown",

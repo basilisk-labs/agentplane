@@ -15,6 +15,7 @@ import {
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import {
+  ensureAgentFilledRequiredDocSections,
   extractDocSection,
   isVerifyStepsFilled,
   nowIso,
@@ -188,6 +189,12 @@ export async function cmdTaskPlanApprove(opts: {
         message: `${task.id}: cannot approve plan: ## Plan section is missing or empty`,
       });
     }
+    ensureAgentFilledRequiredDocSections({
+      task,
+      config,
+      doc: baseDoc,
+      action: "approve plan",
+    });
 
     const enforceVerifySteps = config.tasks.verify.enforce_on_plan_approve !== false;
     if (enforceVerifySteps) {

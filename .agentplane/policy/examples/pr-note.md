@@ -7,7 +7,7 @@ Implemented policy-gateway refactor for AGENTS.md and moved workflow detail into
 
 ### Verification
 
-- bun run policy:routing:check
+- node .agentplane/policy/check-routing.mjs
 - bun run agents:check
 
 ### Risks

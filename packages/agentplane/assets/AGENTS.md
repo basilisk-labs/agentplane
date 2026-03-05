@@ -49,12 +49,12 @@ Required preflight (read-only, before planning/execution):
 
 Required policy verification command:
 
-- `bun run policy:routing:check`
+- `node .agentplane/policy/check-routing.mjs`
 
 Recommended verification baselines:
 
 - Code scope: `bun run typecheck && bun run lint:core && bun run test:fast`
-- Docs/policy scope: `bun run policy:routing:check && bun run agents:check`
+- Docs/policy scope: `node .agentplane/policy/check-routing.mjs && bun run agents:check`
 
 ---
 
@@ -87,6 +87,7 @@ Routing constraints:
 - MUST NOT perform mutating actions before explicit user approval.
 - MUST create/reuse executable task IDs for any repo-state mutation.
 - MUST use `agentplane` commands for task lifecycle updates; MUST NOT manually edit `.agentplane/tasks.json`.
+- MUST run `agentplane task plan approve ...` and `agentplane start|task start-ready ...` sequentially (never in parallel).
 - MUST keep repository artifacts in English by default (unless user explicitly requests another language for a specific artifact).
 - MUST NOT fabricate repository facts.
 - MUST NOT expose raw chain-of-thought.

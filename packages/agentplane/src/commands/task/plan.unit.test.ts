@@ -104,6 +104,45 @@ describe("task plan commands (unit)", () => {
     });
   });
 
+  it("cmdTaskPlanApprove rejects when required non-auto section is empty", async () => {
+    const ctx = mkCtx();
+    ctx.config.tasks.doc.required_sections = [
+      "Summary",
+      "Scope",
+      "Plan",
+      "Verify Steps",
+      "Notes",
+      "Verification",
+    ];
+    mockLoadTaskFromContext.mockResolvedValue(
+      mkTask({
+        doc: [
+          "## Summary",
+          "x",
+          "",
+          "## Scope",
+          "<!-- TODO: fill -->",
+          "",
+          "## Plan",
+          "do",
+          "",
+          "## Verify Steps",
+          "Run checks",
+          "",
+          "## Notes",
+          "n/a",
+        ].join("\n"),
+      }),
+    );
+
+    const { cmdTaskPlanApprove } = await import("./plan.js");
+    await expect(
+      cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: "T-1", by: "A" }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+    });
+  });
+
   it("cmdTaskPlanApprove enforces Verify Steps when tags require it", async () => {
     const ctx = mkCtx();
     mockLoadTaskFromContext.mockResolvedValue(

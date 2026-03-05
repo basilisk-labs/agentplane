@@ -1,4 +1,5 @@
 import { type TaskData } from "../../backends/task-backend.js";
+import { ensureDocSections } from "@agentplaneorg/core";
 import { mapBackendError } from "../../cli/error-map.js";
 import { invalidValueMessage, successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
@@ -22,6 +23,7 @@ import {
   appendTaskEvent,
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
+  ensureAgentFilledRequiredDocSections,
   ensureVerificationSatisfiedIfRequired,
   nowIso,
   readCommitInfo,
@@ -200,6 +202,16 @@ export async function cmdFinish(opts: {
       }
 
       ensureVerificationSatisfiedIfRequired(task, ctx.config);
+      const normalizedDoc = ensureDocSections(
+        typeof task.doc === "string" ? task.doc : "",
+        ctx.config.tasks.doc.required_sections,
+      );
+      ensureAgentFilledRequiredDocSections({
+        task,
+        config: ctx.config,
+        doc: normalizedDoc,
+        action: "finish task",
+      });
 
       if (taskId === metaTaskId) {
         const tags = Array.isArray(task.tags)

@@ -243,7 +243,10 @@ function isAllowedUpgradePath(relPath: string): boolean {
   if (relPath.startsWith(".agentplane/agents/") && relPath.endsWith(".json")) return true;
   if (
     relPath.startsWith(".agentplane/policy/") &&
-    (relPath.endsWith(".md") || relPath.endsWith(".ts"))
+    (relPath.endsWith(".md") ||
+      relPath.endsWith(".ts") ||
+      relPath.endsWith(".js") ||
+      relPath.endsWith(".mjs"))
   ) {
     return true;
   }

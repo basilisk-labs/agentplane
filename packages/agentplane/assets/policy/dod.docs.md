@@ -4,7 +4,7 @@ Apply when task changes docs or policy files only.
 
 ## Minimum checks
 
-- `bun run policy:routing:check`
+- `node .agentplane/policy/check-routing.mjs`
 - `bun run agents:check`
 - Targeted lint/tests if docs generation or scripts were changed.
 

@@ -62,6 +62,24 @@ function mkTask(overrides: Partial<TaskData>): TaskData {
     depends_on: [],
     tags: [],
     verify: [],
+    doc: [
+      "## Summary",
+      "Task summary",
+      "",
+      "## Scope",
+      "In-scope files",
+      "",
+      "## Plan",
+      "1. Implement",
+      "",
+      "## Risks",
+      "Low",
+      "",
+      "## Verification",
+      "",
+      "## Rollback Plan",
+      "Revert commit",
+    ].join("\n"),
     ...overrides,
   };
 }
@@ -514,6 +532,65 @@ describe("task finish (unit)", () => {
       approvals: { require_plan: false, require_network: true, require_verify: true },
     };
     mocks.loadTaskFromContext.mockResolvedValue(mkTask({ id: "T-1", tags: ["code"] }));
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+  });
+
+  it("fails when required agent-filled doc sections are empty", async () => {
+    const ctx = mkCtx();
+    ctx.config.tasks.doc.required_sections = [
+      "Summary",
+      "Scope",
+      "Plan",
+      "Verification",
+      "Verify Steps",
+      "Notes",
+    ];
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        id: "T-1",
+        tags: ["spike"],
+        doc: [
+          "## Summary",
+          "x",
+          "",
+          "## Scope",
+          "",
+          "",
+          "## Plan",
+          "do",
+          "",
+          "## Verify Steps",
+          "Run checks",
+          "",
+          "## Notes",
+          "n/a",
+        ].join("\n"),
+      }),
+    );
 
     const { cmdFinish } = await import("./finish.js");
     await expect(

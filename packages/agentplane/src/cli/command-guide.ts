@@ -47,6 +47,11 @@ const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
     command: "`agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
   },
   {
+    operation: "CODER/TESTER: start task deterministically",
+    command:
+      '`agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."` (run after successful `task plan approve`; do not run in parallel)',
+  },
+  {
     operation: "CODER/TESTER/DOCS: update PR artifacts",
     command: "`agentplane pr update <task-id>`",
   },
@@ -103,6 +108,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- `task new` auto-seeds README sections; use `task scaffold` only for backfill/import/manual repair.",
       '- Plan lifecycle: `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>` -> `agentplane task plan approve <task-id> --by <id>`',
       "- Verify Steps discipline: if a task primary tag is verify-required (default: code/data/ops), fill `## Verify Steps` before plan approval.",
+      "- Doc quality gate: `task plan approve` and `finish` fail when required agent-filled sections (`Summary/Scope/Plan/Risks/Rollback Plan`, per config) are empty/TODO placeholders.",
       '- Task docs (when planning needs it): `agentplane task doc set <task-id> --section Summary --text "..."`',
     ],
   },
@@ -111,7 +117,8 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
-      '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
+      '- Start status (deterministic): `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."` (after `task plan approve`, sequential only).',
+      '- Other status updates: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       "- Verify Steps: `agentplane task verify-show <task-id>` (use as the verification contract before recording results).",
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
@@ -123,7 +130,8 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
-      '- Status updates: `agentplane start <task-id> --author <ROLE> --body "Start: ..."` / `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
+      '- Start status (deterministic): `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."` (after `task plan approve`, sequential only).',
+      '- Other status updates: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
       "- Verify Steps: `agentplane task verify-show <task-id>` (treat as the verification contract).",
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',

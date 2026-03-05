@@ -10,11 +10,13 @@ import {
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
   ensurePlanApprovedIfRequired,
+  ensureAgentFilledRequiredDocSections,
   ensureTaskDependsOnGraphIsAcyclic,
   ensureVerificationSatisfiedIfRequired,
   extractDocSection,
   formatTaskLine,
   handleTaskListWarnings,
+  isDocSectionFilled,
   isMajorStatusCommitTransition,
   isTransitionAllowed,
   isVerifyStepsFilled,
@@ -61,6 +63,59 @@ describe("task shared helpers", () => {
     expect(isVerifyStepsFilled("")).toBe(false);
     expect(isVerifyStepsFilled(`x\n${VERIFY_STEPS_PLACEHOLDER}\n`)).toBe(false);
     expect(isVerifyStepsFilled("Run: bun test")).toBe(true);
+  });
+
+  it("isDocSectionFilled rejects empty/TODO placeholder and accepts normal text", () => {
+    expect(isDocSectionFilled(null)).toBe(false);
+    expect(isDocSectionFilled("")).toBe(false);
+    expect(isDocSectionFilled("<!-- TODO: fill -->")).toBe(false);
+    expect(isDocSectionFilled("Filled by agent")).toBe(true);
+  });
+
+  it("ensureAgentFilledRequiredDocSections enforces only agent-filled required sections", () => {
+    const config = mkConfig();
+    config.tasks.doc.required_sections = [
+      "Summary",
+      "Scope",
+      "Verification",
+      "Verify Steps",
+      "Notes",
+    ];
+    const task = mkTask({});
+    const doc = [
+      "## Summary",
+      "ok",
+      "",
+      "## Scope",
+      "",
+      "",
+      "## Verification",
+      "",
+      "",
+      "## Verify Steps",
+      "",
+      "",
+      "## Notes",
+      "",
+    ].join("\n");
+    expect(() =>
+      ensureAgentFilledRequiredDocSections({
+        task,
+        config,
+        doc,
+        action: "finish task",
+      }),
+    ).toThrow(CliError);
+
+    const docWithScope = doc.replace("## Scope\n\n", "## Scope\n\nin-scope files\n");
+    expect(() =>
+      ensureAgentFilledRequiredDocSections({
+        task,
+        config,
+        doc: docWithScope,
+        action: "finish task",
+      }),
+    ).not.toThrow();
   });
 
   it("normalizeDependsOnInput parses single token and treats empty/[] as none", () => {

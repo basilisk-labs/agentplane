@@ -112,6 +112,8 @@ describe("runCli", () => {
     expect(readme).toContain(`id: "${id}"`);
     expect(readme).toContain('status: "TODO"');
     expect(readme).toContain('title: "My task"');
+    expect(readme).toContain("## Summary");
+    expect(readme).toContain("## Scope");
   });
 
   it("task new supports depends-on and verify flags", async () => {

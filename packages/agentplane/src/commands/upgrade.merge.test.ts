@@ -307,4 +307,49 @@ describe("upgrade merge behavior", () => {
     const workflowPath = path.join(root, ".agentplane", "policy", "workflow.md");
     expect(await readFile(workflowPath, "utf8")).toBe(incomingWorkflow);
   });
+
+  it("accepts managed policy script files from manifest and writes them", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const incomingScript = 'process.stdout.write("policy routing OK\\n");\n';
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [
+            {
+              path: ".agentplane/policy/check-routing.mjs",
+              source_path: "policy/check-routing.mjs",
+              type: "text",
+              merge_strategy: "agents_policy_markdown",
+              required: true,
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "policy/check-routing.mjs": incomingScript,
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "auto",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+
+    const scriptPath = path.join(root, ".agentplane", "policy", "check-routing.mjs");
+    expect(await readFile(scriptPath, "utf8")).toBe(incomingScript);
+  });
 });
