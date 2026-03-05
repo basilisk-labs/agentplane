@@ -14,6 +14,17 @@ description: "How work moves from plan to completion in Agent Plane."
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
+## Harness engeneering workflow style
+
+In Agent Plane, speed comes from reducing ambiguity rather than skipping controls:
+
+- keep changes small and frequent;
+- run preflight/doctor early;
+- verify each increment before moving to the next one;
+- prefer deterministic recovery (`workflow restore`) over manual patching.
+
+This makes high-throughput agent work predictable for both solo and team repos.
+
 ## Preflight before work
 
 Use quick mode for low-latency checks:

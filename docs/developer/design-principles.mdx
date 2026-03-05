@@ -41,6 +41,23 @@ Agent Plane is designed to make agent-driven development predictable and auditab
 - Commits are tied to task IDs and include changelog detail.
 - Release flow is GitHub-only publish with provenance and repeatable CI gates.
 
+### 7) Harness engeneering over prompt tuning
+
+- Optimize the execution harness first: contracts, gates, retries, recovery, and observability.
+- Treat prompt text as one layer of the system, not the system itself.
+- Prefer changes that improve operator legibility (`what`, `why`, `next action`) across all commands.
+
+### 8) Throughput-aware integration
+
+- High agent throughput favors short-lived slices and frequent integration.
+- Avoid large, delayed merges when smaller deterministic increments are possible.
+- Keep verification close to each increment to reduce rollback cost.
+
+### 9) Entropy management as a default operation
+
+- Agent output can increase repository entropy quickly.
+- Bake in routine cleanup: detect drift early, restore known-good state fast, and keep docs/contracts synchronized with behavior.
+
 ## What this means for contributors
 
 - Prefer explicit configs and clear CLI output over implicit behavior.

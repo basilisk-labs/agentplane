@@ -12,6 +12,15 @@ This contract defines the required format for `WORKFLOW.md` used by the planned 
 
 This is the active contract used by `agentplane init`, `agentplane workflow build`, `agentplane workflow restore`, `agentplane doctor`, and `agentplane preflight`.
 
+## Harness engeneering intent
+
+`WORKFLOW.md` is not documentation only; it is an executable control surface.
+
+- **Legibility:** make state and decisions inspectable (`Prompt Template`, `Checks`, `Fallback`).
+- **Enforcement:** push correctness into contract + validators, not informal prompt style.
+- **Recovery:** preserve and restore known-good workflow state deterministically.
+- **Throughput safety:** keep fast iteration possible without sacrificing gates and rollback.
+
 ## File shape
 
 `WORKFLOW.md` is composed of:

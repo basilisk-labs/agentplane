@@ -44,6 +44,18 @@ The runtime layer owns command behavior. The core layer owns parsing and shared 
 5. Optional exports write `.agentplane/tasks.json`.
 6. Task docs live in `.agentplane/tasks/<task-id>/README.md`.
 
+## Harness engeneering loop
+
+Agent Plane architecture is designed for an iterative control loop:
+
+1. **Constrain**: define scope and policy via contracts/config.
+2. **Execute**: run small, explicit command steps.
+3. **Observe**: capture structured artifacts and diagnostics.
+4. **Recover**: use deterministic fallback/restore paths.
+5. **Integrate**: merge verified increments quickly.
+
+This loop keeps autonomy useful while preserving operator control and repository legibility.
+
 ## Upgrade and policy flow
 
 `agentplane upgrade` applies managed framework assets and can emit upgrade review artifacts.

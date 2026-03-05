@@ -45,6 +45,29 @@ Agent behavior is not hidden: it's inspectable, reproducible, and constrained by
 4. **Traceability**
    Task states, artifacts, and agents are documented and versioned: no hidden side effects.
 
+## 🧱 Harness Engeneering
+
+Agent Plane treats agent execution as a systems problem, not a prompt-writing contest.
+
+- **Legibility is the target**
+  - Operators should be able to answer: what happened, why it happened, and what to do next.
+  - This is why contracts (`AGENTS.md`, `WORKFLOW.md`), structured task docs, and deterministic artifacts are first-class.
+
+- **Process beats vibes**
+  - Behavior quality is enforced by workflow gates, checks, and rollback paths.
+  - Prompt text matters, but stable outcomes come from execution design and guardrails.
+
+- **Throughput changes integration style**
+  - When agents can produce many small changes quickly, long-lived branches become a bottleneck.
+  - Agent Plane favors short loops: preflight -> scoped change -> verify -> integrate.
+
+- **Control autonomy by harness design**
+  - More autonomy is safe only with strict boundaries: scoped writes, approval gates, explicit status transitions, and typed command surfaces.
+
+- **Fight entropy continuously**
+  - Agent-generated output accumulates quickly.
+  - Keep quality by running doctor/preflight, enforcing verification contracts, and pruning workflow drift early.
+
 ## 🔧 Quickstart
 
 Install the CLI (or use `npx`):
