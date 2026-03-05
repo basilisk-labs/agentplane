@@ -1,7 +1,9 @@
 ---
 id: "202603051527-JR745A"
 title: "Harden incident policy routing and immutability rules"
-status: "DOING"
+result_summary: "Policy routing is explicit and incident handling is centralized in one enforced file."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +20,16 @@ verification:
   updated_at: "2026-03-05T15:33:22.748Z"
   updated_by: "CODER"
   note: "Verified: policy routing, template sync, and targeted init/upgrade/template tests passed."
-commit: null
+commit:
+  hash: "d1a826a7afd4f19bb0807dd000110499b6cf34a6"
+  message: "✨ JR745A policy: enforce single incidents log and explicit routing"
 comments:
   -
     author: "CODER"
     body: "Start: implement single incidents policy file and strict explicit policy routing without wildcard module references."
+  -
+    author: "CODER"
+    body: "Verified: policy gateway now enforces explicit canonical routing, a single incidents file, and immutability-by-default governance with passing checks/tests."
 events:
   -
     type: "status"
@@ -37,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: policy routing, template sync, and targeted init/upgrade/template tests passed."
+  -
+    type: "status"
+    at: "2026-03-05T15:34:14.580Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: policy gateway now enforces explicit canonical routing, a single incidents file, and immutability-by-default governance with passing checks/tests."
 doc_version: 2
-doc_updated_at: "2026-03-05T15:33:22.750Z"
+doc_updated_at: "2026-03-05T15:34:14.580Z"
 doc_updated_by: "CODER"
 description: "Introduce a single incidents policy file, remove wildcard policy path guidance, and enforce immutable canonical policy modules with explicit governance rules and routing checks."
 id_source: "generated"
