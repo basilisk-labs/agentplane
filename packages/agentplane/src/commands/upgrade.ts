@@ -241,6 +241,12 @@ async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
 function isAllowedUpgradePath(relPath: string): boolean {
   if (relPath === "AGENTS.md") return true;
   if (relPath.startsWith(".agentplane/agents/") && relPath.endsWith(".json")) return true;
+  if (
+    relPath.startsWith(".agentplane/policy/") &&
+    (relPath.endsWith(".md") || relPath.endsWith(".ts"))
+  ) {
+    return true;
+  }
   return false;
 }
 

@@ -131,7 +131,7 @@ Detailed DoD rules are in `.agentplane/policy/dod.*.md`.
 ## REFERENCE EXAMPLES
 
 - EXAMPLE `.agentplane/policy/examples/pr-note.md`
-- EXAMPLE `.agentplane/policy/examples/unit-test-pattern.ts`
+- EXAMPLE `.agentplane/policy/examples/unit-test-pattern.md`
 - EXAMPLE `.agentplane/policy/examples/migration-note.md`
 
 ---

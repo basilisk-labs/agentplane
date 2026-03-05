@@ -2,13 +2,6 @@
   "schema_version": 1,
   "files": [
     {
-      "path": "AGENTS.md",
-      "source_path": "AGENTS.md",
-      "type": "markdown",
-      "merge_strategy": "agents_policy_markdown",
-      "required": true
-    },
-    {
       "path": ".agentplane/agents/CODER.json",
       "source_path": "agents/CODER.json",
       "type": "json",
@@ -83,6 +76,97 @@
       "source_path": "agents/UPGRADER.json",
       "type": "json",
       "merge_strategy": "agent_json_3way",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/dod.code.md",
+      "source_path": "policy/dod.code.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/dod.core.md",
+      "source_path": "policy/dod.core.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/dod.docs.md",
+      "source_path": "policy/dod.docs.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/examples/migration-note.md",
+      "source_path": "policy/examples/migration-note.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/examples/pr-note.md",
+      "source_path": "policy/examples/pr-note.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/examples/unit-test-pattern.md",
+      "source_path": "policy/examples/unit-test-pattern.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/governance.md",
+      "source_path": "policy/governance.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/security.must.md",
+      "source_path": "policy/security.must.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/workflow.branch_pr.md",
+      "source_path": "policy/workflow.branch_pr.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/workflow.direct.md",
+      "source_path": "policy/workflow.direct.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/workflow.md",
+      "source_path": "policy/workflow.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": ".agentplane/policy/workflow.release.md",
+      "source_path": "policy/workflow.release.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
+      "path": "AGENTS.md",
+      "source_path": "AGENTS.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
       "required": true
     }
   ]

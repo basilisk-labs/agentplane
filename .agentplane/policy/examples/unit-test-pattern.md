@@ -1,3 +1,6 @@
+# Example: Unit Test Pattern
+
+```ts
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
@@ -13,3 +16,4 @@ describe("policy routing check", () => {
     ).resolves.toBeDefined();
   });
 });
+```

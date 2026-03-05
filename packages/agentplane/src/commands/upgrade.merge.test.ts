@@ -262,4 +262,49 @@ describe("upgrade merge behavior", () => {
     expect(agentsReview?.needsSemanticReview).toBe(false);
     expect(agentsReview?.mergeApplied).toBe(false);
   });
+
+  it("accepts managed policy files from manifest and writes them", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const incomingWorkflow = "# Workflow Policy\n\nUpdated from bundle.\n";
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [
+            {
+              path: ".agentplane/policy/workflow.md",
+              source_path: "policy/workflow.md",
+              type: "markdown",
+              merge_strategy: "agents_policy_markdown",
+              required: true,
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "policy/workflow.md": incomingWorkflow,
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "auto",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+
+    const workflowPath = path.join(root, ".agentplane", "policy", "workflow.md");
+    expect(await readFile(workflowPath, "utf8")).toBe(incomingWorkflow);
+  });
 });

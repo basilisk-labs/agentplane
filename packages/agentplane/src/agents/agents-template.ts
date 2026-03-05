@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const AGENTS_TEMPLATE_URL = new URL("../../assets/AGENTS.md", import.meta.url);
 const AGENTS_DIR_URL = new URL("../../assets/agents/", import.meta.url);
+const POLICY_DIR_URL = new URL("../../assets/policy/", import.meta.url);
 
 const HEADING_RE = /^(#+)\s+(.*)$/;
 
@@ -12,6 +13,7 @@ type Heading = { index: number; level: number; title: string };
 export type WorkflowMode = "direct" | "branch_pr";
 
 type AgentTemplate = { fileName: string; contents: string };
+export type PolicyTemplate = { relativePath: string; contents: string };
 
 function ensureTrailingNewline(text: string): string {
   return text.endsWith("\n") ? text : `${text}\n`;
@@ -66,6 +68,43 @@ export async function loadAgentTemplates(): Promise<AgentTemplate[]> {
     const filePath = path.join(dirPath, fileName);
     const contents = await readFile(filePath, "utf8");
     templates.push({ fileName, contents: ensureTrailingNewline(contents.trimEnd()) });
+  }
+
+  return templates;
+}
+
+async function listFilesRecursive(dirPath: string, relPrefix = ""): Promise<string[]> {
+  const entries = await readdir(dirPath, { withFileTypes: true });
+  const sorted = entries.toSorted((a, b) => a.name.localeCompare(b.name));
+  const files: string[] = [];
+
+  for (const entry of sorted) {
+    // Ignore editor/OS hidden metadata files.
+    if (entry.name.startsWith(".")) continue;
+    const absPath = path.join(dirPath, entry.name);
+    const relPath = relPrefix ? `${relPrefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      files.push(...(await listFilesRecursive(absPath, relPath)));
+      continue;
+    }
+    if (entry.isFile()) files.push(relPath);
+  }
+
+  return files;
+}
+
+export async function loadPolicyTemplates(): Promise<PolicyTemplate[]> {
+  const dirPath = fileURLToPath(POLICY_DIR_URL);
+  const relFiles = await listFilesRecursive(dirPath);
+  const templates: PolicyTemplate[] = [];
+
+  for (const relFile of relFiles) {
+    const filePath = path.join(dirPath, relFile);
+    const contents = await readFile(filePath, "utf8");
+    templates.push({
+      relativePath: relFile.replaceAll("\\", "/"),
+      contents: ensureTrailingNewline(contents.trimEnd()),
+    });
   }
 
   return templates;

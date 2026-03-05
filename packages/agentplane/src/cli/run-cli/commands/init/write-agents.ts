@@ -8,6 +8,7 @@ import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
   loadAgentsTemplate,
+  loadPolicyTemplates,
 } from "../../../../agents/agents-template.js";
 import { fileExists } from "../../../fs-utils.js";
 
@@ -70,6 +71,17 @@ export async function ensureAgentsFiles(opts: {
     const targetPath = path.join(opts.agentplaneDir, "agents", agent.fileName);
     if (await fileExists(targetPath)) continue;
     await atomicWriteFile(targetPath, agent.contents, "utf8");
+    const relPath = path.relative(opts.gitRoot, targetPath);
+    installPaths.push(relPath);
+    installedManagedPaths.push(relPath);
+  }
+
+  const policyTemplates = await loadPolicyTemplates();
+  for (const policy of policyTemplates) {
+    const targetPath = path.join(opts.agentplaneDir, "policy", policy.relativePath);
+    if (await fileExists(targetPath)) continue;
+    await mkdir(path.dirname(targetPath), { recursive: true });
+    await atomicWriteFile(targetPath, policy.contents, "utf8");
     const relPath = path.relative(opts.gitRoot, targetPath);
     installPaths.push(relPath);
     installedManagedPaths.push(relPath);

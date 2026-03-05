@@ -31,6 +31,7 @@ import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
   loadAgentsTemplate,
+  loadPolicyTemplates,
 } from "../agents/agents-template.js";
 import * as taskBackend from "../backends/task-backend.js";
 import {
@@ -205,13 +206,25 @@ describe("runCli", () => {
       "agents",
       "CODER.json",
     );
+    const policyPath = path.join(root, ".agentplane", "policy", "workflow.md");
+    const baselinePolicyPath = path.join(
+      root,
+      ".agentplane",
+      ".upgrade",
+      "baseline",
+      "policy",
+      "workflow.md",
+    );
     expect(await pathExists(configPath)).toBe(true);
     expect(await pathExists(backendPath)).toBe(true);
     expect(await pathExists(redmineBackendPath)).toBe(false);
     expect(await pathExists(agentsPath)).toBe(true);
     expect(await pathExists(baselineAgentsPath)).toBe(true);
     expect(await pathExists(baselineCoderPath)).toBe(true);
+    expect(await pathExists(policyPath)).toBe(true);
+    expect(await pathExists(baselinePolicyPath)).toBe(true);
     expect(await readFile(baselineAgentsPath, "utf8")).toBe(await readFile(agentsPath, "utf8"));
+    expect(await readFile(baselinePolicyPath, "utf8")).toBe(await readFile(policyPath, "utf8"));
 
     const configText = await readFile(configPath, "utf8");
     const config = JSON.parse(configText) as Record<string, unknown>;
@@ -282,6 +295,7 @@ describe("runCli", () => {
     expect(gitignore).toContain(".agentplane/tasks.json");
     expect(gitignore).toContain("AGENTS.md");
     expect(gitignore).toContain(".agentplane/agents/");
+    expect(gitignore).toContain(".agentplane/policy/");
 
     const execFileAsync = promisify(execFile) as (
       file: string,
@@ -630,6 +644,7 @@ describe("runCli", () => {
     const template = await loadAgentsTemplate();
     const expectedAgents = filterAgentsByWorkflow(template, "direct");
     const templates = await loadAgentTemplates();
+    const policyTemplates = await loadPolicyTemplates();
 
     const io = captureStdIO();
     try {
@@ -652,6 +667,13 @@ describe("runCli", () => {
       const target = path.join(agentsDir, agent.fileName);
       const contents = await readFile(target, "utf8");
       expect(contents).toBe(agent.contents);
+    }
+
+    const policyDir = path.join(root, ".agentplane", "policy");
+    for (const policy of policyTemplates) {
+      const target = path.join(policyDir, policy.relativePath);
+      const contents = await readFile(target, "utf8");
+      expect(contents).toBe(policy.contents);
     }
   });
 

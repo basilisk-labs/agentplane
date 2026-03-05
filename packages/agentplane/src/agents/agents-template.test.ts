@@ -6,6 +6,7 @@ import {
   filterAgentsByWorkflow,
   loadAgentTemplates,
   loadAgentsTemplate,
+  loadPolicyTemplates,
 } from "./agents-template.js";
 
 const LOCAL_CLI = "node packages/agentplane/bin/agentplane.js";
@@ -74,6 +75,30 @@ describe("agents-template", () => {
       const assetText = `${assetRaw.trimEnd()}\n`;
       const repoText = `${repoRaw.trimEnd()}\n`;
       expect(repoText).toBe(assetText);
+    }
+  });
+
+  it("bundled policy templates match framework assets/policy", async () => {
+    const assetsPolicyDir = path.join(process.cwd(), "packages", "agentplane", "assets", "policy");
+    const bundled = await loadPolicyTemplates();
+
+    for (const policy of bundled) {
+      const assetPath = path.join(assetsPolicyDir, policy.relativePath);
+      const assetText = await readFile(assetPath, "utf8");
+      expect(policy.contents).toBe(`${assetText.trimEnd()}\n`);
+      expect(policy.relativePath.startsWith(".")).toBe(false);
+    }
+  });
+
+  it("repo .agentplane/policy stays in sync with assets/policy", async () => {
+    const assetsPolicyDir = path.join(process.cwd(), "packages", "agentplane", "assets", "policy");
+    const repoPolicyDir = path.join(process.cwd(), ".agentplane", "policy");
+    const bundled = await loadPolicyTemplates();
+
+    for (const policy of bundled) {
+      const assetText = await readFile(path.join(assetsPolicyDir, policy.relativePath), "utf8");
+      const repoText = await readFile(path.join(repoPolicyDir, policy.relativePath), "utf8");
+      expect(`${repoText.trimEnd()}\n`).toBe(`${assetText.trimEnd()}\n`);
     }
   });
 
