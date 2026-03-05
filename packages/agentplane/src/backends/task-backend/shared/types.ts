@@ -60,6 +60,7 @@ export type TaskDocMeta = Pick<
 export type TaskBackend = {
   id: string;
   listTasks(): Promise<TaskData[]>;
+  getLastListWarnings?(): string[];
   getTask(taskId: string): Promise<TaskData | null>;
   getTasks?(taskIds: string[]): Promise<(TaskData | null)[]>;
   writeTask(task: TaskData): Promise<void>;

@@ -5,6 +5,7 @@ import {
   buildDependencyState,
   dedupeStrings,
   formatTaskLine,
+  handleTaskListWarnings,
   toStringArray,
   type TaskListFilters,
 } from "./shared.js";
@@ -20,6 +21,7 @@ export async function cmdTaskNext(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const tasks = await ctx.taskBackend.listTasks();
+    handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const depState = buildDependencyState(tasks);
     const statuses =
       opts.filters.status.length > 0

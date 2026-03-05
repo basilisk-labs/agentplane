@@ -32,6 +32,12 @@ export const taskListSpec: CommandSpec<TaskListParsed> = {
       repeatable: true,
       description: "Repeatable. Filter by tag.",
     },
+    {
+      kind: "boolean",
+      name: "strict-read",
+      default: false,
+      description: "Fail if task scan skips malformed/unreadable task files.",
+    },
     { kind: "boolean", name: "quiet", default: false, description: "Suppress summary output." },
   ],
   examples: [
@@ -52,6 +58,7 @@ export const taskListSpec: CommandSpec<TaskListParsed> = {
       owner: toStringList(raw.opts.owner),
       tag: toStringList(raw.opts.tag),
       quiet: raw.opts.quiet === true,
+      strictRead: raw.opts["strict-read"] === true,
     },
   }),
 };

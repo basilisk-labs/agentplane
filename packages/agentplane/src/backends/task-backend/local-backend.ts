@@ -44,6 +44,7 @@ export class LocalBackend implements TaskBackend {
   id = "local";
   root: string;
   updatedBy: string;
+  private lastListWarnings: string[] = [];
 
   constructor(settings?: { dir?: string; updatedBy?: string }) {
     this.root = path.resolve(settings?.dir ?? ".agentplane/tasks");
@@ -73,6 +74,7 @@ export class LocalBackend implements TaskBackend {
 
   async listTasks(): Promise<TaskData[]> {
     const tasks: TaskData[] = [];
+    const warnings: string[] = [];
     const entries = await readdir(this.root, { withFileTypes: true }).catch(() => []);
     const indexPath = resolveTaskIndexPath(this.root);
     const cachedIndex = await loadTaskIndex(indexPath);
@@ -107,6 +109,7 @@ export class LocalBackend implements TaskBackend {
       try {
         stats = await stat(readme);
       } catch {
+        warnings.push(`skip:${dirName}: missing_or_unreadable_readme`);
         return null;
       }
       if (!stats.isFile()) return null;
@@ -121,16 +124,21 @@ export class LocalBackend implements TaskBackend {
       try {
         text = await readFile(readme, "utf8");
       } catch {
+        warnings.push(`skip:${dirName}: unreadable_readme`);
         return null;
       }
       let parsed;
       try {
         parsed = parseTaskReadme(text);
       } catch {
+        warnings.push(`skip:${dirName}: invalid_readme_frontmatter`);
         return null;
       }
       const fm = parsed.frontmatter;
-      if (!isRecord(fm) || Object.keys(fm).length === 0) return null;
+      if (!isRecord(fm) || Object.keys(fm).length === 0) {
+        warnings.push(`skip:${dirName}: empty_or_invalid_frontmatter`);
+        return null;
+      }
       const taskId = (typeof fm.id === "string" ? fm.id : dirName).trim();
       const task = taskRecordToData({
         id: taskId,
@@ -180,7 +188,12 @@ export class LocalBackend implements TaskBackend {
         // Best-effort cache; ignore failures.
       }
     }
+    this.lastListWarnings = warnings;
     return tasks;
+  }
+
+  getLastListWarnings(): string[] {
+    return [...this.lastListWarnings];
   }
 
   async getTask(taskId: string): Promise<TaskData | null> {

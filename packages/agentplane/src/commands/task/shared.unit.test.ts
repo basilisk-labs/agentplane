@@ -14,6 +14,7 @@ import {
   ensureVerificationSatisfiedIfRequired,
   extractDocSection,
   formatTaskLine,
+  handleTaskListWarnings,
   isMajorStatusCommitTransition,
   isTransitionAllowed,
   isVerifyStepsFilled,
@@ -351,8 +352,10 @@ describe("task shared helpers", () => {
       owner: ["me"],
       tag: ["x"],
       quiet: true,
+      strictRead: false,
     });
 
+    expect(parseTaskListFilters(["--strict-read"]).strictRead).toBe(true);
     expect(() => parseTaskListFilters(["--status"])).toThrow(CliError);
     expect(() => parseTaskListFilters(["--owner"])).toThrow(CliError);
     expect(() => parseTaskListFilters(["--tag"])).toThrow(CliError);
@@ -361,6 +364,26 @@ describe("task shared helpers", () => {
     expect(() => parseTaskListFilters(["--limit", "NaN"], { allowLimit: true })).toThrow(CliError);
     expect(parseTaskListFilters(["--limit", "5"], { allowLimit: true }).limit).toBe(5);
     expect(() => parseTaskListFilters(["--nope"])).toThrow(CliError);
+  });
+
+  it("handleTaskListWarnings warns by default and fails in strict mode", () => {
+    const spy = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    try {
+      handleTaskListWarnings({
+        backend: { getLastListWarnings: () => ["skip:AA: invalid_readme_frontmatter"] },
+        strictRead: false,
+      });
+      expect(spy).toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+
+    expect(() =>
+      handleTaskListWarnings({
+        backend: { getLastListWarnings: () => ["skip:AA: invalid_readme_frontmatter"] },
+        strictRead: true,
+      }),
+    ).toThrow(CliError);
   });
 
   it("taskTextBlob concatenates key fields, tags, comments, and commit metadata", () => {

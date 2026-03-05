@@ -38,6 +38,12 @@ export const taskSearchSpec: CommandSpec<TaskSearchParsed> = {
       repeatable: true,
       description: "Repeatable. Filter by tag.",
     },
+    {
+      kind: "boolean",
+      name: "strict-read",
+      default: false,
+      description: "Fail if task scan skips malformed/unreadable task files.",
+    },
     { kind: "string", name: "limit", valueHint: "<n>", description: "Max rows to print." },
   ],
   examples: [
@@ -84,6 +90,7 @@ export const taskSearchSpec: CommandSpec<TaskSearchParsed> = {
       tag: toStringList(raw.opts.tag),
       limit: typeof raw.opts.limit === "string" ? Number.parseInt(raw.opts.limit, 10) : undefined,
       quiet: true,
+      strictRead: raw.opts["strict-read"] === true,
     },
   }),
 };

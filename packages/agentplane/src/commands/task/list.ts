@@ -5,6 +5,7 @@ import {
   buildDependencyState,
   dedupeStrings,
   formatTaskLine,
+  handleTaskListWarnings,
   toStringArray,
   type TaskListFilters,
 } from "./shared.js";
@@ -20,6 +21,7 @@ export async function cmdTaskListWithFilters(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const tasks = await listTasksMemo(ctx);
+    handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const depState = buildDependencyState(tasks);
     let filtered = tasks;
     if (opts.filters.status.length > 0) {

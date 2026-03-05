@@ -666,18 +666,23 @@ export type TaskListFilters = {
   tag: string[];
   limit?: number;
   quiet: boolean;
+  strictRead?: boolean;
 };
 
 export function parseTaskListFilters(
   args: string[],
   opts?: { allowLimit?: boolean },
 ): TaskListFilters {
-  const out: TaskListFilters = { status: [], owner: [], tag: [], quiet: false };
+  const out: TaskListFilters = { status: [], owner: [], tag: [], quiet: false, strictRead: false };
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (!arg) continue;
     if (arg === "--quiet") {
       out.quiet = true;
+      continue;
+    }
+    if (arg === "--strict-read") {
+      out.strictRead = true;
       continue;
     }
     if (arg === "--status") {
@@ -749,6 +754,25 @@ export function parseTaskListFilters(
     }
   }
   return out;
+}
+
+export function handleTaskListWarnings(opts: {
+  backend: { getLastListWarnings?: () => string[] };
+  strictRead?: boolean;
+}): void {
+  const warnings = opts.backend.getLastListWarnings?.() ?? [];
+  if (warnings.length === 0) return;
+  const preview = warnings.slice(0, 3).join("; ");
+  const suffix = warnings.length > 3 ? `; +${warnings.length - 3} more` : "";
+  const message = `skipped ${warnings.length} task files during scan (${preview}${suffix})`;
+  if (opts.strictRead) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `task scan strict mode failed: ${message}`,
+    });
+  }
+  process.stderr.write(`${warnMessage(message)}\n`);
 }
 
 export function taskTextBlob(task: TaskData): string {

@@ -8,6 +8,7 @@ import {
   buildDependencyState,
   dedupeStrings,
   formatTaskLine,
+  handleTaskListWarnings,
   taskTextBlob,
   toStringArray,
   type TaskListFilters,
@@ -34,6 +35,7 @@ export async function cmdTaskSearch(opts: {
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const tasks = await ctx.taskBackend.listTasks();
+    handleTaskListWarnings({ backend: ctx.taskBackend, strictRead: opts.filters.strictRead });
     const depState = buildDependencyState(tasks);
     let filtered = tasks;
     if (opts.filters.status.length > 0) {
