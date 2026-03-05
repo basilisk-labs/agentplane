@@ -23,7 +23,7 @@ Promotion from `incidents.md` into canonical policy modules is allowed only when
 
 - Canonical modules are immutable by default during feature delivery tasks.
 - Canonical modules MAY be changed only in a dedicated policy task with explicit user approval.
-- Every canonical policy edit MUST include `bun run policy:routing:check` in verification evidence.
+- Every canonical policy edit MUST include `node .agentplane/policy/check-routing.mjs` in verification evidence.
 
 ## Policy budget
 

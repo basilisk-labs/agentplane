@@ -1,5 +1,5 @@
 <!--
-AGENTS_POLICY: gateway-v1.0
+AGENTS_POLICY: gateway-v1.1
 repo_namespace: .agentplane
 default_initiator: ORCHESTRATOR
 -->
@@ -7,8 +7,16 @@ default_initiator: ORCHESTRATOR
 # PURPOSE
 
 `AGENTS.md` is the policy gateway for agents in this repository.
-It is intentionally compact and only defines hard constraints, task-entry rules, and routing to canonical policy modules.
-Detailed procedures live in canonical modules listed in `## CANONICAL DOCS`.
+It provides strict routing, hard constraints, and command contracts.
+Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
+
+---
+
+## PROJECT
+
+- Repository type: user project initialized with `agentplane`.
+- Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
+- CLI rule: use `agentplane` from `PATH`; if unavailable, use `node packages/agentplane/bin/agentplane.js ...`.
 
 ---
 
@@ -18,14 +26,14 @@ Priority order (highest first):
 
 1. Enforcement: CI, tests, linters, hooks, CLI validations.
 2. Policy gateway: `AGENTS.md`.
-3. Canonical policy modules listed in `## CANONICAL DOCS`.
+3. Canonical policy modules from `## CANONICAL DOCS`.
 4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `.agentplane/config.json`.
-5. Reference examples listed in `## REFERENCE EXAMPLES`.
+5. Reference examples from `## REFERENCE EXAMPLES`.
 
 Conflict rule:
 
-- If a document conflicts with enforcement, enforcement wins.
-- If lower-priority text conflicts with higher-priority policy, higher priority wins.
+- If documentation conflicts with enforcement, enforcement wins.
+- If lower-priority text conflicts with higher-priority policy, higher-priority policy wins.
 
 ---
 
@@ -37,46 +45,75 @@ Conflict rule:
 
 ---
 
+## COMMANDS
+
+### Preflight
+
+```bash
+agentplane config show
+agentplane quickstart
+agentplane task list
+git status --short --untracked-files=no
+git rev-parse --abbrev-ref HEAD
+```
+
+### Task lifecycle
+
+```bash
+agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>
+agentplane task plan set <task-id> --text "..." --updated-by <ROLE>
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
+agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
+```
+
+### Verification
+
+```bash
+bun run typecheck
+bun run lint:core
+bun run test:fast
+node .agentplane/policy/check-routing.mjs
+bun run agents:check
+```
+
+---
+
 ## TOOLING
 
-Required preflight (read-only, before planning/execution):
-
-1. `agentplane config show`
-2. `agentplane quickstart`
-3. `agentplane task list`
-4. `git status --short --untracked-files=no`
-5. `git rev-parse --abbrev-ref HEAD`
-
-Required policy verification command:
-
-- `node .agentplane/policy/check-routing.mjs`
-
-Recommended verification baselines:
-
-- Code scope: `bun run typecheck && bun run lint:core && bun run test:fast`
-- Docs/policy scope: `node .agentplane/policy/check-routing.mjs && bun run agents:check`
+- Use `## COMMANDS` as the canonical command source.
+- For policy changes, routing validation MUST pass via `node .agentplane/policy/check-routing.mjs`.
 
 ---
 
 ## LOAD RULES
 
-Routing is strict. Load only files required by matching conditions.
+Routing is strict. Load only modules that match the current task.
 
-- IF task includes mutating action (file edits, task-state changes, commits, merge/integrate, release/publish) -> LOAD `.agentplane/policy/security.must.md`
-- IF task includes mutating action (file edits, task-state changes, commits, merge/integrate, release/publish) -> LOAD `.agentplane/policy/dod.core.md`
-- IF `workflow_mode=direct` -> LOAD `.agentplane/policy/workflow.direct.md`
-- IF `workflow_mode=branch_pr` -> LOAD `.agentplane/policy/workflow.branch_pr.md`
-- IF task touches release/version/publish paths or `agentplane release ...` -> LOAD `.agentplane/policy/workflow.release.md`
-- IF task modifies code paths (under `packages/` or `scripts/`) -> LOAD `.agentplane/policy/dod.code.md`
-- IF task modifies docs/policy-only paths (under `docs/`, `AGENTS.md`, or files under `.agentplane/policy/`) -> LOAD `.agentplane/policy/dod.docs.md`
-- IF task modifies policy files (`AGENTS.md` or files under `.agentplane/policy/`) -> LOAD `.agentplane/policy/governance.md`
-- IF task modifies `.agentplane/policy/incidents.md` -> LOAD `.agentplane/policy/incidents.md`
+### Always imports for mutating tasks
+
+Condition: task includes mutation (file edits, task-state changes, commits, merge/integrate, release/publish).
+
+- `@.agentplane/policy/security.must.md`
+- `@.agentplane/policy/dod.core.md`
+
+### Conditional imports
+
+- `workflow_mode=direct`: `@.agentplane/policy/workflow.direct.md`
+- `workflow_mode=branch_pr`: `@.agentplane/policy/workflow.branch_pr.md`
+- task touches release/version/publish or runs `agentplane release ...`: `@.agentplane/policy/workflow.release.md`
+- task runs `agentplane upgrade` or touches `.agentplane/.upgrade/**`: `@.agentplane/policy/workflow.upgrade.md`
+- task modifies implementation code paths: `@.agentplane/policy/dod.code.md`
+- task modifies docs/policy-only paths (`AGENTS.md`, docs, `.agentplane/policy/**`): `@.agentplane/policy/dod.docs.md`
+- task modifies policy files (`AGENTS.md` or `.agentplane/policy/**`): `@.agentplane/policy/governance.md`
+- task modifies `.agentplane/policy/incidents.md`: `@.agentplane/policy/incidents.md`
 
 Routing constraints:
 
-- MUST NOT load unrelated policy files outside matched rules.
-- MUST NOT use unconditional policy module loading (`IF always -> LOAD ...`).
-- MUST keep loaded-policy set minimal (target: 2-4 files per task).
+- MUST NOT load unrelated policy modules.
+- MUST NOT use wildcard policy paths.
+- MUST keep loaded policy set minimal (target: 2-4 files per task).
 - If routing is ambiguous, ask one clarifying question before loading extra modules.
 
 ---
@@ -87,10 +124,9 @@ Routing constraints:
 - MUST NOT perform mutating actions before explicit user approval.
 - MUST create/reuse executable task IDs for any repo-state mutation.
 - MUST use `agentplane` commands for task lifecycle updates; MUST NOT manually edit `.agentplane/tasks.json`.
-- MUST run `agentplane task plan approve ...` and `agentplane start|task start-ready ...` sequentially (never in parallel).
+- MUST run `agentplane task plan approve ...` and `agentplane task start-ready ...` sequentially (never in parallel).
 - MUST keep repository artifacts in English by default (unless user explicitly requests another language for a specific artifact).
 - MUST NOT fabricate repository facts.
-- MUST NOT expose raw chain-of-thought.
 - MUST stage/commit only intentional changes for the active task scope.
 - MUST stop and request re-approval when scope, risk, or verification criteria materially drift.
 
@@ -98,7 +134,7 @@ Role boundaries:
 
 - ORCHESTRATOR: preflight + plan + approvals.
 - PLANNER: executable task graph creation/update.
-- INTEGRATOR: base integration/finish in `branch_pr` workflows.
+- INTEGRATOR: base integration/finish in `branch_pr`.
 
 ---
 
@@ -117,12 +153,22 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 
 ---
 
+## SIZE BUDGET
+
+- `AGENTS.md` MUST stay <= 250 lines.
+- Every policy markdown module under `.agentplane/policy/*.md` MUST stay <= 100 lines.
+- Worst-case loaded policy graph (always imports + all conditional imports) MUST stay <= 600 lines.
+- Enforced by `node .agentplane/policy/check-routing.mjs`.
+
+---
+
 ## CANONICAL DOCS
 
 - DOC `.agentplane/policy/workflow.md`
 - DOC `.agentplane/policy/workflow.direct.md`
 - DOC `.agentplane/policy/workflow.branch_pr.md`
 - DOC `.agentplane/policy/workflow.release.md`
+- DOC `.agentplane/policy/workflow.upgrade.md`
 - DOC `.agentplane/policy/security.must.md`
 - DOC `.agentplane/policy/dod.core.md`
 - DOC `.agentplane/policy/dod.code.md`

@@ -177,6 +177,13 @@
       "required": true
     },
     {
+      "path": ".agentplane/policy/workflow.upgrade.md",
+      "source_path": "policy/workflow.upgrade.md",
+      "type": "markdown",
+      "merge_strategy": "agents_policy_markdown",
+      "required": true
+    },
+    {
       "path": "AGENTS.md",
       "source_path": "AGENTS.md",
       "type": "markdown",

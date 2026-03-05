@@ -1,6 +1,6 @@
 # DoD: code
 
-Apply when task changes `packages/**` or `scripts/**`.
+Apply when task changes implementation/source code.
 
 ## Minimum checks
 
@@ -8,7 +8,18 @@ Apply when task changes `packages/**` or `scripts/**`.
 - `bun run lint:core`
 - `bun run test:fast` (or narrower targeted tests with rationale)
 
-## Evidence
+## Verification notes contract
 
-- Record command list and pass/fail outcomes in task notes.
-- Document any skipped checks with explicit risk and approval.
+Record verification in task notes using this compact template:
+
+- `Command`: exact command string.
+- `Result`: `pass` or `fail`.
+- `Evidence`: short output summary (key lines only).
+- `Scope`: what paths/behavior the check covers.
+
+For skipped checks, record all fields:
+
+- `Skipped`: command not executed.
+- `Reason`: concrete blocker.
+- `Risk`: impact of skipping.
+- `Approval`: who approved the skip.

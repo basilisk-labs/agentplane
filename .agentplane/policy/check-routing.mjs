@@ -17,6 +17,10 @@ function isRepoRelative(p) {
   return true;
 }
 
+function readLines(filePath) {
+  return fs.readFileSync(filePath, "utf8").split(/\r?\n/).length;
+}
+
 function assertFilesExist(repoRoot, paths, label, errors) {
   for (const relPath of paths) {
     if (!isRepoRelative(relPath)) {
@@ -61,11 +65,14 @@ function main() {
 
   const requiredHeadings = [
     "# PURPOSE",
+    "## PROJECT",
     "## SOURCES OF TRUTH",
+    "## COMMANDS",
     "## TOOLING",
     "## LOAD RULES",
     "## MUST / MUST NOT",
     "## CORE DOD",
+    "## SIZE BUDGET",
     "## CANONICAL DOCS",
     "## REFERENCE EXAMPLES",
   ];
@@ -75,30 +82,32 @@ function main() {
     }
   }
 
-  if (!text.includes("MUST NOT load unrelated policy files")) {
-    errors.push("Missing strict routing guard: MUST NOT load unrelated policy files");
+  if (!text.includes("MUST NOT load unrelated policy modules")) {
+    errors.push("Missing strict routing guard: MUST NOT load unrelated policy modules");
   }
-  if (!text.includes("MUST NOT use unconditional policy module loading")) {
-    errors.push("Missing strict routing guard: MUST NOT use unconditional policy module loading");
-  }
-  if (/-\s*IF\s+always\s*->\s*LOAD\s+`/i.test(text)) {
-    errors.push("Unconditional policy loading is forbidden: found `IF always -> LOAD ...`");
+  if (!text.includes("MUST NOT use wildcard policy paths")) {
+    errors.push("Missing strict routing guard: MUST NOT use wildcard policy paths");
   }
 
-  const wildcardInlineCode = collectPaths(text, /`([^`]*\*[^`]*)`/g);
-  for (const wildcard of wildcardInlineCode) {
-    errors.push(`Wildcard paths are not allowed in AGENTS.md: ${wildcard}`);
+  if (/->\s*LOAD\s+`/i.test(text) || /-\s*IF\s+.*->/i.test(text)) {
+    errors.push("Legacy IF/LOAD routing syntax is forbidden; use @path imports in LOAD RULES");
   }
 
-  const loadPaths = collectPaths(text, /->\s*LOAD\s+`([^`]+)`/g);
+  const importPaths = collectPaths(text, /`@([^`\s]+)`/g);
   const docPaths = collectPaths(text, /-\s*DOC\s+`([^`]+)`/g);
   const examplePaths = collectPaths(text, /-\s*EXAMPLE\s+`([^`]+)`/g);
-
-  if (loadPaths.length < 5) {
-    errors.push(`Expected at least 5 LOAD paths, got ${loadPaths.length}`);
+  const wildcardPolicyPaths = [...importPaths, ...docPaths, ...examplePaths].filter((p) =>
+    p.includes("*"),
+  );
+  for (const wildcard of wildcardPolicyPaths) {
+    errors.push(`Wildcard policy path is not allowed: ${wildcard}`);
   }
-  if (docPaths.length < 5) {
-    errors.push(`Expected at least 5 DOC paths, got ${docPaths.length}`);
+
+  if (importPaths.length < 6) {
+    errors.push(`Expected at least 6 @import paths, got ${importPaths.length}`);
+  }
+  if (docPaths.length < 6) {
+    errors.push(`Expected at least 6 DOC paths, got ${docPaths.length}`);
   }
   if (examplePaths.length < 3) {
     errors.push(`Expected at least 3 EXAMPLE paths, got ${examplePaths.length}`);
@@ -108,18 +117,42 @@ function main() {
   if (!docPaths.includes(incidentsPath)) {
     errors.push(`Missing canonical DOC path: ${incidentsPath}`);
   }
-  if (!loadPaths.includes(incidentsPath)) {
-    errors.push(`Missing LOAD rule for incidents path: ${incidentsPath}`);
+  if (!importPaths.includes(incidentsPath)) {
+    errors.push(`Missing @import rule for incidents path: ${incidentsPath}`);
   }
 
-  assertFilesExist(repoRoot, [...new Set(loadPaths)], "LOAD", errors);
+  assertFilesExist(repoRoot, [...new Set(importPaths)], "IMPORT", errors);
   assertFilesExist(repoRoot, [...new Set(docPaths)], "DOC", errors);
   assertFilesExist(repoRoot, [...new Set(examplePaths)], "EXAMPLE", errors);
 
   const policyDir = path.join(repoRoot, ".agentplane", "policy");
-  const incidentFiles = listFilesRecursive(policyDir).filter((relPath) =>
-    /incident/i.test(path.basename(relPath)),
-  );
+  const policyFiles = listFilesRecursive(policyDir);
+  const markdownModules = policyFiles.filter((relPath) => relPath.endsWith(".md"));
+
+  for (const relPath of markdownModules) {
+    const abs = path.join(policyDir, relPath);
+    const moduleLines = readLines(abs);
+    if (moduleLines > 100) {
+      errors.push(
+        `Policy module exceeds budget (<=100 lines): .agentplane/policy/${relPath} (${moduleLines})`,
+      );
+    }
+  }
+
+  const importedMarkdown = [...new Set(importPaths.filter((p) => p.endsWith(".md")))];
+  let worstCaseLoadedLines = 0;
+  for (const relPath of importedMarkdown) {
+    const abs = path.join(repoRoot, relPath);
+    if (!fs.existsSync(abs)) continue;
+    worstCaseLoadedLines += readLines(abs);
+  }
+  if (worstCaseLoadedLines > 600) {
+    errors.push(
+      `Worst-case loaded policy graph exceeds budget (<=600 lines): ${worstCaseLoadedLines}`,
+    );
+  }
+
+  const incidentFiles = policyFiles.filter((relPath) => /incident/i.test(path.basename(relPath)));
   if (incidentFiles.length !== 1 || incidentFiles[0] !== "incidents.md") {
     errors.push(
       `Policy incidents must use a single file (.agentplane/policy/incidents.md). Found: ${incidentFiles.join(", ") || "none"}`,

@@ -20,6 +20,17 @@ This is the single file for incident-derived and situational policy rules.
 - enforcement: `<CI|test|lint|script|manual>`
 - state: `<open|stabilized|promoted>`
 
+<!-- example:start
+- id: INC-20260305-01
+- date: 2026-03-05
+- scope: commit-msg hook in repo development mode
+- failure: commit-msg rejected valid commits because stale-dist check blocked src_dirty/git_head_changed
+- rule: commit-msg MUST validate subject semantics and MUST NOT block on stale dist freshness checks
+- evidence: task 20260305-HOOKS-FIX, commit 9fe55c73
+- enforcement: test + hook script
+- state: open
+example:end -->
+
 ## Entries
 
 - None yet.
