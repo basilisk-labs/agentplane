@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+import { execFileSync } from "node:child_process";
 import path from "node:path";
-import { readdir, stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 async function exists(p) {
@@ -35,47 +36,88 @@ async function maybeWarnGlobalBinaryInRepoCheckout() {
   );
 }
 
-function isTestLikePath(absPath) {
-  // The repo build does not emit test files to dist. If we treat test mtimes as
-  // "src is newer than dist", we can block normal commits that only change tests.
-  const normalized = absPath.replaceAll("\\", "/");
-  if (normalized.includes("/__snapshots__/")) return true;
-  if (normalized.endsWith(".snap")) return true;
-  if (/\.(unit\.)?test\.[cm]?ts$/.test(normalized)) return true;
-  if (/\.(unit\.)?test\.tsx$/.test(normalized)) return true;
-  return false;
+async function readJsonIfExists(p) {
+  let raw = "";
+  try {
+    raw = await readFile(p, "utf8");
+  } catch {
+    return null;
+  }
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
 }
 
-// Keep this file dependency-free and simple: rely on directory mtime scans below.
-async function newestMtimeMsInDir(dir) {
-  let newest = 0;
-  const stack = [dir];
-  while (stack.length > 0) {
-    const current = stack.pop();
-    if (!current) continue;
-    let entries;
-    try {
-      entries = await readdir(current, { withFileTypes: true });
-    } catch {
-      continue;
-    }
-    for (const entry of entries) {
-      const abs = path.join(current, entry.name);
-      if (entry.isDirectory()) {
-        stack.push(abs);
-        continue;
-      }
-      if (!entry.isFile()) continue;
-      if (isTestLikePath(abs)) continue;
-      try {
-        const s = await stat(abs);
-        if (s.mtimeMs > newest) newest = s.mtimeMs;
-      } catch {
-        // ignore
-      }
-    }
+function resolveGitHead(cwd) {
+  try {
+    return execFileSync("git", ["rev-parse", "HEAD"], { cwd, encoding: "utf8" }).trim() || null;
+  } catch {
+    return null;
   }
-  return newest;
+}
+
+function hasSrcChanges(cwd) {
+  try {
+    const out = execFileSync(
+      "git",
+      ["status", "--porcelain", "--untracked-files=all", "--", "src"],
+      {
+        cwd,
+        encoding: "utf8",
+      },
+    );
+    return out.trim().length > 0;
+  } catch {
+    return false;
+  }
+}
+
+async function fileMtimeMs(p) {
+  try {
+    const s = await stat(p);
+    if (!s.isFile()) return null;
+    return s.mtimeMs;
+  } catch {
+    return null;
+  }
+}
+
+async function isPackageBuildFresh(packageRoot) {
+  const manifestPath = path.join(packageRoot, "dist", ".build-manifest.json");
+  const manifest = await readJsonIfExists(manifestPath);
+  if (!manifest || manifest.schema_version !== 1) {
+    return { ok: false, reason: "manifest_missing" };
+  }
+
+  const currentHead = resolveGitHead(packageRoot);
+  if (manifest.git_head && currentHead && manifest.git_head !== currentHead) {
+    return { ok: false, reason: "git_head_changed" };
+  }
+
+  if (hasSrcChanges(packageRoot)) {
+    return { ok: false, reason: "src_dirty" };
+  }
+
+  const srcCliMtimeMs = await fileMtimeMs(path.join(packageRoot, "src", "cli.ts"));
+  const srcIndexMtimeMs = await fileMtimeMs(path.join(packageRoot, "src", "index.ts"));
+  if (
+    typeof manifest.src_cli_mtime_ms === "number" &&
+    typeof srcCliMtimeMs === "number" &&
+    srcCliMtimeMs > manifest.src_cli_mtime_ms
+  ) {
+    return { ok: false, reason: "src_cli_newer_than_manifest" };
+  }
+  if (
+    typeof manifest.src_index_mtime_ms === "number" &&
+    typeof srcIndexMtimeMs === "number" &&
+    srcIndexMtimeMs > manifest.src_index_mtime_ms
+  ) {
+    return { ok: false, reason: "src_index_newer_than_manifest" };
+  }
+
+  return { ok: true, reason: "fresh" };
 }
 
 async function assertDistUpToDate() {
@@ -97,29 +139,24 @@ async function assertDistUpToDate() {
     return false;
   }
 
-  const agentplaneSrcDir = path.join(agentplaneRoot, "src");
-  const agentplaneSrcNewest = await newestMtimeMsInDir(agentplaneSrcDir);
-  const agentplaneDistNewest = await newestMtimeMsInDir(agentplaneDistDir);
-  const isStaleAgentplane = agentplaneSrcNewest > agentplaneDistNewest;
-
-  // If we're in the monorepo, also check core dist because the CLI imports it.
   const repoRoot = path.resolve(agentplaneRoot, "..", "..");
   const coreRoot = path.join(repoRoot, "packages", "core");
-  const coreSrcDir = path.join(coreRoot, "src");
-  const coreDistDir = path.join(coreRoot, "dist");
-  let isStaleCore = false;
-  if ((await exists(coreSrcDir)) && (await exists(coreDistDir))) {
-    const coreSrcNewest = await newestMtimeMsInDir(coreSrcDir);
-    const coreDistNewest = await newestMtimeMsInDir(coreDistDir);
-    isStaleCore = coreSrcNewest > coreDistNewest;
+  const checks = [{ name: "agentplane", root: agentplaneRoot }];
+  if (await exists(path.join(coreRoot, "src"))) checks.push({ name: "core", root: coreRoot });
+
+  const staleReasons = [];
+  for (const check of checks) {
+    const result = await isPackageBuildFresh(check.root);
+    if (!result.ok) staleReasons.push(`${check.name}:${result.reason}`);
   }
 
-  if ((isStaleAgentplane || isStaleCore) && !allowStale) {
+  if (staleReasons.length > 0 && !allowStale) {
     process.stderr.write(
-      "error: refusing to run a stale repo build (dist is older than src).\n" +
+      "error: refusing to run a stale repo build (manifest/git quick-check failed).\n" +
         "Fix:\n" +
         "  bun run --filter=@agentplaneorg/core build\n" +
         "  bun run --filter=agentplane build\n" +
+        `Detected: ${staleReasons.join(", ")}\n` +
         "Override (not recommended): set AGENTPLANE_DEV_ALLOW_STALE_DIST=1\n",
     );
     process.exitCode = 2;
