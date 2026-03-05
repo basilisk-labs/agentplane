@@ -30,6 +30,12 @@ type ReleaseVersionPlan = {
   bump: BumpKind;
 };
 
+type PlanChange = {
+  hash: string;
+  authorDateIso: string;
+  subject: string;
+};
+
 type ReleaseApplyReport = {
   applied_at: string;
   plan_dir: string;
@@ -201,7 +207,7 @@ function cleanHookEnv(): NodeJS.ProcessEnv {
   return env;
 }
 
-async function validateReleaseNotes(notesPath: string): Promise<void> {
+async function validateReleaseNotes(notesPath: string, minBullets: number): Promise<void> {
   const content = await readFile(notesPath, "utf8");
   if (!/release\s+notes/i.test(content)) {
     throw new CliError({
@@ -211,11 +217,11 @@ async function validateReleaseNotes(notesPath: string): Promise<void> {
     });
   }
   const bulletCount = content.split(/\r?\n/u).filter((line) => /^\s*[-*]\s+\S+/u.test(line)).length;
-  if (bulletCount < 1) {
+  if (bulletCount < minBullets) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
-      message: `Release notes must include at least one bullet point in ${notesPath}.`,
+      message: `Release notes must include at least ${minBullets} bullet points in ${notesPath}.`,
     });
   }
   if (/[\u0400-\u04FF]/u.test(content)) {
@@ -467,6 +473,11 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
     });
   }
   const plan = parseVersionPlan(await readJsonFile(versionJsonPath));
+  const changesJsonPath = path.join(planDir, "changes.json");
+  const changes = (await fileExists(changesJsonPath))
+    ? await readJsonFile<PlanChange[]>(changesJsonPath)
+    : [];
+  const minBullets = Math.max(5, Array.isArray(changes) ? changes.length : 0);
 
   if ((plan.bump === "minor" || plan.bump === "major") && flags.yes !== true) {
     throw usageError({
@@ -494,7 +505,7 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
         "Write this file using a DOCS agent before applying the release.",
     });
   }
-  await validateReleaseNotes(notesPath);
+  await validateReleaseNotes(notesPath, minBullets);
 
   const corePkgPath = path.join(gitRoot, "packages", "core", "package.json");
   const agentplanePkgPath = path.join(gitRoot, "packages", "agentplane", "package.json");

@@ -69,6 +69,8 @@ describeWhenNotHook("release plan", () => {
 
     const instructions = await readFile(path.join(runDir, "instructions.md"), "utf8");
     expect(instructions).toContain("docs/releases/v0.2.7.md");
+    expect(instructions).toContain("Cover all listed differences");
+    expect(instructions).toContain("Write at least 5 bullet points.");
     const changesMd = await readFile(path.join(runDir, "changes.md"), "utf8");
     expect(changesMd).toContain("feat: add file");
   });
