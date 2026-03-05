@@ -119,7 +119,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 - Workflow
   - [workflow](#workflow)
   - [workflow build](#workflow-build)
+  - [workflow debug](#workflow-debug)
+  - [workflow land](#workflow-land)
   - [workflow restore](#workflow-restore)
+  - [workflow sync](#workflow-sync)
 
 ## Backend
 
@@ -2707,6 +2710,42 @@ agentplane workflow build --validate
 
 - Build, validate, and atomically publish workflow.
 
+### workflow debug
+
+Run built-in debug checks and capture workflow evidence.
+
+Usage:
+
+```text
+agentplane workflow debug
+```
+
+Examples:
+
+```sh
+agentplane workflow debug
+```
+
+- Collect debug readiness evidence.
+
+### workflow land
+
+Run built-in pre-land checks and capture workflow evidence.
+
+Usage:
+
+```text
+agentplane workflow land
+```
+
+Examples:
+
+```sh
+agentplane workflow land
+```
+
+- Collect land-readiness evidence.
+
 ### workflow restore
 
 Restore WORKFLOW.md from last-known-good snapshot.
@@ -2724,3 +2763,21 @@ agentplane workflow restore
 ```
 
 - Restore active workflow from .agentplane/workflows/last-known-good.md.
+
+### workflow sync
+
+Run built-in sync checks and capture workflow evidence.
+
+Usage:
+
+```text
+agentplane workflow sync
+```
+
+Examples:
+
+```sh
+agentplane workflow sync
+```
+
+- Collect sync-state evidence.
