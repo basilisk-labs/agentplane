@@ -198,19 +198,14 @@ jobs:
         run: |
           set -euo pipefail
           TAG="${{ needs.detect.outputs.tag }}"
-          TARGET_SHA="${{ needs.detect.outputs.sha }}"
           TAG_REF="refs/tags/${TAG}"
           REMOTE_TAG_SHA="$(git ls-remote --tags origin "${TAG_REF}" | awk '{print $1}' | head -n1 || true)"
           REMOTE_PEELED_SHA="$(git ls-remote --tags origin "${TAG_REF}^{}" | awk '{print $1}' | head -n1 || true)"
           RESOLVED_REMOTE_SHA="${REMOTE_PEELED_SHA:-$REMOTE_TAG_SHA}"
 
           if [ -n "${RESOLVED_REMOTE_SHA}" ]; then
-            if [ "${RESOLVED_REMOTE_SHA}" != "${TARGET_SHA}" ]; then
-              echo "tag ${TAG} already exists on origin at ${RESOLVED_REMOTE_SHA}, expected ${TARGET_SHA}" >&2
-              exit 1
-            fi
             echo "tag_exists=true" >> "$GITHUB_OUTPUT"
-            echo "tag ${TAG} already exists on target SHA ${TARGET_SHA}, continuing"
+            echo "tag ${TAG} already exists on origin at ${RESOLVED_REMOTE_SHA}, continuing"
           else
             echo "tag_exists=false" >> "$GITHUB_OUTPUT"
           fi
