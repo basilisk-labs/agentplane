@@ -192,13 +192,27 @@ jobs:
         run: node scripts/check-release-notes.mjs --tag "${{ needs.detect.outputs.tag }}"
       - name: Validate release versions
         run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}"
-      - name: Ensure tag does not exist on origin
+      - name: Validate origin tag state
+        id: tag_state
         shell: bash
         run: |
           set -euo pipefail
-          if git ls-remote --exit-code --tags origin "refs/tags/${{ needs.detect.outputs.tag }}" >/dev/null 2>&1; then
-            echo "tag already exists on origin: ${{ needs.detect.outputs.tag }}" >&2
-            exit 1
+          TAG="${{ needs.detect.outputs.tag }}"
+          TARGET_SHA="${{ needs.detect.outputs.sha }}"
+          TAG_REF="refs/tags/${TAG}"
+          REMOTE_TAG_SHA="$(git ls-remote --tags origin "${TAG_REF}" | awk '{print $1}' | head -n1 || true)"
+          REMOTE_PEELED_SHA="$(git ls-remote --tags origin "${TAG_REF}^{}" | awk '{print $1}' | head -n1 || true)"
+          RESOLVED_REMOTE_SHA="${REMOTE_PEELED_SHA:-$REMOTE_TAG_SHA}"
+
+          if [ -n "${RESOLVED_REMOTE_SHA}" ]; then
+            if [ "${RESOLVED_REMOTE_SHA}" != "${TARGET_SHA}" ]; then
+              echo "tag ${TAG} already exists on origin at ${RESOLVED_REMOTE_SHA}, expected ${TARGET_SHA}" >&2
+              exit 1
+            fi
+            echo "tag_exists=true" >> "$GITHUB_OUTPUT"
+            echo "tag ${TAG} already exists on target SHA ${TARGET_SHA}, continuing"
+          else
+            echo "tag_exists=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Build release packages
         run: bun run release:check
@@ -224,6 +238,7 @@ jobs:
       - name: Post-publish npm smoke
         run: bun run release:smoke:published
       - name: Push release tag
+        if: steps.tag_state.outputs.tag_exists != 'true'
         shell: bash
         run: |
           set -euo pipefail
