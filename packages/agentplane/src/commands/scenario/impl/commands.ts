@@ -175,6 +175,13 @@ export async function cmdScenarioInfoParsed(opts: {
     process.stdout.write(`Goal: ${scenario.goal}\n`);
     process.stdout.write(`Inputs: ${JSON.stringify(scenario.inputs, null, 2)}\n`);
     process.stdout.write(`Outputs: ${JSON.stringify(scenario.outputs, null, 2)}\n`);
+    if (scenario.evidence?.required) {
+      process.stdout.write(
+        `Evidence: required (${normalizeExpectedEvidenceFiles(scenario.evidence.files).join(", ")})\n`,
+      );
+    } else if (scenario.evidence?.files && scenario.evidence.files.length > 0) {
+      process.stdout.write(`Evidence: optional (${scenario.evidence.files.join(", ")})\n`);
+    }
     process.stdout.write("Steps:\n");
     let stepIndex = 1;
     for (const step of scenario.steps) {
@@ -243,6 +250,34 @@ function sanitizeRunId(value: string): string {
   return value.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
 }
 
+function normalizeExpectedEvidenceFiles(raw: string[] | undefined): string[] {
+  if (!raw || raw.length === 0) return ["evidence.json"];
+  const unique: string[] = [];
+  for (const value of raw) {
+    const file = value.trim();
+    if (!file) continue;
+    if (unique.includes(file)) continue;
+    unique.push(file);
+  }
+  return unique.length > 0 ? unique : ["evidence.json"];
+}
+
+async function collectStepEvidenceFiles(
+  stepDir: string,
+  expectedFiles: string[],
+): Promise<{ present: string[]; missing: string[] }> {
+  const present: string[] = [];
+  const missing: string[] = [];
+  for (const file of expectedFiles) {
+    if (await fileExists(path.join(stepDir, file))) {
+      present.push(file);
+    } else {
+      missing.push(file);
+    }
+  }
+  return { present, missing };
+}
+
 export async function cmdScenarioRunParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -307,6 +342,15 @@ export async function cmdScenarioRunParsed(opts: {
       .replaceAll(".", "-")}-${sanitizeRunId(scenarioId)}`;
     const runDir = path.join(runsRoot, runId);
     await mkdir(runDir, { recursive: true });
+    const evidenceRequired = scenario.evidence?.required === true;
+    const expectedEvidenceFiles = evidenceRequired
+      ? normalizeExpectedEvidenceFiles(scenario.evidence?.files)
+      : normalizeExpectedEvidenceFiles(
+          scenario.evidence?.files && scenario.evidence.files.length > 0
+            ? scenario.evidence.files
+            : undefined,
+        );
+    const missingEvidenceSteps: number[] = [];
 
     const stepsMeta: {
       tool: string;
@@ -380,6 +424,11 @@ export async function cmdScenarioRunParsed(opts: {
       const durationMs = Date.now() - startedAt;
       await atomicWriteFile(path.join(stepDir, "stdout.log"), result.stdout, "utf8");
       await atomicWriteFile(path.join(stepDir, "stderr.log"), result.stderr, "utf8");
+      const stepEvidence = await collectStepEvidenceFiles(stepDir, expectedEvidenceFiles);
+      const missingRequiredEvidence = evidenceRequired ? stepEvidence.missing : [];
+      if (missingRequiredEvidence.length > 0) {
+        missingEvidenceSteps.push(index + 1);
+      }
       stepsMeta.push({
         tool: step.tool,
         runtime,
@@ -394,11 +443,14 @@ export async function cmdScenarioRunParsed(opts: {
         entrypoint,
         args: redactArgs(step.args),
         env_keys: stepEnvKeys,
+        evidence_files: stepEvidence.present,
+        missing_evidence_files:
+          missingRequiredEvidence.length > 0 ? missingRequiredEvidence : undefined,
         exit_code: result.exitCode,
         duration_ms: durationMs,
       });
 
-      if (result.exitCode !== 0) {
+      if (result.exitCode !== 0 || missingRequiredEvidence.length > 0) {
         const gitSummary = await getGitDiffSummary(resolved.gitRoot);
         await writeScenarioReport({
           runDir,
@@ -408,6 +460,11 @@ export async function cmdScenarioRunParsed(opts: {
           startedAt: runStartedAt,
           status: "failed",
           steps: stepsReport,
+          evidence: {
+            required: evidenceRequired,
+            expected_files: expectedEvidenceFiles,
+            missing_steps: missingEvidenceSteps,
+          },
           gitSummary,
         });
         await atomicWriteFile(
@@ -417,6 +474,11 @@ export async function cmdScenarioRunParsed(opts: {
               recipe: recipeId,
               scenario: scenarioId,
               run_id: runId,
+              evidence: {
+                required: evidenceRequired,
+                expected_files: expectedEvidenceFiles,
+                missing_steps: missingEvidenceSteps,
+              },
               steps: stepsMeta,
             },
             null,
@@ -424,10 +486,15 @@ export async function cmdScenarioRunParsed(opts: {
           )}\n`,
           "utf8",
         );
+        const reason =
+          missingRequiredEvidence.length > 0
+            ? `Scenario step missing required evidence: ${step.tool} (${missingRequiredEvidence.join(", ")})`
+            : `Scenario step failed: ${step.tool}`;
+        const stepExitCode = result.exitCode === 0 ? 1 : result.exitCode;
         throw new CliError({
-          exitCode: result.exitCode,
+          exitCode: stepExitCode,
           code: "E_INTERNAL",
-          message: `Scenario step failed: ${step.tool}`,
+          message: reason,
         });
       }
     }
@@ -441,6 +508,11 @@ export async function cmdScenarioRunParsed(opts: {
       startedAt: runStartedAt,
       status: "success",
       steps: stepsReport,
+      evidence: {
+        required: evidenceRequired,
+        expected_files: expectedEvidenceFiles,
+        missing_steps: missingEvidenceSteps,
+      },
       gitSummary,
     });
     await atomicWriteFile(
@@ -450,6 +522,11 @@ export async function cmdScenarioRunParsed(opts: {
           recipe: recipeId,
           scenario: scenarioId,
           run_id: runId,
+          evidence: {
+            required: evidenceRequired,
+            expected_files: expectedEvidenceFiles,
+            missing_steps: missingEvidenceSteps,
+          },
           steps: stepsMeta,
         },
         null,

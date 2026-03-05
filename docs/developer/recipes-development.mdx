@@ -29,6 +29,7 @@ description: "Practical workflow for authoring and validating recipes."
 - Keep each step focused on one tool responsibility.
 - Explicitly define expected outputs and failure messages.
 - Do not hide required inputs behind implicit defaults.
+- For operational playbooks, set `evidence.required=true` and declare expected files.
 
 ## Designing tools
 
@@ -36,6 +37,7 @@ description: "Practical workflow for authoring and validating recipes."
 - Keep tool side effects inside project-local directories when possible.
 - Prefer stable stdout/stderr output formats for downstream automation.
 - Exit non-zero on failures and include actionable error text.
+- For evidence-required scenarios, write required artifacts into `AGENTPLANE_STEP_DIR`.
 
 ## Distribution and upgrades
 
@@ -48,3 +50,4 @@ description: "Practical workflow for authoring and validating recipes."
 - Recipe-provided agents are namespaced on install to avoid id collisions.
 - Use `--on-conflict` policy explicitly when testing collision behavior.
 - Validate both local archive installs and remote index installs before release.
+- A ready-to-adapt playbook template lives at `docs/examples/workflow-playbooks/`.

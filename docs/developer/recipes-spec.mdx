@@ -89,6 +89,14 @@ Current runtime support:
 - tool runtime `node` or `bash`
 - per-step logs in run artifact folder
 - report metadata (`meta.json`, `report.json`)
+- step-level evidence files (for example `step-<n>-<tool>/evidence.json`)
+
+Scenario definitions can declare evidence requirements:
+
+- `evidence.required` (boolean)
+- `evidence.files` (string array, defaults to `["evidence.json"]` when required)
+
+When evidence is required, `scenario run` fails if a step does not produce the expected evidence files.
 
 ## Security model
 

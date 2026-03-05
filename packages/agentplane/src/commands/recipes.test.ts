@@ -865,6 +865,136 @@ describe("commands/recipes", () => {
     expect(envKeys).toContain("AGENTPLANE_RUN_DIR");
   });
 
+  it("scenario run fails when required evidence file is missing", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    const manifest = {
+      schema_version: "1",
+      id: "viewer",
+      version: "1.2.3",
+      name: "Viewer",
+      summary: "Preview tasks",
+      description: "Preview tasks",
+      tools: [
+        {
+          id: "NO_EVIDENCE_TOOL",
+          summary: "No evidence tool",
+          runtime: "bash",
+          entrypoint: "tools/run.sh",
+        },
+      ],
+      scenarios: [{ id: "REQ_EVIDENCE_SCENARIO", summary: "Requires evidence" }],
+    };
+    const archivePath = await createRecipeArchiveWithManifest({
+      manifest,
+      files: {
+        "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
+        "scenarios/required-evidence.json": JSON.stringify(
+          {
+            schema_version: "1",
+            id: "REQ_EVIDENCE_SCENARIO",
+            goal: "collect evidence",
+            inputs: [],
+            outputs: [],
+            evidence: { required: true, files: ["evidence.json"] },
+            steps: [{ tool: "NO_EVIDENCE_TOOL", args: [] }],
+          },
+          null,
+          2,
+        ),
+      },
+    });
+
+    await runRecipesTest({
+      cwd: projectDir,
+      args: ["--path", archivePath],
+      command: "install",
+    });
+
+    let failure: unknown;
+    try {
+      await runScenarioTest({
+        cwd: projectDir,
+        args: ["viewer:REQ_EVIDENCE_SCENARIO"],
+        command: "run",
+      });
+    } catch (error) {
+      failure = error;
+    }
+    expect(failure).toMatchObject({ code: "E_INTERNAL" });
+    expect(failure instanceof Error ? failure.message : String(failure)).toContain(
+      "missing required evidence",
+    );
+  });
+
+  it("scenario run records evidence details when required evidence is produced", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    const manifest = {
+      schema_version: "1",
+      id: "viewer",
+      version: "1.2.3",
+      name: "Viewer",
+      summary: "Preview tasks",
+      description: "Preview tasks",
+      tools: [
+        {
+          id: "EVIDENCE_TOOL",
+          summary: "Evidence writer",
+          runtime: "bash",
+          entrypoint: "tools/run.sh",
+        },
+      ],
+      scenarios: [{ id: "EVIDENCE_SCENARIO", summary: "Collects evidence" }],
+    };
+    const archivePath = await createRecipeArchiveWithManifest({
+      manifest,
+      files: {
+        "tools/run.sh":
+          '#!/usr/bin/env bash\nprintf \'{"ok":true}\\n\' > "$AGENTPLANE_STEP_DIR/evidence.json"\nexit 0\n',
+        "scenarios/evidence.json": JSON.stringify(
+          {
+            schema_version: "1",
+            id: "EVIDENCE_SCENARIO",
+            goal: "collect evidence",
+            inputs: [],
+            outputs: [],
+            evidence: { required: true, files: ["evidence.json"] },
+            steps: [{ tool: "EVIDENCE_TOOL", args: [] }],
+          },
+          null,
+          2,
+        ),
+      },
+    });
+
+    await runRecipesTest({
+      cwd: projectDir,
+      args: ["--path", archivePath],
+      command: "install",
+    });
+
+    await runScenarioTest({
+      cwd: projectDir,
+      args: ["viewer:EVIDENCE_SCENARIO"],
+      command: "run",
+    });
+
+    const runsRoot = path.join(projectDir, ".agentplane", "recipes", "viewer", "runs");
+    const runs = await readdir(runsRoot);
+    const latest = runs.toSorted().at(-1);
+    const reportPath = path.join(runsRoot, latest ?? "", "report.json");
+    const report = JSON.parse(await readFile(reportPath, "utf8")) as Record<string, unknown>;
+    const evidence = report.evidence as Record<string, unknown>;
+    expect(evidence.required).toBe(true);
+    expect(evidence.expected_files).toEqual(["evidence.json"]);
+    expect(evidence.missing_steps).toEqual([]);
+    const steps = report.steps as Record<string, unknown>[];
+    expect(steps[0]?.evidence_files).toEqual(["evidence.json"]);
+  });
+
   it("scenario run warns on tool permissions and missing entrypoint", async () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();

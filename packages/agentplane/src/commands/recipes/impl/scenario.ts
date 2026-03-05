@@ -9,6 +9,33 @@ import { RECIPES_SCENARIOS_DIR_NAME, RECIPES_SCENARIOS_INDEX_NAME } from "./cons
 import { normalizeScenarioId } from "./normalize.js";
 import type { RecipeManifest, RecipeScenarioDetail, ScenarioDefinition } from "./types.js";
 
+function normalizeScenarioEvidence(
+  raw: unknown,
+  sourcePath: string,
+): ScenarioDefinition["evidence"] | undefined {
+  if (raw === undefined) return undefined;
+  if (!isRecord(raw)) {
+    throw new Error(invalidFieldMessage("scenario.evidence", "object", sourcePath));
+  }
+  const required = raw.required === true;
+  let files: string[] = [];
+  if (raw.files !== undefined) {
+    if (!Array.isArray(raw.files)) {
+      throw new Error(invalidFieldMessage("scenario.evidence.files", "string[]", sourcePath));
+    }
+    files = raw.files
+      .map((value) => (typeof value === "string" ? value.trim() : ""))
+      .filter(Boolean);
+    if (files.length !== raw.files.length) {
+      throw new Error(invalidFieldMessage("scenario.evidence.files", "string[]", sourcePath));
+    }
+  }
+  if (required && files.length === 0) {
+    files = ["evidence.json"];
+  }
+  return { required, files };
+}
+
 function validateScenarioDefinition(raw: unknown, sourcePath: string): ScenarioDefinition {
   if (!isRecord(raw)) throw new Error(invalidFieldMessage("scenario", "object", sourcePath));
   if (raw.schema_version !== undefined && raw.schema_version !== "1") {
@@ -31,6 +58,7 @@ function validateScenarioDefinition(raw: unknown, sourcePath: string): ScenarioD
     goal,
     inputs: raw.inputs,
     outputs: raw.outputs,
+    evidence: normalizeScenarioEvidence(raw.evidence, sourcePath),
     steps: raw.steps,
   };
 }

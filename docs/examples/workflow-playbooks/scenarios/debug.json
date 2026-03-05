@@ -1,0 +1,16 @@
+{
+  "schema_version": "1",
+  "id": "debug",
+  "summary": "Run debug triage checks and capture diagnostic evidence.",
+  "description": "Executes deterministic debug checks for local workflow diagnosis.",
+  "goal": "Collect reproducible diagnostics for workflow failures.",
+  "inputs": [{ "name": "notes", "type": "string", "optional": true }],
+  "outputs": [
+    { "name": "evidence", "type": "json", "path": "step-1-playbook-runner/evidence.json" }
+  ],
+  "evidence": {
+    "required": true,
+    "files": ["evidence.json"]
+  },
+  "steps": [{ "tool": "playbook-runner", "args": ["debug"] }]
+}

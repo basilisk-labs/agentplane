@@ -1,0 +1,33 @@
+{
+  "schema_version": "1",
+  "id": "workflow-playbooks",
+  "version": "0.1.0",
+  "name": "Workflow Playbooks",
+  "summary": "Operational playbooks for debug, sync, and land workflows.",
+  "description": "Adds deterministic playbooks for common repository operations with mandatory evidence capture.",
+  "tags": ["workflow", "playbook", "debug", "sync", "land"],
+  "agents": [],
+  "tools": [
+    {
+      "id": "playbook-runner",
+      "summary": "Run an operational playbook and capture evidence.",
+      "runtime": "node",
+      "entrypoint": "tools/playbook.mjs",
+      "permissions": ["fs.read", "fs.write", "process.exec"]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "debug",
+      "summary": "Run debug triage checks and capture diagnostic evidence."
+    },
+    {
+      "id": "sync",
+      "summary": "Run sync readiness checks and capture state evidence."
+    },
+    {
+      "id": "land",
+      "summary": "Run pre-land gate checks and capture release evidence."
+    }
+  ]
+}

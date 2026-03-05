@@ -23,8 +23,16 @@ export type ScenarioRunReportStep = {
   entrypoint: string;
   args: string[];
   env_keys: string[];
+  evidence_files: string[];
+  missing_evidence_files?: string[];
   exit_code: number;
   duration_ms: number;
+};
+
+type ScenarioRunEvidenceSummary = {
+  required: boolean;
+  expected_files: string[];
+  missing_steps: number[];
 };
 
 type ScenarioRunReport = {
@@ -36,6 +44,7 @@ type ScenarioRunReport = {
   ended_at: string;
   status: "success" | "failed";
   steps: ScenarioRunReportStep[];
+  evidence: ScenarioRunEvidenceSummary;
   git?: ScenarioRunGitSummary;
 };
 
@@ -126,6 +135,7 @@ export async function writeScenarioReport(opts: {
   startedAt: string;
   status: "success" | "failed";
   steps: ScenarioRunReportStep[];
+  evidence: ScenarioRunEvidenceSummary;
   gitSummary?: ScenarioRunGitSummary;
 }): Promise<void> {
   const report: ScenarioRunReport = {
@@ -137,6 +147,7 @@ export async function writeScenarioReport(opts: {
     ended_at: new Date().toISOString(),
     status: opts.status,
     steps: opts.steps,
+    evidence: opts.evidence,
     git: opts.gitSummary,
   };
   await atomicWriteFile(

@@ -42,6 +42,10 @@ export type ScenarioDefinition = {
   goal: string;
   inputs: unknown;
   outputs: unknown;
+  evidence?: {
+    required: boolean;
+    files: string[];
+  };
   steps: unknown[];
 };
 

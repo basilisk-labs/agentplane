@@ -30,7 +30,8 @@ This page describes runtime behavior behind `recipes` and `scenario` commands.
 2. Loads recipe manifest and scenario definition.
 3. Resolves referenced tools.
 4. Executes steps sequentially.
-5. Writes per-step logs and run report artifacts.
+5. Validates required evidence files (if declared by scenario).
+6. Writes per-step logs and run report artifacts.
 
 Typical run artifact path:
 
@@ -42,6 +43,13 @@ Common files:
 - `report.json`
 - `step-<n>-<tool>/stdout.log`
 - `step-<n>-<tool>/stderr.log`
+- `step-<n>-<tool>/evidence.json` (when produced by the tool)
+
+`report.json` includes:
+
+- step arguments (redacted for sensitive flags)
+- environment key names used by each step
+- evidence summary (`required`, expected files, missing steps)
 
 ## Environment behavior
 
