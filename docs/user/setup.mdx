@@ -59,7 +59,7 @@ If `.git` does not exist in that folder, `init` creates a new git repository the
 
 - `Light`: compact flow, minimum enforcement, maximum flexibility.
 - `Normal` (default): balanced approvals and checks for most teams.
-- `Full Harness`: strict guardrails, full questionnaire, and default `workflow-playbooks` install.
+- `Full Harness`: strict guardrails and full questionnaire.
 
 Hooks are mandatory in all profiles. `--hooks false` is rejected.
 
@@ -154,25 +154,19 @@ agentplane workflow build --validate --dry-run
 agentplane doctor
 ```
 
-## Install optional recipes
+## Core workflow operations
 
 ```bash
-# During init (recommended for bundled playbooks):
-agentplane init --yes --recipes workflow-playbooks
+agentplane workflow debug
+agentplane workflow sync
+agentplane workflow land
+```
 
-# After init (bundled by name, no remote index required):
-agentplane recipes install --name workflow-playbooks
+Each command writes evidence to `.agentplane/workflows/evidence/`.
 
-# Additional remote/index recipe:
+## Install optional recipes (extensions)
+
+```bash
 agentplane recipes install --name viewer
+agentplane scenario run viewer:viewer
 ```
-
-Playbook-style recipes can expose operational scenarios:
-
-```bash
-agentplane scenario run workflow-playbooks:debug
-agentplane scenario run workflow-playbooks:sync
-agentplane scenario run workflow-playbooks:land
-```
-
-See the template recipe in `docs/examples/workflow-playbooks/`.

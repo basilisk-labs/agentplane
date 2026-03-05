@@ -98,7 +98,7 @@ const setupProfilePresets: Record<
     defaultRequireNetworkApproval: true,
     defaultRequireVerifyApproval: true,
     defaultExecutionProfile: "conservative",
-    defaultRecipes: ["workflow-playbooks"],
+    defaultRecipes: [],
   },
 };
 

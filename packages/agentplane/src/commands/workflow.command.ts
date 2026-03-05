@@ -4,7 +4,7 @@ import { suggestOne } from "../cli/spec/suggest.js";
 
 type WorkflowParsed = Record<string, never>;
 
-const WORKFLOW_SUBCOMMANDS = ["build", "restore"] as const;
+const WORKFLOW_SUBCOMMANDS = ["build", "restore", "debug", "sync", "land"] as const;
 
 export const workflowSpec: CommandSpec<WorkflowParsed> = {
   id: ["workflow"],

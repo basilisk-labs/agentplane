@@ -120,7 +120,10 @@ Commands:
   Workflow:
     workflow  Workflow contract commands.
     workflow build  Build WORKFLOW.md from template layers with strict rendering checks.
+    workflow debug  Run built-in debug checks and capture workflow evidence.
+    workflow land  Run built-in pre-land checks and capture workflow evidence.
     workflow restore  Restore WORKFLOW.md from last-known-good snapshot.
+    workflow sync  Run built-in sync checks and capture workflow evidence.
 "
 `;
 

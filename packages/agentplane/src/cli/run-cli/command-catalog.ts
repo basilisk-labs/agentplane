@@ -93,6 +93,11 @@ import { doctorSpec } from "../../commands/doctor.spec.js";
 import { workflowSpec } from "../../commands/workflow.command.js";
 import { workflowBuildSpec } from "../../commands/workflow-build.command.js";
 import { workflowRestoreSpec } from "../../commands/workflow-restore.command.js";
+import {
+  workflowDebugSpec,
+  workflowLandSpec,
+  workflowSyncSpec,
+} from "../../commands/workflow-playbook.command.js";
 
 import { docsCliSpec } from "../../commands/docs/cli.command.js";
 import { hooksSpec } from "../../commands/hooks/hooks.command.js";
@@ -283,6 +288,33 @@ export const COMMANDS = [
   entry(
     workflowRestoreSpec,
     () => import("../../commands/workflow-restore.command.js").then((m) => m.runWorkflowRestore),
+    {
+      needsProject: true,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    workflowDebugSpec,
+    () => import("../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowDebug),
+    {
+      needsProject: true,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    workflowSyncSpec,
+    () => import("../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowSync),
+    {
+      needsProject: true,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    workflowLandSpec,
+    () => import("../../commands/workflow-playbook.command.js").then((m) => m.runWorkflowLand),
     {
       needsProject: true,
       needsConfig: false,

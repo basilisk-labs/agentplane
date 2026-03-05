@@ -417,14 +417,53 @@ describe("commands/recipes", () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
-    const recipeDir = path.join(
-      process.cwd(),
-      "packages",
-      "agentplane",
-      "assets",
-      "recipes",
-      "workflow-playbooks",
+    const fixtureRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-dir-"));
+    const recipeDir = path.join(fixtureRoot, "local-viewer");
+    await mkdir(path.join(recipeDir, "scenarios"), { recursive: true });
+    await mkdir(path.join(recipeDir, "tools"), { recursive: true });
+    await writeFile(
+      path.join(recipeDir, "manifest.json"),
+      JSON.stringify(
+        {
+          schema_version: "1",
+          id: "local-viewer",
+          version: "0.1.0",
+          name: "Local Viewer",
+          summary: "Local recipe fixture",
+          description: "Local recipe fixture",
+          tools: [
+            {
+              id: "noop",
+              summary: "No-op tool",
+              runtime: "node",
+              entrypoint: "tools/noop.mjs",
+              permissions: ["fs.read"],
+            },
+          ],
+          scenarios: [{ id: "fixture", summary: "Fixture scenario" }],
+        },
+        null,
+        2,
+      ),
+      "utf8",
     );
+    await writeFile(
+      path.join(recipeDir, "scenarios", "fixture.json"),
+      JSON.stringify(
+        {
+          schema_version: "1",
+          id: "fixture",
+          goal: "Fixture goal",
+          inputs: [],
+          outputs: [],
+          steps: [{ tool: "noop" }],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    await writeFile(path.join(recipeDir, "tools", "noop.mjs"), "console.log('ok');\n", "utf8");
 
     const io = captureStdIO();
     try {
@@ -437,52 +476,13 @@ describe("commands/recipes", () => {
       ).resolves.toBe(0);
     } finally {
       io.restore();
+      await rm(fixtureRoot, { recursive: true, force: true });
     }
 
     const installed = JSON.parse(await readFile(path.join(tempHome, "recipes.json"), "utf8")) as {
       recipes: { id: string }[];
     };
-    expect(installed.recipes.some((entry) => entry.id === "workflow-playbooks")).toBe(true);
-
-    const debugScenarioPath = path.join(
-      tempHome,
-      "recipes",
-      "workflow-playbooks",
-      "0.1.0",
-      "scenarios",
-      "debug.json",
-    );
-    const debugScenario = JSON.parse(await readFile(debugScenarioPath, "utf8")) as {
-      evidence?: { required?: boolean; files?: string[] };
-    };
-    expect(debugScenario.evidence?.required).toBe(true);
-    expect(debugScenario.evidence?.files).toContain("evidence.json");
-  });
-
-  it("installs bundled recipe by name without remote index fetch", async () => {
-    if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkGitRepoRoot();
-    await writeDefaultConfig(projectDir);
-
-    const io = captureStdIO();
-    try {
-      await expect(
-        runRecipesTest({
-          cwd: projectDir,
-          args: ["--name", "workflow-playbooks"],
-          command: "install",
-        }),
-      ).resolves.toBe(0);
-    } finally {
-      io.restore();
-    }
-
-    const installed = JSON.parse(await readFile(path.join(tempHome, "recipes.json"), "utf8")) as {
-      recipes: { id: string; source: string }[];
-    };
-    const entry = installed.recipes.find((recipe) => recipe.id === "workflow-playbooks");
-    expect(entry).toBeDefined();
-    expect(entry?.source.startsWith("bundled:workflow-playbooks@")).toBe(true);
+    expect(installed.recipes.some((entry) => entry.id === "local-viewer")).toBe(true);
   });
 
   it("prints recipe info details", async () => {

@@ -15,16 +15,7 @@ export type BundledRecipeEntry = BundledRecipesCatalog["recipes"][number];
 
 export const BUNDLED_RECIPES_CATALOG: BundledRecipesCatalog = {
   schema_version: 1,
-  recipes: [
-    {
-      id: "workflow-playbooks",
-      summary: "Operational playbooks for debug, sync, and land workflows.",
-      description:
-        "Provides deterministic playbooks for common repository operations with mandatory evidence capture.",
-      source_path: "recipes/workflow-playbooks",
-      versions: [{ version: "0.1.0" }],
-    },
-  ],
+  recipes: [],
 };
 
 export function resolveBundledRecipeSourcePath(recipeId: string): string | null {

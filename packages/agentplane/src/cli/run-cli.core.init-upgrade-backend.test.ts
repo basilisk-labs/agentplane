@@ -264,30 +264,6 @@ describe("runCli", () => {
     expect(configText).toContain('"profile": "aggressive"');
   });
 
-  it("init --setup-profile full-harness --yes installs workflow-playbooks by default", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "init",
-        "--yes",
-        "--setup-profile",
-        "full-harness",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-
-    const home = getAgentplaneHome();
-    expect(home).toBeTruthy();
-    const recipeRoot = path.join(String(home), "recipes", "workflow-playbooks", "0.1.0");
-    expect(await pathExists(path.join(recipeRoot, "manifest.json"))).toBe(true);
-  });
-
   it("init --gitignore-agents updates .gitignore and skips the install commit", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();
@@ -996,29 +972,6 @@ describe("runCli", () => {
     }
   });
 
-  it("init validates recipes against bundled catalog", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    const original = [...BUNDLED_RECIPES_CATALOG.recipes];
-    BUNDLED_RECIPES_CATALOG.recipes.length = 0;
-    BUNDLED_RECIPES_CATALOG.recipes.push({
-      id: "viewer",
-      summary: "Viewer recipe",
-      source_path: "recipes/workflow-playbooks",
-      versions: [{ version: "1.0.0" }],
-    });
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["init", "--yes", "--recipes", "viewer", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      BUNDLED_RECIPES_CATALOG.recipes.length = 0;
-      BUNDLED_RECIPES_CATALOG.recipes.push(...original);
-      io.restore();
-    }
-  });
-
   it("init fails when selected bundled recipe has no source_path", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
@@ -1040,54 +993,6 @@ describe("runCli", () => {
       BUNDLED_RECIPES_CATALOG.recipes.push(...original);
       io.restore();
     }
-  });
-
-  it("init installs bundled workflow-playbooks with mandatory evidence metadata", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "init",
-        "--yes",
-        "--recipes",
-        "workflow-playbooks",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-
-    const home = getAgentplaneHome();
-    expect(home).toBeTruthy();
-    const recipeRoot = path.join(String(home), "recipes", "workflow-playbooks", "0.1.0");
-    const debugScenarioPath = path.join(recipeRoot, "scenarios", "debug.json");
-    const syncScenarioPath = path.join(recipeRoot, "scenarios", "sync.json");
-    const landScenarioPath = path.join(recipeRoot, "scenarios", "land.json");
-
-    expect(await pathExists(path.join(recipeRoot, "manifest.json"))).toBe(true);
-    expect(await pathExists(debugScenarioPath)).toBe(true);
-    expect(await pathExists(syncScenarioPath)).toBe(true);
-    expect(await pathExists(landScenarioPath)).toBe(true);
-
-    const debugScenario = JSON.parse(await readFile(debugScenarioPath, "utf8")) as {
-      evidence?: { required?: boolean; files?: string[] };
-    };
-    const syncScenario = JSON.parse(await readFile(syncScenarioPath, "utf8")) as {
-      evidence?: { required?: boolean; files?: string[] };
-    };
-    const landScenario = JSON.parse(await readFile(landScenarioPath, "utf8")) as {
-      evidence?: { required?: boolean; files?: string[] };
-    };
-
-    expect(debugScenario.evidence?.required).toBe(true);
-    expect(debugScenario.evidence?.files).toContain("evidence.json");
-    expect(syncScenario.evidence?.required).toBe(true);
-    expect(syncScenario.evidence?.files).toContain("evidence.json");
-    expect(landScenario.evidence?.required).toBe(true);
-    expect(landScenario.evidence?.files).toContain("evidence.json");
   });
 
   it("init lists conflicts for existing files by default", async () => {

@@ -80,13 +80,13 @@ describe("cli/recipes-bundled", () => {
       {
         id: "playbooks",
         summary: "Playbooks",
-        source_path: "recipes/workflow-playbooks",
+        source_path: "recipes/ext-example",
         versions: [{ version: "0.1.0" }],
       },
     ];
 
     const sourcePath = getBundledRecipeSourcePath("playbooks");
     expect(sourcePath).toContain("assets");
-    expect(sourcePath).toContain("workflow-playbooks");
+    expect(sourcePath).toContain("ext-example");
   });
 });
