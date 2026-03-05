@@ -64,7 +64,7 @@ async function mkWorkspace(): Promise<TestWorkspace> {
     '{\n  "role": "coder"\n}\n',
     "utf8",
   );
-  await writeFile(path.join(root, "WORKFLOW.md"), VALID_WORKFLOW, "utf8");
+  await writeFile(path.join(root, ".agentplane", "WORKFLOW.md"), VALID_WORKFLOW, "utf8");
   await writeFile(
     path.join(root, ".agentplane", "workflows", "last-known-good.md"),
     VALID_WORKFLOW,
@@ -114,7 +114,7 @@ describe("doctor.command", () => {
 
   it("supports workflow kill-switch for emergency rollback", async () => {
     const ws = await mkWorkspace();
-    await rm(path.join(ws.root, "WORKFLOW.md"), { force: true });
+    await rm(path.join(ws.root, ".agentplane", "WORKFLOW.md"), { force: true });
     const prev = process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT;
     process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT = "off";
     try {
@@ -132,7 +132,7 @@ describe("doctor.command", () => {
   it("does not fail when workflow has warning-only policy mismatch", async () => {
     const ws = await mkWorkspace();
     const warningOnlyWorkflow = VALID_WORKFLOW.replace("require_plan: false", "require_plan: true");
-    await writeFile(path.join(ws.root, "WORKFLOW.md"), warningOnlyWorkflow, "utf8");
+    await writeFile(path.join(ws.root, ".agentplane", "WORKFLOW.md"), warningOnlyWorkflow, "utf8");
     const rc = await runDoctor(
       { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
       { fix: false, dev: false },

@@ -1,11 +1,11 @@
 ---
 title: "Workflow Contract"
-description: "Formal contract for WORKFLOW.md: schema, required sections, compatibility, and failure behavior."
+description: "Formal contract for .agentplane/WORKFLOW.md: schema, required sections, compatibility, and failure behavior."
 ---
 
 ## Scope
 
-This contract defines the required format for `WORKFLOW.md` used by the planned workflow runtime.
+This contract defines the required format for `.agentplane/WORKFLOW.md` used by the planned workflow runtime.
 
 - Front matter schema source: `schemas/workflow.schema.json`
 - Prompt body is required and interpreted as a template.
@@ -14,7 +14,7 @@ This is the active contract used by `agentplane init`, `agentplane workflow buil
 
 ## Harness engeneering intent
 
-`WORKFLOW.md` is not documentation only; it is an executable control surface.
+`.agentplane/WORKFLOW.md` is not documentation only; it is an executable control surface.
 
 - **Legibility:** make state and decisions inspectable (`Prompt Template`, `Checks`, `Fallback`).
 - **Enforcement:** push correctness into contract + validators, not informal prompt style.
@@ -23,7 +23,7 @@ This is the active contract used by `agentplane init`, `agentplane workflow buil
 
 ## File shape
 
-`WORKFLOW.md` is composed of:
+`.agentplane/WORKFLOW.md` is composed of:
 
 1. YAML front matter validated against `schemas/workflow.schema.json`
 2. Markdown body with required sections:
@@ -53,7 +53,7 @@ Additional keys are disallowed by default (`additionalProperties: false`).
 
 ## Failure behavior
 
-Invalid `WORKFLOW.md` must fail validation with explicit diagnostics:
+Invalid `.agentplane/WORKFLOW.md` must fail validation with explicit diagnostics:
 
 - missing required key
 - invalid type
@@ -65,7 +65,7 @@ Invalid `WORKFLOW.md` must fail validation with explicit diagnostics:
 Runtime behavior:
 
 - candidate with any `ERROR` diagnostics is rejected,
-- active `WORKFLOW.md` is published atomically (`tmp + rename`),
+- active `.agentplane/WORKFLOW.md` is published atomically (`tmp + rename`),
 - `.agentplane/workflows/last-known-good.md` is refreshed only after successful publish,
 - `agentplane workflow restore` recovers from `last-known-good`.
 

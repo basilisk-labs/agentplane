@@ -210,10 +210,16 @@ function findingSeverity(problem: string): "ERROR" | "WARN" | "INFO" {
 async function safeFixWorkflow(repoRoot: string): Promise<{ changed: boolean; note: string }> {
   const paths = resolveWorkflowPaths(repoRoot);
   let current = "";
+  let sourcePath = paths.workflowPath;
   try {
     current = await fs.readFile(paths.workflowPath, "utf8");
   } catch {
-    return { changed: false, note: "Skip: WORKFLOW.md not found." };
+    try {
+      current = await fs.readFile(paths.legacyWorkflowPath, "utf8");
+      sourcePath = paths.legacyWorkflowPath;
+    } catch {
+      return { changed: false, note: "Skip: workflow contract file not found." };
+    }
   }
 
   const fixed = safeAutofixWorkflowText(current);
@@ -225,13 +231,31 @@ async function safeFixWorkflow(repoRoot: string): Promise<{ changed: boolean; no
     };
   }
   if (!fixed.changed) {
-    return { changed: false, note: "OK: WORKFLOW.md already normalized." };
+    if (sourcePath === paths.workflowPath) {
+      return { changed: false, note: "OK: workflow contract already normalized." };
+    }
+    await fs.mkdir(path.dirname(paths.workflowPath), { recursive: true });
+    await fs.writeFile(paths.workflowPath, current, "utf8");
+    await fs.rm(paths.legacyWorkflowPath, { force: true });
+    await fs.mkdir(paths.workflowDir, { recursive: true });
+    await fs.copyFile(paths.workflowPath, paths.lastKnownGoodPath);
+    return {
+      changed: true,
+      note: "Fixed: moved legacy WORKFLOW.md into .agentplane and refreshed last-known-good.",
+    };
   }
 
+  await fs.mkdir(path.dirname(paths.workflowPath), { recursive: true });
   await fs.writeFile(paths.workflowPath, fixed.text, "utf8");
+  if (sourcePath === paths.legacyWorkflowPath) {
+    await fs.rm(paths.legacyWorkflowPath, { force: true });
+  }
   await fs.mkdir(paths.workflowDir, { recursive: true });
   await fs.copyFile(paths.workflowPath, paths.lastKnownGoodPath);
-  return { changed: true, note: "Fixed: normalized WORKFLOW.md and refreshed last-known-good." };
+  return {
+    changed: true,
+    note: "Fixed: normalized workflow contract and refreshed last-known-good.",
+  };
 }
 
 type TaskSnapshotRecord = {

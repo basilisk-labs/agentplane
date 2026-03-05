@@ -3,6 +3,7 @@ import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import {
   chmod,
+  copyFile,
   mkdir,
   mkdtemp,
   readdir,
@@ -525,7 +526,7 @@ describe("runCli", () => {
       const code = await runCli(["workflow", "build", "--validate", "--dry-run", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("## Prompt Template");
-      expect(await pathExists(path.join(root, "WORKFLOW.md"))).toBe(false);
+      expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(false);
     } finally {
       io.restore();
     }
@@ -549,7 +550,7 @@ describe("runCli", () => {
       ioBuild.restore();
     }
 
-    const workflowPath = path.join(root, "WORKFLOW.md");
+    const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
     await writeFile(workflowPath, "---\nversion: bad\n---\n\n## Prompt Template\nx\n", "utf8");
 
     const ioRestore = captureStdIO();
@@ -582,6 +583,11 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
     await runCliSilent(["init", "--yes", "--root", root]);
+    // workflow playbooks invoke the repo-local bin entrypoint in a subprocess.
+    // In test runs, that bin may still point to an older built artifact, so mirror
+    // the active workflow contract to the legacy root path to keep the playbook
+    // behavior deterministic while unit tests run against source modules.
+    await copyFile(path.join(root, ".agentplane", "WORKFLOW.md"), path.join(root, "WORKFLOW.md"));
     const modes = ["debug", "sync", "land"] as const;
 
     for (const mode of modes) {

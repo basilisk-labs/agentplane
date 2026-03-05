@@ -1,13 +1,13 @@
 ---
 title: "Workflow Migration"
-description: "How to migrate existing repositories to strict WORKFLOW.md enforcement, with rollout and rollback policy."
+description: "How to migrate existing repositories to strict .agentplane/WORKFLOW.md enforcement, with rollout and rollback policy."
 ---
 
 ## Target state
 
 Each repository should have:
 
-- `WORKFLOW.md` validated by schema + strict template checks.
+- `.agentplane/WORKFLOW.md` validated by schema + strict template checks.
 - `.agentplane/workflows/last-known-good.md` snapshot.
 - `agentplane doctor` passing without `ERROR`.
 
