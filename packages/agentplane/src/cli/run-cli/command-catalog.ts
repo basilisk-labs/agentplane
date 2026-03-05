@@ -3,7 +3,13 @@ import type { HelpJson } from "../spec/help-render.js";
 
 import { initSpec } from "./commands/init.js";
 import { agentsSpec, preflightSpec, quickstartSpec, roleSpec } from "./commands/core.js";
-import { configSetSpec, configShowSpec, modeGetSpec, modeSetSpec } from "./commands/config.js";
+import {
+  configSetSpec,
+  configShowSpec,
+  modeGetSpec,
+  modeSetSpec,
+  profileSetSpec,
+} from "./commands/config.js";
 import { ideSyncSpec } from "./commands/ide.js";
 
 import { taskNewSpec } from "../../commands/task/new.spec.js";
@@ -84,6 +90,9 @@ import { verifySpec } from "../../commands/verify.spec.js";
 import { finishSpec } from "../../commands/finish.spec.js";
 import { readySpec } from "../../commands/ready.command.js";
 import { doctorSpec } from "../../commands/doctor.spec.js";
+import { workflowSpec } from "../../commands/workflow.command.js";
+import { workflowBuildSpec } from "../../commands/workflow-build.command.js";
+import { workflowRestoreSpec } from "../../commands/workflow-restore.command.js";
 
 import { docsCliSpec } from "../../commands/docs/cli.command.js";
 import { hooksSpec } from "../../commands/hooks/hooks.command.js";
@@ -230,6 +239,15 @@ export const COMMANDS = [
     },
   ),
   entry(
+    profileSetSpec,
+    (deps) => import("./commands/config.js").then((m) => m.makeRunProfileSetHandler(deps)),
+    {
+      needsProject: true,
+      needsConfig: true,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
     ideSyncSpec,
     (deps) => import("./commands/ide.js").then((m) => m.makeRunIdeSyncHandler(deps)),
     {
@@ -244,6 +262,33 @@ export const COMMANDS = [
     needsConfig: false,
     needsTaskContext: false,
   }),
+  entry(
+    workflowSpec,
+    () => import("../../commands/workflow.command.js").then((m) => m.runWorkflow),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    workflowBuildSpec,
+    () => import("../../commands/workflow-build.command.js").then((m) => m.runWorkflowBuild),
+    {
+      needsProject: true,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
+  entry(
+    workflowRestoreSpec,
+    () => import("../../commands/workflow-restore.command.js").then((m) => m.runWorkflowRestore),
+    {
+      needsProject: true,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
 
   entry(taskListSpec, (deps) =>
     import("../../commands/task/list.run.js").then((m) => m.makeRunTaskListHandler(deps.getCtx)),

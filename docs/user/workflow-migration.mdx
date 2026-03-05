@@ -1,0 +1,89 @@
+---
+title: "Workflow Migration"
+description: "How to migrate existing repositories to strict WORKFLOW.md enforcement, with rollout and rollback policy."
+---
+
+## Target state
+
+Each repository should have:
+
+- `WORKFLOW.md` validated by schema + strict template checks.
+- `.agentplane/workflows/last-known-good.md` snapshot.
+- `agentplane doctor` passing without `ERROR`.
+
+## Migration steps (existing repository)
+
+1. Initialize missing workflow artifacts:
+
+```bash
+agentplane workflow build --validate
+```
+
+2. Run health checks and apply safe autofixes:
+
+```bash
+agentplane doctor --fix
+agentplane doctor
+```
+
+3. Verify preflight gate:
+
+```bash
+agentplane preflight --json --mode full
+```
+
+4. If workflow was corrupted, recover deterministically:
+
+```bash
+agentplane workflow restore
+agentplane doctor
+```
+
+## Rollout policy
+
+1. **Internal phase**
+
+- Enable workflow gates in CI for framework repository only.
+- Track error codes (`WF_*`) and fix migration gaps.
+
+2. **Opt-in phase**
+
+- Enable CI workflow gate per repository.
+- Keep emergency kill-switch available.
+
+3. **Default-on phase**
+
+- Keep workflow gates enabled globally.
+- Allow kill-switch only for incident response with documented expiry.
+
+## Rollback criteria
+
+Trigger rollback if any of these occurs:
+
+- Reproducible false-positive `WF_*` diagnostics blocking healthy repos.
+- Restore path (`workflow restore`) fails for valid snapshots.
+- CI gate causes systemic failures across unaffected repositories.
+
+## Kill-switch (emergency only)
+
+Set environment variable to disable workflow contract enforcement temporarily:
+
+```bash
+export AGENTPLANE_WORKFLOW_ENFORCEMENT=off
+```
+
+Effects:
+
+- `agentplane preflight` skips workflow validation.
+- `agentplane doctor` skips workflow contract checks.
+- Core CI workflow-contract gate is skipped when this env is set to `off`.
+
+Validation:
+
+- Covered by CLI tests for preflight and doctor flows.
+
+Recovery:
+
+1. Remove the variable.
+2. Run `agentplane workflow build --validate --dry-run`.
+3. Run `agentplane doctor`.

@@ -23,6 +23,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [config show](#config-show)
   - [mode get](#mode-get)
   - [mode set](#mode-set)
+  - [profile set](#profile-set)
 - Core
   - [agents](#agents)
   - [help](#help)
@@ -115,6 +116,10 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task verify-show](#task-verify-show)
 - Work
   - [work start](#work-start)
+- Workflow
+  - [workflow](#workflow)
+  - [workflow build](#workflow-build)
+  - [workflow restore](#workflow-restore)
 
 ## Backend
 
@@ -493,6 +498,36 @@ agentplane mode set branch_pr
 ```
 
 - Switch to branch_pr mode.
+
+### profile set
+
+Apply setup profile presets to config.
+
+Usage:
+
+```text
+agentplane profile set <light|normal|full-harness>
+```
+
+Examples:
+
+```sh
+agentplane profile set light
+```
+
+- Apply flexible defaults.
+
+```sh
+agentplane profile set normal
+```
+
+- Apply balanced defaults.
+
+```sh
+agentplane profile set full-harness
+```
+
+- Apply strict defaults.
 
 ## Core
 
@@ -1636,11 +1671,11 @@ agentplane init [options]
 
 Options:
 
-- `--setup-profile <developer|vibecoder|manager|enterprise>`: Persona preset for init defaults and dialog depth (compact vs full questionnaire). (choices=developer|vibecoder|manager|enterprise)
+- `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager|enterprise)
 - `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
 - `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
 - `--backend <local|redmine>`: Task backend (default: local). (choices=local|redmine)
-- `--hooks <true|false>`: Install git hooks (non-interactive requires an explicit value).
+- `--hooks <true|false>`: Hooks are mandatory; only true is accepted.
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
@@ -1661,13 +1696,13 @@ agentplane init
 - Interactive setup (prompts for missing values).
 
 ```sh
-agentplane init --setup-profile vibecoder --yes
+agentplane init --setup-profile light --yes
 ```
 
-- Non-interactive fast setup for autonomous defaults (hooks off, approvals off).
+- Non-interactive setup with flexible defaults.
 
 ```sh
-agentplane init --workflow direct --backend local --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes
+agentplane init --workflow direct --backend local --hooks true --require-plan-approval true --require-network-approval true --require-verify-approval true --yes
 ```
 
 - Non-interactive setup with explicit policy flags.
@@ -2630,3 +2665,62 @@ agentplane work start 202602030608-F1Q8AB --agent CODER --slug cli
 ```
 
 - Start work (direct mode records the active task; branch_pr uses a dedicated task branch/worktree).
+
+## Workflow
+
+### workflow
+
+Workflow contract commands.
+
+Usage:
+
+```text
+agentplane workflow <subcommand> [options]
+```
+
+### workflow build
+
+Build WORKFLOW.md from template layers with strict rendering checks.
+
+Usage:
+
+```text
+agentplane workflow build [options]
+```
+
+Options:
+
+- `--validate`: Validate built workflow and fail on errors. (default=false)
+- `--dry-run`: Do not publish; print candidate and diagnostics only. (default=false)
+
+Examples:
+
+```sh
+agentplane workflow build --validate --dry-run
+```
+
+- Build and validate candidate workflow without publishing.
+
+```sh
+agentplane workflow build --validate
+```
+
+- Build, validate, and atomically publish workflow.
+
+### workflow restore
+
+Restore WORKFLOW.md from last-known-good snapshot.
+
+Usage:
+
+```text
+agentplane workflow restore
+```
+
+Examples:
+
+```sh
+agentplane workflow restore
+```
+
+- Restore active workflow from .agentplane/workflows/last-known-good.md.

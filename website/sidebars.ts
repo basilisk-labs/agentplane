@@ -50,6 +50,7 @@ const sidebars: SidebarsConfig = {
       label: "◉ Workflows",
       items: [
         "user/workflow",
+        "user/workflow-migration",
         "user/task-lifecycle",
         "user/agents",
         "user/branching-and-pr-artifacts",
@@ -76,6 +77,8 @@ const sidebars: SidebarsConfig = {
         "developer/design-principles",
         "developer/architecture",
         "developer/project-layout",
+        "developer/workflow-contract",
+        "developer/workflow-harness-test-matrix",
         "developer/documentation-information-architecture",
         "developer/cli-contract",
         "developer/cli-help-json",
@@ -100,7 +103,12 @@ const sidebars: SidebarsConfig = {
     {
       type: "category",
       label: "◇ Help",
-      items: ["help/troubleshooting-by-symptom", "help/troubleshooting", "help/glossary"],
+      items: [
+        "help/troubleshooting-by-symptom",
+        "help/broken-workflow-runbook",
+        "help/troubleshooting",
+        "help/glossary",
+      ],
     },
   ],
 };

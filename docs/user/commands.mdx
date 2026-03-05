@@ -24,19 +24,29 @@ agentplane init
 
 If the directory is not a git repository, `agentplane init` initializes git in that directory.
 
-Interactive init now uses grouped prompts:
+Interactive init now starts with a profile menu:
 
-- Workflow and backend
-- Execution profile (`conservative|balanced|aggressive`)
-- Approval toggles (plan/network/verify)
-- Optional recipes
+- `light`
+- `normal` (default)
+- `full-harness`
+
+Hooks installation is mandatory for all profiles.
 
 `execution.profile` is stored in `.agentplane/config.json`.
 
 Non-interactive:
 
 ```bash
-agentplane init --workflow direct --backend local --execution-profile balanced --strict-unsafe-confirm true --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes
+agentplane init --setup-profile normal --workflow direct --backend local --execution-profile balanced --strict-unsafe-confirm true --hooks true --require-plan-approval true --require-network-approval true --require-verify-approval true --yes
+```
+
+Workflow contract operations:
+
+```bash
+agentplane workflow build --validate --dry-run
+agentplane workflow build --validate
+agentplane workflow restore
+agentplane doctor --fix
 ```
 
 ## Config
@@ -44,6 +54,7 @@ agentplane init --workflow direct --backend local --execution-profile balanced -
 ```bash
 agentplane config show
 agentplane config set workflow_mode branch_pr
+agentplane profile set normal
 ```
 
 ## Tasks

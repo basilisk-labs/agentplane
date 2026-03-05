@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentplane.dev/schemas/workflow.schema.json",
+  "title": "Agentplane Workflow Contract",
+  "description": "Schema for WORKFLOW.md front matter used by agentplane workflow runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "mode",
+    "owners",
+    "approvals",
+    "retry_policy",
+    "timeouts",
+    "in_scope_paths"
+  ],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["direct", "branch_pr"]
+    },
+    "owners": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["orchestrator"],
+      "properties": {
+        "orchestrator": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["require_plan", "require_verify", "require_network"],
+      "properties": {
+        "require_plan": {
+          "type": "boolean"
+        },
+        "require_verify": {
+          "type": "boolean"
+        },
+        "require_network": {
+          "type": "boolean"
+        }
+      }
+    },
+    "retry_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["normal_exit_continuation", "abnormal_backoff", "max_attempts"],
+      "properties": {
+        "normal_exit_continuation": {
+          "type": "boolean"
+        },
+        "abnormal_backoff": {
+          "type": "string",
+          "enum": ["exponential"]
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "timeouts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stall_seconds"],
+      "properties": {
+        "stall_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400
+        }
+      }
+    },
+    "in_scope_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

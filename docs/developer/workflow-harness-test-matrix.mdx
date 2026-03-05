@@ -1,0 +1,54 @@
+---
+title: "Workflow Harness Test Matrix"
+description: "Feature-to-test mapping, acceptance criteria, and coverage gates for workflow-runtime and harness modules."
+---
+
+## Scope
+
+This matrix covers Tasks 1-24 from `TASKS.md` for strict workflow contract and harness hardening.
+
+## Matrix
+
+| Feature area                               | Test files                                                                                                                                                                                | Acceptance criteria                                                                                                                                |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Workflow template strict rendering         | `packages/agentplane/src/workflow-runtime/template.test.ts`, `packages/agentplane/src/workflow-runtime/build.test.ts`                                                                     | Unknown variable/filter fails with stable `WF_TEMPLATE_*` codes; deterministic output for same inputs; override precedence is deterministic.       |
+| Workflow schema/policy/path validation     | `packages/agentplane/src/workflow-runtime/validate.test.ts`, `packages/agentplane/src/commands/doctor.command.test.ts`                                                                    | Invalid front matter/sections return `ERROR`; policy mismatch produces diagnostics; path escape is rejected.                                       |
+| Atomic publish + restore + snapshot safety | `packages/agentplane/src/workflow-runtime/file-ops.test.ts`, `packages/agentplane/src/commands/workflow-build.command.ts`, `packages/agentplane/src/commands/workflow-restore.command.ts` | Publish is atomic (temp + rename), snapshot refreshes only after valid publish, restore fails clearly on missing/corrupt snapshot.                 |
+| Preflight/doctor workflow integration      | `packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts`, `packages/agentplane/src/commands/doctor.command.test.ts`                                                                 | Invalid workflow blocks readiness; kill-switch bypass is explicit and test-covered; post-fix validation is re-run.                                 |
+| Harness state machine + scheduler          | `packages/agentplane/src/harness/state-machine.test.ts`, `packages/agentplane/src/harness/scheduler.test.ts`                                                                              | Illegal transitions fail with stable codes; deterministic ordering and per-state concurrency limits are enforced.                                  |
+| Reconcile-first + retry taxonomy           | `packages/agentplane/src/harness/reconcile.test.ts`, `packages/agentplane/src/harness/retry-policy.test.ts`                                                                               | Reconcile executes before dispatch decisions; retry/backoff/caps are deterministic and reason-coded.                                               |
+| Workspace safety + hooks lifecycle         | `packages/agentplane/src/harness/workspace-safety.test.ts`, `packages/agentplane/src/harness/hooks-lifecycle.test.ts`                                                                     | Path traversal/symlink escape is blocked; hook timeout/failure semantics are deterministic.                                                        |
+| Dynamic tool boundary + token accounting   | `packages/agentplane/src/harness/dynamic-tool-contract.test.ts`, `packages/agentplane/src/harness/token-accounting.test.ts`                                                               | Unsupported tools and malformed args fail with normalized envelopes; high-water-mark token totals are stable under duplicates/out-of-order events. |
+
+## Coverage gate
+
+CI enforces dedicated branch-coverage thresholds for these modules:
+
+- `packages/agentplane/src/workflow-runtime/validate.ts`
+- `packages/agentplane/src/workflow-runtime/file-ops.ts`
+- `packages/agentplane/src/harness/state-machine.ts`
+- `packages/agentplane/src/harness/retry-policy.ts`
+- `packages/agentplane/src/harness/scheduler.ts`
+
+The gate runs with:
+
+```bash
+bunx vitest run \
+  packages/agentplane/src/workflow-runtime/*.test.ts \
+  packages/agentplane/src/harness/*.test.ts \
+  --coverage --coverage.reporter=json \
+  --coverage.include='packages/agentplane/src/workflow-runtime/**' \
+  --coverage.include='packages/agentplane/src/harness/**' \
+  --coverage.thresholds.lines=0 \
+  --coverage.thresholds.functions=0 \
+  --coverage.thresholds.statements=0 \
+  --coverage.thresholds.branches=0
+node scripts/check-workflow-harness-coverage.mjs
+```
+
+## Flaky-test policy
+
+- Use deterministic fixtures only (`mkdtemp`, isolated git repos, no wall-clock assertions).
+- Avoid network and outside-repo dependencies in tests.
+- For env-based kill-switch tests, always restore env in `finally`.
+- Do not assert on full human-formatted messages when a stable code exists; assert on code/path primitives.

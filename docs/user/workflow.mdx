@@ -6,7 +6,7 @@ description: "How work moves from plan to completion in Agent Plane."
 ## Core flow
 
 1. Plan and create task graph.
-2. (Recommended) run preflight for deterministic readiness.
+2. Run preflight for deterministic readiness (includes workflow-contract validation).
 3. Start work (`TODO -> DOING`) with a structured `Start:` comment.
 4. Implement changes.
 5. Record verification outcome with `agentplane verify`.
@@ -26,6 +26,19 @@ Use full mode when you need backend/task-list readiness validation:
 
 ```bash
 agentplane preflight --mode full
+```
+
+If preflight reports `workflow loaded: no`, fix the contract first:
+
+```bash
+agentplane workflow build --validate --dry-run
+agentplane doctor --fix
+```
+
+If the active workflow is broken and blocks work, restore from snapshot:
+
+```bash
+agentplane workflow restore
 ```
 
 ## direct mode

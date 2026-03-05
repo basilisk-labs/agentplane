@@ -24,6 +24,7 @@ import { collectInitConflicts, handleInitConflicts } from "./init/conflicts.js";
 import { ensureGitRoot } from "./init/git.js";
 import { maybeSyncIde } from "./init/ide-sync.js";
 import { maybeInstallBundledRecipes } from "./init/recipes.js";
+import { ensureInitWorkflow } from "./init/write-workflow.js";
 import { ensureAgentplaneDirs, writeBackendStubs, writeInitConfig } from "./init/write-config.js";
 import { ensureAgentsFiles } from "./init/write-agents.js";
 import { ensureInitGitignore } from "./init/write-gitignore.js";
@@ -31,7 +32,7 @@ import { ensureInitRedmineEnvTemplate } from "./init/write-env.js";
 import { renderInitSection, renderInitWelcome } from "./init/ui.js";
 
 type InitFlags = {
-  setupProfile?: "developer" | "vibecoder" | "manager" | "enterprise";
+  setupProfile?: SetupProfilePreset;
   ide?: "codex" | "cursor" | "windsurf";
   workflow?: "direct" | "branch_pr";
   backend?: "local" | "redmine";
@@ -48,7 +49,7 @@ type InitFlags = {
   yes: boolean;
 };
 
-type SetupProfilePreset = "developer" | "vibecoder" | "manager" | "enterprise";
+type SetupProfilePreset = "light" | "normal" | "full-harness";
 
 const setupProfilePresets: Record<
   SetupProfilePreset,
@@ -63,43 +64,31 @@ const setupProfilePresets: Record<
     defaultExecutionProfile: ExecutionProfile;
   }
 > = {
-  developer: {
-    mode: "full",
-    description:
-      "I am Developer (full setup questionnaire; hooks on; explicit unsafe confirmations on).",
-    defaultHooks: true,
-    defaultStrictUnsafeConfirm: true,
-    defaultRequirePlanApproval: true,
-    defaultRequireNetworkApproval: true,
-    defaultRequireVerifyApproval: true,
-    defaultExecutionProfile: "balanced",
-  },
-  vibecoder: {
+  light: {
     mode: "compact",
-    description:
-      "I am Vibecoder (compact setup; hooks off; approvals off; aggressive execution defaults).",
-    defaultHooks: false,
+    description: "Light profile (maximum flexibility, minimal enforcement, hooks still mandatory).",
+    defaultHooks: true,
     defaultStrictUnsafeConfirm: false,
     defaultRequirePlanApproval: false,
     defaultRequireNetworkApproval: false,
     defaultRequireVerifyApproval: false,
     defaultExecutionProfile: "aggressive",
   },
-  manager: {
+  normal: {
     mode: "compact",
     description:
-      "I am Manager / Product owner (compact setup; oversight defaults with approvals on, hooks off).",
-    defaultHooks: false,
+      "Normal profile (balanced defaults and approvals enabled for standard team workflows).",
+    defaultHooks: true,
     defaultStrictUnsafeConfirm: false,
     defaultRequirePlanApproval: true,
     defaultRequireNetworkApproval: true,
     defaultRequireVerifyApproval: true,
     defaultExecutionProfile: "balanced",
   },
-  enterprise: {
+  "full-harness": {
     mode: "full",
     description:
-      "I am Enterprise / Regulated team (full setup; strict approvals, hooks on, conservative execution).",
+      "Full Harness profile (strict guardrails, explicit confirmations, conservative execution).",
     defaultHooks: true,
     defaultStrictUnsafeConfirm: true,
     defaultRequirePlanApproval: true,
@@ -129,6 +118,17 @@ function parseRecipesSelectionForInit(value: string): string[] {
     .filter(Boolean);
 }
 
+function normalizeSetupProfile(raw: string | undefined): InitFlags["setupProfile"] {
+  if (!raw) return undefined;
+  const value = raw.trim().toLowerCase();
+  if (value === "developer") return "full-harness";
+  if (value === "enterprise") return "full-harness";
+  if (value === "manager") return "normal";
+  if (value === "vibecoder") return "light";
+  if (value === "light" || value === "normal" || value === "full-harness") return value;
+  return undefined;
+}
+
 type InitParsed = Omit<InitFlags, "yes"> & { yes: boolean };
 
 export const initSpec: CommandSpec<InitParsed> = {
@@ -141,10 +141,17 @@ export const initSpec: CommandSpec<InitParsed> = {
     {
       kind: "string",
       name: "setup-profile",
-      valueHint: "<developer|vibecoder|manager|enterprise>",
-      choices: ["developer", "vibecoder", "manager", "enterprise"],
-      description:
-        "Persona preset for init defaults and dialog depth (compact vs full questionnaire).",
+      valueHint: "<light|normal|full-harness>",
+      choices: [
+        "light",
+        "normal",
+        "full-harness",
+        "developer",
+        "vibecoder",
+        "manager",
+        "enterprise",
+      ],
+      description: "Setup profile preset. Preferred values: light, normal, full-harness.",
     },
     {
       kind: "string",
@@ -173,7 +180,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       kind: "string",
       name: "hooks",
       valueHint: "<true|false>",
-      description: "Install git hooks (non-interactive requires an explicit value).",
+      description: "Hooks are mandatory; only true is accepted.",
     },
     {
       kind: "string",
@@ -241,11 +248,11 @@ export const initSpec: CommandSpec<InitParsed> = {
   examples: [
     { cmd: "agentplane init", why: "Interactive setup (prompts for missing values)." },
     {
-      cmd: "agentplane init --setup-profile vibecoder --yes",
-      why: "Non-interactive fast setup for autonomous defaults (hooks off, approvals off).",
+      cmd: "agentplane init --setup-profile light --yes",
+      why: "Non-interactive setup with flexible defaults.",
     },
     {
-      cmd: "agentplane init --workflow direct --backend local --hooks false --require-plan-approval true --require-network-approval true --require-verify-approval true --yes",
+      cmd: "agentplane init --workflow direct --backend local --hooks true --require-plan-approval true --require-network-approval true --require-verify-approval true --yes",
       why: "Non-interactive setup with explicit policy flags.",
     },
     {
@@ -274,7 +281,7 @@ export const initSpec: CommandSpec<InitParsed> = {
     const recipesRaw = raw.opts.recipes as string | undefined;
 
     return {
-      setupProfile: raw.opts["setup-profile"] as InitFlags["setupProfile"],
+      setupProfile: normalizeSetupProfile(raw.opts["setup-profile"] as string | undefined),
       ide: raw.opts.ide as InitFlags["ide"],
       workflow: raw.opts.workflow as InitFlags["workflow"],
       backend: raw.opts.backend as InitFlags["backend"],
@@ -314,6 +321,13 @@ export const initSpec: CommandSpec<InitParsed> = {
         message: "Use either --force or --backup (not both).",
       });
     }
+    if (p.hooks === false) {
+      throw usageError({
+        spec: initSpec,
+        command: "init",
+        message: "Hooks installation is mandatory. Use --hooks true (or omit the flag).",
+      });
+    }
   },
 };
 
@@ -331,7 +345,6 @@ async function cmdInit(opts: {
     ide: InitIde;
     workflow: WorkflowMode;
     backend: NonNullable<InitFlags["backend"]>;
-    hooks: boolean;
     recipes: string[];
     requirePlanApproval: boolean;
     requireNetworkApproval: boolean;
@@ -342,7 +355,6 @@ async function cmdInit(opts: {
     ide: "codex",
     workflow: "direct",
     backend: "local",
-    hooks: false,
     recipes: [],
     requirePlanApproval: true,
     requireNetworkApproval: true,
@@ -353,7 +365,6 @@ async function cmdInit(opts: {
   let ide: InitIde = flags.ide ?? defaults.ide;
   let workflow: WorkflowMode = flags.workflow ?? defaults.workflow;
   let backend: NonNullable<InitFlags["backend"]> = flags.backend ?? defaults.backend;
-  let hooks = flags.hooks ?? defaults.hooks;
   let recipes = flags.recipes ?? defaults.recipes;
   let requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
   let requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
@@ -363,14 +374,13 @@ async function cmdInit(opts: {
   let setupProfile: "compact" | "full" = flags.setupProfile
     ? setupProfilePresets[flags.setupProfile].mode
     : "compact";
-  let setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "manager";
+  let setupProfilePreset: SetupProfilePreset = flags.setupProfile ?? "normal";
   const isInteractive = process.stdin.isTTY && !flags.yes;
 
   if (
     !process.stdin.isTTY &&
     !flags.yes &&
     (!flags.workflow ||
-      flags.hooks === undefined ||
       flags.requirePlanApproval === undefined ||
       flags.requireNetworkApproval === undefined ||
       flags.requireVerifyApproval === undefined)
@@ -379,7 +389,7 @@ async function cmdInit(opts: {
       spec: initSpec,
       command: "init",
       message:
-        "Non-interactive init requires --yes or explicit values for: --workflow, --hooks, --require-plan-approval, --require-network-approval, --require-verify-approval.",
+        "Non-interactive init requires --yes or explicit values for: --workflow, --require-plan-approval, --require-network-approval, --require-verify-approval.",
     });
   }
 
@@ -410,8 +420,8 @@ async function cmdInit(opts: {
     );
     process.stdout.write(
       renderInitSection(
-        "Who Are You?",
-        "Pick the persona that best matches your working style. This sets defaults and controls compact vs full questionnaire.",
+        "Setup Profile",
+        "Pick one of three setup profiles. This controls policy strictness and questionnaire depth.",
       ),
     );
     process.stdout.write(`${presetLines.join("\n")}\n\n`);
@@ -419,15 +429,14 @@ async function cmdInit(opts: {
       setupProfilePreset = flags.setupProfile;
     } else {
       const selected = await askChoice(
-        "Who are you?",
-        ["developer", "vibecoder", "manager", "enterprise"],
-        "manager",
+        "Setup profile",
+        ["light", "normal", "full-harness"],
+        "normal",
       );
       setupProfilePreset = selected as SetupProfilePreset;
     }
     const selectedPreset = setupProfilePresets[setupProfilePreset];
     setupProfile = selectedPreset.mode;
-    if (flags.hooks === undefined) hooks = selectedPreset.defaultHooks;
     if (flags.strictUnsafeConfirm === undefined) {
       strictUnsafeConfirm = selectedPreset.defaultStrictUnsafeConfirm;
     }
@@ -467,9 +476,12 @@ async function cmdInit(opts: {
       backend = choice === "redmine" ? "redmine" : "local";
     }
     if (setupProfile === "full") {
-      if (flags.hooks === undefined) {
-        hooks = await askYesNo("Install managed git hooks now?", hooks);
-      }
+      process.stdout.write(
+        renderInitSection(
+          "Hooks",
+          "Managed git hooks are mandatory and will be installed automatically.",
+        ),
+      );
       process.stdout.write(
         renderInitSection(
           "Execution Profile",
@@ -530,7 +542,6 @@ async function cmdInit(opts: {
           : [];
       }
     } else {
-      hooks = flags.hooks ?? selectedPreset.defaultHooks;
       recipes = flags.recipes ?? defaults.recipes;
       requirePlanApproval = flags.requirePlanApproval ?? selectedPreset.defaultRequirePlanApproval;
       requireNetworkApproval =
@@ -542,7 +553,7 @@ async function cmdInit(opts: {
       process.stdout.write(
         renderInitSection(
           "Defaults Applied",
-          `Using compact ${setupProfilePreset} defaults for hooks, approvals, execution profile, and recipes.`,
+          `Using compact ${setupProfilePreset} defaults for approvals, execution profile, and recipes. Hooks remain mandatory.`,
         ),
       );
     }
@@ -553,7 +564,6 @@ async function cmdInit(opts: {
     ide = flags.ide ?? defaults.ide;
     workflow = flags.workflow ?? defaults.workflow;
     backend = flags.backend ?? defaults.backend;
-    hooks = flags.hooks ?? yesPreset.defaultHooks;
     recipes = flags.recipes ?? defaults.recipes;
     requirePlanApproval = flags.requirePlanApproval ?? yesPreset.defaultRequirePlanApproval;
     requireNetworkApproval =
@@ -638,6 +648,14 @@ async function cmdInit(opts: {
     });
     installPaths.push(".gitignore");
 
+    const workflowInit = await ensureInitWorkflow({
+      gitRoot: resolved.gitRoot,
+      workflowMode: workflow,
+    });
+    for (const abs of workflowInit.installPaths) {
+      installPaths.push(path.relative(resolved.gitRoot, abs));
+    }
+
     if (flags.gitignoreAgents) {
       await setPinnedBaseBranch({
         cwd: resolved.gitRoot,
@@ -646,10 +664,8 @@ async function cmdInit(opts: {
       });
     }
 
-    if (hooks) {
-      await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
-      installPaths.push(".agentplane/bin/agentplane");
-    }
+    await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
+    installPaths.push(".agentplane/bin/agentplane");
 
     const ideRes = await maybeSyncIde({
       cwd: opts.cwd,
@@ -667,7 +683,7 @@ async function cmdInit(opts: {
         baseBranch: initBaseBranch,
         installPaths,
         version: getVersion(),
-        skipHooks: hooks,
+        skipHooks: true,
       });
     }
 

@@ -125,6 +125,10 @@ On PRs and on pushes to `main`, GitHub runs:
 
 - `Core CI`:
 - Linux: format/schemas/agents/release parity/build/CLI docs check/lint core/`test:fast`/`test:critical`/significant coverage guard
+- Linux also enforces workflow-contract gates:
+  - `agentplane workflow build --validate --dry-run`
+  - `agentplane doctor`
+  - dedicated workflow+harness branch-coverage thresholds (`check-workflow-harness-coverage.mjs`)
 - Windows: format/schemas/agents/release parity/build + platform-critical test set
 - `Docs CI`: docs generation + site typecheck/build + design-language checks
 
@@ -132,4 +136,6 @@ On PRs and on pushes to `main`, GitHub runs:
 
 - CLI tests live under `packages/agentplane/src/cli/` and `packages/agentplane/src/commands/`.
 - Significant-file coverage policy is checked by `bun run coverage:significant`.
+- Workflow/harness coverage policy is checked by:
+  - `node scripts/check-workflow-harness-coverage.mjs`
 - Release-time local parity checks are enforced by `bun run release:prepublish`.

@@ -1,0 +1,62 @@
+---
+title: "Broken workflow runbook"
+description: "Incident procedure when WORKFLOW.md becomes invalid and blocks execution."
+---
+
+## Symptoms
+
+- `agentplane preflight` reports `workflow loaded: no`.
+- `agentplane doctor` returns `WF_*` errors.
+- `agentplane workflow build --validate` fails.
+
+## Containment
+
+1. Stop mutating task operations.
+2. Collect diagnostics:
+
+```bash
+agentplane workflow build --validate --dry-run
+agentplane doctor
+```
+
+## Recovery paths
+
+### Path A: Safe autofix
+
+Use when diagnostics indicate missing/defaultable fields only.
+
+```bash
+agentplane doctor --fix
+agentplane doctor
+```
+
+### Path B: Snapshot restore
+
+Use when active `WORKFLOW.md` is malformed or manually corrupted.
+
+```bash
+agentplane workflow restore
+agentplane doctor
+agentplane preflight --mode full
+```
+
+### Path C: Emergency kill-switch
+
+Use only when restore/fix is blocked and work must proceed immediately.
+
+```bash
+export AGENTPLANE_WORKFLOW_ENFORCEMENT=off
+agentplane preflight --json
+```
+
+After incident:
+
+1. Remove kill-switch env.
+2. Rebuild and validate workflow.
+3. Confirm `doctor` and `preflight` pass with enforcement enabled.
+
+## Exit criteria
+
+- `agentplane workflow build --validate --dry-run` returns `0`.
+- `agentplane doctor` returns `0`.
+- `agentplane preflight --mode full` reports workflow loaded successfully.

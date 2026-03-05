@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { saveConfig, setByDottedKey } from "@agentplaneorg/core";
+import { buildExecutionProfile, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
@@ -167,6 +167,115 @@ export function makeRunModeSetHandler(deps: RunDeps): CommandHandler<ModeSetPars
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,
       mode: p.mode as "direct" | "branch_pr",
+      deps,
+    });
+}
+
+type ProfileSetParsed = { profile: string };
+
+type ProfilePreset = {
+  requirePlan: boolean;
+  requireNetwork: boolean;
+  requireVerify: boolean;
+  executionProfile: "conservative" | "balanced" | "aggressive";
+  strictUnsafeConfirm: boolean;
+};
+
+const PROFILE_PRESETS: Record<"light" | "normal" | "full-harness", ProfilePreset> = {
+  light: {
+    requirePlan: false,
+    requireNetwork: false,
+    requireVerify: false,
+    executionProfile: "aggressive",
+    strictUnsafeConfirm: false,
+  },
+  normal: {
+    requirePlan: true,
+    requireNetwork: true,
+    requireVerify: true,
+    executionProfile: "balanced",
+    strictUnsafeConfirm: false,
+  },
+  "full-harness": {
+    requirePlan: true,
+    requireNetwork: true,
+    requireVerify: true,
+    executionProfile: "conservative",
+    strictUnsafeConfirm: true,
+  },
+};
+
+function normalizeProfile(value: string): "light" | "normal" | "full-harness" | null {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "light" || normalized === "vibecoder") return "light";
+  if (normalized === "normal" || normalized === "manager") return "normal";
+  if (normalized === "full-harness" || normalized === "developer" || normalized === "enterprise") {
+    return "full-harness";
+  }
+  return null;
+}
+
+export const profileSetSpec: CommandSpec<ProfileSetParsed> = {
+  id: ["profile", "set"],
+  group: "Config",
+  summary: "Apply setup profile presets to config.",
+  args: [{ name: "profile", required: true, valueHint: "<light|normal|full-harness>" }],
+  examples: [
+    { cmd: "agentplane profile set light", why: "Apply flexible defaults." },
+    { cmd: "agentplane profile set normal", why: "Apply balanced defaults." },
+    { cmd: "agentplane profile set full-harness", why: "Apply strict defaults." },
+  ],
+  parse: (raw) => ({ profile: String(raw.args.profile ?? "") }),
+  validate: (p) => {
+    if (!normalizeProfile(p.profile)) {
+      throw usageError({
+        spec: profileSetSpec,
+        command: "profile set",
+        message: `Invalid value for profile: ${p.profile} (expected: light|normal|full-harness)`,
+      });
+    }
+  },
+};
+
+async function cmdProfileSet(opts: {
+  cwd: string;
+  rootOverride?: string;
+  profile: "light" | "normal" | "full-harness";
+  deps: RunDeps;
+}): Promise<number> {
+  return wrapCommand(
+    {
+      command: "profile set",
+      rootOverride: opts.rootOverride,
+      context: { profile: opts.profile },
+    },
+    async () => {
+      const resolved = await opts.deps.getResolvedProject("profile set");
+      const loaded = await opts.deps.getLoadedConfig("profile set");
+      const raw = { ...loaded.raw };
+      const preset = PROFILE_PRESETS[opts.profile];
+      const execution = buildExecutionProfile(preset.executionProfile, {
+        strictUnsafeConfirm: preset.strictUnsafeConfirm,
+      });
+
+      setByDottedKey(raw, "agents.approvals.require_plan", String(preset.requirePlan));
+      setByDottedKey(raw, "agents.approvals.require_network", String(preset.requireNetwork));
+      setByDottedKey(raw, "agents.approvals.require_verify", String(preset.requireVerify));
+      setByDottedKey(raw, "execution", JSON.stringify(execution));
+
+      await saveConfig(resolved.agentplaneDir, raw);
+      process.stdout.write(`${opts.profile}\n`);
+      return 0;
+    },
+  );
+}
+
+export function makeRunProfileSetHandler(deps: RunDeps): CommandHandler<ProfileSetParsed> {
+  return (ctx, p) =>
+    cmdProfileSet({
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      profile: normalizeProfile(p.profile)!,
       deps,
     });
 }

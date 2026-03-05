@@ -15,16 +15,59 @@ type TestWorkspace = {
 const workspaces: string[] = [];
 const execFileAsync = promisify(execFile);
 
+const VALID_WORKFLOW = `---
+version: 1
+mode: direct
+owners:
+  orchestrator: CODER
+approvals:
+  require_plan: false
+  require_verify: false
+  require_network: true
+retry_policy:
+  normal_exit_continuation: true
+  abnormal_backoff: exponential
+  max_attempts: 5
+timeouts:
+  stall_seconds: 900
+in_scope_paths:
+  - packages/**
+---
+
+## Prompt Template
+Repository root: {{ runtime.repo_root }}
+Workflow mode: {{ workflow.mode }}
+
+## Checks
+- preflight
+- verify
+- finish
+
+## Fallback
+last_known_good: .agentplane/workflows/last-known-good.md
+`;
+
 async function mkWorkspace(): Promise<TestWorkspace> {
   const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-doctor-"));
   workspaces.push(root);
   await mkdir(path.join(root, ".git"));
   await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+  await mkdir(path.join(root, ".agentplane", "workflows"), { recursive: true });
   await writeFile(path.join(root, "AGENTS.md"), "# AGENTS\n", "utf8");
-  await writeFile(path.join(root, ".agentplane", "config.json"), '{\n  "version": 1\n}\n', "utf8");
+  await writeFile(
+    path.join(root, ".agentplane", "config.json"),
+    '{\n  "version": 1,\n  "workflow_mode": "direct",\n  "agents": {\n    "approvals": {\n      "require_plan": false,\n      "require_verify": false,\n      "require_network": true\n    }\n  }\n}\n',
+    "utf8",
+  );
   await writeFile(
     path.join(root, ".agentplane", "agents", "CODER.json"),
     '{\n  "role": "coder"\n}\n',
+    "utf8",
+  );
+  await writeFile(path.join(root, "WORKFLOW.md"), VALID_WORKFLOW, "utf8");
+  await writeFile(
+    path.join(root, ".agentplane", "workflows", "last-known-good.md"),
+    VALID_WORKFLOW,
     "utf8",
   );
   return { root };
@@ -67,6 +110,34 @@ describe("doctor.command", () => {
       { fix: false, dev: false },
     );
     expect(rc).toBe(1);
+  });
+
+  it("supports workflow kill-switch for emergency rollback", async () => {
+    const ws = await mkWorkspace();
+    await rm(path.join(ws.root, "WORKFLOW.md"), { force: true });
+    const prev = process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT;
+    process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT = "off";
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+    } finally {
+      if (prev === undefined) delete process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT;
+      else process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT = prev;
+    }
+  });
+
+  it("does not fail when workflow has warning-only policy mismatch", async () => {
+    const ws = await mkWorkspace();
+    const warningOnlyWorkflow = VALID_WORKFLOW.replace("require_plan: false", "require_plan: true");
+    await writeFile(path.join(ws.root, "WORKFLOW.md"), warningOnlyWorkflow, "utf8");
+    const rc = await runDoctor(
+      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+      { fix: false, dev: false },
+    );
+    expect(rc).toBe(0);
   });
 
   it("fails dev checks when monorepo source tree is unavailable", async () => {

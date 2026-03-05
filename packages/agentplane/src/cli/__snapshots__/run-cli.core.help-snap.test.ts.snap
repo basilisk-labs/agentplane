@@ -24,6 +24,7 @@ Commands:
     config show  Print resolved config JSON.
     mode get  Print workflow mode.
     mode set  Set workflow mode.
+    profile set  Apply setup profile presets to config.
   Core:
     agents  List agent definitions under .agentplane/agents.
     help  Show help for a command.
@@ -116,6 +117,10 @@ Commands:
     task verify-show  Print the task Verify Steps section (alias for task doc show --section "Verify Steps").
   Work:
     work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
+  Workflow:
+    workflow  Workflow contract commands.
+    workflow build  Build WORKFLOW.md from template layers with strict rendering checks.
+    workflow restore  Restore WORKFLOW.md from last-known-good snapshot.
 "
 `;
 

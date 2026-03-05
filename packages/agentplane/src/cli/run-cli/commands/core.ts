@@ -12,6 +12,11 @@ import { dedupeStrings } from "../../../shared/strings.js";
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import { listRoles, renderQuickstart, renderRole } from "../../command-guide.js";
+import {
+  isWorkflowEnforcementDisabled,
+  validateWorkflowAtPath,
+  workflowEnforcementEnvHint,
+} from "../../../workflow-runtime/index.js";
 import type { RunDeps } from "../command-catalog.js";
 import { toStringList } from "../../spec/parse-utils.js";
 import { wrapCommand } from "./wrap-command.js";
@@ -77,6 +82,7 @@ type PreflightReport = {
   project_detected: boolean;
   config_loaded: Probe;
   quickstart_loaded: Probe;
+  workflow_loaded: Probe;
   task_list_loaded: Probe & { count?: number };
   working_tree_clean_tracked: Probe & { value?: boolean };
   current_branch: Probe & { value?: string };
@@ -201,6 +207,42 @@ async function buildPreflightReport(opts: {
     }
   }
 
+  let workflowLoaded: Probe = { ok: false, error: "project not resolved" };
+  if (resolved) {
+    if (isWorkflowEnforcementDisabled()) {
+      workflowLoaded = {
+        ok: true,
+        error: `workflow checks disabled via ${workflowEnforcementEnvHint()}`,
+      };
+    } else {
+      try {
+        const workflowValidation = await validateWorkflowAtPath(resolved.gitRoot);
+        workflowLoaded = workflowValidation.ok
+          ? { ok: true }
+          : {
+              ok: false,
+              error: workflowValidation.diagnostics
+                .filter((d) => d.severity === "ERROR")
+                .map((d) => `${d.code}:${d.path}`)
+                .join(", "),
+            };
+        if (!workflowValidation.ok) {
+          nextActions.push({
+            command: "agentplane workflow build --validate --dry-run",
+            reason: "workflow contract is invalid",
+          });
+        }
+      } catch (err) {
+        const message = compactError(err);
+        workflowLoaded = { ok: false, error: message };
+        nextActions.push({
+          command: "agentplane workflow build --validate --dry-run",
+          reason: `cannot validate workflow (${message})`,
+        });
+      }
+    }
+  }
+
   let workingTree: PreflightReport["working_tree_clean_tracked"] = {
     ok: false,
     error: "project not resolved",
@@ -245,6 +287,7 @@ async function buildPreflightReport(opts: {
     project_detected: resolved !== null,
     config_loaded: configLoaded,
     quickstart_loaded: quickstartLoaded,
+    workflow_loaded: workflowLoaded,
     task_list_loaded: taskListLoaded,
     working_tree_clean_tracked: workingTree,
     current_branch: branch,
@@ -317,6 +360,7 @@ async function cmdPreflight(opts: {
     process.stdout.write(`- project detected: ${report.project_detected ? "yes" : "no"}\n`);
     process.stdout.write(`- config loaded: ${probeYesNo(report.config_loaded)}\n`);
     process.stdout.write(`- quickstart loaded: ${probeYesNo(report.quickstart_loaded)}\n`);
+    process.stdout.write(`- workflow loaded: ${probeYesNo(report.workflow_loaded)}\n`);
     process.stdout.write(`- task list loaded: ${probeYesNo(report.task_list_loaded)}\n`);
     process.stdout.write(
       `- working tree clean (tracked-only): ${probeValueOrUnknown(report.working_tree_clean_tracked)}\n`,

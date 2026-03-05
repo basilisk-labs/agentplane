@@ -1,0 +1,151 @@
+---
+title: "Workflow Contract"
+description: "Formal contract for WORKFLOW.md: schema, required sections, compatibility, and failure behavior."
+---
+
+## Scope
+
+This contract defines the required format for `WORKFLOW.md` used by the planned workflow runtime.
+
+- Front matter schema source: `schemas/workflow.schema.json`
+- Prompt body is required and interpreted as a template.
+
+This is the active contract used by `agentplane init`, `agentplane workflow build`, `agentplane workflow restore`, `agentplane doctor`, and `agentplane preflight`.
+
+## File shape
+
+`WORKFLOW.md` is composed of:
+
+1. YAML front matter validated against `schemas/workflow.schema.json`
+2. Markdown body with required sections:
+   - `## Prompt Template`
+   - `## Checks`
+   - `## Fallback`
+
+If front matter exists but does not decode into a map/object, the file is invalid.
+
+## Required front matter keys
+
+Required keys and constraints:
+
+- `version`: integer, `>= 1`
+- `mode`: `direct | branch_pr`
+- `owners.orchestrator`: non-empty string
+- `approvals.require_plan`: boolean
+- `approvals.require_verify`: boolean
+- `approvals.require_network`: boolean
+- `retry_policy.normal_exit_continuation`: boolean
+- `retry_policy.abnormal_backoff`: currently only `exponential`
+- `retry_policy.max_attempts`: integer in `[1, 100]`
+- `timeouts.stall_seconds`: integer in `[1, 86400]`
+- `in_scope_paths`: non-empty array of non-empty strings
+
+Additional keys are disallowed by default (`additionalProperties: false`).
+
+## Failure behavior
+
+Invalid `WORKFLOW.md` must fail validation with explicit diagnostics:
+
+- missing required key
+- invalid type
+- invalid enum/range
+- unknown key (when `additionalProperties: false`)
+- missing required body section
+- malformed/empty prompt template (runtime strict template checks are enforced in later tasks)
+
+Runtime behavior:
+
+- candidate with any `ERROR` diagnostics is rejected,
+- active `WORKFLOW.md` is published atomically (`tmp + rename`),
+- `.agentplane/workflows/last-known-good.md` is refreshed only after successful publish,
+- `agentplane workflow restore` recovers from `last-known-good`.
+
+## Compatibility policy
+
+Versioning policy:
+
+- `version` is the contract version for front matter schema.
+- Backward-compatible additions require either:
+  - optional fields, or
+  - new schema version with migration path.
+- Breaking changes require a major contract bump and migration tooling.
+
+Compatibility guarantees:
+
+- A runtime supporting `version = N` must reject unsupported future versions explicitly.
+- Migrations from older versions should be deterministic and idempotent.
+
+## Canonical valid example
+
+```md
+---
+version: 1
+mode: direct
+owners:
+  orchestrator: ORCHESTRATOR
+approvals:
+  require_plan: true
+  require_verify: true
+  require_network: true
+retry_policy:
+  normal_exit_continuation: true
+  abnormal_backoff: exponential
+  max_attempts: 5
+timeouts:
+  stall_seconds: 900
+in_scope_paths:
+  - packages/**
+---
+
+## Prompt Template
+
+Use approved task scope and policy gates from this workflow contract.
+
+## Checks
+
+- preflight
+- verify
+- finish
+
+## Fallback
+
+last_known_good: .agentplane/workflows/last-known-good.md
+```
+
+## Canonical invalid example
+
+```md
+---
+version: "1"
+mode: fast
+owners:
+  orchestrator: ""
+approvals:
+  require_plan: "yes"
+retry_policy:
+  abnormal_backoff: linear
+  max_attempts: 0
+timeouts:
+  stall_seconds: -1
+in_scope_paths: []
+extra_field: true
+---
+
+## Prompt
+
+This section name is invalid for the contract.
+```
+
+Why invalid:
+
+- `version` must be integer
+- `mode` enum mismatch
+- empty `owners.orchestrator`
+- `approvals.require_plan` must be boolean
+- missing `approvals.require_verify` and `approvals.require_network`
+- `retry_policy.abnormal_backoff` enum mismatch
+- `retry_policy.max_attempts` below minimum
+- `timeouts.stall_seconds` below minimum
+- `in_scope_paths` must be non-empty
+- `extra_field` is not allowed
+- missing required sections (`Prompt Template`, `Checks`, `Fallback`)

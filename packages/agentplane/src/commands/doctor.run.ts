@@ -9,6 +9,14 @@ import { RUNTIME_GITIGNORE_LINES } from "../shared/runtime-artifacts.js";
 import { execFileAsync, gitEnv } from "./shared/git.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import type { DoctorParsed } from "./doctor.spec.js";
+import {
+  emitWorkflowEvent,
+  isWorkflowEnforcementDisabled,
+  resolveWorkflowPaths,
+  safeAutofixWorkflowText,
+  validateWorkflowAtPath,
+  workflowEnforcementEnvHint,
+} from "../workflow-runtime/index.js";
 
 type FileEntry = { absPath: string; relPath: string };
 
@@ -179,6 +187,53 @@ async function safeFixTaskIndex(repoRoot: string): Promise<{ changed: boolean; n
   }
 }
 
+async function checkWorkflowContract(repoRoot: string): Promise<string[]> {
+  const result = await validateWorkflowAtPath(repoRoot);
+  const findings = result.diagnostics.map(
+    (d) => `[${d.severity}] ${d.code} ${d.path}: ${d.message}`,
+  );
+  emitWorkflowEvent({
+    event: "workflow_doctor_check",
+    details: { ok: result.ok, findings: result.diagnostics.length },
+  });
+  return findings;
+}
+
+function findingSeverity(problem: string): "ERROR" | "WARN" | "INFO" {
+  const normalized = problem.trimStart();
+  if (normalized.startsWith("[WARN]")) return "WARN";
+  if (normalized.startsWith("[INFO]")) return "INFO";
+  if (normalized.startsWith("[ERROR]")) return "ERROR";
+  return "ERROR";
+}
+
+async function safeFixWorkflow(repoRoot: string): Promise<{ changed: boolean; note: string }> {
+  const paths = resolveWorkflowPaths(repoRoot);
+  let current = "";
+  try {
+    current = await fs.readFile(paths.workflowPath, "utf8");
+  } catch {
+    return { changed: false, note: "Skip: WORKFLOW.md not found." };
+  }
+
+  const fixed = safeAutofixWorkflowText(current);
+  if (fixed.diagnostics.some((d) => d.code === "WF_FIX_SKIPPED_UNSAFE")) {
+    const details = fixed.diagnostics.map((d) => `${d.path}`).join(", ");
+    return {
+      changed: false,
+      note: `Skip: unsafe workflow autofix required (unknown keys). Proposed manual review: ${details}`,
+    };
+  }
+  if (!fixed.changed) {
+    return { changed: false, note: "OK: WORKFLOW.md already normalized." };
+  }
+
+  await fs.writeFile(paths.workflowPath, fixed.text, "utf8");
+  await fs.mkdir(paths.workflowDir, { recursive: true });
+  await fs.copyFile(paths.workflowPath, paths.lastKnownGoodPath);
+  return { changed: true, note: "Fixed: normalized WORKFLOW.md and refreshed last-known-good." };
+}
+
 type TaskSnapshotRecord = {
   id?: unknown;
   status?: unknown;
@@ -258,15 +313,26 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const repoRoot = resolved.gitRoot;
 
-  const problems = await checkWorkspace(repoRoot);
-  problems.push(...(await checkDoneTaskCommitInvariants(repoRoot)));
-  if (p.dev) {
-    problems.push(...(await checkLayering(repoRoot)));
-  }
-  if (problems.length > 0) {
-    console.error(warnMessage(`doctor found ${problems.length} problem(s):`));
-    for (const prob of problems) console.error(`- ${prob}`);
-    return 1;
+  const runChecks = async (): Promise<string[]> => {
+    const checks = await checkWorkspace(repoRoot);
+    checks.push(...(await checkDoneTaskCommitInvariants(repoRoot)));
+    if (!isWorkflowEnforcementDisabled()) {
+      checks.push(...(await checkWorkflowContract(repoRoot)));
+    }
+    if (p.dev) {
+      checks.push(...(await checkLayering(repoRoot)));
+    }
+    return checks;
+  };
+
+  if (isWorkflowEnforcementDisabled()) {
+    console.log(
+      successMessage(
+        "doctor",
+        undefined,
+        `workflow contract checks disabled via ${workflowEnforcementEnvHint()}.`,
+      ),
+    );
   }
 
   if (p.fix) {
@@ -274,6 +340,22 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     console.log(successMessage("doctor fix", undefined, fix.note));
     const idx = await safeFixTaskIndex(repoRoot);
     console.log(successMessage("doctor fix", undefined, idx.note));
+    const workflowFix = await safeFixWorkflow(repoRoot);
+    console.log(successMessage("doctor fix", undefined, workflowFix.note));
+  }
+
+  const problems = await runChecks();
+  const errors = problems.filter((problem) => findingSeverity(problem) === "ERROR");
+  if (problems.length > 0) {
+    const warningCount = problems.filter((problem) => findingSeverity(problem) === "WARN").length;
+    const infoCount = problems.filter((problem) => findingSeverity(problem) === "INFO").length;
+    console.error(
+      warnMessage(
+        `doctor findings: errors=${errors.length} warnings=${warningCount} info=${infoCount}`,
+      ),
+    );
+    for (const prob of problems) console.error(`- ${prob}`);
+    if (errors.length > 0) return 1;
   }
 
   console.log(successMessage("doctor", undefined, "OK"));

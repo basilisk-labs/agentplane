@@ -450,6 +450,27 @@ describe("runCli", () => {
     }
   });
 
+  it("preflight --json supports workflow kill-switch via env", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const prev = process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT;
+    process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT = "off";
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["preflight", "--json", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        workflow_loaded?: { ok?: boolean; error?: string };
+      };
+      expect(payload.workflow_loaded?.ok).toBe(true);
+      expect(payload.workflow_loaded?.error).toContain("workflow checks disabled");
+    } finally {
+      io.restore();
+      if (prev === undefined) delete process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT;
+      else process.env.AGENTPLANE_WORKFLOW_ENFORCEMENT = prev;
+    }
+  });
+
   it("preflight --json in non-project suggests init", async () => {
     const root = await mkTempDir();
     const io = captureStdIO();
@@ -465,6 +486,95 @@ describe("runCli", () => {
         ? payload.next_actions.map((v) => String(v.command ?? ""))
         : [];
       expect(commands).toContain("agentplane init");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("workflow build --validate --dry-run validates candidate without publishing", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"),
+      '{\n  "role": "orchestrator"\n}\n',
+      "utf8",
+    );
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["workflow", "build", "--validate", "--dry-run", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("## Prompt Template");
+      expect(await pathExists(path.join(root, "WORKFLOW.md"))).toBe(false);
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("workflow restore recovers active workflow from last-known-good snapshot", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await mkdir(path.join(root, ".agentplane", "agents"), { recursive: true });
+    await writeFile(
+      path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json"),
+      '{\n  "role": "orchestrator"\n}\n',
+      "utf8",
+    );
+
+    const ioBuild = captureStdIO();
+    try {
+      const code = await runCli(["workflow", "build", "--validate", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      ioBuild.restore();
+    }
+
+    const workflowPath = path.join(root, "WORKFLOW.md");
+    await writeFile(workflowPath, "---\nversion: bad\n---\n\n## Prompt Template\nx\n", "utf8");
+
+    const ioRestore = captureStdIO();
+    try {
+      const code = await runCli(["workflow", "restore", "--root", root]);
+      expect(code).toBe(0);
+      const restored = await readFile(workflowPath, "utf8");
+      expect(restored).toContain("## Prompt Template");
+      expect(restored).toContain("last_known_good");
+    } finally {
+      ioRestore.restore();
+    }
+  });
+
+  it("workflow restore fails with actionable error when snapshot is missing", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["workflow", "restore", "--root", root]);
+      expect(code).toBe(1);
+      expect(io.stderr).toContain("workflow restore failed");
+      expect(io.stderr).toContain("WF_MISSING_FILE");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("profile set applies preset defaults to config", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["profile", "set", "light", "--root", root]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("light");
+      const rawConfig = JSON.parse(
+        await readFile(path.join(root, ".agentplane", "config.json"), "utf8"),
+      ) as {
+        agents?: { approvals?: { require_plan?: boolean; require_network?: boolean } };
+        execution?: { profile?: string };
+      };
+      expect(rawConfig.agents?.approvals?.require_plan).toBe(false);
+      expect(rawConfig.agents?.approvals?.require_network).toBe(false);
+      expect(rawConfig.execution?.profile).toBe("aggressive");
     } finally {
       io.restore();
     }

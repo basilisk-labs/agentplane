@@ -59,6 +59,7 @@
     "schemas:check": "node scripts/sync-schemas.mjs check",
     "schemas:sync": "node scripts/sync-schemas.mjs sync",
     "coverage:significant": "node scripts/check-significant-coverage.mjs",
+    "coverage:workflow-harness": "node scripts/check-workflow-harness-coverage.mjs",
     "docs:cli:check": "node scripts/check-cli-reference-fresh.mjs",
     "docs:site:generate": "node scripts/generate-website-docs.mjs",
     "docs:site:typecheck": "bun run --cwd website typecheck",
