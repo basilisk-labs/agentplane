@@ -1,7 +1,9 @@
 ---
 id: "202603051536-FPAJ6D"
 title: "Enforce strict conditional policy loading"
-status: "DOING"
+result_summary: "Gateway policy loading is now condition-only with enforced checks against default always-load rules."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +20,16 @@ verification:
   updated_at: "2026-03-05T15:37:38.602Z"
   updated_by: "CODER"
   note: "Verified: strict conditional loading works and routing guard rejects unconditional patterns."
-commit: null
+commit:
+  hash: "65bbc7d2b25d6c749580e24b90c2def7618b187e"
+  message: "✨ FPAJ6D policy: require conditional loading for gateway modules"
 comments:
   -
     author: "CODER"
     body: "Start: enforce strict conditional policy loading and reject unconditional always-load directives in AGENTS routing."
+  -
+    author: "CODER"
+    body: "Verified: AGENTS routing now loads policy modules only under explicit conditions, and unconditional load directives are blocked by policy checks."
 events:
   -
     type: "status"
@@ -37,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: strict conditional loading works and routing guard rejects unconditional patterns."
+  -
+    type: "status"
+    at: "2026-03-05T15:38:09.571Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: AGENTS routing now loads policy modules only under explicit conditions, and unconditional load directives are blocked by policy checks."
 doc_version: 2
-doc_updated_at: "2026-03-05T15:37:38.604Z"
+doc_updated_at: "2026-03-05T15:38:09.571Z"
 doc_updated_by: "CODER"
 description: "Remove always-load policy directives and require condition-only policy module loading, with routing checks rejecting always/wildcard module references."
 id_source: "generated"
