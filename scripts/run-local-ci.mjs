@@ -20,6 +20,7 @@ function runStep(label, fn) {
 runStep("Format (check)", () => run("bun", ["run", "format:check"]));
 runStep("Schemas (check)", () => run("bun", ["run", "schemas:check"]));
 runStep("Agent templates (check)", () => run("bun", ["run", "agents:check"]));
+runStep("Policy routing (check)", () => run("bun", ["run", "policy:routing:check"]));
 runStep("Release parity (check)", () => run("bun", ["run", "release:parity"]));
 runStep("Build", () => {
   run("bun", ["run", "--filter=@agentplaneorg/core", "build"]);
