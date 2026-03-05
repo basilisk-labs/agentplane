@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
@@ -63,7 +63,9 @@ export async function cmdRecipeInstall(opts: {
       let expectedSha = "";
       let indexTags: string[] = [];
 
-      const resolveFromIndex = async (recipeId: string): Promise<string> => {
+      const resolveFromIndex = async (
+        recipeId: string,
+      ): Promise<{ kind: "archive"; path: string }> => {
         const indexSource = opts.index ?? DEFAULT_RECIPES_INDEX_URL;
         const cachePath = resolveRecipesIndexCachePath();
         const willFetchRemote = willFetchRemoteRecipesIndex({
@@ -107,7 +109,7 @@ export async function cmdRecipeInstall(opts: {
           const filename = path.basename(url.pathname) || "recipe.tar.gz";
           const target = path.join(tempRoot, filename);
           await downloadToFile(latest.url, target);
-          return target;
+          return { kind: "archive", path: target };
         }
         const resolved = path.resolve(opts.cwd, latest.url);
         if (!(await fileExists(resolved))) {
@@ -117,10 +119,12 @@ export async function cmdRecipeInstall(opts: {
             message: `Recipe archive not found: ${latest.url}`,
           });
         }
-        return resolved;
+        return { kind: "archive", path: resolved };
       };
 
-      const resolveSourcePath = async (source: RecipeInstallSource): Promise<string> => {
+      const resolveSourcePath = async (
+        source: RecipeInstallSource,
+      ): Promise<{ kind: "archive" | "directory"; path: string }> => {
         if (source.type === "name") return await resolveFromIndex(source.value);
         if (source.type === "url") {
           await ensureApproved("recipes install downloads a recipe archive");
@@ -129,7 +133,7 @@ export async function cmdRecipeInstall(opts: {
           const target = path.join(tempRoot, filename);
           sourceLabel = source.value;
           await downloadToFile(source.value, target);
-          return target;
+          return { kind: "archive", path: target };
         }
         if (source.type === "path") {
           const candidate = await resolvePathFallback(source.value);
@@ -140,8 +144,13 @@ export async function cmdRecipeInstall(opts: {
               message: `Recipe archive not found: ${source.value}`,
             });
           }
+          const kind = await getPathKind(candidate);
+          if (kind === "dir") {
+            sourceLabel = candidate;
+            return { kind: "directory", path: candidate };
+          }
           sourceLabel = candidate;
-          return candidate;
+          return { kind: "archive", path: candidate };
         }
         if (isHttpUrl(source.value)) {
           return await resolveSourcePath({ type: "url", value: source.value });
@@ -153,10 +162,12 @@ export async function cmdRecipeInstall(opts: {
         return await resolveSourcePath({ type: "name", value: source.value });
       };
 
-      const sourcePath = await resolveSourcePath(opts.source);
+      const sourceInput = await resolveSourcePath(opts.source);
+      const sourcePath = sourceInput.path;
       if (!sourceLabel) sourceLabel = opts.source.value;
 
-      const actualSha = expectedSha ? await sha256File(sourcePath) : "";
+      const actualSha =
+        expectedSha && sourceInput.kind === "archive" ? await sha256File(sourcePath) : "";
       if (expectedSha && actualSha !== expectedSha) {
         throw new CliError({
           exitCode: 3,
@@ -165,11 +176,18 @@ export async function cmdRecipeInstall(opts: {
         });
       }
 
-      await extractArchive({
-        archivePath: sourcePath,
-        destDir: tempRoot,
-      });
-      const recipeRoot = await resolveRecipeRoot(tempRoot);
+      let recipeRoot: string;
+      if (sourceInput.kind === "archive") {
+        await extractArchive({
+          archivePath: sourcePath,
+          destDir: tempRoot,
+        });
+        recipeRoot = await resolveRecipeRoot(tempRoot);
+      } else {
+        const stagedRecipeRoot = path.join(tempRoot, "recipe");
+        await cp(sourcePath, stagedRecipeRoot, { recursive: true });
+        recipeRoot = stagedRecipeRoot;
+      }
       const manifest = await readRecipeManifest(path.join(recipeRoot, "manifest.json"));
       const resolvedTags =
         manifest.tags && manifest.tags.length > 0 ? manifest.tags : normalizeRecipeTags(indexTags);

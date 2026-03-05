@@ -413,6 +413,52 @@ describe("commands/recipes", () => {
     expect(installed.recipes[0]?.id).toBe("viewer");
   });
 
+  it("installs a recipe from a local directory path", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    const recipeDir = path.join(
+      process.cwd(),
+      "packages",
+      "agentplane",
+      "assets",
+      "recipes",
+      "workflow-playbooks",
+    );
+
+    const io = captureStdIO();
+    try {
+      await expect(
+        runRecipesTest({
+          cwd: projectDir,
+          args: ["--path", recipeDir],
+          command: "install",
+        }),
+      ).resolves.toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const installed = JSON.parse(await readFile(path.join(tempHome, "recipes.json"), "utf8")) as {
+      recipes: { id: string }[];
+    };
+    expect(installed.recipes.some((entry) => entry.id === "workflow-playbooks")).toBe(true);
+
+    const debugScenarioPath = path.join(
+      tempHome,
+      "recipes",
+      "workflow-playbooks",
+      "0.1.0",
+      "scenarios",
+      "debug.json",
+    );
+    const debugScenario = JSON.parse(await readFile(debugScenarioPath, "utf8")) as {
+      evidence?: { required?: boolean; files?: string[] };
+    };
+    expect(debugScenario.evidence?.required).toBe(true);
+    expect(debugScenario.evidence?.files).toContain("evidence.json");
+  });
+
   it("prints recipe info details", async () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();

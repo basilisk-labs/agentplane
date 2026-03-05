@@ -1,4 +1,7 @@
-import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
+import {
+  BUNDLED_RECIPES_CATALOG,
+  resolveBundledRecipeSourcePath,
+} from "../recipes/bundled-recipes.js";
 import { CliError } from "../shared/errors.js";
 
 export type BundledRecipeInfo = { id: string; summary: string; version: string };
@@ -34,4 +37,8 @@ export function validateBundledRecipesSelection(recipes: string[]): void {
       message: `Unknown recipe id(s): ${missing.join(", ")}. ${renderBundledRecipesHint()}`,
     });
   }
+}
+
+export function getBundledRecipeSourcePath(recipeId: string): string | null {
+  return resolveBundledRecipeSourcePath(recipeId);
 }

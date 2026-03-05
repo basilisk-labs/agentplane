@@ -4,6 +4,7 @@ import { BUNDLED_RECIPES_CATALOG } from "../recipes/bundled-recipes.js";
 import { CliError } from "../shared/errors.js";
 import { captureStdIO } from "./run-cli.test-helpers.js";
 import {
+  getBundledRecipeSourcePath,
   listBundledRecipes,
   renderBundledRecipesHint,
   validateBundledRecipesSelection,
@@ -72,5 +73,20 @@ describe("cli/recipes-bundled", () => {
     ];
 
     expect(() => validateBundledRecipesSelection(["one"])).not.toThrow();
+  });
+
+  it("resolves bundled source path when source_path is defined", () => {
+    BUNDLED_RECIPES_CATALOG.recipes = [
+      {
+        id: "playbooks",
+        summary: "Playbooks",
+        source_path: "recipes/workflow-playbooks",
+        versions: [{ version: "0.1.0" }],
+      },
+    ];
+
+    const sourcePath = getBundledRecipeSourcePath("playbooks");
+    expect(sourcePath).toContain("assets");
+    expect(sourcePath).toContain("workflow-playbooks");
   });
 });

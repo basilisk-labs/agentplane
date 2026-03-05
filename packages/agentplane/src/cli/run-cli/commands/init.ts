@@ -675,7 +675,11 @@ async function cmdInit(opts: {
     });
     installPaths.push(...ideRes.installPaths);
 
-    maybeInstallBundledRecipes(recipes);
+    await maybeInstallBundledRecipes({
+      recipes,
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride,
+    });
 
     if (!flags.gitignoreAgents) {
       await ensureInitCommit({

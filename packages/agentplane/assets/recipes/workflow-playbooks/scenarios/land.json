@@ -1,0 +1,16 @@
+{
+  "schema_version": "1",
+  "id": "land",
+  "summary": "Run pre-land gate checks and capture release evidence.",
+  "description": "Executes deterministic pre-land checks to reduce integration risk.",
+  "goal": "Collect land-readiness evidence before merging or finishing tasks.",
+  "inputs": [{ "name": "task_id", "type": "string", "optional": true }],
+  "outputs": [
+    { "name": "evidence", "type": "json", "path": "step-1-playbook-runner/evidence.json" }
+  ],
+  "evidence": {
+    "required": true,
+    "files": ["evidence.json"]
+  },
+  "steps": [{ "tool": "playbook-runner", "args": ["land"] }]
+}

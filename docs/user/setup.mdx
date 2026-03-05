@@ -157,6 +157,10 @@ agentplane doctor
 ## Install optional recipes
 
 ```bash
+# During init (recommended for bundled playbooks):
+agentplane init --yes --recipes workflow-playbooks
+
+# Additional remote/index recipe:
 agentplane recipes install --name viewer
 ```
 
