@@ -2,6 +2,8 @@ import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
+import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "../shared/git-context.js";
 
@@ -9,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
   cmdCommit: vi.fn(),
   buildGitCommitEnv: vi.fn(),
+  ensureReconciledBeforeMutation: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
   backendIsLocalFileBackend: vi.fn(),
@@ -22,6 +25,9 @@ vi.mock("../guard/index.js", () => ({
   commitFromComment: mocks.commitFromComment,
   cmdCommit: mocks.cmdCommit,
   buildGitCommitEnv: mocks.buildGitCommitEnv,
+}));
+vi.mock("../shared/reconcile-check.js", () => ({
+  ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
 }));
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
@@ -100,6 +106,7 @@ describe("task finish (unit)", () => {
   beforeEach(() => {
     mocks.commitFromComment.mockReset();
     mocks.cmdCommit.mockReset();
+    mocks.ensureReconciledBeforeMutation.mockReset();
     mocks.loadCommandContext.mockReset();
     mocks.loadTaskFromContext.mockReset();
     mocks.backendIsLocalFileBackend.mockReset();
@@ -119,6 +126,7 @@ describe("task finish (unit)", () => {
     });
     mocks.cmdCommit.mockResolvedValue(0);
     mocks.buildGitCommitEnv.mockReturnValue({});
+    mocks.ensureReconciledBeforeMutation.mockResolvedValue();
   });
 
   it("rejects --commit-from-comment/--status-commit with multiple task ids", async () => {
@@ -235,6 +243,10 @@ describe("task finish (unit)", () => {
         closeUnstageOthers: true,
       }),
     );
+    expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
+      ctx,
+      command: "finish",
+    });
   });
 
   it("rejects commit/status commit flags when primary task id is empty", async () => {
@@ -558,5 +570,41 @@ describe("task finish (unit)", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
+  it("fails early when reconcile guard blocks mutation", async () => {
+    const ctx = mkCtx();
+    mocks.ensureReconciledBeforeMutation.mockRejectedValue(
+      new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message: "reconcile blocked",
+      }),
+    );
+
+    const { cmdFinish } = await import("./finish.js");
+    await expect(
+      cmdFinish({
+        ctx,
+        cwd: "/repo",
+        taskIds: ["T-1"],
+        author: "A",
+        body: "Verified: this is long enough",
+        result: "ok",
+        breaking: false,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 });

@@ -5,6 +5,7 @@ import { CliError } from "../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
   mapCoreError: vi.fn(),
+  ensureReconciledBeforeMutation: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
   buildCloseCommitMessage: vi.fn(),
@@ -17,6 +18,9 @@ vi.mock("../../../cli/error-map.js", () => ({ mapCoreError: mocks.mapCoreError }
 vi.mock("../../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+}));
+vi.mock("../../shared/reconcile-check.js", () => ({
+  ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
 }));
 vi.mock("./close-message.js", () => ({
   buildCloseCommitMessage: mocks.buildCloseCommitMessage,
@@ -41,6 +45,7 @@ function mkCtx() {
 describe("guard/impl/commands", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    mocks.ensureReconciledBeforeMutation.mockResolvedValue();
   });
 
   it("cmdGuardClean maps non-Cli errors with mapCoreError", async () => {
@@ -93,6 +98,8 @@ describe("guard/impl/commands", () => {
 
   it("cmdGuardCommit writes OK and maps unknown errors", async () => {
     const { cmdGuardCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    mocks.loadCommandContext.mockResolvedValue(ctx);
     await expect(
       cmdGuardCommit({
         cwd: "/repo",
@@ -109,6 +116,11 @@ describe("guard/impl/commands", () => {
         quiet: true,
       }),
     ).resolves.toBe(0);
+    expect(mocks.loadCommandContext).toHaveBeenCalledTimes(1);
+    expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
+      ctx,
+      command: "guard commit",
+    });
 
     const mapped = new CliError({
       exitCode: exitCodeForError("E_IO"),
@@ -162,6 +174,10 @@ describe("guard/impl/commands", () => {
       quiet: true,
     });
     expect(rc).toBe(0);
+    expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
+      ctx,
+      command: "commit",
+    });
     expect(mocks.guardCommitCheck).toHaveBeenCalledTimes(1);
     expect(ctx.git.commit).toHaveBeenCalledWith({
       message: "✅ ABC123 task: message",
@@ -197,7 +213,43 @@ describe("guard/impl/commands", () => {
       quiet: true,
     });
     expect(rc).toBe(0);
+    expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
+      ctx,
+      command: "commit",
+    });
     expect(ctx.git.stage).toHaveBeenCalledWith(["/outside/README.md"]);
+  });
+
+  it("cmdCommit close --check-only skips reconcile guard", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-2" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-2/README.md");
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-2",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+      closeCheckOnly: true,
+      closeUnstageOthers: false,
+    });
+    expect(rc).toBe(0);
+    expect(mocks.ensureReconciledBeforeMutation).not.toHaveBeenCalled();
   });
 
   it("cmdCommit rejects auto-allow mode", async () => {
@@ -257,6 +309,7 @@ describe("guard/impl/commands", () => {
 
   it("cmdCommit non-close auto-allow rejects when ctx is absent", async () => {
     const { cmdCommit } = await import("./commands.js");
+    mocks.loadCommandContext.mockResolvedValue(mkCtx());
     await expect(
       cmdCommit({
         cwd: "/repo",
@@ -275,6 +328,6 @@ describe("guard/impl/commands", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
-    expect(mocks.loadCommandContext).not.toHaveBeenCalled();
+    expect(mocks.loadCommandContext).toHaveBeenCalledTimes(1);
   });
 });

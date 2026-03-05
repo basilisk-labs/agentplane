@@ -250,6 +250,16 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
       };
     }
     case "E_GIT": {
+      if (reasonCode === "reconcile_git_state_unreadable") {
+        return {
+          hint: "Reconcile check could not read git state.",
+          nextAction: {
+            command: "git status --short --untracked-files=no",
+            reason: "confirm repository state is readable before mutating commands",
+            reasonCode: "reconcile_git_state_unreadable",
+          },
+        };
+      }
       if (command?.startsWith("branch")) {
         return {
           hint: "Check git repo/branch; run `git branch` or pass --root <path>.",
@@ -310,6 +320,19 @@ function resolveErrorGuidance(err: CliError): ErrorGuidance {
       };
     }
     case "E_VALIDATION": {
+      if (
+        reasonCode === "reconcile_task_scan_failed" ||
+        reasonCode === "reconcile_task_scan_incomplete"
+      ) {
+        return {
+          hint: "Reconcile check failed due to task scan drift or parse/read errors.",
+          nextAction: {
+            command: "agentplane task list --strict-read",
+            reason: "surface task scan/read failures before retrying mutating commands",
+            reasonCode: reasonCode,
+          },
+        };
+      }
       return {
         hint: "Fix invalid config/input shape and rerun.",
         nextAction: {

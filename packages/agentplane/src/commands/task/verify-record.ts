@@ -7,6 +7,7 @@ import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
 import { backendNotSupportedMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
@@ -103,6 +104,7 @@ async function recordVerificationResult(opts: {
   const ctx =
     opts.ctx ??
     (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+  await ensureReconciledBeforeMutation({ ctx, command: "verify" });
   const backend = ctx.taskBackend;
   const config = ctx.config;
   const resolved = ctx.resolvedProject;

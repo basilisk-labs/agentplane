@@ -8,6 +8,7 @@ import path from "node:path";
 
 import { buildGitCommitEnv, cmdCommit, commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
+import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import {
   loadCommandContext,
   loadTaskFromContext,
@@ -80,6 +81,7 @@ export async function cmdFinish(opts: {
     const ctx =
       opts.ctx ??
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    await ensureReconciledBeforeMutation({ ctx, command: "finish" });
     if (opts.force) {
       await ensureActionApproved({
         action: "force_action",

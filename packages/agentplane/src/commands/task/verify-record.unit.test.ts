@@ -2,11 +2,14 @@ import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { exitCodeForError } from "../../cli/exit-codes.js";
+import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "../shared/git-context.js";
 
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn<(p: string, enc: string) => Promise<string>>(),
+  ensureReconciledBeforeMutation: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext:
     vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>(),
@@ -26,6 +29,9 @@ vi.mock("node:fs/promises", async (importOriginal) => {
 vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mocks.loadCommandContext,
   loadTaskFromContext: mocks.loadTaskFromContext,
+}));
+vi.mock("../shared/reconcile-check.js", () => ({
+  ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
 }));
 vi.mock("../shared/task-store.js", () => ({
   backendIsLocalFileBackend: mocks.backendIsLocalFileBackend,
@@ -83,12 +89,14 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
 describe("task verify record (unit)", () => {
   beforeEach(() => {
     mocks.readFile.mockReset();
+    mocks.ensureReconciledBeforeMutation.mockReset();
     mocks.loadCommandContext.mockReset();
     mocks.loadTaskFromContext.mockReset();
     mocks.backendIsLocalFileBackend.mockReset();
     mocks.getTaskStore.mockReset();
 
     mocks.backendIsLocalFileBackend.mockReturnValue(false);
+    mocks.ensureReconciledBeforeMutation.mockResolvedValue();
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-02-09T00:00:00.000Z"));
   });
@@ -210,6 +218,10 @@ describe("task verify record (unit)", () => {
     expect(rc).toBe(0);
     expect(getTaskDoc).toHaveBeenCalledTimes(1);
     expect(writeTask).toHaveBeenCalledTimes(1);
+    expect(mocks.ensureReconciledBeforeMutation).toHaveBeenCalledWith({
+      ctx,
+      command: "verify",
+    });
 
     const next = writeTask.mock.calls[0]?.[0];
     expect(next?.verification?.state).toBe("ok");
@@ -313,5 +325,28 @@ describe("task verify record (unit)", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
+  it("cmdVerifyParsed fails early when reconcile guard blocks mutation", async () => {
+    const ctx = mkCtx();
+    mocks.ensureReconciledBeforeMutation.mockRejectedValue(
+      new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message: "reconcile blocked",
+      }),
+    );
+    const { cmdVerifyParsed } = await import("./verify-record.js");
+    await expect(
+      cmdVerifyParsed({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        state: "ok",
+        by: "TESTER",
+        note: "ok",
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 });

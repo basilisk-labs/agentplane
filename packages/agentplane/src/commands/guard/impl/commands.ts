@@ -4,6 +4,7 @@ import { CliError } from "../../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 import { loadTaskFromContext } from "../../shared/task-backend.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
+import { ensureReconciledBeforeMutation } from "../../shared/reconcile-check.js";
 
 import { suggestAllowPrefixes } from "./allow.js";
 import { buildCloseCommitMessage, taskReadmePathForTask } from "./close-message.js";
@@ -126,7 +127,11 @@ export async function cmdGuardSuggestAllow(opts: {
 
 export async function cmdGuardCommit(opts: GuardCommitOptions): Promise<number> {
   try {
-    await guardCommitCheck(opts);
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    await ensureReconciledBeforeMutation({ ctx, command: "guard commit" });
+    await guardCommitCheck({ ...opts, ctx });
     if (!opts.quiet) process.stdout.write("OK\n");
     return 0;
   } catch (err) {
@@ -156,10 +161,14 @@ export async function cmdCommit(opts: {
   closeCheckOnly: boolean;
 }): Promise<number> {
   try {
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+
     if (opts.close) {
-      const ctx =
-        opts.ctx ??
-        (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+      if (!opts.closeCheckOnly) {
+        await ensureReconciledBeforeMutation({ ctx, command: "commit" });
+      }
 
       // Make the close commit deterministic: start from a clean index unless --unstage-others is used.
       let staged = await ctx.git.statusStagedPaths();
@@ -254,8 +263,10 @@ export async function cmdCommit(opts: {
       });
     }
 
+    await ensureReconciledBeforeMutation({ ctx, command: "commit" });
+
     await guardCommitCheck({
-      ctx: opts.ctx,
+      ctx,
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
@@ -271,9 +282,6 @@ export async function cmdCommit(opts: {
       quiet: opts.quiet,
     });
 
-    const ctx =
-      opts.ctx ??
-      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const env = buildGitCommitEnv({
       taskId: opts.taskId,
       allowTasks: opts.allowTasks,
