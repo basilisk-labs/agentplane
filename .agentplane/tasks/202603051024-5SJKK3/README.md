@@ -1,7 +1,7 @@
 ---
 id: "202603051024-5SJKK3"
 title: "P1: Slim task index payload + lazy task hydration"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,9 +18,21 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: Optimizing task index/list path to avoid loading full task payloads and reduce memory/CPU overhead."
+events:
+  -
+    type: "status"
+    at: "2026-03-05T10:38:05.502Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: Optimizing task index/list path to avoid loading full task payloads and reduce memory/CPU overhead."
 doc_version: 2
-doc_updated_at: "2026-03-05T10:24:58.034Z"
+doc_updated_at: "2026-03-05T10:38:05.510Z"
 doc_updated_by: "CODER"
 description: "Store lightweight index entries for list/next/search and hydrate full task content only for commands that require full README/doc bodies."
 id_source: "generated"

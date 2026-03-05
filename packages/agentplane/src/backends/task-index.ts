@@ -138,8 +138,15 @@ export function buildTaskIndexEntry(
   readmePath: string,
   mtimeMs: number,
 ): TaskIndexEntry {
+  const compactTask: TaskData = {
+    ...task,
+    // Keep the index payload lean for list/search/next paths.
+    doc: undefined,
+    comments: undefined,
+    events: undefined,
+  };
   return {
-    task,
+    task: compactTask,
     readmePath,
     mtimeMs,
   };
