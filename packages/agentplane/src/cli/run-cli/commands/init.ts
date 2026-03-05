@@ -30,6 +30,7 @@ import { ensureAgentsFiles } from "./init/write-agents.js";
 import { ensureInitGitignore } from "./init/write-gitignore.js";
 import { ensureInitRedmineEnvTemplate } from "./init/write-env.js";
 import { renderInitSection, renderInitWelcome } from "./init/ui.js";
+import { fileExists } from "../../fs-utils.js";
 
 type InitFlags = {
   setupProfile?: SetupProfilePreset;
@@ -622,6 +623,20 @@ async function cmdInit(opts: {
     ];
     const initFiles = [configPath, backendPath];
     const conflicts = await collectInitConflicts({ initDirs, initFiles });
+    const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
+    const agentsMissing = !(await fileExists(agentsPath));
+    if (conflicts.length > 0 && agentsMissing) {
+      // Recovery path: if a repo already contains conflicting .agentplane config/backend files,
+      // still materialize missing policy/agent templates before reporting conflicts.
+      await ensureAgentplaneDirs(resolved.agentplaneDir, backend);
+      await ensureAgentsFiles({
+        gitRoot: resolved.gitRoot,
+        agentplaneDir: resolved.agentplaneDir,
+        workflow,
+        configPathAbs: configPath,
+        backendPathAbs: backendPath,
+      });
+    }
     await handleInitConflicts({
       gitRoot: resolved.gitRoot,
       conflicts,

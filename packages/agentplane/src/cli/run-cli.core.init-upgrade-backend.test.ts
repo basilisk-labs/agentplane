@@ -1020,6 +1020,31 @@ describe("runCli", () => {
     }
   });
 
+  it("init restores missing AGENTS.md before reporting config/backend conflicts", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const agentplaneDir = path.join(root, ".agentplane");
+    const configPath = path.join(agentplaneDir, "config.json");
+    const backendPath = path.join(agentplaneDir, "backends", "local", "backend.json");
+    await mkdir(path.join(agentplaneDir, "backends", "local"), { recursive: true });
+    await writeFile(configPath, "legacy-config", "utf8");
+    await writeFile(backendPath, "legacy-backend", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--root", root]);
+      expect(code).toBe(4);
+      expect(await pathExists(path.join(root, "AGENTS.md"))).toBe(true);
+      expect(await pathExists(path.join(root, ".agentplane", "agents", "CODER.json"))).toBe(true);
+      const error = normalizeSlashes(io.stderr);
+      expect(error).toContain("Init conflicts detected");
+      expect(error).toContain(".agentplane/config.json");
+      expect(error).toContain(".agentplane/backends/local/backend.json");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("init --force overwrites conflicting files", async () => {
     const root = await mkGitRepoRoot();
     await configureGitUser(root);
