@@ -1,7 +1,8 @@
 ---
 id: "202603051024-669MR4"
 title: "P0: Surface local task parse/read failures (no silent drops)"
-status: "DOING"
+result_summary: "Task scanning now reports skipped files and supports strict-read fail-fast mode."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -14,15 +15,20 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-05T10:31:40.116Z"
+  updated_by: "CODER"
+  note: "Targeted vitest passed for task command helpers/specs; strict-read and scan-warning behavior validated."
+commit:
+  hash: "44037458a777f74414f38e1e28b73632b4e329b3"
+  message: "🚧 669MR4 task: surface skipped task diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: Implementing explicit diagnostics for skipped task files and strict-read guardrails to eliminate silent task drops in list/next/search paths."
+  -
+    author: "CODER"
+    body: "Verified: Added explicit scan warnings + strict-read mode for task list/next/search and removed silent task drops."
 events:
   -
     type: "status"
@@ -31,8 +37,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: Implementing explicit diagnostics for skipped task files and strict-read guardrails to eliminate silent task drops in list/next/search paths."
+  -
+    type: "verify"
+    at: "2026-03-05T10:31:40.116Z"
+    author: "CODER"
+    state: "ok"
+    note: "Targeted vitest passed for task command helpers/specs; strict-read and scan-warning behavior validated."
+  -
+    type: "status"
+    at: "2026-03-05T10:31:54.656Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Added explicit scan warnings + strict-read mode for task list/next/search and removed silent task drops."
 doc_version: 2
-doc_updated_at: "2026-03-05T10:25:20.181Z"
+doc_updated_at: "2026-03-05T10:31:54.656Z"
 doc_updated_by: "CODER"
 description: "Detect and report skipped task READMEs during local backend scans; add strict mode to fail fast when malformed task records are encountered."
 id_source: "generated"
@@ -1045,6 +1064,14 @@ Total: 984 (BLOCKED=1, DOING=1, DONE=978, TODO=4) against fixture with malformed
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-05T10:31:40.116Z — VERIFY — ok
+
+By: CODER
+
+Note: Targeted vitest passed for task command helpers/specs; strict-read and scan-warning behavior validated.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T10:25:20.181Z, excerpt_hash=sha256:da1538745983844308aa7ae98361d8822e386a6abedc6e2a2810f7a44f6ea8f0
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
