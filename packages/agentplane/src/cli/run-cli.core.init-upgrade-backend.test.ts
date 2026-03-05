@@ -264,6 +264,30 @@ describe("runCli", () => {
     expect(configText).toContain('"profile": "aggressive"');
   });
 
+  it("init --setup-profile full-harness --yes installs workflow-playbooks by default", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "init",
+        "--yes",
+        "--setup-profile",
+        "full-harness",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const home = getAgentplaneHome();
+    expect(home).toBeTruthy();
+    const recipeRoot = path.join(String(home), "recipes", "workflow-playbooks", "0.1.0");
+    expect(await pathExists(path.join(recipeRoot, "manifest.json"))).toBe(true);
+  });
+
   it("init --gitignore-agents updates .gitignore and skips the install commit", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

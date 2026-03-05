@@ -62,6 +62,7 @@ const setupProfilePresets: Record<
     defaultRequireNetworkApproval: boolean;
     defaultRequireVerifyApproval: boolean;
     defaultExecutionProfile: ExecutionProfile;
+    defaultRecipes: string[];
   }
 > = {
   light: {
@@ -73,6 +74,7 @@ const setupProfilePresets: Record<
     defaultRequireNetworkApproval: false,
     defaultRequireVerifyApproval: false,
     defaultExecutionProfile: "aggressive",
+    defaultRecipes: [],
   },
   normal: {
     mode: "compact",
@@ -84,6 +86,7 @@ const setupProfilePresets: Record<
     defaultRequireNetworkApproval: true,
     defaultRequireVerifyApproval: true,
     defaultExecutionProfile: "balanced",
+    defaultRecipes: [],
   },
   "full-harness": {
     mode: "full",
@@ -95,6 +98,7 @@ const setupProfilePresets: Record<
     defaultRequireNetworkApproval: true,
     defaultRequireVerifyApproval: true,
     defaultExecutionProfile: "conservative",
+    defaultRecipes: ["workflow-playbooks"],
   },
 };
 
@@ -533,16 +537,27 @@ async function cmdInit(opts: {
       );
       if (!flags.recipes) {
         process.stdout.write(`${renderBundledRecipesHint()}\n`);
-        const answer = await askInput("Install optional recipes (comma separated, or none): ");
-        recipes = answer
-          ? answer
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [];
+        const defaultRecipesLabel =
+          selectedPreset.defaultRecipes.length > 0
+            ? selectedPreset.defaultRecipes.join(", ")
+            : "none";
+        const answer = await askInput(
+          `Install optional recipes (comma separated, or none) [default: ${defaultRecipesLabel}]: `,
+        );
+        const normalized = answer.trim().toLowerCase();
+        if (normalized === "") {
+          recipes = [...selectedPreset.defaultRecipes];
+        } else if (normalized === "none") {
+          recipes = [];
+        } else {
+          recipes = answer
+            .split(",")
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
       }
     } else {
-      recipes = flags.recipes ?? defaults.recipes;
+      recipes = flags.recipes ?? selectedPreset.defaultRecipes;
       requirePlanApproval = flags.requirePlanApproval ?? selectedPreset.defaultRequirePlanApproval;
       requireNetworkApproval =
         flags.requireNetworkApproval ?? selectedPreset.defaultRequireNetworkApproval;
@@ -564,7 +579,7 @@ async function cmdInit(opts: {
     ide = flags.ide ?? defaults.ide;
     workflow = flags.workflow ?? defaults.workflow;
     backend = flags.backend ?? defaults.backend;
-    recipes = flags.recipes ?? defaults.recipes;
+    recipes = flags.recipes ?? yesPreset.defaultRecipes;
     requirePlanApproval = flags.requirePlanApproval ?? yesPreset.defaultRequirePlanApproval;
     requireNetworkApproval =
       flags.requireNetworkApproval ?? yesPreset.defaultRequireNetworkApproval;
