@@ -780,6 +780,54 @@ describe("RedmineBackend (mocked)", () => {
     expect(cached).toHaveLength(1);
   });
 
+  it("does not rewrite local cache on read-only list/get when Redmine is available", async () => {
+    const issues: Record<string, unknown>[] = [
+      {
+        id: 101,
+        subject: "Issue",
+        description: "Desc",
+        status: { id: 5, name: "Done" },
+        custom_fields: [{ id: 1, value: "202601300000-ABCD" }],
+      },
+    ];
+
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      const reqUrl = new URL(url);
+      const pathname = reqUrl.pathname.replace(/^\//u, "");
+      const method = init?.method ?? "GET";
+      if (pathname === "issues.json" && method === "GET") {
+        return Response.json({ issues, total_count: issues.length }, { status: 200 });
+      }
+      if (pathname.startsWith("issues/") && method === "GET") {
+        const id = Number(pathname.split("/")[1]?.replace(".json", ""));
+        const issue = issues.find((item) => item.id === id);
+        return Response.json({ issue }, { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    });
+
+    const cache = new LocalBackend({ dir: tempDir });
+    const cacheWriteSpy = vi.spyOn(cache, "writeTask");
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { DONE: 5, TODO: 1 },
+        custom_fields: { task_id: 1 },
+      },
+      { cache },
+    );
+
+    const tasks = await backend.listTasks();
+    expect(tasks).toHaveLength(1);
+
+    const task = await backend.getTask("202601300000-ABCD");
+    expect(task?.id).toBe("202601300000-ABCD");
+
+    expect(cacheWriteSpy).not.toHaveBeenCalled();
+  });
+
   it("infers DOING and DONE from Redmine status when status_map is missing", async () => {
     const issues: Record<string, unknown>[] = [
       {
@@ -951,6 +999,86 @@ describe("RedmineBackend (mocked)", () => {
     expect(created?.assigned_to_id).toBe(7);
     expect(created?.done_ratio).toBe(100);
     expect(created?.start_date).toBe("2026-01-30");
+  });
+
+  it("infers status_id on writeTask when status_map is missing", async () => {
+    const issues: Record<string, unknown>[] = [];
+    let createdPayload: Record<string, unknown> | null = null;
+    let nextId = 300;
+
+    const parseBody = (init?: RequestInit): { issue?: Record<string, unknown> } | null => {
+      const raw = typeof init?.body === "string" ? init.body : "";
+      if (!raw) return null;
+      return JSON.parse(raw) as { issue?: Record<string, unknown> };
+    };
+
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      const reqUrl = new URL(url);
+      const pathname = reqUrl.pathname.replace(/^\//u, "");
+      const method = init?.method ?? "GET";
+      const body = parseBody(init);
+      if (pathname === "issues.json" && method === "GET") {
+        return Response.json({ issues, total_count: issues.length }, { status: 200 });
+      }
+      if (pathname === "issue_statuses.json" && method === "GET") {
+        return Response.json(
+          {
+            issue_statuses: [
+              { id: 1, name: "New", is_default: true, is_closed: false },
+              { id: 2, name: "In Progress", is_closed: false },
+              { id: 5, name: "Closed", is_closed: true },
+            ],
+          },
+          { status: 200 },
+        );
+      }
+      if (pathname === "issues.json" && method === "POST") {
+        createdPayload = body?.issue ?? null;
+        const issue = {
+          id: nextId++,
+          subject: createdPayload?.subject,
+          description: createdPayload?.description,
+          status: { id: createdPayload?.status_id ?? 1 },
+          priority: { name: "Normal" },
+          custom_fields: createdPayload?.custom_fields ?? [],
+        };
+        issues.push(issue);
+        return Response.json({ issue }, { status: 200 });
+      }
+      if (pathname.startsWith("issues/") && method === "PUT") {
+        return Response.json({}, { status: 200 });
+      }
+      if (pathname.startsWith("issues/") && method === "GET") {
+        const id = Number(pathname.split("/")[1]?.replace(".json", ""));
+        const issue = issues.find((item) => item.id === id);
+        return Response.json({ issue }, { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    });
+
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+
+    await backend.writeTask({
+      id: "202601300000-ABCD",
+      title: "New task",
+      description: "Desc",
+      status: "DOING",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    });
+
+    expect((createdPayload as { status_id?: number } | null)?.status_id).toBe(2);
   });
 
   it("builds payloads with existing assignees and status mapping", () => {

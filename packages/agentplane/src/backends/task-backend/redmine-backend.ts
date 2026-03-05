@@ -78,6 +78,7 @@ export class RedmineBackend implements TaskBackend {
   cache: LocalBackend | null;
   issueCache = new Map<string, Record<string, unknown>>();
   reverseStatus = new Map<number, string>();
+  inferredStatusByTaskStatus: Map<string, number> | null = null;
 
   constructor(settings: RedmineSettings, opts: { cache?: LocalBackend | null }) {
     const env = readRedmineEnv();
@@ -147,11 +148,8 @@ export class RedmineBackend implements TaskBackend {
 
   async listTasks(): Promise<TaskData[]> {
     try {
-      const tasks = await this.listTasksRemote();
-      for (const task of tasks) {
-        await this.cacheTask(task, false);
-      }
-      return tasks;
+      // Read-only listing must not rewrite local task READMEs through cache updates.
+      return await this.listTasksRemote();
     } catch (err) {
       if (err instanceof RedmineUnavailable) {
         if (!this.cache) throw err;
@@ -176,9 +174,8 @@ export class RedmineBackend implements TaskBackend {
     try {
       const issue = await this.findIssueByTaskId(taskId);
       if (!issue) return null;
-      const task = this.issueToTask(issue, taskId);
-      if (task) await this.cacheTask(task, false);
-      return task;
+      // Read-only fetch must not rewrite local task READMEs through cache updates.
+      return this.issueToTask(issue, taskId);
     } catch (err) {
       if (err instanceof RedmineUnavailable) {
         if (!this.cache) throw err;
@@ -300,6 +297,10 @@ export class RedmineBackend implements TaskBackend {
         existingIssue = this.issueFromPayload(payload);
       }
       const payload = this.taskToIssuePayload(task, existingIssue ?? undefined);
+      if (payload.status_id === undefined) {
+        const inferredStatusId = await this.inferStatusIdForTaskStatus(task.status);
+        if (inferredStatusId !== null) payload.status_id = inferredStatusId;
+      }
       if (issueIdText) {
         await this.requestJson("PUT", `issues/${issueIdText}.json`, { issue: payload });
       } else {
@@ -512,6 +513,94 @@ export class RedmineBackend implements TaskBackend {
 
   private issueFromPayload(payload: Record<string, unknown>): Record<string, unknown> | null {
     return isRecord(payload.issue) ? payload.issue : null;
+  }
+
+  private async inferStatusIdForTaskStatus(statusRaw: unknown): Promise<number | null> {
+    const status = toStringSafe(statusRaw).trim().toUpperCase();
+    if (!status) return null;
+
+    const explicit = this.statusMap?.[status];
+    if (typeof explicit === "number" && Number.isFinite(explicit)) return explicit;
+
+    const inferred = await this.loadInferredStatusByTaskStatus();
+    return inferred.get(status) ?? null;
+  }
+
+  private async loadInferredStatusByTaskStatus(): Promise<Map<string, number>> {
+    if (this.inferredStatusByTaskStatus) return this.inferredStatusByTaskStatus;
+    const map = new Map<string, number>();
+    this.inferredStatusByTaskStatus = map;
+
+    try {
+      const payload = await this.requestJson("GET", "issue_statuses.json");
+      const statuses = Array.isArray(payload.issue_statuses) ? payload.issue_statuses : [];
+      const parsed: {
+        id: number;
+        name: string;
+        isClosed: boolean;
+        isDefault: boolean;
+      }[] = [];
+
+      for (const item of statuses) {
+        if (!isRecord(item)) continue;
+        const id = typeof item.id === "number" ? item.id : null;
+        if (!id || !Number.isFinite(id)) continue;
+        parsed.push({
+          id,
+          name: toStringSafe(item.name).trim().toLowerCase(),
+          isClosed: item.is_closed === true,
+          isDefault: item.is_default === true,
+        });
+      }
+
+      const done = this.selectInferredStatus(parsed, "DONE");
+      const doing = this.selectInferredStatus(parsed, "DOING");
+      const todo = this.selectInferredStatus(parsed, "TODO");
+      if (done !== null) map.set("DONE", done);
+      if (doing !== null) map.set("DOING", doing);
+      if (todo !== null) map.set("TODO", todo);
+    } catch {
+      // Best effort: keep previous behavior when status discovery is unavailable.
+    }
+
+    return map;
+  }
+
+  private selectInferredStatus(
+    statuses: { id: number; name: string; isClosed: boolean; isDefault: boolean }[],
+    target: "TODO" | "DOING" | "DONE",
+  ): number | null {
+    if (statuses.length === 0) return null;
+    if (target === "DOING") {
+      const byId = statuses.find((item) => item.id === 2);
+      if (byId) return byId.id;
+      const byName = statuses.find(
+        (item) => item.name.includes("progress") || item.name.includes("doing"),
+      );
+      if (byName) return byName.id;
+      return null;
+    }
+    if (target === "DONE") {
+      const closed = statuses.find((item) => item.isClosed);
+      if (closed) return closed.id;
+      const byId = statuses.find((item) => item.id === 5 || item.id === 3 || item.id === 6);
+      if (byId) return byId.id;
+      const byName = statuses.find(
+        (item) =>
+          item.name.includes("done") ||
+          item.name.includes("closed") ||
+          item.name.includes("resolved") ||
+          item.name.includes("complete"),
+      );
+      if (byName) return byName.id;
+      return null;
+    }
+
+    const byDefault = statuses.find((item) => item.isDefault);
+    if (byDefault) return byDefault.id;
+    const byId = statuses.find((item) => item.id === 1);
+    if (byId) return byId.id;
+    return statuses[0]?.id ?? null;
   }
 
   private async findIssueByTaskId(taskId: string): Promise<Record<string, unknown> | null> {
