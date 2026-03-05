@@ -980,6 +980,7 @@ describe("runCli", () => {
     BUNDLED_RECIPES_CATALOG.recipes.push({
       id: "viewer",
       summary: "Viewer recipe",
+      source_path: "recipes/workflow-playbooks",
       versions: [{ version: "1.0.0" }],
     });
 
@@ -987,6 +988,29 @@ describe("runCli", () => {
     try {
       const code = await runCli(["init", "--yes", "--recipes", "viewer", "--root", root]);
       expect(code).toBe(0);
+    } finally {
+      BUNDLED_RECIPES_CATALOG.recipes.length = 0;
+      BUNDLED_RECIPES_CATALOG.recipes.push(...original);
+      io.restore();
+    }
+  });
+
+  it("init fails when selected bundled recipe has no source_path", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const original = [...BUNDLED_RECIPES_CATALOG.recipes];
+    BUNDLED_RECIPES_CATALOG.recipes.length = 0;
+    BUNDLED_RECIPES_CATALOG.recipes.push({
+      id: "viewer",
+      summary: "Viewer recipe",
+      versions: [{ version: "1.0.0" }],
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--recipes", "viewer", "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("missing source_path");
     } finally {
       BUNDLED_RECIPES_CATALOG.recipes.length = 0;
       BUNDLED_RECIPES_CATALOG.recipes.push(...original);

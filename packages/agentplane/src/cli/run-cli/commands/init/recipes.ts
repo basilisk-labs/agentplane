@@ -1,6 +1,7 @@
 import { cmdRecipeInstall } from "../../../../commands/recipes.js";
-import { infoMessage, warnMessage } from "../../../output.js";
+import { infoMessage } from "../../../output.js";
 import { getBundledRecipeSourcePath, listBundledRecipes } from "../../../recipes-bundled.js";
+import { CliError } from "../../../../shared/errors.js";
 
 export async function maybeInstallBundledRecipes(opts: {
   recipes: string[];
@@ -17,10 +18,11 @@ export async function maybeInstallBundledRecipes(opts: {
   for (const recipeId of opts.recipes) {
     const sourcePath = getBundledRecipeSourcePath(recipeId);
     if (!sourcePath) {
-      process.stdout.write(
-        `${warnMessage(`bundled recipe ${recipeId} has no local source path; skipping`)}\n`,
-      );
-      continue;
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message: `Bundled recipe ${recipeId} is missing source_path in bundled catalog`,
+      });
     }
     await cmdRecipeInstall({
       cwd: opts.cwd,
