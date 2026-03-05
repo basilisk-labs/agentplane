@@ -27,5 +27,6 @@ describe("command-guide", () => {
     const text = renderQuickstartTyped();
     expect(text).toContain("## Agent cheat sheet");
     expect(text).toContain("Operation | Command");
+    expect(text).toContain("## Harness engeneering loop");
   });
 });

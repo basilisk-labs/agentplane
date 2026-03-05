@@ -1,0 +1,52 @@
+---
+title: "Harness Engeneering"
+description: "Execution-system design approach for reliable, high-throughput agent workflows."
+---
+
+## Definition
+
+Harness engeneering is the discipline of designing the execution system around agents:
+
+- contracts
+- gates
+- retries
+- observability
+- recovery paths
+
+The goal is not to make agents sound smarter. The goal is to make outcomes predictable, inspectable, and recoverable.
+
+## Why this matters
+
+Agent output throughput is high. Without an execution harness, repository entropy grows faster than teams can review or recover.
+
+Harness engeneering counters this by shifting quality control from ad-hoc prompting to system-level controls.
+
+## Core pattern in Agent Plane
+
+1. **Constrain**
+   - Define policy and scope in `AGENTS.md` + `WORKFLOW.md`.
+2. **Execute**
+   - Run explicit CLI transitions (`start`, `verify`, `finish`) and bounded command surfaces.
+3. **Observe**
+   - Persist structured artifacts (`README` sections, verify logs, scenario reports).
+4. **Recover**
+   - Use deterministic fallback (`workflow restore`, last-known-good snapshots).
+5. **Integrate**
+   - Merge small validated increments; avoid large delayed merges.
+
+## Design rules
+
+- Prefer legibility over terse “smart” behavior.
+- Keep failures typed and actionable (`code`, `path`, `next action`).
+- Treat retries and timeouts as part of the contract, not implementation detail.
+- Keep verification close to each increment.
+- Keep optional automation in recipes/scenarios, not in core state transitions.
+
+## Operator checklist
+
+- Can you explain the current state from artifacts only?
+- Can you locate the exact failing gate in one command?
+- Can you recover to known-good state without manual surgery?
+- Can you rerun the same flow and get equivalent outputs?
+
+If any answer is “no”, the harness is underspecified.
