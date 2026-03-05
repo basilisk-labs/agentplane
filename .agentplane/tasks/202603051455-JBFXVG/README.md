@@ -1,7 +1,8 @@
 ---
 id: "202603051455-JBFXVG"
 title: "Refactor AGENTS gateway and modular policy docs"
-status: "DOING"
+result_summary: "AGENTS gateway modularization completed with policy routing enforcement"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-05T15:01:41.310Z"
   updated_by: "CODER"
   note: "Verified: reran policy checks after final task-doc normalization; all targeted checks remain green."
-commit: null
+commit:
+  hash: "3fd12b28ac13a1afce9b73ff1405ed4d0758a79a"
+  message: "✨ JBFXVG policy: modularize AGENTS gateway routing"
 comments:
   -
     author: "CODER"
     body: "Start: execute AGENTS gateway refactor into modular policy files with explicit load rules, core DoD, and routing checks."
+  -
+    author: "CODER"
+    body: "Verified: AGENTS.md is now a compact gateway; modular policy docs and routing enforcement checks were added and validated."
 events:
   -
     type: "status"
@@ -43,8 +49,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: reran policy checks after final task-doc normalization; all targeted checks remain green."
+  -
+    type: "status"
+    at: "2026-03-05T15:04:49.187Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: AGENTS.md is now a compact gateway; modular policy docs and routing enforcement checks were added and validated."
 doc_version: 2
-doc_updated_at: "2026-03-05T15:01:41.312Z"
+doc_updated_at: "2026-03-05T15:04:49.187Z"
 doc_updated_by: "CODER"
 description: "Convert AGENTS.md into a compact policy gateway, move situational/repo workflow into modular .agentplane/policy docs, add reference examples, and enforce routing checks."
 id_source: "generated"
