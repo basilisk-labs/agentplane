@@ -160,6 +160,9 @@ agentplane doctor
 # During init (recommended for bundled playbooks):
 agentplane init --yes --recipes workflow-playbooks
 
+# After init (bundled by name, no remote index required):
+agentplane recipes install --name workflow-playbooks
+
 # Additional remote/index recipe:
 agentplane recipes install --name viewer
 ```

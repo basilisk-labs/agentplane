@@ -11,6 +11,8 @@ export type BundledRecipesCatalog = {
   }[];
 };
 
+export type BundledRecipeEntry = BundledRecipesCatalog["recipes"][number];
+
 export const BUNDLED_RECIPES_CATALOG: BundledRecipesCatalog = {
   schema_version: 1,
   recipes: [
@@ -26,8 +28,12 @@ export const BUNDLED_RECIPES_CATALOG: BundledRecipesCatalog = {
 };
 
 export function resolveBundledRecipeSourcePath(recipeId: string): string | null {
-  const entry = BUNDLED_RECIPES_CATALOG.recipes.find((recipe) => recipe.id === recipeId);
+  const entry = getBundledRecipeEntry(recipeId);
   const sourcePath = entry?.source_path?.trim();
   if (!sourcePath) return null;
   return fileURLToPath(new URL(`../../assets/${sourcePath.replace(/^\/+/, "")}`, import.meta.url));
+}
+
+export function getBundledRecipeEntry(recipeId: string): BundledRecipeEntry | null {
+  return BUNDLED_RECIPES_CATALOG.recipes.find((recipe) => recipe.id === recipeId) ?? null;
 }

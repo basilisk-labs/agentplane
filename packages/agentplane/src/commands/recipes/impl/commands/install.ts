@@ -10,6 +10,10 @@ import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../../../cli/fs-utils.js";
 import { downloadToFile } from "../../../../cli/http.js";
+import {
+  getBundledRecipeEntry,
+  resolveBundledRecipeSourcePath,
+} from "../../../../recipes/bundled-recipes.js";
 import { CliError } from "../../../../shared/errors.js";
 import { ensureNetworkApproved } from "../../../shared/network-approval.js";
 import { resolvePathFallback } from "../../../shared/path.js";
@@ -125,7 +129,16 @@ export async function cmdRecipeInstall(opts: {
       const resolveSourcePath = async (
         source: RecipeInstallSource,
       ): Promise<{ kind: "archive" | "directory"; path: string }> => {
-        if (source.type === "name") return await resolveFromIndex(source.value);
+        if (source.type === "name") {
+          const bundledPath = resolveBundledRecipeSourcePath(source.value);
+          if (bundledPath && (await fileExists(path.join(bundledPath, "manifest.json")))) {
+            const bundledEntry = getBundledRecipeEntry(source.value);
+            const bundledVersion = bundledEntry?.versions.at(-1)?.version ?? "unknown";
+            sourceLabel = `bundled:${source.value}@${bundledVersion}`;
+            return { kind: "directory", path: bundledPath };
+          }
+          return await resolveFromIndex(source.value);
+        }
         if (source.type === "url") {
           await ensureApproved("recipes install downloads a recipe archive");
           const url = new URL(source.value);

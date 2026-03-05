@@ -459,6 +459,32 @@ describe("commands/recipes", () => {
     expect(debugScenario.evidence?.files).toContain("evidence.json");
   });
 
+  it("installs bundled recipe by name without remote index fetch", async () => {
+    if (!tempHome) throw new Error("temp home not set");
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+
+    const io = captureStdIO();
+    try {
+      await expect(
+        runRecipesTest({
+          cwd: projectDir,
+          args: ["--name", "workflow-playbooks"],
+          command: "install",
+        }),
+      ).resolves.toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const installed = JSON.parse(await readFile(path.join(tempHome, "recipes.json"), "utf8")) as {
+      recipes: { id: string; source: string }[];
+    };
+    const entry = installed.recipes.find((recipe) => recipe.id === "workflow-playbooks");
+    expect(entry).toBeDefined();
+    expect(entry?.source.startsWith("bundled:workflow-playbooks@")).toBe(true);
+  });
+
   it("prints recipe info details", async () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();
