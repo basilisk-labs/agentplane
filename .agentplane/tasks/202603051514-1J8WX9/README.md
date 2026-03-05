@@ -1,7 +1,8 @@
 ---
 id: "202603051514-1J8WX9"
 title: "Install policy templates with init"
-status: "DOING"
+result_summary: "Init/upgrade now support bundled policy templates"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-05T15:19:09.002Z"
   updated_by: "CODER"
   note: "Verified: init now installs policy templates from assets; sync checks pass; upgrade accepts policy managed paths; targeted init/upgrade/template tests pass."
-commit: null
+commit:
+  hash: "296dce95e2873cb72265b1f742c7d16de25c87c2"
+  message: "✨ 1J8WX9 init: install policy templates from assets"
 comments:
   -
     author: "CODER"
     body: "Start: implement policy template installation via assets+init with sync checks and upgrade allowlist support."
+  -
+    author: "CODER"
+    body: "Verified: agentplane init now installs .agentplane/policy templates from bundled assets; sync checks, init tests, and upgrade policy-path regression pass."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: init now installs policy templates from assets; sync checks pass; upgrade accepts policy managed paths; targeted init/upgrade/template tests pass."
+  -
+    type: "status"
+    at: "2026-03-05T15:22:20.784Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: agentplane init now installs .agentplane/policy templates from bundled assets; sync checks, init tests, and upgrade policy-path regression pass."
 doc_version: 2
-doc_updated_at: "2026-03-05T15:19:09.004Z"
+doc_updated_at: "2026-03-05T15:22:20.784Z"
 doc_updated_by: "CODER"
 description: "Ship .agentplane/policy templates in assets and ensure agentplane init installs them, with sync/tests and upgrade path allowlist updates."
 id_source: "generated"
