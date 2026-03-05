@@ -26,26 +26,10 @@ function commitMsgPath() {
   }).trim();
 }
 
-function touchesRepoSource(files) {
-  return files.some(
-    (file) =>
-      file.startsWith("packages/agentplane/src/") ||
-      file.startsWith("packages/core/src/") ||
-      file.startsWith("packages/agentplane/bin/agentplane.js"),
-  );
-}
-
 const files = stagedFiles();
 const msg = commitMsgPath();
-const needsFreshDist = touchesRepoSource(files);
-const extraEnv = needsFreshDist ? {} : { AGENTPLANE_DEV_ALLOW_STALE_DIST: "1" };
-
-if (!needsFreshDist) {
-  process.stdout.write("commit-msg: stale dist check skipped (no staged src/bin changes).\n");
+if (files.length === 0) {
+  process.stdout.write("commit-msg: no staged files detected.\n");
 }
 
-run(
-  "node",
-  ["packages/agentplane/bin/agentplane.js", "hooks", "run", "commit-msg", "--", msg],
-  extraEnv,
-);
+run("node", ["packages/agentplane/bin/agentplane.js", "hooks", "run", "commit-msg", "--", msg]);

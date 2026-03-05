@@ -120,6 +120,15 @@ async function isPackageBuildFresh(packageRoot) {
   return { ok: true, reason: "fresh" };
 }
 
+function isHooksRunCommitMsgInvocation(argv) {
+  const args = argv.slice(2).map((value) => String(value ?? "").trim());
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i] !== "hooks") continue;
+    return args[i + 1] === "run" && args[i + 2] === "commit-msg";
+  }
+  return false;
+}
+
 async function assertDistUpToDate() {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const agentplaneRoot = path.resolve(here, "..");
@@ -167,5 +176,5 @@ async function assertDistUpToDate() {
 }
 
 await maybeWarnGlobalBinaryInRepoCheckout();
-const ok = await assertDistUpToDate();
+const ok = isHooksRunCommitMsgInvocation(process.argv) ? true : await assertDistUpToDate();
 if (ok) await import("../dist/cli.js");
