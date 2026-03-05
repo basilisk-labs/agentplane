@@ -69,6 +69,27 @@ Runtime behavior:
 - `.agentplane/workflows/last-known-good.md` is refreshed only after successful publish,
 - `agentplane workflow restore` recovers from `last-known-good`.
 
+## Reason code contract
+
+Mutation and preflight failures should expose stable `reason_code` values. CLI guidance uses these codes to output deterministic remediation hints.
+
+Current reconcile and guidance-critical codes:
+
+- `usage_help`
+- `sync_backend_mismatch`
+- `reconcile_git_state_unreadable`
+- `reconcile_task_scan_failed`
+- `reconcile_task_scan_incomplete`
+- `git_branch_state`
+- `git_index_state`
+- `git_context`
+- `network_gate`
+- `backend_sync_config`
+- `backend_config`
+- `validation_preflight`
+
+The canonical code map lives in `packages/agentplane/src/cli/reason-codes.ts`.
+
 ## Compatibility policy
 
 Versioning policy:

@@ -32,6 +32,7 @@ import { helpSpec } from "./spec/help.js";
 import { usageError } from "./spec/errors.js";
 import { suggestOne } from "./spec/suggest.js";
 import { COMMANDS } from "./run-cli/command-catalog.js";
+import { getReasonCodeMeta } from "./reason-codes.js";
 
 type ParsedArgs = {
   help: boolean;
@@ -193,9 +194,17 @@ type ErrorGuidance = {
 
 function writeError(err: CliError, jsonErrors: boolean): void {
   const guidance = resolveErrorGuidance(err);
+  const contextReasonCode =
+    typeof err.context?.reason_code === "string" ? String(err.context.reason_code) : undefined;
+  const reasonCode = contextReasonCode ?? guidance.nextAction?.reasonCode;
+  const reasonDecode = getReasonCodeMeta(reasonCode);
   if (jsonErrors) {
     process.stdout.write(
-      `${formatJsonError(err, { hint: guidance.hint, nextAction: guidance.nextAction })}\n`,
+      `${formatJsonError(err, {
+        hint: guidance.hint,
+        nextAction: guidance.nextAction,
+        reasonDecode,
+      })}\n`,
     );
   } else {
     const header = `error [${err.code}]`;
@@ -211,6 +220,12 @@ function writeError(err: CliError, jsonErrors: boolean): void {
       process.stderr.write(
         `next_action: ${guidance.nextAction.command} (${guidance.nextAction.reason})\n`,
       );
+    }
+    if (reasonDecode) {
+      process.stderr.write(
+        `reason_code: ${reasonDecode.code} [${reasonDecode.category}] ${reasonDecode.summary}\n`,
+      );
+      process.stderr.write(`reason_action: ${reasonDecode.action}\n`);
     }
   }
 }

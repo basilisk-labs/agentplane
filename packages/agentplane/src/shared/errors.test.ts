@@ -19,6 +19,12 @@ describe("errors", () => {
           reason: "inspect required arguments",
           reasonCode: "usage_help",
         },
+        reasonDecode: {
+          code: "usage_help",
+          category: "usage",
+          summary: "command invocation is incomplete or invalid",
+          action: "open command help and fix required args/flags",
+        },
       }),
     ) as unknown;
     expect(json).toEqual({
@@ -31,6 +37,12 @@ describe("errors", () => {
           command: "agentplane help config set --compact",
           reason: "inspect required arguments",
           reasonCode: "usage_help",
+        },
+        reason_decode: {
+          code: "usage_help",
+          category: "usage",
+          summary: "command invocation is incomplete or invalid",
+          action: "open command help and fix required args/flags",
         },
       },
     });

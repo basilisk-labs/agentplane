@@ -32,6 +32,12 @@ export type JsonErrorGuidance = {
     reason: string;
     reasonCode?: string;
   };
+  reasonDecode?: {
+    code: string;
+    category: string;
+    summary: string;
+    action: string;
+  };
 };
 
 export function formatJsonError(err: CliError, guidance?: JsonErrorGuidance): string {
@@ -43,6 +49,7 @@ export function formatJsonError(err: CliError, guidance?: JsonErrorGuidance): st
         context: err.context ?? undefined,
         hint: guidance?.hint,
         next_action: guidance?.nextAction,
+        reason_decode: guidance?.reasonDecode,
       },
     },
     null,

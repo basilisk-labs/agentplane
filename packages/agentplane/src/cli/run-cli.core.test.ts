@@ -514,6 +514,8 @@ describe("runCli", () => {
       expect(io.stdout).toContain('"code"');
       expect(io.stdout).toContain('"next_action"');
       expect(io.stdout).toContain("agentplane help config set --compact");
+      expect(io.stdout).toContain('"reason_decode"');
+      expect(io.stdout).toContain('"code": "usage_help"');
     } finally {
       io.restore();
     }
@@ -527,6 +529,9 @@ describe("runCli", () => {
       expect(io.stderr).toContain("Unknown command: nope");
       expect(io.stderr).toContain("Usage:");
       expect(io.stderr).toContain("next_action: agentplane help");
+      expect(io.stderr).toContain(
+        "reason_code: usage_help [usage] command invocation is incomplete or invalid",
+      );
     } finally {
       io.restore();
     }
