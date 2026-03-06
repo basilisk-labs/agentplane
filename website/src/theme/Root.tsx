@@ -1,7 +1,9 @@
+import { useLocation } from "@docusaurus/router";
 import type { Props } from "@theme/Root";
 import Head from "@docusaurus/Head";
 import Root from "@theme-original/Root";
 import type { ReactElement } from "react";
+import { useEffect, useState } from "react";
 
 const gtmContainerId = "GTM-P4FNLHQF";
 
@@ -29,6 +31,45 @@ const websiteJsonLd = {
 };
 
 const ThemeRoot = Root as (props: Props) => ReactElement;
+
+function BlogReadingProgress(): ReactElement | null {
+  const { pathname } = useLocation();
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    if (!pathname.startsWith("/blog/") || pathname === "/blog") {
+      setProgress(0);
+      return;
+    }
+
+    const updateProgress = () => {
+      const scrollTop = window.scrollY;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const nextProgress =
+        scrollHeight <= 0 ? 0 : Math.max(0, Math.min(1, scrollTop / scrollHeight));
+      setProgress(nextProgress);
+    };
+
+    updateProgress();
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+
+    return () => {
+      window.removeEventListener("scroll", updateProgress);
+      window.removeEventListener("resize", updateProgress);
+    };
+  }, [pathname]);
+
+  if (!pathname.startsWith("/blog/") || pathname === "/blog") {
+    return null;
+  }
+
+  return (
+    <div className="blog-reading-progress" aria-hidden="true">
+      <span className="blog-reading-progress__bar" style={{ transform: `scaleX(${progress})` }} />
+    </div>
+  );
+}
 
 export default function RootWrapper(props: Props): ReactElement {
   return (
@@ -58,6 +99,7 @@ export default function RootWrapper(props: Props): ReactElement {
           />
         </noscript>
       ) : null}
+      <BlogReadingProgress />
       <ThemeRoot {...props} />
     </>
   );
