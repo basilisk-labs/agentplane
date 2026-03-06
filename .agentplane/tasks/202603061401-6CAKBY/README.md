@@ -1,7 +1,8 @@
 ---
 id: "202603061401-6CAKBY"
 title: "Allow batched task-doc planning updates and publish site"
-status: "DOING"
+result_summary: "Batched task-doc updates are now explicitly documented without weakening lifecycle sequencing."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-06T14:07:58.732Z"
   updated_by: "CODER"
   note: "Command: git diff -- .agentplane/policy/workflow.direct.md .agentplane/policy/workflow.branch_pr.md packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/commands/task/doc.command.ts\nResult: pass\nEvidence: policy and CLI guidance now explicitly allow batched task-doc updates before approval while keeping approve -> start-ready sequential\nScope: workflow policy and task-doc guidance surfaces\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy gateway and canonical module routing\n\nCommand: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor\nResult: pass\nEvidence: doctor OK with historical warning-only task archive findings\nScope: repository workflow health\n\nCommand: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts\nResult: pass\nEvidence: 67 tests passed across command-guide/help/task CLI surfaces\nScope: CLI guidance/help/task-doc behavior"
-commit: null
+commit:
+  hash: "3758c4b0bc071ce082c5e10bdc298b65dc023de4"
+  message: "📝 6CAKBY policy: allow batched task-doc updates before approval"
 comments:
   -
     author: "CODER"
     body: "Start: update policy and CLI guidance so batched task-doc updates are explicitly allowed before approval while keeping approve-to-start sequencing strict, then push main and verify the website deployment."
+  -
+    author: "CODER"
+    body: "Verified: workflow policy and CLI guidance now state that task documentation sections may be batched in one turn before approval, while the approve-to-start transition remains strictly sequential; routing, doctor, and targeted CLI help/task tests passed, and the next step is to publish the accumulated website changes via main."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: git diff -- .agentplane/policy/workflow.direct.md .agentplane/policy/workflow.branch_pr.md packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/commands/task/doc.command.ts\nResult: pass\nEvidence: policy and CLI guidance now explicitly allow batched task-doc updates before approval while keeping approve -> start-ready sequential\nScope: workflow policy and task-doc guidance surfaces\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy gateway and canonical module routing\n\nCommand: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor\nResult: pass\nEvidence: doctor OK with historical warning-only task archive findings\nScope: repository workflow health\n\nCommand: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts\nResult: pass\nEvidence: 67 tests passed across command-guide/help/task CLI surfaces\nScope: CLI guidance/help/task-doc behavior"
+  -
+    type: "status"
+    at: "2026-03-06T14:08:28.820Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: workflow policy and CLI guidance now state that task documentation sections may be batched in one turn before approval, while the approve-to-start transition remains strictly sequential; routing, doctor, and targeted CLI help/task tests passed, and the next step is to publish the accumulated website changes via main."
 doc_version: 2
-doc_updated_at: "2026-03-06T14:07:58.734Z"
+doc_updated_at: "2026-03-06T14:08:28.820Z"
 doc_updated_by: "CODER"
 description: "Adjust workflow/task tooling or docs so plan and task documentation sections can be applied together in one agent turn without violating lifecycle sequencing, then push the website changes and verify the site deploy."
 id_source: "generated"
