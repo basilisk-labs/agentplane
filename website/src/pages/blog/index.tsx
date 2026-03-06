@@ -28,20 +28,29 @@ const signalCards = [
 
 const archiveLinks = [
   {
-    title: "Read the featured post",
+    title: "Release 0.2.25",
     href: featuredPost.href,
-    note: "Open the first public release story.",
+    note: "Commit safety, publish gates, and documentation parity.",
+    meta: "Public post • Previous release",
   },
   {
-    title: "Open the roadmap post",
+    title: "Roadmap 0.1 -> 0.5",
     href: "/blog/roadmap-0-5-agentplane-runner",
-    note: "Read the public roadmap from baseline workflow to Agentplane Runner.",
+    note: "The operational path from deterministic CLI workflow to Agentplane Runner.",
+    meta: "Public post • Strategy",
   },
   {
-    title: "Browse release notes",
+    title: "Formal release notes",
     href: "/docs/releases",
-    note: "Go deeper into version-by-version changes and release records.",
+    note: "The source record for shipped changes, version by version.",
+    meta: "Documentation • Archive",
   },
+];
+
+const motionNotes = [
+  "Public posts are treated as editorial stories, not dump bins for changelog bullets.",
+  "Visual hierarchy now distinguishes featured narrative, supporting signals, and archive navigation.",
+  "Motion is restrained: ambient drift, staggered reveal, and precise hover response instead of decorative noise.",
 ];
 
 export default function BlogLanding() {
@@ -52,6 +61,12 @@ export default function BlogLanding() {
     >
       <main className={styles.page}>
         <section className={`${styles.hero} grid-paper`}>
+          <div className={styles.heroBackdrop} aria-hidden="true">
+            <span className={styles.orbPrimary} />
+            <span className={styles.orbSecondary} />
+            <span className={styles.orbTertiary} />
+          </div>
+
           <div className={styles.heroHeader}>
             <p className={styles.kicker}>AgentPlane Journal</p>
             <p className={styles.status}>Editorial feed is live</p>
@@ -59,6 +74,12 @@ export default function BlogLanding() {
 
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
+              <div className={styles.eyebrowRow}>
+                <span className={styles.heroChip}>Release analysis</span>
+                <span className={styles.heroChip}>Workflow systems</span>
+                <span className={styles.heroChip}>Policy surface</span>
+              </div>
+
               <h1>Release notes are not enough when the product promise is workflow control.</h1>
               <p className={styles.lead}>
                 The blog now tracks why a release matters, what operational risk it removes, and
@@ -73,6 +94,12 @@ export default function BlogLanding() {
                   Open release notes
                 </Link>
               </div>
+
+              <div className={styles.signalStrip}>
+                {motionNotes.map((note) => (
+                  <p key={note}>{note}</p>
+                ))}
+              </div>
             </div>
 
             <article className={styles.featuredCard}>
@@ -80,6 +107,7 @@ export default function BlogLanding() {
               <h2>{featuredPost.title}</h2>
               <p className={styles.featuredDescription}>{featuredPost.description}</p>
               <p className={styles.featuredMeta}>{featuredPost.meta}</p>
+              <div className={styles.featuredRule} aria-hidden="true" />
               <Link className={styles.featuredLink} to={featuredPost.href}>
                 Read article
               </Link>
@@ -105,15 +133,19 @@ export default function BlogLanding() {
 
         <section className={styles.archiveSection} aria-labelledby="blog-entry-title">
           <div className={styles.sectionHeading}>
-            <p className={styles.sectionLabel}>Start here</p>
-            <h2 id="blog-entry-title">Direct paths into the blog and release archive</h2>
+            <p className={styles.sectionLabel}>Story rail</p>
+            <h2 id="blog-entry-title">Public entries and archive paths</h2>
           </div>
 
           <div className={styles.archiveList}>
             {archiveLinks.map((item) => (
               <Link key={item.title} className={styles.archiveItem} to={item.href}>
-                <span>{item.title}</span>
+                <span className={styles.archiveMeta}>{item.meta}</span>
+                <strong>{item.title}</strong>
                 <small>{item.note}</small>
+                <span className={styles.archiveArrow} aria-hidden="true">
+                  →
+                </span>
               </Link>
             ))}
           </div>
