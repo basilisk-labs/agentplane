@@ -44,12 +44,6 @@ export default function Home(): ReactNode {
     >
       <main className={styles.page}>
         <section className={`${styles.hero} grid-paper`}>
-          <div className={styles.heroBackdrop} aria-hidden="true">
-            <span className={styles.orbPrimary} />
-            <span className={styles.orbSecondary} />
-            <span className={styles.orbTertiary} />
-          </div>
-
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
               <p className={styles.pixelTag}>WF-01</p>

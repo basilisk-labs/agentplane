@@ -6,87 +6,36 @@
 
 .hero {
   border: 1px solid rgb(var(--border));
-  isolation: isolate;
-  overflow: hidden;
-  padding: 1.2rem;
+  padding: 1.25rem;
   position: relative;
 }
 
-.hero::after {
-  background:
-    radial-gradient(circle at top left, rgb(var(--accent) / 0.14), transparent 38%),
-    linear-gradient(135deg, rgb(255 255 255 / 0.96), rgb(var(--accent) / 0.03));
+.hero::before {
+  background: rgb(var(--accent) / 0.12);
   content: "";
-  inset: 0;
-  pointer-events: none;
+  height: 1px;
+  left: 1.25rem;
   position: absolute;
-}
-
-.heroBackdrop,
-.heroGrid {
-  position: relative;
-}
-
-.heroBackdrop {
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: 0;
-}
-
-.orbPrimary,
-.orbSecondary,
-.orbTertiary {
-  border-radius: 999px;
-  filter: blur(18px);
-  position: absolute;
-}
-
-.orbPrimary {
-  animation: driftY 16s ease-in-out infinite;
-  background: rgb(var(--accent) / 0.14);
-  height: 260px;
-  right: -30px;
-  top: 24px;
-  width: 260px;
-}
-
-.orbSecondary {
-  animation: driftX 18s ease-in-out infinite;
-  background: rgb(11 17 32 / 0.07);
-  height: 160px;
-  left: 48%;
-  top: 52%;
-  width: 160px;
-}
-
-.orbTertiary {
-  animation: driftY 15s ease-in-out infinite reverse;
-  background: rgb(255 255 255 / 0.68);
-  height: 150px;
-  left: -40px;
-  top: 14px;
-  width: 150px;
+  right: 1.25rem;
+  top: 1.25rem;
 }
 
 .heroGrid {
   align-items: stretch;
   display: grid;
   gap: 1.2rem;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
-  z-index: 1;
+  grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.88fr);
+  position: relative;
 }
 
 .heroCopy,
 .artifactPanel {
-  position: relative;
-  z-index: 1;
+  display: grid;
+  gap: 0.95rem;
 }
 
 .heroCopy {
-  display: grid;
-  gap: 0.9rem;
-  padding: 0.25rem 0;
+  padding-top: 1rem;
 }
 
 .pixelTag,
@@ -120,8 +69,6 @@
 }
 
 .heroChip {
-  backdrop-filter: blur(8px);
-  background: rgb(var(--bg) / 0.76);
   border: 1px solid rgb(var(--border));
   color: rgb(var(--faint));
   font-family: var(--ifm-font-family-monospace);
@@ -134,7 +81,7 @@
 .subtitle {
   color: rgb(var(--fg));
   font-size: clamp(1.08rem, 1.7vw, 1.28rem);
-  line-height: 1.7;
+  line-height: 1.65;
   margin: 0;
   max-width: 60ch;
 }
@@ -183,7 +130,7 @@
 }
 
 .secondaryCta {
-  background: rgb(var(--bg) / 0.75);
+  background: rgb(var(--bg));
   border: 1px solid rgb(var(--border));
   color: rgb(var(--fg));
 }
@@ -200,34 +147,43 @@
   display: grid;
   gap: 0.45rem;
   margin-top: 0.35rem;
+  max-width: 56ch;
   padding-left: 0.85rem;
 }
 
 .signalStrip p {
   color: rgb(var(--muted));
   font-size: 0.85rem;
-  line-height: 1.45;
+  line-height: 1.5;
   margin: 0;
 }
 
 .artifactPanel {
-  backdrop-filter: blur(12px);
-  background: rgb(var(--bg));
+  align-content: start;
   border: 1px solid rgb(var(--border));
-  box-shadow:
-    0 18px 38px rgb(11 17 32 / 0.08),
-    0 0 0 1px rgb(255 255 255 / 0.7) inset;
-  display: grid;
-  gap: 0.85rem;
-  min-height: 100%;
-  padding: 1.1rem;
+  padding: 1.15rem;
+  position: relative;
+}
+
+.artifactPanel::before {
+  background: rgb(var(--accent));
+  content: "";
+  height: 1px;
+  left: 1.15rem;
+  position: absolute;
+  right: 1.15rem;
+  top: 1.15rem;
+}
+
+.panelLabel {
+  padding-top: 0.45rem;
 }
 
 .artifact {
   border: 1px solid rgb(var(--border));
   color: rgb(var(--fg));
   font-family: var(--ifm-font-family-monospace);
-  font-size: clamp(1.15rem, 3vw, 2rem);
+  font-size: clamp(1.15rem, 3vw, 1.85rem);
   font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1.1;
@@ -245,16 +201,18 @@
 
 .signalSection,
 .entrySection {
-  margin-top: 1.4rem;
+  margin-top: 1.5rem;
 }
 
 .sectionHeading {
   align-items: end;
+  border-top: 1px solid rgb(var(--border));
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
   justify-content: space-between;
   margin-bottom: 0.9rem;
+  padding-top: 0.9rem;
 }
 
 .sectionHeading h2 {
@@ -274,15 +232,27 @@
 
 .signalCard,
 .entryItem {
-  background: linear-gradient(180deg, rgb(var(--bg)), rgb(var(--accent) / 0.03));
   border: 1px solid rgb(var(--border));
   min-height: 100%;
   padding: 1rem;
+  position: relative;
   transition:
     transform 200ms ease,
     border-color 200ms ease,
-    box-shadow 200ms ease,
     color 200ms ease;
+}
+
+.signalCard::before,
+.entryItem::before {
+  background: rgb(var(--accent) / 0.18);
+  content: "";
+  height: 1px;
+  left: 1rem;
+  opacity: 0;
+  position: absolute;
+  right: 1rem;
+  top: 0.85rem;
+  transition: opacity 180ms ease;
 }
 
 .signalCard p:last-child {
@@ -295,21 +265,27 @@
 .signalCard:focus-within,
 .entryItem:hover,
 .entryItem:focus-visible {
-  border-color: rgb(var(--accent) / 0.3);
-  box-shadow: 0 18px 34px rgb(11 17 32 / 0.05);
+  border-color: rgb(var(--accent) / 0.4);
   transform: translateY(-2px);
+}
+
+.signalCard:hover::before,
+.signalCard:focus-within::before,
+.entryItem:hover::before,
+.entryItem:focus-visible::before {
+  opacity: 1;
 }
 
 .entryItem {
   color: rgb(var(--fg));
   display: grid;
   gap: 0.55rem;
-  position: relative;
 }
 
 .entryItem strong {
   font-size: 1.05rem;
   letter-spacing: -0.02em;
+  padding-top: 0.3rem;
 }
 
 .entryItem small {
@@ -348,7 +324,13 @@
   }
 
   .hero {
-    padding: 0.9rem;
+    padding: 0.95rem;
+  }
+
+  .hero::before {
+    left: 0.95rem;
+    right: 0.95rem;
+    top: 0.95rem;
   }
 
   .heroActions {
@@ -372,37 +354,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .orbPrimary,
-  .orbSecondary,
-  .orbTertiary,
   .primaryCta,
   .secondaryCta,
   .signalCard,
   .entryItem,
   .entryArrow {
-    animation: none;
     transition: none;
-  }
-}
-
-@keyframes driftY {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-
-  50% {
-    transform: translate3d(0, 16px, 0);
-  }
-}
-
-@keyframes driftX {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-
-  50% {
-    transform: translate3d(16px, -10px, 0);
   }
 }

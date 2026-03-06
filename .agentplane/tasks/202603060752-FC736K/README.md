@@ -15,9 +15,9 @@ plan_approval:
   note: "Re-approved after user-expanded scope: roadmap post public, v0.3.0 post staged as hidden draft."
 verification:
   state: "ok"
-  updated_at: "2026-03-06T08:09:38.043Z"
+  updated_at: "2026-03-06T13:20:54.055Z"
   updated_by: "CODER"
-  note: "blog now has two public posts (v0.2.25 and roadmap) plus a hidden v0.3.0 draft; repo and website checks passed."
+  note: "Command: git diff -- website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/src/css/custom.css; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Result: pass. Evidence: blog landing remains live, cleaner, and compliant with the website design contract after the visual refinement pass. Scope: blog landing and shared blog styling."
 commit: null
 comments:
   -
@@ -43,8 +43,14 @@ events:
     author: "CODER"
     state: "ok"
     note: "blog now has two public posts (v0.2.25 and roadmap) plus a hidden v0.3.0 draft; repo and website checks passed."
+  -
+    type: "verify"
+    at: "2026-03-06T13:20:54.055Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: git diff -- website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/src/css/custom.css; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Result: pass. Evidence: blog landing remains live, cleaner, and compliant with the website design contract after the visual refinement pass. Scope: blog landing and shared blog styling."
 doc_version: 2
-doc_updated_at: "2026-03-06T08:09:38.045Z"
+doc_updated_at: "2026-03-06T13:20:54.055Z"
 doc_updated_by: "CODER"
 description: "Replace blog placeholder with a modern landing page and surface the first release post from the previous release cycle."
 id_source: "generated"
@@ -126,6 +132,14 @@ By: CODER
 Note: blog now has two public posts (v0.2.25 and roadmap) plus a hidden v0.3.0 draft; repo and website checks passed.
 
 VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T08:09:37.562Z, excerpt_hash=sha256:2efb66c1b9c8307de67b5b4db3a8c5a993803b2b5e90338efe45457a7124187e
+
+#### 2026-03-06T13:20:54.055Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: git diff -- website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/src/css/custom.css; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Result: pass. Evidence: blog landing remains live, cleaner, and compliant with the website design contract after the visual refinement pass. Scope: blog landing and shared blog styling.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T08:09:38.045Z, excerpt_hash=sha256:2efb66c1b9c8307de67b5b4db3a8c5a993803b2b5e90338efe45457a7124187e
 
 <!-- END VERIFICATION RESULTS -->
 

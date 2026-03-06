@@ -10,14 +10,14 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-03-06T12:37:26.666Z"
+  updated_at: "2026-03-06T13:02:19.913Z"
   updated_by: "ORCHESTRATOR"
-  note: "Approved release-readiness scope and commit packaging for v0.3.0 preparation."
+  note: "Re-approved after npm confirmed 0.3.0 is burned; release retargeted to 0.3.1 with website/docs completion and publish recovery."
 verification:
   state: "ok"
-  updated_at: "2026-03-06T12:09:05.699Z"
+  updated_at: "2026-03-06T13:20:54.053Z"
   updated_by: "CODER"
-  note: "Removed repo-root path leakage from generated workflow artifacts; generated-reference now renders private packages as internal instead of 0.0.0. Verified: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx vitest run packages/agentplane/src/workflow-runtime/build.test.ts packages/agentplane/src/commands/doctor.command.test.ts --hookTimeout 60000 --testTimeout 60000; node packages/agentplane/dist/cli.js workflow build --validate; node packages/agentplane/dist/cli.js doctor; node .agentplane/policy/check-routing.mjs; node scripts/check-cli-reference-fresh.mjs; bun run lint:core -- packages/agentplane/src/workflow-runtime/build.ts packages/agentplane/src/commands/workflow-build.command.ts packages/agentplane/src/cli/run-cli/commands/init/write-workflow.ts packages/agentplane/src/workflow-runtime/build.test.ts packages/agentplane/src/commands/doctor.command.test.ts scripts/generate-website-docs.mjs"
+  note: "Command: node .agentplane/policy/check-routing.mjs; node scripts/check-cli-reference-fresh.mjs; git diff -- docs/user/setup.mdx docs/user/commands.mdx docs/help/troubleshooting.mdx docs/reference/generated-reference.mdx packages/agentplane/bin/agentplane.js packages/agentplane/bin/dist-guard.js packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/workflow-runtime/build.ts. Result: pass. Evidence: docs/code sync and release-readiness classification were completed; the blocked 0.3.x npm path is now explicitly understood and follow-up work was separated from site work. Scope: docs sync, stale-dist/doctor/workflow readiness analysis."
 commit: null
 comments:
   -
@@ -49,10 +49,16 @@ events:
     author: "CODER"
     state: "ok"
     note: "Removed repo-root path leakage from generated workflow artifacts; generated-reference now renders private packages as internal instead of 0.0.0. Verified: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx vitest run packages/agentplane/src/workflow-runtime/build.test.ts packages/agentplane/src/commands/doctor.command.test.ts --hookTimeout 60000 --testTimeout 60000; node packages/agentplane/dist/cli.js workflow build --validate; node packages/agentplane/dist/cli.js doctor; node .agentplane/policy/check-routing.mjs; node scripts/check-cli-reference-fresh.mjs; bun run lint:core -- packages/agentplane/src/workflow-runtime/build.ts packages/agentplane/src/commands/workflow-build.command.ts packages/agentplane/src/cli/run-cli/commands/init/write-workflow.ts packages/agentplane/src/workflow-runtime/build.test.ts packages/agentplane/src/commands/doctor.command.test.ts scripts/generate-website-docs.mjs"
+  -
+    type: "verify"
+    at: "2026-03-06T13:20:54.053Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: node .agentplane/policy/check-routing.mjs; node scripts/check-cli-reference-fresh.mjs; git diff -- docs/user/setup.mdx docs/user/commands.mdx docs/help/troubleshooting.mdx docs/reference/generated-reference.mdx packages/agentplane/bin/agentplane.js packages/agentplane/bin/dist-guard.js packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/workflow-runtime/build.ts. Result: pass. Evidence: docs/code sync and release-readiness classification were completed; the blocked 0.3.x npm path is now explicitly understood and follow-up work was separated from site work. Scope: docs sync, stale-dist/doctor/workflow readiness analysis."
 doc_version: 2
-doc_updated_at: "2026-03-06T12:09:05.700Z"
+doc_updated_at: "2026-03-06T13:20:54.054Z"
 doc_updated_by: "CODER"
-description: "Align setup/init docs with actual CLI behavior, assess stale-dist preflight behavior, and classify 0.3.0 vs 0.3.1 work."
+description: "Align setup/init docs with actual CLI behavior, assess stale-dist preflight behavior, and classify the blocked 0.3.x release path after the burned npm 0.3.0 version."
 id_source: "generated"
 ---
 ## Summary
@@ -132,6 +138,14 @@ By: CODER
 Note: Removed repo-root path leakage from generated workflow artifacts; generated-reference now renders private packages as internal instead of 0.0.0. Verified: bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; bunx vitest run packages/agentplane/src/workflow-runtime/build.test.ts packages/agentplane/src/commands/doctor.command.test.ts --hookTimeout 60000 --testTimeout 60000; node packages/agentplane/dist/cli.js workflow build --validate; node packages/agentplane/dist/cli.js doctor; node .agentplane/policy/check-routing.mjs; node scripts/check-cli-reference-fresh.mjs; bun run lint:core -- packages/agentplane/src/workflow-runtime/build.ts packages/agentplane/src/commands/workflow-build.command.ts packages/agentplane/src/cli/run-cli/commands/init/write-workflow.ts packages/agentplane/src/workflow-runtime/build.test.ts packages/agentplane/src/commands/doctor.command.test.ts scripts/generate-website-docs.mjs
 
 VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T12:02:58.037Z, excerpt_hash=sha256:2efb66c1b9c8307de67b5b4db3a8c5a993803b2b5e90338efe45457a7124187e
+
+#### 2026-03-06T13:20:54.053Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: node .agentplane/policy/check-routing.mjs; node scripts/check-cli-reference-fresh.mjs; git diff -- docs/user/setup.mdx docs/user/commands.mdx docs/help/troubleshooting.mdx docs/reference/generated-reference.mdx packages/agentplane/bin/agentplane.js packages/agentplane/bin/dist-guard.js packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/workflow-runtime/build.ts. Result: pass. Evidence: docs/code sync and release-readiness classification were completed; the blocked 0.3.x npm path is now explicitly understood and follow-up work was separated from site work. Scope: docs sync, stale-dist/doctor/workflow readiness analysis.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T12:09:05.700Z, excerpt_hash=sha256:58e5e1c97c95090be9760f2405b89bcde8754bf09033310a5f0ef7310de6f702
 
 <!-- END VERIFICATION RESULTS -->
 

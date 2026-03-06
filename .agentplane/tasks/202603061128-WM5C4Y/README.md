@@ -14,10 +14,10 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved homepage CTA alignment scope."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-06T13:20:54.055Z"
+  updated_by: "CODER"
+  note: "Command: git diff -- website/src/pages/index.tsx website/src/pages/index.module.css; bun run --cwd website typecheck; bun run --cwd website build. Result: pass. Evidence: homepage keeps docs as the primary CTA and install as the secondary action while the refreshed layout still builds cleanly. Scope: homepage CTA hierarchy and supporting homepage presentation."
 commit: null
 comments:
   -
@@ -31,9 +31,15 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: adjust homepage CTA hierarchy to docs-first primary and install secondary."
+  -
+    type: "verify"
+    at: "2026-03-06T13:20:54.055Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: git diff -- website/src/pages/index.tsx website/src/pages/index.module.css; bun run --cwd website typecheck; bun run --cwd website build. Result: pass. Evidence: homepage keeps docs as the primary CTA and install as the secondary action while the refreshed layout still builds cleanly. Scope: homepage CTA hierarchy and supporting homepage presentation."
 doc_version: 2
-doc_updated_at: "2026-03-06T11:28:39.298Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-03-06T13:20:54.056Z"
+doc_updated_by: "CODER"
 description: "Keep documentation as the primary homepage CTA and surface CLI installation as the secondary action on the public home page."
 id_source: "generated"
 ---
@@ -89,6 +95,14 @@ Validate the homepage CTA hierarchy and build integrity after the docs-first adj
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-06T13:20:54.055Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: git diff -- website/src/pages/index.tsx website/src/pages/index.module.css; bun run --cwd website typecheck; bun run --cwd website build. Result: pass. Evidence: homepage keeps docs as the primary CTA and install as the secondary action while the refreshed layout still builds cleanly. Scope: homepage CTA hierarchy and supporting homepage presentation.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T11:28:39.298Z, excerpt_hash=sha256:59cd3fd74f7c1dd7109f2d28cbd7c59a9ce44b05f572a98260b7b39833fdbe36
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
