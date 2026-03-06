@@ -100,18 +100,6 @@
   padding: 1rem;
 }
 
-.entryVisual {
-  border: 1px solid rgb(var(--border));
-  display: block;
-  overflow: hidden;
-}
-
-.entryVisual img {
-  display: block;
-  height: auto;
-  width: 100%;
-}
-
 .entryTitleLink {
   color: rgb(var(--fg));
   text-decoration: none;

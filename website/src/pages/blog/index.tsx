@@ -9,7 +9,6 @@ const entries = [
     excerpt:
       "Why stricter commit scope and cleaner release checks mattered in day-to-day repository work.",
     meta: "Release journal • 4 min read",
-    image: "/img/blog/release-0-2-25-kandinsky-agentplane.svg",
   },
   {
     href: "/blog/roadmap-0-5-agentplane-runner",
@@ -17,7 +16,6 @@ const entries = [
     excerpt:
       "The product path from repository-native workflow discipline toward a broader execution runtime.",
     meta: "Roadmap • 5 min read",
-    image: "/img/blog/roadmap-kandinsky-agentplane.svg",
   },
   {
     href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
@@ -25,7 +23,6 @@ const entries = [
     excerpt:
       "How gateway structure, release-note quality, and publish rerun discipline tightened the governance layer.",
     meta: "Unlisted draft • release analysis",
-    image: "/img/blog/release-0-3-0-kandinsky-agentplane.svg",
   },
 ];
 
@@ -73,14 +70,6 @@ export default function BlogLanding() {
             <div className={styles.entryList}>
               {entries.map((entry) => (
                 <article key={entry.href} className={styles.entryItem}>
-                  <Link
-                    className={styles.entryVisual}
-                    to={entry.href}
-                    aria-hidden="true"
-                    tabIndex={-1}
-                  >
-                    <img src={entry.image} alt="" />
-                  </Link>
                   <p className={styles.entryMeta}>{entry.meta}</p>
                   <h3>
                     <Link className={styles.entryTitleLink} to={entry.href}>
