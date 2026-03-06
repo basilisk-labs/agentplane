@@ -285,8 +285,7 @@
 
 .featuredRule {
   background:
-    linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent) / 0.2)),
-    rgb(var(--border));
+    linear-gradient(90deg, rgb(var(--accent)), rgb(var(--accent) / 0.2)), rgb(var(--border));
   height: 1px;
   width: 100%;
 }
@@ -403,9 +402,7 @@
 }
 
 .archiveItem {
-  background:
-    linear-gradient(180deg, rgb(var(--bg)), rgb(var(--accent) / 0.025)),
-    rgb(var(--bg));
+  background: linear-gradient(180deg, rgb(var(--bg)), rgb(var(--accent) / 0.025)), rgb(var(--bg));
   border: 1px solid rgb(var(--border));
   color: rgb(var(--fg));
   display: grid;
