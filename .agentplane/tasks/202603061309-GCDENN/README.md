@@ -1,7 +1,7 @@
 ---
 id: "202603061309-GCDENN"
 title: "Refine website visual system within DESIGN.md"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +18,16 @@ verification:
   updated_at: "2026-03-06T13:20:37.382Z"
   updated_by: "CODER"
   note: "Command: git diff -- website/src/css/custom.css website/src/pages/index.tsx website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css; bun run docs:site:generate; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Result: pass. Evidence: homepage/blog/shared theme were tightened to a calmer proof-first layout; docs generation, website build, and design-language validation all passed. Scope: website visual system within existing DESIGN.md."
-commit: null
+commit:
+  hash: "5e89de17a561fa97595835ba2f6607746895b285"
+  message: "✨ website: refine public site within design contract"
 comments:
   -
     author: "CODER"
     body: "Start: audit the current website visual system, update DESIGN.md to preserve the approved motifs explicitly, and refine the homepage, blog landing, and shared theme into a cleaner modern baseline."
+  -
+    author: "CODER"
+    body: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 events:
   -
     type: "status"
@@ -37,8 +42,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: git diff -- website/src/css/custom.css website/src/pages/index.tsx website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css; bun run docs:site:generate; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Result: pass. Evidence: homepage/blog/shared theme were tightened to a calmer proof-first layout; docs generation, website build, and design-language validation all passed. Scope: website visual system within existing DESIGN.md."
+  -
+    type: "status"
+    at: "2026-03-06T13:22:32.548Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 doc_version: 2
-doc_updated_at: "2026-03-06T13:20:37.383Z"
+doc_updated_at: "2026-03-06T13:22:32.548Z"
 doc_updated_by: "CODER"
 description: "Use the existing DESIGN.md contract to make the public website cleaner and more modern, while preserving strong typography, a disciplined navbar shell, and proof-first hierarchy on homepage and blog surfaces."
 id_source: "generated"

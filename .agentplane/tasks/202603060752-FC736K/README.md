@@ -1,7 +1,7 @@
 ---
 id: "202603060752-FC736K"
 title: "Redesign website blog landing"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -18,11 +18,16 @@ verification:
   updated_at: "2026-03-06T13:20:54.055Z"
   updated_by: "CODER"
   note: "Command: git diff -- website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/src/css/custom.css; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Result: pass. Evidence: blog landing remains live, cleaner, and compliant with the website design contract after the visual refinement pass. Scope: blog landing and shared blog styling."
-commit: null
+commit:
+  hash: "5e89de17a561fa97595835ba2f6607746895b285"
+  message: "✨ website: refine public site within design contract"
 comments:
   -
     author: "CODER"
     body: "Start: redesign /blog landing, remove placeholder, and surface the first release-story post."
+  -
+    author: "CODER"
+    body: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 events:
   -
     type: "status"
@@ -49,8 +54,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: git diff -- website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/src/css/custom.css; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Result: pass. Evidence: blog landing remains live, cleaner, and compliant with the website design contract after the visual refinement pass. Scope: blog landing and shared blog styling."
+  -
+    type: "status"
+    at: "2026-03-06T13:22:32.533Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 doc_version: 2
-doc_updated_at: "2026-03-06T13:20:54.055Z"
+doc_updated_at: "2026-03-06T13:22:32.533Z"
 doc_updated_by: "CODER"
 description: "Replace blog placeholder with a modern landing page and surface the first release post from the previous release cycle."
 id_source: "generated"

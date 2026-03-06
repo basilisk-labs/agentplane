@@ -1,7 +1,7 @@
 ---
 id: "202603061128-WM5C4Y"
 title: "Align homepage CTA strategy"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -18,11 +18,16 @@ verification:
   updated_at: "2026-03-06T13:20:54.055Z"
   updated_by: "CODER"
   note: "Command: git diff -- website/src/pages/index.tsx website/src/pages/index.module.css; bun run --cwd website typecheck; bun run --cwd website build. Result: pass. Evidence: homepage keeps docs as the primary CTA and install as the secondary action while the refreshed layout still builds cleanly. Scope: homepage CTA hierarchy and supporting homepage presentation."
-commit: null
+commit:
+  hash: "5e89de17a561fa97595835ba2f6607746895b285"
+  message: "✨ website: refine public site within design contract"
 comments:
   -
     author: "CODER"
     body: "Start: adjust homepage CTA hierarchy to docs-first primary and install secondary."
+  -
+    author: "CODER"
+    body: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 events:
   -
     type: "status"
@@ -37,8 +42,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: git diff -- website/src/pages/index.tsx website/src/pages/index.module.css; bun run --cwd website typecheck; bun run --cwd website build. Result: pass. Evidence: homepage keeps docs as the primary CTA and install as the secondary action while the refreshed layout still builds cleanly. Scope: homepage CTA hierarchy and supporting homepage presentation."
+  -
+    type: "status"
+    at: "2026-03-06T13:22:32.542Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 doc_version: 2
-doc_updated_at: "2026-03-06T13:20:54.056Z"
+doc_updated_at: "2026-03-06T13:22:32.542Z"
 doc_updated_by: "CODER"
 description: "Keep documentation as the primary homepage CTA and surface CLI installation as the secondary action on the public home page."
 id_source: "generated"

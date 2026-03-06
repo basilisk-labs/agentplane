@@ -1,7 +1,7 @@
 ---
 id: "202603061050-5ZZ7D0"
 title: "Create homepage content map"
-status: "DOING"
+status: "DONE"
 priority: "med"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -18,11 +18,16 @@ verification:
   updated_at: "2026-03-06T13:20:53.953Z"
   updated_by: "CODER"
   note: "Command: node .agentplane/policy/check-routing.mjs; bun run docs:site:generate; git diff -- website/CONTENT.md. Result: pass. Evidence: website/CONTENT.md remains present as the homepage content map, policy routing passes, and website-backed docs generation succeeds. Scope: homepage content-map artifact and linked docs surface."
-commit: null
+commit:
+  hash: "5e89de17a561fa97595835ba2f6607746895b285"
+  message: "✨ website: refine public site within design contract"
 comments:
   -
     author: "CODER"
     body: "Start: synthesize homepage content map into website/CONTENT.md from canonical docs and README."
+  -
+    author: "CODER"
+    body: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 events:
   -
     type: "status"
@@ -37,8 +42,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; bun run docs:site:generate; git diff -- website/CONTENT.md. Result: pass. Evidence: website/CONTENT.md remains present as the homepage content map, policy routing passes, and website-backed docs generation succeeds. Scope: homepage content-map artifact and linked docs surface."
+  -
+    type: "status"
+    at: "2026-03-06T13:22:32.539Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 doc_version: 2
-doc_updated_at: "2026-03-06T13:20:53.954Z"
+doc_updated_at: "2026-03-06T13:22:32.539Z"
 doc_updated_by: "CODER"
 description: "Create website/CONTENT.md with a structured content map for the homepage based on README, website IA, overview docs, and harness engeneering narrative."
 id_source: "generated"

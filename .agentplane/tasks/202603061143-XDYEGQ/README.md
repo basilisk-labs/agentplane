@@ -1,7 +1,7 @@
 ---
 id: "202603061143-XDYEGQ"
 title: "Sync docs with code and define v0.3 readiness"
-status: "DOING"
+status: "DONE"
 priority: "high"
 owner: "ORCHESTRATOR"
 depends_on: []
@@ -18,11 +18,16 @@ verification:
   updated_at: "2026-03-06T13:20:54.053Z"
   updated_by: "CODER"
   note: "Command: node .agentplane/policy/check-routing.mjs; node scripts/check-cli-reference-fresh.mjs; git diff -- docs/user/setup.mdx docs/user/commands.mdx docs/help/troubleshooting.mdx docs/reference/generated-reference.mdx packages/agentplane/bin/agentplane.js packages/agentplane/bin/dist-guard.js packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/workflow-runtime/build.ts. Result: pass. Evidence: docs/code sync and release-readiness classification were completed; the blocked 0.3.x npm path is now explicitly understood and follow-up work was separated from site work. Scope: docs sync, stale-dist/doctor/workflow readiness analysis."
-commit: null
+commit:
+  hash: "5e89de17a561fa97595835ba2f6607746895b285"
+  message: "✨ website: refine public site within design contract"
 comments:
   -
     author: "ORCHESTRATOR"
     body: "Start: align setup and preflight documentation with current CLI behavior, then verify docs and classify remaining release blockers for v0.3.0."
+  -
+    author: "CODER"
+    body: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 events:
   -
     type: "status"
@@ -55,8 +60,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: node .agentplane/policy/check-routing.mjs; node scripts/check-cli-reference-fresh.mjs; git diff -- docs/user/setup.mdx docs/user/commands.mdx docs/help/troubleshooting.mdx docs/reference/generated-reference.mdx packages/agentplane/bin/agentplane.js packages/agentplane/bin/dist-guard.js packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/workflow-runtime/build.ts. Result: pass. Evidence: docs/code sync and release-readiness classification were completed; the blocked 0.3.x npm path is now explicitly understood and follow-up work was separated from site work. Scope: docs sync, stale-dist/doctor/workflow readiness analysis."
+  -
+    type: "status"
+    at: "2026-03-06T13:22:32.545Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
 doc_version: 2
-doc_updated_at: "2026-03-06T13:20:54.054Z"
+doc_updated_at: "2026-03-06T13:22:32.545Z"
 doc_updated_by: "CODER"
 description: "Align setup/init docs with actual CLI behavior, assess stale-dist preflight behavior, and classify the blocked 0.3.x release path after the burned npm 0.3.0 version."
 id_source: "generated"
