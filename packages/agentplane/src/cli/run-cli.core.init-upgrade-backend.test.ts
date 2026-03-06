@@ -276,6 +276,11 @@ describe("runCli", () => {
     expect(configText).toContain('"require_network": false');
     expect(configText).toContain('"require_verify": false');
     expect(configText).toContain('"profile": "aggressive"');
+
+    const hookShimPath = path.join(root, ".agentplane", "bin", "agentplane");
+    const commitMsgHookPath = path.join(root, ".git", "hooks", "commit-msg");
+    expect(await pathExists(hookShimPath)).toBe(false);
+    expect(await pathExists(commitMsgHookPath)).toBe(false);
   });
 
   it("init --gitignore-agents updates .gitignore and skips the install commit", async () => {

@@ -71,8 +71,8 @@ const setupProfilePresets: Record<
 > = {
   light: {
     mode: "compact",
-    description: "Light profile (maximum flexibility, minimal enforcement, hooks still mandatory).",
-    defaultHooks: true,
+    description: "Light profile (maximum flexibility, minimal enforcement, hooks disabled).",
+    defaultHooks: false,
     defaultStrictUnsafeConfirm: false,
     defaultRequirePlanApproval: false,
     defaultRequireNetworkApproval: false,
@@ -83,7 +83,7 @@ const setupProfilePresets: Record<
   normal: {
     mode: "compact",
     description:
-      "Normal profile (balanced defaults and approvals enabled for standard team workflows).",
+      "Normal profile (balanced defaults and approvals enabled for standard team workflows; hooks enabled).",
     defaultHooks: true,
     defaultStrictUnsafeConfirm: false,
     defaultRequirePlanApproval: true,
@@ -95,7 +95,7 @@ const setupProfilePresets: Record<
   "full-harness": {
     mode: "full",
     description:
-      "Full Harness profile (strict guardrails, explicit confirmations, conservative execution).",
+      "Full Harness profile (strict guardrails, explicit confirmations, conservative execution; hooks enabled).",
     defaultHooks: true,
     defaultStrictUnsafeConfirm: true,
     defaultRequirePlanApproval: true,
@@ -196,7 +196,8 @@ export const initSpec: CommandSpec<InitParsed> = {
       kind: "string",
       name: "hooks",
       valueHint: "<true|false>",
-      description: "Hooks are mandatory; only true is accepted.",
+      description:
+        "Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).",
     },
     {
       kind: "string",
@@ -338,13 +339,6 @@ export const initSpec: CommandSpec<InitParsed> = {
         message: "Use either --force or --backup (not both).",
       });
     }
-    if (p.hooks === false) {
-      throw usageError({
-        spec: initSpec,
-        command: "init",
-        message: "Hooks installation is mandatory. Use --hooks true (or omit the flag).",
-      });
-    }
   },
 };
 
@@ -363,6 +357,7 @@ async function cmdInit(opts: {
     ide: InitIde;
     workflow: WorkflowMode;
     backend: NonNullable<InitFlags["backend"]>;
+    hooks: boolean;
     recipes: string[];
     requirePlanApproval: boolean;
     requireNetworkApproval: boolean;
@@ -374,6 +369,7 @@ async function cmdInit(opts: {
     ide: "codex",
     workflow: "direct",
     backend: "local",
+    hooks: true,
     recipes: [],
     requirePlanApproval: true,
     requireNetworkApproval: true,
@@ -385,6 +381,7 @@ async function cmdInit(opts: {
   let policyGateway: PolicyGatewayFlavor = flags.policyGateway ?? defaults.policyGateway;
   let workflow: WorkflowMode = flags.workflow ?? defaults.workflow;
   let backend: NonNullable<InitFlags["backend"]> = flags.backend ?? defaults.backend;
+  let hooks = flags.hooks ?? defaults.hooks;
   let recipes = flags.recipes ?? defaults.recipes;
   let requirePlanApproval = flags.requirePlanApproval ?? defaults.requirePlanApproval;
   let requireNetworkApproval = flags.requireNetworkApproval ?? defaults.requireNetworkApproval;
@@ -457,6 +454,7 @@ async function cmdInit(opts: {
     }
     const selectedPreset = setupProfilePresets[setupProfilePreset];
     setupProfile = selectedPreset.mode;
+    hooks = flags.hooks ?? selectedPreset.defaultHooks;
     if (flags.policyGateway) {
       policyGateway = flags.policyGateway;
     } else {
@@ -514,7 +512,9 @@ async function cmdInit(opts: {
       process.stdout.write(
         renderInitSection(
           "Hooks",
-          "Managed git hooks are mandatory and will be installed automatically.",
+          hooks
+            ? "Managed git hooks are enabled and will be installed automatically."
+            : "Managed git hooks are disabled by profile/flag and will not be installed.",
         ),
       );
       process.stdout.write(
@@ -599,7 +599,7 @@ async function cmdInit(opts: {
       process.stdout.write(
         renderInitSection(
           "Defaults Applied",
-          `Using compact ${setupProfilePreset} defaults for approvals, execution profile, and recipes. Hooks remain mandatory.`,
+          `Using compact ${setupProfilePreset} defaults for approvals, execution profile, and recipes. Hooks: ${hooks ? "enabled" : "disabled"}.`,
         ),
       );
     }
@@ -611,6 +611,7 @@ async function cmdInit(opts: {
     policyGateway = flags.policyGateway ?? defaults.policyGateway;
     workflow = flags.workflow ?? defaults.workflow;
     backend = flags.backend ?? defaults.backend;
+    hooks = flags.hooks ?? yesPreset.defaultHooks;
     recipes = flags.recipes ?? yesPreset.defaultRecipes;
     requirePlanApproval = flags.requirePlanApproval ?? yesPreset.defaultRequirePlanApproval;
     requireNetworkApproval =
@@ -727,8 +728,10 @@ async function cmdInit(opts: {
       });
     }
 
-    await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
-    installPaths.push(".agentplane/bin/agentplane");
+    if (hooks) {
+      await cmdHooksInstall({ cwd: opts.cwd, rootOverride: opts.rootOverride, quiet: true });
+      installPaths.push(".agentplane/bin/agentplane");
+    }
 
     const ideRes = await maybeSyncIde({
       cwd: opts.cwd,

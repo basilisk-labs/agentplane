@@ -29,12 +29,11 @@ export function renderInitWelcome(): string {
     "░█▀█░█░█░█▀▀░█░█░░█░░▄▀░░█▀▀░█░░░█▀█░█░█░█▀▀",
     "░▀░▀░▀▀▀░▀▀▀░▀░▀░░▀░░▀░░░▀░░░▀▀▀░▀░▀░▀░▀░▀▀▀",
   ].map((line) => color(line, "36"));
-  const subtitle = color("agent/plane", "36");
   const intro = [
     color("Bootstrap an agent-first workflow in this repository.", "1"),
     "This interactive setup runs once; daily work is executed by agents.",
   ];
-  return `${logo.join("\n")}\n${subtitle}\n\n${box(intro)}\n\n`;
+  return `${logo.join("\n")}\n\n${box(intro)}\n\n`;
 }
 
 export function renderInitSection(title: string, description: string): string {
