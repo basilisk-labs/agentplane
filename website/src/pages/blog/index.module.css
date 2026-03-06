@@ -14,7 +14,6 @@
 
 .kicker,
 .sectionLabel,
-.featuredLabel,
 .entryMeta {
   color: rgb(var(--faint));
   font-family: var(--font-pixel), var(--ifm-font-family-monospace);
@@ -69,21 +68,12 @@
   margin: 0;
 }
 
-.featuredEntry,
 .entryItem,
 .referenceItem {
   border: 1px solid rgb(var(--border));
   text-align: left;
 }
 
-.featuredEntry {
-  display: grid;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  padding: 1rem;
-}
-
-.featuredEntry h3,
 .entryItem h3 {
   font-size: clamp(1.2rem, 2vw, 1.55rem);
   letter-spacing: -0.03em;
@@ -91,7 +81,6 @@
   margin: 0;
 }
 
-.featuredEntry p:not(.featuredLabel):not(.entryMeta),
 .entryItem p:not(.entryMeta),
 .referenceItem span {
   color: rgb(var(--muted));
@@ -109,6 +98,29 @@
   display: grid;
   gap: 0.7rem;
   padding: 1rem;
+}
+
+.entryVisual {
+  border: 1px solid rgb(var(--border));
+  display: block;
+  overflow: hidden;
+}
+
+.entryVisual img {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.entryTitleLink {
+  color: rgb(var(--fg));
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+
+.entryTitleLink:hover,
+.entryTitleLink:focus-visible {
+  color: rgb(var(--accent));
 }
 
 .entryLink {

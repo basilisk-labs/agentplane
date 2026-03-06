@@ -37,6 +37,8 @@
   --ifm-blockquote-border-left-color: rgb(var(--border));
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.04);
   --content-width: 74ch;
+  --site-frame-width: 1240px;
+  --site-gutter: 0.75rem;
 }
 
 html,
@@ -62,10 +64,10 @@ a {
   border: 0;
   left: 0;
   margin: 0.75rem auto 0;
-  max-width: 1240px;
+  max-width: var(--site-frame-width);
   right: 0;
   top: 0.75rem;
-  width: calc(100% - 1.5rem);
+  width: calc(100% - (var(--site-gutter) * 2));
 }
 
 .navbar.navbar--fixed-top {
@@ -132,6 +134,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   background: transparent;
   border-bottom-color: rgb(var(--accent));
   color: rgb(var(--fg)) !important;
+  font-weight: 600;
 }
 
 .navbar__link--active:hover,
@@ -193,8 +196,14 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   box-shadow: none;
 }
 
+.main-wrapper {
+  padding-top: 1.25rem;
+}
+
 .theme-doc-markdown.markdown {
+  margin-left: clamp(0.4rem, 1.1vw, 1rem);
   max-width: var(--content-width);
+  padding-top: 0.45rem;
   position: relative;
 }
 
@@ -262,7 +271,19 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 }
 
 .theme-doc-sidebar-container {
-  border-right: 1px solid rgb(var(--border));
+  border-right: none;
+  padding-right: clamp(0.85rem, 1.3vw, 1.25rem);
+  position: relative;
+}
+
+.theme-doc-sidebar-container::after {
+  background: rgb(var(--border));
+  bottom: 1rem;
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 1rem;
+  width: 1px;
 }
 
 .menu__list-item-collapsible > .menu__link {
@@ -300,6 +321,10 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 .theme-last-updated {
   color: rgb(var(--faint));
   font-size: 0.8rem;
+}
+
+nav[aria-label="Breadcrumbs"] {
+  margin-bottom: 1rem;
 }
 
 .theme-edit-this-page:hover,
@@ -489,6 +514,15 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   position: relative;
 }
 
+.blog-post-page article .markdown img,
+.theme-blog-post-page article .markdown img {
+  border: 1px solid rgb(var(--border));
+  display: block;
+  height: auto;
+  margin: 0 0 2rem;
+  width: 100%;
+}
+
 .blog-post-page article .markdown > p:first-of-type,
 .theme-blog-post-page article .markdown > p:first-of-type {
   color: rgb(30 30 30);
@@ -600,6 +634,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 @media (max-width: 996px) {
   .theme-doc-markdown.markdown {
+    margin-left: 0;
     max-width: 100%;
   }
 
@@ -614,7 +649,11 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   }
 
   .theme-doc-sidebar-container {
-    border-right: none;
+    padding-right: 0;
+  }
+
+  .theme-doc-sidebar-container::after {
+    display: none;
   }
 
   .theme-doc-markdown.markdown::before,

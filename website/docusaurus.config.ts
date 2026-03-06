@@ -108,12 +108,39 @@ const config = {
         height: 32,
       },
       items: [
-        { to: "/docs/user/overview", label: "Getting Started", position: "left" },
-        { to: "/docs/user/workflow", label: "Workflows", position: "left" },
-        { to: "/docs/user/commands", label: "Reference", position: "left" },
-        { to: "/docs/developer/architecture", label: "Developer", position: "left" },
-        { to: "/blog", label: "Blog", position: "left" },
-        { to: "/docs/releases", label: "Release Notes", position: "right" },
+        {
+          to: "/docs/user/overview",
+          label: "Getting Started",
+          position: "left",
+          activeBaseRegex: "^/docs/user/(overview|prerequisites|setup|breaking-changes)$",
+        },
+        {
+          to: "/docs/user/workflow",
+          label: "Workflows",
+          position: "left",
+          activeBaseRegex:
+            "^/docs/user/(workflow|task-lifecycle|agents|branching-and-pr-artifacts|tasks-and-backends|workflow-migration|redmine)$",
+        },
+        {
+          to: "/docs/user/commands",
+          label: "Reference",
+          position: "left",
+          activeBaseRegex:
+            "^/docs/(user/(commands|configuration|backends|backends/local|backends/redmine|agent-discovery|indexing-and-webmaster-operations)|reference/generated-reference)$",
+        },
+        {
+          to: "/docs/developer/architecture",
+          label: "Developer",
+          position: "left",
+          activeBaseRegex: "^/docs/developer/",
+        },
+        { to: "/blog", label: "Blog", position: "left", activeBaseRegex: "^/blog" },
+        {
+          to: "/docs/releases",
+          label: "Release Notes",
+          position: "right",
+          activeBaseRegex: "^/docs/releases",
+        },
         {
           href: "https://www.npmjs.com/package/agentplane",
           label: "npm",

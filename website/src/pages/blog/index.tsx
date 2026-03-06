@@ -2,29 +2,30 @@ import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import styles from "./index.module.css";
 
-const featuredPost = {
-  href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
-  label: "Featured entry",
-  title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
-  description:
-    "The first public release story explains how commit-scope enforcement, publish gates, and docs parity changed the operational baseline.",
-  meta: "Release journal • 4 min read",
-};
-
 const entries = [
   {
-    href: featuredPost.href,
-    title: featuredPost.title,
+    href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
+    title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
     excerpt:
       "Why stricter commit scope and cleaner release checks mattered in day-to-day repository work.",
-    meta: "Release notes companion",
+    meta: "Release journal • 4 min read",
+    image: "/img/blog/release-0-2-25-kandinsky-agentplane.svg",
   },
   {
     href: "/blog/roadmap-0-5-agentplane-runner",
     title: "Roadmap 0.1 → 0.5: toward AgentPlane Runner",
     excerpt:
       "The product path from repository-native workflow discipline toward a broader execution runtime.",
-    meta: "Roadmap",
+    meta: "Roadmap • 5 min read",
+    image: "/img/blog/roadmap-kandinsky-agentplane.svg",
+  },
+  {
+    href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
+    title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
+    excerpt:
+      "How gateway structure, release-note quality, and publish rerun discipline tightened the governance layer.",
+    meta: "Unlisted draft • release analysis",
+    image: "/img/blog/release-0-3-0-kandinsky-agentplane.svg",
   },
 ];
 
@@ -69,21 +70,23 @@ export default function BlogLanding() {
               <h2 id="blog-entries-title">Recent entries</h2>
             </div>
 
-            <article className={styles.featuredEntry}>
-              <p className={styles.featuredLabel}>{featuredPost.label}</p>
-              <h3>{featuredPost.title}</h3>
-              <p>{featuredPost.description}</p>
-              <p className={styles.entryMeta}>{featuredPost.meta}</p>
-              <Link className={styles.entryLink} to={featuredPost.href}>
-                Read featured post
-              </Link>
-            </article>
-
             <div className={styles.entryList}>
               {entries.map((entry) => (
                 <article key={entry.href} className={styles.entryItem}>
+                  <Link
+                    className={styles.entryVisual}
+                    to={entry.href}
+                    aria-hidden="true"
+                    tabIndex={-1}
+                  >
+                    <img src={entry.image} alt="" />
+                  </Link>
                   <p className={styles.entryMeta}>{entry.meta}</p>
-                  <h3>{entry.title}</h3>
+                  <h3>
+                    <Link className={styles.entryTitleLink} to={entry.href}>
+                      {entry.title}
+                    </Link>
+                  </h3>
                   <p>{entry.excerpt}</p>
                   <Link className={styles.entryLink} to={entry.href}>
                     Open entry
