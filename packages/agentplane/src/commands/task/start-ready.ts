@@ -35,7 +35,7 @@ export async function cmdTaskStartReady(opts: {
       confirmStatusCommit: false,
       force: opts.force,
       yes: opts.yes,
-      quiet: opts.quiet,
+      quiet: true,
     });
     if (!opts.quiet) {
       process.stdout.write(`${successMessage("ready", opts.taskId)}\n`);

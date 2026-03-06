@@ -25,7 +25,7 @@ async function readPackages() {
       rows.push({
         id: dir,
         name: manifest.name ?? dir,
-        version: manifest.version ?? "0.0.0",
+        version: displayVersion(manifest),
       });
     } catch {
       // Skip folders without package manifests.
@@ -33,6 +33,11 @@ async function readPackages() {
   }
 
   return rows;
+}
+
+function displayVersion(manifest) {
+  if (manifest.private === true) return "internal";
+  return manifest.version ?? "unknown";
 }
 
 function renderPackagesTable(rows) {

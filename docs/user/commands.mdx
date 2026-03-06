@@ -16,6 +16,14 @@ agentplane --version
 agentplane quickstart
 ```
 
+If you are using a linked development binary from inside the Agent Plane framework checkout and
+it reports a stale build, rebuild first:
+
+```bash
+bun run --filter=@agentplaneorg/core build
+bun run --filter=agentplane build
+```
+
 ## Init
 
 ```bash
@@ -30,7 +38,11 @@ Interactive init now starts with a profile menu:
 - `normal` (default)
 - `full-harness`
 
-Hooks installation is mandatory for all profiles.
+Hooks default by profile:
+
+- `light`: disabled
+- `normal`: enabled
+- `full-harness`: enabled
 
 `execution.profile` is stored in `.agentplane/config.json`.
 

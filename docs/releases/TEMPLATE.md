@@ -29,4 +29,4 @@
 - Cover all differences from the release plan (`changes.md`/`changes.json`).
 - Use detailed, human-readable language, not raw commit log text.
 - Keep concrete bullets with explicit outcomes.
-- Keep at least 5 bullets total across sections.
+- Keep at least one bullet per listed change from `changes.md`/`changes.json`.

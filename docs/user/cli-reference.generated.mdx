@@ -906,7 +906,7 @@ agentplane hooks uninstall
 
 ### ide sync
 
-Generate IDE entrypoints from AGENTS.md.
+Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
 
 Usage:
 
@@ -1675,10 +1675,11 @@ agentplane init [options]
 Options:
 
 - `--setup-profile <light|normal|full-harness>`: Setup profile preset. Preferred values: light, normal, full-harness. (choices=light|normal|full-harness|developer|vibecoder|manager|enterprise)
+- `--policy-gateway <codex|claude>`: Policy gateway file to install (codex -&gt; AGENTS.md, claude -&gt; CLAUDE.md). (choices=codex|claude)
 - `--ide <codex|cursor|windsurf>`: IDE rules integration target (default: codex). (choices=codex|cursor|windsurf)
 - `--workflow <direct|branch_pr>`: Workflow mode (default: direct). (choices=direct|branch_pr)
 - `--backend <local|redmine>`: Task backend (default: local). (choices=local|redmine)
-- `--hooks <true|false>`: Hooks are mandatory; only true is accepted.
+- `--hooks <true|false>`: Install managed git hooks (default by setup profile: light=false, normal/full-harness=true).
 - `--require-plan-approval <true|false>`: Require explicit plan approval before starting work.
 - `--require-network-approval <true|false>`: Require explicit approval before any network operation.
 - `--require-verify-approval <true|false>`: Require explicit approval before recording verification.
@@ -1688,7 +1689,7 @@ Options:
 - `--force`: Overwrite init conflicts by deleting existing paths. (default=false)
 - `--backup`: Backup init conflicts before overwriting. (default=false)
 - `--yes`: Non-interactive mode (do not prompt; use defaults for missing flags). (default=false)
-- `--gitignore-agents`: Add agent files (AGENTS.md and .agentplane/agents/) to .gitignore and skip the initial install commit. (default=false)
+- `--gitignore-agents`: Add gateway/agent files (AGENTS.md or CLAUDE.md and .agentplane/agents/) to .gitignore and skip the initial install commit. (default=false)
 
 Examples:
 
@@ -1726,7 +1727,7 @@ agentplane init --yes --gitignore-agents
 
 Upgrade the local agentplane framework bundle in the repo.
 
-Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade generates an agent-assisted plan from the locally installed agentplane package assets (no network) and does not modify files. Use --auto to apply changes. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
+Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade generates an agent-assisted plan from the locally installed agentplane package assets (no network) and does not modify files. Use --auto to apply changes and create a dedicated upgrade commit. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
 
 Usage:
 
@@ -1737,7 +1738,7 @@ agentplane upgrade [options]
 Options:
 
 - `--agent`: Generate an agent-assisted upgrade plan (no files are modified). This is the default mode. (default=false)
-- `--auto`: Apply the upgrade automatically (writes managed files). (default=false)
+- `--auto`: Apply the upgrade automatically (writes managed files) and create a dedicated upgrade commit. (default=false)
 - `--remote`: Fetch the framework bundle from GitHub releases (requires network approvals). (default=false)
 - `--allow-tarball`: Allow falling back to a GitHub repo tarball when release assets are missing (no checksum verification). (default=false)
 - `--tag <tag>`: GitHub release tag (defaults to latest).

@@ -10,6 +10,11 @@ import {
 export async function ensureInitWorkflow(opts: {
   gitRoot: string;
   workflowMode: "direct" | "branch_pr";
+  approvals: {
+    requirePlanApproval: boolean;
+    requireVerifyApproval: boolean;
+    requireNetworkApproval: boolean;
+  };
 }): Promise<{ installPaths: string[] }> {
   const built = buildWorkflowFromTemplates({
     baseTemplate: DEFAULT_WORKFLOW_TEMPLATE,
@@ -17,8 +22,15 @@ export async function ensureInitWorkflow(opts: {
       workflow: {
         mode: opts.workflowMode,
         version: 1,
+        approvals: {
+          require_plan: opts.approvals.requirePlanApproval,
+          require_verify: opts.approvals.requireVerifyApproval,
+          require_network: opts.approvals.requireNetworkApproval,
+        },
       },
       runtime: {
+        repo_name:
+          opts.gitRoot.split(/[/\\\\]/).findLast((segment) => segment.length > 0) ?? "repo",
         repo_root: opts.gitRoot,
         timestamp: new Date().toISOString(),
       },

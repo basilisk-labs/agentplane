@@ -19,4 +19,8 @@ When adding or moving pages, update these files together:
 Generated command reference:
 
 - `docs/user/cli-reference.generated.mdx` is generated from live CLI specs.
-- Refresh it with `agentplane docs cli --out docs/user/cli-reference.generated.mdx`.
+- Preferred refresh command:
+  `agentplane docs cli --out docs/user/cli-reference.generated.mdx`
+- If the linked dev binary reports a stale build inside the framework checkout, rebuild first or
+  run the built dist entrypoint directly:
+  `node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx`

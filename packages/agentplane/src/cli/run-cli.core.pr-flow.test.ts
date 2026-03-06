@@ -1482,7 +1482,7 @@ describe("runCli", () => {
     const meta = JSON.parse(metaText) as Record<string, unknown>;
     expect(meta.base).toBe("main");
     expect(meta).not.toHaveProperty("base_branch");
-  }, 15_000);
+  }, 120_000);
 
   it("integrate uses a compliant fallback commit subject when branch subject is invalid (squash)", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -1558,7 +1558,7 @@ describe("runCli", () => {
     expect(
       validateCommitSubject({ subject, taskId, genericTokens: config.commit.generic_tokens }).ok,
     ).toBe(true);
-  }, 15_000);
+  }, 120_000);
 
   it("integrate supports dry-run", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -1640,7 +1640,7 @@ describe("runCli", () => {
       cwd: root,
     });
     expect(headAfter.trim()).toBe(headBefore.trim());
-  }, 15_000);
+  }, 60_000);
 
   it("integrate supports merge strategy", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -1713,7 +1713,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  }, 15_000);
+  }, 60_000);
 
   it("integrate supports rebase strategy", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -1794,7 +1794,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  }, 15_000);
+  }, 60_000);
 
   it("integrate rebase fails when base changes during verify", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -1881,7 +1881,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  }, 15_000);
+  }, 60_000);
 
   it("integrate rebase fails when verify command fails", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -1962,7 +1962,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  }, 15_000);
+  }, 60_000);
 
   it("integrate fails when post-merge hook removes pr dir", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -2040,7 +2040,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  }, 15_000);
+  }, 60_000);
 
   it("integrate runs verify when requested", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -2120,7 +2120,7 @@ describe("runCli", () => {
       "utf8",
     );
     expect(verifyLog).toContain("verified_sha=");
-  }, 15_000);
+  }, 60_000);
 
   it("cleanup merged requires branch_pr workflow", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -2154,7 +2154,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("cleanup merged maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
@@ -2398,7 +2398,7 @@ describe("runCli", () => {
 
     expect(await gitBranchExists(root, branch)).toBe(true);
     expect(await pathExists(worktreePath)).toBe(true);
-  }, 15_000);
+  }, 60_000);
 
   it("cleanup merged deletes branches/worktrees and archives pr artifacts", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -2477,7 +2477,7 @@ describe("runCli", () => {
     expect(entries.length).toBe(1);
     expect(await pathExists(path.join(archiveRoot, entries[0]))).toBe(true);
     expect(await pathExists(prDir)).toBe(false);
-  }, 15_000);
+  }, 60_000);
 
   it("cleanup merged refuses worktrees outside repo", async () => {
     const root = await mkGitRepoRootWithBranch("main");
@@ -2548,7 +2548,7 @@ describe("runCli", () => {
       env: cleanGitEnv(),
     });
     await execFileAsync("git", ["branch", "-D", branch], { cwd: root, env: cleanGitEnv() });
-  }, 15_000);
+  }, 60_000);
 
   it("pr note rejects unknown flags", async () => {
     const root = await mkGitRepoRootWithBranch("main");

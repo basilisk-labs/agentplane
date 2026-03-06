@@ -477,7 +477,7 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
   const changes = (await fileExists(changesJsonPath))
     ? await readJsonFile<PlanChange[]>(changesJsonPath)
     : [];
-  const minBullets = Math.max(5, Array.isArray(changes) ? changes.length : 0);
+  const minBullets = Math.max(1, Array.isArray(changes) ? changes.length : 0);
 
   if ((plan.bump === "minor" || plan.bump === "major") && flags.yes !== true) {
     throw usageError({

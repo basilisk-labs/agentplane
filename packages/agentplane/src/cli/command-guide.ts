@@ -164,7 +164,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "CREATOR",
     lines: [
-      '- Task bookkeeping: `agentplane task update <task-id> ...` / `agentplane start <task-id> --author CREATOR --body "Start: ..."`',
+      '- Task bookkeeping: `agentplane task update <task-id> ...` / `agentplane task start-ready <task-id> --author CREATOR --body "Start: ..."`',
       '- Commits: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>`',
     ],
   },
@@ -287,12 +287,14 @@ export function renderQuickstart(): string {
     "## Global flags",
     "",
     "- `--root <path>`: treat <path> as project root",
+    "- `--output <text|json>`: force global CLI output mode (`json` is agent-oriented envelope mode)",
     "- `--json-errors`: emit JSON-formatted errors",
     "- `--help` / `-h`: show help",
     "- `--version`: show version",
     "- `--no-update-check`: skip checking npm for a newer CLI version",
     "",
     "Notes:",
+    "- `AGENTPLANE_OUTPUT=json` enables global JSON output mode for agent runtimes.",
     "- `.env` at the repo root is loaded automatically (without overwriting existing environment variables).",
     "",
     "## Commit message format",

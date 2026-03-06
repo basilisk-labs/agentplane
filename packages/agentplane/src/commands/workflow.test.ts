@@ -279,6 +279,12 @@ describe("commands/workflow", () => {
     const root = await makeRepo();
     const taskId = "202602060840-P1A2";
     await addTask(root, taskId);
+    await cmdTaskDocSet({
+      cwd: root,
+      taskId,
+      section: "Plan",
+      text: "",
+    });
 
     await expect(cmdTaskPlanApprove({ cwd: root, taskId, by: "USER" })).rejects.toMatchObject({
       code: "E_VALIDATION",
@@ -1366,7 +1372,7 @@ describe("commands/workflow", () => {
         quiet: true,
       });
       expect(code).toBe(0);
-      expect(ioQuiet.stdout.trim()).toBe("");
+      expect(ioQuiet.stdout).toContain("- In scope:");
     } finally {
       ioQuiet.restore();
     }

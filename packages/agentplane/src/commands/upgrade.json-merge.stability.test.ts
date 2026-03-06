@@ -9,35 +9,21 @@ import {
 } from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
-describe("upgrade agent JSON merge stability", () => {
-  it("does not treat key order differences as user edits in 3-way merge", async () => {
+describe("upgrade agent JSON replacement stability", () => {
+  it("replaces agent JSON with incoming content regardless of local key order", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
     const agentsDir = path.join(root, ".agentplane", "agents");
     await mkdir(agentsDir, { recursive: true });
 
-    // Baseline (base) and current have identical content but different key order.
-    const base =
-      JSON.stringify({ id: "CODER", role: "Coder v1", settings: { a: 1, b: 2 } }, null, 2) + "\n";
+    // Current has local formatting/key-order differences; upgrade should still replace with incoming.
     const current =
       '{\n  "settings": { "b": 2, "a": 1 },\n  "role": "Coder v1",\n  "id": "CODER"\n}\n';
     const incoming =
       JSON.stringify({ id: "CODER", role: "Coder v2", settings: { a: 1, b: 3 } }, null, 2) + "\n";
 
     await writeFile(path.join(agentsDir, "CODER.json"), current, "utf8");
-
-    // Seed baseline for 3-way merges.
-    const baselinePath = path.join(
-      root,
-      ".agentplane",
-      ".upgrade",
-      "baseline",
-      "agents",
-      "CODER.json",
-    );
-    await mkdir(path.dirname(baselinePath), { recursive: true });
-    await writeFile(baselinePath, base, "utf8");
 
     const { bundlePath, checksumPath } = await createUpgradeBundle({
       "framework.manifest.json": JSON.stringify(
@@ -78,5 +64,6 @@ describe("upgrade agent JSON merge stability", () => {
     const final = JSON.parse(finalText) as { role?: string; settings?: { b?: number } };
     expect(final.role).toBe("Coder v2");
     expect(final.settings?.b).toBe(3);
+    expect(finalText).toBe(incoming);
   });
 });

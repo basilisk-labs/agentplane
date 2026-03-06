@@ -94,7 +94,44 @@ function insertMarkdownSectionBefore(opts: {
   return `${out.join("\n").trimEnd()}\n`;
 }
 
-function defaultTaskDoc(requiredSections: string[]): string {
+function buildDefaultSummary(opts: { title: string; description: string }): string {
+  return `${opts.title}\n\n${opts.description}`;
+}
+
+function buildDefaultScope(opts: { title: string; description: string }): string {
+  return [
+    `- In scope: ${opts.description}.`,
+    `- Out of scope: unrelated refactors not required for "${opts.title}".`,
+  ].join("\n");
+}
+
+function buildDefaultPlan(opts: { title: string }): string {
+  return [
+    `1. Implement the change for "${opts.title}".`,
+    "2. Run required checks and capture verification evidence.",
+    "3. Finalize task notes and finish with traceable commit metadata.",
+  ].join("\n");
+}
+
+function buildDefaultRisks(): string {
+  return [
+    "- Risk: hidden regressions in touched paths.",
+    "- Mitigation: run required checks before finish and record evidence.",
+  ].join("\n");
+}
+
+function buildDefaultRollbackPlan(): string {
+  return [
+    "- Revert task-related commit(s).",
+    "- Re-run required checks to confirm rollback safety.",
+  ].join("\n");
+}
+
+function defaultTaskDoc(opts: {
+  requiredSections: string[];
+  title: string;
+  description: string;
+}): string {
   const verifyStepsTemplate = [
     "<!-- TODO: FILL VERIFY STEPS -->",
     "",
@@ -122,14 +159,31 @@ function defaultTaskDoc(requiredSections: string[]): string {
     "<!-- END VERIFICATION RESULTS -->",
   ].join("\n");
 
-  const baseDoc = ensureDocSections("", requiredSections);
+  const baseDoc = ensureDocSections("", opts.requiredSections);
   const withVerifySteps = insertMarkdownSectionBefore({
     body: baseDoc,
     section: "Verify Steps",
     text: verifyStepsTemplate,
     beforeSection: "Verification",
   });
-  return setMarkdownSection(withVerifySteps, "Verification", verificationTemplate);
+  const withVerification = setMarkdownSection(
+    withVerifySteps,
+    "Verification",
+    verificationTemplate,
+  );
+  const withSummary = setMarkdownSection(
+    withVerification,
+    "Summary",
+    buildDefaultSummary({ title: opts.title, description: opts.description }),
+  );
+  const withScope = setMarkdownSection(
+    withSummary,
+    "Scope",
+    buildDefaultScope({ title: opts.title, description: opts.description }),
+  );
+  const withPlan = setMarkdownSection(withScope, "Plan", buildDefaultPlan({ title: opts.title }));
+  const withRisks = setMarkdownSection(withPlan, "Risks", buildDefaultRisks());
+  return setMarkdownSection(withRisks, "Rollback Plan", buildDefaultRollbackPlan());
 }
 
 function buildDefaultVerifyStepsSection(opts: {
@@ -191,7 +245,11 @@ export async function runTaskNewParsed(opts: {
       doc_updated_at: nowIso(),
       doc_updated_by: p.owner,
       id_source: "generated",
-      doc: defaultTaskDoc(ctx.config.tasks.doc.required_sections),
+      doc: defaultTaskDoc({
+        requiredSections: ctx.config.tasks.doc.required_sections,
+        title: p.title,
+        description: p.description,
+      }),
     };
 
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();

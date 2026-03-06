@@ -27,6 +27,8 @@ import {
 import { exitCodeForError } from "../cli/exit-codes.js";
 import { CliError } from "../shared/errors.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
+import { execFileAsync, gitEnv } from "./shared/git.js";
+import { getVersion } from "../meta/version.js";
 
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
 const DEFAULT_UPGRADE_CHECKSUM_ASSET = "agentplane-upgrade.tar.gz.sha256";
@@ -82,7 +84,8 @@ type UpgradeReviewRecord = {
     | "3way"
     | "incomingWins"
     | "incomingWinsFallback"
-    | "parseFailed";
+    | "parseFailed"
+    | "incidentsAppend";
 };
 
 async function safeRemovePath(targetPath: string): Promise<void> {
@@ -254,84 +257,9 @@ function isAllowedUpgradePath(relPath: string): boolean {
   return false;
 }
 
-const LOCAL_OVERRIDES_START = "<!-- AGENTPLANE:LOCAL-START -->";
-const LOCAL_OVERRIDES_END = "<!-- AGENTPLANE:LOCAL-END -->";
-
-function extractLocalOverridesBlock(text: string): string | null {
-  const start = text.indexOf(LOCAL_OVERRIDES_START);
-  const end = text.indexOf(LOCAL_OVERRIDES_END);
-  if (start === -1 || end === -1 || end < start) return null;
-  return text.slice(start + LOCAL_OVERRIDES_START.length, end).trim();
-}
-
-function withLocalOverridesBlock(base: string, localOverrides: string): string {
-  const start = base.indexOf(LOCAL_OVERRIDES_START);
-  const end = base.indexOf(LOCAL_OVERRIDES_END);
-  if (start === -1 || end === -1 || end < start) {
-    const suffix =
-      "\n\n## Local Overrides (preserved across upgrades)\n\n" +
-      `${LOCAL_OVERRIDES_START}\n` +
-      (localOverrides.trim() ? `${localOverrides.trim()}\n` : "") +
-      `${LOCAL_OVERRIDES_END}\n`;
-    return `${base.trimEnd()}${suffix}`;
-  }
-  const before = base.slice(0, start + LOCAL_OVERRIDES_START.length);
-  const after = base.slice(end);
-  return `${before}\n${localOverrides.trim() ? `${localOverrides.trim()}\n` : ""}${after}`;
-}
-
-function parseH2Sections(text: string): Map<string, string> {
-  const lines = text.replaceAll("\r\n", "\n").split("\n");
-  const sections = new Map<string, string>();
-  let current: string | null = null;
-  let buf: string[] = [];
-
-  const flush = () => {
-    if (!current) return;
-    if (!sections.has(current)) {
-      sections.set(current, buf.join("\n").trimEnd());
-    }
-  };
-
-  for (const line of lines) {
-    const m = /^##\s+(.+?)\s*$/.exec(line);
-    if (m) {
-      flush();
-      current = (m[1] ?? "").trim();
-      buf = [];
-      continue;
-    }
-    if (current) buf.push(line);
-  }
-  flush();
-  return sections;
-}
-
-function mergeAgentsPolicyMarkdown(incoming: string, current: string): string {
-  const local = extractLocalOverridesBlock(current);
-  if (local !== null) {
-    return withLocalOverridesBlock(incoming, local);
-  }
-
-  // Fallback: if the user edited AGENTS.md without the local markers, preserve their changes by
-  // appending differing/extra sections into a dedicated local overrides block.
-  const incomingSections = parseH2Sections(incoming);
-  const currentSections = parseH2Sections(current);
-  const overrides: string[] = [];
-  for (const [title, body] of currentSections.entries()) {
-    const incomingBody = incomingSections.get(title);
-    if (incomingBody === undefined) {
-      overrides.push(`### Added section: ${title}\n\n${body.trim()}\n`);
-      continue;
-    }
-    if (incomingBody.trim() !== body.trim()) {
-      overrides.push(`### Local edits for: ${title}\n\n${body.trim()}\n`);
-    }
-  }
-
-  if (overrides.length === 0) return incoming;
-  return withLocalOverridesBlock(incoming, overrides.join("\n"));
-}
+const INCIDENTS_POLICY_PATH = ".agentplane/policy/incidents.md";
+const INCIDENTS_APPEND_MARKER = "<!-- AGENTPLANE:UPGRADE-APPEND incidents.md -->";
+const CONFIG_REL_PATH = ".agentplane/config.json";
 
 function isJsonRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
@@ -374,127 +302,206 @@ function textChangedForType(opts: {
   return opts.aText.trimEnd() !== opts.bText.trimEnd();
 }
 
-// Used as a fallback for 3-way merges when no baseline is available. Incoming (upstream) values
-// win for scalar/object conflicts, while user-added keys and array items are preserved.
-function mergeAgentJsonIncomingWins(incomingText: string, currentText: string): string | null {
-  let incoming: unknown;
-  let current: unknown;
-  try {
-    incoming = JSON.parse(incomingText);
-    current = JSON.parse(currentText);
-  } catch {
-    return null;
+function parseIncidentEntryBlocks(entriesBody: string): string[] {
+  const lines = entriesBody.replaceAll("\r\n", "\n").split("\n");
+  const starts: number[] = [];
+  for (const [index, line] of lines.entries()) {
+    if (/^\s*-\s*id:\s+/i.test(line ?? "")) starts.push(index);
   }
-  if (!isJsonRecord(incoming) || !isJsonRecord(current)) return null;
-
-  const out: Record<string, unknown> = { ...incoming };
-  for (const [k, curVal] of Object.entries(current)) {
-    const incVal = incoming[k];
-    if (incVal === undefined) {
-      out[k] = curVal;
-      continue;
-    }
-    if (Array.isArray(incVal) && Array.isArray(curVal)) {
-      const merged = [...(incVal as unknown[])] as unknown[];
-      const seen = new Set<string>();
-      for (const x of merged) seen.add(JSON.stringify(canonicalizeJson(x)));
-      for (const item of curVal) {
-        const key = JSON.stringify(canonicalizeJson(item));
-        if (!seen.has(key)) {
-          merged.push(item);
-          seen.add(key);
-        }
-      }
-      out[k] = merged;
-      continue;
-    }
-    if (isJsonRecord(incVal) && isJsonRecord(curVal)) {
-      // Preserve user-only subkeys but let upstream win for conflicts.
-      out[k] = { ...curVal, ...incVal };
-      continue;
-    }
-    out[k] = incVal;
+  const blocks: string[] = [];
+  for (const [idx, start] of starts.entries()) {
+    const end = starts.at(idx + 1) ?? lines.length;
+    const slice = lines.slice(start, end);
+    while (slice.length > 0 && !(slice[0] ?? "").trim()) slice.shift();
+    while (slice.length > 0 && !(slice.at(-1) ?? "").trim()) slice.pop();
+    const block = slice.join("\n").trim();
+    if (block) blocks.push(block);
   }
-
-  return JSON.stringify(out, null, 2) + "\n";
+  return blocks;
 }
 
-function mergeAgentJson3Way(opts: {
+function normalizeEntryBlock(block: string): string {
+  return block
+    .replaceAll("\r\n", "\n")
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .trim();
+}
+
+function splitEntriesSection(text: string): {
+  before: string;
+  entriesBody: string;
+  after: string;
+} | null {
+  const lines = text.replaceAll("\r\n", "\n").split("\n");
+  const headingIndex = lines.findIndex((line) => /^\s*##\s+Entries\s*$/i.test(line));
+  if (headingIndex === -1) return null;
+
+  let nextHeadingIndex = lines.length;
+  for (let i = headingIndex + 1; i < lines.length; i++) {
+    if (/^\s*##\s+/.test(lines[i] ?? "")) {
+      nextHeadingIndex = i;
+      break;
+    }
+  }
+
+  return {
+    before: lines.slice(0, headingIndex + 1).join("\n"),
+    entriesBody: lines.slice(headingIndex + 1, nextHeadingIndex).join("\n"),
+    after: lines.slice(nextHeadingIndex).join("\n"),
+  };
+}
+
+function mergeIncidentsPolicy(opts: {
   incomingText: string;
   currentText: string;
-  baseText: string;
-}): string | null {
-  let incoming: unknown;
-  let current: unknown;
-  let base: unknown;
+  baselineText: string | null;
+}): {
+  nextText: string;
+  appended: boolean;
+  appendedCount: number;
+} {
+  const incomingTrimmed = opts.incomingText.trim();
+  if (!incomingTrimmed) return { nextText: opts.currentText, appended: false, appendedCount: 0 };
+
+  const incomingSection = splitEntriesSection(opts.incomingText);
+  const currentSection = splitEntriesSection(opts.currentText);
+  if (!incomingSection || !currentSection) {
+    return { nextText: opts.incomingText, appended: false, appendedCount: 0 };
+  }
+
+  const incomingBlocks = parseIncidentEntryBlocks(incomingSection.entriesBody).map((block) =>
+    normalizeEntryBlock(block),
+  );
+  const currentBlocks = parseIncidentEntryBlocks(currentSection.entriesBody).map((block) =>
+    normalizeEntryBlock(block),
+  );
+  if (currentBlocks.length === 0) {
+    return { nextText: opts.incomingText, appended: false, appendedCount: 0 };
+  }
+
+  const baselineSection = opts.baselineText ? splitEntriesSection(opts.baselineText) : null;
+  const baselineBlocks = baselineSection
+    ? parseIncidentEntryBlocks(baselineSection.entriesBody).map((block) =>
+        normalizeEntryBlock(block),
+      )
+    : [];
+  const baselineSet = new Set(baselineBlocks);
+  const incomingSet = new Set(incomingBlocks);
+
+  const userAdded = currentBlocks.filter((block) => {
+    if (baselineSet.size > 0 && baselineSet.has(block)) return false;
+    return true;
+  });
+  const toAppend = userAdded.filter((block) => !incomingSet.has(block));
+  if (toAppend.length === 0) {
+    return { nextText: opts.incomingText, appended: false, appendedCount: 0 };
+  }
+
+  const mergedBlocks = [...incomingBlocks, ...toAppend];
+  const renderedEntries =
+    mergedBlocks.length > 0 ? `\n\n${mergedBlocks.join("\n\n")}\n` : "\n\n- None yet.\n";
+  const afterSuffix = incomingSection.after ? `\n${incomingSection.after.trimStart()}` : "";
+  const nextText =
+    `${incomingSection.before.trimEnd()}` +
+    `${renderedEntries}` +
+    `${INCIDENTS_APPEND_MARKER}\n` +
+    `${afterSuffix}` +
+    `\n`;
+  return { nextText, appended: true, appendedCount: toAppend.length };
+}
+
+function normalizeUpgradeVersionLabel(input: string): string {
+  const trimmed = input.trim();
+  if (!trimmed) return "unknown";
+  if (/^v\d/i.test(trimmed)) return trimmed;
+  return `v${trimmed}`;
+}
+
+async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise<void> {
+  const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  const dirty = String(stdout ?? "")
+    .split(/\r?\n/u)
+    .map((line) => line.trimEnd())
+    .filter((line) => line.length > 0);
+  if (dirty.length === 0) return;
+  throw new CliError({
+    exitCode: exitCodeForError("E_GIT"),
+    code: "E_GIT",
+    message:
+      "Upgrade --auto requires a clean tracked working tree.\n" +
+      `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
+  });
+}
+
+async function createUpgradeCommit(opts: {
+  gitRoot: string;
+  paths: string[];
+  versionLabel: string;
+  source: "local_assets" | "upgrade_bundle" | "repo_tarball";
+  additions: number;
+  updates: number;
+  unchanged: number;
+  incidentsAppendedCount: number;
+}): Promise<{ hash: string; subject: string } | null> {
+  const uniquePaths = [...new Set(opts.paths.filter(Boolean))];
+  if (uniquePaths.length === 0) return null;
+  await execFileAsync("git", ["add", "--", ...uniquePaths], {
+    cwd: opts.gitRoot,
+    env: gitEnv(),
+    maxBuffer: 10 * 1024 * 1024,
+  });
+
+  const { stdout: stagedOut } = await execFileAsync(
+    "git",
+    ["diff", "--cached", "--name-only", "-z"],
+    {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+      encoding: "buffer",
+      maxBuffer: 10 * 1024 * 1024,
+    },
+  );
+  const staged = (Buffer.isBuffer(stagedOut) ? stagedOut.toString("utf8") : String(stagedOut ?? ""))
+    .split("\0")
+    .map((entry) => entry.trim())
+    .some(Boolean);
+  if (!staged) return null;
+
+  const subject = `⬆️ upgrade: apply framework ${opts.versionLabel}`;
+  const body =
+    `Upgrade-Version: ${opts.versionLabel}\n` +
+    `Source: ${opts.source}\n` +
+    `Managed-Changes: add=${opts.additions}, update=${opts.updates}, unchanged=${opts.unchanged}\n` +
+    `Incidents-Appended: ${opts.incidentsAppendedCount}\n`;
   try {
-    incoming = JSON.parse(opts.incomingText);
-    current = JSON.parse(opts.currentText);
-    base = JSON.parse(opts.baseText);
-  } catch {
-    return null;
-  }
-  if (!isJsonRecord(incoming) || !isJsonRecord(current) || !isJsonRecord(base)) return null;
-
-  const keys = new Set([...Object.keys(incoming), ...Object.keys(current), ...Object.keys(base)]);
-  const out: Record<string, unknown> = {};
-
-  for (const key of keys) {
-    const incVal = incoming[key];
-    const curVal = current[key];
-    const baseVal = base[key];
-
-    // Arrays: always take incoming as base; if user changed vs base, append user-only items.
-    if (Array.isArray(incVal) && Array.isArray(curVal) && Array.isArray(baseVal)) {
-      const merged = [...(incVal as unknown[])] as unknown[];
-      const userChanged = !jsonEqual(curVal, baseVal);
-      if (userChanged) {
-        const seen = new Set<string>();
-        for (const x of merged) seen.add(JSON.stringify(canonicalizeJson(x)));
-        for (const item of curVal) {
-          const k = JSON.stringify(canonicalizeJson(item));
-          if (!seen.has(k)) {
-            merged.push(item);
-            seen.add(k);
-          }
-        }
-      }
-      out[key] = merged;
-      continue;
-    }
-
-    // Objects: shallow merge; for each subkey, prefer incoming unless user changed vs base.
-    if (isJsonRecord(incVal) && isJsonRecord(curVal) && isJsonRecord(baseVal)) {
-      const merged: Record<string, unknown> = { ...incVal };
-      const subKeys = new Set([
-        ...Object.keys(incVal),
-        ...Object.keys(curVal),
-        ...Object.keys(baseVal),
-      ]);
-      for (const sk of subKeys) {
-        const incSub = incVal[sk];
-        const curSub = curVal[sk];
-        const baseSub = baseVal[sk];
-        const userChanged = !jsonEqual(curSub, baseSub);
-        if (userChanged) merged[sk] = curSub;
-        else if (incSub !== undefined) merged[sk] = incSub;
-        else if (curSub !== undefined) merged[sk] = curSub;
-      }
-      out[key] = merged;
-      continue;
-    }
-
-    // Scalars: prefer incoming unless the user changed vs base.
-    if (!jsonEqual(curVal, baseVal)) {
-      if (curVal !== undefined) out[key] = curVal;
-      else if (incVal !== undefined) out[key] = incVal;
-      continue;
-    }
-    if (incVal !== undefined) out[key] = incVal;
-    else if (curVal !== undefined) out[key] = curVal;
+    await execFileAsync("git", ["commit", "-m", subject, "-m", body], {
+      cwd: opts.gitRoot,
+      env: gitEnv(),
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  } catch (err) {
+    const details = (err as { stderr?: string; message?: string } | null)?.stderr ?? "";
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message:
+        "Upgrade applied but failed to create the upgrade commit.\n" +
+        "Fix commit policy/hook issues and commit the staged upgrade files as a dedicated upgrade commit.\n" +
+        (String(details).trim() ? `Details:\n${String(details).trim()}` : ""),
+    });
   }
 
-  return JSON.stringify(out, null, 2) + "\n";
+  const { stdout: hashOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: opts.gitRoot,
+    env: gitEnv(),
+  });
+  return { hash: String(hashOut ?? "").trim(), subject };
 }
 
 export async function cmdUpgradeParsed(opts: {
@@ -518,6 +525,9 @@ export async function cmdUpgradeParsed(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
+  if (flags.mode === "auto" && !flags.dryRun) {
+    await ensureCleanTrackedTreeForUpgrade(resolved.gitRoot);
+  }
   const upgradeStateDir = path.join(resolved.agentplaneDir, ".upgrade");
   const lockPath = path.join(upgradeStateDir, "lock.json");
   const statePath = path.join(upgradeStateDir, "state.json");
@@ -564,6 +574,7 @@ export async function cmdUpgradeParsed(opts: {
     let bundleLayout: "local_assets" | "upgrade_bundle" | "repo_tarball" = "upgrade_bundle";
     let bundleRoot = "";
     let normalizedSourceToPersist: string | null = null;
+    let upgradeVersionLabel = normalizeUpgradeVersionLabel(getVersion());
 
     if (!hasBundle && !useRemote) {
       bundleLayout = "local_assets";
@@ -613,6 +624,13 @@ export async function cmdUpgradeParsed(opts: {
         releaseUrl,
         UPGRADE_RELEASE_METADATA_TIMEOUT_MS,
       )) as GitHubRelease;
+      const releaseTag =
+        (typeof release.tag_name === "string" && release.tag_name.trim()) ||
+        (typeof flags.tag === "string" && flags.tag.trim()) ||
+        "";
+      if (releaseTag) {
+        upgradeVersionLabel = normalizeUpgradeVersionLabel(releaseTag);
+      }
       const download = resolveUpgradeDownloadFromRelease({
         release,
         owner,
@@ -697,15 +715,7 @@ export async function cmdUpgradeParsed(opts: {
     const merged: string[] = [];
     const missingRequired: string[] = [];
     const reviewRecords: UpgradeReviewRecord[] = [];
-    const reviewSnapshots = new Map<
-      string,
-      {
-        incomingText: string;
-        currentText: string | null;
-        baselineText: string | null;
-        proposedText: string;
-      }
-    >();
+    let incidentsAppendedCount = 0;
 
     const readBaselineText = async (baselineKey: string): Promise<string | null> => {
       try {
@@ -829,7 +839,7 @@ export async function cmdUpgradeParsed(opts: {
               aText: currentTextForReview,
               bText: incomingTextOriginal,
             }) === false;
-      // Fast-path: if incoming already equals local, semantic merge/snapshots are unnecessary.
+      // Fast-path: incoming already equals local.
       if (currentTextForReview !== null && currentAndIncomingEqual) {
         skipped.push(rel);
         reviewRecords.push({
@@ -846,7 +856,7 @@ export async function cmdUpgradeParsed(opts: {
         continue;
       }
 
-      // No local edits vs baseline: file can be safely replaced with incoming without semantic merge.
+      // No local edits vs baseline: file can be safely replaced with incoming.
       if (currentTextForReview !== null && changedCurrentVsBaseline === false) {
         updates.push(rel);
         fileContents.set(rel, data);
@@ -867,55 +877,25 @@ export async function cmdUpgradeParsed(opts: {
       let mergeApplied = false;
       let mergePath: UpgradeReviewRecord["mergePath"] = "none";
 
-      // Merge logic only needs text for a small subset of managed files.
-      if (existingBuf) {
-        if (
-          entry.merge_strategy === "agents_policy_markdown" &&
-          (rel === "AGENTS.md" || rel === "CLAUDE.md")
-        ) {
-          existingText = existingBuf.toString("utf8");
-          const mergedText = mergeAgentsPolicyMarkdown(data.toString("utf8"), existingText);
-          data = Buffer.from(mergedText, "utf8");
+      // Simplified policy for upgrade:
+      // - All managed files are replaced with incoming bundle content.
+      // - incidents.md is append-only when local file already has content.
+      if (existingBuf && rel === INCIDENTS_POLICY_PATH) {
+        existingText = existingBuf.toString("utf8");
+        const mergedIncidents = mergeIncidentsPolicy({
+          incomingText: data.toString("utf8"),
+          currentText: existingText,
+          baselineText,
+        });
+        data = Buffer.from(mergedIncidents.nextText, "utf8");
+        if (mergedIncidents.appended) {
           merged.push(rel);
           mergeApplied = true;
-          mergePath = "markdownOverrides";
-        } else if (
-          entry.merge_strategy === "agent_json_3way" &&
-          rel.startsWith(".agentplane/agents/") &&
-          rel.endsWith(".json")
-        ) {
-          existingText = existingBuf.toString("utf8");
-          let mergedText: string | null = null;
-          if (baselineText !== null) {
-            try {
-              mergedText = mergeAgentJson3Way({
-                incomingText: data.toString("utf8"),
-                currentText: existingText,
-                baseText: baselineText,
-              });
-            } catch {
-              mergedText = null;
-            }
-          }
-          if (mergedText) {
-            mergePath = "3way";
-          } else {
-            mergedText = mergeAgentJsonIncomingWins(data.toString("utf8"), existingText);
-            if (mergedText) {
-              mergePath = baselineText === null ? "incomingWins" : "incomingWinsFallback";
-            }
-          }
-          if (mergedText) {
-            data = Buffer.from(mergedText, "utf8");
-            merged.push(rel);
-            mergeApplied = true;
-          } else {
-            mergePath = "parseFailed";
-          }
+          mergePath = "incidentsAppend";
+          incidentsAppendedCount += mergedIncidents.appendedCount;
         }
       }
 
-      const proposedText = data.toString("utf8");
       const currentDiffersFromIncoming =
         currentTextForReview === null
           ? false
@@ -925,19 +905,7 @@ export async function cmdUpgradeParsed(opts: {
               bText: incomingTextOriginal,
             });
 
-      const baselineConflict =
-        baselineText === null
-          ? false
-          : currentDiffersFromIncoming &&
-            Boolean(changedCurrentVsBaseline) &&
-            Boolean(changedIncomingVsBaseline);
-      const unresolvedLocalEditsConflict =
-        baselineText === null
-          ? false
-          : currentDiffersFromIncoming && Boolean(changedCurrentVsBaseline) && !mergeApplied;
-      const parseFailedConflict = mergePath === "parseFailed";
-      const needsSemanticReview =
-        baselineConflict || unresolvedLocalEditsConflict || parseFailedConflict;
+      const needsSemanticReview = false;
 
       reviewRecords.push({
         relPath: rel,
@@ -950,15 +918,6 @@ export async function cmdUpgradeParsed(opts: {
         mergeApplied,
         mergePath,
       });
-
-      if (flags.mode === "agent" && needsSemanticReview) {
-        reviewSnapshots.set(rel, {
-          incomingText: incomingTextOriginal,
-          currentText: currentTextForReview,
-          baselineText,
-          proposedText,
-        });
-      }
 
       fileContents.set(rel, data);
       if (kind === null) additions.push(rel);
@@ -1076,30 +1035,9 @@ export async function cmdUpgradeParsed(opts: {
         "utf8",
       );
 
-      if (needsReview.length > 0) {
-        const snapshotsRoot = path.join(runDir, "snapshots");
-        for (const [rel, snap] of reviewSnapshots.entries()) {
-          const variants: [string, string | null][] = [
-            ["current", snap.currentText],
-            ["incoming", snap.incomingText],
-            ["baseline", snap.baselineText],
-            ["proposed", snap.proposedText],
-          ];
-          for (const [variant, text] of variants) {
-            if (text === null) continue;
-            const outPath = path.join(snapshotsRoot, variant, rel);
-            await mkdir(path.dirname(outPath), { recursive: true });
-            await writeFile(outPath, text, "utf8");
-          }
-        }
-      }
-
       const relRunDir = path.relative(resolved.gitRoot, runDir);
       process.stdout.write(`Upgrade plan written: ${relRunDir}\n`);
-      process.stdout.write(`Prompt merge required: ${needsReview.length} files\n`);
-      if (needsReview.length > 0) {
-        process.stdout.write(`Hint: Create an UPGRADER task and attach ${relRunDir}\n`);
-      }
+      process.stdout.write(`Review-required files: ${needsReview.length}\n`);
       return 0;
     }
 
@@ -1150,12 +1088,17 @@ export async function cmdUpgradeParsed(opts: {
       }
     }
 
-    const raw = { ...loaded.raw };
-    if (normalizedSourceToPersist) {
-      setByDottedKey(raw, "framework.source", normalizedSourceToPersist);
+    const hasManagedMutations = additions.length > 0 || updates.length > 0;
+    const hasSourceMigration = normalizedSourceToPersist !== null;
+    const shouldMutateConfig = hasManagedMutations || hasSourceMigration;
+    if (shouldMutateConfig) {
+      const raw = { ...loaded.raw };
+      if (normalizedSourceToPersist) {
+        setByDottedKey(raw, "framework.source", normalizedSourceToPersist);
+      }
+      setByDottedKey(raw, "framework.last_update", new Date().toISOString());
+      await saveConfig(resolved.agentplaneDir, raw);
     }
-    setByDottedKey(raw, "framework.last_update", new Date().toISOString());
-    await saveConfig(resolved.agentplaneDir, raw);
     await writeFile(
       statePath,
       JSON.stringify(
@@ -1185,11 +1128,27 @@ export async function cmdUpgradeParsed(opts: {
       ) + "\n",
       "utf8",
     );
+    const commitPaths = [
+      ...new Set([...additions, ...updates, ...(shouldMutateConfig ? [CONFIG_REL_PATH] : [])]),
+    ];
+    const commit = await createUpgradeCommit({
+      gitRoot: resolved.gitRoot,
+      paths: commitPaths,
+      versionLabel: upgradeVersionLabel,
+      source: bundleLayout,
+      additions: additions.length,
+      updates: updates.length,
+      unchanged: skipped.length,
+      incidentsAppendedCount,
+    });
     await cleanupAutoUpgradeArtifacts({ upgradeStateDir, createdBackups });
 
     process.stdout.write(
       `Upgrade applied: ${additions.length} add, ${updates.length} update, ${skipped.length} unchanged\n`,
     );
+    if (commit) {
+      process.stdout.write(`Upgrade commit: ${commit.hash.slice(0, 12)} ${commit.subject}\n`);
+    }
     return 0;
   } finally {
     if (extractRoot) await rm(extractRoot, { recursive: true, force: true });

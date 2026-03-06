@@ -11,7 +11,7 @@ Use this module when `workflow_mode=direct`.
 5. Approve plan (if required), then start task sequentially.
 6. Implement changes in current checkout.
 7. Run verification commands from loaded DoD modules.
-8. Record verification (`agentplane verify ...`) if required by workflow.
+8. Record verification result (`agentplane verify ...`) for the task scope.
 9. CHECKPOINT C: finish task with traceable evidence.
 
 ## Command contract

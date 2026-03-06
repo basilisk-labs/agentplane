@@ -575,6 +575,70 @@ describe("runCli", () => {
     }
   });
 
+  it("prints JSON success envelope when --output json is set", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--output", "json", "config", "show", "--root", root]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        mode?: string;
+        command?: string;
+        ok?: boolean;
+        exit_code?: number;
+        data?: { workflow_mode?: string };
+      };
+      expect(payload.mode).toBe("agent_json_v1");
+      expect(payload.command).toBe("config show");
+      expect(payload.ok).toBe(true);
+      expect(payload.exit_code).toBe(0);
+      expect(typeof payload.data?.workflow_mode).toBe("string");
+      expect(io.stderr.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("uses AGENTPLANE_OUTPUT=json as global output mode", async () => {
+    const original = process.env.AGENTPLANE_OUTPUT;
+    process.env.AGENTPLANE_OUTPUT = "json";
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help"]);
+      expect(code).toBe(0);
+      const payload = JSON.parse(io.stdout) as {
+        mode?: string;
+        command?: string;
+        ok?: boolean;
+      };
+      expect(payload.mode).toBe("agent_json_v1");
+      expect(payload.command).toBe("help");
+      expect(payload.ok).toBe(true);
+    } finally {
+      if (original === undefined) {
+        delete process.env.AGENTPLANE_OUTPUT;
+      } else {
+        process.env.AGENTPLANE_OUTPUT = original;
+      }
+      io.restore();
+    }
+  });
+
+  it("prints JSON errors automatically when --output json is set", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["--output", "json", "config", "set"]);
+      expect(code).toBe(2);
+      expect(io.stdout).toContain('"error"');
+      expect(io.stdout).toContain('"code": "E_USAGE"');
+      expect(io.stdout).toContain("Missing required argument");
+      expect(io.stderr.trim()).toBe("");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("returns usage error when config set is missing key/value", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

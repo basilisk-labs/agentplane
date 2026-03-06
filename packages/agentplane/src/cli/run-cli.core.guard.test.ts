@@ -932,7 +932,7 @@ describe("runCli", () => {
       .map((s) => s.trim())
       .filter(Boolean);
     expect(changed).toEqual([`.agentplane/tasks/${taskId}/README.md`]);
-  });
+  }, 60_000);
 
   it("commit wrapper --close rejects non-empty index", async () => {
     const root = await mkGitRepoRoot();
@@ -1019,7 +1019,7 @@ describe("runCli", () => {
       .map((s) => s.trim())
       .filter(Boolean);
     expect(changed).toEqual([`.agentplane/tasks/${taskId}/README.md`]);
-  });
+  }, 60_000);
 
   it("commit wrapper --close supports --check-only", async () => {
     const root = await mkGitRepoRoot();

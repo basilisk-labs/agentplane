@@ -56,9 +56,23 @@ export function buildWorkflowFromTemplates(input: WorkflowBuildInput): WorkflowB
   );
   const runtimeWorkflow = input.runtimeContext.workflow;
   if (runtimeWorkflow && typeof runtimeWorkflow === "object" && !Array.isArray(runtimeWorkflow)) {
-    const runtimeMode = (runtimeWorkflow as Record<string, unknown>).mode;
+    const runtimeWorkflowRecord = runtimeWorkflow as Record<string, unknown>;
+    const runtimeMode = runtimeWorkflowRecord.mode;
     if (runtimeMode === "direct" || runtimeMode === "branch_pr") {
       mergedFrontMatter.mode = runtimeMode;
+    }
+    const runtimeApprovals = runtimeWorkflowRecord.approvals;
+    if (
+      runtimeApprovals &&
+      typeof runtimeApprovals === "object" &&
+      !Array.isArray(runtimeApprovals)
+    ) {
+      const approvalsRecord = runtimeApprovals as Record<string, unknown>;
+      mergedFrontMatter.approvals = {
+        require_plan: approvalsRecord.require_plan === true,
+        require_verify: approvalsRecord.require_verify === true,
+        require_network: approvalsRecord.require_network === true,
+      };
     }
   }
   const mergedSections = mergeSections(base.document.sections, override?.document.sections ?? {});
@@ -122,7 +136,7 @@ in_scope_paths:
 ---
 
 ## Prompt Template
-Repository root: {{ runtime.repo_root }}
+Repository: {{ runtime.repo_name }}
 Workflow mode: {{ workflow.mode }}
 
 ## Checks

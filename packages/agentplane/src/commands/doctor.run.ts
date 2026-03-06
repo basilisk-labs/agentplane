@@ -325,12 +325,12 @@ async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<string[]
     if (!hash) continue;
     const subject = subjectByHash.get(hash) ?? "";
     if (!subject) {
-      problems.push(`DONE task references unknown commit hash: ${id} -> ${hash}`);
+      problems.push(`[WARN] DONE task references unknown commit hash: ${id} -> ${hash}`);
       continue;
     }
     if (/\bclose:/iu.test(subject)) {
       problems.push(
-        `DONE task implementation commit points to a close commit: ${id} -> ${hash} (${subject})`,
+        `[WARN] DONE task implementation commit points to a close commit: ${id} -> ${hash} (${subject})`,
       );
     }
   }

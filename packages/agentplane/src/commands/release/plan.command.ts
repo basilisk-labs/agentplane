@@ -125,7 +125,7 @@ function changesMarkdown(changes: Change[]): string {
 }
 
 function requiredBulletCount(changeCount: number): number {
-  return Math.max(5, changeCount);
+  return Math.max(1, changeCount);
 }
 
 function releaseInstructions(opts: {
@@ -147,7 +147,7 @@ function releaseInstructions(opts: {
     `Rules:\n` +
     `- Use detailed, human-readable bullets focused on outcomes and user-facing improvements.\n` +
     `- Cover all listed differences from \`changes.md\`; do not omit commits.\n` +
-    `- Keep one concrete bullet per meaningful change in plain language.\n` +
+    `- Keep one concrete bullet per listed change in plain language.\n` +
     `- Write at least ${opts.minBullets} bullet points.\n` +
     `- Do not include Cyrillic.\n` +
     `- Use \`docs/releases/TEMPLATE.md\` as the structure.\n\n` +

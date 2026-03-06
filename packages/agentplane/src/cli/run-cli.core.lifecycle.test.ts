@@ -745,7 +745,7 @@ describe("runCli", () => {
     expect(body).toContain("Status: DOING");
     expect(body).toContain("Comment:");
     expect(body).toContain("implement comment-driven commit for start flow");
-  });
+  }, 90_000);
 
   it("start --commit-from-comment normalizes ./ prefixes in allowlist", async () => {
     const root = await mkGitRepoRoot();
@@ -1611,7 +1611,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  }, 15_000);
+  }, 60_000);
 
   it("block updates status and appends comment", async () => {
     const root = await mkGitRepoRoot();

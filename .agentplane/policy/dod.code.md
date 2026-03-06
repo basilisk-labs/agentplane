@@ -4,9 +4,9 @@ Apply when task changes implementation/source code.
 
 ## Minimum checks
 
-- `bun run typecheck`
-- `bun run lint:core`
-- `bun run test:fast` (or narrower targeted tests with rationale)
+- `agentplane task verify-show <task-id>` (read declared verification contract first)
+- Run all checks listed in task `## Verify Steps` (or record approved skips)
+- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`
 
 ## Verification notes contract
 

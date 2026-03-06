@@ -119,7 +119,6 @@ async function runWorkflowPlaybookCommand(opts: {
       env: {
         ...process.env,
         AGENTPLANE_NO_UPDATE_CHECK: process.env.AGENTPLANE_NO_UPDATE_CHECK ?? "1",
-        AGENTPLANE_DEV_ALLOW_STALE_DIST: process.env.AGENTPLANE_DEV_ALLOW_STALE_DIST ?? "1",
       },
       encoding: "utf8",
       maxBuffer: 10 * 1024 * 1024,

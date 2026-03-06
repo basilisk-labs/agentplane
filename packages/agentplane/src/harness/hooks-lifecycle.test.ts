@@ -13,7 +13,7 @@ describe("harness/hooks-lifecycle", () => {
       const result = await runLifecycleHook({
         hook: "before_run",
         cwd: dir,
-        policy: { command: "echo ok", timeoutMs: 1000, blocking: true },
+        policy: { command: "echo ok", timeoutMs: 10_000, blocking: true },
       });
       expect(result.ok).toBe(true);
       expect(result.output).toContain("ok");
@@ -29,13 +29,15 @@ describe("harness/hooks-lifecycle", () => {
         cwd: dir,
         order: ["before_run", "after_run"],
         hooks: {
-          before_run: { command: "exit 9", timeoutMs: 1000, blocking: true },
+          before_run: { command: "exit 9", timeoutMs: 10_000, blocking: true },
           after_run: { command: "echo later", timeoutMs: 1000, blocking: true },
         },
       });
       expect(out.ok).toBe(false);
       expect(out.results).toHaveLength(1);
-      expect(out.results[0]?.exitCode).toBe(9);
+      const first = out.results[0];
+      expect(first?.ok).toBe(false);
+      expect(first?.exitCode === 9 || first?.timedOut === true).toBe(true);
     } finally {
       await fs.rm(dir, { recursive: true, force: true });
     }

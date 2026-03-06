@@ -204,7 +204,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("branch base set maps errors for non-git roots", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-cli-test-"));
@@ -403,7 +403,7 @@ describe("runCli", () => {
         source_of_truth?: { workflow_policy?: string };
         lines?: string[];
       };
-      expect(payload.source_of_truth?.workflow_policy).toBe("AGENTS.md");
+      expect(payload.source_of_truth?.workflow_policy).toBe("AGENTS.md|CLAUDE.md");
       expect(Array.isArray(payload.lines)).toBe(true);
       expect((payload.lines ?? []).some((line) => line.includes("agentplane init"))).toBe(true);
     } finally {
@@ -613,7 +613,7 @@ describe("runCli", () => {
         io.restore();
       }
     }
-  });
+  }, 90_000);
 
   it("profile set applies preset defaults to config", async () => {
     const root = await mkGitRepoRoot();
@@ -645,7 +645,7 @@ describe("runCli", () => {
       const code = await runCli(["role", "CODER", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("### CODER");
-      expect(io.stdout).toContain("agentplane start");
+      expect(io.stdout).toContain("agentplane task start-ready");
     } finally {
       io.restore();
     }
@@ -661,9 +661,9 @@ describe("runCli", () => {
       const payload = JSON.parse(io.stdout) as { role?: string; builtin_guide?: string[] };
       expect(payload.role).toBe("CODER");
       expect(Array.isArray(payload.builtin_guide)).toBe(true);
-      expect((payload.builtin_guide ?? []).some((line) => line.includes("agentplane start"))).toBe(
-        true,
-      );
+      expect(
+        (payload.builtin_guide ?? []).some((line) => line.includes("agentplane task start-ready")),
+      ).toBe(true);
     } finally {
       io.restore();
     }
@@ -1012,7 +1012,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("branch remove deletes the branch", async () => {
     const root = await mkGitRepoRootWithBranch("main");

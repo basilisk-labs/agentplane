@@ -1,5 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { execFile } from "node:child_process";
 import path from "node:path";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -9,8 +11,10 @@ import {
 } from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
+const execFileAsync = promisify(execFile);
+
 describe("upgrade merge behavior", () => {
-  it("merges AGENTS.md local overrides and merges agent JSON; skips config overwrite", async () => {
+  it("replaces managed files with incoming content; skips config overwrite", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -18,31 +22,9 @@ describe("upgrade merge behavior", () => {
     const configPath = path.join(root, ".agentplane", "config.json");
     const originalConfig = await readFile(configPath, "utf8");
 
-    // Seed a baseline file set to enable three-way agent JSON merges.
-    const baselineDir = path.join(root, ".agentplane", ".upgrade", "baseline");
-    await mkdir(path.join(baselineDir, "agents"), { recursive: true });
-    await writeFile(
-      path.join(baselineDir, "agents", "CODER.json"),
-      JSON.stringify({ id: "CODER", role: "Coder", workflow: ["upstream-step"] }, null, 2) + "\n",
-      "utf8",
-    );
-
-    // Existing AGENTS.md with local override markers.
+    // Existing AGENTS.md with local-only edits.
     const agentsPath = path.join(root, "AGENTS.md");
-    await writeFile(
-      agentsPath,
-      [
-        "# Policy",
-        "",
-        "## Local Overrides (preserved across upgrades)",
-        "",
-        "<!-- AGENTPLANE:LOCAL-START -->",
-        "LOCAL: keep this line",
-        "<!-- AGENTPLANE:LOCAL-END -->",
-        "",
-      ].join("\n"),
-      "utf8",
-    );
+    await writeFile(agentsPath, ["# Policy", "", "LOCAL: keep this line"].join("\n"), "utf8");
 
     // Existing agent with user customization.
     const agentsDir = path.join(root, ".agentplane", "agents");
@@ -112,13 +94,12 @@ describe("upgrade merge behavior", () => {
     ).toBe(true);
     expect(
       lastReview.files?.some(
-        (f) => f.relPath === ".agentplane/agents/CODER.json" && f.needsSemanticReview === true,
+        (f) => f.relPath === ".agentplane/agents/CODER.json" && f.needsSemanticReview === false,
       ),
     ).toBe(true);
 
     const mergedAgents = await readFile(agentsPath, "utf8");
-    expect(mergedAgents).toContain("# New Policy");
-    expect(mergedAgents).toContain("LOCAL: keep this line");
+    expect(mergedAgents).toBe(incomingAgents);
 
     const mergedCoder = JSON.parse(await readFile(path.join(agentsDir, "CODER.json"), "utf8")) as {
       workflow?: string[];
@@ -126,8 +107,8 @@ describe("upgrade merge behavior", () => {
       local_only?: boolean;
     };
     expect(mergedCoder.role).toBe("Coder v2");
-    expect(mergedCoder.workflow).toEqual(["upstream-step", "new-step", "local-step"]);
-    expect(mergedCoder.local_only).toBe(true);
+    expect(mergedCoder.workflow).toEqual(["upstream-step", "new-step"]);
+    expect(mergedCoder.local_only).toBeUndefined();
 
     const finalConfig = await readFile(configPath, "utf8");
     // config.json should not be overwritten by the bundle; it may be updated by upgrade itself
@@ -137,6 +118,13 @@ describe("upgrade merge behavior", () => {
     const parsedFinal = JSON.parse(finalConfig) as Record<string, unknown>;
     expect(parsedFinal.schema_version).toBe(parsedOriginal.schema_version);
     expect(parsedFinal.paths).toEqual(parsedOriginal.paths);
+
+    const { stdout: commitBodyOut } = await execFileAsync("git", ["log", "-1", "--pretty=%B"], {
+      cwd: root,
+    });
+    const commitBody = String(commitBodyOut ?? "");
+    expect(commitBody).toContain("upgrade: apply framework");
+    expect(commitBody).toContain("Upgrade-Version:");
   });
 
   it("does not require semantic review when baseline differs but current equals incoming", async () => {
@@ -261,6 +249,172 @@ describe("upgrade merge behavior", () => {
     expect(agentsReview?.changedCurrentVsBaseline).toBe(false);
     expect(agentsReview?.needsSemanticReview).toBe(false);
     expect(agentsReview?.mergeApplied).toBe(false);
+  });
+
+  it("appends incoming incidents policy when local incidents file is non-empty", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const incidentsPath = path.join(root, ".agentplane", "policy", "incidents.md");
+    await mkdir(path.dirname(incidentsPath), { recursive: true });
+    await writeFile(
+      incidentsPath,
+      ["# Policy Incidents Log", "", "## Entries", "", "- id: INC-20260306-01"].join("\n"),
+      "utf8",
+    );
+
+    const incomingIncidents = [
+      "# Policy Incidents Log",
+      "",
+      "## Entry contract",
+      "",
+      "- Add entries append-only.",
+      "",
+      "## Entries",
+      "",
+      "- None yet.",
+      "",
+    ].join("\n");
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [
+            {
+              path: ".agentplane/policy/incidents.md",
+              source_path: "policy/incidents.md",
+              type: "markdown",
+              merge_strategy: "agents_policy_markdown",
+              required: true,
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "policy/incidents.md": incomingIncidents,
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "auto",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+
+    const finalIncidents = await readFile(incidentsPath, "utf8");
+    expect(finalIncidents).toContain("INC-20260306-01");
+    expect(finalIncidents).toContain("AGENTPLANE:UPGRADE-APPEND incidents.md");
+    expect(finalIncidents).toContain("## Entry contract");
+
+    const lastReviewPath = path.join(root, ".agentplane", ".upgrade", "last-review.json");
+    const lastReview = JSON.parse(await readFile(lastReviewPath, "utf8")) as {
+      files?: {
+        relPath?: string;
+        needsSemanticReview?: boolean;
+        mergeApplied?: boolean;
+        mergePath?: string;
+      }[];
+    };
+    const incidentsReview = lastReview.files?.find(
+      (f) => f.relPath === ".agentplane/policy/incidents.md",
+    );
+    expect(incidentsReview?.needsSemanticReview).toBe(false);
+    expect(incidentsReview?.mergeApplied).toBe(true);
+    expect(incidentsReview?.mergePath).toBe("incidentsAppend");
+  });
+
+  it("does not append incidents when local incidents file equals baseline template", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const baselineIncidents = [
+      "# Policy Incidents Log",
+      "",
+      "## Entry template",
+      "",
+      "- id: `INC-YYYYMMDD-NN`",
+      "",
+      "## Entries",
+      "",
+      "- None yet.",
+      "",
+    ].join("\n");
+    const baselinePath = path.join(
+      root,
+      ".agentplane",
+      ".upgrade",
+      "baseline",
+      "policy",
+      "incidents.md",
+    );
+    await mkdir(path.dirname(baselinePath), { recursive: true });
+    await writeFile(baselinePath, baselineIncidents, "utf8");
+
+    const incidentsPath = path.join(root, ".agentplane", "policy", "incidents.md");
+    await mkdir(path.dirname(incidentsPath), { recursive: true });
+    await writeFile(incidentsPath, baselineIncidents, "utf8");
+
+    const incomingIncidents = [
+      "# Policy Incidents Log",
+      "",
+      "## Entry contract",
+      "",
+      "- Add entries append-only.",
+      "",
+      "## Entries",
+      "",
+      "- None yet.",
+      "",
+    ].join("\n");
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [
+            {
+              path: ".agentplane/policy/incidents.md",
+              source_path: "policy/incidents.md",
+              type: "markdown",
+              merge_strategy: "agents_policy_markdown",
+              required: true,
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "policy/incidents.md": incomingIncidents,
+    });
+
+    const code = await cmdUpgradeParsed({
+      cwd: root,
+      rootOverride: root,
+      flags: {
+        bundle: bundlePath,
+        checksum: checksumPath,
+        mode: "auto",
+        remote: false,
+        allowTarball: false,
+        dryRun: false,
+        backup: false,
+        yes: true,
+      },
+    });
+    expect(code).toBe(0);
+
+    const finalIncidents = await readFile(incidentsPath, "utf8");
+    expect(finalIncidents).toBe(incomingIncidents);
+    expect(finalIncidents).not.toContain("AGENTPLANE:UPGRADE-APPEND incidents.md");
   });
 
   it("accepts managed policy files from manifest and writes them", async () => {

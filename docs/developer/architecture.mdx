@@ -60,9 +60,9 @@ This loop keeps autonomy useful while preserving operator control and repository
 
 `agentplane upgrade` applies managed framework assets and can emit upgrade review artifacts.
 
-- In agent mode, run artifacts are created under `.agentplane/.upgrade/agent/<runId>/` only when a plan is needed (changes to add/update or semantic-review candidates).
+- In agent mode, run artifacts are created under `.agentplane/.upgrade/agent/<runId>/` only when a plan is needed (changes to add/update).
 - When there are no managed changes, agent mode exits via fast no-op and does not create per-run artifacts.
-- For managed files with baseline and no local edits (`current == baseline`), auto mode replaces with incoming directly without semantic merge.
+- Auto mode uses replace-first behavior for managed files; `.agentplane/policy/incidents.md` is append-only when local content already exists.
 
 Policy enforcement happens in command handlers and guard flows:
 

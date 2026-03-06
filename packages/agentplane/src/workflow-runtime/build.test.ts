@@ -13,7 +13,7 @@ owners:
 ---
 
 ## Prompt Template
-Repository {{ runtime.repo_root }}
+Repository {{ runtime.repo_name }}
 
 ## Checks
 - preflight
@@ -23,12 +23,12 @@ Repository {{ runtime.repo_root }}
 `,
       runtimeContext: {
         workflow: { mode: "branch_pr", version: 1 },
-        runtime: { repo_root: "/repo" },
+        runtime: { repo_name: "repo", repo_root: "/repo" },
       },
     });
 
     expect(out.text).toContain('mode: "branch_pr"');
-    expect(out.text).toContain("Repository /repo");
+    expect(out.text).toContain("Repository repo");
     expect(out.text).toContain("- custom");
   });
 
@@ -52,10 +52,32 @@ f
 `,
       runtimeContext: {
         workflow: { mode: "direct", version: 1 },
-        runtime: { repo_root: "/repo" },
+        runtime: { repo_name: "repo", repo_root: "/repo" },
       },
     });
 
     expect(out.diagnostics.some((d) => d.code === "WF_TEMPLATE_UNKNOWN_VARIABLE")).toBe(true);
+  });
+
+  it("uses approvals from runtime context when provided", () => {
+    const out = buildWorkflowFromTemplates({
+      baseTemplate: DEFAULT_WORKFLOW_TEMPLATE,
+      runtimeContext: {
+        workflow: {
+          mode: "direct",
+          version: 1,
+          approvals: {
+            require_plan: false,
+            require_verify: false,
+            require_network: true,
+          },
+        },
+        runtime: { repo_name: "repo", repo_root: "/repo" },
+      },
+    });
+
+    expect(out.text).toContain("require_plan: false");
+    expect(out.text).toContain("require_verify: false");
+    expect(out.text).toContain("require_network: true");
   });
 });

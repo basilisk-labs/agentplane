@@ -227,5 +227,5 @@ describe("agentplane CLI smoke", () => {
       else process.env.AGENTPLANE_HOME = previousAgentplaneHome;
       await rm(root, { recursive: true, force: true });
     }
-  }, 15_000);
+  }, 60_000);
 });

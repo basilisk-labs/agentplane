@@ -766,7 +766,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(ioStart.stdout).toContain("ready");
-      expect(ioStart.stdout).toContain("started");
+      expect(ioStart.stdout).not.toContain("started");
     } finally {
       ioStart.restore();
     }

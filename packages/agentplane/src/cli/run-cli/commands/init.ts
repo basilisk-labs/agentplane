@@ -715,6 +715,11 @@ async function cmdInit(opts: {
     const workflowInit = await ensureInitWorkflow({
       gitRoot: resolved.gitRoot,
       workflowMode: workflow,
+      approvals: {
+        requirePlanApproval,
+        requireVerifyApproval,
+        requireNetworkApproval,
+      },
     });
     for (const abs of workflowInit.installPaths) {
       installPaths.push(path.relative(resolved.gitRoot, abs));

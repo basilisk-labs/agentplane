@@ -66,13 +66,20 @@ export const runWorkflowBuild: CommandHandler<WorkflowBuildParsed> = async (ctx,
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const configLoaded = await loadConfig(resolved.agentplaneDir);
   const workflowPaths = resolveWorkflowPaths(resolved.gitRoot);
+  const configApprovals = configLoaded.config.agents?.approvals;
 
   const runtimeContext = {
     workflow: {
       mode: configLoaded.config.workflow_mode,
       version: 1,
+      approvals: {
+        require_plan: configApprovals?.require_plan ?? true,
+        require_verify: configApprovals?.require_verify ?? true,
+        require_network: configApprovals?.require_network ?? true,
+      },
     },
     runtime: {
+      repo_name: path.basename(resolved.gitRoot),
       repo_root: resolved.gitRoot,
       timestamp: new Date().toISOString(),
     },

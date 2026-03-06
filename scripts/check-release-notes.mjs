@@ -1,17 +1,77 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
+
+function parseSemverTag(tag) {
+  const match = /^v(\d+)\.(\d+)\.(\d+)$/u.exec(tag.trim());
+  if (!match) return null;
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+  };
+}
+
+function compareSemverTags(a, b) {
+  const pa = parseSemverTag(a);
+  const pb = parseSemverTag(b);
+  if (!pa || !pb) return a.localeCompare(b);
+  if (pa.major !== pb.major) return pa.major - pb.major;
+  if (pa.minor !== pb.minor) return pa.minor - pb.minor;
+  return pa.patch - pb.patch;
+}
+
+function listReleaseTags(rootDir) {
+  try {
+    const out = execFileSync("git", ["tag", "--list", "v[0-9]*.[0-9]*.[0-9]*"], {
+      cwd: rootDir,
+      encoding: "utf8",
+    });
+    return out
+      .split(/\r?\n/u)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .toSorted(compareSemverTags);
+  } catch {
+    return [];
+  }
+}
+
+function requiredBulletsFromGitRange(rootDir, tag) {
+  const releaseTags = listReleaseTags(rootDir);
+  const index = releaseTags.indexOf(tag);
+  const prevTag = index > 0 ? releaseTags[index - 1] : null;
+  const range = prevTag ? `${prevTag}..${tag}` : tag;
+  try {
+    const out = execFileSync("git", ["log", "--no-merges", "--pretty=format:%H", range], {
+      cwd: rootDir,
+      encoding: "utf8",
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    const count = out
+      .split(/\r?\n/u)
+      .map((line) => line.trim())
+      .filter(Boolean).length;
+    return Math.max(1, count);
+  } catch {
+    return 1;
+  }
+}
 
 const run = () => {
   const args = process.argv.slice(2);
   let tagArg = null;
-  let minBullets = 5;
+  let minBulletsOverride = null;
   for (let i = 0; i < args.length; i += 1) {
     const value = args[i];
     if (value === "--tag" && args[i + 1]) {
       tagArg = args[i + 1];
       i += 1;
     } else if (value === "--min-bullets" && args[i + 1]) {
-      minBullets = Number(args[i + 1]) || minBullets;
+      const parsed = Number(args[i + 1]);
+      if (Number.isFinite(parsed) && parsed > 0) {
+        minBulletsOverride = Math.floor(parsed);
+      }
       i += 1;
     }
   }
@@ -57,6 +117,7 @@ const run = () => {
     if (!/release\s+notes/i.test(content)) {
       errors.push(`Release notes must include a "Release Notes" heading in ${relPath}.`);
     }
+    const minBullets = Math.max(minBulletsOverride ?? 0, requiredBulletsFromGitRange(rootDir, tag));
     const bulletCount = content.split(/\r?\n/).filter((line) => /^\s*[-*]\s+\S+/.test(line)).length;
     if (bulletCount < minBullets) {
       errors.push(`Release notes must include at least ${minBullets} bullet points in ${relPath}.`);

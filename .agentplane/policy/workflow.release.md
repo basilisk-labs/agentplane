@@ -17,9 +17,8 @@ Use this module when task touches release/version/publish flows.
 git status --short --untracked-files=no
 agentplane task plan set <task-id> --text "Release plan: version=<v>, tag=<t>, scope=<...>" --updated-by <ROLE>
 agentplane task plan approve <task-id> --by ORCHESTRATOR
-# Run project release commands (example):
-# <package-manager> run release:plan
-# <package-manager> run release:publish
+agentplane release plan --patch
+agentplane release apply --push --yes
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "Release checks: ..."
 agentplane finish <task-id> --author <ROLE> --body "Verified: release" --result "Release <v> published" --commit <git-rev> --close-commit
 ```

@@ -35,7 +35,7 @@ in_scope_paths:
 ---
 
 ## Prompt Template
-Repository root: {{ runtime.repo_root }}
+Repository: {{ runtime.repo_name }}
 Workflow mode: {{ workflow.mode }}
 
 ## Checks
@@ -185,7 +185,34 @@ describe("doctor.command", () => {
     expect(rc).toBe(1);
   });
 
-  it("fails when DONE task commit points to a close commit subject", async () => {
+  it("warns but does not fail when DONE task references an unknown historical commit hash", async () => {
+    const ws = await mkWorkspace();
+    await gitInitWithCommit(ws.root, "feat: initial");
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks.json"),
+      JSON.stringify(
+        {
+          tasks: [
+            {
+              id: "202602111801-DEF456",
+              status: "DONE",
+              commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+    const rc = await runDoctor(
+      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+      { fix: false, dev: false },
+    );
+    expect(rc).toBe(0);
+  });
+
+  it("warns but does not fail when DONE task commit points to a close commit subject", async () => {
     const ws = await mkWorkspace();
     const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
     await writeFile(
@@ -203,6 +230,6 @@ describe("doctor.command", () => {
       { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
       { fix: false, dev: false },
     );
-    expect(rc).toBe(1);
+    expect(rc).toBe(0);
   });
 });

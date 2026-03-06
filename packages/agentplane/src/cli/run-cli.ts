@@ -41,9 +41,17 @@ type ParsedArgs = {
   root?: string;
   jsonErrors: boolean;
   allowNetwork: boolean;
+  outputMode?: "text" | "json";
 };
 
-type GlobalFlagKey = "help" | "version" | "noUpdateCheck" | "root" | "jsonErrors" | "allowNetwork";
+type GlobalFlagKey =
+  | "help"
+  | "version"
+  | "noUpdateCheck"
+  | "root"
+  | "jsonErrors"
+  | "allowNetwork"
+  | "outputMode";
 
 type GlobalFlagDef = {
   key: GlobalFlagKey;
@@ -58,6 +66,7 @@ const GLOBAL_FLAGS: readonly GlobalFlagDef[] = [
   { key: "noUpdateCheck", forms: ["--no-update-check"], takesValue: false, scoped: false },
   { key: "allowNetwork", forms: ["--allow-network"], takesValue: false, scoped: true },
   { key: "jsonErrors", forms: ["--json-errors"], takesValue: false, scoped: true },
+  { key: "outputMode", forms: ["--output"], takesValue: true, scoped: false },
   { key: "root", forms: ["--root"], takesValue: true, scoped: false },
 ] as const;
 
@@ -97,6 +106,7 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
   let jsonErrors = false;
   let root: string | undefined;
   let allowNetwork = false;
+  let outputMode: "text" | "json" | undefined;
 
   const rest: string[] = [];
   for (let i = 0; i < argv.length; i++) {
@@ -149,6 +159,27 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
         i++;
         break;
       }
+      case "outputMode": {
+        const next = argv[i + 1];
+        if (!next) {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: "Missing value after --output (expected text|json)",
+          });
+        }
+        const normalized = next.trim().toLowerCase();
+        if (normalized !== "text" && normalized !== "json") {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: `Invalid value for --output: ${next} (expected text|json)`,
+          });
+        }
+        outputMode = normalized;
+        i++;
+        break;
+      }
       default: {
         // Exhaustive by construction; keep a defensive fallback.
         rest.push(arg);
@@ -156,7 +187,94 @@ function parseGlobalArgs(argv: string[]): { globals: ParsedArgs; rest: string[] 
       }
     }
   }
-  return { globals: { help, version, noUpdateCheck, root, jsonErrors, allowNetwork }, rest };
+  return {
+    globals: { help, version, noUpdateCheck, root, jsonErrors, allowNetwork, outputMode },
+    rest,
+  };
+}
+
+type CliOutputMode = "text" | "json";
+const OUTPUT_MODE_ENV = "AGENTPLANE_OUTPUT";
+
+function resolveOutputMode(modeFromFlag: "text" | "json" | undefined): CliOutputMode {
+  if (modeFromFlag) return modeFromFlag;
+  const fromEnv = process.env[OUTPUT_MODE_ENV]?.trim().toLowerCase();
+  if (!fromEnv || fromEnv === "text") return "text";
+  if (fromEnv === "json") return "json";
+  throw new CliError({
+    exitCode: 2,
+    code: "E_USAGE",
+    message: `Invalid ${OUTPUT_MODE_ENV}: ${fromEnv} (expected text|json)`,
+  });
+}
+
+function chunkToString(chunk: unknown, encoding?: BufferEncoding): string {
+  if (typeof chunk === "string") return chunk;
+  if (chunk instanceof Uint8Array) return Buffer.from(chunk).toString(encoding);
+  return String(chunk);
+}
+
+async function runWithOutputMode(opts: {
+  mode: CliOutputMode;
+  command: string;
+  run: () => Promise<number>;
+}): Promise<number> {
+  if (opts.mode === "text") return await opts.run();
+
+  const stdoutWrite = process.stdout.write.bind(process.stdout);
+  const stderrWrite = process.stderr.write.bind(process.stderr);
+  let stdout = "";
+  let stderr = "";
+
+  process.stdout.write = ((chunk: unknown, ...rest: unknown[]) => {
+    const encoding = typeof rest[0] === "string" ? (rest[0] as BufferEncoding) : undefined;
+    stdout += chunkToString(chunk, encoding);
+    const callback = rest.find((item) => typeof item === "function") as
+      | ((error?: Error | null) => void)
+      | undefined;
+    callback?.(null);
+    return true;
+  }) as typeof process.stdout.write;
+
+  process.stderr.write = ((chunk: unknown, ...rest: unknown[]) => {
+    const encoding = typeof rest[0] === "string" ? (rest[0] as BufferEncoding) : undefined;
+    stderr += chunkToString(chunk, encoding);
+    const callback = rest.find((item) => typeof item === "function") as
+      | ((error?: Error | null) => void)
+      | undefined;
+    callback?.(null);
+    return true;
+  }) as typeof process.stderr.write;
+
+  try {
+    const exitCode = await opts.run();
+    let parsed: unknown;
+    const trimmedStdout = stdout.trim();
+    if (trimmedStdout.length > 0) {
+      try {
+        parsed = JSON.parse(trimmedStdout) as unknown;
+      } catch {
+        parsed = undefined;
+      }
+    }
+    const payload: Record<string, unknown> = {
+      schema_version: 1,
+      mode: "agent_json_v1",
+      command: opts.command,
+      ok: exitCode === 0,
+      exit_code: exitCode,
+      stdout: trimmedStdout,
+      stderr: stderr.trim(),
+    };
+    if (parsed !== undefined) {
+      payload.data = parsed;
+    }
+    stdoutWrite(`${JSON.stringify(payload, null, 2)}\n`);
+    return exitCode;
+  } finally {
+    process.stdout.write = stdoutWrite;
+    process.stderr.write = stderrWrite;
+  }
 }
 
 type CatalogMatch = { entry: (typeof COMMANDS)[number]; consumed: number };
@@ -486,11 +604,18 @@ export async function runCli(argv: string[]): Promise<number> {
   let jsonErrors = prescanJsonErrors(argv);
   try {
     const { globals, rest } = parseGlobalArgs(argv);
-    jsonErrors = globals.jsonErrors;
+    const outputMode = resolveOutputMode(globals.outputMode);
+    jsonErrors = globals.jsonErrors || outputMode === "json";
 
     if (globals.version) {
-      process.stdout.write(`${getVersion()}\n`);
-      return 0;
+      return await runWithOutputMode({
+        mode: outputMode,
+        command: "version",
+        run: () => {
+          process.stdout.write(`${getVersion()}\n`);
+          return Promise.resolve(0);
+        },
+      });
     }
 
     const runCli2HelpFast = async (helpArgv: string[]): Promise<number> => {
@@ -515,7 +640,13 @@ export async function runCli(argv: string[]): Promise<number> {
       }
       const tail = helpArgv.slice(match.consumed);
       const parsed = parseCommandArgv(match.spec, tail).parsed;
-      return await match.handler({ cwd: process.cwd(), rootOverride: globals.root }, parsed);
+      return await runWithOutputMode({
+        mode: outputMode,
+        command: match.spec.id.join(" "),
+        run: async () => {
+          return await match.handler({ cwd: process.cwd(), rootOverride: globals.root }, parsed);
+        },
+      });
     };
 
     // `--help` is treated as an alias for `help` and supports per-command help:
@@ -615,7 +746,7 @@ export async function runCli(argv: string[]): Promise<number> {
       currentVersion: getVersion(),
       skip:
         globals.noUpdateCheck || skipUpdateCheckForPolicy || matched?.entry.needsConfig === false,
-      jsonErrors: globals.jsonErrors,
+      jsonErrors,
     });
 
     let ctxPromise: Promise<CommandContext> | null = null;
@@ -659,7 +790,11 @@ export async function runCli(argv: string[]): Promise<number> {
     if (match) {
       const tail = rest.slice(match.consumed);
       const parsed = parseCommandArgv(match.spec, tail).parsed;
-      return await match.handler({ cwd, rootOverride: globals.root }, parsed);
+      return await runWithOutputMode({
+        mode: outputMode,
+        command: match.spec.id.join(" "),
+        run: async () => await match.handler({ cwd, rootOverride: globals.root }, parsed),
+      });
     }
 
     const input = rest.join(" ");

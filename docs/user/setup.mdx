@@ -61,7 +61,13 @@ If `.git` does not exist in that folder, `init` creates a new git repository the
 - `Normal` (default): balanced approvals and checks for most teams.
 - `Full Harness`: strict guardrails and full questionnaire.
 
-Hooks are mandatory in all profiles. `--hooks false` is rejected.
+Hooks default by profile:
+
+- `Light`: hooks disabled by default.
+- `Normal`: hooks enabled by default.
+- `Full Harness`: hooks enabled by default.
+
+You can override the default explicitly with `--hooks true|false`.
 
 Use `--setup-profile full-harness` to force the full questionnaire.
 
@@ -119,13 +125,15 @@ Default mode is review-first (`--agent`):
 
 - if there are no managed changes, upgrade exits fast with `Upgrade plan: no managed changes detected`;
 - in this no-op case it does not create per-run artifacts under `.agentplane/.upgrade/agent/*`;
-- semantic merge is only required when upstream and local changes conflict.
+- managed files are replace-first on apply, except `.agentplane/policy/incidents.md`, which is append-only when local content already exists.
 
 To apply automatically:
 
 ```bash
 agentplane upgrade --auto
 ```
+
+`--auto` creates a dedicated upgrade commit with the target upgrade version in the commit message.
 
 ## Preflight modes
 
@@ -153,6 +161,24 @@ agentplane task list
 agentplane workflow build --validate --dry-run
 agentplane doctor
 ```
+
+## Working inside the Agent Plane framework checkout
+
+If you are using a linked development binary from this repository, the wrapper checks whether
+`dist/` matches the current source tree.
+
+- Inside the framework checkout, a stale build is a hard stop. Rebuild first:
+
+```bash
+bun run --filter=@agentplaneorg/core build
+bun run --filter=agentplane build
+```
+
+- Outside the framework checkout, the linked binary warns and continues with the existing
+  `dist` output.
+
+The gateway preflight commands are still the correct commands. They assume a fresh local build
+when run from the framework repository itself.
 
 ## Core workflow operations
 

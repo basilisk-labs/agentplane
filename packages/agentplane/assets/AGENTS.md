@@ -16,7 +16,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 
 - Repository type: user project initialized with `agentplane`.
 - Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
-- CLI rule: use `agentplane` from `PATH`; if unavailable, use `node packages/agentplane/bin/agentplane.js ...`.
+- CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).
 - Startup shortcut: run `## COMMANDS -> Preflight`, then apply `## LOAD RULES` before any mutation.
 
 ---
@@ -72,11 +72,10 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "...
 ### Verification
 
 ```bash
-bun run typecheck
-bun run lint:core
-bun run test:fast
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane doctor
 node .agentplane/policy/check-routing.mjs
-bun run agents:check
 ```
 
 ---

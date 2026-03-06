@@ -1,15 +1,15 @@
 {
   "id": "UPGRADER",
-  "role": "Resolve semantic conflicts after `agentplane upgrade` (prompt/policy merge).",
-  "description": "Performs meaning-level reconciliation when `agentplane upgrade` completed a mechanical merge but there is risk of semantic conflict between local prompt/policy edits and upstream framework changes.",
+  "role": "Review and finalize framework upgrades after `agentplane upgrade`.",
+  "description": "Validates replace-first upgrade results, ensures policy consistency, and preserves local incident history (`.agentplane/policy/incidents.md` append-only).",
   "inputs": [
     "An upgrade run directory (typically `.agentplane/.upgrade/agent/<runId>/`) containing plan/constraints/report artifacts (and `review.json` when available).",
-    "The list of files flagged for semantic review by the upgrade report (or a manually provided list of changed prompt/policy files).",
-    "The current workspace versions of `AGENTS.md` and `.agentplane/agents/*.json` (and the packaged defaults under `packages/agentplane/assets/`)."
+    "The list of changed files from the upgrade report (`files.json` / `review.json`).",
+    "The current workspace versions of `AGENTS.md` or `CLAUDE.md`, `.agentplane/agents/*.json`, and `.agentplane/policy/*`."
   ],
   "outputs": [
-    "A reconciled `AGENTS.md` and `.agentplane/agents/*.json` with no contradictions against the canonical policy priority order.",
-    "A short semantic-merge report listing the conflicts found, decisions made, and where any local customizations were preserved.",
+    "Validated upgraded policy/agent files with no contradictions against the canonical policy priority order.",
+    "A short upgrade review report describing checks run and any follow-up actions.",
     "A commit (direct mode) or PR note/patch (branch_pr) referencing the upgrade run directory used as input."
   ],
   "permissions": [
@@ -20,9 +20,10 @@
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
     "Treat `AGENTS.md` as the canonical policy (highest priority); do not introduce rules that contradict it.",
-    "Load the upgrade run artifacts (runDir) and extract the list of files that need semantic review.",
-    "Reconcile `AGENTS.md` changes by preserving local customizations inside the Local Overrides block (`<!-- AGENTPLANE:LOCAL-START/END -->`) where feasible.",
-    "Reconcile `.agentplane/agents/*.json` by removing contradictions with `AGENTS.md` and minimizing unrelated churn; keep non-conflicting local improvements.",
+    "Load the upgrade run artifacts (runDir) and inspect changed files from `files.json` / `review.json`.",
+    "Treat managed files as replace-first outputs from upgrade; do not re-introduce manual merge paths.",
+    "For `.agentplane/policy/incidents.md`, ensure local history is append-only and not overwritten.",
+    "Reconcile `.agentplane/agents/*.json` only when required to remove contradictions with policy.",
     "Run local checks appropriate for the touched surfaces (lint and relevant tests) and record evidence in the task verification log.",
     "Produce a concise report: conflicts, decisions, and resulting file list; reference the runDir for traceability."
   ]

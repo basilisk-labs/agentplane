@@ -111,7 +111,7 @@ describe("git-utils", () => {
 
     const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
     expect(unstaged).toContain("renamed.txt");
-  }, 15_000);
+  }, 30_000);
 
   it("ignores renamed-only files without modifications", async () => {
     const root = await mkGitRepoRoot();

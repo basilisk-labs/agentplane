@@ -1216,6 +1216,7 @@ describe("runCli", () => {
       ]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("Upgrade applied");
+      expect(io.stdout).toContain("Upgrade commit:");
     } finally {
       io.restore();
     }
@@ -1227,6 +1228,14 @@ describe("runCli", () => {
     expect(agentEntries.some((entry) => entry.startsWith("ORCHESTRATOR.json.bak-"))).toBe(false);
     const rootEntries = await readdir(root);
     expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
+
+    const execFileAsync = promisify(execFile);
+    const { stdout: subjectOut } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], {
+      cwd: root,
+      env: cleanGitEnv(),
+    });
+    const subject = String(subjectOut ?? "").trim();
+    expect(subject).toContain("upgrade: apply framework");
   });
 
   it("upgrade --dry-run reports changes without modifying files", async () => {
@@ -1260,6 +1269,39 @@ describe("runCli", () => {
     expect(agentsText).toContain("legacy agents");
     const rootEntries = await readdir(root);
     expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
+  });
+
+  it("upgrade --auto fails on dirty tracked tree before applying", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
+    await writeFile(path.join(root, "tracked.txt"), "dirty\n", "utf8");
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root, env: cleanGitEnv() });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root, env: cleanGitEnv() });
+    await writeFile(path.join(root, "tracked.txt"), "dirty changed\n", "utf8");
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "AGENTS.md": "# AGENTS\n\nUpdated\n",
+    });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "upgrade",
+        "--auto",
+        "--bundle",
+        bundlePath,
+        "--checksum",
+        checksumPath,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(5);
+      expect(io.stderr).toContain("requires a clean tracked working tree");
+    } finally {
+      io.restore();
+    }
   });
 
   it("upgrade requires --yes in non-tty mode when require_network=true and it would fetch remote assets", async () => {

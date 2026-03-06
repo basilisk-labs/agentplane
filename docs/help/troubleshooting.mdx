@@ -17,6 +17,23 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 - Use `agentplane init --yes` to regenerate defaults if the repository can be reset to a clean baseline.
 - Re-apply only intentional local config changes.
 
+## linked dev binary refuses to run because build is stale
+
+- Symptom: commands fail with `refusing to run a stale repo build`.
+- Why this happens: you are running the linked development binary from inside the Agent Plane
+  framework checkout, and `dist/` is older than the current source tree.
+- What to do:
+- Rebuild the local packages:
+
+```bash
+bun run --filter=@agentplaneorg/core build
+bun run --filter=agentplane build
+```
+
+- Retry the original command after the rebuild.
+- If you are outside the framework checkout, the linked binary should warn and continue instead of
+  hard-failing.
+
 ## working tree is dirty before commit or finish
 
 - Why this happens: task execution changed files outside your current scope, or generated artifacts were not cleaned.

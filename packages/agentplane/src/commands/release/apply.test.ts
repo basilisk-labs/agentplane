@@ -303,11 +303,13 @@ describeWhenNotHook("release apply", () => {
 
     await writeFile(path.join(root, "file.txt"), "x", "utf8");
     await commitAll(root, "feat: add file");
+    await writeFile(path.join(root, "file-2.txt"), "y", "utf8");
+    await commitAll(root, "fix: adjust file");
 
     await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
     await writeFile(
       path.join(root, "docs", "releases", "v0.2.7.md"),
-      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", ""].join("\n"),
+      ["# Release Notes — v0.2.7", "", "- A", ""].join("\n"),
       "utf8",
     );
 
@@ -318,6 +320,6 @@ describeWhenNotHook("release apply", () => {
           { plan: undefined, yes: false, push: false, remote: "origin" },
         ),
       ),
-    ).rejects.toThrow(/at least 5 bullet points/u);
+    ).rejects.toThrow(/at least 2 bullet points/u);
   });
 });

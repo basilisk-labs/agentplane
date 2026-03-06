@@ -9,7 +9,7 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
   group: "Setup",
   summary: "Upgrade the local agentplane framework bundle in the repo.",
   description:
-    "Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade generates an agent-assisted plan from the locally installed agentplane package assets (no network) and does not modify files. Use --auto to apply changes. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.",
+    "Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade generates an agent-assisted plan from the locally installed agentplane package assets (no network) and does not modify files. Use --auto to apply changes and create a dedicated upgrade commit. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.",
   options: [
     {
       kind: "boolean",
@@ -22,7 +22,8 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
       kind: "boolean",
       name: "auto",
       default: false,
-      description: "Apply the upgrade automatically (writes managed files).",
+      description:
+        "Apply the upgrade automatically (writes managed files) and create a dedicated upgrade commit.",
     },
     {
       kind: "boolean",
