@@ -1,7 +1,8 @@
 ---
 id: "202603061532-9Y41NM"
 title: "Fix release apply push hang"
-status: "DOING"
+result_summary: "Fixed the release CLI so internal push steps bypass recursive local hooks and the previously hanging release-apply path is covered by regression tests."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,15 +19,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved release/code bugfix scope and verification contract."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-06T15:39:55.738Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts\nResult: pass\nEvidence: 8/8 tests passed, including the new pushReleaseRefs regression that proves internal release pushes bypass local pre-push hooks.\nScope: release apply command flow, release plan flow, internal push behavior.\n\nCommand: bun run release:check\nResult: pass\nEvidence: package builds and release pack/parity checks completed successfully for 0.3.1.\nScope: release build/parity gate.\n\nCommand: git diff -- packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts docs/developer/release-and-publishing.mdx\nResult: pass\nEvidence: release apply now calls git push with --no-verify, plus docs and regression coverage were updated.\nScope: implemented fix and documentation alignment."
+commit:
+  hash: "d1b1fb3ce143e0f804bf15b474277018c4e9d623"
+  message: "🐛 9Y41NM release: skip hook recursion in release apply"
 comments:
   -
     author: "CODER"
     body: "Start: trace the release apply hang after local commit/tag creation, patch the lifecycle/push path, add regression coverage, and verify deterministic completion."
+  -
+    author: "CODER"
+    body: "Verified: release apply no longer re-enters local pre-push hooks; targeted release tests and release:check passed."
 events:
   -
     type: "status"
@@ -35,8 +41,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: trace the release apply hang after local commit/tag creation, patch the lifecycle/push path, add regression coverage, and verify deterministic completion."
+  -
+    type: "verify"
+    at: "2026-03-06T15:39:55.738Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts\nResult: pass\nEvidence: 8/8 tests passed, including the new pushReleaseRefs regression that proves internal release pushes bypass local pre-push hooks.\nScope: release apply command flow, release plan flow, internal push behavior.\n\nCommand: bun run release:check\nResult: pass\nEvidence: package builds and release pack/parity checks completed successfully for 0.3.1.\nScope: release build/parity gate.\n\nCommand: git diff -- packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts docs/developer/release-and-publishing.mdx\nResult: pass\nEvidence: release apply now calls git push with --no-verify, plus docs and regression coverage were updated.\nScope: implemented fix and documentation alignment."
+  -
+    type: "status"
+    at: "2026-03-06T15:40:03.844Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release apply no longer re-enters local pre-push hooks; targeted release tests and release:check passed."
 doc_version: 2
-doc_updated_at: "2026-03-06T15:35:19.423Z"
+doc_updated_at: "2026-03-06T15:40:03.844Z"
 doc_updated_by: "CODER"
 description: "Diagnose and fix the bug where agentplane release apply --push --yes can hang after creating the local release commit and tag, leaving push/publication incomplete."
 id_source: "generated"
@@ -70,6 +89,27 @@ Release code is high-impact: a wrong fix can create duplicate tags, partial publ
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-06T15:39:55.738Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts
+Result: pass
+Evidence: 8/8 tests passed, including the new pushReleaseRefs regression that proves internal release pushes bypass local pre-push hooks.
+Scope: release apply command flow, release plan flow, internal push behavior.
+
+Command: bun run release:check
+Result: pass
+Evidence: package builds and release pack/parity checks completed successfully for 0.3.1.
+Scope: release build/parity gate.
+
+Command: git diff -- packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts docs/developer/release-and-publishing.mdx
+Result: pass
+Evidence: release apply now calls git push with --no-verify, plus docs and regression coverage were updated.
+Scope: implemented fix and documentation alignment.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T15:35:19.423Z, excerpt_hash=sha256:8293c8b3fef4de505eb31c11fde2eb6f1a72d05e49bf2d0c3d4ddef01021a29d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
