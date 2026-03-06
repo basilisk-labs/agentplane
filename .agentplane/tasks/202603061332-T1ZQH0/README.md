@@ -1,7 +1,8 @@
 ---
 id: "202603061332-T1ZQH0"
 title: "Tighten website alignment and simplify blog layout"
-status: "DOING"
+result_summary: "Homepage and blog now read as cleaner left-aligned surfaces within the existing design contract."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-06T13:36:31.389Z"
   updated_by: "CODER"
   note: "Command: git diff -- website/src/css/custom.css website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css\nResult: pass\nEvidence: homepage and blog copy are left-aligned; navbar frame removed; active nav link stays visible; blog converted to editorial index\nScope: website homepage, blog landing, global navbar styles\n\nCommand: bun run --cwd website typecheck\nResult: pass\nEvidence: tsc completed without errors\nScope: website TypeScript surface\n\nCommand: bun run --cwd website build\nResult: pass\nEvidence: client and server compiled successfully; static files generated in build\nScope: production website build\n\nCommand: node scripts/check-design-language.mjs\nResult: pass\nEvidence: DESIGN.md compliance check passed\nScope: website visual language contract"
-commit: null
+commit:
+  hash: "f803dcb94ef25421623aae102fd4e48cec4cca71"
+  message: "✨ T1ZQH0 website: simplify layout and blog index"
 comments:
   -
     author: "CODER"
     body: "Start: left-align the website text system, simplify the navbar chrome and active state, reduce visual noise, and rebuild the blog page into a proper journal index within the existing design contract."
+  -
+    author: "CODER"
+    body: "Verified: left-aligned homepage/blog copy, simplified navbar chrome and active state, blog index rebuilt into an editorial layout; website typecheck, production build, and design-language checks all passed."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: git diff -- website/src/css/custom.css website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css\nResult: pass\nEvidence: homepage and blog copy are left-aligned; navbar frame removed; active nav link stays visible; blog converted to editorial index\nScope: website homepage, blog landing, global navbar styles\n\nCommand: bun run --cwd website typecheck\nResult: pass\nEvidence: tsc completed without errors\nScope: website TypeScript surface\n\nCommand: bun run --cwd website build\nResult: pass\nEvidence: client and server compiled successfully; static files generated in build\nScope: production website build\n\nCommand: node scripts/check-design-language.mjs\nResult: pass\nEvidence: DESIGN.md compliance check passed\nScope: website visual language contract"
+  -
+    type: "status"
+    at: "2026-03-06T13:37:22.952Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: left-aligned homepage/blog copy, simplified navbar chrome and active state, blog index rebuilt into an editorial layout; website typecheck, production build, and design-language checks all passed."
 doc_version: 2
-doc_updated_at: "2026-03-06T13:36:49.032Z"
+doc_updated_at: "2026-03-06T13:37:22.952Z"
 doc_updated_by: "CODER"
 description: "Left-align homepage/blog typography, remove navbar frame background, simplify the visual system further, fix active navbar state visibility, and turn /blog into a true blog index instead of a homepage-like hero."
 id_source: "generated"
