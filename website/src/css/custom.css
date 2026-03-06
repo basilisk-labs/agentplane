@@ -82,6 +82,17 @@ a {
   top: 0.75rem;
 }
 
+html.nav-scrolled .navbar,
+html.nav-scrolled .navbar.navbar--fixed-top {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.84)),
+    rgb(var(--bg) / 0.88);
+  box-shadow:
+    0 24px 56px rgb(11 17 32 / 0.11),
+    0 0 0 1px rgb(255 255 255 / 0.8) inset;
+  transform: translateY(-1px);
+}
+
 .navbar__inner {
   gap: 0.65rem;
   min-height: 64px;

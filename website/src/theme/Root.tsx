@@ -71,6 +71,28 @@ function BlogReadingProgress(): ReactElement | null {
   );
 }
 
+function NavbarScrollState(): null {
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const updateScrolled = () => {
+      root.classList.toggle("nav-scrolled", window.scrollY > 20);
+    };
+
+    updateScrolled();
+    window.addEventListener("scroll", updateScrolled, { passive: true });
+    window.addEventListener("resize", updateScrolled);
+
+    return () => {
+      window.removeEventListener("scroll", updateScrolled);
+      window.removeEventListener("resize", updateScrolled);
+      root.classList.remove("nav-scrolled");
+    };
+  }, []);
+
+  return null;
+}
+
 export default function RootWrapper(props: Props): ReactElement {
   return (
     <>
@@ -99,6 +121,7 @@ export default function RootWrapper(props: Props): ReactElement {
           />
         </noscript>
       ) : null}
+      <NavbarScrollState />
       <BlogReadingProgress />
       <ThemeRoot {...props} />
     </>
