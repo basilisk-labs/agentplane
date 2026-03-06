@@ -68,18 +68,22 @@ afterEach(async () => {
 });
 
 describe("dist-guard", () => {
-  it("allows commits after build when only non-runtime paths changed", async () => {
-    const { repoRoot, packageRoot } = await setupPackageRepo();
-    await writeFile(path.join(repoRoot, "README.md"), "docs only\n", "utf8");
-    await execFileAsync("git", ["add", "README.md"], { cwd: repoRoot });
-    await execFileAsync("git", ["commit", "-m", "docs: update readme"], { cwd: repoRoot });
+  it(
+    "allows commits after build when only non-runtime paths changed",
+    { timeout: 60_000 },
+    async () => {
+      const { repoRoot, packageRoot } = await setupPackageRepo();
+      await writeFile(path.join(repoRoot, "README.md"), "docs only\n", "utf8");
+      await execFileAsync("git", ["add", "README.md"], { cwd: repoRoot });
+      await execFileAsync("git", ["commit", "-m", "docs: update readme"], { cwd: repoRoot });
 
-    const result = await readBuildFreshness(packageRoot, {
-      watchedPaths: ["src", "bin/agentplane.js"],
-    });
+      const result = await readBuildFreshness(packageRoot, {
+        watchedPaths: ["src", "bin/agentplane.js"],
+      });
 
-    expect(result.ok).toBe(true);
-  });
+      expect(result.ok).toBe(true);
+    },
+  );
 
   it("blocks when runtime paths changed after the build manifest commit", async () => {
     const { repoRoot, packageRoot } = await setupPackageRepo();

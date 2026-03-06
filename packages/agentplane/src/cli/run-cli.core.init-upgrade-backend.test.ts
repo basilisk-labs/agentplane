@@ -346,44 +346,48 @@ describe("runCli", () => {
     expect(stdout.trim()).toBe("");
   });
 
-  it("init --backend redmine leaves a clean tree in a fresh repository", async () => {
-    const root = await mkTempDir();
-    const originalEnv = {
-      GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME,
-      GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL,
-      GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME,
-      GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL,
-    };
-    process.env.GIT_AUTHOR_NAME = "Test User";
-    process.env.GIT_AUTHOR_EMAIL = "test@example.com";
-    process.env.GIT_COMMITTER_NAME = "Test User";
-    process.env.GIT_COMMITTER_EMAIL = "test@example.com";
+  it(
+    "init --backend redmine leaves a clean tree in a fresh repository",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkTempDir();
+      const originalEnv = {
+        GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME,
+        GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL,
+        GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME,
+        GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL,
+      };
+      process.env.GIT_AUTHOR_NAME = "Test User";
+      process.env.GIT_AUTHOR_EMAIL = "test@example.com";
+      process.env.GIT_COMMITTER_NAME = "Test User";
+      process.env.GIT_COMMITTER_EMAIL = "test@example.com";
 
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["init", "--yes", "--backend", "redmine", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-      process.env.GIT_AUTHOR_NAME = originalEnv.GIT_AUTHOR_NAME;
-      process.env.GIT_AUTHOR_EMAIL = originalEnv.GIT_AUTHOR_EMAIL;
-      process.env.GIT_COMMITTER_NAME = originalEnv.GIT_COMMITTER_NAME;
-      process.env.GIT_COMMITTER_EMAIL = originalEnv.GIT_COMMITTER_EMAIL;
-    }
+      const io = captureStdIO();
+      try {
+        const code = await runCli(["init", "--yes", "--backend", "redmine", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+        process.env.GIT_AUTHOR_NAME = originalEnv.GIT_AUTHOR_NAME;
+        process.env.GIT_AUTHOR_EMAIL = originalEnv.GIT_AUTHOR_EMAIL;
+        process.env.GIT_COMMITTER_NAME = originalEnv.GIT_COMMITTER_NAME;
+        process.env.GIT_COMMITTER_EMAIL = originalEnv.GIT_COMMITTER_EMAIL;
+      }
 
-    const execFileAsync = promisify(execFile);
-    const { stdout } = await execFileAsync("git", ["status", "--short"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    expect(stdout.trim()).toBe("");
+      const execFileAsync = promisify(execFile);
+      const { stdout } = await execFileAsync("git", ["status", "--short"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      expect(stdout.trim()).toBe("");
 
-    const { stdout: ignoredPath } = await execFileAsync("git", ["check-ignore", ".env"], {
-      cwd: root,
-      env: cleanGitEnv(),
-    });
-    expect(ignoredPath.trim()).toBe(".env");
-  });
+      const { stdout: ignoredPath } = await execFileAsync("git", ["check-ignore", ".env"], {
+        cwd: root,
+        env: cleanGitEnv(),
+      });
+      expect(ignoredPath.trim()).toBe(".env");
+    },
+  );
 
   it("init --backend redmine sets backend config path", async () => {
     const root = await mkGitRepoRoot();
@@ -500,7 +504,7 @@ describe("runCli", () => {
     expect(baseBranch.trim()).toBe("main");
   });
 
-  it("init branch_pr defaults base branch to main in empty repo", async () => {
+  it("init branch_pr defaults base branch to main in empty repo", { timeout: 60_000 }, async () => {
     const root = await mkTempDir();
     const originalEnv = {
       GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME,

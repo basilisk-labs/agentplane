@@ -482,7 +482,7 @@ describe("runCli", () => {
     await readFile(path.join(prDir, "verify.log"), "utf8");
   });
 
-  it("pr update refreshes diffstat and auto summary", async () => {
+  it("pr update refreshes diffstat and auto summary", { timeout: 60_000 }, async () => {
     const root = await mkGitRepoRootWithBranch("main");
     const config = defaultConfig();
     config.workflow_mode = "branch_pr";

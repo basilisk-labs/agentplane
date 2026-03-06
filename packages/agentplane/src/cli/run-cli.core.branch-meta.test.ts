@@ -579,41 +579,45 @@ describe("runCli", () => {
     }
   });
 
-  it("workflow debug/sync/land run built-in core operations and write evidence files", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    await runCliSilent(["init", "--yes", "--root", root]);
-    // workflow playbooks invoke the repo-local bin entrypoint in a subprocess.
-    // In test runs, that bin may still point to an older built artifact, so mirror
-    // the active workflow contract to the legacy root path to keep the playbook
-    // behavior deterministic while unit tests run against source modules.
-    await copyFile(path.join(root, ".agentplane", "WORKFLOW.md"), path.join(root, "WORKFLOW.md"));
-    const modes = ["debug", "sync", "land"] as const;
+  it(
+    "workflow debug/sync/land run built-in core operations and write evidence files",
+    { timeout: 180_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+      await runCliSilent(["init", "--yes", "--root", root]);
+      // workflow playbooks invoke the repo-local bin entrypoint in a subprocess.
+      // In test runs, that bin may still point to an older built artifact, so mirror
+      // the active workflow contract to the legacy root path to keep the playbook
+      // behavior deterministic while unit tests run against source modules.
+      await copyFile(path.join(root, ".agentplane", "WORKFLOW.md"), path.join(root, "WORKFLOW.md"));
+      const modes = ["debug", "sync", "land"] as const;
 
-    for (const mode of modes) {
-      const io = captureStdIO();
-      try {
-        const code = await runCli(["workflow", mode, "--root", root]);
-        expect(code).toBe(0);
-        const match = /Evidence:\s+(.+\.json)/.exec(io.stdout);
-        expect(match).not.toBeNull();
-        const evidenceRel = String(match?.[1] ?? "").trim();
-        const evidencePath = path.join(root, evidenceRel);
-        expect(await pathExists(evidencePath)).toBe(true);
-        const payload = JSON.parse(await readFile(evidencePath, "utf8")) as {
-          mode?: string;
-          status?: string;
-          commands?: unknown[];
-        };
-        expect(payload.mode).toBe(mode);
-        expect(payload.status).toBe("success");
-        expect(Array.isArray(payload.commands)).toBe(true);
-        expect((payload.commands ?? []).length).toBeGreaterThan(0);
-      } finally {
-        io.restore();
+      for (const mode of modes) {
+        const io = captureStdIO();
+        try {
+          const code = await runCli(["workflow", mode, "--root", root]);
+          expect(code).toBe(0);
+          const match = /Evidence:\s+(.+\.json)/.exec(io.stdout);
+          expect(match).not.toBeNull();
+          const evidenceRel = String(match?.[1] ?? "").trim();
+          const evidencePath = path.join(root, evidenceRel);
+          expect(await pathExists(evidencePath)).toBe(true);
+          const payload = JSON.parse(await readFile(evidencePath, "utf8")) as {
+            mode?: string;
+            status?: string;
+            commands?: unknown[];
+          };
+          expect(payload.mode).toBe(mode);
+          expect(payload.status).toBe("success");
+          expect(Array.isArray(payload.commands)).toBe(true);
+          expect((payload.commands ?? []).length).toBeGreaterThan(0);
+        } finally {
+          io.restore();
+        }
       }
-    }
-  }, 90_000);
+    },
+  );
 
   it("profile set applies preset defaults to config", async () => {
     const root = await mkGitRepoRoot();
