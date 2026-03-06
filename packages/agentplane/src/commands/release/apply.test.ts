@@ -355,7 +355,15 @@ describeWhenNotHook("release apply", () => {
 
     await expect(readFile(markerPath, "utf8")).rejects.toThrow();
 
-    const { stdout: remoteHead } = await execFileAsync("git", ["rev-parse", "refs/heads/main"], {
+    const { stdout: localBranch } = await execFileAsync(
+      "git",
+      ["symbolic-ref", "--short", "HEAD"],
+      {
+        cwd: root,
+      },
+    );
+    const branchRef = `refs/heads/${localBranch.trim()}`;
+    const { stdout: remoteHead } = await execFileAsync("git", ["rev-parse", branchRef], {
       cwd: remoteRoot,
     });
     const { stdout: localHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
