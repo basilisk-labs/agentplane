@@ -34,6 +34,8 @@ jobs:
       tag: ${{ steps.detect.outputs.tag }}
       ref: ${{ steps.ref.outputs.ref }}
       sha: ${{ steps.detect.outputs.sha }}
+      core_published: ${{ steps.detect.outputs.core_published }}
+      cli_published: ${{ steps.detect.outputs.cli_published }}
     steps:
       - name: Resolve ref
         id: ref
@@ -77,13 +79,8 @@ jobs:
           if npm view "@agentplaneorg/core@${VERSION}" version >/dev/null 2>&1; then CORE_PUBLISHED=true; fi
           if npm view "agentplane@${VERSION}" version >/dev/null 2>&1; then CLI_PUBLISHED=true; fi
 
-          if [ "$CORE_PUBLISHED" != "$CLI_PUBLISHED" ]; then
-            echo "registry drift: core=${CORE_PUBLISHED} agentplane=${CLI_PUBLISHED} for ${VERSION}" >&2
-            exit 1
-          fi
-
           {
-            if [ "$CORE_PUBLISHED" = "true" ]; then
+            if [ "$CORE_PUBLISHED" = "true" ] && [ "$CLI_PUBLISHED" = "true" ]; then
               echo "should_publish=false"
             else
               echo "should_publish=true"
@@ -91,6 +88,8 @@ jobs:
             echo "sha=$SHA"
             echo "version=$VERSION"
             echo "tag=$TAG"
+            echo "core_published=$CORE_PUBLISHED"
+            echo "cli_published=$CLI_PUBLISHED"
           } >> "$GITHUB_OUTPUT"
 
   ci-gate:
@@ -219,12 +218,14 @@ jobs:
           sha256sum agentplane-upgrade.tar.gz > agentplane-upgrade.tar.gz.sha256
       - run: printf "registry=https://registry.npmjs.org/\n" > "$NPM_CONFIG_USERCONFIG"
       - name: Publish @agentplaneorg/core
+        if: needs.detect.outputs.core_published != 'true'
         working-directory: packages/core
         shell: bash
         run: |
           set -euo pipefail
           npm publish --provenance --access public --tag latest
       - name: Publish agentplane
+        if: needs.detect.outputs.cli_published != 'true'
         working-directory: packages/agentplane
         shell: bash
         run: |
