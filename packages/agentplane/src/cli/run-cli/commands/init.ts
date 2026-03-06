@@ -31,9 +31,12 @@ import { ensureInitGitignore } from "./init/write-gitignore.js";
 import { ensureInitRedmineEnvTemplate } from "./init/write-env.js";
 import { renderInitSection, renderInitWelcome } from "./init/ui.js";
 import { fileExists } from "../../fs-utils.js";
+import type { PolicyGatewayFlavor } from "../../../shared/policy-gateway.js";
+import { policyGatewayFileName } from "../../../shared/policy-gateway.js";
 
 type InitFlags = {
   setupProfile?: SetupProfilePreset;
+  policyGateway?: PolicyGatewayFlavor;
   ide?: "codex" | "cursor" | "windsurf";
   workflow?: "direct" | "branch_pr";
   backend?: "local" | "redmine";
@@ -160,6 +163,14 @@ export const initSpec: CommandSpec<InitParsed> = {
     },
     {
       kind: "string",
+      name: "policy-gateway",
+      valueHint: "<codex|claude>",
+      choices: ["codex", "claude"],
+      coerce: (raw) => raw.trim().toLowerCase(),
+      description: "Policy gateway file to install (codex -> AGENTS.md, claude -> CLAUDE.md).",
+    },
+    {
+      kind: "string",
       name: "ide",
       valueHint: "<codex|cursor|windsurf>",
       choices: ["codex", "cursor", "windsurf"],
@@ -247,7 +258,7 @@ export const initSpec: CommandSpec<InitParsed> = {
       name: "gitignore-agents",
       default: false,
       description:
-        "Add agent files (AGENTS.md and .agentplane/agents/) to .gitignore and skip the initial install commit.",
+        "Add gateway/agent files (AGENTS.md or CLAUDE.md and .agentplane/agents/) to .gitignore and skip the initial install commit.",
     },
   ],
   examples: [
@@ -287,6 +298,7 @@ export const initSpec: CommandSpec<InitParsed> = {
 
     return {
       setupProfile: normalizeSetupProfile(raw.opts["setup-profile"] as string | undefined),
+      policyGateway: raw.opts["policy-gateway"] as InitFlags["policyGateway"],
       ide: raw.opts.ide as InitFlags["ide"],
       workflow: raw.opts.workflow as InitFlags["workflow"],
       backend: raw.opts.backend as InitFlags["backend"],
@@ -347,6 +359,7 @@ async function cmdInit(opts: {
   const flags = opts.flags;
   type InitIde = NonNullable<InitFlags["ide"]>;
   const defaults: {
+    policyGateway: PolicyGatewayFlavor;
     ide: InitIde;
     workflow: WorkflowMode;
     backend: NonNullable<InitFlags["backend"]>;
@@ -357,6 +370,7 @@ async function cmdInit(opts: {
     executionProfile: ExecutionProfile;
     strictUnsafeConfirm: boolean;
   } = {
+    policyGateway: "codex",
     ide: "codex",
     workflow: "direct",
     backend: "local",
@@ -368,6 +382,7 @@ async function cmdInit(opts: {
     strictUnsafeConfirm: false,
   };
   let ide: InitIde = flags.ide ?? defaults.ide;
+  let policyGateway: PolicyGatewayFlavor = flags.policyGateway ?? defaults.policyGateway;
   let workflow: WorkflowMode = flags.workflow ?? defaults.workflow;
   let backend: NonNullable<InitFlags["backend"]> = flags.backend ?? defaults.backend;
   let recipes = flags.recipes ?? defaults.recipes;
@@ -442,6 +457,21 @@ async function cmdInit(opts: {
     }
     const selectedPreset = setupProfilePresets[setupProfilePreset];
     setupProfile = selectedPreset.mode;
+    if (flags.policyGateway) {
+      policyGateway = flags.policyGateway;
+    } else {
+      process.stdout.write(
+        renderInitSection(
+          "Policy Gateway",
+          "Choose which root policy gateway file to install for your primary agent runtime.",
+        ),
+      );
+      policyGateway = (await askChoice(
+        "Policy gateway",
+        ["codex", "claude"],
+        policyGateway,
+      )) as PolicyGatewayFlavor;
+    }
     if (flags.strictUnsafeConfirm === undefined) {
       strictUnsafeConfirm = selectedPreset.defaultStrictUnsafeConfirm;
     }
@@ -578,6 +608,7 @@ async function cmdInit(opts: {
   if (flags.yes) {
     const yesPreset = setupProfilePresets[setupProfilePreset];
     ide = flags.ide ?? defaults.ide;
+    policyGateway = flags.policyGateway ?? defaults.policyGateway;
     workflow = flags.workflow ?? defaults.workflow;
     backend = flags.backend ?? defaults.backend;
     recipes = flags.recipes ?? yesPreset.defaultRecipes;
@@ -623,8 +654,8 @@ async function cmdInit(opts: {
     ];
     const initFiles = [configPath, backendPath];
     const conflicts = await collectInitConflicts({ initDirs, initFiles });
-    const agentsPath = path.join(resolved.gitRoot, "AGENTS.md");
-    const agentsMissing = !(await fileExists(agentsPath));
+    const gatewayPath = path.join(resolved.gitRoot, policyGatewayFileName(policyGateway));
+    const agentsMissing = !(await fileExists(gatewayPath));
     if (conflicts.length > 0 && agentsMissing) {
       // Recovery path: if a repo already contains conflicting .agentplane config/backend files,
       // still materialize missing policy/agent templates before reporting conflicts.
@@ -633,6 +664,7 @@ async function cmdInit(opts: {
         gitRoot: resolved.gitRoot,
         agentplaneDir: resolved.agentplaneDir,
         workflow,
+        policyGateway,
         configPathAbs: configPath,
         backendPathAbs: backendPath,
       });
@@ -665,6 +697,7 @@ async function cmdInit(opts: {
       gitRoot: resolved.gitRoot,
       agentplaneDir: resolved.agentplaneDir,
       workflow,
+      policyGateway,
       configPathAbs: configPath,
       backendPathAbs: backendPath,
     });

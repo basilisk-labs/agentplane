@@ -6,6 +6,7 @@ import { resolveProject } from "@agentplaneorg/core";
 import type { CommandHandler } from "../cli/spec/spec.js";
 import { warnMessage, successMessage } from "../cli/output.js";
 import { RUNTIME_GITIGNORE_LINES } from "../shared/runtime-artifacts.js";
+import { resolvePolicyGatewayForRepo } from "../shared/policy-gateway.js";
 import { execFileAsync, gitEnv } from "./shared/git.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import type { DoctorParsed } from "./doctor.spec.js";
@@ -71,14 +72,18 @@ async function isDirectory(absPath: string): Promise<boolean> {
 
 async function checkWorkspace(repoRoot: string): Promise<string[]> {
   const problems: string[] = [];
-  const requiredFiles = [
-    path.join(repoRoot, "AGENTS.md"),
-    path.join(repoRoot, ".agentplane", "config.json"),
-  ];
+  const requiredFiles = [path.join(repoRoot, ".agentplane", "config.json")];
   for (const filePath of requiredFiles) {
     if (!(await pathExists(filePath))) {
       problems.push(`Missing required file: ${path.relative(repoRoot, filePath)}`);
     }
+  }
+  const gateway = await resolvePolicyGatewayForRepo({
+    gitRoot: repoRoot,
+    fallbackFlavor: "codex",
+  });
+  if (!(await pathExists(gateway.absPath))) {
+    problems.push("Missing required policy gateway file: AGENTS.md or CLAUDE.md");
   }
 
   const agentsDir = path.join(repoRoot, ".agentplane", "agents");

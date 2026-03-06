@@ -102,14 +102,26 @@ describe("doctor.command", () => {
     expect(rc).toBe(0);
   });
 
-  it("fails default checks when AGENTS.md is missing", async () => {
+  it("fails default checks when both policy gateway files are missing", async () => {
     const ws = await mkWorkspace();
     await rm(path.join(ws.root, "AGENTS.md"), { force: true });
+    await rm(path.join(ws.root, "CLAUDE.md"), { force: true });
     const rc = await runDoctor(
       { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
       { fix: false, dev: false },
     );
     expect(rc).toBe(1);
+  });
+
+  it("passes default checks when only CLAUDE.md exists", async () => {
+    const ws = await mkWorkspace();
+    await writeFile(path.join(ws.root, "CLAUDE.md"), "# CLAUDE\n", "utf8");
+    await rm(path.join(ws.root, "AGENTS.md"), { force: true });
+    const rc = await runDoctor(
+      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+      { fix: false, dev: false },
+    );
+    expect(rc).toBe(0);
   });
 
   it("supports workflow kill-switch for emergency rollback", async () => {

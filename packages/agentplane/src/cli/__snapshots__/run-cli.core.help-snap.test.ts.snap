@@ -45,7 +45,7 @@ Commands:
     hooks run  Run a managed hook (use \`--\` to pass through additional arguments).
     hooks uninstall  Uninstall managed git hooks installed by agentplane.
   IDE:
-    ide sync  Generate IDE entrypoints from AGENTS.md.
+    ide sync  Generate IDE entrypoints from policy gateway file (AGENTS.md or CLAUDE.md).
   Lifecycle:
     block  Transition a task to BLOCKED and record a structured Blocked comment.
     finish  Mark task(s) as DONE and record a structured Verified comment.

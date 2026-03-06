@@ -217,10 +217,10 @@ export function renderQuickstart(): string {
   return [
     "# agentplane quickstart",
     "",
-    "AGENTS.md is the source of truth for the workflow/process policy; quickstart and role output are the source of truth for CLI syntax and artifacts.",
+    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for workflow/process policy; quickstart and role output are the source of truth for CLI syntax and artifacts.",
     "Do not edit `.agentplane/tasks.json` by hand.",
     "",
-    "- See AGENTS.md for the canonical workflow policy and approval gates.",
+    "- See your policy gateway file (AGENTS.md or CLAUDE.md) for canonical workflow policy and approval gates.",
     "",
     "## Project setup",
     "",

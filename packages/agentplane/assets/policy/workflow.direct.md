@@ -4,15 +4,15 @@ Use this module when `workflow_mode=direct`.
 
 ## Required sequence
 
-1. Run preflight and publish summary.
-2. Build task graph and obtain explicit user approval.
+1. CHECKPOINT A: run preflight and publish summary.
+2. CHECKPOINT B: build task graph and obtain explicit user approval.
 3. Create/reuse task ID.
 4. Fill task docs (`Summary/Scope/Plan/Risks/Verify Steps/Rollback/Notes`).
 5. Approve plan (if required), then start task sequentially.
 6. Implement changes in current checkout.
 7. Run verification commands from loaded DoD modules.
 8. Record verification (`agentplane verify ...`) if required by workflow.
-9. Finish task with traceable evidence.
+9. CHECKPOINT C: finish task with traceable evidence.
 
 ## Command contract
 
@@ -37,5 +37,8 @@ If any step fails:
 
 ## Constraints
 
+- MUST NOT perform mutating actions before explicit user approval.
+- MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
+- MUST stop and request re-approval on material drift.
 - Do not use worktrees in direct mode.
 - Do not perform `branch_pr`-only operations.

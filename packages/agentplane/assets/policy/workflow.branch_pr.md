@@ -4,13 +4,13 @@ Use this module when `workflow_mode=branch_pr`.
 
 ## Required sequence
 
-1. Plan/approve on base checkout.
+1. CHECKPOINT A: plan/approve on base checkout.
 2. Start work with dedicated task branch + worktree.
 3. Keep single-writer discipline per task worktree.
 4. Publish/update PR artifacts.
 5. Verify on task branch.
-6. Integrate on base branch by INTEGRATOR.
-7. Finish task(s) on base with verification evidence.
+6. CHECKPOINT B: integrate on base branch by INTEGRATOR.
+7. CHECKPOINT C: finish task(s) on base with verification evidence.
 
 ## Command contract
 
@@ -26,5 +26,8 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 
 ## Constraints
 
+- MUST NOT perform mutating actions before explicit user approval.
+- MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
+- MUST stop and request re-approval on material drift.
 - Planning and closure happen on base checkout.
 - Do not export task snapshots from task branches.

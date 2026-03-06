@@ -33,6 +33,7 @@ import {
   loadAgentsTemplate,
   loadPolicyTemplates,
 } from "../agents/agents-template.js";
+import { renderPolicyGatewayTemplateText } from "../shared/policy-gateway.js";
 import * as taskBackend from "../backends/task-backend.js";
 import {
   captureStdIO,
@@ -673,7 +674,70 @@ describe("runCli", () => {
     for (const policy of policyTemplates) {
       const target = path.join(policyDir, policy.relativePath);
       const contents = await readFile(target, "utf8");
-      expect(contents).toBe(policy.contents);
+      const expected = policy.relativePath.endsWith(".md")
+        ? renderPolicyGatewayTemplateText(policy.contents, "AGENTS.md")
+        : policy.contents;
+      expect(contents).toBe(expected);
+    }
+  });
+
+  it("init --policy-gateway claude installs CLAUDE.md and rewrites gateway references", async () => {
+    const root = await mkGitRepoRoot();
+    await configureGitUser(root);
+    const template = await loadAgentsTemplate();
+    const expectedGateway = filterAgentsByWorkflow(
+      renderPolicyGatewayTemplateText(template, "CLAUDE.md"),
+      "direct",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["init", "--yes", "--policy-gateway", "claude", "--root", root]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const agentsPath = path.join(root, "AGENTS.md");
+    const claudePath = path.join(root, "CLAUDE.md");
+    const baselineClaudePath = path.join(root, ".agentplane", ".upgrade", "baseline", "CLAUDE.md");
+    expect(await pathExists(agentsPath)).toBe(false);
+    expect(await pathExists(claudePath)).toBe(true);
+    expect(await pathExists(baselineClaudePath)).toBe(true);
+    expect(await readFile(claudePath, "utf8")).toBe(expectedGateway);
+
+    const orchestratorPath = path.join(root, ".agentplane", "agents", "ORCHESTRATOR.json");
+    const orchestrator = await readFile(orchestratorPath, "utf8");
+    expect(orchestrator).toContain("CLAUDE.md");
+    expect(orchestrator).not.toContain("AGENTS.md");
+
+    const workflowPath = path.join(root, ".agentplane", "policy", "workflow.md");
+    const workflowText = await readFile(workflowPath, "utf8");
+    expect(workflowText).toContain("Use `CLAUDE.md` load rules");
+    expect(workflowText).not.toContain("AGENTS.md");
+
+    const governancePath = path.join(root, ".agentplane", "policy", "governance.md");
+    const governanceText = await readFile(governancePath, "utf8");
+    expect(governanceText).toContain("`CLAUDE.md`");
+    expect(governanceText).not.toContain("AGENTS.md or CLAUDE.md");
+
+    const agentTemplates = await loadAgentTemplates();
+    for (const agent of agentTemplates) {
+      const agentText = await readFile(
+        path.join(root, ".agentplane", "agents", agent.fileName),
+        "utf8",
+      );
+      expect(agentText).not.toContain("AGENTS.md");
+    }
+
+    const policyTemplates = await loadPolicyTemplates();
+    for (const policy of policyTemplates) {
+      if (!policy.relativePath.endsWith(".md")) continue;
+      const policyText = await readFile(
+        path.join(root, ".agentplane", "policy", policy.relativePath),
+        "utf8",
+      );
+      expect(policyText).not.toContain("AGENTS.md");
     }
   });
 

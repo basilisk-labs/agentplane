@@ -82,6 +82,7 @@ module.exports = [
       "import/resolver": {
         typescript: {
           project: tsconfigProjects,
+          noWarnOnMultipleProjects: true,
         },
       },
     },

@@ -53,7 +53,7 @@ async function cmdQuickstart(opts: {
         .filter((line) => line.length > 0);
       const payload = {
         source_of_truth: {
-          workflow_policy: "AGENTS.md",
+          workflow_policy: "AGENTS.md|CLAUDE.md",
           cli_syntax: "quickstart/role output",
         },
         lines,
@@ -539,7 +539,7 @@ function renderAgentProfileBlock(opts: {
     ...(permissions.length > 0 ? ["", "Permissions:", ...permissions.map((s) => `- ${s}`)] : []),
     ...(workflow.length > 0 ? ["", "Workflow:", ...workflow.map((s) => `- ${s}`)] : []),
     "",
-    `Source: .agentplane/agents/${opts.filename} (lower priority; see AGENTS.md)`,
+    `Source: .agentplane/agents/${opts.filename} (lower priority; see policy gateway file AGENTS.md or CLAUDE.md)`,
   ];
   return lines.join("\n").trimEnd();
 }

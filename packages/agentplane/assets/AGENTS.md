@@ -17,6 +17,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 - Repository type: user project initialized with `agentplane`.
 - Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
 - CLI rule: use `agentplane` from `PATH`; if unavailable, use `node packages/agentplane/bin/agentplane.js ...`.
+- Startup shortcut: run `## COMMANDS -> Preflight`, then apply `## LOAD RULES` before any mutation.
 
 ---
 
@@ -98,16 +99,21 @@ Condition: task includes mutation (file edits, task-state changes, commits, merg
 - `@.agentplane/policy/security.must.md`
 - `@.agentplane/policy/dod.core.md`
 
-### Conditional imports
+### Conditional imports (linear IF -> LOAD contract)
 
-- `workflow_mode=direct`: `@.agentplane/policy/workflow.direct.md`
-- `workflow_mode=branch_pr`: `@.agentplane/policy/workflow.branch_pr.md`
-- task touches release/version/publish or runs `agentplane release ...`: `@.agentplane/policy/workflow.release.md`
-- task runs `agentplane upgrade` or touches `.agentplane/.upgrade/**`: `@.agentplane/policy/workflow.upgrade.md`
-- task modifies implementation code paths: `@.agentplane/policy/dod.code.md`
-- task modifies docs/policy-only paths (`AGENTS.md`, docs, `.agentplane/policy/**`): `@.agentplane/policy/dod.docs.md`
-- task modifies policy files (`AGENTS.md` or `.agentplane/policy/**`): `@.agentplane/policy/governance.md`
-- task modifies `.agentplane/policy/incidents.md`: `@.agentplane/policy/incidents.md`
+1. IF `workflow_mode=direct` THEN LOAD `@.agentplane/policy/workflow.direct.md`.
+2. IF `workflow_mode=branch_pr` THEN LOAD `@.agentplane/policy/workflow.branch_pr.md`.
+3. IF task touches release/version/publish THEN LOAD `@.agentplane/policy/workflow.release.md`.
+4. IF task runs `agentplane upgrade` or touches `.agentplane/.upgrade/**` THEN LOAD `@.agentplane/policy/workflow.upgrade.md`.
+5. IF task modifies implementation code paths THEN LOAD `@.agentplane/policy/dod.code.md`.
+6. IF task modifies docs/policy-only paths (`AGENTS.md`, docs, `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/dod.docs.md`.
+7. IF task modifies policy files (`AGENTS.md` or `.agentplane/policy/**`) THEN LOAD `@.agentplane/policy/governance.md`.
+8. IF task modifies `.agentplane/policy/incidents.md` THEN LOAD `@.agentplane/policy/incidents.md`.
+
+Routing examples:
+
+- Example (docs-only task): rules `1|6` apply in `direct`; do not load `dod.code.md`.
+- Example (upgrade task): rules `4|7` apply plus workflow mode rule.
 
 Routing constraints:
 

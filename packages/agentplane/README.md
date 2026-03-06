@@ -25,6 +25,7 @@ agentplane quickstart
 ```
 
 `agentplane init` is human-oriented: interactive onboarding includes workflow/backend selection,
+policy gateway selection (`--policy-gateway codex|claude` -> `AGENTS.md` or `CLAUDE.md`),
 execution profile selection (`conservative|balanced|aggressive`), approval toggles, and optional recipes.
 
 Create your first task and run the workflow:
@@ -45,7 +46,8 @@ npx agentplane quickstart
 ## What gets installed automatically
 
 - `.agentplane/` is created with config, tasks, agents, and caches.
-- `AGENTS.md` is created if missing and defines the policy/guardrails.
+- The selected policy gateway file is created if missing and defines the policy/guardrails:
+  `AGENTS.md` (Codex) or `CLAUDE.md` (Claude Code).
 - Built-in agent definitions are copied into `.agentplane/agents/`.
 - Optional recipes can install additional agents when you run `agentplane recipes install ...`.
 - `.agentplane/config.json` stores execution defaults under `execution` (profile, reasoning effort, tool budget, safety gates).

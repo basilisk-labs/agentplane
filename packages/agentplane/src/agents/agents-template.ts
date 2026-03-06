@@ -2,6 +2,12 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  policyGatewayFileName,
+  renderPolicyGatewayTemplateText,
+  type PolicyGatewayFlavor,
+} from "../shared/policy-gateway.js";
+
 const AGENTS_TEMPLATE_URL = new URL("../../assets/AGENTS.md", import.meta.url);
 const AGENTS_DIR_URL = new URL("../../assets/agents/", import.meta.url);
 const POLICY_DIR_URL = new URL("../../assets/policy/", import.meta.url);
@@ -54,8 +60,7 @@ function removeSections(lines: string[], titles: string[]): string[] {
 }
 
 export async function loadAgentsTemplate(): Promise<string> {
-  const text = await readFile(AGENTS_TEMPLATE_URL, "utf8");
-  return ensureTrailingNewline(text.trimEnd());
+  return loadPolicyGatewayTemplate("codex");
 }
 
 export async function loadAgentTemplates(): Promise<AgentTemplate[]> {
@@ -119,4 +124,10 @@ export function filterAgentsByWorkflow(template: string, workflow: WorkflowMode)
 
   const filtered = removeSections(lines, removeTitles);
   return ensureTrailingNewline(filtered.join("\n").trimEnd());
+}
+
+export async function loadPolicyGatewayTemplate(flavor: PolicyGatewayFlavor): Promise<string> {
+  const text = await readFile(AGENTS_TEMPLATE_URL, "utf8");
+  const rendered = renderPolicyGatewayTemplateText(text, policyGatewayFileName(flavor));
+  return ensureTrailingNewline(rendered.trimEnd());
 }

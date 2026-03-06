@@ -44,6 +44,7 @@ export function protectedPathKindForFile(opts: {
   // "Rules of the game": authoring/agent policies and registry.
   if (
     p === "AGENTS.md" ||
+    p === "CLAUDE.md" ||
     p === "packages/agentplane/assets/AGENTS.md" ||
     pathIsUnder(p, ".agentplane/agents")
   ) {

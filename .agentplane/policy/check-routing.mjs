@@ -54,13 +54,24 @@ function listFilesRecursive(dirPath, relPrefix = "") {
 
 function main() {
   const repoRoot = process.cwd();
-  const agentsPath = path.join(repoRoot, "AGENTS.md");
-  const text = fs.readFileSync(agentsPath, "utf8");
+  const codexPath = path.join(repoRoot, "AGENTS.md");
+  const claudePath = path.join(repoRoot, "CLAUDE.md");
+  const hasCodex = fs.existsSync(codexPath);
+  const hasClaude = fs.existsSync(claudePath);
+  let gatewayPath = codexPath;
+  if (!hasCodex && hasClaude) gatewayPath = claudePath;
+  const gatewayFileName = path.basename(gatewayPath);
+  if (!hasCodex && !hasClaude) {
+    throw new Error(
+      "Policy routing check failed:\n- Missing policy gateway file: AGENTS.md or CLAUDE.md",
+    );
+  }
+  const text = fs.readFileSync(gatewayPath, "utf8");
   const errors = [];
 
   const lineCount = text.split(/\r?\n/).length;
   if (lineCount > 250) {
-    errors.push(`AGENTS.md exceeds policy budget (<=250 lines): got ${lineCount}`);
+    errors.push(`${gatewayFileName} exceeds policy budget (<=250 lines): got ${lineCount}`);
   }
 
   const requiredHeadings = [

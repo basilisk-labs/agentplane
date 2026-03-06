@@ -240,6 +240,7 @@ async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
 
 function isAllowedUpgradePath(relPath: string): boolean {
   if (relPath === "AGENTS.md") return true;
+  if (relPath === "CLAUDE.md") return true;
   if (relPath.startsWith(".agentplane/agents/") && relPath.endsWith(".json")) return true;
   if (
     relPath.startsWith(".agentplane/policy/") &&
@@ -721,33 +722,46 @@ export async function cmdUpgradeParsed(opts: {
 
     const toBaselineKey = (rel: string): string | null => {
       if (rel === "AGENTS.md") return "AGENTS.md";
+      if (rel === "CLAUDE.md") return "CLAUDE.md";
       if (rel.startsWith(".agentplane/")) return rel.slice(".agentplane/".length);
       return null;
     };
 
+    const policyGatewayRel = (await fileExists(path.join(resolved.gitRoot, "AGENTS.md")))
+      ? "AGENTS.md"
+      : (await fileExists(path.join(resolved.gitRoot, "CLAUDE.md")))
+        ? "CLAUDE.md"
+        : "AGENTS.md";
+
+    const remapManagedGatewayRel = (rel: string): string => {
+      if (rel === "AGENTS.md" && policyGatewayRel === "CLAUDE.md") return "CLAUDE.md";
+      return rel;
+    };
+
     for (const entry of manifest.files) {
-      const rel = entry.path.replaceAll("\\", "/").trim();
-      if (!rel || rel.startsWith("..") || path.isAbsolute(rel)) {
+      const relRaw = entry.path.replaceAll("\\", "/").trim();
+      if (!relRaw || relRaw.startsWith("..") || path.isAbsolute(relRaw)) {
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
           message: `Invalid manifest path: ${entry.path}`,
         });
       }
-      if (isDeniedUpgradePath(rel)) {
+      if (isDeniedUpgradePath(relRaw)) {
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
-          message: `Manifest includes a denied path: ${rel}`,
+          message: `Manifest includes a denied path: ${relRaw}`,
         });
       }
-      if (!isAllowedUpgradePath(rel)) {
+      if (!isAllowedUpgradePath(relRaw)) {
         throw new CliError({
           exitCode: 3,
           code: "E_VALIDATION",
-          message: `Manifest path not allowed: ${rel}`,
+          message: `Manifest path not allowed: ${relRaw}`,
         });
       }
+      const rel = remapManagedGatewayRel(relRaw);
 
       const destPath = path.join(resolved.gitRoot, rel);
       const kind = await getPathKind(destPath);
@@ -759,14 +773,26 @@ export async function cmdUpgradeParsed(opts: {
         });
       }
 
-      const sourceRel = (entry.source_path ?? entry.path).replaceAll("\\", "/").trim();
-      const sourcePath = path.join(bundleRoot, sourceRel);
       let data: Buffer;
-      try {
-        data = await readFile(sourcePath);
-      } catch {
-        if (entry.required) missingRequired.push(rel);
-        continue;
+      {
+        const sourceRelRaw = (entry.source_path ?? entry.path).replaceAll("\\", "/").trim();
+        const mappedSourceRel =
+          rel === "CLAUDE.md" && sourceRelRaw === "AGENTS.md" ? "CLAUDE.md" : sourceRelRaw;
+        const sourceCandidates = [...new Set([mappedSourceRel, sourceRelRaw])];
+        let loaded: Buffer | null = null;
+        for (const candidate of sourceCandidates) {
+          try {
+            loaded = await readFile(path.join(bundleRoot, candidate));
+            break;
+          } catch {
+            // try next candidate
+          }
+        }
+        if (!loaded) {
+          if (entry.required) missingRequired.push(rel);
+          continue;
+        }
+        data = loaded;
       }
 
       let existingBuf: Buffer | null = null;
@@ -843,7 +869,10 @@ export async function cmdUpgradeParsed(opts: {
 
       // Merge logic only needs text for a small subset of managed files.
       if (existingBuf) {
-        if (entry.merge_strategy === "agents_policy_markdown" && rel === "AGENTS.md") {
+        if (
+          entry.merge_strategy === "agents_policy_markdown" &&
+          (rel === "AGENTS.md" || rel === "CLAUDE.md")
+        ) {
           existingText = existingBuf.toString("utf8");
           const mergedText = mergeAgentsPolicyMarkdown(data.toString("utf8"), existingText);
           data = Buffer.from(mergedText, "utf8");
@@ -1009,7 +1038,7 @@ export async function cmdUpgradeParsed(opts: {
         `- .git/**\n\n` +
         `## Notes\n\n` +
         `- The upgrade bundle is validated against framework.manifest.json.\n` +
-        `- AGENTS.md is the canonical policy file at the workspace root.\n`;
+        `- The policy gateway file at workspace root is AGENTS.md or CLAUDE.md.\n`;
 
       const reportMd =
         `# Upgrade report (${runId})\n\n` +
@@ -1083,8 +1112,8 @@ export async function cmdUpgradeParsed(opts: {
       await mkdir(path.dirname(destPath), { recursive: true });
       const data = fileContents.get(rel);
       if (data) {
-        if (rel === "AGENTS.md") {
-          // If AGENTS.md is a symlink, avoid overwriting an arbitrary external target.
+        if (rel === "AGENTS.md" || rel === "CLAUDE.md") {
+          // If policy gateway file is a symlink, avoid overwriting an arbitrary external target.
           // This permits repo-internal symlinks (e.g. the agentplane repo itself) while
           // keeping user workspaces safe.
           try {
@@ -1098,7 +1127,7 @@ export async function cmdUpgradeParsed(opts: {
                   exitCode: exitCodeForError("E_VALIDATION"),
                   code: "E_VALIDATION",
                   message:
-                    `Refusing to overwrite symlinked AGENTS.md target outside repo: ${linkTarget}. ` +
+                    `Refusing to overwrite symlinked ${rel} target outside repo: ${linkTarget}. ` +
                     "Replace the symlink with a regular file and retry.",
                 });
               }

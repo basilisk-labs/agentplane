@@ -112,9 +112,9 @@ npx agentplane config set workflow_mode branch_pr
 
 ## 🧠 Core Concepts
 
-### 🔹 AGENTS.md
+### 🔹 Policy Gateway
 
-This repository contains a special policy file (`AGENTS.md`) that defines:
+This repository contains a special policy file (`AGENTS.md` for Codex or `CLAUDE.md` for Claude Code) that defines:
 
 - Global guardrails
 - Allowed actions
@@ -125,7 +125,7 @@ It acts as the canonical policy layer (the "constitution") for agents.
 
 Notes:
 
-- `agentplane init` creates `AGENTS.md` as a regular file at the repository root (if missing).
+- `agentplane init` creates the selected gateway file (`AGENTS.md` or `CLAUDE.md`) at the repository root (if missing).
 - `agentplane upgrade` writes a machine-readable review report under `.agentplane/.upgrade/` (for example `.agentplane/.upgrade/agent/<runId>/review.json` or `.agentplane/.upgrade/last-review.json`) that can signal when a semantic prompt merge is required.
 
 ### 🔹 Roles
@@ -145,7 +145,7 @@ Use `agentplane role <ROLE>` to print the built-in CLI guide and, when available
 Your project with agent/plane typically includes:
 
 ```
-AGENTS.md              # Policy & guardrails
+AGENTS.md or CLAUDE.md # Policy & guardrails
 .agentplane/           # Internal agent artifacts and config
 .agentplane/tasks/     # Per-task records
 .agentplane/config.json # agent/plane configuration

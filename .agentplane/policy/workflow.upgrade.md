@@ -9,7 +9,7 @@ Use this module when task runs `agentplane upgrade` or touches `.agentplane/.upg
    - agent mode: `.agentplane/.upgrade/agent/<runId>/review.json`
    - auto mode: `.agentplane/.upgrade/last-review.json`
 3. If any entry has `needsSemanticReview=true`, create executable task owned by `UPGRADER`.
-4. In the UPGRADER task, reconcile `AGENTS.md`, `.agentplane/agents/*.json`, and `packages/agentplane/assets/*`.
+4. In the UPGRADER task, reconcile the policy gateway file (`AGENTS.md` or `CLAUDE.md`), `.agentplane/agents/*.json`, and `packages/agentplane/assets/*`.
 5. Verify policy/agent consistency and routing checks.
 6. Record run path, reviewed files, and decisions in task notes.
 

@@ -17,7 +17,7 @@ Promotion from `incidents.md` into canonical policy modules is allowed only when
 
 1. The incident is `stabilized`.
 2. Enforcement is defined (`CI`, `test`, `lint`, or policy check script).
-3. `AGENTS.md` load rules are updated if routing behavior changes.
+3. Policy gateway load rules are updated if routing behavior changes.
 
 ## Canonical module immutability
 
@@ -27,9 +27,9 @@ Promotion from `incidents.md` into canonical policy modules is allowed only when
 
 ## Policy budget
 
-- `AGENTS.md` MUST remain a compact gateway (target <= 250 lines).
-- Detailed procedures MUST be placed in canonical modules listed in `AGENTS.md`.
-- If a policy change needs >20 new lines in `AGENTS.md`, move detail to a module and keep only routing + hard gate in gateway.
+- The policy gateway file (`AGENTS.md` or `CLAUDE.md`) MUST remain compact (target <= 250 lines).
+- Detailed procedures MUST be placed in canonical modules listed in the gateway file.
+- If a policy change needs >20 new lines in the gateway file, move detail to a module and keep only routing + hard gate in gateway.
 
 ## Rule quality
 
