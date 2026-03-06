@@ -327,7 +327,7 @@ describeWhenNotHook("release apply", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
-    const remoteRoot = path.join(root, "..", "remote.git");
+    const remoteRoot = path.join(root, "remote.git");
     await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
     await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
 

@@ -2,7 +2,7 @@
 id: "202603061532-9Y41NM"
 title: "Fix release apply push hang"
 result_summary: "Fixed the release CLI so internal push steps bypass recursive local hooks and the previously hanging release-apply path is covered by regression tests."
-status: "DONE"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,13 +19,11 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved release/code bugfix scope and verification contract."
 verification:
-  state: "ok"
-  updated_at: "2026-03-06T15:39:55.738Z"
+  state: "needs_rework"
+  updated_at: "2026-03-06T15:42:10.152Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts\nResult: pass\nEvidence: 8/8 tests passed, including the new pushReleaseRefs regression that proves internal release pushes bypass local pre-push hooks.\nScope: release apply command flow, release plan flow, internal push behavior.\n\nCommand: bun run release:check\nResult: pass\nEvidence: package builds and release pack/parity checks completed successfully for 0.3.1.\nScope: release build/parity gate.\n\nCommand: git diff -- packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts docs/developer/release-and-publishing.mdx\nResult: pass\nEvidence: release apply now calls git push with --no-verify, plus docs and regression coverage were updated.\nScope: implemented fix and documentation alignment."
-commit:
-  hash: "d1b1fb3ce143e0f804bf15b474277018c4e9d623"
-  message: "🐛 9Y41NM release: skip hook recursion in release apply"
+  note: "Pre-push exposed a nondeterministic regression in the new test: the temporary bare remote path could collide across parallel runs. Reopening to make the test sandbox path unique and rerun verification."
+commit: null
 comments:
   -
     author: "CODER"
@@ -54,8 +52,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release apply no longer re-enters local pre-push hooks; targeted release tests and release:check passed."
+  -
+    type: "verify"
+    at: "2026-03-06T15:42:10.152Z"
+    author: "CODER"
+    state: "needs_rework"
+    note: "Pre-push exposed a nondeterministic regression in the new test: the temporary bare remote path could collide across parallel runs. Reopening to make the test sandbox path unique and rerun verification."
 doc_version: 2
-doc_updated_at: "2026-03-06T15:40:03.844Z"
+doc_updated_at: "2026-03-06T15:42:10.153Z"
 doc_updated_by: "CODER"
 description: "Diagnose and fix the bug where agentplane release apply --push --yes can hang after creating the local release commit and tag, leaving push/publication incomplete."
 id_source: "generated"
@@ -109,6 +113,14 @@ Evidence: release apply now calls git push with --no-verify, plus docs and regre
 Scope: implemented fix and documentation alignment.
 
 VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T15:35:19.423Z, excerpt_hash=sha256:8293c8b3fef4de505eb31c11fde2eb6f1a72d05e49bf2d0c3d4ddef01021a29d
+
+#### 2026-03-06T15:42:10.152Z — VERIFY — needs_rework
+
+By: CODER
+
+Note: Pre-push exposed a nondeterministic regression in the new test: the temporary bare remote path could collide across parallel runs. Reopening to make the test sandbox path unique and rerun verification.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T15:40:03.844Z, excerpt_hash=sha256:8293c8b3fef4de505eb31c11fde2eb6f1a72d05e49bf2d0c3d4ddef01021a29d
 
 <!-- END VERIFICATION RESULTS -->
 
