@@ -118,7 +118,9 @@
   letter-spacing: 0.04em;
   text-decoration: none;
   text-transform: uppercase;
-  transition: color 180ms ease, transform 180ms ease;
+  transition:
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .entryLink:hover,
@@ -133,7 +135,9 @@
   gap: 0.45rem;
   padding: 0.9rem 1rem;
   text-decoration: none;
-  transition: border-color 180ms ease, transform 180ms ease;
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 
 .referenceItem strong {
