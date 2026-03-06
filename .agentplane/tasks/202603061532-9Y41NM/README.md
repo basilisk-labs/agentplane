@@ -1,8 +1,8 @@
 ---
 id: "202603061532-9Y41NM"
 title: "Fix release apply push hang"
-result_summary: "Fixed the release CLI so internal push steps bypass recursive local hooks and the previously hanging release-apply path is covered by regression tests."
-status: "DOING"
+result_summary: "Fixed the release CLI so internal push steps bypass recursive local hooks and the release-apply path is covered by deterministic regression tests."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +19,13 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved release/code bugfix scope and verification contract."
 verification:
-  state: "needs_rework"
-  updated_at: "2026-03-06T15:42:10.152Z"
+  state: "ok"
+  updated_at: "2026-03-06T15:45:19.957Z"
   updated_by: "CODER"
-  note: "Pre-push exposed a nondeterministic regression in the new test: the temporary bare remote path could collide across parallel runs. Reopening to make the test sandbox path unique and rerun verification."
-commit: null
+  note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts\nResult: pass\nEvidence: 8/8 tests passed, including the regression that proves internal release pushes use git push --no-verify and do not execute a failing local pre-push hook.\nScope: release apply command flow, release plan flow, internal push behavior.\n\nCommand: bun run release:check\nResult: pass\nEvidence: release build/parity gate completed successfully after the sandbox-path stabilization.\nScope: release packaging and publish-readiness checks.\n\nCommand: git log --oneline -3\nResult: pass\nEvidence: final implementation commit is d3443b9f on top of the earlier partial close, so the task can now be closed against the latest implementation revision.\nScope: traceability for the final fix set.\n\nNote: The approved verify step agentplane release apply --push --yes was not re-executed against the live repository because it is destructive on version/tag state; the deterministic regression test exercises that path in an isolated repository with a failing local pre-push hook."
+commit:
+  hash: "d3443b9f75d0460d8b3e11d6ead8ee59bc9f7a6b"
+  message: "🧪 9Y41NM release: stabilize push regression sandbox"
 comments:
   -
     author: "CODER"
@@ -31,6 +33,9 @@ comments:
   -
     author: "CODER"
     body: "Verified: release apply no longer re-enters local pre-push hooks; targeted release tests and release:check passed."
+  -
+    author: "CODER"
+    body: "Verified: release apply internal push now bypasses recursive local hooks; targeted release tests and release:check passed after stabilizing the regression sandbox path."
 events:
   -
     type: "status"
@@ -58,8 +63,21 @@ events:
     author: "CODER"
     state: "needs_rework"
     note: "Pre-push exposed a nondeterministic regression in the new test: the temporary bare remote path could collide across parallel runs. Reopening to make the test sandbox path unique and rerun verification."
+  -
+    type: "verify"
+    at: "2026-03-06T15:45:19.957Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts\nResult: pass\nEvidence: 8/8 tests passed, including the regression that proves internal release pushes use git push --no-verify and do not execute a failing local pre-push hook.\nScope: release apply command flow, release plan flow, internal push behavior.\n\nCommand: bun run release:check\nResult: pass\nEvidence: release build/parity gate completed successfully after the sandbox-path stabilization.\nScope: release packaging and publish-readiness checks.\n\nCommand: git log --oneline -3\nResult: pass\nEvidence: final implementation commit is d3443b9f on top of the earlier partial close, so the task can now be closed against the latest implementation revision.\nScope: traceability for the final fix set.\n\nNote: The approved verify step agentplane release apply --push --yes was not re-executed against the live repository because it is destructive on version/tag state; the deterministic regression test exercises that path in an isolated repository with a failing local pre-push hook."
+  -
+    type: "status"
+    at: "2026-03-06T15:45:30.443Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release apply internal push now bypasses recursive local hooks; targeted release tests and release:check passed after stabilizing the regression sandbox path."
 doc_version: 2
-doc_updated_at: "2026-03-06T15:42:10.153Z"
+doc_updated_at: "2026-03-06T15:45:30.443Z"
 doc_updated_by: "CODER"
 description: "Diagnose and fix the bug where agentplane release apply --push --yes can hang after creating the local release commit and tag, leaving push/publication incomplete."
 id_source: "generated"
@@ -121,6 +139,29 @@ By: CODER
 Note: Pre-push exposed a nondeterministic regression in the new test: the temporary bare remote path could collide across parallel runs. Reopening to make the test sandbox path unique and rerun verification.
 
 VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T15:40:03.844Z, excerpt_hash=sha256:8293c8b3fef4de505eb31c11fde2eb6f1a72d05e49bf2d0c3d4ddef01021a29d
+
+#### 2026-03-06T15:45:19.957Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts
+Result: pass
+Evidence: 8/8 tests passed, including the regression that proves internal release pushes use git push --no-verify and do not execute a failing local pre-push hook.
+Scope: release apply command flow, release plan flow, internal push behavior.
+
+Command: bun run release:check
+Result: pass
+Evidence: release build/parity gate completed successfully after the sandbox-path stabilization.
+Scope: release packaging and publish-readiness checks.
+
+Command: git log --oneline -3
+Result: pass
+Evidence: final implementation commit is d3443b9f on top of the earlier partial close, so the task can now be closed against the latest implementation revision.
+Scope: traceability for the final fix set.
+
+Note: The approved verify step agentplane release apply --push --yes was not re-executed against the live repository because it is destructive on version/tag state; the deterministic regression test exercises that path in an isolated repository with a failing local pre-push hook.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T15:42:10.153Z, excerpt_hash=sha256:8293c8b3fef4de505eb31c11fde2eb6f1a72d05e49bf2d0c3d4ddef01021a29d
 
 <!-- END VERIFICATION RESULTS -->
 
