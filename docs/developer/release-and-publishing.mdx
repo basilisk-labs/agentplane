@@ -55,6 +55,8 @@ AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release apply
 agentplane release apply --push --yes
 ```
 
+`release apply --push --yes` runs the release gate before tagging and then pushes with `git push --no-verify`, so it does not recursively re-enter the local `pre-push` hook after the release gate already passed.
+
 ## What `release:prepublish` covers
 
 `bun run release:prepublish` includes:

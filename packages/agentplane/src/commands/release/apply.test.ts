@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 
 import { mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helpers.js";
 import { runReleasePlan } from "./plan.command.js";
-import { runReleaseApply } from "./apply.command.js";
+import { pushReleaseRefs, runReleaseApply } from "./apply.command.js";
 
 const execFileAsync = promisify(execFile);
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
@@ -322,4 +322,53 @@ describeWhenNotHook("release apply", () => {
       ),
     ).rejects.toThrow(/at least 2 bullet points/u);
   });
+
+  it("pushes release refs with --no-verify to avoid recursive local pre-push hooks", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const remoteRoot = path.join(root, "..", "remote.git");
+    await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+
+    await writeFile(path.join(root, "tracked.txt"), "release\n", "utf8");
+    await commitAll(root, "seed");
+    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+    await execFileAsync("git", ["tag", "v0.2.7"], { cwd: root });
+
+    const hookPath = path.join(root, ".git", "hooks", "pre-push");
+    const markerPath = path.join(root, "pre-push.marker");
+    await writeFile(
+      hookPath,
+      [
+        "#!/bin/sh",
+        String.raw`printf 'hook-ran\n' >> '${markerPath}'`,
+        "echo 'pre-push hook should have been skipped' >&2",
+        "exit 1",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await execFileAsync("chmod", ["+x", hookPath], { cwd: root });
+
+    await pushReleaseRefs(root, "origin", "v0.2.7");
+
+    await expect(readFile(markerPath, "utf8")).rejects.toThrow();
+
+    const { stdout: remoteHead } = await execFileAsync("git", ["rev-parse", "refs/heads/main"], {
+      cwd: remoteRoot,
+    });
+    const { stdout: localHead } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+      cwd: root,
+    });
+    expect(remoteHead.trim()).toBe(localHead.trim());
+
+    const { stdout: remoteTag } = await execFileAsync("git", ["rev-parse", "refs/tags/v0.2.7"], {
+      cwd: remoteRoot,
+    });
+    const { stdout: localTag } = await execFileAsync("git", ["rev-list", "-n", "1", "v0.2.7"], {
+      cwd: root,
+    });
+    expect(remoteTag.trim()).toBe(localTag.trim());
+  }, 30_000);
 });

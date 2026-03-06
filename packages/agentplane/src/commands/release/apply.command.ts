@@ -368,6 +368,17 @@ async function writeReleaseApplyReport(
   return reportPath;
 }
 
+export async function pushReleaseRefs(gitRoot: string, remote: string, tag: string): Promise<void> {
+  await execFileAsync("git", ["push", "--no-verify", remote, "HEAD"], {
+    cwd: gitRoot,
+    env: gitEnv(),
+  });
+  await execFileAsync("git", ["push", "--no-verify", remote, tag], {
+    cwd: gitRoot,
+    env: gitEnv(),
+  });
+}
+
 export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
   id: ["release", "apply"],
   group: "Release",
@@ -600,11 +611,7 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
 
   process.stdout.write(`Release tag created: ${plan.nextTag}\n`);
   if (flags.push) {
-    await execFileAsync("git", ["push", flags.remote, "HEAD"], { cwd: gitRoot, env: gitEnv() });
-    await execFileAsync("git", ["push", flags.remote, plan.nextTag], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
+    await pushReleaseRefs(gitRoot, flags.remote, plan.nextTag);
     process.stdout.write(`Pushed: ${flags.remote} HEAD + ${plan.nextTag}\n`);
   } else {
     process.stdout.write(`Next: git push <remote> HEAD && git push <remote> ${plan.nextTag}\n`);
