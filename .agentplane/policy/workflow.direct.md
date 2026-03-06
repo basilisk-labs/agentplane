@@ -8,6 +8,7 @@ Use this module when `workflow_mode=direct`.
 2. CHECKPOINT B: build task graph and obtain explicit user approval.
 3. Create/reuse task ID.
 4. Fill task docs (`Summary/Scope/Plan/Risks/Verify Steps/Rollback/Notes`).
+   Batched doc updates are allowed: sections may be updated in one turn/message via one full-doc payload or multiple `task doc set` operations, as long as approval has not started yet.
 5. Approve plan (if required), then start task sequentially.
 6. Implement changes in current checkout.
 7. Run verification commands from loaded DoD modules.
@@ -38,6 +39,7 @@ If any step fails:
 ## Constraints
 
 - MUST NOT perform mutating actions before explicit user approval.
+- Task documentation updates MAY be batched within one turn before approval.
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
 - MUST stop and request re-approval on material drift.
 - Do not use worktrees in direct mode.

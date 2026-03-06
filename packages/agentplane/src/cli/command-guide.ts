@@ -109,13 +109,13 @@ const ROLE_GUIDES: RoleGuide[] = [
       '- Plan lifecycle: `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>` -> `agentplane task plan approve <task-id> --by <id>`',
       "- Verify Steps discipline: if a task primary tag is verify-required (default: code/data/ops), fill `## Verify Steps` before plan approval.",
       "- Doc quality gate: `task plan approve` and `finish` fail when required agent-filled sections (`Summary/Scope/Plan/Risks/Rollback Plan`, per config) are empty/TODO placeholders.",
-      '- Task docs (when planning needs it): `agentplane task doc set <task-id> --section Summary --text "..."`',
+      '- Task docs (when planning needs it): `agentplane task doc set <task-id> --section Summary --text "..."`; if `--text`/`--file` contains multiple known headings, the command applies it as one batched full-doc update.',
     ],
   },
   {
     role: "CODER",
     lines: [
-      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates.",
+      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates; batched doc updates are allowed before approval.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Start status (deterministic): `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."` (after `task plan approve`, sequential only).',
       '- Other status updates: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
@@ -128,7 +128,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "TESTER",
     lines: [
-      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates.",
+      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates; batched doc updates are allowed before approval.",
       "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
       '- Start status (deterministic): `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."` (after `task plan approve`, sequential only).',
       '- Other status updates: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
@@ -141,7 +141,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "DOCS",
     lines: [
-      '- Task docs: `agentplane task doc set <task-id> --section Summary --text "..."` (repeat per section or use `--file`)',
+      '- Task docs: `agentplane task doc set <task-id> --section Summary --text "..."` (repeat per section, or send one multi-heading full-doc payload via `--text`/`--file`)',
       '- PR notes: `agentplane pr note <task-id> --author DOCS --body "..."`',
       '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
     ],
