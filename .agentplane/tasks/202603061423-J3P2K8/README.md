@@ -1,7 +1,8 @@
 ---
 id: "202603061423-J3P2K8"
 title: "Restore placeholder homepage and simplify blog index"
-status: "DOING"
+result_summary: "Homepage now uses the earlier typographic placeholder, blog entry artwork is hidden from the index page, and the site is ready to republish."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -14,15 +15,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-06T14:26:10.406Z"
+  updated_by: "CODER"
+  note: "Verified: bun run docs:site:generate; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Homepage is restored to the earlier placeholder surface and blog index illustrations are removed."
+commit:
+  hash: "009f0fb1e3c857942c2bc626be639a71e521261d"
+  message: "✨ J3P2K8 website: restore placeholder homepage"
 comments:
   -
     author: "CODER"
     body: "Start: restore the earlier placeholder homepage surface and remove inline artwork from the blog landing page, then republish the site after the required checks."
+  -
+    author: "CODER"
+    body: "Verified: the homepage is back to the placeholder holding surface, the blog index is text-only, and the required website checks passed before deployment."
 events:
   -
     type: "status"
@@ -31,8 +37,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: restore the earlier placeholder homepage surface and remove inline artwork from the blog landing page, then republish the site after the required checks."
+  -
+    type: "verify"
+    at: "2026-03-06T14:26:10.406Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun run docs:site:generate; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Homepage is restored to the earlier placeholder surface and blog index illustrations are removed."
+  -
+    type: "status"
+    at: "2026-03-06T14:26:20.634Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the homepage is back to the placeholder holding surface, the blog index is text-only, and the required website checks passed before deployment."
 doc_version: 2
-doc_updated_at: "2026-03-06T14:24:36.039Z"
+doc_updated_at: "2026-03-06T14:26:20.634Z"
 doc_updated_by: "CODER"
 description: "Revert the homepage to the previous placeholder-style typographic landing, keep the blog itself, and hide post illustrations from the blog index page before republishing the website."
 id_source: "generated"
@@ -67,6 +86,14 @@ In scope: website/src/pages/index.tsx, website/src/pages/index.module.css, websi
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-06T14:26:10.406Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun run docs:site:generate; bun run --cwd website typecheck; bun run --cwd website build; node scripts/check-design-language.mjs. Homepage is restored to the earlier placeholder surface and blog index illustrations are removed.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T14:24:36.039Z, excerpt_hash=sha256:408bbe274f74d2ed7254d73c27da9ba514373e726e21b4974fc2ac870a1bde97
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
