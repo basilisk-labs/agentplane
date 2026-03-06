@@ -58,29 +58,132 @@ a {
 }
 
 .navbar {
-  border-bottom: 1px solid rgb(var(--border));
+  backdrop-filter: blur(18px) saturate(150%);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.7)),
+    rgb(var(--bg) / 0.78);
+  border: 1px solid rgb(var(--border) / 0.8);
+  border-radius: 18px;
+  box-shadow:
+    0 18px 44px rgb(11 17 32 / 0.08),
+    0 0 0 1px rgb(255 255 255 / 0.68) inset;
+  left: 0;
+  margin: 0.75rem auto 0;
+  max-width: 1240px;
+  right: 0;
+  top: 0.75rem;
+  width: calc(100% - 1.5rem);
+}
+
+.navbar.navbar--fixed-top {
+  left: 0;
+  margin-inline: auto;
+  right: 0;
+  top: 0.75rem;
+}
+
+.navbar__inner {
+  gap: 0.65rem;
+  min-height: 64px;
+  padding: 0.5rem 0.7rem;
+}
+
+.navbar__brand {
+  backdrop-filter: blur(8px);
+  background: rgb(var(--bg) / 0.72);
+  border: 1px solid rgb(var(--border));
+  padding: 0.35rem 0.55rem;
+}
+
+.navbar__logo {
+  margin-right: 0.55rem;
+}
+
+.navbar__items {
+  gap: 0.15rem;
 }
 
 .navbar__item.navbar__link {
+  backdrop-filter: blur(8px);
+  background: transparent;
   border: 1px solid transparent;
-  border-radius: 0;
+  border-radius: 999px;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.76rem;
   line-height: 1.2;
-  padding: 0.28rem 0.42rem;
+  padding: 0.45rem 0.72rem;
   letter-spacing: 0.04em;
   position: relative;
   text-transform: uppercase;
   transition:
     border-color 180ms ease,
     background-color 180ms ease,
-    color 180ms ease;
+    color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .navbar__item.navbar__link:hover,
 .navbar__item.navbar__link:focus-visible {
   background-color: rgb(var(--accent) / 0.08);
-  border-color: rgb(var(--accent) / 0.55);
+  border-color: rgb(var(--accent) / 0.4);
+  box-shadow: 0 8px 18px rgb(0 132 184 / 0.08);
+  transform: translateY(-1px);
+}
+
+.navbar__link--active {
+  background: rgb(var(--fg));
+  border-color: rgb(var(--fg));
+  color: rgb(var(--bg)) !important;
+}
+
+.navbar__link--active:hover,
+.navbar__link--active:focus-visible {
+  background: rgb(var(--accent));
+  border-color: rgb(var(--accent));
+  color: rgb(var(--bg)) !important;
+}
+
+.navbar__toggle {
+  border: 1px solid rgb(var(--border));
+  border-radius: 999px;
+  padding: 0.35rem;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.navbar__toggle:hover,
+.navbar__toggle:focus-visible {
+  background: rgb(var(--accent) / 0.08);
+  border-color: rgb(var(--accent) / 0.38);
+}
+
+.navbar-sidebar {
+  backdrop-filter: blur(18px) saturate(150%);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.88)),
+    rgb(var(--bg) / 0.9);
+  border-left: 1px solid rgb(var(--border));
+}
+
+.navbar-sidebar__brand {
+  border-bottom: 1px solid rgb(var(--border));
+}
+
+.navbar-sidebar__item.menu__list-item .menu__link {
+  border: 1px solid transparent;
+  border-radius: 14px;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.navbar-sidebar__item.menu__list-item .menu__link:hover,
+.navbar-sidebar__item.menu__list-item .menu__link:focus-visible {
+  background: rgb(var(--accent) / 0.08);
+  border-color: rgb(var(--accent) / 0.3);
 }
 
 .footer {
