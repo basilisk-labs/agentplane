@@ -1,50 +1,322 @@
-.wrap {
+.page {
   margin: 0 auto;
-  max-width: 860px;
-  padding: 3.5rem 1rem 4rem;
+  max-width: 1180px;
+  padding: 2.5rem 1rem 4.5rem;
 }
 
 .hero {
-  background-color: rgb(0 132 184 / 0.06);
-  border: 1px solid rgb(230 230 230);
-  border-top: 2px solid rgb(0 132 184 / 0.6);
-  padding: 1.4rem 1.2rem;
+  border: 1px solid rgb(var(--border));
+  overflow: hidden;
+  padding: 1.25rem;
+  position: relative;
 }
 
-.kicker {
-  color: rgb(90 90 90);
-  font-family: "Geist Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  margin: 0 0 0.45rem;
+.hero::after {
+  background:
+    radial-gradient(circle at top left, rgb(var(--accent) / 0.14), transparent 42%),
+    linear-gradient(135deg, rgb(255 255 255 / 0.96), rgb(var(--accent) / 0.03));
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.heroHeader,
+.heroGrid {
+  position: relative;
+  z-index: 1;
+}
+
+.heroHeader {
+  align-items: center;
+  display: flex;
+  gap: 0.85rem;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.kicker,
+.sectionLabel,
+.signalLabel,
+.featuredEyebrow,
+.status {
+  font-family: var(--font-pixel), var(--ifm-font-family-monospace);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
-.hero h1 {
-  font-size: clamp(1.8rem, 5vw, 3rem);
-  letter-spacing: -0.03em;
-  margin: 0 0 0.7rem;
+.kicker,
+.sectionLabel,
+.featuredEyebrow {
+  color: rgb(var(--faint));
+  font-size: 0.68rem;
+  margin: 0;
+}
+
+.status {
+  border: 1px solid rgb(var(--accent) / 0.35);
+  color: rgb(var(--accent));
+  font-size: 0.64rem;
+  margin: 0;
+  padding: 0.3rem 0.5rem;
+}
+
+.heroGrid {
+  align-items: stretch;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.95fr);
+}
+
+.heroCopy {
+  display: grid;
+  gap: 1rem;
+  padding: 0.25rem 0;
+}
+
+.heroCopy h1 {
+  font-size: clamp(2.3rem, 5vw, 4.4rem);
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  margin: 0;
+  max-width: 12ch;
 }
 
 .lead {
-  color: rgb(60 60 60);
-  margin: 0;
-  max-width: 60ch;
-}
-
-.card {
-  border: 1px solid rgb(230 230 230);
-  margin-top: 1rem;
-  padding: 1rem 1.2rem;
-}
-
-.card h2 {
+  color: rgb(var(--muted));
   font-size: 1rem;
-  letter-spacing: 0.02em;
-  margin: 0 0 0.45rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 62ch;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+
+.primaryCta,
+.secondaryCta,
+.featuredLink,
+.archiveItem {
+  text-decoration: none;
+}
+
+.primaryCta,
+.secondaryCta {
+  align-items: center;
+  display: inline-flex;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  min-height: 44px;
+  padding: 0.78rem 1rem;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.primaryCta {
+  background: rgb(var(--fg));
+  border: 1px solid rgb(var(--fg));
+  color: rgb(var(--bg));
+}
+
+.primaryCta:hover,
+.primaryCta:focus-visible {
+  background: rgb(var(--accent));
+  border-color: rgb(var(--accent));
+  color: rgb(var(--bg));
+  transform: translateY(-1px);
+}
+
+.secondaryCta {
+  background: rgb(var(--bg) / 0.72);
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+}
+
+.secondaryCta:hover,
+.secondaryCta:focus-visible {
+  border-color: rgb(var(--accent));
+  color: rgb(var(--accent));
+  transform: translateY(-1px);
+}
+
+.featuredCard {
+  background: rgb(var(--bg));
+  border: 1px solid rgb(var(--border));
+  display: grid;
+  gap: 0.85rem;
+  min-height: 100%;
+  padding: 1.1rem;
+}
+
+.featuredCard h2 {
+  font-size: clamp(1.45rem, 2vw, 1.95rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+.featuredDescription,
+.featuredMeta,
+.signalCard p,
+.archiveItem small {
+  margin: 0;
+}
+
+.featuredDescription,
+.signalCard p,
+.archiveItem small {
+  color: rgb(var(--muted));
+  line-height: 1.55;
+}
+
+.featuredMeta {
+  color: rgb(var(--faint));
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.76rem;
+}
+
+.featuredLink {
+  align-items: center;
+  border-top: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+  display: inline-flex;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 0.8rem;
   text-transform: uppercase;
 }
 
-.card p {
+.featuredLink:hover,
+.featuredLink:focus-visible {
+  color: rgb(var(--accent));
+}
+
+.signalSection,
+.archiveSection {
+  margin-top: 1.4rem;
+}
+
+.sectionHeading {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.9rem;
+}
+
+.sectionHeading h2 {
+  font-size: clamp(1.45rem, 2.4vw, 2.1rem);
+  letter-spacing: -0.03em;
+  line-height: 1.08;
   margin: 0;
+  max-width: 18ch;
+}
+
+.signalGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.signalCard {
+  background: linear-gradient(180deg, rgb(var(--bg)), rgb(var(--accent) / 0.03));
+  border: 1px solid rgb(var(--border));
+  min-height: 100%;
+  padding: 1rem;
+}
+
+.signalLabel {
+  color: rgb(var(--fg));
+  font-size: 0.7rem;
+  margin: 0 0 0.6rem;
+}
+
+.archiveList {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.archiveItem {
+  background: rgb(var(--bg));
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+  display: grid;
+  gap: 0.55rem;
+  min-height: 100%;
+  padding: 1rem;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.archiveItem span {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.archiveItem:hover,
+.archiveItem:focus-visible {
+  border-color: rgb(var(--accent));
+  color: rgb(var(--accent));
+  transform: translateY(-2px);
+}
+
+@media (max-width: 960px) {
+  .heroGrid,
+  .signalGrid,
+  .archiveList {
+    grid-template-columns: 1fr;
+  }
+
+  .heroCopy h1 {
+    max-width: 14ch;
+  }
+
+  .sectionHeading h2 {
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1.4rem 0.8rem 3.5rem;
+  }
+
+  .hero {
+    padding: 0.9rem;
+  }
+
+  .heroHeader {
+    align-items: start;
+    flex-direction: column;
+    margin-bottom: 1.1rem;
+  }
+
+  .heroCopy h1 {
+    font-size: clamp(2rem, 11vw, 3rem);
+  }
+
+  .heroActions {
+    flex-direction: column;
+  }
+
+  .primaryCta,
+  .secondaryCta {
+    justify-content: center;
+    width: 100%;
+  }
 }

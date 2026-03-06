@@ -1,0 +1,83 @@
+---
+slug: release-0-3-0-policy-gateway-and-release-discipline
+title: "AgentPlane 0.3.0: policy gateway, stricter release discipline"
+description: "A hidden draft blog post for v0.3.0 based on the formal release notes."
+authors: [team]
+tags: [release, workflow, operations]
+unlisted: true
+---
+
+AgentPlane `0.3.0` is the release where policy structure stops being a side detail and becomes a first-class part of how the product explains itself, validates itself, and upgrades safely.
+
+<!-- truncate -->
+
+## The center of gravity changed
+
+Previous releases improved execution safety in specific places. `0.3.0` moves one level higher: it tightens the policy surface that tells agents which rules to load, when to load them, and how those rules map to task state and verification.
+
+That matters because policy sprawl creates a hidden failure mode. A repository may look governed while agents still load the wrong documents, skip the right ones, or treat routing conventions as optional.
+
+`0.3.0` reduces that ambiguity.
+
+## What became explicit
+
+The headline shift is the policy-gateway refactor.
+
+The `AGENTS` gateway was rebuilt around clearer routing into dedicated modules, with stronger contracts for conditional loading and stricter checks that the routed policy graph actually matches the repository rules.
+
+In practice, this release pushes three things into the open:
+
+- gateway structure is now treated as product surface, not incidental scaffolding,
+- routing checks are tied more directly to task-document quality gates,
+- incident logging semantics are consolidated so there is one canonical place for policy incidents.
+
+This is less about documentation aesthetics and more about execution determinism.
+
+## Release notes had to get better too
+
+`0.3.0` also hardens the release path itself. Release-note validation now aims for full change coverage instead of accepting generic summaries that technically pass but explain very little.
+
+That is an important shift in quality criteria.
+
+Weak release notes are not only a communication problem. They break traceability between shipped behavior and the decisions a team later tries to audit. If a release changes routing, startup defaults, or publish behavior, the public record needs to describe those changes concretely.
+
+This release pushes the system in that direction.
+
+## Setup and startup got cleaner
+
+There are also pragmatic ergonomics improvements underneath the larger policy work.
+
+Light-profile users now get simpler startup behavior, with hooks disabled by default and a less noisy initial experience. Linked global CLI usage was also relaxed by reducing stale-dist friction outside the framework checkout.
+
+These are not cosmetic improvements. They lower avoidable setup resistance while keeping the stricter governance model intact.
+
+## Publishing is more rerunnable
+
+The release also hardens CI and publish flows around idempotency.
+
+Two related problems were addressed:
+
+- publish reruns should not fail only because a release tag already exists on origin,
+- release continuation should remain possible when tags were created earlier in the flow.
+
+This is a small but important operational correction. Release automation is safer when it can distinguish a real integrity problem from a legitimate retry on partially completed state.
+
+## Practical outcome
+
+For users, `0.3.0` changes the system in a specific way: governance became more legible.
+
+After this release, the workflow should be easier to reason about because:
+
+- policy loading is more explicit,
+- gateway structure is easier to verify,
+- release records are expected to be more concrete,
+- install and startup behavior are less brittle for common setups,
+- publish flows are more tolerant of safe reruns.
+
+The common thread is tighter operational contracts with less ambiguity at the edges.
+
+## Upgrade note
+
+There are no breaking API changes called out for `0.3.0`, but repositories using policy modules should run their routing checks after upgrade to validate local customizations.
+
+The formal source record remains the release notes at [`/docs/releases/v0.3.0`](/docs/releases/v0.3.0).
