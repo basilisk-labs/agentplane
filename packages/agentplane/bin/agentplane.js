@@ -129,6 +129,11 @@ function isHooksRunCommitMsgInvocation(argv) {
   return false;
 }
 
+function isPathInside(baseDir, targetPath) {
+  const rel = path.relative(path.resolve(baseDir), path.resolve(targetPath));
+  return rel === "" || (!rel.startsWith("..") && !path.isAbsolute(rel));
+}
+
 async function assertDistUpToDate() {
   const here = path.dirname(fileURLToPath(import.meta.url));
   const agentplaneRoot = path.resolve(here, "..");
@@ -160,6 +165,17 @@ async function assertDistUpToDate() {
   }
 
   if (staleReasons.length > 0 && !allowStale) {
+    const runningInsideCheckout = isPathInside(repoRoot, process.cwd());
+    if (!runningInsideCheckout) {
+      process.stderr.write(
+        "warning: linked development binary has a stale build, but current working directory is outside the agentplane checkout.\n" +
+          "proceeding with existing dist output.\n" +
+          `detected: ${staleReasons.join(", ")}\n` +
+          "tip: rebuild (`bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build`) or reinstall from npm for stable global usage.\n",
+      );
+      return true;
+    }
+
     process.stderr.write(
       "error: refusing to run a stale repo build (manifest/git quick-check failed).\n" +
         "Fix:\n" +
