@@ -75,8 +75,11 @@ export default function Home(): ReactNode {
                 <Link className={styles.primaryCta} to="/docs/user/overview">
                   Start with docs
                 </Link>
-                <Link className={styles.secondaryCta} to="/blog">
-                  Explore journal
+                <Link
+                  className={styles.secondaryCta}
+                  href="https://www.npmjs.com/package/agentplane"
+                >
+                  Install CLI
                 </Link>
               </div>
 
@@ -92,8 +95,8 @@ export default function Home(): ReactNode {
                 <code>npm i -g agentplane</code>
               </pre>
               <p className={styles.panelNote}>
-                Use the docs when you need the full command model; use the blog when you need
-                release and architecture context.
+                Start with the docs if you need the workflow model first. Use the install path when
+                you already know you want the CLI in your repository workflow.
               </p>
             </aside>
           </div>
