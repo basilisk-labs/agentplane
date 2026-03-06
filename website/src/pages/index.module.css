@@ -36,6 +36,7 @@
 
 .heroCopy {
   padding-top: 1rem;
+  text-align: left;
 }
 
 .pixelTag,
@@ -205,14 +206,13 @@
 }
 
 .sectionHeading {
-  align-items: end;
+  align-items: start;
   border-top: 1px solid rgb(var(--border));
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  justify-content: space-between;
+  display: grid;
+  gap: 0.35rem;
   margin-bottom: 0.9rem;
   padding-top: 0.9rem;
+  text-align: left;
 }
 
 .sectionHeading h2 {
@@ -220,7 +220,7 @@
   letter-spacing: -0.03em;
   line-height: 1.08;
   margin: 0;
-  max-width: 20ch;
+  max-width: 24ch;
 }
 
 .signalGrid,
@@ -234,7 +234,7 @@
 .entryItem {
   border: 1px solid rgb(var(--border));
   min-height: 100%;
-  padding: 1rem;
+  padding: 0.9rem 1rem 1rem;
   position: relative;
   transition:
     transform 200ms ease,
@@ -280,6 +280,7 @@
   color: rgb(var(--fg));
   display: grid;
   gap: 0.55rem;
+  text-align: left;
 }
 
 .entryItem strong {
@@ -296,7 +297,7 @@
 .entryArrow {
   color: rgb(var(--accent));
   font-size: 1.1rem;
-  justify-self: end;
+  justify-self: start;
   transform: translateX(0);
   transition: transform 180ms ease;
 }

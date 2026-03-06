@@ -58,8 +58,8 @@ a {
 }
 
 .navbar {
-  background: rgb(var(--bg));
-  border: 1px solid rgb(var(--border) / 0.8);
+  background: transparent;
+  border: 0;
   left: 0;
   margin: 0.75rem auto 0;
   max-width: 1240px;
@@ -77,20 +77,21 @@ a {
 
 html.nav-scrolled .navbar,
 html.nav-scrolled .navbar.navbar--fixed-top {
-  background: rgb(var(--bg));
+  background: transparent;
   transform: translateY(-1px);
 }
 
 .navbar__inner {
+  border-bottom: 1px solid rgb(var(--border));
   gap: 0.65rem;
   min-height: 64px;
-  padding: 0.5rem 0.7rem;
+  padding: 0.45rem 0;
 }
 
 .navbar__brand {
-  background: rgb(var(--bg));
-  border: 1px solid rgb(var(--border));
-  padding: 0.35rem 0.55rem;
+  background: transparent;
+  border: 0;
+  padding: 0;
 }
 
 .navbar__logo {
@@ -103,7 +104,8 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__item.navbar__link {
   background: transparent;
-  border: 1px solid transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
   border-radius: 0;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.76rem;
@@ -121,22 +123,22 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__item.navbar__link:hover,
 .navbar__item.navbar__link:focus-visible {
-  background-color: rgb(var(--accent) / 0.08);
-  border-color: rgb(var(--accent) / 0.4);
+  background-color: transparent;
+  border-bottom-color: rgb(var(--accent) / 0.45);
   transform: translateY(-1px);
 }
 
 .navbar__link--active {
-  background: rgb(var(--fg));
-  border-color: rgb(var(--fg));
-  color: rgb(var(--bg)) !important;
+  background: transparent;
+  border-bottom-color: rgb(var(--accent));
+  color: rgb(var(--fg)) !important;
 }
 
 .navbar__link--active:hover,
 .navbar__link--active:focus-visible {
-  background: rgb(var(--accent));
-  border-color: rgb(var(--accent));
-  color: rgb(var(--bg)) !important;
+  background: transparent;
+  border-bottom-color: rgb(var(--accent));
+  color: rgb(var(--fg)) !important;
 }
 
 .navbar__toggle {
@@ -174,7 +176,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar-sidebar__item.menu__list-item .menu__link:hover,
 .navbar-sidebar__item.menu__list-item .menu__link:focus-visible {
-  background: rgb(var(--accent) / 0.08);
+  background: transparent;
   border-color: rgb(var(--accent) / 0.3);
 }
 
