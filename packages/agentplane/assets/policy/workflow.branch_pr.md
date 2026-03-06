@@ -27,6 +27,7 @@ agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result 
 ## Constraints
 
 - MUST NOT perform mutating actions before explicit user approval.
+- Task documentation updates MAY be batched within one turn before approval.
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
 - MUST stop and request re-approval on material drift.
 - Planning and closure happen on base checkout.
