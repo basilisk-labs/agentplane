@@ -1,7 +1,8 @@
 ---
 id: "202603072133-TBN594"
 title: "Tighten incidents log to strong entries only"
-status: "DOING"
+result_summary: "Restricted the incident log to high-signal entries and encoded the stronger incident-entry contract in governance and direct-workflow guidance."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-07T21:37:02.623Z"
   updated_by: "TESTER"
   note: "Verified: incidents.md now keeps only the strongest entries, governance forbids weak/local notes in the incident log, routing passed, and doctor stayed green aside from known historical archive warnings."
-commit: null
+commit:
+  hash: "f3183e229098d8368053127bc7d6230ded9ce041"
+  message: "📝 TBN594 policy: tighten incidents log contract"
 comments:
   -
     author: "DOCS"
     body: "Start: tighten the incidents contract, keep only the strongest incident rules, and verify routing plus doctor after the trim."
+  -
+    author: "DOCS"
+    body: "Verified: incidents.md now keeps only strong incident classes, governance forbids weak/local notes in the incident log, routing passed, and doctor stayed green aside from known historical archive warnings."
 events:
   -
     type: "status"
@@ -37,9 +43,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: incidents.md now keeps only the strongest entries, governance forbids weak/local notes in the incident log, routing passed, and doctor stayed green aside from known historical archive warnings."
+  -
+    type: "status"
+    at: "2026-03-07T21:37:25.051Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: incidents.md now keeps only strong incident classes, governance forbids weak/local notes in the incident log, routing passed, and doctor stayed green aside from known historical archive warnings."
 doc_version: 2
-doc_updated_at: "2026-03-07T21:37:02.624Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-03-07T21:37:25.051Z"
+doc_updated_by: "DOCS"
 description: "Keep only high-value incident rules in .agentplane/policy/incidents.md and update the incidents contract so only strong, actionable, enforced entries belong there."
 id_source: "generated"
 ---
