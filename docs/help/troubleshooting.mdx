@@ -21,7 +21,8 @@ description: "Fix common setup and workflow issues when using Agent Plane locall
 
 - Symptom: commands fail with `refusing to run a stale repo build`.
 - Why this happens: you are running the linked development binary from inside the Agent Plane
-  framework checkout, and `dist/` is older than the current source tree.
+  framework checkout, the global wrapper delegated to the repo-local binary, and `dist/` is older
+  than the current source tree.
 - What to do:
 - Rebuild the local packages:
 
@@ -33,6 +34,8 @@ bun run --filter=agentplane build
 - Retry the original command after the rebuild.
 - If you are outside the framework checkout, the linked binary should warn and continue instead of
   hard-failing.
+- If you intentionally need the global installed CLI inside the framework checkout, set
+  `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1`.
 
 ## working tree is dirty before commit or finish
 

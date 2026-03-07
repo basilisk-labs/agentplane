@@ -17,13 +17,17 @@ bun run typecheck
 bun run test:fast
 ```
 
-If you run the repo-local CLI entrypoint (`node packages/agentplane/bin/agentplane.js ...`),
-the CLI executes from `dist/`. Rebuild after source changes:
+Inside this framework checkout, `agentplane` from `PATH` now delegates automatically to the
+repo-local binary. The repo-local entrypoint still executes from `dist/`, so rebuild after source
+changes:
 
 ```bash
 bun run --filter=@agentplaneorg/core build
 bun run --filter=agentplane build
 ```
+
+To force the global installed CLI instead of the repo-local handoff during framework debugging, set
+`AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1`.
 
 For a full run (including slower CLI integration tests):
 

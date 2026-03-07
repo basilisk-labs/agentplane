@@ -1,7 +1,7 @@
 ---
 id: "202603071647-25WS52"
 title: "Cover repo-local handoff with tests and docs"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -10,21 +10,31 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T16:52:47.166Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: add end-to-end handoff regressions and sync docs/help with the new framework-checkout behavior."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: add handoff regressions for nested cwd and opt-out behavior, then sync setup and developer docs with the new framework-checkout routing model."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T16:52:47.284Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add handoff regressions for nested cwd and opt-out behavior, then sync setup and developer docs with the new framework-checkout routing model."
 doc_version: 2
-doc_updated_at: "2026-03-07T16:47:44.964Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-07T16:52:47.284Z"
+doc_updated_by: "DOCS"
 description: "Add regression coverage for nested cwd, opt-out, and hook/stale-build behavior, then sync developer-facing docs with the new framework-checkout routing model."
 id_source: "generated"
 ---

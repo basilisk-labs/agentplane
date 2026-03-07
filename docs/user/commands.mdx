@@ -21,8 +21,8 @@ The canonical startup path for agents is also documented in:
 - [Agent bootstrap](agent-bootstrap.generated)
   The page starts with a copy-paste bootstrap block for the first terminal pass.
 
-If you are using a linked development binary from inside the Agent Plane framework checkout and
-it reports a stale build, rebuild first:
+Inside the Agent Plane framework checkout, `agentplane` from `PATH` now delegates to the
+repo-local binary automatically. If that repo-local binary reports a stale build, rebuild first:
 
 ```bash
 bun run --filter=@agentplaneorg/core build

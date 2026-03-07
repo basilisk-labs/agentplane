@@ -217,8 +217,10 @@ Then read [Agent bootstrap](agent-bootstrap.generated) for the canonical agent s
 
 ## Working inside the Agent Plane framework checkout
 
-If you are using a linked development binary from this repository, the wrapper checks whether
-`dist/` matches the current source tree.
+If you run `agentplane` from `PATH` inside this framework repository, the global wrapper now
+detects the checkout and delegates automatically to the repo-local binary from this checkout.
+
+The repo-local binary still checks whether `dist/` matches the current source tree.
 
 - Inside the framework checkout, a stale build is a hard stop. Rebuild first:
 
@@ -227,11 +229,18 @@ bun run --filter=@agentplaneorg/core build
 bun run --filter=agentplane build
 ```
 
-- Outside the framework checkout, the linked binary warns and continues with the existing
-  `dist` output.
+- If you intentionally want to keep using the global installed CLI inside the framework checkout,
+  set:
 
-The gateway preflight commands are still the correct commands. They assume a fresh local build
-when run from the framework repository itself.
+```bash
+AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1
+```
+
+- Outside the framework checkout, the linked global binary continues to use its own installed
+  package and does not hand off.
+
+The gateway preflight commands are still the correct commands. Inside the framework repository
+they now resolve to the repo-local binary automatically and therefore assume a fresh local build.
 
 ## Core workflow operations
 
