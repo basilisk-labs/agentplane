@@ -114,6 +114,28 @@ Trusted publishing must be configured in npm for repository workflow identity.
 - Publish workflow fails after partial publish:
 - rerun workflow, idempotent checks should skip already-published packages
 
+## Recovery tool
+
+For read-only recovery diagnostics against the latest release plan, use:
+
+```bash
+bun run release:recover
+```
+
+This reports:
+
+- local tag created but remote tag missing
+- release-note drift for the planned tag
+- version bump drift versus the prepared plan
+- optional burned-version checks when you explicitly opt in:
+
+```bash
+bun run release:recover -- --check-registry
+```
+
+The tool is intentionally read-only: it suggests exact next actions, but it does not rewrite tags,
+versions, or release notes for you.
+
 ## Post-release checks
 
 - verify npm versions for both packages
