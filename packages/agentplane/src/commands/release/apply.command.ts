@@ -262,6 +262,33 @@ async function maybeUpdateBunLockfile(gitRoot: string): Promise<void> {
   }
 }
 
+async function maybeRefreshGeneratedReference(gitRoot: string): Promise<boolean> {
+  const scriptPath = path.join(gitRoot, "scripts", "generate-website-docs.mjs");
+  if (!(await fileExists(scriptPath))) return false;
+
+  try {
+    await execFileAsync("node", [scriptPath], {
+      cwd: gitRoot,
+      env: process.env,
+      maxBuffer: 20 * 1024 * 1024,
+    });
+  } catch (err) {
+    const e = err as { message?: string } | null;
+    throw new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message:
+        "Failed to refresh docs/reference/generated-reference.mdx after bumping release versions.\n" +
+        "Fix:\n" +
+        "  1) Run `node scripts/generate-website-docs.mjs`\n" +
+        "  2) Re-run `agentplane release apply`\n" +
+        (e?.message ? `\nDetails:\n${e.message}` : ""),
+    });
+  }
+
+  return await fileExists(path.join(gitRoot, "docs", "reference", "generated-reference.mdx"));
+}
+
 async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
   const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
     cwd: gitRoot,
@@ -583,12 +610,16 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
   }
 
   await maybeUpdateBunLockfile(gitRoot);
+  const generatedReferenceExists = await maybeRefreshGeneratedReference(gitRoot);
 
   const stagePaths = [
     "packages/core/package.json",
     "packages/agentplane/package.json",
     path.relative(gitRoot, notesPath),
   ];
+  if (generatedReferenceExists) {
+    stagePaths.push("docs/reference/generated-reference.mdx");
+  }
   if (await fileExists(path.join(gitRoot, "bun.lock"))) {
     stagePaths.push("bun.lock");
   }

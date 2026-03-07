@@ -323,6 +323,107 @@ describeWhenNotHook("release apply", () => {
     ).rejects.toThrow(/at least 2 bullet points/u);
   });
 
+  it("regenerates and commits generated package reference after bumping release versions", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    await mkdir(path.join(root, "packages", "core"), { recursive: true });
+    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
+    await mkdir(path.join(root, "docs", "reference"), { recursive: true });
+    await mkdir(path.join(root, "scripts"), { recursive: true });
+
+    await writeFile(
+      path.join(root, "packages", "core", "package.json"),
+      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "package.json"),
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "docs", "reference", "generated-reference.mdx"),
+      [
+        "# Generated Reference",
+        "",
+        "| Package | Version |",
+        "| --- | --- |",
+        "| agentplane | 0.2.6 |",
+        "| @agentplaneorg/core | 0.2.6 |",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "scripts", "generate-website-docs.mjs"),
+      [
+        "import { mkdir, readFile, writeFile } from 'node:fs/promises';",
+        "import path from 'node:path';",
+        "",
+        "const root = process.cwd();",
+        "const core = JSON.parse(await readFile(path.join(root, 'packages', 'core', 'package.json'), 'utf8'));",
+        "const cli = JSON.parse(await readFile(path.join(root, 'packages', 'agentplane', 'package.json'), 'utf8'));",
+        "const outDir = path.join(root, 'docs', 'reference');",
+        "await mkdir(outDir, { recursive: true });",
+        "await writeFile(",
+        "  path.join(outDir, 'generated-reference.mdx'),",
+        "  [",
+        "    '# Generated Reference',",
+        "    '',",
+        "    '| Package | Version |',",
+        "    '| --- | --- |',",
+        "    `| agentplane | ${cli.version} |`,",
+        "    `| @agentplaneorg/core | ${core.version} |`,",
+        "    '',",
+        String.raw`  ].join('\n'),`,
+        "  'utf8',",
+        ");",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
+    await commitAll(root, "seed");
+    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await commitAll(root, "feat: add file");
+
+    await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+    await writeFile(
+      path.join(root, "docs", "releases", "v0.2.7.md"),
+      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      "utf8",
+    );
+
+    const rcApply = await withDryRunReleaseMode(async () =>
+      runReleaseApply(
+        { cwd: root, rootOverride: root },
+        { plan: undefined, yes: false, push: false, remote: "origin" },
+      ),
+    );
+    expect(rcApply).toBe(0);
+
+    const generatedRef = await readFile(
+      path.join(root, "docs", "reference", "generated-reference.mdx"),
+      "utf8",
+    );
+    expect(generatedRef).toContain("| agentplane | 0.2.7 |");
+    expect(generatedRef).toContain("| @agentplaneorg/core | 0.2.7 |");
+
+    const { stdout: committedFiles } = await execFileAsync(
+      "git",
+      ["show", "--name-only", "--format=", "HEAD"],
+      { cwd: root },
+    );
+    expect(committedFiles).toContain("docs/reference/generated-reference.mdx");
+  });
+
   it("pushes release refs with --no-verify to avoid recursive local pre-push hooks", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
