@@ -27,8 +27,10 @@ describe("command-guide", () => {
   it("renders the canonical bootstrap path in quickstart", () => {
     const text = renderQuickstartTyped();
     expect(text).toContain("Canonical bootstrap doc");
-    expect(text).toContain("## 1. Preflight");
+    expect(text).toContain("## First screen");
+    expect(text).toContain("## Go deeper");
     expect(text).toContain("agentplane task start-ready");
+    expect(text).not.toContain("## Commit message format");
   });
 
   it("renders the generated bootstrap doc", () => {

@@ -1,8 +1,8 @@
 import { COMMAND_SNIPPETS } from "./command-snippets.js";
 import {
   AGENT_BOOTSTRAP_DOC_PATH,
-  BOOTSTRAP_SECTIONS,
-  renderBootstrapReferenceLine,
+  BOOTSTRAP_PREFLIGHT_COMMANDS,
+  BOOTSTRAP_TASK_PREP_COMMANDS,
 } from "./bootstrap-guide.js";
 
 type RoleGuide = {
@@ -10,17 +10,10 @@ type RoleGuide = {
   lines: string[];
 };
 
-function renderBootstrapOverview(): string[] {
-  const lines: string[] = [];
-  for (const section of BOOTSTRAP_SECTIONS) {
-    lines.push(`## ${section.heading}`, "", section.summary, "");
-    for (const command of section.commands) {
-      lines.push(`- \`${command}\``);
-    }
-    lines.push("");
-  }
-  if (lines.at(-1) === "") lines.pop();
-  return lines;
+const CLI_REFERENCE_DOC_PATH = "docs/user/cli-reference.generated.mdx";
+
+function renderQuickstartCommandBlock(commands: readonly string[]): string[] {
+  return ["```bash", ...commands, "```"];
 }
 
 const ROLE_GUIDES: RoleGuide[] = [
@@ -49,6 +42,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       `- Start deterministically with \`${COMMAND_SNIPPETS.core.startTask}\` after plan approval.`,
       '- Treat `agentplane task verify-show <task-id>` as the verification contract, then record `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`.',
       `- Preferred direct close path: \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result "..." \`; add \`--no-close-commit\` only for explicit manual close handling.`,
+      "- For manual close or allowlist detail, use `agentplane help finish` and `agentplane help commit` on demand.",
     ],
   },
   {
@@ -58,6 +52,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- Start only after plan approval and explicit Verify Steps exist.",
       '- Use `agentplane task verify-show <task-id>` before running checks, then record `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`.',
       `- In direct mode, close with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \` when you own final verification.`,
+      "- For mixed-state recovery or runtime ambiguity, use `agentplane doctor` and `agentplane runtime explain` instead of relying on the short quickstart screen.",
     ],
   },
   {
@@ -66,6 +61,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
       '- Keep task docs and user docs aligned with runtime behavior via `agentplane task doc set <task-id> --section <name> --text "..."`.',
       "- For implementation tasks, verify generated/help surfaces after changing CLI-facing text.",
+      `- Treat \`${CLI_REFERENCE_DOC_PATH}\` as the deep reference surface; keep first-screen help intentionally shorter.`,
     ],
   },
   {
@@ -82,6 +78,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
       '- branch_pr: `agentplane pr check <task-id>` -> `agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify` -> `agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --result "..." --close-commit`.',
       `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \`.`,
+      "- For branch-level flags and branch/base diagnostics, use `agentplane help work start`, `agentplane help integrate`, and `agentplane help branch base`.",
     ],
   },
   {
@@ -126,43 +123,36 @@ export function renderQuickstart(): string {
   return [
     "# agentplane quickstart",
     "",
-    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for workflow/process policy. CLI syntax lives in quickstart and `agentplane role <ROLE>`.",
+    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for workflow/process policy.",
+    "Keep this first screen short: use it for startup only, then go deeper with `agentplane role <ROLE>` or `agentplane help <command>`.",
     "Do not edit `.agentplane/tasks.json` by hand.",
     "If the repository is not initialized yet, stop and run `agentplane init` first.",
     "",
-    renderBootstrapReferenceLine(),
+    `Canonical bootstrap doc: \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
     "",
-    ...renderBootstrapOverview(),
+    "## First screen",
     "",
-    "## Minimal direct route",
+    "Run preflight:",
     "",
-    `- Default route: \`${COMMAND_SNIPPETS.core.startTask}\` -> \`agentplane task verify-show <task-id>\` -> \`${COMMAND_SNIPPETS.core.verifyTask}\` -> \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result "..." \`.`,
+    ...renderQuickstartCommandBlock(BOOTSTRAP_PREFLIGHT_COMMANDS),
+    "",
+    "Default direct route:",
+    "",
+    `- Task setup: \`${BOOTSTRAP_TASK_PREP_COMMANDS[0]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[1]}\` -> \`${BOOTSTRAP_TASK_PREP_COMMANDS[2]}\`.`,
+    `- Execution: \`${COMMAND_SNIPPETS.core.startTask}\` -> \`agentplane task verify-show <task-id>\` -> \`${COMMAND_SNIPPETS.core.verifyTask}\` -> \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result "..." \`.`,
     "- In `direct`, `finish` creates the deterministic close commit by default.",
     "",
-    "## Role-specific deltas",
+    "## Go deeper",
     "",
-    `- Use \`${COMMAND_SNIPPETS.core.role}\` only after you understand the shared bootstrap path.`,
-    "- Role output adds deltas; it should not replace the canonical bootstrap route.",
+    `- \`${COMMAND_SNIPPETS.core.role}\` for role-specific deltas and mode-specific ownership rules.`,
+    "- `agentplane help <command>` for flags, examples, and exceptional/manual flows.",
+    `- \`${AGENT_BOOTSTRAP_DOC_PATH}\` for the full startup path instead of repeating it on the first screen.`,
+    `- \`${CLI_REFERENCE_DOC_PATH}\` for the generated full command reference.`,
     "",
-    "## Non-default paths",
+    "## Non-default",
     "",
-    "- branch_pr extras: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree` -> `agentplane pr open/update/check` -> `agentplane integrate ...`.",
-    "- Manual close flags (`--no-close-commit`, `--close-unstage-others`) are fallback-only, not part of the normal route.",
-    "- Use `agentplane doctor` / `agentplane upgrade` when the repository state is broken or mixed.",
-    "",
-    "## More guidance",
-    "",
-    "- `agentplane help <command>` for command-level flags and examples.",
-    `- \`${COMMAND_SNIPPETS.core.role}\` for role-specific deltas.`,
-    `- \`${AGENT_BOOTSTRAP_DOC_PATH}\` for the canonical startup path in repository docs.`,
-    "",
-    "## Commit message format",
-    "",
-    "Use: `<emoji> <suffix> <scope>: <summary>`.",
-    "",
-    "Notes:",
-    "- `suffix` is the task ID segment after the last dash.",
-    "- When using comment-driven flags, the subject is auto-built as `<emoji> <suffix> <primary>: <status>` and only for major transitions (TODO->DOING, DOING->BLOCKED, BLOCKED->DOING, DOING->DONE).",
-    "- Comment-driven commit bodies are structured: `Task`, `Primary`, `Status`, `Comment`.",
+    "- `branch_pr`: use `agentplane help work start`, `agentplane help pr`, and `agentplane help integrate`.",
+    "- Recovery/mixed state: use `agentplane doctor`, `agentplane upgrade`, and `agentplane runtime explain`.",
+    "- Manual close or allowlist details belong in command-specific help, not on this first screen.",
   ].join("\n");
 }
