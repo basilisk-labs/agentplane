@@ -1,7 +1,7 @@
 ---
 id: "202603071710-CJMQZT"
 title: "Guarantee full local framework install for development"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -9,21 +9,31 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T17:38:25.544Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: start the next-release P0 track by making framework development installs deterministic and verifiable from the local checkout."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "ORCHESTRATOR"
+    body: "Start: audit the current framework-dev install path, make the local checkout the deterministic runtime source for both agentplane and core during framework development, and document the resulting install workflow."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T17:38:29.454Z"
+    author: "ORCHESTRATOR"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: audit the current framework-dev install path, make the local checkout the deterministic runtime source for both agentplane and core during framework development, and document the resulting install workflow."
 doc_version: 2
-doc_updated_at: "2026-03-07T17:10:10.766Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-07T17:38:29.454Z"
+doc_updated_by: "ORCHESTRATOR"
 description: "Make the framework development install flow guarantee that both agentplane and @agentplaneorg/core come from the current checkout, not from published registry resolution."
 id_source: "generated"
 ---
@@ -40,9 +50,7 @@ Make the framework development install flow guarantee that both agentplane and @
 
 ## Plan
 
-1. Implement the change for "Guarantee full local framework install for development".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Audit the current framework development install path, especially scripts/reinstall-global-agentplane.sh and workspace dependency resolution for @agentplaneorg/core. 2. Design a deterministic developer install flow that guarantees the global CLI resolves both agentplane and core from the local checkout. 3. Implement the chosen install path, add diagnostics or tests that prove the active runtime stack is local, and document the development workflow.
 
 ## Risks
 
