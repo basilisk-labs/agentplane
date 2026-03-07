@@ -19,8 +19,33 @@ describe("stale-dist command policy", () => {
     );
   });
 
-  it("keeps non-diagnostic commands strict in this first P0 step", () => {
+  it("allows safe inspection commands needed during framework development", () => {
     expect(classifyStaleDistPolicy(["node", "agentplane", "task", "list"])).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
+    expect(
+      classifyStaleDistPolicy(["node", "agentplane", "task", "show", "20260307-ABC123"]),
+    ).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "config", "show"])).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "quickstart"])).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "--version"])).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
+  });
+
+  it("keeps mutating commands strict", () => {
+    expect(classifyStaleDistPolicy(["node", "agentplane", "task", "doc", "set"])).toEqual({
       mode: "strict",
       reason: "default",
     });

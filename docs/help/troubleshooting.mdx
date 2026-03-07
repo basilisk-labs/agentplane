@@ -33,8 +33,11 @@ bun run --filter=agentplane build
 
 - After a rebuild, strict commands should run again even if the watched runtime tree is still dirty
   relative to git, as long as the rebuilt `dist/` snapshot matches the current runtime source.
-- Read-only diagnostics `agentplane doctor` and `agentplane runtime explain` warn and continue even
-  while stale-build blocking is still active for stricter commands inside the framework checkout.
+- Safe inspection commands such as `agentplane doctor`, `agentplane runtime explain`,
+  `agentplane task list`, `agentplane task show`, `agentplane task verify-show`,
+  `agentplane config show`, `agentplane quickstart`, and `agentplane role <ROLE>` warn and
+  continue even while stale-build blocking is still active for stricter commands inside the
+  framework checkout.
 - Retry the original command after the rebuild.
 - Run `agentplane runtime explain` if you need to confirm which binary handed off and which package
   roots are active before retrying.

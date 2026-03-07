@@ -40,11 +40,17 @@ it prints the active runtime facts together with the rebuild commands, the globa
 the runtime re-check step, and the explicit force-global override path.
 
 If watched runtime paths are dirty and the repo-local build would otherwise be considered stale,
-read-only diagnostics still warn and continue:
+read-only inspection commands still warn and continue:
 
 ```bash
 agentplane doctor
 agentplane runtime explain
+agentplane task list
+agentplane task show <task-id>
+agentplane task verify-show <task-id>
+agentplane config show
+agentplane quickstart
+agentplane role CODER
 ```
 
 After you rebuild the local packages, strict commands should be unblocked again as soon as the

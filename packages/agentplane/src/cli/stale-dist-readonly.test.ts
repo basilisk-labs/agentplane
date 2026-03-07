@@ -136,10 +136,23 @@ describe("stale-dist read-only diagnostics", () => {
     expect(stderr).toContain("command: runtime explain --json");
   });
 
-  it("still blocks strict commands when watched runtime paths are dirty", async () => {
+  it("warns but runs task list when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 
-    const failure = (await execFileAsync(process.execPath, [repoBin, "task", "list"], {
+    const { stdout, stderr } = await execFileAsync(process.execPath, [repoBin, "task", "list"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    });
+
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain('"args":["task","list"]');
+    expect(stderr).toContain("command: task list");
+  });
+
+  it("still blocks strict mutating commands when watched runtime paths are dirty", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+
+    const failure = (await execFileAsync(process.execPath, [repoBin, "task", "doc", "set"], {
       cwd: repoRoot,
       encoding: "utf8",
     }).then(
