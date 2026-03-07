@@ -1,7 +1,8 @@
 ---
 id: "202603071710-HRBXMA"
 title: "Expand docs and CLI parity gates"
-status: "DOING"
+result_summary: "Expanded docs and CLI parity gates across startup and recovery surfaces."
+status: "DONE"
 priority: "med"
 owner: "TESTER"
 depends_on:
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T20:18:58.788Z"
+  updated_by: "TESTER"
+  note: "Parity gates and docs surfaces are aligned"
+commit:
+  hash: "dd6c36d7c8915135594107f2ea49c949cb89c29f"
+  message: "🧪 HRBXMA code: expand docs and CLI parity gates"
 comments:
   -
     author: "TESTER"
     body: "Start: extend the existing bootstrap freshness gate to cover runtime, troubleshooting, and release recovery parity anchors before closing the final roadmap task."
+  -
+    author: "TESTER"
+    body: "Verified: parity checks now cover bootstrap freshness, quickstart/role guidance, runtime recovery anchors, troubleshooting next actions, and release recovery docs."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extend the existing bootstrap freshness gate to cover runtime, troubleshooting, and release recovery parity anchors before closing the final roadmap task."
+  -
+    type: "verify"
+    at: "2026-03-07T20:18:58.788Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Parity gates and docs surfaces are aligned"
+  -
+    type: "status"
+    at: "2026-03-07T20:19:11.660Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: parity checks now cover bootstrap freshness, quickstart/role guidance, runtime recovery anchors, troubleshooting next actions, and release recovery docs."
 doc_version: 2
-doc_updated_at: "2026-03-07T20:11:35.368Z"
+doc_updated_at: "2026-03-07T20:19:11.660Z"
 doc_updated_by: "TESTER"
 description: "Add parity checks across bootstrap docs, quickstart, role help, troubleshooting next actions, and runtime explain examples."
 id_source: "generated"
@@ -86,6 +105,41 @@ Add parity checks across bootstrap docs, quickstart, role help, troubleshooting 
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T20:18:58.788Z — VERIFY — ok
+
+By: TESTER
+
+Note: Parity gates and docs surfaces are aligned
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T20:11:35.368Z, excerpt_hash=sha256:31081ee35f350696f5886cc8552ac072c959c5f12eeb2036a78e586a82fcc793
+
+Details:
+
+Command: bun run docs:bootstrap:check
+Result: pass
+Evidence: bootstrap doc freshness check passed; startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs aligned.
+Scope: scripts/check-agent-bootstrap-fresh.mjs, docs/user/agent-bootstrap.generated.mdx, startup/recovery surfaces.
+
+Command: bun run lint:core -- scripts/check-agent-bootstrap-fresh.mjs
+Result: pass
+Evidence: eslint completed with exit code 0.
+Scope: parity gate script implementation.
+
+Command: bun run --cwd website build
+Result: pass
+Evidence: Docusaurus production build completed successfully.
+Scope: docs site renderability after troubleshooting/bootstrap updates.
+
+Command: agentplane doctor
+Result: pass
+Evidence: completed with errors=0 warnings=2 info=7 after a long historical-archive scan; runtime facts and warnings remained informational/actionable only.
+Scope: repo health and docs/code verification coverage for touched surfaces.
+
+Command: node .agentplane/policy/check-routing.mjs
+Result: pass
+Evidence: policy routing OK.
+Scope: policy routing integrity after task documentation and docs changes.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
