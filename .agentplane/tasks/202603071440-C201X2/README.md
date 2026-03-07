@@ -1,7 +1,8 @@
 ---
 id: "202603071440-C201X2"
 title: "Add recovery doc for upgraded legacy projects"
-status: "DOING"
+result_summary: "Added a recovery runbook for upgraded legacy projects."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved: add a shortest-path recovery doc for mixed upgrade state."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T15:00:37.142Z"
+  updated_by: "REVIEWER"
+  note: "Verified: the new legacy-upgrade recovery doc explains mixed gateway/policy state, the shortest recovery commands, and the managed ownership contract."
+commit:
+  hash: "d336a63eccb2cb36737cc79dbaa62ae7622b84cf"
+  message: "📝 C201X2 docs: add recovery and direct-finish guidance"
 comments:
   -
     author: "DOCS"
     body: "Start: document the shortest recovery path for legacy projects that ended up with a new gateway and an incomplete managed policy tree after upgrade."
+  -
+    author: "DOCS"
+    body: "Verified: legacy upgrade recovery is now documented as a shortest-path runbook for mixed gateway and managed policy states."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: document the shortest recovery path for legacy projects that ended up with a new gateway and an incomplete managed policy tree after upgrade."
+  -
+    type: "verify"
+    at: "2026-03-07T15:00:37.142Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified: the new legacy-upgrade recovery doc explains mixed gateway/policy state, the shortest recovery commands, and the managed ownership contract."
+  -
+    type: "status"
+    at: "2026-03-07T15:00:37.737Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: legacy upgrade recovery is now documented as a shortest-path runbook for mixed gateway and managed policy states."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:57:55.700Z"
+doc_updated_at: "2026-03-07T15:00:37.737Z"
 doc_updated_by: "DOCS"
 description: "Document the shortest recovery path for old projects that have mixed gateway and managed policy state after upgrade."
 id_source: "generated"
@@ -79,6 +98,14 @@ Document the shortest recovery path for old projects that have mixed gateway and
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T15:00:37.142Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified: the new legacy-upgrade recovery doc explains mixed gateway/policy state, the shortest recovery commands, and the managed ownership contract.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:57:55.700Z, excerpt_hash=sha256:2efb66c1b9c8307de67b5b4db3a8c5a993803b2b5e90338efe45457a7124187e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

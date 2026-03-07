@@ -1,7 +1,8 @@
 ---
 id: "202603071440-V49Q20"
 title: "Publish a single copy-paste bootstrap command block"
-status: "DOING"
+result_summary: "Published an explicit copy-paste bootstrap command block."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved: publish the copy-paste bootstrap block as an explicit startup affordance."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T15:00:37.531Z"
+  updated_by: "REVIEWER"
+  note: "Verified: the canonical bootstrap page now starts with a copy-paste preflight block and startup-facing docs point agents at that block."
+commit:
+  hash: "d336a63eccb2cb36737cc79dbaa62ae7622b84cf"
+  message: "📝 C201X2 docs: add recovery and direct-finish guidance"
 comments:
   -
     author: "DOCS"
     body: "Start: surface the copy-paste bootstrap block prominently so agents can start without reconstructing the first command sequence from multiple docs."
+  -
+    author: "DOCS"
+    body: "Verified: the canonical bootstrap page now surfaces a copy-paste start block before the detailed startup narrative so agents can begin from one command block."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: surface the copy-paste bootstrap block prominently so agents can start without reconstructing the first command sequence from multiple docs."
+  -
+    type: "verify"
+    at: "2026-03-07T15:00:37.531Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified: the canonical bootstrap page now starts with a copy-paste preflight block and startup-facing docs point agents at that block."
+  -
+    type: "status"
+    at: "2026-03-07T15:00:38.236Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the canonical bootstrap page now surfaces a copy-paste start block before the detailed startup narrative so agents can begin from one command block."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:57:55.938Z"
+doc_updated_at: "2026-03-07T15:00:38.236Z"
 doc_updated_by: "DOCS"
 description: "Expose one minimal startup command block that agents can execute without cross-reading multiple documents."
 id_source: "generated"
@@ -79,6 +98,14 @@ Expose one minimal startup command block that agents can execute without cross-r
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T15:00:37.531Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified: the canonical bootstrap page now starts with a copy-paste preflight block and startup-facing docs point agents at that block.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:57:55.938Z, excerpt_hash=sha256:2efb66c1b9c8307de67b5b4db3a8c5a993803b2b5e90338efe45457a7124187e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
