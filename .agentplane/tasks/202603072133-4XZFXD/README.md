@@ -1,7 +1,8 @@
 ---
 id: "202603072133-4XZFXD"
 title: "Audit historical task commit anomalies"
-status: "DOING"
+result_summary: "Produced a repair-oriented audit of historical DONE-task commit anomalies, separating legacy backfills, exact remaps, and meta-task close-reference cases."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
 depends_on:
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-07T21:45:46.728Z"
   updated_by: "REVIEWER"
   note: "Verified: historical task archive anomalies are now bucketed with concrete counts, representative samples, and a repair strategy; the next task can safely distinguish exact remaps, legacy backfills, and meta-task close references."
-commit: null
+commit:
+  hash: "355722d011cbd0ddd892fb0190ca253cfe03a029"
+  message: "📝 4XZFXD tasks: audit historical commit anomalies"
 comments:
   -
     author: "PLANNER"
     body: "Start: classify historical task archive warnings into concrete buckets, measure repairability, and record the migration strategy before touching any archive data."
+  -
+    author: "PLANNER"
+    body: "Verified: historical archive anomalies are now bucketed by count and repairability, with representative examples and a concrete strategy for the follow-up repair task."
 events:
   -
     type: "status"
@@ -45,9 +51,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Verified: historical task archive anomalies are now bucketed with concrete counts, representative samples, and a repair strategy; the next task can safely distinguish exact remaps, legacy backfills, and meta-task close references."
+  -
+    type: "status"
+    at: "2026-03-07T21:46:02.130Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: historical archive anomalies are now bucketed by count and repairability, with representative examples and a concrete strategy for the follow-up repair task."
 doc_version: 2
-doc_updated_at: "2026-03-07T21:45:46.730Z"
-doc_updated_by: "REVIEWER"
+doc_updated_at: "2026-03-07T21:46:02.130Z"
+doc_updated_by: "PLANNER"
 description: "Classify DONE-task commit-hash anomalies in the archive, separate repairable metadata from irrecoverable legacy backfills, and capture the repair strategy."
 id_source: "generated"
 ---

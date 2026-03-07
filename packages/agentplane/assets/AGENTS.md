@@ -195,5 +195,5 @@ Detailed DoD rules are in `.agentplane/policy/dod.core.md`, `.agentplane/policy/
 ## CHANGE CONTROL
 
 - Follow incident-log, immutability, and policy-budget rules in `.agentplane/policy/governance.md`.
-- Record situational incident rules only in `.agentplane/policy/incidents.md`.
+- Record situational incident rules only in `.agentplane/policy/incidents.md`; do not load/read that file during normal startup unless the task directly touches it or recovery/incident handling requires it.
 - Keep `AGENTS.md` as a gateway; move detailed procedures to canonical modules.
