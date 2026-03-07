@@ -60,8 +60,12 @@ const onboardingScenarios = [
   {
     name: "direct lifecycle",
     checks: [
-      ["bootstrap", "## 3. Start work deterministically"],
-      ["bootstrap", "## 4. Verify and finish"],
+      ["bootstrap", "## 2. Direct happy path"],
+      [
+        "bootstrap",
+        "Treat `task verify-show` as the verification contract right before `verify` and `finish`.",
+      ],
+      ["bootstrap", "## 3. Fallbacks and recovery"],
       ["lifecycle", "## Minimal direct lifecycle"],
       ["lifecycle", "**Preferred close flow (single command)**"],
       ["workflow", "## Default direct path"],
