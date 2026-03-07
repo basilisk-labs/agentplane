@@ -1,7 +1,8 @@
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
 import { afterEach, describe, expect, it } from "vitest";
@@ -64,6 +65,23 @@ async function mkWorkspace(): Promise<TestWorkspace> {
     '{\n  "role": "coder"\n}\n',
     "utf8",
   );
+  const manifestPath = fileURLToPath(
+    new URL("../../assets/framework.manifest.json", import.meta.url),
+  );
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as {
+    files?: { path?: string; required?: boolean }[];
+  };
+  for (const entry of manifest.files ?? []) {
+    const relPath = typeof entry.path === "string" ? entry.path.replaceAll("\\", "/") : "";
+    if (!entry.required || !relPath.startsWith(".agentplane/policy/")) continue;
+    const absPath = path.join(root, relPath);
+    await mkdir(path.dirname(absPath), { recursive: true });
+    await writeFile(
+      absPath,
+      relPath.endsWith(".mjs") ? "export {};\n" : `# ${path.basename(relPath)}\n`,
+      "utf8",
+    );
+  }
   await writeFile(path.join(root, ".agentplane", "WORKFLOW.md"), VALID_WORKFLOW, "utf8");
   await writeFile(
     path.join(root, ".agentplane", "workflows", "last-known-good.md"),
@@ -231,5 +249,15 @@ describe("doctor.command", () => {
       { fix: false, dev: false },
     );
     expect(rc).toBe(0);
+  });
+
+  it("fails when the managed policy tree is incomplete for the active gateway", async () => {
+    const ws = await mkWorkspace();
+    await rm(path.join(ws.root, ".agentplane", "policy", "workflow.upgrade.md"), { force: true });
+    const rc = await runDoctor(
+      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+      { fix: false, dev: false },
+    );
+    expect(rc).toBe(1);
   });
 });

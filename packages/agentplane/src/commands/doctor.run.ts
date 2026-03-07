@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { resolveProject } from "@agentplaneorg/core";
 
@@ -70,6 +71,33 @@ async function isDirectory(absPath: string): Promise<boolean> {
   }
 }
 
+async function listMissingManagedPolicyFiles(repoRoot: string): Promise<string[]> {
+  const manifestPath = fileURLToPath(
+    new URL("../../assets/framework.manifest.json", import.meta.url),
+  );
+  let parsed: { files?: { path?: unknown; required?: unknown }[] } = {};
+  try {
+    parsed = JSON.parse(await fs.readFile(manifestPath, "utf8")) as {
+      files?: { path?: unknown; required?: unknown }[];
+    };
+  } catch {
+    return [];
+  }
+  const relPaths = Array.isArray(parsed.files)
+    ? parsed.files
+        .filter((entry) => entry?.required === true && typeof entry.path === "string")
+        .map((entry) => String(entry.path).replaceAll("\\", "/").trim())
+        .filter((relPath) => relPath.startsWith(".agentplane/policy/"))
+    : [];
+  const missing: string[] = [];
+  for (const relPath of relPaths) {
+    if (!(await pathExists(path.join(repoRoot, relPath)))) {
+      missing.push(relPath);
+    }
+  }
+  return missing.toSorted();
+}
+
 async function checkWorkspace(repoRoot: string): Promise<string[]> {
   const problems: string[] = [];
   const requiredFiles = [path.join(repoRoot, ".agentplane", "config.json")];
@@ -84,6 +112,21 @@ async function checkWorkspace(repoRoot: string): Promise<string[]> {
   });
   if (!(await pathExists(gateway.absPath))) {
     problems.push("Missing required policy gateway file: AGENTS.md or CLAUDE.md");
+  }
+  if (await pathExists(gateway.absPath)) {
+    const missingManagedPolicy = await listMissingManagedPolicyFiles(repoRoot);
+    if (missingManagedPolicy.length > 0) {
+      const listed = missingManagedPolicy.slice(0, 8).join(", ");
+      const more =
+        missingManagedPolicy.length > 8 ? ` (+${missingManagedPolicy.length - 8} more)` : "";
+      problems.push(
+        "Managed policy tree is incomplete for the current framework gateway. " +
+          `Missing required files: ${listed}${more}. ` +
+          "This often means AGENTS.md/CLAUDE.md was updated manually or the repo was upgraded " +
+          "with an older agentplane CLI. Recovery: update or reinstall agentplane, then run " +
+          "`agentplane upgrade --yes` (or `agentplane upgrade --remote --yes`).",
+      );
+    }
   }
 
   const agentsDir = path.join(repoRoot, ".agentplane", "agents");
