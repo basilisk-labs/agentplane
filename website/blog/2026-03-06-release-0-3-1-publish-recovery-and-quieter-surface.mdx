@@ -1,0 +1,69 @@
+---
+slug: release-0-3-1-publish-recovery-and-quieter-surface
+title: "AgentPlane 0.3.1: publish recovery, quieter homepage, cleaner docs"
+description: "A practical look at AgentPlane 0.3.1: fixing the blocked 0.3.x publish path and cleaning up docs and website surfaces."
+authors: [team]
+tags: [release, workflow, operations]
+---
+
+AgentPlane `0.3.1` is a recovery release. Its job was not to introduce a new model. Its job was to get the `0.3.x` line back onto stable ground after the failed `0.3.0` npm publish path, then clean up the surfaces users actually touch.
+
+<!-- truncate -->
+
+## Why `0.3.1` existed
+
+The main problem was simple: `0.3.0` had already been burned on npm history, so trying to force the same version again was the wrong move.
+
+`0.3.1` takes the practical path instead:
+
+- move the release line forward to the next valid version,
+- repair the publish and release notes flow,
+- clean up the public docs and website surfaces around that release.
+
+This matters because release discipline is not only about code quality. It is also about not pretending a broken publish can be reused safely when the package registry has already closed that path.
+
+## The release pipeline was recovered, not papered over
+
+The core improvement in `0.3.1` is operational honesty.
+
+Instead of trying to reuse `0.3.0`, the release process moved to `0.3.1` and documented the situation clearly. That is a better model for teams because it preserves traceability:
+
+- which version was attempted,
+- which one actually shipped,
+- which recovery steps were required to get back to a clean release path.
+
+That sounds procedural, but it has a user-facing effect. When release metadata is clean, later upgrades and support work become much less ambiguous.
+
+## Task-doc updates became less awkward
+
+`0.3.1` also clarified a smaller but real workflow annoyance: batched task-document updates.
+
+The written guidance now explicitly allows agents to update task-doc sections in one grouped turn before approval starts. The sequencing rule still stays strict where it matters: approval and start-ready must still happen in order.
+
+The result is cleaner workflow guidance without weakening the lifecycle contract.
+
+## The website got quieter again
+
+Part of `0.3.1` was simply admitting that the intermediate website iteration had drifted too far from the intended surface.
+
+The release tightened the docs shell, improved spacing and left-aligned reading flow, simplified the blog index, and then intentionally restored the homepage to a quieter placeholder-style landing.
+
+That is the right call for this product stage. The public surface does not need to behave like a marketing page if the main value is operational clarity.
+
+## Practical outcome
+
+For users, `0.3.1` means three things:
+
+- the `0.3.x` line is publishable again on a clean version path,
+- task-doc guidance is clearer for normal use,
+- the docs and blog surfaces are less noisy and easier to scan.
+
+It is a small release, but it removes confusion in exactly the places where confusion compounds.
+
+## Upgrade note
+
+There are no breaking API or workflow-mode changes in `0.3.1`.
+
+If your repository consumes framework policy templates, it is still worth syncing or upgrading them so the clarified batched task-doc guidance lands locally as well.
+
+The formal source record remains the release notes at [`/docs/releases/v0.3.1`](/docs/releases/v0.3.1).

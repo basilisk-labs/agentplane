@@ -4,6 +4,27 @@ import styles from "./index.module.css";
 
 const entries = [
   {
+    href: "/blog/release-0-3-2-smoother-upgrades-and-framework-dev",
+    title: "AgentPlane 0.3.2: smoother upgrades, cleaner finish, better framework dev",
+    excerpt:
+      "Why upgrades now default to the practical path, why finish leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
+    meta: "Release journal • 5 min read",
+  },
+  {
+    href: "/blog/release-0-3-1-publish-recovery-and-quieter-surface",
+    title: "AgentPlane 0.3.1: publish recovery, quieter homepage, cleaner docs",
+    excerpt:
+      "How the 0.3.x line recovered from a blocked publish and why the public surface intentionally became quieter again.",
+    meta: "Release journal • 4 min read",
+  },
+  {
+    href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
+    title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
+    excerpt:
+      "How policy routing became explicit, release notes became stricter, and rerunning a publish became safer.",
+    meta: "Release journal • 5 min read",
+  },
+  {
     href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
     title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
     excerpt:
@@ -16,13 +37,6 @@ const entries = [
     excerpt:
       "The product path from repository-native workflow discipline toward a broader execution runtime.",
     meta: "Roadmap • 5 min read",
-  },
-  {
-    href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
-    title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
-    excerpt:
-      "How gateway structure, release-note quality, and publish rerun discipline tightened the governance layer.",
-    meta: "Unlisted draft • release analysis",
   },
 ];
 

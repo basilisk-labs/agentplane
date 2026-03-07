@@ -1,13 +1,10 @@
 ---
 slug: release-0-3-0-policy-gateway-and-release-discipline
 title: "AgentPlane 0.3.0: policy gateway, stricter release discipline"
-description: "A hidden draft blog post for v0.3.0 based on the formal release notes."
+description: "What changed in AgentPlane 0.3.0, in plain language: clearer policy routing, better release notes, and safer reruns."
 authors: [team]
 tags: [release, workflow, operations]
-unlisted: true
 ---
-
-![AgentPlane release 0.3.0 abstract illustration](/img/blog/release-0-3-0-kandinsky-agentplane.svg)
 
 AgentPlane `0.3.0` is the release where policy structure stops being a side detail and becomes a first-class part of how the product explains itself, validates itself, and upgrades safely.
 
@@ -23,15 +20,19 @@ That matters because policy sprawl creates a hidden failure mode. A repository m
 
 ## What became explicit
 
-The headline shift is the policy-gateway refactor.
+The main change is the policy-gateway refactor.
 
-The `AGENTS` gateway was rebuilt around clearer routing into dedicated modules, with stronger contracts for conditional loading and stricter checks that the routed policy graph actually matches the repository rules.
+Before `0.3.0`, the policy surface could work, but it was easier for it to become fuzzy over time. One repository might load too many rules, another might skip the right ones, and a third might keep a large `AGENTS.md` that looked authoritative while hiding the real logic elsewhere.
+
+`0.3.0` makes that structure more explicit.
+
+The `AGENTS.md` gateway was rebuilt around clearer routing into dedicated policy modules, with stronger rules for conditional loading and stricter checks that the routed policy graph actually matches the repository rules.
 
 In practice, this release pushes three things into the open:
 
-- gateway structure is now treated as product surface, not incidental scaffolding,
+- the gateway is treated as real product surface, not throwaway scaffolding,
 - routing checks are tied more directly to task-document quality gates,
-- incident logging semantics are consolidated so there is one canonical place for policy incidents.
+- incident logging now has one canonical place instead of several half-official ones.
 
 This is less about documentation aesthetics and more about execution determinism.
 
@@ -66,7 +67,7 @@ This is a small but important operational correction. Release automation is safe
 
 ## Practical outcome
 
-For users, `0.3.0` changes the system in a specific way: governance became more legible.
+For users, `0.3.0` changes the system in one important way: governance became easier to read and easier to trust.
 
 After this release, the workflow should be easier to reason about because:
 

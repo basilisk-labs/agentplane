@@ -1,0 +1,74 @@
+---
+slug: release-0-3-2-smoother-upgrades-and-framework-dev
+title: "AgentPlane 0.3.2: smoother upgrades, cleaner finish, better framework dev"
+description: "What AgentPlane 0.3.2 changes in everyday terms: easier upgrades, automatic clean closure in direct mode, and saner behavior inside the framework repo."
+authors: [team]
+tags: [release, workflow, operations]
+---
+
+AgentPlane `0.3.2` is the release where many small workflow frictions stop being “known quirks” and start getting proper fixes.
+
+This is especially visible in three areas: upgrades, direct-mode task closure, and framework development inside the AgentPlane repository itself.
+
+<!-- truncate -->
+
+## Upgrades became more direct
+
+Before `0.3.2`, upgrade behavior still carried some older assumptions. That made the experience more cautious than useful, especially once framework-managed files had become clearly owned by the framework itself.
+
+`0.3.2` shifts the default in a more practical direction:
+
+- managed framework files now apply by default,
+- `doctor` gives better guidance when a repository is only partially upgraded,
+- docs explain more clearly which files belong to the framework and which local file is still meant for local incidents and overrides.
+
+For users, the effect is straightforward: fewer half-upgraded states and less guessing when a project has drifted.
+
+## Finishing a task no longer dirties the tree by default
+
+This release also tightens the direct workflow.
+
+In normal direct-mode use, `finish` now records task metadata and creates the close commit automatically unless you explicitly opt out. That removes a persistent annoyance where the task looked done but the repository still had a dirty README change sitting around.
+
+This is a small change with a large workflow effect. A “done” task should actually leave the repository in a done-looking state.
+
+## Framework development got less misleading
+
+One of the most practical changes in `0.3.2` is for people working on AgentPlane itself.
+
+If `agentplane` from `PATH` is launched inside the framework repository, it now delegates to the repo-local binary by default instead of silently using an older global install. There is still an opt-out if you really want to force the global binary, but the default behavior is now closer to what a developer actually expects.
+
+That matters because mixed runtime sources create very confusing failures:
+
+- the docs in the checkout say one thing,
+- the code in the checkout says the same thing,
+- but the executed binary still behaves like an older version.
+
+`0.3.2` reduces that trap.
+
+## Release and docs discipline also improved
+
+The same release also hardened the release path and the agent-facing documentation layer.
+
+It fixed a case where `release apply --push --yes` could hang after creating the commit and tag, improved the test coverage around that path, and aligned the main bootstrap surfaces so agents see one clearer startup path instead of several competing ones.
+
+That may sound internal, but it improves the user experience indirectly. A tool becomes easier to trust when its docs, startup help, and release behavior stop drifting apart.
+
+## Practical outcome
+
+For most users, `0.3.2` means:
+
+- upgrading older or partially patched repositories is easier to recover,
+- finishing work in direct mode leaves fewer cleanup surprises,
+- framework contributors are less likely to accidentally run the wrong binary,
+- startup guidance across CLI and docs is more consistent.
+
+This is not a flashy release. It is a release that removes avoidable friction from the real workflow.
+
+## Upgrade note
+
+There are no breaking API or workflow-mode changes in `0.3.2`.
+
+Framework developers should update their installed CLI if they want the new repo-local handoff behavior when working inside the framework checkout. Older initialized repositories should run `agentplane doctor` after upgrade and follow the suggested recovery command if the managed policy tree is incomplete.
+
+The formal source record remains the release notes at [`/docs/releases/v0.3.2`](/docs/releases/v0.3.2).
