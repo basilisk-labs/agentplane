@@ -1,7 +1,8 @@
 ---
 id: "202603072032-V9VGT2"
 title: "Switch stale-dist freshness to snapshot comparison"
-status: "DOING"
+result_summary: "Switched dist-guard to compare current watched-runtime snapshots against the build manifest with legacy fallback for old manifests, plus clearer runtime docs and regressions."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-07T20:58:43.161Z"
   updated_by: "CODER"
   note: "Stale-dist freshness now compares watched-runtime snapshots from the build manifest and falls back to legacy git/mtime checks only for older manifests. Verified with dist-guard, stale-readonly, runtime.command, doctor.command, eslint on touched files, package builds, routing check, and a manual strict task-list run after rebuild on the current dirty runtime tree."
-commit: null
+commit:
+  hash: "4771172dd177ddb30dc421748f9466f3d08474e5"
+  message: "🔧 V9VGT2 cli: compare stale dist against snapshots"
 comments:
   -
     author: "CODER"
     body: "Start: switch stale-dist freshness to compare current watched-runtime snapshots against the built manifest so rebuilt dirty runtime trees stop blocking strict commands."
+  -
+    author: "CODER"
+    body: "Verified: stale-dist freshness now follows watched-runtime snapshot equality, so rebuilt dirty runtime trees no longer block strict commands while real runtime drift still does."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Stale-dist freshness now compares watched-runtime snapshots from the build manifest and falls back to legacy git/mtime checks only for older manifests. Verified with dist-guard, stale-readonly, runtime.command, doctor.command, eslint on touched files, package builds, routing check, and a manual strict task-list run after rebuild on the current dirty runtime tree."
+  -
+    type: "status"
+    at: "2026-03-07T20:59:09.934Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale-dist freshness now follows watched-runtime snapshot equality, so rebuilt dirty runtime trees no longer block strict commands while real runtime drift still does."
 doc_version: 2
-doc_updated_at: "2026-03-07T20:58:43.162Z"
+doc_updated_at: "2026-03-07T20:59:09.934Z"
 doc_updated_by: "CODER"
 description: "Use build-manifest snapshots to treat rebuilt dirty runtime trees as fresh and keep strict blocking only when dist is actually behind the current source state."
 id_source: "generated"
