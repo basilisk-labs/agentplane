@@ -8,52 +8,52 @@ tags: [release, workflow, operations]
 
 ![AgentPlane release 0.2.25 abstract illustration](/img/blog/release-0-2-25-kandinsky-agentplane.svg)
 
-AgentPlane `0.2.25` was a reliability release. It did not try to make the system louder. It made the workflow narrower, safer, and easier to audit when agents touch a real repository.
+AgentPlane `0.2.25` was the sort of release that looks small until you have to trust it. No shiny headline feature. Just a stricter workflow, fewer accidental commits, and a cleaner release path.
 
 <!-- truncate -->
 
-## Why this release mattered
+## Why this one mattered
 
-The previous release focused on one failure mode: agents doing more than the task actually permits.
+The underlying problem was simple: agents could still do more than the task really allowed.
 
-That risk usually appears in three places:
+In practice that risk shows up in three places:
 
 - commit scope expands beyond the files a task should touch,
 - release operations run with weak pre-publish validation,
 - documentation drifts away from the actual CLI and process rules.
 
-`0.2.25` tightened all three.
+`0.2.25` tightened all three at once.
 
 ## Safer commit boundaries
 
-The main operational change was stricter commit behavior. Commit scope moved toward explicit allowlists, so unrelated files are much less likely to be staged by accident.
+The main change was stricter commit behavior. The workflow moved toward explicit allowlists, so unrelated files are much less likely to get staged by accident.
 
-This matters because repository automation fails in expensive ways when scope is ambiguous. The technical issue is not only a bad commit. It is loss of trust in the workflow itself. Once teams believe the agent may stage unrelated work, every automated step becomes suspect.
+That sounds mechanical, but it changes the social side too. Once a team thinks the agent might quietly scoop up unrelated files, every automated step starts to feel suspicious.
 
-`0.2.25` pushes the system toward a simpler rule: touch only what the task and policy allow, and make that boundary visible.
+The release pushes the tool toward a cleaner rule: touch only what the task allows, and make that boundary visible.
 
 ## Cleaner release flow
 
-The release path also became stricter. Pre-publish validation and CI gates were reinforced so that version publication is less likely to happen on partial or drifting state.
+The release path got stricter too. Pre-publish validation and CI gates were tightened so a version is less likely to ship from partial or drifting state.
 
 Operationally, this reduces two classes of failure:
 
 - publishing before the expected checks have actually passed,
 - shipping a version whose notes, docs, or package state do not match.
 
-The goal was not speed at any cost. The goal was controlled release execution with a clearer audit trail.
+That is the right tradeoff here. A slower release is fine. A blurry one is not.
 
 ## Documentation parity
 
-The release also improved documentation and website consistency checks. This closes an easy-to-ignore gap: a system can be technically correct while its public instructions already drift from reality.
+The release also tightened docs and website consistency checks. That sounds secondary until you trip over bad guidance in a real repo.
 
-For a policy-driven workflow tool, that is not a minor editorial problem. It is a contract problem. If docs, help text, and release communication diverge, users will execute the wrong process with high confidence.
+For a policy-heavy workflow tool, docs drift is not an editorial blemish. It is a contract bug. If help text and real behavior split apart, people will do the wrong thing very confidently.
 
-`0.2.25` therefore treated documentation quality as part of runtime reliability, not as a separate polish track.
+So `0.2.25` treated documentation quality as part of runtime reliability, not as bonus polish.
 
 ## Practical outcome
 
-If you run AgentPlane in a multi-agent or policy-sensitive environment, the previous release improved one central property: trust.
+If you run AgentPlane in a policy-sensitive repo, this release mostly improves one thing: trust.
 
 The intended workflow after `0.2.25` is more constrained:
 
@@ -61,10 +61,8 @@ The intended workflow after `0.2.25` is more constrained:
 - releases should be blocked earlier when validation is incomplete,
 - docs should reflect the system that users actually execute.
 
-That is a narrower system, but it is a stronger one.
+It is a narrower system. Good. Narrow beats fuzzy when a tool can mutate your repo.
 
 ## Next path
 
-If you want the underlying version record, open the formal release notes at [`/docs/releases/v0.2.25`](/docs/releases/v0.2.25).
-
-If you want the broader product direction after this release, the roadmap entry remains available in the journal archive.
+If you want the formal version record, the release notes are at [`/docs/releases/v0.2.25`](/docs/releases/v0.2.25). The broader direction is in the roadmap entry.

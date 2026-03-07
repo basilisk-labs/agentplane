@@ -7,19 +7,19 @@ tags: [workflow, operations]
 
 ![Agentplane roadmap abstract illustration](/img/blog/roadmap-kandinsky-agentplane.svg)
 
-AgentPlane started as a deterministic CLI workflow layer for repository-native task execution. This roadmap defines how it evolves from baseline discipline to autonomous multi-agent execution while preserving auditability and policy control.
+AgentPlane started as a CLI that keeps repository work honest. The roadmap to `0.5` is not about turning it into a vague “AI platform.” It is about adding more automation without losing the audit trail or the policy boundaries that make the tool usable in a real repo.
 
 <!-- truncate -->
 
-## Why Now
+## Why this roadmap exists
 
-Three constraints shape the roadmap:
+Three pressures keep showing up:
 
-- Teams want stronger automation without losing control of repository state.
-- Prompt quality and execution quality must be treated as system design, not ad-hoc tuning.
-- Extensibility must be explicit so teams can evolve agents, tools, and scenarios without forking core behavior.
+- teams want more automation, but they do not want agents freelancing in the repo;
+- prompt quality and execution quality have to be treated like product design, not prompt tinkering;
+- extension points need to be explicit, otherwise every serious team ends up forking the framework.
 
-The roadmap is structured to reduce risk by sequencing foundation, contracts, extension, and autonomy in that order.
+So the order matters. Foundation first. Then contracts. Then extension. Only after that does it make sense to talk about more autonomous execution.
 
 ## Version-by-Version Roadmap
 
@@ -29,9 +29,9 @@ The roadmap is structured to reduce risk by sequencing foundation, contracts, ex
 - Define the first end-to-end task lifecycle for local execution.
 - Introduce core task tracking, verification logging, and export conventions.
 
-Operational outcome:
+What that means in practice:
 
-- Teams can run a deterministic local workflow with explicit task state and auditable transitions.
+- a team can run a local workflow with explicit task state and an audit trail that actually survives inspection.
 
 ## 0.2 Architecture and Codebase Formalization
 
@@ -39,9 +39,9 @@ Operational outcome:
 - Modularize subsystems to keep scaling simple and predictable.
 - Formalize operational processes at the CLI level.
 
-Operational outcome:
+What that means in practice:
 
-- Lower coupling and clearer responsibility boundaries across CLI, policy, and backend layers.
+- less hidden coupling and fewer “why does this command know about that file?” moments.
 
 ## 0.3 Prompt System Improvements
 
@@ -49,9 +49,9 @@ Operational outcome:
 - Formalize process contracts at the agent-prompt level.
 - Deliver a dedicated Claude Code-compatible version.
 
-Operational outcome:
+What that means in practice:
 
-- More stable agent behavior under real repository constraints and clearer role-level execution contracts.
+- agents behave more predictably under real repo constraints, not just in clean demos.
 
 ## 0.4 Recipes and Plugin Extension Model
 
@@ -59,9 +59,9 @@ Operational outcome:
 - Define recipe packaging, versioning, and compatibility rules.
 - Add recipe discovery, installation, and validation flows in CLI.
 
-Operational outcome:
+What that means in practice:
 
-- Extension becomes first-class: teams can introduce domain-specific capability without patching core internals.
+- teams can add domain-specific behavior without patching core every time they need one more tool or scenario.
 
 ## 0.5 Agentplane Runner
 
@@ -69,39 +69,41 @@ Operational outcome:
 - Enable coordinated swarm-style execution by custom agents.
 - Provide orchestration primitives for reliable multi-agent runs.
 
-Operational outcome:
+What that means in practice:
 
-- Autonomous execution moves from manual orchestration to controlled, policy-aware runtime behavior.
+- multi-agent execution stops being a pile of scripts and starts looking like a runtime with real guardrails.
 
-## Operational Impact for Users
+## What changes for users
 
-Across versions, users should expect:
+If the roadmap lands the way it should, users get:
 
 - Faster execution loops with clearer policy boundaries.
 - Better reproducibility for planning, implementation, and verification paths.
 - Lower overhead when introducing custom automation patterns.
 - Stronger traceability from intent to repository mutation.
 
-## Risks and Open Questions
+That is the optimistic version. The harder part is making sure the system stays legible while it grows.
 
-Primary delivery risks:
+## Risks and open questions
+
+The main risks are not mysterious:
 
 - Over-complex extension surfaces can reduce adoption if plugin contracts are not strict enough.
 - Autonomous execution can increase failure blast radius if guardrails are not enforced at runtime.
 - Prompt formalization must remain aligned with real execution constraints, not only prompt style.
 
-Open questions that will shape implementation detail:
+There are also a few design questions we have not earned the right to hand-wave away:
 
 - Runner execution model under mixed local/remote tool constraints.
 - Cross-recipe compatibility guarantees and version pinning strategy.
 - Default observability contract for multi-agent runs.
 
-## What to Expect Next
+## What comes next
 
-Near-term focus remains on roadmap execution through explicit contracts:
+The near-term work is more grounded than the title “Runner” suggests:
 
-- finalize editorial and technical contract surfaces for roadmap communication,
-- ship incremental milestones with deterministic verification,
-- publish follow-up release notes as each roadmap segment lands.
+- finish the contract surfaces,
+- ship the milestones one by one,
+- keep the release notes honest as each part lands.
 
-The direction is straightforward: stronger determinism, safer extensibility, and autonomous execution without sacrificing governance.
+The direction is simple enough. More automation, yes. Sloppier governance, no.

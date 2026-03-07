@@ -7,35 +7,35 @@ const entries = [
     href: "/blog/release-0-3-2-smoother-upgrades-and-framework-dev",
     title: "AgentPlane 0.3.2: smoother upgrades, cleaner finish, better framework dev",
     excerpt:
-      "Why upgrades now default to the practical path, why finish leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
+      "Why upgrades got less weird, why finish now leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
     meta: "Release journal • 5 min read",
   },
   {
     href: "/blog/release-0-3-1-publish-recovery-and-quieter-surface",
     title: "AgentPlane 0.3.1: publish recovery, quieter homepage, cleaner docs",
     excerpt:
-      "How the 0.3.x line recovered from a blocked publish and why the public surface intentionally became quieter again.",
+      "How the 0.3.x line recovered from a blocked publish and why the public surface got quieter on purpose.",
     meta: "Release journal • 4 min read",
   },
   {
     href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
     title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
     excerpt:
-      "How policy routing became explicit, release notes became stricter, and rerunning a publish became safer.",
+      "How policy routing became easier to follow, release notes got more concrete, and safe publish reruns stopped being awkward.",
     meta: "Release journal • 5 min read",
   },
   {
     href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
     title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
     excerpt:
-      "Why stricter commit scope and cleaner release checks mattered in day-to-day repository work.",
+      "Why stricter commit scope and cleaner release checks mattered once agents started touching real repositories.",
     meta: "Release journal • 4 min read",
   },
   {
     href: "/blog/roadmap-0-5-agentplane-runner",
     title: "Roadmap 0.1 → 0.5: toward AgentPlane Runner",
     excerpt:
-      "The product path from repository-native workflow discipline toward a broader execution runtime.",
+      "The path from a strict repository workflow tool to a more autonomous runtime, without dropping the audit trail on the floor.",
     meta: "Roadmap • 5 min read",
   },
 ];
@@ -69,8 +69,8 @@ export default function BlogLanding() {
           <p className={styles.kicker}>AgentPlane Journal</p>
           <h1>Release stories, product notes, and operational context.</h1>
           <p className={styles.lead}>
-            The blog is the narrative layer around the product: what changed, why it mattered, and
-            which repository constraints moved underneath the CLI surface.
+            The blog is where the formal release notes turn into plain language: what changed, why
+            it matters, and which repo constraints quietly shifted underneath the CLI.
           </p>
         </section>
 

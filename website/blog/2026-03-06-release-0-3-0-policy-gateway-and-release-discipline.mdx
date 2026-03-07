@@ -6,23 +6,23 @@ authors: [team]
 tags: [release, workflow, operations]
 ---
 
-AgentPlane `0.3.0` is the release where policy structure stops being a side detail and becomes a first-class part of how the product explains itself, validates itself, and upgrades safely.
+AgentPlane `0.3.0` is where the policy layer stopped feeling like scaffolding and started acting like product surface. Before that, the rules could work and still be hard to follow. This release cleaned that up.
 
 <!-- truncate -->
 
-## The center of gravity changed
+## What actually changed
 
-Previous releases improved execution safety in specific places. `0.3.0` moves one level higher: it tightens the policy surface that tells agents which rules to load, when to load them, and how those rules map to task state and verification.
+Earlier releases mostly tightened specific commands. `0.3.0` went one level up and tightened the layer that tells agents which rules to load, when to load them, and how those rules connect to task state and verification.
 
-That matters because policy sprawl creates a hidden failure mode. A repository may look governed while agents still load the wrong documents, skip the right ones, or treat routing conventions as optional.
+That was overdue. Policy sprawl creates a very annoying failure mode: a repo looks governed, but agents still load the wrong docs or skip the right ones.
 
-`0.3.0` reduces that ambiguity.
+`0.3.0` cuts a lot of that ambiguity out.
 
 ## What became explicit
 
-The main change is the policy-gateway refactor.
+The headline change is the policy-gateway refactor.
 
-Before `0.3.0`, the policy surface could work, but it was easier for it to become fuzzy over time. One repository might load too many rules, another might skip the right ones, and a third might keep a large `AGENTS.md` that looked authoritative while hiding the real logic elsewhere.
+Before `0.3.0`, it was too easy for the policy surface to get fuzzy over time. One repo might load too many rules. Another might skip the important ones. A third might keep a huge `AGENTS.md` that looked authoritative while the real logic had already drifted somewhere else.
 
 `0.3.0` makes that structure more explicit.
 
@@ -34,40 +34,36 @@ In practice, this release pushes three things into the open:
 - routing checks are tied more directly to task-document quality gates,
 - incident logging now has one canonical place instead of several half-official ones.
 
-This is less about documentation aesthetics and more about execution determinism.
+This is not about prettier docs. It is about making execution rules easier to reason about.
 
 ## Release notes had to get better too
 
-`0.3.0` also hardens the release path itself. Release-note validation now aims for full change coverage instead of accepting generic summaries that technically pass but explain very little.
+`0.3.0` also tightened the release path itself. Release-note validation now expects real coverage instead of vague summaries that technically pass but tell you almost nothing.
 
-That is an important shift in quality criteria.
-
-Weak release notes are not only a communication problem. They break traceability between shipped behavior and the decisions a team later tries to audit. If a release changes routing, startup defaults, or publish behavior, the public record needs to describe those changes concretely.
-
-This release pushes the system in that direction.
+That change is less glamorous than it sounds, but it matters. Weak release notes are not just boring. They break traceability. If a release changes routing, startup defaults, or publish behavior, the written record has to say so plainly.
 
 ## Setup and startup got cleaner
 
-There are also pragmatic ergonomics improvements underneath the larger policy work.
+There were also a few practical ergonomics fixes underneath the bigger policy work.
 
 Light-profile users now get simpler startup behavior, with hooks disabled by default and a less noisy initial experience. Linked global CLI usage was also relaxed by reducing stale-dist friction outside the framework checkout.
 
-These are not cosmetic improvements. They lower avoidable setup resistance while keeping the stricter governance model intact.
+That combination matters. The workflow got stricter, but the common setup path got less annoying.
 
 ## Publishing is more rerunnable
 
-The release also hardens CI and publish flows around idempotency.
+The release also made publish reruns less brittle.
 
 Two related problems were addressed:
 
 - publish reruns should not fail only because a release tag already exists on origin,
 - release continuation should remain possible when tags were created earlier in the flow.
 
-This is a small but important operational correction. Release automation is safer when it can distinguish a real integrity problem from a legitimate retry on partially completed state.
+That is a small operational fix, but a good one. Automation should be able to tell the difference between a real integrity problem and a safe retry.
 
 ## Practical outcome
 
-For users, `0.3.0` changes the system in one important way: governance became easier to read and easier to trust.
+For users, the net effect is pretty clear: governance became easier to read and easier to trust.
 
 After this release, the workflow should be easier to reason about because:
 
@@ -77,10 +73,10 @@ After this release, the workflow should be easier to reason about because:
 - install and startup behavior are less brittle for common setups,
 - publish flows are more tolerant of safe reruns.
 
-The common thread is tighter operational contracts with less ambiguity at the edges.
+That is the thread running through the whole release. Fewer fuzzy edges. Fewer hidden rules.
 
 ## Upgrade note
 
-There are no breaking API changes called out for `0.3.0`, but repositories using policy modules should run their routing checks after upgrade to validate local customizations.
+There are no breaking API changes called out for `0.3.0`, but repositories using policy modules should still run routing checks after upgrade to make sure local customizations did not drift.
 
 The formal source record remains the release notes at [`/docs/releases/v0.3.0`](/docs/releases/v0.3.0).

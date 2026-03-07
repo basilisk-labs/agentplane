@@ -6,13 +6,13 @@ authors: [team]
 tags: [release, workflow, operations]
 ---
 
-AgentPlane `0.3.1` is a recovery release. Its job was not to introduce a new model. Its job was to get the `0.3.x` line back onto stable ground after the failed `0.3.0` npm publish path, then clean up the surfaces users actually touch.
+AgentPlane `0.3.1` is a recovery release in the most literal sense. It exists because the `0.3.0` npm path was already burned, and pretending otherwise would have made the release story worse, not better.
 
 <!-- truncate -->
 
-## Why `0.3.1` existed
+## Why `0.3.1` had to happen
 
-The main problem was simple: `0.3.0` had already been burned on npm history, so trying to force the same version again was the wrong move.
+The problem was not subtle. `0.3.0` had already been burned in npm history, so trying to ram the same version through again would have been the wrong fix.
 
 `0.3.1` takes the practical path instead:
 
@@ -20,11 +20,11 @@ The main problem was simple: `0.3.0` had already been burned on npm history, so 
 - repair the publish and release notes flow,
 - clean up the public docs and website surfaces around that release.
 
-This matters because release discipline is not only about code quality. It is also about not pretending a broken publish can be reused safely when the package registry has already closed that path.
+That is what release discipline looks like in real life. Not just writing better code, but refusing to fake a clean publish path when the registry has already said no.
 
 ## The release pipeline was recovered, not papered over
 
-The core improvement in `0.3.1` is operational honesty.
+The best thing about `0.3.1` is that it stays honest.
 
 Instead of trying to reuse `0.3.0`, the release process moved to `0.3.1` and documented the situation clearly. That is a better model for teams because it preserves traceability:
 
@@ -32,23 +32,23 @@ Instead of trying to reuse `0.3.0`, the release process moved to `0.3.1` and doc
 - which one actually shipped,
 - which recovery steps were required to get back to a clean release path.
 
-That sounds procedural, but it has a user-facing effect. When release metadata is clean, later upgrades and support work become much less ambiguous.
+This sounds procedural until you are the person debugging upgrades later. Clean release metadata saves a lot of guesswork.
 
 ## Task-doc updates became less awkward
 
-`0.3.1` also clarified a smaller but real workflow annoyance: batched task-document updates.
+`0.3.1` also cleaned up a smaller but real annoyance: batched task-doc updates.
 
 The written guidance now explicitly allows agents to update task-doc sections in one grouped turn before approval starts. The sequencing rule still stays strict where it matters: approval and start-ready must still happen in order.
 
-The result is cleaner workflow guidance without weakening the lifecycle contract.
+So the guidance got easier to use without turning the lifecycle into mush.
 
 ## The website got quieter again
 
-Part of `0.3.1` was simply admitting that the intermediate website iteration had drifted too far from the intended surface.
+Part of `0.3.1` was also admitting that the website had drifted in a bad direction.
 
 The release tightened the docs shell, improved spacing and left-aligned reading flow, simplified the blog index, and then intentionally restored the homepage to a quieter placeholder-style landing.
 
-That is the right call for this product stage. The public surface does not need to behave like a marketing page if the main value is operational clarity.
+I think that was the right decision. This product does not need a loud marketing front page if the real value is operational clarity.
 
 ## Practical outcome
 
@@ -58,7 +58,7 @@ For users, `0.3.1` means three things:
 - task-doc guidance is clearer for normal use,
 - the docs and blog surfaces are less noisy and easier to scan.
 
-It is a small release, but it removes confusion in exactly the places where confusion compounds.
+It is not a big release. It is a useful one. It removes confusion in exactly the places where confusion tends to multiply.
 
 ## Upgrade note
 
