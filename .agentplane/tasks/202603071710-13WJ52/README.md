@@ -1,7 +1,8 @@
 ---
 id: "202603071710-13WJ52"
 title: "Make diagnostics state-oriented"
-status: "TODO"
+result_summary: "Unified state-oriented diagnostics across doctor, upgrade, release apply, and close-commit flows."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -10,20 +11,48 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-07T18:55:29.817Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-03-07T19:09:25.223Z"
+  updated_by: "CODER"
+  note: "Passed: bunx vitest run packages/agentplane/src/shared/diagnostics.test.ts packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/upgrade.safety.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts; bun run lint:core -- packages/agentplane/src/shared/diagnostics.ts packages/agentplane/src/shared/diagnostics.test.ts packages/agentplane/src/shared/errors.ts packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/commands/upgrade.ts packages/agentplane/src/commands/upgrade.safety.test.ts packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs."
+commit:
+  hash: "50c95a2422cada81b517976692b8d83cea9699f5"
+  message: "🩺 cli: make diagnostics state-oriented"
+comments:
+  -
+    author: "CODER"
+    body: "Start: refactor the highest-friction diagnostics so users first see the detected state, then the likely cause, then one exact recovery action, beginning with doctor, upgrade, finish, and release-related surfaces."
+  -
+    author: "CODER"
+    body: "Verified: state/cause/action diagnostics now render consistently across doctor, upgrade, release apply, and deterministic close-commit failures."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T18:54:50.673Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: refactor the highest-friction diagnostics so users first see the detected state, then the likely cause, then one exact recovery action, beginning with doctor, upgrade, finish, and release-related surfaces."
+  -
+    type: "verify"
+    at: "2026-03-07T19:09:25.223Z"
+    author: "CODER"
+    state: "ok"
+    note: "Passed: bunx vitest run packages/agentplane/src/shared/diagnostics.test.ts packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/upgrade.safety.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts; bun run lint:core -- packages/agentplane/src/shared/diagnostics.ts packages/agentplane/src/shared/diagnostics.test.ts packages/agentplane/src/shared/errors.ts packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/commands/upgrade.ts packages/agentplane/src/commands/upgrade.safety.test.ts packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs."
+  -
+    type: "status"
+    at: "2026-03-07T19:09:26.774Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: state/cause/action diagnostics now render consistently across doctor, upgrade, release apply, and deterministic close-commit failures."
 doc_version: 2
-doc_updated_at: "2026-03-07T17:10:11.951Z"
+doc_updated_at: "2026-03-07T19:09:26.774Z"
 doc_updated_by: "CODER"
 description: "Refactor key doctor, upgrade, finish, and release diagnostics to report detected state, likely cause, and exact recovery action."
 id_source: "generated"
@@ -41,9 +70,7 @@ Refactor key doctor, upgrade, finish, and release diagnostics to report detected
 
 ## Plan
 
-1. Implement the change for "Make diagnostics state-oriented".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Define a shared diagnostic shape that reports detected state, likely cause, and exact next action, then apply it to the most user-facing failure paths. 2. Refactor doctor, upgrade, finish, and release diagnostics so each high-friction message explains the state first and points to one concrete recovery command. 3. Add focused regression tests plus docs/help updates to keep the new diagnostic shape stable across CLI surfaces.
 
 ## Risks
 
@@ -71,6 +98,14 @@ Refactor key doctor, upgrade, finish, and release diagnostics to report detected
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T19:09:25.223Z — VERIFY — ok
+
+By: CODER
+
+Note: Passed: bunx vitest run packages/agentplane/src/shared/diagnostics.test.ts packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/upgrade.safety.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts; bun run lint:core -- packages/agentplane/src/shared/diagnostics.ts packages/agentplane/src/shared/diagnostics.test.ts packages/agentplane/src/shared/errors.ts packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/commands/upgrade.ts packages/agentplane/src/commands/upgrade.safety.test.ts packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts; bun run --filter=agentplane build; node .agentplane/policy/check-routing.mjs.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T18:55:22.856Z, excerpt_hash=sha256:682d5674a3bb4d925efca0f9cabc057c814315f01dc448e2879b94eecb1a7911
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
