@@ -8,11 +8,14 @@ export type FrameworkCheckout = {
 export type FrameworkBinaryContext = {
   inFrameworkCheckout: boolean;
   isRepoLocalBinary: boolean;
+  isRepoLocalRuntime: boolean;
   checkout: FrameworkCheckout | null;
   thisBin: string;
 };
 
 export function findFrameworkCheckout(startDir: string): FrameworkCheckout | null;
+
+export function isPathInside(baseDir: string, targetPath: string): boolean;
 
 export function resolveFrameworkBinaryContext(options: {
   cwd: string;

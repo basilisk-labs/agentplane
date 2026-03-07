@@ -74,6 +74,17 @@ agentplane config set workflow_mode branch_pr
 agentplane profile set normal
 ```
 
+## Runtime diagnostics
+
+```bash
+agentplane runtime explain
+agentplane runtime explain --json
+```
+
+Use this when you need to prove which binary is active, whether you are on
+`repo-local`, `repo-local-handoff`, or a global install, and which `agentplane` /
+`@agentplaneorg/core` package roots are actually being resolved at runtime.
+
 ## Tasks
 
 ```bash

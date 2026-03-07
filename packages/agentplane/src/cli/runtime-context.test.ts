@@ -64,11 +64,20 @@ describe("runtime-context", () => {
 
     const repoLocal = resolveFrameworkBinaryContext({ cwd: nestedCwd, thisBin: repoBin });
     const global = resolveFrameworkBinaryContext({ cwd: nestedCwd, thisBin: globalBin });
+    const distRuntime = resolveFrameworkBinaryContext({
+      cwd: nestedCwd,
+      thisBin: path.join(path.dirname(repoBin), "..", "dist", "cli.js"),
+    });
 
     expect(repoLocal.inFrameworkCheckout).toBe(true);
     expect(repoLocal.isRepoLocalBinary).toBe(true);
+    expect(repoLocal.isRepoLocalRuntime).toBe(true);
     expect(global.inFrameworkCheckout).toBe(true);
     expect(global.isRepoLocalBinary).toBe(false);
+    expect(global.isRepoLocalRuntime).toBe(false);
     expect(global.checkout?.repoBin).toBe(repoBin);
+    expect(distRuntime.inFrameworkCheckout).toBe(true);
+    expect(distRuntime.isRepoLocalBinary).toBe(false);
+    expect(distRuntime.isRepoLocalRuntime).toBe(true);
   });
 });

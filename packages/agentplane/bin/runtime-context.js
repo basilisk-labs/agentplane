@@ -21,6 +21,7 @@ import path from "node:path";
  * @typedef {{
  *   inFrameworkCheckout: boolean;
  *   isRepoLocalBinary: boolean;
+ *   isRepoLocalRuntime: boolean;
  *   checkout: FrameworkCheckout | null;
  *   thisBin: string;
  * }} FrameworkBinaryContext
@@ -56,6 +57,16 @@ export function findFrameworkCheckout(startDir) {
 }
 
 /**
+ * @param {string} baseDir
+ * @param {string} targetPath
+ * @returns {boolean}
+ */
+export function isPathInside(baseDir, targetPath) {
+  const rel = path.relative(path.resolve(baseDir), path.resolve(targetPath));
+  return rel === "" || (!rel.startsWith("..") && !path.isAbsolute(rel));
+}
+
+/**
  * @param {FrameworkBinaryContextOptions} options
  * @returns {FrameworkBinaryContext}
  */
@@ -67,6 +78,7 @@ export function resolveFrameworkBinaryContext(options) {
     return {
       inFrameworkCheckout: false,
       isRepoLocalBinary: false,
+      isRepoLocalRuntime: false,
       checkout: null,
       thisBin,
     };
@@ -75,6 +87,7 @@ export function resolveFrameworkBinaryContext(options) {
   return {
     inFrameworkCheckout: true,
     isRepoLocalBinary: path.resolve(checkout.repoBin) === thisBin,
+    isRepoLocalRuntime: isPathInside(checkout.packageRoot, thisBin),
     checkout,
     thisBin,
   };

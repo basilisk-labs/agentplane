@@ -4,7 +4,7 @@ import path from "node:path";
 import { stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
-import { resolveFrameworkBinaryContext } from "./runtime-context.js";
+import { isPathInside, resolveFrameworkBinaryContext } from "./runtime-context.js";
 
 async function exists(p) {
   try {
@@ -43,6 +43,27 @@ function isRepoLocalHandoffInvocation() {
   return (process.env.AGENTPLANE_REPO_LOCAL_HANDOFF ?? "").trim() === "1";
 }
 
+function inferRuntimeMode(context) {
+  if (context.inFrameworkCheckout && context.isRepoLocalRuntime) {
+    return isRepoLocalHandoffInvocation() ? "repo-local-handoff" : "repo-local";
+  }
+  if (context.inFrameworkCheckout && shouldUseGlobalBinaryInFramework()) {
+    return "global-forced-in-framework";
+  }
+  if (context.inFrameworkCheckout) {
+    return "global-in-framework";
+  }
+  return "global-installed";
+}
+
+function primeRuntimeEnv(context) {
+  process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = context.thisBin;
+  process.env.AGENTPLANE_RUNTIME_MODE = inferRuntimeMode(context);
+  if (!isRepoLocalHandoffInvocation()) {
+    delete process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
+  }
+}
+
 function handoffToRepoLocalBinary(context) {
   const repoBin = context.checkout?.repoBin;
   if (!repoBin) return false;
@@ -57,6 +78,9 @@ function handoffToRepoLocalBinary(context) {
     env: {
       ...process.env,
       AGENTPLANE_REPO_LOCAL_HANDOFF: "1",
+      AGENTPLANE_RUNTIME_MODE: "repo-local-handoff",
+      AGENTPLANE_RUNTIME_ACTIVE_BIN: path.resolve(repoBin),
+      AGENTPLANE_RUNTIME_HANDOFF_FROM: context.thisBin,
     },
   });
 
@@ -89,11 +113,6 @@ function isHooksRunCommitMsgInvocation(argv) {
     return args[i + 1] === "run" && args[i + 2] === "commit-msg";
   }
   return false;
-}
-
-function isPathInside(baseDir, targetPath) {
-  const rel = path.relative(path.resolve(baseDir), path.resolve(targetPath));
-  return rel === "" || (!rel.startsWith("..") && !path.isAbsolute(rel));
 }
 
 async function assertDistUpToDate() {
@@ -164,6 +183,12 @@ async function assertDistUpToDate() {
 
   return true;
 }
+
+const runtimeContext = resolveFrameworkBinaryContext({
+  cwd: process.cwd(),
+  thisBin: fileURLToPath(import.meta.url),
+});
+primeRuntimeEnv(runtimeContext);
 
 if (!maybeHandoffToRepoLocalBinary()) {
   await maybeWarnGlobalBinaryInRepoCheckout();

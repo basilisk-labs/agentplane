@@ -102,6 +102,31 @@ async function gitInitWithCommit(root: string, subject: string): Promise<string>
   return stdout.trim();
 }
 
+async function addFrameworkCheckout(root: string): Promise<{
+  repoBin: string;
+  coreRoot: string;
+}> {
+  const packageRoot = path.join(root, "packages", "agentplane");
+  const repoBin = path.join(packageRoot, "bin", "agentplane.js");
+  const coreRoot = path.join(root, "packages", "core");
+  await mkdir(path.join(packageRoot, "bin"), { recursive: true });
+  await mkdir(path.join(packageRoot, "src"), { recursive: true });
+  await mkdir(coreRoot, { recursive: true });
+  await writeFile(repoBin, "#!/usr/bin/env node\n", "utf8");
+  await writeFile(path.join(packageRoot, "src", "cli.ts"), "export const cli = true;\n", "utf8");
+  await writeFile(
+    path.join(packageRoot, "package.json"),
+    '{\n  "name": "agentplane",\n  "version": "0.3.2"\n}\n',
+    "utf8",
+  );
+  await writeFile(
+    path.join(coreRoot, "package.json"),
+    '{\n  "name": "@agentplaneorg/core",\n  "version": "0.3.2"\n}\n',
+    "utf8",
+  );
+  return { repoBin, coreRoot };
+}
+
 afterEach(async () => {
   while (workspaces.length > 0) {
     const root = workspaces.pop();
@@ -267,6 +292,60 @@ describe("doctor.command", () => {
         "docs/help/legacy-upgrade-recovery.mdx",
       );
     } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("prints runtime info when doctor runs inside a framework checkout", async () => {
+    const ws = await mkWorkspace();
+    const framework = await addFrameworkCheckout(ws.root);
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    const prevActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = framework.repoBin;
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("Runtime mode: repo-local");
+      expect(output).toContain(`Active binary: ${framework.repoBin}`);
+      expect(output).toContain(`Framework repo root: ${ws.root}`);
+      expect(output).toContain(`Framework core root: ${framework.coreRoot}`);
+    } finally {
+      if (prevActiveBin === undefined) delete process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+      else process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = prevActiveBin;
+      stderr.mockRestore();
+    }
+  });
+
+  it("warns when the global binary is forced inside a framework checkout", async () => {
+    const ws = await mkWorkspace();
+    await addFrameworkCheckout(ws.root);
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    const prevActiveBin = process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+    const prevForce = process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK;
+    process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = path.join(os.tmpdir(), "agentplane-global-bin.js");
+    process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK = "1";
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("Framework checkout is forcing the global installed binary");
+      expect(output).toContain("Runtime mode: global-forced-in-framework");
+    } finally {
+      if (prevActiveBin === undefined) delete process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+      else process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = prevActiveBin;
+      if (prevForce === undefined) delete process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK;
+      else process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK = prevForce;
       stderr.mockRestore();
     }
   });

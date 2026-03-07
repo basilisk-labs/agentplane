@@ -32,10 +32,30 @@ bun run --filter=agentplane build
 ```
 
 - Retry the original command after the rebuild.
+- Run `agentplane runtime explain` if you need to confirm which binary handed off and which package
+  roots are active before retrying.
 - If you are outside the framework checkout, the linked binary should warn and continue instead of
   hard-failing.
 - If you intentionally need the global installed CLI inside the framework checkout, set
   `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1`.
+
+## runtime source is unclear inside the framework checkout
+
+- Symptom: docs, behavior, or package versions seem inconsistent while working in the framework repo.
+- Why this happens: the active process may be using a global install, repo-local handoff, or a
+  directly invoked repo-local binary.
+- What to do:
+
+```bash
+agentplane runtime explain
+```
+
+- Read the reported `Mode`, `Active binary`, `Resolved agentplane`, and
+  `Resolved @agentplaneorg/core` lines first.
+- If mode is `global-in-framework`, update or reinstall the global CLI so the wrapper can hand off
+  to the repo-local binary.
+- If mode is `global-forced-in-framework`, unset `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` unless you
+  intentionally want the global runtime.
 
 ## working tree is dirty before commit or finish
 

@@ -222,6 +222,15 @@ detects the checkout and delegates automatically to the repo-local binary from t
 
 The repo-local binary still checks whether `dist/` matches the current source tree.
 
+- To inspect which runtime is currently active, run:
+
+```bash
+agentplane runtime explain
+```
+
+It prints the active binary path, runtime mode, and the resolved `agentplane` /
+`@agentplaneorg/core` package roots.
+
 - Inside the framework checkout, a stale build is a hard stop. Rebuild first:
 
 ```bash

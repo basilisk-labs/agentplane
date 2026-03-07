@@ -100,6 +100,7 @@ import {
 } from "../../commands/workflow-playbook.command.js";
 
 import { docsCliSpec } from "../../commands/docs/cli.command.js";
+import { runtimeExplainSpec, runtimeSpec } from "../../commands/runtime.command.js";
 import { hooksSpec } from "../../commands/hooks/hooks.command.js";
 import { hooksInstallSpec } from "../../commands/hooks/install.command.js";
 import { hooksUninstallSpec } from "../../commands/hooks/uninstall.command.js";
@@ -193,6 +194,20 @@ export const COMMANDS = [
     needsConfig: false,
     needsTaskContext: false,
   }),
+  entry(runtimeSpec, () => import("../../commands/runtime.command.js").then((m) => m.runRuntime), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
+  entry(
+    runtimeExplainSpec,
+    () => import("../../commands/runtime.command.js").then((m) => m.runRuntimeExplain),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
+  ),
   entry(roleSpec, () => import("./commands/core.js").then((m) => m.runRole), {
     needsProject: false,
     needsConfig: false,

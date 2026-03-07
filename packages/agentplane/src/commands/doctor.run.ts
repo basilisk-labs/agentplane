@@ -7,6 +7,7 @@ import { resolveProject } from "@agentplaneorg/core";
 import type { CommandHandler } from "../cli/spec/spec.js";
 import { warnMessage, successMessage } from "../cli/output.js";
 import { RUNTIME_GITIGNORE_LINES } from "../shared/runtime-artifacts.js";
+import { describeRuntimeMode, resolveRuntimeSourceInfo } from "../shared/runtime-source.js";
 import { resolvePolicyGatewayForRepo } from "../shared/policy-gateway.js";
 import { execFileAsync, gitEnv } from "./shared/git.js";
 import { loadCommandContext } from "./shared/task-backend.js";
@@ -248,6 +249,33 @@ async function checkWorkflowContract(repoRoot: string): Promise<string[]> {
   return findings;
 }
 
+function checkRuntimeSourceFacts(cwd: string): string[] {
+  const report = resolveRuntimeSourceInfo({ cwd, entryModuleUrl: import.meta.url });
+  if (!report.framework.inFrameworkCheckout) return [];
+
+  const warning =
+    report.mode === "global-in-framework"
+      ? "[WARN] Framework checkout detected but the active runtime is still a global installed binary. " +
+        "Update or reinstall agentplane to pick up repo-local handoff, or run the repo-local binary directly."
+      : report.mode === "global-forced-in-framework"
+        ? "[WARN] Framework checkout is forcing the global installed binary via AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1."
+        : null;
+
+  return [
+    ...(warning ? [warning] : []),
+    `[INFO] Runtime mode: ${report.mode} (${describeRuntimeMode(report.mode)})`,
+    `[INFO] Active binary: ${report.activeBinaryPath ?? "unresolved"}`,
+    ...(report.handoffFromBinaryPath
+      ? [`[INFO] Handoff source binary: ${report.handoffFromBinaryPath}`]
+      : []),
+    `[INFO] Resolved agentplane: ${report.agentplane.version ?? "unknown"} @ ${report.agentplane.packageRoot ?? "unresolved"}`,
+    `[INFO] Resolved @agentplaneorg/core: ${report.core.version ?? "unknown"} @ ${report.core.packageRoot ?? "unresolved"}`,
+    `[INFO] Framework repo root: ${report.frameworkSources.repoRoot ?? "unresolved"}`,
+    `[INFO] Framework agentplane root: ${report.frameworkSources.agentplaneRoot ?? "unresolved"}`,
+    `[INFO] Framework core root: ${report.frameworkSources.coreRoot ?? "unresolved"}`,
+  ];
+}
+
 function findingSeverity(problem: string): "ERROR" | "WARN" | "INFO" {
   const normalized = problem.trimStart();
   if (normalized.startsWith("[WARN]")) return "WARN";
@@ -387,13 +415,16 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   const repoRoot = resolved.gitRoot;
 
   const runChecks = async (): Promise<string[]> => {
-    const checks = await checkWorkspace(repoRoot);
-    checks.push(...(await checkDoneTaskCommitInvariants(repoRoot)));
+    let checks = [
+      ...(await checkWorkspace(repoRoot)),
+      ...checkRuntimeSourceFacts(ctx.cwd),
+      ...(await checkDoneTaskCommitInvariants(repoRoot)),
+    ];
     if (!isWorkflowEnforcementDisabled()) {
-      checks.push(...(await checkWorkflowContract(repoRoot)));
+      checks = [...checks, ...(await checkWorkflowContract(repoRoot))];
     }
     if (p.dev) {
-      checks.push(...(await checkLayering(repoRoot)));
+      checks = [...checks, ...(await checkLayering(repoRoot))];
     }
     return checks;
   };

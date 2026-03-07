@@ -29,6 +29,12 @@ bun run --filter=agentplane build
 To force the global installed CLI instead of the repo-local handoff during framework debugging, set
 `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1`.
 
+When the active runtime is unclear, inspect it explicitly:
+
+```bash
+agentplane runtime explain
+```
+
 If you want the globally installed `agentplane` command itself to come from this checkout, use the
 developer reinstall helper:
 

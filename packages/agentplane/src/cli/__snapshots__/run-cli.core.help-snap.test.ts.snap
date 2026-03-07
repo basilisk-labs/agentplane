@@ -31,6 +31,9 @@ Commands:
     preflight  Run aggregated preflight checks and print a deterministic readiness report.
     quickstart  Print the canonical agent bootstrap path and startup guidance.
     role  Show role-specific workflow guidance.
+  Diagnostics:
+    runtime  Inspect which agentplane runtime/binary/package sources are active.
+    runtime explain  Explain the active binary, runtime mode, and resolved package roots.
   Docs:
     docs cli  Generate an MDX CLI reference from the current cli2 registry/spec.
   Guard:

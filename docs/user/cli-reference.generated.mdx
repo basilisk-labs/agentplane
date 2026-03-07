@@ -30,6 +30,9 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [preflight](#preflight)
   - [quickstart](#quickstart)
   - [role](#role)
+- Diagnostics
+  - [runtime](#runtime)
+  - [runtime explain](#runtime-explain)
 - Docs
   - [docs cli](#docs-cli)
 - Guard
@@ -662,6 +665,54 @@ agentplane role ORCHESTRATOR
 ```
 
 - Show ORCHESTRATOR guide.
+
+## Diagnostics
+
+### runtime
+
+Inspect which agentplane runtime/binary/package sources are active.
+
+Usage:
+
+```text
+agentplane runtime <explain> [options]
+```
+
+Examples:
+
+```sh
+agentplane runtime explain
+```
+
+- Show active runtime details.
+
+### runtime explain
+
+Explain the active binary, runtime mode, and resolved package roots.
+
+Usage:
+
+```text
+agentplane runtime explain [options]
+```
+
+Options:
+
+- `--json`: Emit machine-readable runtime details. (default=false)
+
+Examples:
+
+```sh
+agentplane runtime explain
+```
+
+- Show the active runtime as readable text.
+
+```sh
+agentplane runtime explain --json
+```
+
+- Show runtime details for scripts and diagnostics tooling.
 
 ## Docs
 
