@@ -88,6 +88,18 @@ type UpgradeReviewRecord = {
     | "incidentsAppend";
 };
 
+function describeUpgradeSource(opts: {
+  bundleLayout: "local_assets" | "upgrade_bundle" | "repo_tarball";
+  hasExplicitBundle: boolean;
+  useRemote: boolean;
+}): string {
+  if (opts.bundleLayout === "local_assets") return "local installed agentplane CLI assets";
+  if (opts.bundleLayout === "repo_tarball") return "GitHub repo tarball fallback";
+  if (opts.hasExplicitBundle) return "explicit upgrade bundle";
+  if (opts.useRemote) return "GitHub release bundle";
+  return "upgrade bundle";
+}
+
 async function safeRemovePath(targetPath: string): Promise<void> {
   try {
     await rm(targetPath, { recursive: true, force: true });
@@ -707,6 +719,16 @@ export async function cmdUpgradeParsed(opts: {
         ? fileURLToPath(new URL("../../assets/framework.manifest.json", import.meta.url))
         : path.join(bundleRoot, "framework.manifest.json");
     const manifest = await loadFrameworkManifestFromPath(manifestPath);
+    const modeLabel = flags.dryRun ? "dry-run" : flags.mode === "agent" ? "review" : "apply";
+    process.stdout.write(
+      `Upgrade source: ${describeUpgradeSource({
+        bundleLayout,
+        hasExplicitBundle: hasBundle,
+        useRemote,
+      })}\n` +
+        `Upgrade version: ${upgradeVersionLabel}\n` +
+        `Upgrade mode: ${modeLabel}\n`,
+    );
 
     const additions: string[] = [];
     const updates: string[] = [];
@@ -962,7 +984,7 @@ export async function cmdUpgradeParsed(opts: {
       const managedFiles = manifest.files.map((f) => f.path.replaceAll("\\", "/").trim());
       const planMd =
         `# agentplane upgrade plan (${runId})\n\n` +
-        `Mode: agent-assisted (no files modified)\n\n` +
+        `Mode: agent-assisted review (no files modified)\n\n` +
         `## Summary\n\n` +
         `- additions: ${additions.length}\n` +
         `- updates: ${updates.length}\n` +
@@ -983,7 +1005,7 @@ export async function cmdUpgradeParsed(opts: {
         `\n` +
         `## Next steps\n\n` +
         `1. Review the proposed changes list.\n` +
-        `2. Apply changes manually or re-run with \`agentplane upgrade --auto\` to apply managed files.\n` +
+        `2. Apply changes manually or re-run without \`--agent\` to apply managed files.\n` +
         `3. Run \`agentplane doctor\` (or \`agentplane doctor --fix\`) and ensure checks pass.\n`;
 
       const constraintsMd =

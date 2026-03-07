@@ -121,19 +121,24 @@ This appends ignores for `AGENTS.md` and `.agentplane/agents/` and skips the ini
 agentplane upgrade
 ```
 
-Default mode is review-first (`--agent`):
+Default mode applies the managed framework files from the installed CLI bundle and creates a dedicated upgrade commit.
 
-- if there are no managed changes, upgrade exits fast with `Upgrade plan: no managed changes detected`;
-- in this no-op case it does not create per-run artifacts under `.agentplane/.upgrade/agent/*`;
-- managed files are replace-first on apply, except `.agentplane/policy/incidents.md`, which is append-only when local content already exists.
+- managed files are replace-first on apply, except `.agentplane/policy/incidents.md`, which is append-only when local content already exists;
+- upgrade prints the bundle source, resolved version label, and selected mode before doing any work.
 
-To apply automatically:
+Preview only:
 
 ```bash
-agentplane upgrade --auto
+agentplane upgrade --dry-run
 ```
 
-`--auto` creates a dedicated upgrade commit with the target upgrade version in the commit message.
+Review-plan mode without writes:
+
+```bash
+agentplane upgrade --agent
+```
+
+Default apply and explicit `--auto` both create a dedicated upgrade commit with the target upgrade version in the commit message.
 
 ## Preflight modes
 

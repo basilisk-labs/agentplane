@@ -1190,7 +1190,7 @@ describe("runCli", () => {
     expect(configText).toContain('"workflow_mode": "direct"');
   });
 
-  it("upgrade applies bundle changes and cleans backup artifacts by default", async () => {
+  it("upgrade applies bundle changes by default and cleans backup artifacts", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
@@ -1210,7 +1210,6 @@ describe("runCli", () => {
     try {
       const code = await runCli([
         "upgrade",
-        "--auto",
         "--bundle",
         bundlePath,
         "--checksum",
@@ -1275,7 +1274,7 @@ describe("runCli", () => {
     expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
   });
 
-  it("upgrade --auto fails on dirty tracked tree before applying", async () => {
+  it("upgrade fails on dirty tracked tree before applying in default apply mode", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await writeFile(path.join(root, "AGENTS.md"), "legacy agents", "utf8");
@@ -1293,7 +1292,6 @@ describe("runCli", () => {
     try {
       const code = await runCli([
         "upgrade",
-        "--auto",
         "--bundle",
         bundlePath,
         "--checksum",

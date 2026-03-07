@@ -63,14 +63,14 @@ describe("upgradeSpec parsing/validation", () => {
     expect(out.parsed.allowTarball).toBe(true);
   });
 
-  it("defaults to agent mode (plan-only)", () => {
+  it("defaults to auto mode (apply-first)", () => {
     const out = parseCommandArgv(upgradeSpec, []);
-    expect(out.parsed.mode).toBe("agent");
+    expect(out.parsed.mode).toBe("auto");
   });
 
-  it("parses --auto mode", () => {
-    const out = parseCommandArgv(upgradeSpec, ["--auto"]);
-    expect(out.parsed.mode).toBe("auto");
+  it("parses --agent mode", () => {
+    const out = parseCommandArgv(upgradeSpec, ["--agent"]);
+    expect(out.parsed.mode).toBe("agent");
   });
 
   it("rejects --agent + --auto", () => {
