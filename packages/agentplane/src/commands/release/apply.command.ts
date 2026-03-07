@@ -356,6 +356,102 @@ async function ensureTagDoesNotExist(gitRoot: string, tag: string): Promise<void
   }
 }
 
+async function ensureRemoteExists(gitRoot: string, remote: string): Promise<void> {
+  try {
+    await execFileAsync("git", ["remote", "get-url", remote], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+  } catch (err) {
+    const details = String(
+      (err as { stderr?: string; message?: string } | null)?.stderr ??
+        (err as { message?: string } | null)?.message ??
+        "",
+    ).trim();
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message: `Git remote is not configured: ${remote}` + (details ? `\n\n${details}` : ""),
+      context: withDiagnosticContext(
+        { command: "release apply" },
+        {
+          state: "the configured release remote does not exist locally",
+          likelyCause:
+            "release apply was asked to push, but the selected git remote is missing or misconfigured in this checkout",
+          nextAction: {
+            command: "git remote -v",
+            reason: "inspect configured remotes before rerunning release apply with --push",
+            reasonCode: "release_remote_missing",
+          },
+        },
+      ),
+    });
+  }
+}
+
+async function ensureRemoteTagDoesNotExist(
+  gitRoot: string,
+  remote: string,
+  tag: string,
+): Promise<void> {
+  let stdout = "";
+  try {
+    const out = await execFileAsync("git", ["ls-remote", "--tags", remote, `refs/tags/${tag}`], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    stdout = String(out.stdout ?? "").trim();
+  } catch (err) {
+    const details = String(
+      (err as { stderr?: string; message?: string } | null)?.stderr ??
+        (err as { message?: string } | null)?.message ??
+        "",
+    ).trim();
+    throw new CliError({
+      exitCode: exitCodeForError("E_GIT"),
+      code: "E_GIT",
+      message:
+        `Failed to inspect remote tag state for ${remote}/${tag}.` +
+        (details ? `\n\n${details}` : ""),
+      context: withDiagnosticContext(
+        { command: "release apply" },
+        {
+          state: "release apply could not verify the remote tag state",
+          likelyCause:
+            "the remote is configured, but git could not query it for the target release tag before the release started",
+          nextAction: {
+            command: `git ls-remote --tags ${remote} refs/tags/${tag}`,
+            reason: "inspect remote tag visibility before retrying the release push path",
+            reasonCode: "release_remote_tag_check_failed",
+          },
+        },
+      ),
+    });
+  }
+
+  if (!stdout) return;
+
+  throw new CliError({
+    exitCode: exitCodeForError("E_GIT"),
+    code: "E_GIT",
+    message: `Remote tag already exists: ${remote}/${tag}`,
+    context: withDiagnosticContext(
+      { command: "release apply" },
+      {
+        state: "the target release tag already exists on the remote",
+        likelyCause:
+          "a previous release or partial push already published this tag upstream, so pushing the same version again would drift the local release state",
+        nextAction: {
+          command: `git ls-remote --tags ${remote} refs/tags/${tag}`,
+          reason:
+            "inspect the existing remote tag before deciding whether to recover or bump to a new version",
+          reasonCode: "release_remote_tag_exists",
+        },
+      },
+    ),
+  });
+}
+
 async function ensureNpmVersionsAvailable(gitRoot: string, version: string): Promise<void> {
   const scriptPath = path.join(gitRoot, "scripts", "check-npm-version-availability.mjs");
   try {
@@ -632,43 +728,20 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
   const git = new GitContext({ gitRoot });
   await ensureCleanTrackedTree(gitRoot);
   await ensureTagDoesNotExist(gitRoot, plan.nextTag);
-
-  let npmVersionChecked = false;
-  if (flags.push) {
-    const loaded = await loadConfig(resolved.agentplaneDir);
-    await ensureNetworkApproved({
-      config: loaded.config,
-      yes: flags.yes,
-      reason: "release apply --push validates npm version availability and pushes over network",
-      interactive: Boolean(process.stdin.isTTY),
-    });
-    await runReleasePrepublishGate(gitRoot);
-    await ensureNpmVersionsAvailable(gitRoot, plan.nextVersion);
-    npmVersionChecked = true;
-  }
-
-  let releaseCommit: { hash: string; subject: string } | null = null;
-  if (coreVersion === plan.prevVersion) {
-    await Promise.all([
-      replacePackageVersionInFile(corePkgPath, plan.nextVersion),
-      replaceAgentplanePackageMetadata(agentplanePkgPath, plan.nextVersion),
-    ]);
-  } else if (coreVersion === plan.nextVersion) {
-    await replaceAgentplanePackageMetadata(agentplanePkgPath, plan.nextVersion);
-  } else {
+  if (coreVersion !== plan.prevVersion) {
     throw new CliError({
       exitCode: exitCodeForError("E_VALIDATION"),
       code: "E_VALIDATION",
       message:
-        `Current version does not match plan. ` +
+        `Current version does not match the release-plan baseline. ` +
         `current=${coreVersion} expected_prev=${plan.prevVersion} expected_next=${plan.nextVersion}\n` +
         "Re-run `agentplane release plan` to generate a fresh plan for this repo state.",
       context: withDiagnosticContext(
         { command: "release apply" },
         {
-          state: "the repository version no longer matches the prepared release plan",
+          state: "the repository version no longer matches the prepared release-plan baseline",
           likelyCause:
-            "package versions changed after the plan was generated, so the plan no longer describes the current repo state",
+            "package versions changed after the plan was generated, so continuing would apply the release over a partially drifted local state",
           nextAction: {
             command: "agentplane release plan",
             reason:
@@ -679,6 +752,28 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
       ),
     });
   }
+
+  let npmVersionChecked = false;
+  if (flags.push) {
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    await ensureNetworkApproved({
+      config: loaded.config,
+      yes: flags.yes,
+      reason: "release apply --push validates npm version availability and pushes over network",
+      interactive: Boolean(process.stdin.isTTY),
+    });
+    await ensureRemoteExists(gitRoot, flags.remote);
+    await ensureRemoteTagDoesNotExist(gitRoot, flags.remote, plan.nextTag);
+    await ensureNpmVersionsAvailable(gitRoot, plan.nextVersion);
+    npmVersionChecked = true;
+    await runReleasePrepublishGate(gitRoot);
+  }
+
+  let releaseCommit: { hash: string; subject: string } | null = null;
+  await Promise.all([
+    replacePackageVersionInFile(corePkgPath, plan.nextVersion),
+    replaceAgentplanePackageMetadata(agentplanePkgPath, plan.nextVersion),
+  ]);
 
   await maybeUpdateBunLockfile(gitRoot);
   const generatedReferenceExists = await maybeRefreshGeneratedReference(gitRoot);

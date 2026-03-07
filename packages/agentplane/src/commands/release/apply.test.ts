@@ -39,6 +39,39 @@ async function listRuns(root: string): Promise<string[]> {
     .toSorted();
 }
 
+async function writeReleasePushScripts(opts: {
+  root: string;
+  prepublishBody: string;
+  registryBody: string;
+}): Promise<void> {
+  await mkdir(path.join(opts.root, "scripts"), { recursive: true });
+  await writeFile(
+    path.join(opts.root, "package.json"),
+    JSON.stringify(
+      {
+        name: "release-test-root",
+        private: true,
+        scripts: {
+          "release:prepublish": "node scripts/prepublish-marker.mjs",
+        },
+      },
+      null,
+      2,
+    ) + "\n",
+    "utf8",
+  );
+  await writeFile(
+    path.join(opts.root, "scripts", "prepublish-marker.mjs"),
+    opts.prepublishBody,
+    "utf8",
+  );
+  await writeFile(
+    path.join(opts.root, "scripts", "check-npm-version-availability.mjs"),
+    opts.registryBody,
+    "utf8",
+  );
+}
+
 describeWhenNotHook("release apply", () => {
   it("bumps versions, commits, and tags using the latest plan", async () => {
     const root = await mkGitRepoRoot();
@@ -492,4 +525,223 @@ describeWhenNotHook("release apply", () => {
     });
     expect(remoteTag.trim()).toBe(localTag.trim());
   }, 30_000);
+
+  it("fails on a burned npm version before running release:prepublish or mutating local state", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const remoteRoot = path.join(root, "remote.git");
+    await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+
+    await mkdir(path.join(root, "packages", "core"), { recursive: true });
+    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
+    await writeReleasePushScripts({
+      root,
+      prepublishBody: [
+        "import { writeFile } from 'node:fs/promises';",
+        String.raw`await writeFile('prepublish.marker', 'ran\n', 'utf8');`,
+      ].join("\n"),
+      registryBody: [
+        String.raw`process.stderr.write('Version already published: agentplane@0.2.7\n');`,
+        "process.exitCode = 1;",
+      ].join("\n"),
+    });
+
+    await writeFile(
+      path.join(root, "packages", "core", "package.json"),
+      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "package.json"),
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+    await commitAll(root, "seed");
+    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await commitAll(root, "feat: add file");
+
+    await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+    await writeFile(
+      path.join(root, "docs", "releases", "v0.2.7.md"),
+      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      "utf8",
+    );
+
+    await expect(
+      withDryRunReleaseMode(async () =>
+        runReleaseApply(
+          { cwd: root, rootOverride: root },
+          { plan: undefined, yes: true, push: true, remote: "origin" },
+        ),
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        diagnostic_state: "the target npm version is not publishable",
+        diagnostic_next_action_command:
+          "node scripts/check-npm-version-availability.mjs --version 0.2.7",
+      },
+    });
+
+    await expect(readFile(path.join(root, "prepublish.marker"), "utf8")).rejects.toThrow();
+    const coreText = await readFile(path.join(root, "packages", "core", "package.json"), "utf8");
+    expect(coreText).toContain('"version": "0.2.6"');
+    const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
+      cwd: root,
+    });
+    expect(tagOut.trim()).toBe("");
+  });
+
+  it("fails on an existing remote release tag before running release:prepublish or mutating local state", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const remoteRoot = path.join(root, "remote.git");
+    await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+
+    await mkdir(path.join(root, "packages", "core"), { recursive: true });
+    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
+    await writeReleasePushScripts({
+      root,
+      prepublishBody: [
+        "import { writeFile } from 'node:fs/promises';",
+        String.raw`await writeFile('prepublish.marker', 'ran\n', 'utf8');`,
+      ].join("\n"),
+      registryBody: `${String.raw`process.stdout.write('npm version availability check passed\n');`}\n`,
+    });
+
+    await writeFile(
+      path.join(root, "packages", "core", "package.json"),
+      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "package.json"),
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+    await commitAll(root, "seed");
+    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+    const { stdout: seedHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+    await execFileAsync("git", ["push", "origin", "HEAD:refs/heads/main"], { cwd: root });
+    await execFileAsync("git", ["update-ref", "refs/tags/v0.2.7", seedHash.trim()], {
+      cwd: remoteRoot,
+    });
+
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await commitAll(root, "feat: add file");
+
+    await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+    await writeFile(
+      path.join(root, "docs", "releases", "v0.2.7.md"),
+      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      "utf8",
+    );
+
+    await expect(
+      withDryRunReleaseMode(async () =>
+        runReleaseApply(
+          { cwd: root, rootOverride: root },
+          { plan: undefined, yes: true, push: true, remote: "origin" },
+        ),
+      ),
+    ).rejects.toMatchObject({
+      code: "E_GIT",
+      context: {
+        diagnostic_state: "the target release tag already exists on the remote",
+        diagnostic_next_action_command: "git ls-remote --tags origin refs/tags/v0.2.7",
+      },
+    });
+
+    await expect(readFile(path.join(root, "prepublish.marker"), "utf8")).rejects.toThrow();
+    const coreText = await readFile(path.join(root, "packages", "core", "package.json"), "utf8");
+    expect(coreText).toContain('"version": "0.2.6"');
+    const { stdout: localTagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
+      cwd: root,
+    });
+    expect(localTagOut.trim()).toBe("");
+  });
+
+  it("fails when the current package versions drift past the release-plan baseline", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    await mkdir(path.join(root, "packages", "core"), { recursive: true });
+    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
+
+    await writeFile(
+      path.join(root, "packages", "core", "package.json"),
+      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "package.json"),
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+    await commitAll(root, "seed");
+    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+
+    await writeFile(path.join(root, "file.txt"), "x", "utf8");
+    await commitAll(root, "feat: add file");
+
+    await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+    await writeFile(
+      path.join(root, "docs", "releases", "v0.2.7.md"),
+      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+      "utf8",
+    );
+
+    await writeFile(
+      path.join(root, "packages", "core", "package.json"),
+      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.7" }, null, 2) + "\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(root, "packages", "agentplane", "package.json"),
+      JSON.stringify(
+        { name: "agentplane", version: "0.2.7", dependencies: { "@agentplaneorg/core": "0.2.7" } },
+        null,
+        2,
+      ) + "\n",
+      "utf8",
+    );
+    await commitAll(root, "drift versions");
+
+    await expect(
+      withDryRunReleaseMode(async () =>
+        runReleaseApply(
+          { cwd: root, rootOverride: root },
+          { plan: undefined, yes: false, push: false, remote: "origin" },
+        ),
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        diagnostic_state:
+          "the repository version no longer matches the prepared release-plan baseline",
+        diagnostic_next_action_command: "agentplane release plan",
+      },
+    });
+  });
 });

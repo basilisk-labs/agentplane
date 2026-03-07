@@ -55,7 +55,7 @@ AGENTPLANE_RELEASE_DRY_RUN=1 agentplane release apply
 agentplane release apply --push --yes
 ```
 
-`release apply --push --yes` runs the release gate before tagging, refreshes generated package-reference docs after the version bump, and then pushes with `git push --no-verify`, so it does not recursively re-enter the local `pre-push` hook after the release gate already passed.
+`release apply --push --yes` now fails in an immutable preflight stage if the working tree is dirty, the local or remote release tag already exists, the target npm version is already burned, the configured remote is missing, or package versions drifted away from the prepared plan baseline. Only after that preflight passes does it run the release gate, bump versions, refresh generated package-reference docs, and push with `git push --no-verify`, so it does not recursively re-enter the local `pre-push` hook after the release gate already passed.
 
 ## What `release:prepublish` covers
 
