@@ -1,7 +1,8 @@
 ---
 id: "202603072133-RHJ409"
 title: "Load incidents only in recovery and error paths"
-status: "DOING"
+result_summary: "Moved incidents.md to a recovery-only reading contract for agents and aligned onboarding checks with that behavior."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-07T21:40:59.387Z"
   updated_by: "TESTER"
   note: "Verified: incidents.md is now explicitly outside the normal startup path, recovery-only surfaces still point to it, onboarding/bootstrap checks passed, and doctor remained green aside from known historical archive warnings."
-commit: null
+commit:
+  hash: "76f8dc3d7d48673c4a0aaf18c0b59e496b9e591f"
+  message: "📝 RHJ409 docs: move incidents to recovery-only path"
 comments:
   -
     author: "DOCS"
     body: "Start: move incidents.md out of the normal startup path, keep it explicit in recovery-only surfaces, and align onboarding checks with that contract."
+  -
+    author: "DOCS"
+    body: "Verified: incidents.md is now explicitly outside the normal startup path, recovery-only surfaces still point to it, onboarding/bootstrap checks passed, and doctor remained green aside from known historical archive warnings."
 events:
   -
     type: "status"
@@ -38,9 +44,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: incidents.md is now explicitly outside the normal startup path, recovery-only surfaces still point to it, onboarding/bootstrap checks passed, and doctor remained green aside from known historical archive warnings."
+  -
+    type: "status"
+    at: "2026-03-07T21:41:15.118Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: incidents.md is now explicitly outside the normal startup path, recovery-only surfaces still point to it, onboarding/bootstrap checks passed, and doctor remained green aside from known historical archive warnings."
 doc_version: 2
-doc_updated_at: "2026-03-07T21:40:59.388Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-03-07T21:41:15.118Z"
+doc_updated_by: "DOCS"
 description: "Update agent guidance and runtime help so .agentplane/policy/incidents.md is not part of the normal startup path and is consulted only for failures, recovery, or incident response."
 id_source: "generated"
 ---
