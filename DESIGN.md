@@ -29,7 +29,7 @@ A clean **engineering sheet**:
 The following are explicitly disallowed unless this document is revised:
 
 - SaaS-style **card grids** as the primary layout language.
-- Heavy backgrounds, gradients, glassmorphism, glow, 3D, illustrations-for-vibes.
+- Heavy backgrounds, gradients, generic glassmorphism, glow, 3D, illustrations-for-vibes.
 - Rounded shapes as a motif (`rounded-none` by default).
 - Shadows as a structural tool (`shadow-none` by default).
 - “Playful” motion: bouncing, parallax, scroll-jacking, animated backgrounds.
@@ -80,9 +80,9 @@ The following are explicitly disallowed unless this document is revised:
 
 Use clamp-based sizes when possible.
 
-- **H1:** 56–72px, weight 700, `tracking ~ -0.03em`, tight leading (`~1.0`)
-- **H2:** 36–44px, weight 650–700
-- **H3:** 22–26px, weight 650
+- **H1:** 56–72px, weight 700, `tracking ~ -0.03em`, controlled leading (`~1.04–1.1`)
+- **H2:** 36–44px, weight 650–700, leading (`~1.08–1.14`)
+- **H3:** 22–26px, weight 650, leading (`~1.12–1.18`)
 - **Body:** 17–18px, weight 400–450, `leading 1.45–1.6`
 - **Meta:** 13–14px, weight 450–500
 - **Mono artifacts:** 13–15px, weight 450–500
@@ -185,6 +185,20 @@ Visual:
 
 - Small mono, faint text.
 - One thin vertical line—no box.
+
+### 7.4 Liquid-glass chrome (exception)
+
+Purpose: allow a single layer of navigational chrome to feel slightly suspended above the sheet
+without turning the entire website into a glassmorphism system.
+
+Rules:
+
+- Allowed only for compact shell elements such as the top navbar.
+- Keep the shape rectangular; the no-radius default still applies.
+- Fill must stay near-white and translucent, never colorful.
+- Blur is allowed only as a subtle backdrop treatment, not as a glow effect.
+- No soft drop shadows; separation should come from border, translucency, and contrast.
+- Never stack multiple glass layers in one viewport.
 
 ---
 

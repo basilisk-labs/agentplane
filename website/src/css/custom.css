@@ -39,6 +39,10 @@
   --content-width: 74ch;
   --site-frame-width: 1240px;
   --site-gutter: 0.75rem;
+  --glass-fill-strong: rgb(255 255 255 / 0.84);
+  --glass-fill-soft: rgb(255 255 255 / 0.62);
+  --glass-border: rgb(255 255 255 / 0.54);
+  --glass-blur: 14px;
 }
 
 html,
@@ -84,10 +88,24 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 }
 
 .navbar__inner {
-  border-bottom: 1px solid rgb(var(--border));
+  background:
+    linear-gradient(180deg, var(--glass-fill-strong), var(--glass-fill-soft)), rgb(var(--bg) / 0.56);
+  backdrop-filter: blur(var(--glass-blur)) saturate(122%);
+  border: 1px solid rgb(var(--border) / 0.85);
+  border-bottom-color: rgb(var(--border));
   gap: 0.65rem;
   min-height: 64px;
-  padding: 0.45rem 0;
+  padding: 0.55rem 0.75rem;
+  position: relative;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(122%);
+}
+
+.navbar__inner::before {
+  border: 1px solid var(--glass-border);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
 }
 
 .navbar__brand {
@@ -105,7 +123,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 }
 
 .navbar__item.navbar__link {
-  background: transparent;
+  background: rgb(255 255 255 / 0);
   border: 0;
   border-bottom: 1px solid transparent;
   border-radius: 0;
@@ -125,13 +143,13 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__item.navbar__link:hover,
 .navbar__item.navbar__link:focus-visible {
-  background-color: transparent;
+  background-color: rgb(255 255 255 / 0.52);
   border-bottom-color: rgb(var(--accent) / 0.45);
   transform: translateY(-1px);
 }
 
 .navbar__link--active {
-  background: transparent;
+  background: rgb(255 255 255 / 0.7);
   border-bottom-color: rgb(var(--accent));
   color: rgb(var(--fg)) !important;
   font-weight: 600;
@@ -139,9 +157,14 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__link--active:hover,
 .navbar__link--active:focus-visible {
-  background: transparent;
+  background: rgb(255 255 255 / 0.76);
   border-bottom-color: rgb(var(--accent));
   color: rgb(var(--fg)) !important;
+}
+
+html.nav-scrolled .navbar__inner {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.68)), rgb(var(--bg) / 0.62);
 }
 
 .navbar__toggle {
@@ -210,7 +233,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 .theme-doc-markdown.markdown > h1:first-child {
   font-size: clamp(2.55rem, 4.8vw, 3.7rem);
   letter-spacing: -0.03em;
-  line-height: 1;
+  line-height: 1.08;
   transition: letter-spacing 180ms ease;
 }
 
@@ -218,12 +241,14 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   border-top: 1px solid rgb(var(--border));
   font-size: clamp(1.4rem, 2.2vw, 1.8rem);
   letter-spacing: -0.02em;
+  line-height: 1.14;
   margin-top: 3.2rem;
   padding-top: 0.8rem;
 }
 
 .theme-doc-markdown.markdown h3 {
   font-size: clamp(1.04rem, 1.45vw, 1.2rem);
+  line-height: 1.18;
   margin-top: 1.95rem;
 }
 

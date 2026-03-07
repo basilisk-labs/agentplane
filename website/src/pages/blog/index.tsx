@@ -4,10 +4,10 @@ import styles from "./index.module.css";
 
 const entries = [
   {
-    href: "/blog/release-0-3-2-smoother-upgrades-and-framework-dev",
-    title: "AgentPlane 0.3.2: smoother upgrades, cleaner finish, better framework dev",
+    href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
+    title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
     excerpt:
-      "Why upgrades got less weird, why finish now leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
+      "How policy routing became easier to follow, release notes got more concrete, and safe publish reruns stopped being awkward.",
     meta: "Release journal • 5 min read",
   },
   {
@@ -18,10 +18,10 @@ const entries = [
     meta: "Release journal • 4 min read",
   },
   {
-    href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
-    title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
+    href: "/blog/release-0-3-2-smoother-upgrades-and-framework-dev",
+    title: "AgentPlane 0.3.2: smoother upgrades, cleaner finish, better framework dev",
     excerpt:
-      "How policy routing became easier to follow, release notes got more concrete, and safe publish reruns stopped being awkward.",
+      "Why upgrades got less weird, why finish now leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
     meta: "Release journal • 5 min read",
   },
   {
@@ -77,7 +77,7 @@ export default function BlogLanding() {
         <div className={styles.layout}>
           <section className={styles.entriesSection} aria-labelledby="blog-entries-title">
             <div className={styles.sectionHeading}>
-              <p className={styles.sectionLabel}>Latest</p>
+              <p className={styles.sectionLabel}>Release line</p>
               <h2 id="blog-entries-title">Recent entries</h2>
             </div>
 
