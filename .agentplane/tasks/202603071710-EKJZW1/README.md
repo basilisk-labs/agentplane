@@ -1,7 +1,8 @@
 ---
 id: "202603071710-EKJZW1"
 title: "Clean up historical task archive noise"
-status: "DOING"
+result_summary: "Compacted historical doctor noise into grouped warnings without weakening current-state errors."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T19:43:11.503Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts; Result: pass; Evidence: 14 tests passed, including new aggregation coverage for repeated unknown-hash and close-commit flood cases. Scope: doctor reporting logic and regression coverage. Command: bun run lint:core -- packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.command.test.ts; Result: pass; Evidence: eslint clean after switching historical summary grouping to toSorted(). Scope: touched doctor source and tests. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0 on the implementation commit. Scope: updated doctor runtime bundle. Command: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor; Result: pass; Evidence: doctor now reports 2 warnings instead of hundreds, summarizing 218 unknown historical hashes and 21 close-commit archive cases while preserving actionable error class for missing implementation hash in tests. Scope: real-repo doctor output under current framework-dev stale-dist guard."
+commit:
+  hash: "7d4822df59ccd6ff03827d6173296812a84bc25d"
+  message: "🩺 EKJZW1 code: compact historical doctor noise"
 comments:
   -
     author: "CODER"
     body: "Start: compact historical doctor noise without hiding actionable commit invariant failures."
+  -
+    author: "CODER"
+    body: "Verified: doctor now summarizes historical task-archive noise while keeping actionable commit invariant failures visible."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: compact historical doctor noise without hiding actionable commit invariant failures."
+  -
+    type: "verify"
+    at: "2026-03-07T19:43:11.503Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts; Result: pass; Evidence: 14 tests passed, including new aggregation coverage for repeated unknown-hash and close-commit flood cases. Scope: doctor reporting logic and regression coverage. Command: bun run lint:core -- packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.command.test.ts; Result: pass; Evidence: eslint clean after switching historical summary grouping to toSorted(). Scope: touched doctor source and tests. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0 on the implementation commit. Scope: updated doctor runtime bundle. Command: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor; Result: pass; Evidence: doctor now reports 2 warnings instead of hundreds, summarizing 218 unknown historical hashes and 21 close-commit archive cases while preserving actionable error class for missing implementation hash in tests. Scope: real-repo doctor output under current framework-dev stale-dist guard."
+  -
+    type: "status"
+    at: "2026-03-07T19:43:21.111Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor now summarizes historical task-archive noise while keeping actionable commit invariant failures visible."
 doc_version: 2
-doc_updated_at: "2026-03-07T19:37:31.006Z"
+doc_updated_at: "2026-03-07T19:43:21.111Z"
 doc_updated_by: "CODER"
 description: "Reduce doctor noise from legacy task metadata and historical archive inconsistencies without hiding actionable current-state failures."
 id_source: "generated"
@@ -84,6 +103,14 @@ Reduce doctor noise from legacy task metadata and historical archive inconsisten
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T19:43:11.503Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts; Result: pass; Evidence: 14 tests passed, including new aggregation coverage for repeated unknown-hash and close-commit flood cases. Scope: doctor reporting logic and regression coverage. Command: bun run lint:core -- packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.command.test.ts; Result: pass; Evidence: eslint clean after switching historical summary grouping to toSorted(). Scope: touched doctor source and tests. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0 on the implementation commit. Scope: updated doctor runtime bundle. Command: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor; Result: pass; Evidence: doctor now reports 2 warnings instead of hundreds, summarizing 218 unknown historical hashes and 21 close-commit archive cases while preserving actionable error class for missing implementation hash in tests. Scope: real-repo doctor output under current framework-dev stale-dist guard.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T19:37:31.006Z, excerpt_hash=sha256:b03069c55ee600c61b982ea552b50e0d5c95275d4236303c07ca3f28e6b142d4
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
