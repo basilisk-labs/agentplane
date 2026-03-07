@@ -38,6 +38,10 @@ async function setupFrameworkCheckout() {
     path.join(binDir, "runtime-context.js"),
   );
   await copyFile(
+    path.join(workspaceRoot, "packages", "agentplane", "bin", "runtime-watch.js"),
+    path.join(binDir, "runtime-watch.js"),
+  );
+  await copyFile(
     path.join(workspaceRoot, "packages", "agentplane", "bin", "stale-dist-policy.js"),
     path.join(binDir, "stale-dist-policy.js"),
   );

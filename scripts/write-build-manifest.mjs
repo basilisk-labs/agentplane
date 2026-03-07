@@ -1,6 +1,11 @@
 import { execFileSync } from "node:child_process";
-import { mkdir, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+
+import {
+  collectWatchedRuntimeSnapshot,
+  getWatchedRuntimePathsForPackage,
+} from "../packages/agentplane/bin/runtime-watch.js";
 
 async function fileMtimeMs(p) {
   try {
@@ -26,6 +31,11 @@ async function main() {
   }
 
   const packageDir = path.resolve(packageDirArg);
+  const packageJson = JSON.parse(await readFile(path.join(packageDir, "package.json"), "utf8"));
+  const watchedRuntime = await collectWatchedRuntimeSnapshot(
+    packageDir,
+    getWatchedRuntimePathsForPackage(packageJson.name),
+  );
   const srcCliPath = path.join(packageDir, "src", "cli.ts");
   const srcIndexPath = path.join(packageDir, "src", "index.ts");
   const distCliPath = path.join(packageDir, "dist", "cli.js");
@@ -48,6 +58,9 @@ async function main() {
     dist_cli_mtime_ms: distCliMtimeMs,
     dist_index_mtime_ms: distIndexMtimeMs,
     tsbuildinfo_mtime_ms: tsBuildInfoMtimeMs,
+    watched_runtime_paths: watchedRuntime.watchedPaths,
+    watched_runtime_snapshot_hash: watchedRuntime.snapshotHash,
+    watched_runtime_files: watchedRuntime.files,
   };
 
   const outPath = path.join(packageDir, "dist", ".build-manifest.json");

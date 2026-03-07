@@ -37,6 +37,14 @@ async function setupGlobalInstall() {
     path.join(root, "bin", "runtime-context.js"),
   );
   await copyFile(
+    path.join(workspaceRoot, "packages", "agentplane", "bin", "runtime-watch.js"),
+    path.join(root, "bin", "runtime-watch.js"),
+  );
+  await copyFile(
+    path.join(workspaceRoot, "packages", "agentplane", "bin", "stale-dist-policy.js"),
+    path.join(root, "bin", "stale-dist-policy.js"),
+  );
+  await copyFile(
     path.join(workspaceRoot, "packages", "agentplane", "bin", "dist-guard.js"),
     path.join(root, "bin", "dist-guard.js"),
   );

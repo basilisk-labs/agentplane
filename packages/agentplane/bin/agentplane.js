@@ -4,6 +4,7 @@ import path from "node:path";
 import { stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
+import { getWatchedRuntimePathsForPackage } from "./runtime-watch.js";
 import { classifyStaleDistPolicy } from "./stale-dist-policy.js";
 import { isPathInside, resolveFrameworkBinaryContext } from "./runtime-context.js";
 
@@ -140,17 +141,16 @@ async function assertDistUpToDate() {
     {
       name: "agentplane",
       root: agentplaneRoot,
-      watchedPaths: [
-        "src",
-        "bin/agentplane.js",
-        "bin/dist-guard.js",
-        "bin/runtime-context.js",
-        "bin/stale-dist-policy.js",
-      ],
+      watchedPaths: getWatchedRuntimePathsForPackage("agentplane"),
     },
   ];
-  if (await exists(path.join(coreRoot, "src")))
-    checks.push({ name: "core", root: coreRoot, watchedPaths: ["src"] });
+  if (await exists(path.join(coreRoot, "src"))) {
+    checks.push({
+      name: "core",
+      root: coreRoot,
+      watchedPaths: getWatchedRuntimePathsForPackage("@agentplaneorg/core"),
+    });
+  }
 
   const staleReasons = [];
   for (const check of checks) {
