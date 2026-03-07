@@ -35,6 +35,10 @@ When the active runtime is unclear, inspect it explicitly:
 agentplane runtime explain
 ```
 
+Inside the framework checkout, this output is now the canonical framework-dev workflow surface:
+it prints the active runtime facts together with the rebuild commands, the global reinstall helper,
+the runtime re-check step, and the explicit force-global override path.
+
 If you want the globally installed `agentplane` command itself to come from this checkout, use the
 developer reinstall helper:
 

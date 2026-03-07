@@ -3,7 +3,11 @@ import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { captureStdIO } from "../cli/run-cli.test-helpers.js";
-import { runRuntimeExplain, renderRuntimeExplainText } from "./runtime.command.js";
+import {
+  buildFrameworkDevWorkflow,
+  runRuntimeExplain,
+  renderRuntimeExplainText,
+} from "./runtime.command.js";
 
 const envSnapshot = { ...process.env };
 const workspaceRoot = process.cwd();
@@ -41,12 +45,26 @@ describe("runtime.command", () => {
         framework: { inFrameworkCheckout: boolean };
         agentplane: { version: string | null; packageRoot: string | null };
         core: { version: string | null; packageRoot: string | null };
+        frameworkDev: {
+          available: boolean;
+          rebuildCommands: string[];
+          reinstallScript: string;
+          verifyCommand: string;
+          forceGlobalExample: string;
+          recommendation: string | null;
+        };
       };
       expect(payload.mode).toBe("repo-local");
       expect(payload.activeBinaryPath).toContain("packages/agentplane/bin/agentplane.js");
       expect(payload.framework.inFrameworkCheckout).toBe(true);
       expect(payload.agentplane.packageRoot).toContain("packages/agentplane");
       expect(payload.core).toHaveProperty("packageRoot");
+      expect(payload.frameworkDev.available).toBe(true);
+      expect(payload.frameworkDev.reinstallScript).toBe("scripts/reinstall-global-agentplane.sh");
+      expect(payload.frameworkDev.verifyCommand).toBe("agentplane runtime explain");
+      expect(payload.frameworkDev.forceGlobalExample).toContain(
+        "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
+      );
     } finally {
       io.restore();
     }
@@ -73,6 +91,9 @@ describe("runtime.command", () => {
       expect(io.stdout).toContain("Mode: repo-local-handoff");
       expect(io.stdout).toContain("Handoff from: /usr/local/bin/agentplane");
       expect(io.stdout).toContain("Resolved @agentplaneorg/core:");
+      expect(io.stdout).toContain("Framework dev workflow:");
+      expect(io.stdout).toContain("scripts/reinstall-global-agentplane.sh");
+      expect(io.stdout).toContain("AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>");
     } finally {
       io.restore();
     }
@@ -118,5 +139,43 @@ describe("runtime.command", () => {
     expect(text).toContain("Active binary:");
     expect(text).toContain("Framework repo root:");
     expect(text).toContain("Resolved agentplane:");
+    expect(text).toContain("Framework dev workflow:");
+    expect(text).toContain("scripts/reinstall-global-agentplane.sh");
+  });
+
+  it("builds a no-op framework workflow outside the framework checkout", () => {
+    const workflow = buildFrameworkDevWorkflow({
+      cwd: "/tmp/outside",
+      activeBinaryPath: "/usr/local/bin/agentplane",
+      handoffFromBinaryPath: null,
+      mode: "global-installed",
+      framework: {
+        inFrameworkCheckout: false,
+        isRepoLocalBinary: false,
+        isRepoLocalRuntime: false,
+        checkout: null,
+        thisBin: "/usr/local/bin/agentplane",
+      },
+      frameworkSources: {
+        repoRoot: null,
+        agentplaneRoot: "/usr/local/lib/node_modules/agentplane",
+        coreRoot: null,
+      },
+      agentplane: {
+        name: "agentplane",
+        version: "0.3.2",
+        packageRoot: "/usr/local/lib/node_modules/agentplane",
+        packageJsonPath: "/usr/local/lib/node_modules/agentplane/package.json",
+      },
+      core: {
+        name: "@agentplaneorg/core",
+        version: "0.3.2",
+        packageRoot: "/usr/local/lib/node_modules/@agentplaneorg/core",
+        packageJsonPath: "/usr/local/lib/node_modules/@agentplaneorg/core/package.json",
+      },
+    });
+
+    expect(workflow.available).toBe(false);
+    expect(workflow.recommendation).toBeNull();
   });
 });

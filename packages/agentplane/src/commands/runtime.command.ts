@@ -7,6 +7,19 @@ import {
   type RuntimeSourceInfo,
 } from "../shared/runtime-source.js";
 
+export type FrameworkDevWorkflow = {
+  available: boolean;
+  rebuildCommands: string[];
+  reinstallScript: string;
+  verifyCommand: string;
+  forceGlobalExample: string;
+  recommendation: string | null;
+};
+
+export type RuntimeExplainPayload = RuntimeSourceInfo & {
+  frameworkDev: FrameworkDevWorkflow;
+};
+
 export type RuntimeGroupParsed = { cmd: string[] };
 export type RuntimeExplainParsed = { json: boolean };
 
@@ -46,7 +59,55 @@ function renderPath(value: string | null): string {
   return value ?? "unresolved";
 }
 
+export function buildFrameworkDevWorkflow(report: RuntimeSourceInfo): FrameworkDevWorkflow {
+  const available = report.framework.inFrameworkCheckout;
+  const reinstallScript = "scripts/reinstall-global-agentplane.sh";
+  const rebuildCommands = [
+    "bun run --filter=@agentplaneorg/core build",
+    "bun run --filter=agentplane build",
+  ];
+  const verifyCommand = "agentplane runtime explain";
+  const forceGlobalExample = "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>";
+
+  if (!available) {
+    return {
+      available,
+      rebuildCommands,
+      reinstallScript,
+      verifyCommand,
+      forceGlobalExample,
+      recommendation: null,
+    };
+  }
+
+  const recommendation =
+    report.mode === "repo-local" || report.mode === "repo-local-handoff"
+      ? "Rebuild local packages after source changes; use the reinstall helper only when you need the global PATH command updated from this checkout."
+      : report.mode === "global-in-framework"
+        ? "Reinstall or update the global agentplane CLI from this checkout so the wrapper can hand off to the repo-local binary."
+        : report.mode === "global-forced-in-framework"
+          ? "Unset AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 unless you intentionally need the global installed CLI inside the framework checkout."
+          : "Use runtime explain after rebuild/reinstall to confirm which binary and package roots are active.";
+
+  return {
+    available,
+    rebuildCommands,
+    reinstallScript,
+    verifyCommand,
+    forceGlobalExample,
+    recommendation,
+  };
+}
+
+function buildRuntimeExplainPayload(report: RuntimeSourceInfo): RuntimeExplainPayload {
+  return {
+    ...report,
+    frameworkDev: buildFrameworkDevWorkflow(report),
+  };
+}
+
 export function renderRuntimeExplainText(report: RuntimeSourceInfo): string {
+  const frameworkDev = buildFrameworkDevWorkflow(report);
   const lines = [
     `Mode: ${report.mode} (${describeRuntimeMode(report.mode)})`,
     `Active binary: ${renderPath(report.activeBinaryPath)}`,
@@ -60,6 +121,23 @@ export function renderRuntimeExplainText(report: RuntimeSourceInfo): string {
   ];
   if (report.handoffFromBinaryPath) {
     lines.push(`Handoff from: ${report.handoffFromBinaryPath}`);
+  }
+  if (frameworkDev.available) {
+    lines.push(
+      "",
+      "Framework dev workflow:",
+      "1. Rebuild local packages after source changes:",
+      ...frameworkDev.rebuildCommands.map((command) => `   - ${command}`),
+      "2. If the global PATH install should resolve this checkout:",
+      `   - ${frameworkDev.reinstallScript}`,
+      "3. Re-verify the active runtime:",
+      `   - ${frameworkDev.verifyCommand}`,
+      "4. Optional: force the global installed CLI inside this checkout:",
+      `   - ${frameworkDev.forceGlobalExample}`,
+    );
+    if (frameworkDev.recommendation) {
+      lines.push(`Recommendation: ${frameworkDev.recommendation}`);
+    }
   }
   return lines.join("\n");
 }
@@ -85,7 +163,7 @@ export const runRuntimeExplain: CommandHandler<RuntimeExplainParsed> = (ctx, p) 
     entryModuleUrl: import.meta.url,
   });
   if (p.json) {
-    process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+    process.stdout.write(`${JSON.stringify(buildRuntimeExplainPayload(report), null, 2)}\n`);
     return Promise.resolve(0);
   }
   process.stdout.write(`${renderRuntimeExplainText(report)}\n`);
