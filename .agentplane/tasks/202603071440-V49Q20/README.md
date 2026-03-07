@@ -1,7 +1,7 @@
 ---
 id: "202603071440-V49Q20"
 title: "Publish a single copy-paste bootstrap command block"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -10,20 +10,30 @@ tags:
   - "docs"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T14:57:55.581Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: publish the copy-paste bootstrap block as an explicit startup affordance."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: surface the copy-paste bootstrap block prominently so agents can start without reconstructing the first command sequence from multiple docs."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T14:57:55.938Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: surface the copy-paste bootstrap block prominently so agents can start without reconstructing the first command sequence from multiple docs."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:40:20.997Z"
+doc_updated_at: "2026-03-07T14:57:55.938Z"
 doc_updated_by: "DOCS"
 description: "Expose one minimal startup command block that agents can execute without cross-reading multiple documents."
 id_source: "generated"

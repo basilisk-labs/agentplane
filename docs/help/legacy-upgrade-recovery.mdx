@@ -1,0 +1,63 @@
+---
+title: "Legacy upgrade recovery"
+description: "Shortest-path recovery for older repositories that ended up with a new gateway and an incomplete managed policy tree."
+---
+
+## Symptom
+
+You upgraded a project and then an agent says that required policy modules from `AGENTS.md` are
+missing, or `agentplane doctor` reports an incomplete managed policy tree.
+
+Typical signs:
+
+- `AGENTS.md` references `.agentplane/policy/*.md` files that do not exist.
+- `agentplane doctor` reports missing managed policy files.
+- The project was updated partially by hand before `agentplane upgrade` ran.
+
+## Why this happens
+
+This is usually a mixed-state workspace:
+
+1. the gateway file was updated to a newer framework contract;
+2. the managed `.agentplane/policy/**` tree was not updated fully;
+3. the installed CLI bundle used for `agentplane upgrade` was older than expected, or the upgrade was never applied.
+
+## Shortest recovery path
+
+1. Confirm the installed CLI is the version you actually intend to use.
+2. Run diagnostics from the repository root:
+
+```bash
+agentplane doctor
+```
+
+3. Apply the managed framework files from the installed CLI bundle:
+
+```bash
+agentplane upgrade --yes
+```
+
+4. If you need the latest published framework bundle rather than the currently installed one:
+
+```bash
+agentplane upgrade --remote --yes
+```
+
+5. Re-run diagnostics:
+
+```bash
+agentplane doctor
+agentplane quickstart
+```
+
+## If `upgrade` still does nothing useful
+
+- Reinstall or update the global `agentplane` CLI first.
+- Then run `agentplane upgrade --yes` again from the project root.
+- Do not patch `AGENTS.md` and `.agentplane/policy/**` by hand unless you are intentionally doing framework development.
+
+## Managed ownership contract
+
+- `AGENTS.md` and `.agentplane/policy/**` are framework-managed files.
+- `.agentplane/policy/incidents.md` is the sanctioned local place for situational directives.
+- If you hand-edit the managed tree, expect the next upgrade to overwrite or reconcile those files.

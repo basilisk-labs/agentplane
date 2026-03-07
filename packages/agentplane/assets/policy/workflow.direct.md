@@ -23,7 +23,7 @@ agentplane task plan set <task-id> --text "..." --updated-by <ROLE>
 agentplane task plan approve <task-id> --by ORCHESTRATOR
 agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
 agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
-agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
+agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
 ```
 
 ## ERROR RECOVERY
@@ -41,6 +41,7 @@ If any step fails:
 - MUST NOT perform mutating actions before explicit user approval.
 - Task documentation updates MAY be batched within one turn before approval.
 - MUST run `task plan approve` then `task start-ready` as `Step 1 -> wait -> Step 2` (never parallel).
+- In direct mode, `finish` auto-creates the deterministic close commit by default; use `--no-close-commit` only for explicit manual handling.
 - MUST stop and request re-approval on material drift.
 - Do not use worktrees in direct mode.
 - Do not perform `branch_pr`-only operations.

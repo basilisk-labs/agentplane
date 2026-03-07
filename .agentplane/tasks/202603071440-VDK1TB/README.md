@@ -1,7 +1,7 @@
 ---
 id: "202603071440-VDK1TB"
 title: "Rewrite finish flow as direct-first narrative"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -10,20 +10,30 @@ tags:
   - "docs"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T14:57:55.454Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: rewrite finish guidance around the direct-mode default."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: rewrite finish guidance so direct-mode docs and policy surfaces treat auto-close as the default narrative rather than the explicit flag path."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T14:57:55.819Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: rewrite finish guidance so direct-mode docs and policy surfaces treat auto-close as the default narrative rather than the explicit flag path."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:40:20.373Z"
+doc_updated_at: "2026-03-07T14:57:55.819Z"
 doc_updated_by: "DOCS"
 description: "Update docs and CLI guidance so the normal direct-mode finish path reflects auto-close semantics without legacy mental models."
 id_source: "generated"

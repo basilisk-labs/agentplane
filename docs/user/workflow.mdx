@@ -7,10 +7,10 @@ description: "How work moves from plan to completion in Agent Plane."
 
 1. Plan and create task graph.
 2. Run preflight for deterministic readiness (includes workflow-contract validation).
-3. Start work (`TODO -> DOING`) with a structured `Start:` comment.
+3. Start work with `agentplane task start-ready` after plan approval succeeds.
 4. Implement changes.
-5. Record verification outcome with `agentplane verify`.
-6. Finish task (`DOING -> DONE`) with a structured `Verified:` comment and `--result`.
+5. Print `Verify Steps`, then record verification outcome with `agentplane verify`.
+6. Finish task (`DOING -> DONE`) with a structured `Verified:` comment, `--result`, and commit metadata.
 
 For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
@@ -57,6 +57,8 @@ agentplane workflow restore
 - Work in a single checkout.
 - `agentplane work start` records the active task lock for that checkout.
 - Per-task branches/worktrees are not required.
+- The default happy path is `task start-ready -> task verify-show -> verify -> finish`.
+- In direct mode, `finish` creates the deterministic close commit by default.
 
 ## branch_pr mode
 
@@ -79,10 +81,14 @@ Allowed transitions in normal mode:
 `DONE` is terminal unless `--force` is used.
 
 ```bash
-agentplane start <task-id> --author CODER --body "Start: ..."
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
 agentplane block <task-id> --author CODER --body "Blocked: ..."
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome"
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
+
+Use `--no-close-commit` only when close handling must remain manual.
 
 ## Status-commit policy
 

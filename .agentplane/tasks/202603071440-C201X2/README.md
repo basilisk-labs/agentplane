@@ -1,7 +1,7 @@
 ---
 id: "202603071440-C201X2"
 title: "Add recovery doc for upgraded legacy projects"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -10,20 +10,30 @@ tags:
   - "docs"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T14:57:55.337Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: add a shortest-path recovery doc for mixed upgrade state."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: document the shortest recovery path for legacy projects that ended up with a new gateway and an incomplete managed policy tree after upgrade."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T14:57:55.700Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: document the shortest recovery path for legacy projects that ended up with a new gateway and an incomplete managed policy tree after upgrade."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:40:19.045Z"
+doc_updated_at: "2026-03-07T14:57:55.700Z"
 doc_updated_by: "DOCS"
 description: "Document the shortest recovery path for old projects that have mixed gateway and managed policy state after upgrade."
 id_source: "generated"
