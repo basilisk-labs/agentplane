@@ -34,7 +34,7 @@ If any step fails:
 2. Record failure details in task `Notes` (`what failed`, `where`, `impact`).
 3. Mark task blocked: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`.
 4. Request re-approval before scope/risk changes.
-5. If failure is process/policy-related, append entry to `.agentplane/policy/incidents.md`.
+5. If failure is process/policy-related and rises to a strong incident class, append entry to `.agentplane/policy/incidents.md`.
 
 ## Constraints
 

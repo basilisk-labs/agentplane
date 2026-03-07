@@ -5,6 +5,8 @@
 - `.agentplane/policy/incidents.md` is the single incident registry.
 - Incident-derived and situational rules MUST be added only to `incidents.md`.
 - MUST NOT create additional incident policy files under `.agentplane/policy/`.
+- `incidents.md` MUST stay narrow: add only strong, high-signal incident classes with concrete evidence and enforcement.
+- Local preferences, one-off operator notes, and guidance that belongs in normal docs/help MUST NOT be logged as incidents.
 
 ## Stabilization criteria
 

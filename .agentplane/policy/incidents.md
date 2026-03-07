@@ -1,12 +1,17 @@
 # Policy Incidents Log
 
-This is the single file for incident-derived and situational policy rules.
+This is the single file for high-signal incident-derived policy rules.
 
 ## Entry contract
 
 - Add entries append-only.
 - Every entry MUST include: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`.
 - `rule` MUST be concrete and testable (`MUST` / `MUST NOT`).
+- Entries MUST capture only strong incident classes:
+  - repeatable or severe operational failures;
+  - non-obvious failure modes that are not already clear from canonical docs or command help;
+  - failures with concrete enforcement or a named path to enforcement.
+- MUST NOT log local preferences, one-off operator notes, weak heuristics, or guidance that belongs in normal docs/help.
 - `state` values: `open`, `stabilized`, `promoted`.
 
 ## Entry template
@@ -49,24 +54,6 @@ example:end -->
   rule: Stale-dist freshness MUST compare the current watched-runtime snapshot against the build-manifest snapshot; read-only diagnostics MUST warn-and-run instead of hard-failing
   evidence: tasks 202603072032-2M0V8V, 202603072032-1BC7VQ, 202603072032-V9VGT2, 202603072032-4D9ASG; commits 0c259fa8, 30e9ba26, 4771172d, cc2b4a20
   enforcement: dist-guard tests + build manifest snapshotting + docs
-  state: promoted
-
-- id: INC-20260308-03
-  date: 2026-03-08
-  scope: direct finish task closure
-  failure: finishing a direct-mode task updated task README metadata and left tracked drift in the working tree unless a follow-up close commit was added manually
-  rule: In workflow_mode=direct, finish MUST create the deterministic close commit by default so task README metadata does not leave tracked drift
-  evidence: task 202603070958-W769HC; commit f09e4c50
-  enforcement: finish command tests + docs
-  state: promoted
-
-- id: INC-20260308-04
-  date: 2026-03-08
-  scope: legacy project upgrade and managed policy tree recovery
-  failure: partially upgraded projects could keep a new gateway but miss required managed policy files after stale or manual upgrade flows, making the repo state hybrid and confusing
-  rule: Upgrade MUST apply managed framework files by default, and doctor MUST diagnose a missing managed policy tree with an explicit recovery action
-  evidence: tasks 202603070958-FBM32H, 202603070958-VNGEEN; commits c37b59a0, ebb2bd84
-  enforcement: upgrade tests + doctor diagnostics + docs
   state: promoted
 
 - id: INC-20260308-05
