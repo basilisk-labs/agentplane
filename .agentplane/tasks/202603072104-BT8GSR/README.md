@@ -1,7 +1,8 @@
 ---
 id: "202603072104-BT8GSR"
 title: "Refine website navbar glass and blog ordering"
-status: "DOING"
+result_summary: "Updated DESIGN.md for a narrow liquid-glass navbar exception, increased heading leading in docs/blog surfaces, and reordered the custom 0.3.x blog landing entries."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-07T21:09:32.080Z"
   updated_by: "CODER"
   note: "Updated the design contract to allow tightly constrained liquid-glass navbar chrome, increased heading leading across docs/blog surfaces, and reordered the 0.3.x custom blog landing entries to 0.3.0 -> 0.3.1 -> 0.3.2. Verified with docs:site:check, docs:bootstrap:check, and policy routing check."
-commit: null
+commit:
+  hash: "6c40137606337f54f4ba13c477b656518ca9a8e0"
+  message: "🎨 BT8GSR website: add liquid glass navbar chrome"
 comments:
   -
     author: "CODER"
     body: "Start: update the website contract and navbar chrome for a constrained liquid-glass treatment, increase heading leading, and reorder the custom 0.3.x blog landing entries."
+  -
+    author: "CODER"
+    body: "Verified: navbar now uses a constrained liquid-glass chrome treatment, headings are looser, and the custom 0.3.x blog landing order is 0.3.0 -> 0.3.1 -> 0.3.2."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Updated the design contract to allow tightly constrained liquid-glass navbar chrome, increased heading leading across docs/blog surfaces, and reordered the 0.3.x custom blog landing entries to 0.3.0 -> 0.3.1 -> 0.3.2. Verified with docs:site:check, docs:bootstrap:check, and policy routing check."
+  -
+    type: "status"
+    at: "2026-03-07T21:09:54.463Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: navbar now uses a constrained liquid-glass chrome treatment, headings are looser, and the custom 0.3.x blog landing order is 0.3.0 -> 0.3.1 -> 0.3.2."
 doc_version: 2
-doc_updated_at: "2026-03-07T21:09:32.082Z"
+doc_updated_at: "2026-03-07T21:09:54.463Z"
 doc_updated_by: "CODER"
 description: "Update DESIGN.md to allow tightly constrained liquid-glass elements, increase heading leading, add a subtle liquid-glass navbar treatment, and reorder the 0.3.x blog landing entries."
 id_source: "generated"
