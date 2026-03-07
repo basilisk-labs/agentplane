@@ -1,7 +1,8 @@
 ---
 id: "202603071440-2ZVTF7"
 title: "Refactor docs IA around agent workflows"
-status: "DOING"
+result_summary: "The public docs IA now mirrors the agent workflow model across the docs landing page, Mintlify metadata, navbar, and sidebar navigation."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -17,15 +18,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved: refactor docs IA so website navigation mirrors the agent workflow model."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T16:35:30.356Z"
+  updated_by: "REVIEWER"
+  note: "Verified: docs index, Mintlify metadata, navbar, sidebar, and website IA now all mirror the same start/task-work/upgrade-recovery/reference model."
+commit:
+  hash: "ddfa3f585f6fb9254874c18bfacc108f173ec05a"
+  message: "🧭 2ZVTF7 docs: align agent-first onboarding IA"
 comments:
   -
     author: "DOCS"
     body: "Start: reorganize docs navigation around start, task work, upgrade and recovery, reference, and release entrypoints."
+  -
+    author: "DOCS"
+    body: "Verified: refactored the docs IA so index pages, Mintlify metadata, navbar, and sidebar all mirror the same workflow-oriented model."
 events:
   -
     type: "status"
@@ -34,8 +40,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: reorganize docs navigation around start, task work, upgrade and recovery, reference, and release entrypoints."
+  -
+    type: "verify"
+    at: "2026-03-07T16:35:30.356Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified: docs index, Mintlify metadata, navbar, sidebar, and website IA now all mirror the same start/task-work/upgrade-recovery/reference model."
+  -
+    type: "status"
+    at: "2026-03-07T16:35:30.606Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: refactored the docs IA so index pages, Mintlify metadata, navbar, and sidebar all mirror the same workflow-oriented model."
 doc_version: 2
-doc_updated_at: "2026-03-07T16:31:30.471Z"
+doc_updated_at: "2026-03-07T16:35:30.606Z"
 doc_updated_by: "DOCS"
 description: "Restructure site navigation around start, task work, upgrade, recovery, and release so the website mirrors the same agent-first model as CLI and gateway."
 id_source: "generated"
@@ -79,6 +98,14 @@ Restructure site navigation around start, task work, upgrade, recovery, and rele
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T16:35:30.356Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified: docs index, Mintlify metadata, navbar, sidebar, and website IA now all mirror the same start/task-work/upgrade-recovery/reference model.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:31:30.471Z, excerpt_hash=sha256:2efb66c1b9c8307de67b5b4db3a8c5a993803b2b5e90338efe45457a7124187e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
