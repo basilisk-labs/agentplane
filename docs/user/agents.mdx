@@ -8,11 +8,20 @@ description: "Learn how agents are defined, how responsibilities are split, and 
 Agent behavior is resolved in this order:
 
 1. `AGENTS.md`
-2. `agentplane quickstart` and `agentplane role <ROLE>`
+2. `agentplane quickstart`, `agentplane role <ROLE>`, and `docs/user/agent-bootstrap.generated.mdx`
 3. `.agentplane/config.json`
 4. `.agentplane/agents/*.json`
 
 Profiles live under `.agentplane/agents/*.json`, but they cannot override higher-level policy.
+
+## Startup path
+
+Use this order when an agent enters a repository:
+
+1. Read `AGENTS.md`.
+2. Run `agentplane quickstart`.
+3. Read `docs/user/agent-bootstrap.generated.mdx`.
+4. Use `agentplane role <ROLE>` only for role-specific deltas.
 
 ## ORCHESTRATOR
 
@@ -71,4 +80,5 @@ Profiles live under `.agentplane/agents/*.json`, but they cannot override higher
 ## Notes
 
 - Role command guidance is available via `agentplane role <ROLE>`.
+- The canonical startup path lives in `docs/user/agent-bootstrap.generated.mdx`.
 - For policy details, read `AGENTS.md`.

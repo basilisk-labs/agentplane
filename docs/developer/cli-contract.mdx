@@ -75,9 +75,10 @@ The catalog keeps command specs lightweight and loads command runtime handlers l
 
 This split keeps `agentplane help` fast and reduces accidental startup cost from heavy imports.
 
-## 5) Help and role surfaces
+## 5) Help and startup surfaces
 
 - `agentplane quickstart` and `agentplane role <ROLE>` are generated from `packages/agentplane/src/cli/command-guide.ts`.
+- The canonical bootstrap doc is generated from `packages/agentplane/src/cli/bootstrap-guide.ts` into `docs/user/agent-bootstrap.generated.mdx`.
 - `agentplane role <ROLE>` can display:
 - built-in CLI role guide blocks
 - and project-local `.agentplane/agents/<ROLE>.json` profile details when available.
@@ -96,6 +97,10 @@ This split keeps `agentplane help` fast and reduces accidental startup cost from
   - `packages/agentplane/src/cli/run-cli.ts`
 - Help/role guide text:
   - `packages/agentplane/src/cli/command-guide.ts`
+- Bootstrap doc generation and drift checks:
+  - `packages/agentplane/src/cli/bootstrap-guide.ts`
+  - `scripts/generate-agent-bootstrap-doc.mjs`
+  - `scripts/check-agent-bootstrap-fresh.mjs`
 - Command catalog:
   - `packages/agentplane/src/cli/run-cli/command-catalog.ts`
 

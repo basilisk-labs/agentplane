@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { renderBootstrapDoc } from "./bootstrap-guide.js";
 import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
 
 const listRolesTyped = listRoles as () => string[];
@@ -23,10 +24,17 @@ describe("command-guide", () => {
     expect(renderRoleTyped("unknown")).toBeNull();
   });
 
-  it("includes the cheat sheet in the quickstart", () => {
+  it("renders the canonical bootstrap path in quickstart", () => {
     const text = renderQuickstartTyped();
-    expect(text).toContain("## Agent cheat sheet");
-    expect(text).toContain("Operation | Command");
-    expect(text).toContain("## Harness engeneering loop");
+    expect(text).toContain("Canonical bootstrap doc");
+    expect(text).toContain("## 1. Preflight");
+    expect(text).toContain("agentplane task start-ready");
+  });
+
+  it("renders the generated bootstrap doc", () => {
+    const text = renderBootstrapDoc();
+    expect(text).toContain('title: "Agent bootstrap"');
+    expect(text).toContain("## 1. Preflight");
+    expect(text).toContain("## Copy-paste start block");
   });
 });

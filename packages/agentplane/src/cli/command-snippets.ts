@@ -3,7 +3,7 @@ export const COMMAND_SNIPPETS = {
     taskList: "agentplane task list",
     taskShow: "agentplane task show <task-id>",
     taskNew:
-      'agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag>',
+      'agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>',
     startTask: 'agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."',
     verifyTask: 'agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."',
     finishTask:

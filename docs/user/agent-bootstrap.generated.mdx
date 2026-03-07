@@ -1,0 +1,79 @@
+---
+title: "Agent bootstrap"
+description: "The shortest canonical startup path for agent work in an Agent Plane repository."
+---
+
+This page is generated from `packages/agentplane/src/cli/bootstrap-guide.ts`.
+
+Use it as the single startup path for agents. `AGENTS.md`, `agentplane quickstart`, and `agentplane role <ROLE>` should point here instead of restating lifecycle prose.
+
+## 1. Preflight
+
+Establish workflow mode, current branch, current task state, and tracked working-tree state.
+
+- `agentplane config show`
+- `agentplane quickstart`
+- `agentplane task list`
+- `git status --short --untracked-files=no`
+- `git rev-parse --abbrev-ref HEAD`
+
+- Run this before any mutation.
+- If the project is not initialized, stop and use `agentplane init` first.
+
+## 2. Prepare executable task scope
+
+Work only through executable task ids. Create the task, fill plan/docs, then approve the plan.
+
+- `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`
+- `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`
+- `agentplane task plan approve <task-id> --by ORCHESTRATOR`
+
+- Use `task doc set` to fill required README sections before approval.
+- For dependent tasks, wait until upstream tasks are DONE before `task start-ready`.
+
+## 3. Start work deterministically
+
+Move the task to DOING only after plan approval succeeds.
+
+- `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."`
+
+- `task plan approve` and `task start-ready` must run sequentially, never in parallel.
+
+## 4. Verify and finish
+
+Treat Verify Steps as the contract, then record verification and close with traceable metadata.
+
+- `agentplane task verify-show <task-id>`
+- `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`
+- `agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>`
+
+- In `direct`, `finish` creates the deterministic close commit by default.
+- Use `--no-close-commit` only for explicit manual close handling.
+
+## 5. Recover mixed or broken state
+
+Use diagnostics before manual repair, especially after framework upgrades or partial edits.
+
+- `agentplane doctor`
+- `agentplane upgrade --dry-run`
+- `agentplane upgrade`
+
+- Run `doctor` before touching managed policy files by hand.
+- `upgrade` applies the managed framework files from the installed CLI bundle.
+
+## Direct vs branch_pr
+
+- `direct`: work in the current checkout and finish the task yourself.
+- `branch_pr`: start a task branch/worktree, maintain PR artifacts, and let INTEGRATOR close on base.
+
+## Copy-paste start block
+
+```bash
+agentplane config show
+agentplane quickstart
+agentplane task list
+git status --short --untracked-files=no
+git rev-parse --abbrev-ref HEAD
+```
+
+After preflight, continue with the smallest task flow that matches your mode and role.

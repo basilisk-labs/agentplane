@@ -29,7 +29,7 @@ Commands:
     agents  List agent definitions under .agentplane/agents.
     help  Show help for a command.
     preflight  Run aggregated preflight checks and print a deterministic readiness report.
-    quickstart  Print CLI quickstart and command cheat sheet.
+    quickstart  Print the canonical agent bootstrap path and startup guidance.
     role  Show role-specific workflow guidance.
   Docs:
     docs cli  Generate an MDX CLI reference from the current cli2 registry/spec.

@@ -16,6 +16,10 @@ agentplane --version
 agentplane quickstart
 ```
 
+The canonical startup path for agents is also documented in:
+
+- [Agent bootstrap](agent-bootstrap.generated)
+
 If you are using a linked development binary from inside the Agent Plane framework checkout and
 it reports a stale build, rebuild first:
 
@@ -102,11 +106,15 @@ agentplane backend sync redmine --direction push --yes
 ## Workflow
 
 ```bash
-agentplane start <task-id> --author CODER --body "Start: ..."
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
 agentplane block <task-id> --author CODER --body "Blocked: ..."
+agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
-agentplane finish <task-id> --author INTEGRATOR --body "Verified: ..." --result "One-line outcome"
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
+
+In `direct`, `finish` creates the deterministic close commit by default. Use `--no-close-commit`
+only when close handling must stay manual.
 
 For any commit-capable command (`commit`, `guard commit`, `start/block/finish ... --commit-from-comment`):
 

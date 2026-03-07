@@ -1,204 +1,113 @@
 import { COMMAND_SNIPPETS } from "./command-snippets.js";
-
-type CheatSheetRow = {
-  operation: string;
-  command: string;
-};
+import {
+  AGENT_BOOTSTRAP_DOC_PATH,
+  BOOTSTRAP_SECTIONS,
+  renderBootstrapReferenceLine,
+} from "./bootstrap-guide.js";
 
 type RoleGuide = {
   role: string;
   lines: string[];
 };
 
-const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
-  {
-    operation: "PLANNER: list/show tasks",
-    command: "`agentplane task list` / `agentplane task show <task-id>`",
-  },
-  {
-    operation: "PLANNER: set/approve/reject plan",
-    command:
-      '`agentplane task plan set <task-id> --text "..." --updated-by <id>` / `agentplane task plan approve <task-id> --by <id> --note "OK"`',
-  },
-  {
-    operation: "PLANNER: create task (auto ID)",
-    command:
-      '`agentplane task new --title "..." --description "..." --priority med --owner CODER --tag <tag> [--depends-on <task-id|json>]`',
-  },
-  {
-    operation: "PLANNER: add/update task",
-    command: "`agentplane task add <task-id> ...` / `agentplane task update <task-id> ...`",
-  },
-  {
-    operation: "PLANNER: backfill/repair scaffold",
-    command: "`agentplane task scaffold <task-id>` (backfill/import/manual repair only)",
-  },
-  {
-    operation: "PLANNER: derive implementation from spike",
-    command:
-      '`agentplane task derive <spike-id> --title "..." --description "..." --priority med --owner CODER --tag code`',
-  },
-  {
-    operation: "Config: show/set",
-    command: "`agentplane config show` / `agentplane config set <key> <value>`",
-  },
-  {
-    operation: "CODER/TESTER/DOCS: start checkout (branch_pr)",
-    command: "`agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
-  },
-  {
-    operation: "CODER/TESTER: start task deterministically",
-    command:
-      '`agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."` (run after successful `task plan approve`; do not run in parallel)',
-  },
-  {
-    operation: "CODER/TESTER/DOCS: update PR artifacts",
-    command: "`agentplane pr update <task-id>`",
-  },
-  {
-    operation: "CODER/TESTER/DOCS/REVIEWER: add handoff note",
-    command: '`agentplane pr note <task-id> --author <ROLE> --body "..."`',
-  },
-  {
-    operation: "CODER/TESTER: verify task",
-    command:
-      '`agentplane verify <task-id> --ok|--rework --by <id> --note "..."` (record-only; appends to README)',
-  },
-  {
-    operation: "CODER/TESTER: print Verify Steps",
-    command: "`agentplane task verify-show <task-id>`",
-  },
-  {
-    operation: "REVIEWER: check PR artifacts",
-    command: "`agentplane pr check <task-id>`",
-  },
-  {
-    operation: "INTEGRATOR: integrate task",
-    command:
-      "`agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify`",
-  },
-  {
-    operation: "INTEGRATOR: finish task(s)",
-    command:
-      '`agentplane finish <task-id> [<task-id> ...] --commit <git-rev> --author INTEGRATOR --body "Verified: ..." [--result "<one line>"] [--close-commit|--no-close-commit] [--close-unstage-others]`',
-  },
-  {
-    operation: "INTEGRATOR: commit closure",
-    command:
-      "Preferred in direct mode: `agentplane finish <task-id>` (auto close-commit). Explicit/manual: `agentplane finish <task-id> --close-commit` / opt-out: `agentplane finish <task-id> --no-close-commit`. Legacy/manual: `agentplane commit <task-id> --close [--check-only] [--unstage-others]` / duplicate no-op close: `agentplane task close-duplicate <task-id> --of <canonical-task-id> --author <ROLE>`",
-  },
-];
+function renderBootstrapOverview(): string[] {
+  const lines: string[] = [];
+  for (const section of BOOTSTRAP_SECTIONS) {
+    lines.push(`## ${section.heading}`, "", section.summary, "");
+    for (const command of section.commands) {
+      lines.push(`- \`${command}\``);
+    }
+    lines.push("");
+  }
+  if (lines.at(-1) === "") lines.pop();
+  return lines;
+}
 
 const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "ORCHESTRATOR",
     lines: [
-      "- Plan intake: `agentplane task list` / `agentplane task show <task-id>`",
-      "- After plan approval: ask PLANNER to create executable tasks directly from the approved task graph.",
-      "- If task graph has exactly one work item, create exactly one executable task.",
-      "- Two-stage verification: `## Verify Steps` is the ex-ante contract; `agentplane verify ...` appends an ex-post entry into `## Verification`.",
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      "- Owns preflight, plan summaries, approvals, and scope checkpoints.",
+      "- Does not create non-executable tasks or bypass lifecycle guardrails.",
     ],
   },
   {
     role: "PLANNER",
     lines: [
-      '- TODO scan: `agentplane task list` / `agentplane task search "..."` / `agentplane task next`',
-      '- Create tasks: `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --depends-on "[]" --tag <tag>` (tags are required; use `task add` only for imported IDs)',
-      '- Update tasks: `agentplane task update <task-id> --title "..." --description "..." --priority med --owner <ROLE> --depends-on <task-id>`',
-      "- `task new` auto-seeds README sections; use `task scaffold` only for backfill/import/manual repair.",
-      '- Plan lifecycle: `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>` -> `agentplane task plan approve <task-id> --by <id>`',
-      "- Verify Steps discipline: if a task primary tag is verify-required (default: code/data/ops), fill `## Verify Steps` before plan approval.",
-      "- Doc quality gate: `task plan approve` and `finish` fail when required agent-filled sections (`Summary/Scope/Plan/Risks/Rollback Plan`, per config) are empty/TODO placeholders.",
-      '- Task docs (when planning needs it): `agentplane task doc set <task-id> --section Summary --text "..."`; if `--text`/`--file` contains multiple known headings, the command applies it as one batched full-doc update.',
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      '- Create executable tasks with `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`.',
+      '- Fill docs with `agentplane task doc set <task-id> --section <name> --text "..."` and set plan text with `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`.',
+      "- Approve plan only after required sections and Verify Steps are ready.",
     ],
   },
   {
     role: "CODER",
     lines: [
-      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates; batched doc updates are allowed before approval.",
-      "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
-      '- Start status (deterministic): `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."` (after `task plan approve`, sequential only).',
-      '- Other status updates: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
-      "- Verify Steps: `agentplane task verify-show <task-id>` (use as the verification contract before recording results).",
-      '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
-      '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred direct close path: `agentplane finish <task-id>` / explicit close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      "- direct: stay in the current checkout; branch_pr: start a task branch/worktree first.",
+      `- Start deterministically with \`${COMMAND_SNIPPETS.core.startTask}\` after plan approval.`,
+      '- Treat `agentplane task verify-show <task-id>` as the verification contract, then record `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`.',
+      `- Preferred direct close path: \`${COMMAND_SNIPPETS.core.finishTask}\` with \`--result "..." \`; add \`--no-close-commit\` only for explicit manual close handling.`,
     ],
   },
   {
     role: "TESTER",
     lines: [
-      "- direct mode: single-stream in the current checkout; `agentplane work start <task-id> --agent <ROLE> --slug <slug>` records the active task and keeps the current branch (no task branches). Use `task doc set` / `task plan set` for normal docs updates; batched doc updates are allowed before approval.",
-      "- branch_pr: `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
-      '- Start status (deterministic): `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."` (after `task plan approve`, sequential only).',
-      '- Other status updates: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`',
-      "- Verify Steps: `agentplane task verify-show <task-id>` (treat as the verification contract).",
-      '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
-      '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred direct close path: `agentplane finish <task-id>` / explicit close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      "- Start only after plan approval and explicit Verify Steps exist.",
+      '- Use `agentplane task verify-show <task-id>` before running checks, then record `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`.',
+      `- In direct mode, close with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \` when you own final verification.`,
     ],
   },
   {
     role: "DOCS",
     lines: [
-      '- Task docs: `agentplane task doc set <task-id> --section Summary --text "..."` (repeat per section, or send one multi-heading full-doc payload via `--text`/`--file`)',
-      '- PR notes: `agentplane pr note <task-id> --author DOCS --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred direct close path: `agentplane finish <task-id>` / explicit close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      '- Keep task docs and user docs aligned with runtime behavior via `agentplane task doc set <task-id> --section <name> --text "..."`.',
+      "- For implementation tasks, verify generated/help surfaces after changing CLI-facing text.",
     ],
   },
   {
     role: "REVIEWER",
     lines: [
-      "- Review artifacts: `agentplane pr check <task-id>` / `agentplane task show <task-id>`",
-      '- Handoff notes: `agentplane pr note <task-id> --author REVIEWER --body "..."`',
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      "- Review artifacts with `agentplane task show <task-id>` and `agentplane pr check <task-id>` when relevant.",
+      "- Focus on regressions, lifecycle drift, and missing verification evidence.",
     ],
   },
   {
     role: "INTEGRATOR",
     lines: [
-      '- branch_pr: `agentplane pr check <task-id>` -> `agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify` -> `agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --close-commit`',
-      '- direct: task owner uses `agentplane finish <task-id> --commit <git-rev> --author <OWNER> --body "Verified: ..."` after the implementation commit; add `--no-close-commit` only for explicit manual close handling',
-      "- Optional cleanup: `agentplane cleanup merged --yes`",
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      '- branch_pr: `agentplane pr check <task-id>` -> `agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify` -> `agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --result "..." --close-commit`.',
+      `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \`.`,
     ],
   },
   {
     role: "CREATOR",
     lines: [
-      '- Task bookkeeping: `agentplane task update <task-id> ...` / `agentplane task start-ready <task-id> --author CREATOR --body "Start: ..."`',
-      '- Commits: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>`',
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      `- Use \`${COMMAND_SNIPPETS.core.startTask}\` only when the new-agent creation task is approved and ready.`,
+      "- Keep commits scoped to the created agent artifacts and task docs.",
     ],
   },
   {
     role: "REDMINE",
     lines: [
-      `- Sync before/after updates: \`${COMMAND_SNIPPETS.sync.pullRedmineExplicit}\` / \`${COMMAND_SNIPPETS.sync.pushRedmineExplicitWithYes}\``,
-      "- Then use normal task/doc commands (`agentplane task list` / `agentplane task show` / `agentplane task update` / `agentplane task doc set`) as needed.",
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      `- Sync explicitly with \`${COMMAND_SNIPPETS.sync.pullRedmineExplicit}\` / \`${COMMAND_SNIPPETS.sync.pushRedmineExplicitWithYes}\`.`,
+      "- After sync, follow the same task/bootstrap lifecycle as local backends.",
     ],
   },
   {
     role: "UPDATER",
     lines: [
-      '- Read-only audit: `agentplane task list` / `agentplane task show` / `agentplane task search "..."` / `agentplane task next` (no write commands).',
+      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      "- Read-only role: inspect state, do not mutate task or workflow artifacts.",
     ],
   },
 ];
-
-function renderCheatSheet(rows: CheatSheetRow[]): string[] {
-  const lines = ["Operation | Command", "--- | ---"];
-  for (const row of rows) {
-    lines.push(`${row.operation} | ${row.command}`);
-  }
-  return lines;
-}
-
-function renderRoleSection(): string[] {
-  const lines: string[] = [];
-  for (const guide of ROLE_GUIDES) {
-    lines.push(`### ${guide.role}`, ...guide.lines, "");
-  }
-  if (lines.at(-1) === "") lines.pop();
-  return lines;
-}
 
 export function listRoles(): string[] {
   return ROLE_GUIDES.map((guide) => guide.role);
@@ -217,85 +126,30 @@ export function renderQuickstart(): string {
   return [
     "# agentplane quickstart",
     "",
-    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for workflow/process policy; quickstart and role output are the source of truth for CLI syntax and artifacts.",
+    "The policy gateway file (AGENTS.md or CLAUDE.md) is the source of truth for workflow/process policy. CLI syntax lives in quickstart and `agentplane role <ROLE>`.",
     "Do not edit `.agentplane/tasks.json` by hand.",
+    "If the repository is not initialized yet, stop and run `agentplane init` first.",
     "",
-    "- See your policy gateway file (AGENTS.md or CLAUDE.md) for canonical workflow policy and approval gates.",
+    renderBootstrapReferenceLine(),
     "",
-    "## Project setup",
+    ...renderBootstrapOverview(),
     "",
-    "- `agentplane init` (bootstrap `.agentplane/`)",
-    "- `agentplane config show` / `agentplane config set <key> <value>`",
-    "- `agentplane mode get` / `agentplane mode set <direct|branch_pr>`",
-    "- `agentplane ide sync` (regenerate IDE entrypoints)",
+    "## Role-specific deltas",
     "",
-    "## Daily task workflow",
+    `- Use \`${COMMAND_SNIPPETS.core.role}\` for role-specific constraints after you understand the shared bootstrap path.`,
+    "- Role output should add deltas, not replace the canonical bootstrap flow.",
     "",
-    `- \`${COMMAND_SNIPPETS.core.taskList}\` / \`${COMMAND_SNIPPETS.core.taskShow}\``,
-    `- \`${COMMAND_SNIPPETS.core.taskNew}\``,
-    `- \`${COMMAND_SNIPPETS.core.startTask}\``,
-    `- \`${COMMAND_SNIPPETS.core.verifyTask}\``,
-    `- \`${COMMAND_SNIPPETS.core.finishTask}\``,
-    "",
-    "## Harness engeneering loop",
-    "",
-    "- Constrain: policy + workflow contract first.",
-    "- Execute: small explicit transitions.",
-    "- Observe: structured artifacts and diagnostics.",
-    "- Recover: deterministic fallback before manual repair.",
-    "",
-    "## Branch workflow (branch_pr)",
+    "## Branch workflow extras",
     "",
     "- `agentplane work start <task-id> --agent <ROLE> --slug <slug> --worktree`",
     "- `agentplane pr open <task-id>` / `agentplane pr update <task-id>` / `agentplane pr check <task-id>`",
     "- `agentplane integrate <task-id> --branch task/<task-id>/<slug> --run-verify`",
     "",
-    "## Workflow operations (core)",
-
-    "- `agentplane workflow debug`",
-    "- `agentplane workflow sync`",
-    "- `agentplane workflow land`",
-    "",
-    "## Recipes and scenarios (extensions)",
-    "",
-    "- `agentplane recipes list`",
-    "- `agentplane recipes list --tag <tag>`",
-    "- `agentplane recipes explain <id>`",
-    "- `agentplane scenario list`",
-    "- `agentplane scenario run <recipe:scenario>`",
-    "",
     "## More guidance",
     "",
-    `- \`${COMMAND_SNIPPETS.core.quickstart}\` and \`${COMMAND_SNIPPETS.core.role}\` show command guidance.`,
-    "",
-    "## Agent cheat sheet",
-    "",
-    ...renderCheatSheet(CHEAT_SHEET_ROWS),
-    "",
-    "## Config management",
-    "",
-    "- Show the current config: `agentplane config show`",
-    "- Set a value by dotted key: `agentplane config set workflow_mode branch_pr`",
-    '- Set JSON values (lists/objects): `agentplane config set tasks.verify.require_steps_for_primary \'["code","data","ops"]\'`',
-    "",
-    "## Role/phase command guide (when to use what)",
-    "",
-    "Use `agentplane role <ROLE>` to print a single block from this section.",
-    "",
-    ...renderRoleSection(),
-    "",
-    "## Global flags",
-    "",
-    "- `--root <path>`: treat <path> as project root",
-    "- `--output <text|json>`: force global CLI output mode (`json` is agent-oriented envelope mode)",
-    "- `--json-errors`: emit JSON-formatted errors",
-    "- `--help` / `-h`: show help",
-    "- `--version`: show version",
-    "- `--no-update-check`: skip checking npm for a newer CLI version",
-    "",
-    "Notes:",
-    "- `AGENTPLANE_OUTPUT=json` enables global JSON output mode for agent runtimes.",
-    "- `.env` at the repo root is loaded automatically (without overwriting existing environment variables).",
+    "- `agentplane help <command>` for command-level flags and examples.",
+    `- \`${COMMAND_SNIPPETS.core.role}\` for role-specific deltas.`,
+    `- \`${AGENT_BOOTSTRAP_DOC_PATH}\` for the canonical startup path in repository docs.`,
     "",
     "## Commit message format",
     "",

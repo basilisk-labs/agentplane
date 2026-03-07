@@ -26,7 +26,7 @@ type QuickstartParsed = { json: boolean };
 export const quickstartSpec: CommandSpec<QuickstartParsed> = {
   id: ["quickstart"],
   group: "Core",
-  summary: "Print CLI quickstart and command cheat sheet.",
+  summary: "Print the canonical agent bootstrap path and startup guidance.",
   options: [
     {
       kind: "boolean",
