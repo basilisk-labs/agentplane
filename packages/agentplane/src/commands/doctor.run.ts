@@ -351,6 +351,70 @@ type TaskSnapshotRecord = {
   commit?: { hash?: unknown } | null;
 };
 
+type HistoricalCommitFinding = {
+  id: string;
+  hash: string;
+  subject?: string;
+};
+
+function pluralize(count: number, singular: string, plural = `${singular}s`): string {
+  return count === 1 ? singular : plural;
+}
+
+function formatIdExamples(ids: string[], maxExamples = 3): string {
+  const shown = ids.slice(0, maxExamples);
+  const remainder = ids.length - shown.length;
+  return remainder > 0 ? `${shown.join(", ")}; +${remainder} more` : shown.join(", ");
+}
+
+function summarizeHistoricalFindings(
+  findings: HistoricalCommitFinding[],
+  opts: {
+    singlePrefix: string;
+    groupLabel: string;
+    summaryLabel: string;
+    includeSubject: boolean;
+  },
+): string[] {
+  if (findings.length === 0) return [];
+  if (findings.length === 1) {
+    const [finding] = findings;
+    const subjectSuffix = opts.includeSubject && finding.subject ? ` (${finding.subject})` : "";
+    return [`[WARN] ${opts.singlePrefix}: ${finding.id} -> ${finding.hash}${subjectSuffix}`];
+  }
+
+  const grouped = new Map<string, { hash: string; ids: string[]; subject?: string }>();
+  for (const finding of findings) {
+    const existing = grouped.get(finding.hash);
+    if (existing) {
+      existing.ids.push(finding.id);
+      if (!existing.subject && finding.subject) existing.subject = finding.subject;
+      continue;
+    }
+    grouped.set(finding.hash, {
+      hash: finding.hash,
+      ids: [finding.id],
+      subject: finding.subject,
+    });
+  }
+
+  const groups = [...grouped.values()].toSorted((left, right) => {
+    const countDelta = right.ids.length - left.ids.length;
+    if (countDelta !== 0) return countDelta;
+    return left.hash.localeCompare(right.hash);
+  });
+  const exampleGroups = groups.slice(0, 3).map((group) => {
+    const subjectSuffix = opts.includeSubject && group.subject ? `; subject: ${group.subject}` : "";
+    return `${group.hash} (${group.ids.length} ${pluralize(group.ids.length, "task")}: ${formatIdExamples(group.ids)}${subjectSuffix})`;
+  });
+  const remainingGroups = groups.length - exampleGroups.length;
+  const groupedSuffix = remainingGroups > 0 ? `; +${remainingGroups} more hash groups` : "";
+
+  return [
+    `[WARN] Historical task archive contains ${findings.length} DONE tasks with ${opts.summaryLabel} across ${groups.length} distinct commit ${opts.groupLabel}. Examples: ${exampleGroups.join("; ")}${groupedSuffix}`,
+  ];
+}
+
 async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<string[]> {
   const tasksPath = path.join(repoRoot, ".agentplane", "tasks.json");
   let raw = "";
@@ -374,6 +438,8 @@ async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<string[]
   if (done.length === 0) return [];
 
   const problems: string[] = [];
+  const unknownHashWarnings: HistoricalCommitFinding[] = [];
+  const closeCommitWarnings: HistoricalCommitFinding[] = [];
   const hashes = new Set<string>();
   for (const task of done) {
     const id = typeof task.id === "string" ? task.id : "<unknown>";
@@ -407,15 +473,28 @@ async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<string[]
     if (!hash) continue;
     const subject = subjectByHash.get(hash) ?? "";
     if (!subject) {
-      problems.push(`[WARN] DONE task references unknown commit hash: ${id} -> ${hash}`);
+      unknownHashWarnings.push({ id, hash });
       continue;
     }
     if (/\bclose:/iu.test(subject)) {
-      problems.push(
-        `[WARN] DONE task implementation commit points to a close commit: ${id} -> ${hash} (${subject})`,
-      );
+      closeCommitWarnings.push({ id, hash, subject });
     }
   }
+
+  problems.push(
+    ...summarizeHistoricalFindings(unknownHashWarnings, {
+      singlePrefix: "DONE task references unknown historical commit hash",
+      groupLabel: "hashes",
+      summaryLabel: "unknown implementation commit hashes",
+      includeSubject: false,
+    }),
+    ...summarizeHistoricalFindings(closeCommitWarnings, {
+      singlePrefix: "DONE task implementation commit points to a close commit",
+      groupLabel: "hashes",
+      summaryLabel: "implementation commits that point to close commits",
+      includeSubject: true,
+    }),
+  );
 
   return problems;
 }

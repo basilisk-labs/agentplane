@@ -276,6 +276,102 @@ describe("doctor.command", () => {
     expect(rc).toBe(0);
   });
 
+  it("summarizes repeated unknown historical hashes instead of printing one warning per task", async () => {
+    const ws = await mkWorkspace();
+    await gitInitWithCommit(ws.root, "feat: initial");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify(
+          {
+            tasks: [
+              {
+                id: "202602111810-AAA111",
+                status: "DONE",
+                commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+              },
+              {
+                id: "202602111811-BBB222",
+                status: "DONE",
+                commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+              },
+              {
+                id: "202602111812-CCC333",
+                status: "DONE",
+                commit: { hash: "463a8853f38d3b9f3ebd9f6a191f3f7c81db0aa7" },
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain(
+        "Historical task archive contains 3 DONE tasks with unknown implementation commit hashes across 2 distinct commit hashes.",
+      );
+      expect(output).toContain(
+        "13721c623fd186abbaee48456aa242f7e4561119 (2 tasks: 202602111810-AAA111, 202602111811-BBB222)",
+      );
+      expect(output).not.toContain(
+        "DONE task references unknown historical commit hash: 202602111810-AAA111",
+      );
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("summarizes repeated close-commit misuse in historical DONE tasks", async () => {
+    const ws = await mkWorkspace();
+    const closeHashA = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
+    const closeHashB = await gitInitWithCommit(ws.root, "✅ XYZ999 close: merged");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify(
+          {
+            tasks: [
+              { id: "202602111820-AAA111", status: "DONE", commit: { hash: closeHashA } },
+              { id: "202602111821-BBB222", status: "DONE", commit: { hash: closeHashA } },
+              { id: "202602111822-CCC333", status: "DONE", commit: { hash: closeHashB } },
+            ],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain(
+        "Historical task archive contains 3 DONE tasks with implementation commits that point to close commits across 2 distinct commit hashes.",
+      );
+      expect(output).toContain("202602111820-AAA111, 202602111821-BBB222");
+      expect(output).toContain("subject: ✅ ABC123 close: done");
+      expect(output).not.toContain(
+        "DONE task implementation commit points to a close commit: 202602111820-AAA111",
+      );
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
   it("fails when the managed policy tree is incomplete for the active gateway", async () => {
     const ws = await mkWorkspace();
     await rm(path.join(ws.root, ".agentplane", "policy", "workflow.upgrade.md"), { force: true });
