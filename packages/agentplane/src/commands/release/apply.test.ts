@@ -175,7 +175,13 @@ describeWhenNotHook("release apply", () => {
           { plan: undefined, yes: false, push: false, remote: "origin" },
         ),
       ),
-    ).rejects.toThrow(/clean tracked working tree/u);
+    ).rejects.toMatchObject({
+      code: "E_GIT",
+      context: {
+        diagnostic_state: "release apply cannot start from a dirty tracked tree",
+        diagnostic_next_action_command: "git status --short --untracked-files=no",
+      },
+    });
   }, 60_000);
 
   it("requires --push in normal mode for non-dry-run release apply", async () => {
@@ -273,7 +279,13 @@ describeWhenNotHook("release apply", () => {
           { plan: undefined, yes: false, push: false, remote: "origin" },
         ),
       ),
-    ).rejects.toThrow(/Tag already exists/u);
+    ).rejects.toMatchObject({
+      code: "E_GIT",
+      context: {
+        diagnostic_state: "the target release tag already exists locally",
+        diagnostic_next_action_command: "git show --stat --oneline v0.2.7",
+      },
+    });
   });
 
   it("fails when release notes have fewer bullets than required", async () => {

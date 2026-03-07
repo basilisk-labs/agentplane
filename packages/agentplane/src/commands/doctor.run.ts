@@ -6,6 +6,7 @@ import { resolveProject } from "@agentplaneorg/core";
 
 import type { CommandHandler } from "../cli/spec/spec.js";
 import { warnMessage, successMessage } from "../cli/output.js";
+import { renderDiagnosticFinding } from "../shared/diagnostics.js";
 import { RUNTIME_GITIGNORE_LINES } from "../shared/runtime-artifacts.js";
 import { describeRuntimeMode, resolveRuntimeSourceInfo } from "../shared/runtime-source.js";
 import { resolvePolicyGatewayForRepo } from "../shared/policy-gateway.js";
@@ -121,12 +122,21 @@ async function checkWorkspace(repoRoot: string): Promise<string[]> {
       const more =
         missingManagedPolicy.length > 8 ? ` (+${missingManagedPolicy.length - 8} more)` : "";
       problems.push(
-        "Managed policy tree is incomplete for the current framework gateway. " +
-          `Missing required files: ${listed}${more}. ` +
-          "This often means AGENTS.md/CLAUDE.md was updated manually or the repo was upgraded " +
-          "with an older agentplane CLI. Recovery: update or reinstall agentplane, then run " +
-          "`agentplane upgrade --yes` (or `agentplane upgrade --remote --yes`). " +
-          "See `docs/help/legacy-upgrade-recovery.mdx` for the shortest recovery path.",
+        renderDiagnosticFinding({
+          severity: "ERROR",
+          state: "framework-managed policy tree is incomplete",
+          likelyCause:
+            "the active AGENTS.md/CLAUDE.md gateway expects required policy files that are not installed in this workspace",
+          nextAction: {
+            command: "agentplane upgrade --yes",
+            reason: "reinstall the managed policy tree from the currently active framework bundle",
+          },
+          details: [
+            `Missing required files: ${listed}${more}`,
+            "If the installed CLI is older than the gateway, update or reinstall agentplane first and then rerun `agentplane upgrade --yes` (or `agentplane upgrade --remote --yes`).",
+            "Recovery guide: docs/help/legacy-upgrade-recovery.mdx",
+          ],
+        }),
       );
     }
   }

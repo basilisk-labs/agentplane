@@ -47,4 +47,31 @@ describe("errors", () => {
       },
     });
   });
+
+  it("formatJsonError includes explicit state-oriented guidance when provided", () => {
+    const err = new CliError({
+      exitCode: 5,
+      code: "E_GIT",
+      message: "Dirty tree",
+      context: { command: "release apply" },
+    });
+
+    const json = JSON.parse(
+      formatJsonError(err, {
+        state: "release apply cannot start from a dirty tracked tree",
+        likelyCause: "tracked edits already exist in the workspace",
+        nextAction: {
+          command: "git status --short --untracked-files=no",
+          reason: "inspect tracked changes before rerunning release apply",
+          reasonCode: "release_dirty_tree",
+        },
+      }),
+    ) as {
+      error?: { state?: string; likely_cause?: string; next_action?: { command?: string } };
+    };
+
+    expect(json.error?.state).toBe("release apply cannot start from a dirty tracked tree");
+    expect(json.error?.likely_cause).toBe("tracked edits already exist in the workspace");
+    expect(json.error?.next_action?.command).toBe("git status --short --untracked-files=no");
+  });
 });

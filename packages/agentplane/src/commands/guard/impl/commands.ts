@@ -1,5 +1,6 @@
 import { mapCoreError } from "../../../cli/error-map.js";
 import { successMessage } from "../../../cli/output.js";
+import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 import { loadTaskFromContext } from "../../shared/task-backend.js";
@@ -59,6 +60,20 @@ function asCommitFailure(err: unknown): CliError | null {
         exitCode: 5,
         code: "E_GIT",
         message: lines.join("\n"),
+        context: withDiagnosticContext(
+          { command: "commit" },
+          {
+            state: "git rejected the generated close commit",
+            likelyCause:
+              "a hook or commit policy blocked the deterministic task close commit after the task README was staged",
+            nextAction: {
+              command: "git status --short --untracked-files=no",
+              reason:
+                "inspect the staged close-commit payload before fixing the hook or policy failure",
+              reasonCode: "git_close_commit_blocked",
+            },
+          },
+        ),
       });
     }
     return null;
@@ -187,6 +202,19 @@ export async function cmdCommit(opts: {
           code: "E_GIT",
           message:
             "Staged files exist (close commit requires an empty index; rerun with --unstage-others to auto-unstage).",
+          context: withDiagnosticContext(
+            { command: "commit" },
+            {
+              state: "close commit cannot run with a non-empty git index",
+              likelyCause:
+                "deterministic close commits only stage the task README, but other staged files are already in the index",
+              nextAction: {
+                command: "git restore --staged -- .",
+                reason: "clear the current index before rerunning the close commit flow",
+                reasonCode: "git_close_commit_dirty_index",
+              },
+            },
+          ),
         });
       }
 

@@ -289,6 +289,12 @@ describe("doctor.command", () => {
       );
       expect(rc).toBe(1);
       expect(stderr.mock.calls.flat().join("\n")).toContain(
+        "State: framework-managed policy tree is incomplete",
+      );
+      expect(stderr.mock.calls.flat().join("\n")).toContain(
+        "Next action: agentplane upgrade --yes",
+      );
+      expect(stderr.mock.calls.flat().join("\n")).toContain(
         "docs/help/legacy-upgrade-recovery.mdx",
       );
     } finally {

@@ -1,6 +1,8 @@
 import { readFile, writeFile, mkdir, readdir, mkdtemp, symlink } from "node:fs/promises";
+import { execFile } from "node:child_process";
 import os from "node:os";
 import path from "node:path";
+import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -10,7 +12,53 @@ import {
 } from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
 
+const execFileAsync = promisify(execFile);
+
 describe("upgrade safety invariants", () => {
+  it("explains the dirty-tree state before auto upgrade", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await writeFile(path.join(root, "tracked.txt"), "seed\n", "utf8");
+    await execFileAsync("git", ["add", "tracked.txt"], { cwd: root });
+    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+    await writeFile(path.join(root, "tracked.txt"), "dirty\n", "utf8");
+
+    const { bundlePath, checksumPath } = await createUpgradeBundle({
+      "framework.manifest.json": JSON.stringify(
+        {
+          schema_version: 1,
+          files: [{ path: "AGENTS.md", type: "text", merge_strategy: "agents_policy_markdown" }],
+        },
+        null,
+        2,
+      ),
+      "AGENTS.md": "# AGENTS\n",
+    });
+
+    await expect(
+      cmdUpgradeParsed({
+        cwd: root,
+        rootOverride: root,
+        flags: {
+          bundle: bundlePath,
+          checksum: checksumPath,
+          mode: "auto",
+          remote: false,
+          allowTarball: false,
+          dryRun: false,
+          backup: false,
+          yes: true,
+        },
+      }),
+    ).rejects.toMatchObject({
+      code: "E_GIT",
+      context: {
+        diagnostic_state: "managed upgrade cannot apply over tracked local edits",
+        diagnostic_next_action_command: "git status --short --untracked-files=no",
+      },
+    });
+  });
+
   it("rejects bundles that include .agentplane/tasks/** in the manifest (and does not touch local tasks)", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

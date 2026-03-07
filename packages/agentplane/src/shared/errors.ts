@@ -26,6 +26,8 @@ export class CliError extends Error {
 }
 
 export type JsonErrorGuidance = {
+  state?: string;
+  likelyCause?: string;
   hint?: string;
   nextAction?: {
     command: string;
@@ -47,6 +49,8 @@ export function formatJsonError(err: CliError, guidance?: JsonErrorGuidance): st
         code: err.code,
         message: err.message,
         context: err.context ?? undefined,
+        state: guidance?.state,
+        likely_cause: guidance?.likelyCause,
         hint: guidance?.hint,
         next_action: guidance?.nextAction,
         reason_decode: guidance?.reasonDecode,

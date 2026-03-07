@@ -947,6 +947,11 @@ describe("runCli", () => {
       const code = await runCli(["commit", "202602081506-R18Y1Q", "--close", "--root", root]);
       expect(code).toBe(5);
       expect(io.stderr).toContain("close commit requires an empty index");
+      expect(io.stderr).toContain("state: close commit cannot run with a non-empty git index");
+      expect(io.stderr).toContain(
+        "likely_cause: deterministic close commits only stage the task README, but other staged files are already in the index",
+      );
+      expect(io.stderr).toContain("next_action: git restore --staged -- .");
       expect(io.stderr).toContain("--unstage-others");
     } finally {
       io.restore();

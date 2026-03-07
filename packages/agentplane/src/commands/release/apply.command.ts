@@ -6,6 +6,7 @@ import { resolveProject, loadConfig } from "@agentplaneorg/core";
 import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { usageError } from "../../cli/spec/errors.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
+import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { GitContext } from "../shared/git-context.js";
@@ -307,6 +308,20 @@ async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
     message:
       "Release apply requires a clean tracked working tree.\n" +
       `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
+    context: withDiagnosticContext(
+      { command: "release apply" },
+      {
+        state: "release apply cannot start from a dirty tracked tree",
+        likelyCause:
+          "the release flow needs to create one deterministic version-bump commit and tag, but tracked edits already exist in the workspace",
+        nextAction: {
+          command: "git status --short --untracked-files=no",
+          reason:
+            "inspect or clear tracked changes before rerunning `agentplane release apply --push --yes`",
+          reasonCode: "release_dirty_tree",
+        },
+      },
+    ),
   });
 }
 
@@ -320,6 +335,20 @@ async function ensureTagDoesNotExist(gitRoot: string, tag: string): Promise<void
       exitCode: exitCodeForError("E_GIT"),
       code: "E_GIT",
       message: `Tag already exists: ${tag}`,
+      context: withDiagnosticContext(
+        { command: "release apply" },
+        {
+          state: "the target release tag already exists locally",
+          likelyCause:
+            "the release version was already applied earlier, or a previous release attempt created the tag before failing later in the flow",
+          nextAction: {
+            command: `git show --stat --oneline ${tag}`,
+            reason:
+              "inspect the existing tag before deciding whether to reuse it or plan a new version",
+            reasonCode: "release_tag_exists",
+          },
+        },
+      ),
     });
   } catch (err) {
     const code = (err as { code?: number | string } | null)?.code;
@@ -346,6 +375,20 @@ async function ensureNpmVersionsAvailable(gitRoot: string, version: string): Pro
         `Pre-publish npm check failed for version ${version}. ` +
         "Ensure this version is not already published for @agentplaneorg/core and agentplane." +
         (details ? `\n\n${details}` : ""),
+      context: withDiagnosticContext(
+        { command: "release apply" },
+        {
+          state: "the target npm version is not publishable",
+          likelyCause:
+            "that version is already burned in npm history for one of the published packages, even if it is no longer the current dist-tag",
+          nextAction: {
+            command: `node scripts/check-npm-version-availability.mjs --version ${version}`,
+            reason:
+              "inspect which package already consumed the target version before choosing a new release number",
+            reasonCode: "release_npm_version_burned",
+          },
+        },
+      ),
     });
   }
 }
@@ -376,6 +419,20 @@ async function runReleasePrepublishGate(gitRoot: string): Promise<void> {
       message:
         "Release prepublish gate failed. `agentplane release apply --push` requires a successful local `bun run release:prepublish` run before pushing the release tag." +
         (details ? `\n\n${details}` : ""),
+      context: withDiagnosticContext(
+        { command: "release apply" },
+        {
+          state: "release prepublish validation failed before pushing the release",
+          likelyCause:
+            "one of the local publish gates rejected the current repository state, so the release cannot be pushed safely yet",
+          nextAction: {
+            command: "bun run release:prepublish",
+            reason:
+              "rerun the exact local publish gate and fix the reported failure before retrying release apply",
+            reasonCode: "release_prepublish_failed",
+          },
+        },
+      ),
     });
   }
 }
@@ -606,6 +663,20 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
         `Current version does not match plan. ` +
         `current=${coreVersion} expected_prev=${plan.prevVersion} expected_next=${plan.nextVersion}\n` +
         "Re-run `agentplane release plan` to generate a fresh plan for this repo state.",
+      context: withDiagnosticContext(
+        { command: "release apply" },
+        {
+          state: "the repository version no longer matches the prepared release plan",
+          likelyCause:
+            "package versions changed after the plan was generated, so the plan no longer describes the current repo state",
+          nextAction: {
+            command: "agentplane release plan",
+            reason:
+              "generate a fresh release plan from the current repository state before applying the release",
+            reasonCode: "release_plan_drifted",
+          },
+        },
+      ),
     });
   }
 

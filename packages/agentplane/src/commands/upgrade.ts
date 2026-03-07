@@ -25,6 +25,7 @@ import {
   warnMessage,
 } from "../cli/output.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
+import { withDiagnosticContext } from "../shared/diagnostics.js";
 import { CliError } from "../shared/errors.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
 import { execFileAsync, gitEnv } from "./shared/git.js";
@@ -448,6 +449,19 @@ async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise<void> 
     message:
       "Upgrade --auto requires a clean tracked working tree.\n" +
       `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
+    context: withDiagnosticContext(
+      { command: "upgrade" },
+      {
+        state: "managed upgrade cannot apply over tracked local edits",
+        likelyCause:
+          "auto-apply upgrade is about to replace framework-managed files, but the repository already has tracked modifications",
+        nextAction: {
+          command: "git status --short --untracked-files=no",
+          reason: "inspect or clear tracked changes before rerunning `agentplane upgrade --yes`",
+          reasonCode: "upgrade_dirty_tree",
+        },
+      },
+    ),
   });
 }
 
@@ -506,6 +520,20 @@ async function createUpgradeCommit(opts: {
         "Upgrade applied but failed to create the upgrade commit.\n" +
         "Fix commit policy/hook issues and commit the staged upgrade files as a dedicated upgrade commit.\n" +
         (String(details).trim() ? `Details:\n${String(details).trim()}` : ""),
+      context: withDiagnosticContext(
+        { command: "upgrade" },
+        {
+          state: "managed files were updated, but the upgrade commit was blocked",
+          likelyCause:
+            "the generated upgrade commit hit a git hook or commit policy failure after the framework files were already staged",
+          nextAction: {
+            command: `git commit -m "⬆️ upgrade: apply framework ${opts.versionLabel}"`,
+            reason:
+              "record the already-staged framework changes as one dedicated upgrade commit after fixing the blocking hook or policy",
+            reasonCode: "upgrade_commit_blocked",
+          },
+        },
+      ),
     });
   }
 
