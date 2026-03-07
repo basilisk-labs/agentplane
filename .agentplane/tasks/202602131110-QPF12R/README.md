@@ -19,7 +19,9 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "ba31edf893ec6b0e4981cf53b3972f32497322ae"
+  message: "✅ JE84GB cli: add preflight quick/full and optimize lifecycle/index paths"
 comments:
   -
     author: "CODER"

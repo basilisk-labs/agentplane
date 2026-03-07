@@ -19,7 +19,9 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "77a6f1d1a60c0103c545fe8793e60e08c4259f97"
+  message: "✅ JE84GB cli: speed up upgrade/init bootstrap and hook pipeline"
 comments:
   -
     author: "CODER"

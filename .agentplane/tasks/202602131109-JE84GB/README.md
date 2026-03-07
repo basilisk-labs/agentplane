@@ -18,7 +18,9 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-commit: null
+commit:
+  hash: "b29062b889c5974098d8d56329c6567be1acd687"
+  message: "✅ JE84GB docs: update preflight/upgrade guidance and close task chain"
 comments:
   -
     author: "CODER"

@@ -228,9 +228,12 @@ describe("doctor.command", () => {
     expect(rc).toBe(1);
   });
 
-  it("warns but does not fail when DONE task references an unknown historical commit hash", async () => {
+  it("reports but does not fail when DONE task references an unknown historical commit hash", async () => {
     const ws = await mkWorkspace();
     await gitInitWithCommit(ws.root, "feat: initial");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
     await writeFile(
       path.join(ws.root, ".agentplane", "tasks.json"),
       JSON.stringify(
@@ -248,16 +251,26 @@ describe("doctor.command", () => {
       ),
       "utf8",
     );
-    const rc = await runDoctor(
-      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-      { fix: false, dev: false },
-    );
-    expect(rc).toBe(0);
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      expect(stderr.mock.calls.flat().join("\n")).toContain(
+        "[INFO] DONE task references unknown historical commit hash: 202602111801-DEF456 -> 13721c623fd186abbaee48456aa242f7e4561119",
+      );
+    } finally {
+      stderr.mockRestore();
+    }
   });
 
   it("warns but does not fail when DONE task commit points to a close commit subject", async () => {
     const ws = await mkWorkspace();
     const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
     await writeFile(
       path.join(ws.root, ".agentplane", "tasks.json"),
       JSON.stringify(
@@ -269,11 +282,18 @@ describe("doctor.command", () => {
       ),
       "utf8",
     );
-    const rc = await runDoctor(
-      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-      { fix: false, dev: false },
-    );
-    expect(rc).toBe(0);
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      expect(stderr.mock.calls.flat().join("\n")).toContain(
+        "[WARN] DONE task implementation commit points to a close commit: 202602111802-ABC123",
+      );
+    } finally {
+      stderr.mockRestore();
+    }
   });
 
   it("summarizes repeated unknown historical hashes instead of printing one warning per task", async () => {
@@ -317,7 +337,7 @@ describe("doctor.command", () => {
       expect(rc).toBe(0);
       const output = stderr.mock.calls.flat().join("\n");
       expect(output).toContain(
-        "Historical task archive contains 3 DONE tasks with unknown implementation commit hashes across 2 distinct commit hashes.",
+        "[INFO] Historical task archive contains 3 DONE tasks with unknown implementation commit hashes across 2 distinct commit hashes.",
       );
       expect(output).toContain(
         "13721c623fd186abbaee48456aa242f7e4561119 (2 tasks: 202602111810-AAA111, 202602111811-BBB222)",
@@ -360,12 +380,142 @@ describe("doctor.command", () => {
       expect(rc).toBe(0);
       const output = stderr.mock.calls.flat().join("\n");
       expect(output).toContain(
-        "Historical task archive contains 3 DONE tasks with implementation commits that point to close commits across 2 distinct commit hashes.",
+        "[INFO] Historical task archive contains 3 DONE tasks with historical close-commit references that were classified as non-actionable archive records across 2 distinct commit hashes.",
       );
       expect(output).toContain("202602111820-AAA111, 202602111821-BBB222");
       expect(output).toContain("subject: ✅ ABC123 close: done");
       expect(output).not.toContain(
         "DONE task implementation commit points to a close commit: 202602111820-AAA111",
+      );
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("downgrades legacy backfill historical hashes to info", async () => {
+    const ws = await mkWorkspace();
+    await gitInitWithCommit(ws.root, "feat: initial");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify(
+          {
+            tasks: [
+              {
+                id: "202602111813-DDD444",
+                status: "DONE",
+                commit: {
+                  hash: "463a8853f38d3b9f3ebd9f6a191f3f7c81db0aa7",
+                  message: "Legacy completion (backfill)",
+                },
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("[INFO] DONE task references unknown historical commit hash");
+      expect(output).not.toContain("[WARN] DONE task references unknown historical commit hash");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("downgrades no-op close-commit references to info", async () => {
+    const ws = await mkWorkspace();
+    const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify(
+          {
+            tasks: [
+              {
+                id: "202602111824-ABC123",
+                status: "DONE",
+                result_summary: "No-op: already implemented",
+                verification: { note: "No-op: already implemented" },
+                commit: { hash: closeHash, message: "✅ ABC123 close: done" },
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain(
+        "[INFO] DONE task implementation commit resolves to a historical close commit reference: 202602111824-ABC123",
+      );
+      expect(output).not.toContain(
+        "[WARN] DONE task implementation commit points to a close commit: 202602111824-ABC123",
+      );
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("downgrades legacy close: record task doc references to info", async () => {
+    const ws = await mkWorkspace();
+    const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: record task doc");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify(
+          {
+            tasks: [
+              {
+                id: "202602111825-ABC123",
+                status: "DONE",
+                commit: { hash: closeHash, message: "✅ ABC123 close: record task doc" },
+                comments: [
+                  {
+                    author: "ORCHESTRATOR",
+                    body: "verified: implementation landed earlier; close commit only recorded task doc metadata.",
+                  },
+                ],
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain(
+        "[INFO] DONE task implementation commit resolves to a historical close commit reference: 202602111825-ABC123",
+      );
+      expect(output).not.toContain(
+        "[WARN] DONE task implementation commit points to a close commit: 202602111825-ABC123",
       );
     } finally {
       stderr.mockRestore();

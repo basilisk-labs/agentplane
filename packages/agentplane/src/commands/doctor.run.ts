@@ -347,14 +347,21 @@ async function safeFixWorkflow(repoRoot: string): Promise<{ changed: boolean; no
 
 type TaskSnapshotRecord = {
   id?: unknown;
+  title?: unknown;
   status?: unknown;
-  commit?: { hash?: unknown } | null;
+  owner?: unknown;
+  tags?: unknown;
+  result_summary?: unknown;
+  verification?: { note?: unknown; state?: unknown } | null;
+  comments?: { body?: unknown }[] | null;
+  commit?: { hash?: unknown; message?: unknown } | null;
 };
 
 type HistoricalCommitFinding = {
   id: string;
   hash: string;
   subject?: string;
+  severity: "WARN" | "INFO";
 };
 
 function pluralize(count: number, singular: string, plural = `${singular}s`): string {
@@ -367,6 +374,61 @@ function formatIdExamples(ids: string[], maxExamples = 3): string {
   return remainder > 0 ? `${shown.join(", ")}; +${remainder} more` : shown.join(", ");
 }
 
+function taskShortId(taskId: string): string {
+  const shortId = taskId.split("-").at(-1) ?? taskId;
+  return shortId.trim().toUpperCase();
+}
+
+function textOrEmpty(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function collectTaskEvidenceText(task: TaskSnapshotRecord): string {
+  const chunks = [
+    textOrEmpty(task.title),
+    textOrEmpty(task.result_summary),
+    textOrEmpty(task.verification?.note),
+    textOrEmpty(task.commit?.message),
+    ...(Array.isArray(task.comments)
+      ? task.comments.map((entry) => textOrEmpty(entry?.body)).filter(Boolean)
+      : []),
+    ...(Array.isArray(task.tags) ? task.tags.filter((tag) => typeof tag === "string") : []),
+  ];
+  return chunks.filter(Boolean).join("\n");
+}
+
+function classifyUnknownHistoricalHash(task: TaskSnapshotRecord): "INFO" {
+  void task;
+  return "INFO";
+}
+
+function classifyCloseCommitReference(task: TaskSnapshotRecord, subject: string): "WARN" | "INFO" {
+  if (/\bclose:\s*record task doc\b/iu.test(subject)) {
+    return "INFO";
+  }
+
+  const evidence = collectTaskEvidenceText(task);
+  if (
+    /(no-op|already implemented|already fixed|already present|without changes|task deemed not актуальна|obsolete|no changes)/iu.test(
+      evidence,
+    )
+  ) {
+    return "INFO";
+  }
+
+  const subjectTaskId = /^\s*✅\s+([A-Z0-9]{6})\s+close:/u.exec(subject)?.[1] ?? "";
+  const currentTaskId = typeof task.id === "string" ? taskShortId(task.id) : "";
+  if (subjectTaskId && currentTaskId && subjectTaskId !== currentTaskId) {
+    return "INFO";
+  }
+
+  if (/\b(epic|roadmap|spike|meta)\b/iu.test(evidence)) {
+    return "INFO";
+  }
+
+  return "WARN";
+}
+
 function summarizeHistoricalFindings(
   findings: HistoricalCommitFinding[],
   opts: {
@@ -374,13 +436,15 @@ function summarizeHistoricalFindings(
     groupLabel: string;
     summaryLabel: string;
     includeSubject: boolean;
+    severity: "WARN" | "INFO";
   },
 ): string[] {
   if (findings.length === 0) return [];
+  const prefix = `[${opts.severity}]`;
   if (findings.length === 1) {
     const [finding] = findings;
     const subjectSuffix = opts.includeSubject && finding.subject ? ` (${finding.subject})` : "";
-    return [`[WARN] ${opts.singlePrefix}: ${finding.id} -> ${finding.hash}${subjectSuffix}`];
+    return [`${prefix} ${opts.singlePrefix}: ${finding.id} -> ${finding.hash}${subjectSuffix}`];
   }
 
   const grouped = new Map<string, { hash: string; ids: string[]; subject?: string }>();
@@ -411,7 +475,7 @@ function summarizeHistoricalFindings(
   const groupedSuffix = remainingGroups > 0 ? `; +${remainingGroups} more hash groups` : "";
 
   return [
-    `[WARN] Historical task archive contains ${findings.length} DONE tasks with ${opts.summaryLabel} across ${groups.length} distinct commit ${opts.groupLabel}. Examples: ${exampleGroups.join("; ")}${groupedSuffix}`,
+    `${prefix} Historical task archive contains ${findings.length} DONE tasks with ${opts.summaryLabel} across ${groups.length} distinct commit ${opts.groupLabel}. Examples: ${exampleGroups.join("; ")}${groupedSuffix}`,
   ];
 }
 
@@ -438,8 +502,9 @@ async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<string[]
   if (done.length === 0) return [];
 
   const problems: string[] = [];
-  const unknownHashWarnings: HistoricalCommitFinding[] = [];
-  const closeCommitWarnings: HistoricalCommitFinding[] = [];
+  const unknownHashFindings: HistoricalCommitFinding[] = [];
+  const closeCommitWarnFindings: HistoricalCommitFinding[] = [];
+  const closeCommitInfoFindings: HistoricalCommitFinding[] = [];
   const hashes = new Set<string>();
   for (const task of done) {
     const id = typeof task.id === "string" ? task.id : "<unknown>";
@@ -473,26 +538,44 @@ async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<string[]
     if (!hash) continue;
     const subject = subjectByHash.get(hash) ?? "";
     if (!subject) {
-      unknownHashWarnings.push({ id, hash });
+      unknownHashFindings.push({
+        id,
+        hash,
+        severity: classifyUnknownHistoricalHash(task),
+      });
       continue;
     }
     if (/\bclose:/iu.test(subject)) {
-      closeCommitWarnings.push({ id, hash, subject });
+      const severity = classifyCloseCommitReference(task, subject);
+      const finding = { id, hash, subject, severity };
+      if (severity === "WARN") closeCommitWarnFindings.push(finding);
+      else closeCommitInfoFindings.push(finding);
     }
   }
 
   problems.push(
-    ...summarizeHistoricalFindings(unknownHashWarnings, {
+    ...summarizeHistoricalFindings(unknownHashFindings, {
       singlePrefix: "DONE task references unknown historical commit hash",
       groupLabel: "hashes",
       summaryLabel: "unknown implementation commit hashes",
       includeSubject: false,
+      severity: "INFO",
     }),
-    ...summarizeHistoricalFindings(closeCommitWarnings, {
+    ...summarizeHistoricalFindings(closeCommitInfoFindings, {
+      singlePrefix:
+        "DONE task implementation commit resolves to a historical close commit reference",
+      groupLabel: "hashes",
+      summaryLabel:
+        "historical close-commit references that were classified as non-actionable archive records",
+      includeSubject: true,
+      severity: "INFO",
+    }),
+    ...summarizeHistoricalFindings(closeCommitWarnFindings, {
       singlePrefix: "DONE task implementation commit points to a close commit",
       groupLabel: "hashes",
       summaryLabel: "implementation commits that point to close commits",
       includeSubject: true,
+      severity: "WARN",
     }),
   );
 

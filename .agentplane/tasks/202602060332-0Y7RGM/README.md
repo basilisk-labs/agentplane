@@ -19,7 +19,7 @@ verification:
   updated_by: "ORCHESTRATOR"
   note: "bun run test:core and bun run test:agentplane passed; event rendering/export covered."
 commit:
-  hash: "99427994db0b756fc7bf93a8fb73e4e1de261823"
+  hash: "4bf588cc9a83c8b4c19cd38d115a20c6bda5c5f7"
   message: "✨ KYXD2V tasks: append-only task events"
 comments:
   -
