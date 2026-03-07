@@ -1004,6 +1004,7 @@ Options:
 - `--status-commit-require-clean`: Require a clean working tree for the status commit (used with --status-commit). (default=false)
 - `--confirm-status-commit`: Confirm status commit creation when status_commit_policy=confirm (used with --commit-from-comment or --status-commit). (default=false)
 - `--close-commit`: After finishing, run a deterministic close commit for the task README (single-task only). (default=false)
+- `--no-close-commit`: Disable the default deterministic close commit in direct mode (single-task only). (default=false)
 - `--close-unstage-others`: With --close-commit: unstage any currently staged paths before staging the task README. (default=false)
 - `--quiet`: Suppress output. (default=false)
 
@@ -1727,7 +1728,7 @@ agentplane init --yes --gitignore-agents
 
 Upgrade the local agentplane framework bundle in the repo.
 
-Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade generates an agent-assisted plan from the locally installed agentplane package assets (no network) and does not modify files. Use --auto to apply changes and create a dedicated upgrade commit. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
+Upgrades the local agentplane framework bundle in the repo using a strict manifest of managed files. By default, upgrade applies the bundled managed files from the locally installed agentplane package assets (no network) and creates a dedicated upgrade commit. Use --dry-run to preview changes without writing files, or --agent to generate a review plan instead of applying. Use --remote to fetch a GitHub release bundle; network access is gated by config approvals.
 
 Usage:
 
@@ -1737,8 +1738,8 @@ agentplane upgrade [options]
 
 Options:
 
-- `--agent`: Generate an agent-assisted upgrade plan (no files are modified). This is the default mode. (default=false)
-- `--auto`: Apply the upgrade automatically (writes managed files) and create a dedicated upgrade commit. (default=false)
+- `--agent`: Generate an agent-assisted upgrade plan instead of applying managed files. (default=false)
+- `--auto`: Apply the upgrade automatically (same behavior as the default mode; useful for explicit scripts). (default=false)
 - `--remote`: Fetch the framework bundle from GitHub releases (requires network approvals). (default=false)
 - `--allow-tarball`: Allow falling back to a GitHub repo tarball when release assets are missing (no checksum verification). (default=false)
 - `--tag <tag>`: GitHub release tag (defaults to latest).
@@ -1757,13 +1758,19 @@ Examples:
 agentplane upgrade
 ```
 
-- Generate an agent-assisted plan using locally installed assets (no network).
+- Apply managed files from the installed CLI assets and create an upgrade commit.
 
 ```sh
-agentplane upgrade --auto
+agentplane upgrade --dry-run
 ```
 
-- Apply the upgrade automatically (writes managed files).
+- Preview managed-file changes without modifying the repo.
+
+```sh
+agentplane upgrade --agent
+```
+
+- Generate an agent-assisted upgrade plan instead of applying files.
 
 ```sh
 agentplane upgrade --remote --tag v0.1.9 --dry-run
