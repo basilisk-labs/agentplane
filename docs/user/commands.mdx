@@ -19,7 +19,7 @@ agentplane quickstart
 The canonical startup path for agents is also documented in:
 
 - [Agent bootstrap](agent-bootstrap.generated)
-  The page starts with a copy-paste bootstrap block for the first terminal pass.
+  The page starts with a copy-paste bootstrap block and the shortest direct happy path.
 
 Inside the Agent Plane framework checkout, `agentplane` from `PATH` now delegates to the
 repo-local binary automatically. If that repo-local binary reports a stale build, rebuild first:
@@ -117,9 +117,10 @@ agentplane backend sync redmine --direction push --yes
 
 ## Workflow
 
+Default direct happy path:
+
 ```bash
 agentplane task start-ready <task-id> --author CODER --body "Start: ..."
-agentplane block <task-id> --author CODER --body "Blocked: ..."
 agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
@@ -128,9 +129,10 @@ agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-
 In `direct`, `finish` creates the deterministic close commit by default. Use `--no-close-commit`
 only when close handling must stay manual.
 
-Rare/manual finish paths:
+Fallback/manual paths:
 
 ```bash
+agentplane block <task-id> --author CODER --body "Blocked: ..."
 agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..." --commit <git-rev> --no-close-commit
 agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
 agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..." --commit <git-rev> --close-commit --close-unstage-others

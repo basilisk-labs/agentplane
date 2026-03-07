@@ -3,6 +3,30 @@ title: "Workflow"
 description: "How work moves from plan to completion in Agent Plane."
 ---
 
+## Default direct path
+
+1. Run preflight.
+2. Create the task, set the plan, and approve it.
+3. Start with `agentplane task start-ready`.
+4. Implement changes.
+5. Run `agentplane task verify-show`, then record the result with `agentplane verify`.
+6. Finish with `agentplane finish ... --result ... --commit <git-rev>`.
+
+For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
+
+```bash
+agentplane config show
+agentplane quickstart
+agentplane task list
+git status --short --untracked-files=no
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
+```
+
+This is the normal `direct` route. Recovery, `branch_pr`, and manual close handling are non-default paths.
+
 ## Core flow
 
 1. Plan and create task graph.
@@ -11,8 +35,6 @@ description: "How work moves from plan to completion in Agent Plane."
 4. Implement changes.
 5. Print `Verify Steps`, then record verification outcome with `agentplane verify`.
 6. Finish task (`DOING -> DONE`) with a structured `Verified:` comment, `--result`, and commit metadata.
-
-For the full end-to-end story (intake to export) across both modes, see [Task lifecycle](task-lifecycle).
 
 ## Harness engeneering workflow style
 

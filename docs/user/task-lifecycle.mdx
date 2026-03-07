@@ -5,6 +5,30 @@ description: "How tasks move from idea to closure in direct and branch_pr workfl
 
 ## Overview
 
+## Minimal direct lifecycle
+
+If you are not in `branch_pr` and nothing is broken, the shortest agent-first route is:
+
+1. Preflight.
+2. Create the task and approve the plan.
+3. `task start-ready`.
+4. Implement changes.
+5. `task verify-show` -> `verify`.
+6. `finish` with `--result` and `--commit`.
+
+```bash
+agentplane config show
+agentplane quickstart
+agentplane task list
+git status --short --untracked-files=no
+agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."
+agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>
+```
+
+Everything else in this document is either mode-specific detail or a fallback path.
+
 A task moves through the same core stages in both modes:
 
 1. **Intake**: a need is identified and recorded.

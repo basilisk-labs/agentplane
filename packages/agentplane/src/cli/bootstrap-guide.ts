@@ -23,24 +23,12 @@ export const BOOTSTRAP_TASK_PREP_COMMANDS = [
   "agentplane task plan approve <task-id> --by ORCHESTRATOR",
 ];
 
-export const BOOTSTRAP_TASK_LIFECYCLE_COMMANDS = [
+export const BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS = [
   ...BOOTSTRAP_TASK_PREP_COMMANDS,
   COMMAND_SNIPPETS.core.startTask,
-  COMMAND_SNIPPETS.core.verifyTask,
-  'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>',
-] as const;
-
-export const BOOTSTRAP_VERIFY_AND_FINISH_COMMANDS = [
   "agentplane task verify-show <task-id>",
   COMMAND_SNIPPETS.core.verifyTask,
   'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>',
-] as const;
-
-export const BOOTSTRAP_VERIFICATION_COMMANDS = [
-  "agentplane task verify-show <task-id>",
-  COMMAND_SNIPPETS.core.verifyTask,
-  "agentplane doctor",
-  "node .agentplane/policy/check-routing.mjs",
 ] as const;
 
 export const BOOTSTRAP_RECOVERY_COMMANDS = [
@@ -61,39 +49,27 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
     ],
   },
   {
-    heading: "2. Prepare executable task scope",
+    heading: "2. Direct happy path",
     summary:
-      "Work only through executable task ids. Create the task, fill plan/docs, then approve the plan.",
-    commands: BOOTSTRAP_TASK_PREP_COMMANDS,
+      "Use one short direct-mode route: create the task, approve it, start it, verify it, and finish it.",
+    commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
     notes: [
       "Use `task doc set` to fill required README sections before approval.",
       "For dependent tasks, wait until upstream tasks are DONE before `task start-ready`.",
-    ],
-  },
-  {
-    heading: "3. Start work deterministically",
-    summary: "Move the task to DOING only after plan approval succeeds.",
-    commands: [COMMAND_SNIPPETS.core.startTask],
-    notes: ["`task plan approve` and `task start-ready` must run sequentially, never in parallel."],
-  },
-  {
-    heading: "4. Verify and finish",
-    summary:
-      "Treat Verify Steps as the contract, then record verification and close with traceable metadata.",
-    commands: BOOTSTRAP_VERIFY_AND_FINISH_COMMANDS,
-    notes: [
+      "`task plan approve` and `task start-ready` must run sequentially, never in parallel.",
       "In `direct`, `finish` creates the deterministic close commit by default.",
-      "Use `--no-close-commit` only for explicit manual close handling.",
+      "Treat `task verify-show` as the verification contract right before `verify` and `finish`.",
     ],
   },
   {
-    heading: "5. Recover mixed or broken state",
+    heading: "3. Fallbacks and recovery",
     summary:
-      "Use diagnostics before manual repair, especially after framework upgrades or partial edits.",
+      "Keep exceptional paths out of the normal route: use these only for recovery, framework upgrades, or branch_pr work.",
     commands: BOOTSTRAP_RECOVERY_COMMANDS,
     notes: [
       "Run `doctor` before touching managed policy files by hand.",
       "`upgrade` applies the managed framework files from the installed CLI bundle.",
+      "Manual close handling (`--no-close-commit`, `--close-unstage-others`) belongs here, not in the default direct path.",
     ],
   },
 ] as const;
@@ -140,14 +116,15 @@ export function renderBootstrapDoc(): string {
     "",
     ...renderCommandBlock(BOOTSTRAP_PREFLIGHT_COMMANDS),
     "",
-    "After preflight, continue with the smallest task flow that matches your mode and role.",
+    "After preflight, stay on the direct happy path unless the repository state is broken or you are explicitly in `branch_pr`.",
     "",
     ...renderBootstrapSectionLines(BOOTSTRAP_SECTIONS),
     "",
-    "## Direct vs branch_pr",
+    "## Non-default paths",
     "",
-    "- `direct`: work in the current checkout and finish the task yourself.",
+    "- `direct`: the default route is `task new/plan approve/start-ready -> task verify-show -> verify -> finish`.",
     "- `branch_pr`: start a task branch/worktree, maintain PR artifacts, and let INTEGRATOR close on base.",
+    "- Use manual close flags only when a specific policy or recovery situation requires them.",
     "",
   ];
   return `${lines.join("\n")}\n`;
