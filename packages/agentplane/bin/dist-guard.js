@@ -33,12 +33,13 @@ function resolveGitHead(cwd) {
   }
 }
 
-function listGitPaths(cwd, args) {
+function listGitPaths(cwd, args, options = {}) {
+  const trimLines = options.trimLines ?? true;
   try {
     const out = execFileSync("git", args, { cwd, encoding: "utf8" });
     return out
       .split(/\r?\n/u)
-      .map((line) => line.trim())
+      .map((line) => (trimLines ? line.trim() : line))
       .filter(Boolean);
   } catch {
     return [];
@@ -50,14 +51,19 @@ function uniqueSorted(values) {
 }
 
 function workingTreeChangedPaths(cwd, watchedPaths) {
-  const lines = listGitPaths(cwd, [
-    "status",
-    "--porcelain",
-    "--untracked-files=all",
-    "--",
-    ...watchedPaths,
-  ]);
-  return uniqueSorted(lines.map((line) => line.slice(3).trim()).filter(Boolean));
+  const lines = listGitPaths(
+    cwd,
+    ["status", "--porcelain", "--untracked-files=all", "--", ...watchedPaths],
+    { trimLines: false },
+  );
+  return uniqueSorted(
+    lines
+      .map((line) => {
+        const normalized = String(line ?? "");
+        return normalized.length > 3 ? normalized.slice(3).trim() : "";
+      })
+      .filter(Boolean),
+  );
 }
 
 function committedChangedPathsSince(cwd, fromGitHead, watchedPaths) {

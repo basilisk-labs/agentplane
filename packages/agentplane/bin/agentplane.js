@@ -4,6 +4,7 @@ import path from "node:path";
 import { stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
+import { classifyStaleDistPolicy } from "./stale-dist-policy.js";
 import { isPathInside, resolveFrameworkBinaryContext } from "./runtime-context.js";
 
 async function exists(p) {
@@ -139,7 +140,13 @@ async function assertDistUpToDate() {
     {
       name: "agentplane",
       root: agentplaneRoot,
-      watchedPaths: ["src", "bin/agentplane.js", "bin/dist-guard.js"],
+      watchedPaths: [
+        "src",
+        "bin/agentplane.js",
+        "bin/dist-guard.js",
+        "bin/runtime-context.js",
+        "bin/stale-dist-policy.js",
+      ],
     },
   ];
   if (await exists(path.join(coreRoot, "src")))
@@ -165,6 +172,24 @@ async function assertDistUpToDate() {
           "proceeding with existing dist output.\n" +
           `detected: ${staleReasons.join(", ")}\n` +
           "tip: rebuild (`bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build`) or reinstall from npm for stable global usage.\n",
+      );
+      return true;
+    }
+
+    const commandPolicy = classifyStaleDistPolicy(process.argv);
+    if (commandPolicy.mode === "warn_and_run") {
+      const commandText = process.argv
+        .slice(2)
+        .map((value) => String(value ?? "").trim())
+        .filter(Boolean)
+        .join(" ");
+      process.stderr.write(
+        "warning: allowing read-only diagnostic command to run with a stale repo build inside the framework checkout.\n" +
+          `command: ${commandText || "<unknown>"}\n` +
+          `detected: ${staleReasons.join(", ")}\n` +
+          "rebuild recommended:\n" +
+          "  bun run --filter=@agentplaneorg/core build\n" +
+          "  bun run --filter=agentplane build\n",
       );
       return true;
     }

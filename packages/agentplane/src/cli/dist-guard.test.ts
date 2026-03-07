@@ -30,6 +30,16 @@ async function setupPackageRepo() {
   await writeFile(path.join(packageRoot, "src", "cli.ts"), "export const cli = 1;\n", "utf8");
   await writeFile(path.join(packageRoot, "src", "index.ts"), "export const index = 1;\n", "utf8");
   await writeFile(path.join(packageRoot, "bin", "agentplane.js"), "#!/usr/bin/env node\n", "utf8");
+  await writeFile(
+    path.join(packageRoot, "bin", "runtime-context.js"),
+    "export const runtime = 1;\n",
+    "utf8",
+  );
+  await writeFile(
+    path.join(packageRoot, "bin", "stale-dist-policy.js"),
+    "export const policy = 1;\n",
+    "utf8",
+  );
 
   await execFileAsync("git", ["init", "-q", "-b", "main"], { cwd: repoRoot });
   await execFileAsync("git", ["config", "user.name", "Dist Guard Test"], { cwd: repoRoot });
@@ -78,7 +88,12 @@ describe("dist-guard", () => {
       await execFileAsync("git", ["commit", "-m", "docs: update readme"], { cwd: repoRoot });
 
       const result = await readBuildFreshness(packageRoot, {
-        watchedPaths: ["src", "bin/agentplane.js"],
+        watchedPaths: [
+          "src",
+          "bin/agentplane.js",
+          "bin/runtime-context.js",
+          "bin/stale-dist-policy.js",
+        ],
       });
 
       expect(result.ok).toBe(true);
@@ -94,11 +109,36 @@ describe("dist-guard", () => {
     await execFileAsync("git", ["commit", "-m", "feat: change cli runtime"], { cwd: repoRoot });
 
     const result = await readBuildFreshness(packageRoot, {
-      watchedPaths: ["src", "bin/agentplane.js"],
+      watchedPaths: [
+        "src",
+        "bin/agentplane.js",
+        "bin/runtime-context.js",
+        "bin/stale-dist-policy.js",
+      ],
     });
 
     expect(result.ok).toBe(false);
     expect(result.reason).toBe("watched_paths_changed");
     expect(result.changedPaths).toContain("packages/agentplane/src/cli.ts");
+  });
+
+  it("tracks standalone runtime bin policy files as watched paths", async () => {
+    const { packageRoot } = await setupPackageRepo();
+    const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
+    const current = await readFile(policyPath, "utf8");
+    await writeFile(policyPath, `${current}export const dirty = 1;\n`, "utf8");
+
+    const result = await readBuildFreshness(packageRoot, {
+      watchedPaths: [
+        "src",
+        "bin/agentplane.js",
+        "bin/runtime-context.js",
+        "bin/stale-dist-policy.js",
+      ],
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.reason).toBe("watched_paths_changed");
+    expect(result.changedPaths).toContain("packages/agentplane/bin/stale-dist-policy.js");
   });
 });

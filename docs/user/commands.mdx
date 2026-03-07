@@ -89,6 +89,10 @@ Inside the Agent Plane framework checkout, the same command now acts as the cano
 framework-dev workflow surface: it prints rebuild steps, the reinstall helper, the follow-up
 runtime check, and the optional force-global override in one place.
 
+If watched runtime paths are dirty inside the framework checkout, `agentplane runtime explain` and
+`agentplane doctor` warn and continue as read-only diagnostics; stricter commands still keep the
+stale-build hard-fail.
+
 ## Tasks
 
 ```bash

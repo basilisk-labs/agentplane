@@ -31,6 +31,8 @@ bun run --filter=@agentplaneorg/core build
 bun run --filter=agentplane build
 ```
 
+- Read-only diagnostics `agentplane doctor` and `agentplane runtime explain` warn and continue even
+  while stale-build blocking is still active for stricter commands inside the framework checkout.
 - Retry the original command after the rebuild.
 - Run `agentplane runtime explain` if you need to confirm which binary handed off and which package
   roots are active before retrying.
