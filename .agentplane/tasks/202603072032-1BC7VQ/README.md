@@ -1,7 +1,8 @@
 ---
 id: "202603072032-1BC7VQ"
 title: "Snapshot watched runtime files in build manifest"
-status: "DOING"
+result_summary: "Added a shared runtime-watch helper, persisted watched file hashes in manifests for agentplane/core, and updated test fixtures to use the shared watch contract."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-07T20:53:22.147Z"
   updated_by: "CODER"
   note: "Build manifests now persist deterministic watched-runtime snapshots with content hashes for agentplane and core. Verified with runtime-watch, dist-guard, stale-readonly, repo-local-handoff, and global-install manifest tests; builds and routing pass; eslint is clean on touched files."
-commit: null
+commit:
+  hash: "30e9ba26bf7291c890ad4065b66e1aa4f5206e8d"
+  message: "🧱 1BC7VQ build: snapshot watched runtime files"
 comments:
   -
     author: "CODER"
     body: "Start: add deterministic watched-runtime snapshots to build manifests so stale-dist freshness can compare built source state instead of raw git dirtiness in the next task."
+  -
+    author: "CODER"
+    body: "Verified: build manifests now record deterministic watched-runtime snapshots while existing stale-dist consumers remain compatible."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Build manifests now persist deterministic watched-runtime snapshots with content hashes for agentplane and core. Verified with runtime-watch, dist-guard, stale-readonly, repo-local-handoff, and global-install manifest tests; builds and routing pass; eslint is clean on touched files."
+  -
+    type: "status"
+    at: "2026-03-07T20:54:00.998Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: build manifests now record deterministic watched-runtime snapshots while existing stale-dist consumers remain compatible."
 doc_version: 2
-doc_updated_at: "2026-03-07T20:53:22.149Z"
+doc_updated_at: "2026-03-07T20:54:00.998Z"
 doc_updated_by: "CODER"
 description: "Record watched runtime file state during build so stale-dist freshness can be compared against built source instead of git dirtiness alone."
 id_source: "generated"
