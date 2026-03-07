@@ -8,8 +8,28 @@ const ROOT = process.cwd();
 const CLI_DIST_DIR = path.join(ROOT, "packages", "agentplane", "dist", "cli");
 const BOOTSTRAP_DIST = path.join(CLI_DIST_DIR, "bootstrap-guide.js");
 const COMMAND_GUIDE_DIST = path.join(CLI_DIST_DIR, "command-guide.js");
+const RUNTIME_COMMAND_DIST = path.join(
+  ROOT,
+  "packages",
+  "agentplane",
+  "dist",
+  "commands",
+  "runtime.command.js",
+);
+const RUNTIME_SOURCE_DIST = path.join(
+  ROOT,
+  "packages",
+  "agentplane",
+  "dist",
+  "shared",
+  "runtime-source.js",
+);
 const DOC_PATH = path.join(ROOT, "docs", "user", "agent-bootstrap.generated.mdx");
 const AGENTS_PATH = path.join(ROOT, "AGENTS.md");
+const COMMANDS_DOC_PATH = path.join(ROOT, "docs", "user", "commands.mdx");
+const TROUBLESHOOTING_DOC_PATH = path.join(ROOT, "docs", "help", "troubleshooting.mdx");
+const TESTING_DOC_PATH = path.join(ROOT, "docs", "developer", "testing-and-quality.mdx");
+const RELEASE_DOC_PATH = path.join(ROOT, "docs", "developer", "release-and-publishing.mdx");
 
 async function fileExists(p) {
   try {
@@ -61,8 +81,20 @@ function assertEqualBlock(actual, expected, label) {
   }
 }
 
+function assertIncludesAll(source, expected, label) {
+  const missing = expected.filter((fragment) => !source.includes(fragment));
+  if (missing.length > 0) {
+    throw new Error(`${label} drifted. Missing fragments:\n- ${missing.join("\n- ")}`);
+  }
+}
+
 async function main() {
-  if (!(await fileExists(BOOTSTRAP_DIST)) || !(await fileExists(COMMAND_GUIDE_DIST))) {
+  if (
+    !(await fileExists(BOOTSTRAP_DIST)) ||
+    !(await fileExists(COMMAND_GUIDE_DIST)) ||
+    !(await fileExists(RUNTIME_COMMAND_DIST)) ||
+    !(await fileExists(RUNTIME_SOURCE_DIST))
+  ) {
     throw new Error(
       "CLI dist is missing. Build first:\n" +
         "  bun run --filter=@agentplaneorg/core build\n" +
@@ -72,6 +104,8 @@ async function main() {
 
   const bootstrapModule = await import(pathToFileURL(BOOTSTRAP_DIST).href);
   const commandGuideModule = await import(pathToFileURL(COMMAND_GUIDE_DIST).href);
+  const runtimeModule = await import(pathToFileURL(RUNTIME_COMMAND_DIST).href);
+  const runtimeSourceModule = await import(pathToFileURL(RUNTIME_SOURCE_DIST).href);
   const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-bootstrap-doc-"));
   const generatedPath = path.join(tempDir, "agent-bootstrap.generated.mdx");
 
@@ -79,10 +113,31 @@ async function main() {
     await writeFile(generatedPath, bootstrapModule.renderBootstrapDoc(), "utf8");
     await runBunx(["prettier", "--write", generatedPath]);
 
-    const [expectedDoc, actualDoc, agentsRaw] = await Promise.all([
+    const runtimeReport = runtimeSourceModule.resolveRuntimeSourceInfo({
+      cwd: ROOT,
+      activeBinaryPath: path.join(ROOT, "packages", "agentplane", "bin", "agentplane.js"),
+      agentplanePackageRoot: path.join(ROOT, "packages", "agentplane"),
+      corePackageJsonPath: path.join(ROOT, "packages", "core", "package.json"),
+      entryModuleUrl: pathToFileURL(RUNTIME_COMMAND_DIST).href,
+    });
+    const frameworkDev = runtimeModule.buildFrameworkDevWorkflow(runtimeReport);
+
+    const [
+      expectedDoc,
+      actualDoc,
+      agentsRaw,
+      commandsDoc,
+      troubleshootingDoc,
+      testingDoc,
+      releaseDoc,
+    ] = await Promise.all([
       readFile(DOC_PATH, "utf8"),
       readFile(generatedPath, "utf8"),
       readFile(AGENTS_PATH, "utf8"),
+      readFile(COMMANDS_DOC_PATH, "utf8"),
+      readFile(TROUBLESHOOTING_DOC_PATH, "utf8"),
+      readFile(TESTING_DOC_PATH, "utf8"),
+      readFile(RELEASE_DOC_PATH, "utf8"),
     ]);
 
     if (expectedDoc !== actualDoc) {
@@ -98,26 +153,123 @@ async function main() {
     );
     assertEqualBlock(
       extractCodeBlock(agentsRaw, "### Task lifecycle"),
-      [...bootstrapModule.BOOTSTRAP_TASK_LIFECYCLE_COMMANDS],
+      bootstrapModule.BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS.filter(
+        (command) => command !== "agentplane task verify-show <task-id>",
+      ),
       "AGENTS task lifecycle block",
     );
     assertEqualBlock(
       extractCodeBlock(agentsRaw, "### Verification"),
-      [...bootstrapModule.BOOTSTRAP_VERIFICATION_COMMANDS],
+      [
+        bootstrapModule.BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS.find((command) =>
+          command.startsWith("agentplane task verify-show "),
+        ),
+        bootstrapModule.BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS.find((command) =>
+          command.startsWith("agentplane verify "),
+        ),
+        bootstrapModule.BOOTSTRAP_RECOVERY_COMMANDS.find(
+          (command) => command === "agentplane doctor",
+        ),
+        "node .agentplane/policy/check-routing.mjs",
+      ].filter(Boolean),
       "AGENTS verification block",
     );
 
     const quickstartText = commandGuideModule.renderQuickstart();
-    if (!quickstartText.includes(bootstrapModule.AGENT_BOOTSTRAP_DOC_PATH)) {
-      throw new Error("quickstart no longer references the canonical bootstrap doc");
-    }
-    const coderRole = commandGuideModule.renderRole("CODER");
-    if (!coderRole || !coderRole.includes(bootstrapModule.AGENT_BOOTSTRAP_DOC_PATH)) {
-      throw new Error("role CODER no longer references the canonical bootstrap doc");
+    assertIncludesAll(
+      quickstartText,
+      [
+        bootstrapModule.AGENT_BOOTSTRAP_DOC_PATH,
+        "agentplane role <ROLE>",
+        "agentplane help <command>",
+        "docs/user/cli-reference.generated.mdx",
+        "agentplane doctor",
+        "agentplane upgrade",
+        "agentplane runtime explain",
+        "agentplane help work start",
+        "agentplane help pr",
+        "agentplane help integrate",
+      ],
+      "quickstart surface",
+    );
+
+    for (const role of commandGuideModule.listRoles()) {
+      const roleText = commandGuideModule.renderRole(role);
+      if (!roleText) {
+        throw new Error(`role ${role} is missing from the command guide`);
+      }
+      assertIncludesAll(
+        roleText,
+        [bootstrapModule.AGENT_BOOTSTRAP_DOC_PATH],
+        `role ${role} bootstrap reference`,
+      );
     }
 
+    assertIncludesAll(
+      commandGuideModule.renderRole("TESTER") ?? "",
+      ["agentplane doctor", "agentplane runtime explain"],
+      "role TESTER recovery guidance",
+    );
+    assertIncludesAll(
+      commandGuideModule.renderRole("DOCS") ?? "",
+      ["docs/user/cli-reference.generated.mdx"],
+      "role DOCS deep reference guidance",
+    );
+    assertIncludesAll(
+      commandGuideModule.renderRole("INTEGRATOR") ?? "",
+      ["agentplane help work start", "agentplane help integrate", "agentplane help branch base"],
+      "role INTEGRATOR branch guidance",
+    );
+
+    assertIncludesAll(
+      commandsDoc,
+      [
+        "[Agent bootstrap](agent-bootstrap.generated)",
+        "agentplane runtime explain",
+        "agentplane runtime explain --json",
+        "repo-local",
+        "repo-local-handoff",
+        "reinstall helper",
+        "force-global override",
+      ],
+      "docs/user/commands.mdx runtime parity",
+    );
+
+    assertIncludesAll(
+      testingDoc,
+      [
+        "agentplane runtime explain",
+        frameworkDev.reinstallScript,
+        ...frameworkDev.rebuildCommands,
+        "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
+      ],
+      "docs/developer/testing-and-quality.mdx framework-dev parity",
+    );
+
+    assertIncludesAll(
+      troubleshootingDoc,
+      [
+        ...frameworkDev.rebuildCommands,
+        frameworkDev.verifyCommand,
+        "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
+        "Mode",
+        "Active binary",
+        "Resolved agentplane",
+        "Resolved @agentplaneorg/core",
+        "bun run release:recover",
+        "bun run release:recover -- --check-registry",
+      ],
+      "docs/help/troubleshooting.mdx recovery parity",
+    );
+
+    assertIncludesAll(
+      releaseDoc,
+      ["bun run release:recover", "bun run release:recover -- --check-registry"],
+      "docs/developer/release-and-publishing.mdx recovery parity",
+    );
+
     process.stdout.write(
-      "ok: bootstrap doc, AGENTS command blocks, quickstart, and role guidance are aligned\n",
+      "ok: bootstrap doc, startup command blocks, quickstart/roles, runtime docs, troubleshooting, and release recovery docs are aligned\n",
     );
   } finally {
     await rm(tempDir, { recursive: true, force: true });

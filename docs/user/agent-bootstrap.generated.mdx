@@ -17,7 +17,7 @@ git status --short --untracked-files=no
 git rev-parse --abbrev-ref HEAD
 ```
 
-After preflight, continue with the smallest task flow that matches your mode and role.
+After preflight, stay on the direct happy path unless the repository state is broken or you are explicitly in `branch_pr`.
 
 ## 1. Preflight
 
@@ -32,39 +32,27 @@ Establish workflow mode, current branch, current task state, and tracked working
 - Run this before any mutation.
 - If the project is not initialized, stop and use `agentplane init` first.
 
-## 2. Prepare executable task scope
+## 2. Direct happy path
 
-Work only through executable task ids. Create the task, fill plan/docs, then approve the plan.
+Use one short direct-mode route: create the task, approve it, start it, verify it, and finish it.
 
 - `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`
 - `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`
 - `agentplane task plan approve <task-id> --by ORCHESTRATOR`
-
-- Use `task doc set` to fill required README sections before approval.
-- For dependent tasks, wait until upstream tasks are DONE before `task start-ready`.
-
-## 3. Start work deterministically
-
-Move the task to DOING only after plan approval succeeds.
-
 - `agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."`
-
-- `task plan approve` and `task start-ready` must run sequentially, never in parallel.
-
-## 4. Verify and finish
-
-Treat Verify Steps as the contract, then record verification and close with traceable metadata.
-
 - `agentplane task verify-show <task-id>`
 - `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`
 - `agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "..." --commit <git-rev>`
 
+- Use `task doc set` to fill required README sections before approval.
+- For dependent tasks, wait until upstream tasks are DONE before `task start-ready`.
+- `task plan approve` and `task start-ready` must run sequentially, never in parallel.
 - In `direct`, `finish` creates the deterministic close commit by default.
-- Use `--no-close-commit` only for explicit manual close handling.
+- Treat `task verify-show` as the verification contract right before `verify` and `finish`.
 
-## 5. Recover mixed or broken state
+## 3. Fallbacks and recovery
 
-Use diagnostics before manual repair, especially after framework upgrades or partial edits.
+Keep exceptional paths out of the normal route: use these only for recovery, framework upgrades, or branch_pr work.
 
 - `agentplane doctor`
 - `agentplane upgrade --dry-run`
@@ -72,8 +60,10 @@ Use diagnostics before manual repair, especially after framework upgrades or par
 
 - Run `doctor` before touching managed policy files by hand.
 - `upgrade` applies the managed framework files from the installed CLI bundle.
+- Manual close handling (`--no-close-commit`, `--close-unstage-others`) belongs here, not in the default direct path.
 
-## Direct vs branch_pr
+## Non-default paths
 
-- `direct`: work in the current checkout and finish the task yourself.
+- `direct`: the default route is `task new/plan approve/start-ready -> task verify-show -> verify -> finish`.
 - `branch_pr`: start a task branch/worktree, maintain PR artifacts, and let INTEGRATOR close on base.
+- Use manual close flags only when a specific policy or recovery situation requires them.

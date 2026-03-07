@@ -94,6 +94,8 @@ agentplane runtime explain
 - Why this happens: `release:prepublish` gate failed (tests/lint/build/sync checks).
 - What to do:
 - Run `bun run release:prepublish`.
+- Run `bun run release:recover` to classify tag/version/notes drift before retrying.
+- If npm history may already contain the target version, run `bun run release:recover -- --check-registry`.
 - Fix reported errors first, then run `agentplane release apply --push` again.
 
 ## init completed, but repo is not clean
