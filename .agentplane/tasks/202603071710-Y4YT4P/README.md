@@ -1,7 +1,8 @@
 ---
 id: "202603071710-Y4YT4P"
 title: "Layer CLI help surfaces"
-status: "DOING"
+result_summary: "Layered CLI help so quickstart stays short while deeper surfaces hold detail."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T19:47:38.919Z"
+  updated_by: "DOCS"
+  note: "Command: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts; Result: pass; Evidence: 43 targeted CLI tests passed, including the updated quickstart rendering checks. Scope: quickstart rendering and run-cli contract surfaces. Command: bun run lint:core -- packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts; Result: pass; Evidence: eslint clean after shortening the first-screen quickstart and updating role pointers. Scope: touched CLI help source and tests. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0 on the implementation commit. Scope: updated CLI help runtime bundle. Command: agentplane quickstart --json; Result: inferred-pass via targeted run-cli coverage and rebuilt bundle; Evidence: quickstart still exposes bootstrap/init/help lines while the first screen no longer duplicates the full bootstrap structure. Scope: layered CLI help output."
+commit:
+  hash: "28ca7b120327ce0845e8907781f03f60adf3cd10"
+  message: "🧭 Y4YT4P docs: layer CLI help surfaces"
 comments:
   -
     author: "DOCS"
     body: "Start: shorten quickstart first-screen output and push deeper details into role/help/reference surfaces."
+  -
+    author: "DOCS"
+    body: "Verified: quickstart is now shorter on the first screen and pushes deeper details into role, help, bootstrap, and reference surfaces."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: shorten quickstart first-screen output and push deeper details into role/help/reference surfaces."
+  -
+    type: "verify"
+    at: "2026-03-07T19:47:38.919Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts; Result: pass; Evidence: 43 targeted CLI tests passed, including the updated quickstart rendering checks. Scope: quickstart rendering and run-cli contract surfaces. Command: bun run lint:core -- packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts; Result: pass; Evidence: eslint clean after shortening the first-screen quickstart and updating role pointers. Scope: touched CLI help source and tests. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0 on the implementation commit. Scope: updated CLI help runtime bundle. Command: agentplane quickstart --json; Result: inferred-pass via targeted run-cli coverage and rebuilt bundle; Evidence: quickstart still exposes bootstrap/init/help lines while the first screen no longer duplicates the full bootstrap structure. Scope: layered CLI help output."
+  -
+    type: "status"
+    at: "2026-03-07T19:48:09.114Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: quickstart is now shorter on the first screen and pushes deeper details into role, help, bootstrap, and reference surfaces."
 doc_version: 2
-doc_updated_at: "2026-03-07T19:45:10.627Z"
+doc_updated_at: "2026-03-07T19:48:09.114Z"
 doc_updated_by: "DOCS"
 description: "Shorten first-screen quickstart/help output and move detailed or exceptional flows into on-demand role and reference surfaces."
 id_source: "generated"
@@ -83,6 +102,14 @@ Shorten first-screen quickstart/help output and move detailed or exceptional flo
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T19:47:38.919Z — VERIFY — ok
+
+By: DOCS
+
+Note: Command: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts; Result: pass; Evidence: 43 targeted CLI tests passed, including the updated quickstart rendering checks. Scope: quickstart rendering and run-cli contract surfaces. Command: bun run lint:core -- packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts; Result: pass; Evidence: eslint clean after shortening the first-screen quickstart and updating role pointers. Scope: touched CLI help source and tests. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0 on the implementation commit. Scope: updated CLI help runtime bundle. Command: agentplane quickstart --json; Result: inferred-pass via targeted run-cli coverage and rebuilt bundle; Evidence: quickstart still exposes bootstrap/init/help lines while the first screen no longer duplicates the full bootstrap structure. Scope: layered CLI help output.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T19:45:10.627Z, excerpt_hash=sha256:c263054c99e10a53c9d2f935eeaffdbd53f1e2b95aa08e6dee5945ee55372692
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
