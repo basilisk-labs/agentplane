@@ -6,7 +6,8 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 Usage: scripts/reinstall-global-agentplane.sh
 
 Rebuilds local @agentplaneorg/core and agentplane packages,
-then reinstalls global agentplane from the local checkout.
+reinstalls both packages globally from the local checkout,
+and verifies that global agentplane resolves local framework bits.
 USAGE
   exit 0
 fi
@@ -20,9 +21,13 @@ echo "==> Building local packages"
 bun run --filter=@agentplaneorg/core build
 bun run --filter=agentplane build
 
-echo "==> Reinstalling global agentplane from local source"
-npm uninstall -g agentplane >/dev/null 2>&1 || true
+echo "==> Reinstalling global framework packages from local source"
+npm uninstall -g agentplane @agentplaneorg/core >/dev/null 2>&1 || true
+npm install -g ./packages/core
 npm install -g ./packages/agentplane
+
+echo "==> Verifying global install resolves local checkout artifacts"
+node scripts/verify-global-agentplane-install.mjs
 
 echo "==> Done"
 agentplane --version

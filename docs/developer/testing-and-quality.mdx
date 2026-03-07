@@ -29,6 +29,17 @@ bun run --filter=agentplane build
 To force the global installed CLI instead of the repo-local handoff during framework debugging, set
 `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1`.
 
+If you want the globally installed `agentplane` command itself to come from this checkout, use the
+developer reinstall helper:
+
+```bash
+scripts/reinstall-global-agentplane.sh
+```
+
+It rebuilds local `@agentplaneorg/core` and `agentplane`, reinstalls both packages globally from
+this checkout, and verifies that the global `agentplane` runtime resolves `@agentplaneorg/core`
+from this checkout instead of a published fallback.
+
 For a full run (including slower CLI integration tests):
 
 ```bash
