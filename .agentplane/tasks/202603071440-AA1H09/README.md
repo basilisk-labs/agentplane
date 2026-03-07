@@ -1,7 +1,7 @@
 ---
 id: "202603071440-AA1H09"
 title: "Document upgrade state model"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -10,20 +10,30 @@ tags:
   - "docs"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T16:20:54.884Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: document the upgrade state model explicitly."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: document the clean, partial, and manually drifted upgrade states so recovery guidance stops depending on implicit mental models."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T16:20:55.230Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: document the clean, partial, and manually drifted upgrade states so recovery guidance stops depending on implicit mental models."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:40:19.758Z"
+doc_updated_at: "2026-03-07T16:20:55.230Z"
 doc_updated_by: "DOCS"
 description: "Explain clean managed state, partial upgrade state, and manual drift state in one upgrade-focused model."
 id_source: "generated"

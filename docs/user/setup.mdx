@@ -123,22 +123,47 @@ agentplane upgrade
 
 Default mode applies the managed framework files from the installed CLI bundle and creates a dedicated upgrade commit.
 
+### Upgrade state model
+
+Think about upgrade in three states:
+
+1. **Clean managed state**
+   `AGENTS.md`, `.agentplane/policy/**`, and other managed framework files match the installed CLI bundle.
+   Normal path:
+
+   ```bash
+   agentplane upgrade
+   ```
+
+2. **Partial upgrade state**
+   The gateway or part of the managed tree changed, but not all managed files were updated.
+   Typical recovery:
+
+   ```bash
+   agentplane doctor
+   agentplane upgrade --yes
+   ```
+
+3. **Manual drift state**
+   Managed files were edited by hand, or the workspace was updated with an older CLI than expected.
+   Recovery starts with diagnostics and may require reinstalling/updating the CLI first:
+
+   ```bash
+   agentplane doctor
+   agentplane upgrade --remote --yes
+   ```
+
 - managed files are replace-first on apply, except `.agentplane/policy/incidents.md`, which is append-only when local content already exists;
 - upgrade prints the bundle source, resolved version label, and selected mode before doing any work.
 
-Preview only:
+Non-default modes:
 
 ```bash
 agentplane upgrade --dry-run
-```
-
-Review-plan mode without writes:
-
-```bash
 agentplane upgrade --agent
 ```
 
-Default apply and explicit `--auto` both create a dedicated upgrade commit with the target upgrade version in the commit message.
+`--dry-run` is the preview path. `--agent` keeps the older review-plan mode without writes.
 
 If a legacy project ends up with a new gateway but missing policy modules after upgrade, use the
 [Legacy upgrade recovery](../help/legacy-upgrade-recovery) runbook.

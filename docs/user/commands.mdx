@@ -117,6 +117,14 @@ agentplane finish <task-id> --author CODER --body "Verified: ..." --result "One-
 In `direct`, `finish` creates the deterministic close commit by default. Use `--no-close-commit`
 only when close handling must stay manual.
 
+Rare/manual finish paths:
+
+```bash
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..." --commit <git-rev> --no-close-commit
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..." --commit <git-rev> --close-commit
+agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..." --commit <git-rev> --close-commit --close-unstage-others
+```
+
 For any commit-capable command (`commit`, `guard commit`, `start/block/finish ... --commit-from-comment`):
 
 - Always pass explicit allowlist prefixes (`--allow` / `--commit-allow` / `--status-commit-allow`).

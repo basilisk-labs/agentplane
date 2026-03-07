@@ -161,6 +161,7 @@ sequenceDiagram
   - `agentplane task close-duplicate <task-id> --of <canonical-task-id> --author <ROLE>`
 - **Preferred close flow (single command)**:
   - In `direct`, `agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev>` closes task metadata and creates the deterministic close commit in one step by default.
+- **Exceptional/manual close paths**:
   - Use `--no-close-commit` only when you need to leave close handling manual.
   - In `branch_pr`, or when you want to be explicit, use `--close-commit`.
   - Add `--close-unstage-others` when unrelated staged files are present and you are using explicit `--close-commit`.

@@ -1,7 +1,7 @@
 ---
 id: "202603071440-MJHV8H"
 title: "Link doctor diagnostics to recovery guidance"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -10,20 +10,30 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T16:20:54.998Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: doctor should point directly to the recovery path."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: make doctor diagnostics point directly to the new recovery guidance and exact upgrade commands for incomplete managed policy trees."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T16:20:55.350Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: make doctor diagnostics point directly to the new recovery guidance and exact upgrade commands for incomplete managed policy trees."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:40:19.449Z"
+doc_updated_at: "2026-03-07T16:20:55.350Z"
 doc_updated_by: "CODER"
 description: "Make doctor diagnostics point directly to the recovery commands and docs for missing managed policy trees and related hybrid states."
 id_source: "generated"

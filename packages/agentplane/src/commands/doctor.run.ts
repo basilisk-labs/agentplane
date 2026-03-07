@@ -124,7 +124,8 @@ async function checkWorkspace(repoRoot: string): Promise<string[]> {
           `Missing required files: ${listed}${more}. ` +
           "This often means AGENTS.md/CLAUDE.md was updated manually or the repo was upgraded " +
           "with an older agentplane CLI. Recovery: update or reinstall agentplane, then run " +
-          "`agentplane upgrade --yes` (or `agentplane upgrade --remote --yes`).",
+          "`agentplane upgrade --yes` (or `agentplane upgrade --remote --yes`). " +
+          "See `docs/help/legacy-upgrade-recovery.mdx` for the shortest recovery path.",
       );
     }
   }

@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { runDoctor } from "./doctor.command.js";
 
@@ -254,10 +254,20 @@ describe("doctor.command", () => {
   it("fails when the managed policy tree is incomplete for the active gateway", async () => {
     const ws = await mkWorkspace();
     await rm(path.join(ws.root, ".agentplane", "policy", "workflow.upgrade.md"), { force: true });
-    const rc = await runDoctor(
-      { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-      { fix: false, dev: false },
-    );
-    expect(rc).toBe(1);
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(1);
+      expect(stderr.mock.calls.flat().join("\n")).toContain(
+        "docs/help/legacy-upgrade-recovery.mdx",
+      );
+    } finally {
+      stderr.mockRestore();
+    }
   });
 });

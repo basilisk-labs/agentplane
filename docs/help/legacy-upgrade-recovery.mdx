@@ -22,6 +22,11 @@ This is usually a mixed-state workspace:
 2. the managed `.agentplane/policy/**` tree was not updated fully;
 3. the installed CLI bundle used for `agentplane upgrade` was older than expected, or the upgrade was never applied.
 
+In the upgrade state model from [Setup](../user/setup), this is usually either:
+
+- **partial upgrade state**: some managed files changed, but the full bundle was not applied;
+- **manual drift state**: managed files were edited by hand or updated with the wrong CLI bundle.
+
 ## Shortest recovery path
 
 1. Confirm the installed CLI is the version you actually intend to use.
