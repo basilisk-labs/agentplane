@@ -1,8 +1,10 @@
 #!/usr/bin/env node
+import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { stat } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { distExists, isPackageBuildFresh } from "./dist-guard.js";
+import { resolveFrameworkBinaryContext } from "./runtime-context.js";
 
 async function exists(p) {
   try {
@@ -14,15 +16,12 @@ async function exists(p) {
 }
 
 async function maybeWarnGlobalBinaryInRepoCheckout() {
-  const cwd = process.cwd();
-  const repoCli = path.join(cwd, "packages", "agentplane", "src", "cli.ts");
-  const repoBin = path.join(cwd, "packages", "agentplane", "bin", "agentplane.js");
-  if (!(await exists(repoCli)) || !(await exists(repoBin))) return;
-
   const thisBin = fileURLToPath(import.meta.url);
+  const context = resolveFrameworkBinaryContext({ cwd: process.cwd(), thisBin });
+  if (!context.inFrameworkCheckout || context.isRepoLocalBinary) return;
+
   const normalizedThis = path.resolve(thisBin);
-  const normalizedRepo = path.resolve(repoBin);
-  if (normalizedThis === normalizedRepo) return;
+  const normalizedRepo = path.resolve(context.checkout.repoBin);
 
   process.stderr.write(
     "warning: running global agentplane binary inside repository checkout.\n" +
@@ -34,6 +33,53 @@ async function maybeWarnGlobalBinaryInRepoCheckout() {
       "\n" +
       "tip: run `node packages/agentplane/bin/agentplane.js ...` for repo-local changes.\n",
   );
+}
+
+function shouldUseGlobalBinaryInFramework() {
+  return (process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK ?? "").trim() === "1";
+}
+
+function isRepoLocalHandoffInvocation() {
+  return (process.env.AGENTPLANE_REPO_LOCAL_HANDOFF ?? "").trim() === "1";
+}
+
+function handoffToRepoLocalBinary(context) {
+  const repoBin = context.checkout?.repoBin;
+  if (!repoBin) return false;
+
+  process.stderr.write(
+    `info: detected framework checkout; delegating to repo-local binary: ${repoBin}\n`,
+  );
+
+  const result = spawnSync(process.execPath, [repoBin, ...process.argv.slice(2)], {
+    cwd: process.cwd(),
+    stdio: "inherit",
+    env: {
+      ...process.env,
+      AGENTPLANE_REPO_LOCAL_HANDOFF: "1",
+    },
+  });
+
+  if (result.error) {
+    process.stderr.write(`error: failed to launch repo-local binary: ${result.error.message}\n`);
+    process.exitCode = 2;
+    return true;
+  }
+
+  process.exitCode = result.status ?? (result.signal ? 1 : 0);
+  return true;
+}
+
+function maybeHandoffToRepoLocalBinary() {
+  if (shouldUseGlobalBinaryInFramework() || isRepoLocalHandoffInvocation()) return false;
+
+  const context = resolveFrameworkBinaryContext({
+    cwd: process.cwd(),
+    thisBin: fileURLToPath(import.meta.url),
+  });
+  if (!context.inFrameworkCheckout || context.isRepoLocalBinary) return false;
+
+  return handoffToRepoLocalBinary(context);
 }
 
 function isHooksRunCommitMsgInvocation(argv) {
@@ -119,6 +165,8 @@ async function assertDistUpToDate() {
   return true;
 }
 
-await maybeWarnGlobalBinaryInRepoCheckout();
-const ok = isHooksRunCommitMsgInvocation(process.argv) ? true : await assertDistUpToDate();
-if (ok) await import("../dist/cli.js");
+if (!maybeHandoffToRepoLocalBinary()) {
+  await maybeWarnGlobalBinaryInRepoCheckout();
+  const ok = isHooksRunCommitMsgInvocation(process.argv) ? true : await assertDistUpToDate();
+  if (ok) await import("../dist/cli.js");
+}
