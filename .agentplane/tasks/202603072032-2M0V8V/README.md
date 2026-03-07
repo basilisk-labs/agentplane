@@ -1,7 +1,8 @@
 ---
 id: "202603072032-2M0V8V"
 title: "Allow read-only diagnostics under stale dist"
-status: "DOING"
+result_summary: "Added a narrow stale-dist policy for doctor/runtime explain, expanded watched runtime paths, and fixed changed-path reporting."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-07T20:43:03.244Z"
   updated_by: "CODER"
   note: "Read-only diagnostics now warn and continue under stale dist; strict commands still block. Verified with targeted vitest, lint:core, website build, routing check, and manual runtime/task command checks."
-commit: null
+commit:
+  hash: "0c259fa8ccae43339a183a37d637f1f179e6643b"
+  message: "🩺 2M0V8V cli: allow stale read-only diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: add a narrow stale-dist policy exception for read-only diagnostics so framework contributors can run doctor/runtime explain without forcing AGENTPLANE_DEV_ALLOW_STALE_DIST=1."
+  -
+    author: "CODER"
+    body: "Verified: read-only diagnostics now warn and continue under stale dist while stricter commands remain blocked until rebuild."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Read-only diagnostics now warn and continue under stale dist; strict commands still block. Verified with targeted vitest, lint:core, website build, routing check, and manual runtime/task command checks."
+  -
+    type: "status"
+    at: "2026-03-07T20:46:20.273Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: read-only diagnostics now warn and continue under stale dist while stricter commands remain blocked until rebuild."
 doc_version: 2
-doc_updated_at: "2026-03-07T20:43:03.245Z"
+doc_updated_at: "2026-03-07T20:46:20.273Z"
 doc_updated_by: "CODER"
 description: "Let doctor and runtime explain run inside the framework checkout with an explicit warning when watched runtime paths are dirty, while keeping mutating commands blocked."
 id_source: "generated"
