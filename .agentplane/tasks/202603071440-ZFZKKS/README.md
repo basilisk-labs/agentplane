@@ -1,7 +1,8 @@
 ---
 id: "202603071440-ZFZKKS"
 title: "Define canonical agent bootstrap path"
-status: "DOING"
+result_summary: "Defined the canonical agent bootstrap path and wired it into startup surfaces."
+status: "DONE"
 priority: "med"
 owner: "PLANNER"
 depends_on: []
@@ -14,15 +15,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved: bootstrap-doc agent-first cleanup batch."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T14:54:22.576Z"
+  updated_by: "REVIEWER"
+  note: "Verified: shared bootstrap contract, generated bootstrap doc, quickstart/role refactor, drift check, CLI docs freshness, routing check, docs build, and targeted CLI tests all passed."
+commit:
+  hash: "aed6d519fbe50ff428d5fc81e8d6d2566dfa2e98"
+  message: "✨ ZFZKKS docs: unify agent bootstrap surfaces"
 comments:
   -
     author: "CODER"
     body: "Start: define the canonical bootstrap path and encode it before updating the gateway or CLI help surfaces."
+  -
+    author: "CODER"
+    body: "Verified: the shared bootstrap contract now drives startup guidance across quickstart, role output, AGENTS command blocks, and the generated bootstrap doc with an enforced drift check."
 events:
   -
     type: "status"
@@ -31,8 +37,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: define the canonical bootstrap path and encode it before updating the gateway or CLI help surfaces."
+  -
+    type: "verify"
+    at: "2026-03-07T14:54:22.576Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified: shared bootstrap contract, generated bootstrap doc, quickstart/role refactor, drift check, CLI docs freshness, routing check, docs build, and targeted CLI tests all passed."
+  -
+    type: "status"
+    at: "2026-03-07T14:54:22.785Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the shared bootstrap contract now drives startup guidance across quickstart, role output, AGENTS command blocks, and the generated bootstrap doc with an enforced drift check."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:43:10.809Z"
+doc_updated_at: "2026-03-07T14:54:22.785Z"
 doc_updated_by: "CODER"
 description: "Choose the single canonical startup flow for agents and document it so every other entrypoint can point to one path."
 id_source: "generated"
@@ -72,6 +91,14 @@ If the bootstrap path is too abstract, quickstart and AGENTS may still drift or 
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T14:54:22.576Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified: shared bootstrap contract, generated bootstrap doc, quickstart/role refactor, drift check, CLI docs freshness, routing check, docs build, and targeted CLI tests all passed.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:43:10.809Z, excerpt_hash=sha256:2efb66c1b9c8307de67b5b4db3a8c5a993803b2b5e90338efe45457a7124187e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
