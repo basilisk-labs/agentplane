@@ -1,7 +1,8 @@
 ---
 id: "202603072118-K7T5TB"
 title: "Append resolved policy incidents from session"
-status: "DOING"
+result_summary: "Appended resolved incident-derived rules for runtime handoff, stale-dist diagnostics, direct finish closure, legacy upgrade recovery, burned-version release preflight, and release-generated docs synchronization."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-07T21:23:13.339Z"
   updated_by: "TESTER"
   note: "Verified: routing check passed, doctor returned OK with only historical archive warnings, and incidents.md now contains six schema-valid promoted entries backed by this session's task IDs, commits, and enforcement."
-commit: null
+commit:
+  hash: "f7a77c4f11c92ef9755c8092b013af0c7828da95"
+  message: "📝 K7T5TB policy: append resolved incident rules"
 comments:
   -
     author: "DOCS"
     body: "Start: audit this session for confirmed policy incidents, append schema-valid entries to incidents.md only, and verify routing plus doctor before closure."
+  -
+    author: "DOCS"
+    body: "Verified: incidents.md now captures six promoted, session-confirmed incident classes with concrete evidence, routing passed, and doctor returned OK with only historical archive warnings."
 events:
   -
     type: "status"
@@ -37,9 +43,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: routing check passed, doctor returned OK with only historical archive warnings, and incidents.md now contains six schema-valid promoted entries backed by this session's task IDs, commits, and enforcement."
+  -
+    type: "status"
+    at: "2026-03-07T21:26:01.192Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: incidents.md now captures six promoted, session-confirmed incident classes with concrete evidence, routing passed, and doctor returned OK with only historical archive warnings."
 doc_version: 2
-doc_updated_at: "2026-03-07T21:23:13.341Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-03-07T21:26:01.192Z"
+doc_updated_by: "DOCS"
 description: "Analyze this session for confirmed incident classes and append stabilized or open entries to .agentplane/policy/incidents.md with evidence and enforcement."
 id_source: "generated"
 ---
