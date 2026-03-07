@@ -18,6 +18,7 @@ Managed ownership remains framework-first:
 
 - `AGENTS.md` and `.agentplane/policy/**` are framework-managed.
 - `.agentplane/policy/incidents.md` is the sanctioned local place for situational directives.
+- Agents should not read `incidents.md` during the normal startup path; use it only for recovery, incident response, or tasks that directly modify the file.
 
 ## Startup path
 

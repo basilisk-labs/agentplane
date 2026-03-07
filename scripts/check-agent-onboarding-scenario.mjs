@@ -8,6 +8,7 @@ const files = {
   bootstrap: path.join(ROOT, "docs", "user", "agent-bootstrap.generated.mdx"),
   commands: path.join(ROOT, "docs", "user", "commands.mdx"),
   setup: path.join(ROOT, "docs", "user", "setup.mdx"),
+  agents: path.join(ROOT, "docs", "user", "agents.mdx"),
   lifecycle: path.join(ROOT, "docs", "user", "task-lifecycle.mdx"),
   workflow: path.join(ROOT, "docs", "user", "workflow.mdx"),
   branching: path.join(ROOT, "docs", "user", "branching-and-pr-artifacts.mdx"),
@@ -104,7 +105,16 @@ async function main() {
   }
 
   assertIncludes(fileContents.setup, "### Managed ownership contract", "setup");
-  assertIncludes(fileContents.setup, ".agentplane/policy/incidents.md", "setup");
+  assertIncludes(
+    fileContents.setup,
+    "do not treat `incidents.md` as part of the normal startup reading path for agents",
+    "setup",
+  );
+  assertIncludes(
+    fileContents.agents ?? "",
+    "Agents should not read `incidents.md` during the normal startup path",
+    "agents",
+  );
 
   assertIncludes(fileContents.lifecycle, "**Exceptional/manual close paths**", "task lifecycle");
   assertIncludes(fileContents.lifecycle, "--no-close-commit", "task lifecycle");
