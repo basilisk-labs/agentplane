@@ -40,6 +40,7 @@ export function makeRunFinishHandler(getCtx: (cmd: string) => Promise<CommandCon
       statusCommitRequireClean: p.statusCommitRequireClean,
       confirmStatusCommit: p.confirmStatusCommit,
       closeCommit: p.closeCommit,
+      noCloseCommit: p.noCloseCommit,
       closeUnstageOthers: p.closeUnstageOthers,
       quiet: p.quiet,
     });

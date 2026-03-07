@@ -7,7 +7,7 @@ export const COMMAND_SNIPPETS = {
     startTask: 'agentplane task start-ready <task-id> --author <ROLE> --body "Start: ..."',
     verifyTask: 'agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."',
     finishTask:
-      'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev> --close-commit',
+      'agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --commit <git-rev>',
     quickstart: "agentplane quickstart",
     role: "agentplane role <ROLE>",
   },

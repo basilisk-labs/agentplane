@@ -267,6 +267,133 @@ describe("task finish (unit)", () => {
     });
   });
 
+  it("auto-runs deterministic close commit by default in direct mode with local backend", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "direct";
+    const task = mkTask({ id: "T-1", tags: ["meta"] });
+    const store = {
+      get: vi.fn().mockResolvedValue(task),
+      update: vi.fn().mockImplementation((_taskId: string, updater: () => TaskData) => {
+        updater();
+        return Promise.resolve();
+      }),
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        close: true,
+        closeUnstageOthers: false,
+      }),
+    );
+  });
+
+  it("does not auto-run close commit outside direct mode", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    const task = mkTask({ id: "T-1", tags: ["meta"] });
+    const store = {
+      get: vi.fn().mockResolvedValue(task),
+      update: vi.fn().mockImplementation((_taskId: string, updater: () => TaskData) => {
+        updater();
+        return Promise.resolve();
+      }),
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
+  it("suppresses default direct close commit with --no-close-commit", async () => {
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "direct";
+    const task = mkTask({ id: "T-1", tags: ["meta"] });
+    const store = {
+      get: vi.fn().mockResolvedValue(task),
+      update: vi.fn().mockImplementation((_taskId: string, updater: () => TaskData) => {
+        updater();
+        return Promise.resolve();
+      }),
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      noCloseCommit: true,
+      quiet: true,
+    });
+
+    expect(mocks.cmdCommit).not.toHaveBeenCalled();
+  });
+
   it("rejects commit/status commit flags when primary task id is empty", async () => {
     const { cmdFinish } = await import("./finish.js");
     await expect(

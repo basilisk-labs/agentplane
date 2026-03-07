@@ -30,6 +30,7 @@ export type FinishParsed = {
   statusCommitRequireClean: boolean;
   confirmStatusCommit: boolean;
   closeCommit: boolean;
+  noCloseCommit: boolean;
   closeUnstageOthers: boolean;
   quiet: boolean;
 };
@@ -186,6 +187,13 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     },
     {
       kind: "boolean",
+      name: "no-close-commit",
+      default: false,
+      description:
+        "Disable the default deterministic close commit in direct mode (single-task only).",
+    },
+    {
+      kind: "boolean",
       name: "close-unstage-others",
       default: false,
       description:
@@ -271,14 +279,29 @@ export const finishSpec: CommandSpec<FinishParsed> = {
         message: "--close-commit requires exactly one task id",
       });
     }
+    if (raw.opts["no-close-commit"] === true && taskIds.length !== 1) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: "--no-close-commit requires exactly one task id",
+      });
+    }
+    if (raw.opts["close-commit"] === true && raw.opts["no-close-commit"] === true) {
+      throw usageError({
+        spec: finishSpec,
+        command: "finish",
+        message: "--close-commit and --no-close-commit are mutually exclusive",
+      });
+    }
     if (
-      raw.opts["close-commit"] === true &&
+      (raw.opts["close-commit"] === true || raw.opts["no-close-commit"] === true) &&
       (raw.opts["commit-from-comment"] === true || raw.opts["status-commit"] === true)
     ) {
       throw usageError({
         spec: finishSpec,
         command: "finish",
-        message: "--close-commit cannot be combined with --commit-from-comment/--status-commit",
+        message:
+          "--close-commit/--no-close-commit cannot be combined with --commit-from-comment/--status-commit",
       });
     }
     if (raw.opts["close-unstage-others"] === true && raw.opts["close-commit"] !== true) {
@@ -325,6 +348,7 @@ export const finishSpec: CommandSpec<FinishParsed> = {
     statusCommitRequireClean: raw.opts["status-commit-require-clean"] === true,
     confirmStatusCommit: raw.opts["confirm-status-commit"] === true,
     closeCommit: raw.opts["close-commit"] === true,
+    noCloseCommit: raw.opts["no-close-commit"] === true,
     closeUnstageOthers: raw.opts["close-unstage-others"] === true,
     quiet: raw.opts.quiet === true,
   }),

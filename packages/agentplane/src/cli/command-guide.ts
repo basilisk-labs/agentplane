@@ -80,12 +80,12 @@ const CHEAT_SHEET_ROWS: CheatSheetRow[] = [
   {
     operation: "INTEGRATOR: finish task(s)",
     command:
-      '`agentplane finish <task-id> [<task-id> ...] --commit <git-rev> --author INTEGRATOR --body "Verified: ..." [--result "<one line>"] [--close-commit] [--close-unstage-others]`',
+      '`agentplane finish <task-id> [<task-id> ...] --commit <git-rev> --author INTEGRATOR --body "Verified: ..." [--result "<one line>"] [--close-commit|--no-close-commit] [--close-unstage-others]`',
   },
   {
     operation: "INTEGRATOR: commit closure",
     command:
-      "Preferred: `agentplane finish <task-id> --close-commit` (single command). Legacy/manual: `agentplane commit <task-id> --close [--check-only] [--unstage-others]` / duplicate no-op close: `agentplane task close-duplicate <task-id> --of <canonical-task-id> --author <ROLE>`",
+      "Preferred in direct mode: `agentplane finish <task-id>` (auto close-commit). Explicit/manual: `agentplane finish <task-id> --close-commit` / opt-out: `agentplane finish <task-id> --no-close-commit`. Legacy/manual: `agentplane commit <task-id> --close [--check-only] [--unstage-others]` / duplicate no-op close: `agentplane task close-duplicate <task-id> --of <canonical-task-id> --author <ROLE>`",
   },
 ];
 
@@ -122,7 +122,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- Verify Steps: `agentplane task verify-show <task-id>` (use as the verification contract before recording results).",
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred direct close path: `agentplane finish <task-id>` / explicit close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
     ],
   },
   {
@@ -135,7 +135,7 @@ const ROLE_GUIDES: RoleGuide[] = [
       "- Verify Steps: `agentplane task verify-show <task-id>` (treat as the verification contract).",
       '- Verify: `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`',
       '- PR artifacts (branch_pr): `agentplane pr open <task-id> --branch task/<task-id>/<slug> --author <ROLE>` / `agentplane pr update <task-id>` / `agentplane pr note <task-id> --author <ROLE> --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred direct close path: `agentplane finish <task-id>` / explicit close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
     ],
   },
   {
@@ -143,7 +143,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       '- Task docs: `agentplane task doc set <task-id> --section Summary --text "..."` (repeat per section, or send one multi-heading full-doc payload via `--text`/`--file`)',
       '- PR notes: `agentplane pr note <task-id> --author DOCS --body "..."`',
-      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
+      '- Commit: `agentplane guard commit <task-id> -m "<emoji> <suffix> <scope>: <summary>"` / `agentplane commit <task-id> -m "<emoji> <suffix> <scope>: <summary>" --allow <path-prefix>` / preferred direct close path: `agentplane finish <task-id>` / explicit close path: `agentplane finish <task-id> --close-commit [--close-unstage-others]`',
     ],
   },
   {
@@ -157,7 +157,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     role: "INTEGRATOR",
     lines: [
       '- branch_pr: `agentplane pr check <task-id>` -> `agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify` -> `agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --close-commit`',
-      '- direct: task owner uses `agentplane finish <task-id> --commit <git-rev> --author <OWNER> --body "Verified: ..." --close-commit` after the implementation commit',
+      '- direct: task owner uses `agentplane finish <task-id> --commit <git-rev> --author <OWNER> --body "Verified: ..."` after the implementation commit; add `--no-close-commit` only for explicit manual close handling',
       "- Optional cleanup: `agentplane cleanup merged --yes`",
     ],
   },

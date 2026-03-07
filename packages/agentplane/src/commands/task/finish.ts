@@ -76,6 +76,7 @@ export async function cmdFinish(opts: {
   statusCommitRequireClean: boolean;
   confirmStatusCommit: boolean;
   closeCommit?: boolean;
+  noCloseCommit?: boolean;
   closeUnstageOthers?: boolean;
   quiet: boolean;
 }): Promise<number> {
@@ -102,18 +103,26 @@ export async function cmdFinish(opts: {
         message: "--commit-from-comment/--status-commit requires exactly one task id",
       });
     }
-    if (opts.closeCommit && opts.taskIds.length !== 1) {
+    if ((opts.closeCommit || opts.noCloseCommit) && opts.taskIds.length !== 1) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "--close-commit requires exactly one task id",
+        message: "--close-commit/--no-close-commit requires exactly one task id",
       });
     }
-    if (opts.closeCommit && (opts.commitFromComment || opts.statusCommit)) {
+    if (opts.closeCommit && opts.noCloseCommit) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: "--close-commit cannot be combined with --commit-from-comment/--status-commit",
+        message: "--close-commit and --no-close-commit are mutually exclusive",
+      });
+    }
+    if ((opts.closeCommit || opts.noCloseCommit) && (opts.commitFromComment || opts.statusCommit)) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message:
+          "--close-commit/--no-close-commit cannot be combined with --commit-from-comment/--status-commit",
       });
     }
     const primaryTaskId = opts.taskIds[0] ?? "";
@@ -161,6 +170,14 @@ export async function cmdFinish(opts: {
 
     const useStore = backendIsLocalFileBackend(ctx);
     const store = useStore ? getTaskStore(ctx) : null;
+    const defaultDirectCloseCommit =
+      ctx.config.workflow_mode === "direct" &&
+      useStore &&
+      opts.taskIds.length === 1 &&
+      !opts.commitFromComment &&
+      !statusCommitRequested;
+    const shouldCloseCommit =
+      opts.closeCommit === true || (defaultDirectCloseCommit && opts.noCloseCommit !== true);
 
     const metaTaskId = opts.taskIds.length === 1 ? (opts.taskIds[0] ?? "") : "";
     const wantMeta =
@@ -398,7 +415,7 @@ export async function cmdFinish(opts: {
       });
     }
 
-    if (opts.closeCommit && primaryTaskId) {
+    if (shouldCloseCommit && primaryTaskId) {
       await cmdCommit({
         ctx,
         cwd: opts.cwd,
@@ -416,7 +433,7 @@ export async function cmdFinish(opts: {
         allowCI: false,
         requireClean: true,
         quiet: opts.quiet,
-        closeUnstageOthers: opts.closeUnstageOthers === true,
+        closeUnstageOthers: opts.closeCommit === true && opts.closeUnstageOthers === true,
         closeCheckOnly: false,
       });
     }
