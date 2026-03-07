@@ -10,8 +10,17 @@ export type WatchedRuntimeSnapshot = {
   snapshotHash: string;
 };
 
+export type WatchedRuntimeSnapshotComparison = {
+  ok: boolean;
+  changedPaths: string[];
+};
+
 export function getWatchedRuntimePathsForPackage(packageName: string): string[];
 export function collectWatchedRuntimeSnapshot(
   packageDir: string,
   watchedPaths: string[],
 ): Promise<WatchedRuntimeSnapshot>;
+export function compareWatchedRuntimeSnapshots(
+  recordedSnapshot: WatchedRuntimeSnapshot,
+  currentSnapshot: WatchedRuntimeSnapshot,
+): WatchedRuntimeSnapshotComparison;

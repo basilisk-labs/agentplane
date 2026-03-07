@@ -1,7 +1,7 @@
 ---
 id: "202603072032-V9VGT2"
 title: "Switch stale-dist freshness to snapshot comparison"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -10,18 +10,36 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-07T20:55:20.239Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
+  state: "ok"
+  updated_at: "2026-03-07T20:58:43.161Z"
+  updated_by: "CODER"
+  note: "Stale-dist freshness now compares watched-runtime snapshots from the build manifest and falls back to legacy git/mtime checks only for older manifests. Verified with dist-guard, stale-readonly, runtime.command, doctor.command, eslint on touched files, package builds, routing check, and a manual strict task-list run after rebuild on the current dirty runtime tree."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: switch stale-dist freshness to compare current watched-runtime snapshots against the built manifest so rebuilt dirty runtime trees stop blocking strict commands."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T20:55:25.066Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: switch stale-dist freshness to compare current watched-runtime snapshots against the built manifest so rebuilt dirty runtime trees stop blocking strict commands."
+  -
+    type: "verify"
+    at: "2026-03-07T20:58:43.161Z"
+    author: "CODER"
+    state: "ok"
+    note: "Stale-dist freshness now compares watched-runtime snapshots from the build manifest and falls back to legacy git/mtime checks only for older manifests. Verified with dist-guard, stale-readonly, runtime.command, doctor.command, eslint on touched files, package builds, routing check, and a manual strict task-list run after rebuild on the current dirty runtime tree."
 doc_version: 2
-doc_updated_at: "2026-03-07T20:32:43.290Z"
+doc_updated_at: "2026-03-07T20:58:43.162Z"
 doc_updated_by: "CODER"
 description: "Use build-manifest snapshots to treat rebuilt dirty runtime trees as fresh and keep strict blocking only when dist is actually behind the current source state."
 id_source: "generated"
@@ -39,28 +57,31 @@ Use build-manifest snapshots to treat rebuilt dirty runtime trees as fresh and k
 
 ## Plan
 
-1. Implement the change for "Switch stale-dist freshness to snapshot comparison".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Teach dist-guard to prefer watched-runtime snapshot comparison from the build manifest and to fall back to the legacy git/mtime heuristic only when snapshot fields are absent. 2. Report changed watched files from snapshot diffing so strict commands block only when dist is truly behind the current runtime source state, including rebuilt-but-dirty trees becoming fresh. 3. Add regressions for rebuilt dirty trees, legacy manifest fallback, and changed-path reporting, then sync the minimal framework-dev docs needed for the new contract.
 
 ## Risks
 
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
+- Risk: snapshot diffing can silently drift from the build writer if producer and consumer do not reuse the same watch contract.\n- Mitigation: import the shared runtime-watch helper from dist-guard and avoid hardcoded duplicate watch lists.\n\n- Risk: dropping legacy logic too early would break older global installs whose manifests do not yet contain snapshot fields.\n- Mitigation: keep a compatibility fallback to the existing git/mtime heuristic when snapshot data is missing or malformed.
 
 ## Verify Steps
 
 ### Scope
 - Primary tag: `code`
+- Surfaces: stale-dist freshness predicate, build-manifest snapshot consumption, changed-path reporting, framework-dev docs.
 
 ### Checks
-- Add explicit checks/commands for this task before approval.
+- `bunx vitest run packages/agentplane/src/cli/dist-guard.test.ts packages/agentplane/src/cli/stale-dist-readonly.test.ts packages/agentplane/src/commands/runtime.command.test.ts packages/agentplane/src/commands/doctor.command.test.ts`
+- `bunx eslint packages/agentplane/bin/dist-guard.js packages/agentplane/bin/runtime-watch.js packages/agentplane/bin/agentplane.js packages/agentplane/src/cli/dist-guard.test.ts packages/agentplane/src/cli/stale-dist-readonly.test.ts`
+- `bun run --filter=@agentplaneorg/core build`
+- `bun run --filter=agentplane build`
+- `agentplane runtime explain --json`
+- `node .agentplane/policy/check-routing.mjs`
 
 ### Evidence / Commands
-- Record executed commands and key outputs.
+- Record that rebuilt dirty runtime trees are accepted as fresh, while genuinely out-of-date runtime files still produce changed-path diagnostics.
 
 ### Pass criteria
-- Steps are reproducible and produce expected results.
+- The stale-dist guard blocks only when dist is behind the current watched runtime source state, not merely because the watched tree is dirty relative to git.
 
 ## Verification
 
@@ -69,9 +90,21 @@ Use build-manifest snapshots to treat rebuilt dirty runtime trees as fresh and k
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T20:58:43.161Z — VERIFY — ok
+
+By: CODER
+
+Note: Stale-dist freshness now compares watched-runtime snapshots from the build manifest and falls back to legacy git/mtime checks only for older manifests. Verified with dist-guard, stale-readonly, runtime.command, doctor.command, eslint on touched files, package builds, routing check, and a manual strict task-list run after rebuild on the current dirty runtime tree.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T20:55:25.066Z, excerpt_hash=sha256:9b7a37fe51930854e188328ab0eb5ee04770b2dc32bb089064ac03d015555806
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Notes
+
+- This is the consumer-side half of the snapshot redesign introduced in 202603072032-1BC7VQ.\n- Prefer additive reasons and changedPaths so existing stale-dist warning/output surfaces stay readable while becoming more accurate.

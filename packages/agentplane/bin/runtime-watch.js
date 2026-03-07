@@ -90,3 +90,27 @@ export async function collectWatchedRuntimeSnapshot(packageDir, watchedPaths) {
     snapshotHash: snapshotHash(files),
   };
 }
+
+function snapshotFileMap(snapshot) {
+  return new Map(snapshot.files.map((file) => [file.path, file.sha256]));
+}
+
+export function compareWatchedRuntimeSnapshots(recordedSnapshot, currentSnapshot) {
+  if (
+    recordedSnapshot.snapshotHash === currentSnapshot.snapshotHash &&
+    recordedSnapshot.files.length === currentSnapshot.files.length
+  ) {
+    return { ok: true, changedPaths: [] };
+  }
+
+  const recordedMap = snapshotFileMap(recordedSnapshot);
+  const currentMap = snapshotFileMap(currentSnapshot);
+  const changedPaths = [...new Set([...recordedMap.keys(), ...currentMap.keys()])]
+    .filter((filePath) => recordedMap.get(filePath) !== currentMap.get(filePath))
+    .toSorted((a, b) => a.localeCompare(b));
+
+  return {
+    ok: changedPaths.length === 0,
+    changedPaths,
+  };
+}

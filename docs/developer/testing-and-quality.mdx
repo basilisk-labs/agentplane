@@ -47,6 +47,10 @@ agentplane doctor
 agentplane runtime explain
 ```
 
+After you rebuild the local packages, strict commands should be unblocked again as soon as the
+recorded watched-runtime snapshot in `dist/.build-manifest.json` matches the current source tree,
+even before those runtime file changes are committed.
+
 Mutating commands remain strict and still require a fresh repo-local build.
 
 If you want the globally installed `agentplane` command itself to come from this checkout, use the
