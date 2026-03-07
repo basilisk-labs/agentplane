@@ -19,26 +19,45 @@
   "navigation": {
     "groups": [
       {
-        "group": "Getting Started",
-        "pages": ["index", "overview", "prerequisites", "setup"]
+        "group": "Start",
+        "pages": ["index", "overview", "prerequisites", "setup", "agent-bootstrap.generated"]
       },
       {
-        "group": "Concepts",
+        "group": "Work on a Task",
+        "pages": ["workflow", "task-lifecycle", "commands", "agents", "branching-and-pr-artifacts"]
+      },
+      {
+        "group": "Upgrade & Recover",
         "pages": [
-          "architecture",
-          "workflow",
-          "agents",
-          "tasks-and-backends",
-          "branching-and-pr-artifacts"
+          "breaking-changes",
+          "workflow-migration",
+          "legacy-upgrade-recovery",
+          "troubleshooting"
         ]
       },
       {
         "group": "Reference",
-        "pages": ["commands", "cli-contract", "harness-engeneering", "recipes-spec", "code-quality"]
+        "pages": [
+          "tasks-and-backends",
+          "backends",
+          "configuration",
+          "cli-reference.generated",
+          "redmine"
+        ]
+      },
+      {
+        "group": "Developer",
+        "pages": [
+          "architecture",
+          "cli-contract",
+          "harness-engeneering",
+          "recipes-spec",
+          "code-quality"
+        ]
       },
       {
         "group": "Help",
-        "pages": ["troubleshooting", "glossary", "redmine"]
+        "pages": ["troubleshooting-by-symptom", "glossary"]
       }
     ]
   }

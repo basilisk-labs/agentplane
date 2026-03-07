@@ -14,6 +14,11 @@ Agent behavior is resolved in this order:
 
 Profiles live under `.agentplane/agents/*.json`, but they cannot override higher-level policy.
 
+Managed ownership remains framework-first:
+
+- `AGENTS.md` and `.agentplane/policy/**` are framework-managed.
+- `.agentplane/policy/incidents.md` is the sanctioned local place for situational directives.
+
 ## Startup path
 
 Use this order when an agent enters a repository:

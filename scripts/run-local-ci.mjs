@@ -33,6 +33,7 @@ runStep("CLI docs freshness (check)", () =>
     AGENTPLANE_DEV_ALLOW_STALE_DIST: "1",
   }),
 );
+runStep("Agent onboarding scenario (check)", () => run("bun", ["run", "docs:onboarding:check"]));
 runStep("Docs site pipeline (generate + typecheck + build + design)", () =>
   run("bun", ["run", "docs:site:check"]),
 );

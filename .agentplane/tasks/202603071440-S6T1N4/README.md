@@ -1,7 +1,7 @@
 ---
 id: "202603071440-S6T1N4"
 title: "Document ownership of managed policy files"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -10,20 +10,30 @@ tags:
   - "docs"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T16:26:27.452Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: make managed ownership explicit across setup, upgrade, and recovery docs."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: make the ownership contract explicit so agents treat AGENTS.md and managed policy files as framework-owned and reserve incidents.md for local directives."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T16:26:27.780Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: make the ownership contract explicit so agents treat AGENTS.md and managed policy files as framework-owned and reserve incidents.md for local directives."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:40:20.065Z"
+doc_updated_at: "2026-03-07T16:26:27.780Z"
 doc_updated_by: "DOCS"
 description: "Make the contract explicit that AGENTS.md and .agentplane/policy/** are framework-managed while incidents.md remains the sanctioned local override area."
 id_source: "generated"
@@ -41,9 +51,7 @@ Make the contract explicit that AGENTS.md and .agentplane/policy/** are framewor
 
 ## Plan
 
-1. Implement the change for "Document ownership of managed policy files".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Make ownership of AGENTS.md and .agentplane/policy/** explicit in setup and recovery docs. 2. Mirror the same ownership contract in upgrade guidance and doctor-facing docs. 3. Regenerate site docs if needed and verify routing/docs checks.
 
 ## Risks
 

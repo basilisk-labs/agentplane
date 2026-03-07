@@ -1,7 +1,7 @@
 ---
 id: "202603071440-2ZVTF7"
 title: "Refactor docs IA around agent workflows"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -12,20 +12,30 @@ tags:
   - "docs"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-07T16:31:30.348Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved: refactor docs IA so website navigation mirrors the agent workflow model."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: reorganize docs navigation around start, task work, upgrade and recovery, reference, and release entrypoints."
+events:
+  -
+    type: "status"
+    at: "2026-03-07T16:31:30.471Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: reorganize docs navigation around start, task work, upgrade and recovery, reference, and release entrypoints."
 doc_version: 2
-doc_updated_at: "2026-03-07T14:40:21.623Z"
+doc_updated_at: "2026-03-07T16:31:30.471Z"
 doc_updated_by: "DOCS"
 description: "Restructure site navigation around start, task work, upgrade, recovery, and release so the website mirrors the same agent-first model as CLI and gateway."
 id_source: "generated"
@@ -43,9 +53,7 @@ Restructure site navigation around start, task work, upgrade, recovery, and rele
 
 ## Plan
 
-1. Implement the change for "Refactor docs IA around agent workflows".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Audit current docs navigation and identify where start, task work, upgrade, recovery, and release live today. 2. Reorder docs IA and navbar/sidebar entry points to mirror the agent-first workflow. 3. Verify the website build and generated docs remain consistent after the IA rewrite.
 
 ## Risks
 

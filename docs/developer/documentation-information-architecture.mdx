@@ -36,20 +36,33 @@ Use `docs/help/*` for diagnosis and recovery:
 - Common failure patterns and exact fixes.
 - Shared terminology.
 
+## Agent-first navigation model
+
+The public docs entrypoints should mirror the same workflow model the CLI and gateway use:
+
+1. **Start**: repository entry, setup, bootstrap.
+2. **Work on a task**: workflow, lifecycle, commands, roles.
+3. **Upgrade & recover**: upgrade state model, migration, recovery runbooks.
+4. **Reference & integrations**: backends, config, generated reference.
+5. **Developer**: implementation and maintenance details.
+6. **Release notes**: historical record only.
+
 ## Canonical mapping
 
-| Topic                                 | Primary docs page(s)                                                        | Code source of truth                                                                     |
-| ------------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Init flow and repository bootstrap    | `docs/user/setup.mdx`                                                       | `packages/agentplane/src/cli/run-cli/commands/init/*`                                    |
-| Config keys and defaults              | `docs/user/configuration.mdx`                                               | `packages/spec/schemas/config.schema.json`, `packages/core/src/config/config.ts`         |
-| Task lifecycle and status transitions | `docs/user/task-lifecycle.mdx`, `docs/user/workflow.mdx`                    | `packages/agentplane/src/commands/task/*`                                                |
-| Command usage guide                   | `docs/user/commands.mdx`                                                    | `packages/agentplane/src/commands/**/*.spec.ts`                                          |
-| Full CLI reference (generated)        | `docs/user/cli-reference.generated.mdx`                                     | `agentplane docs cli --out docs/user/cli-reference.generated.mdx`                        |
-| Backend behavior (local/redmine)      | `docs/user/backends*.mdx`, `docs/user/redmine.mdx`                          | `packages/agentplane/src/backends/task-backend/*`                                        |
-| Role and policy behavior              | `docs/user/agents.mdx`, `AGENTS.md`                                         | `AGENTS.md`, `packages/agentplane/assets/agents/*.json`                                  |
-| CLI architecture and contracts        | `docs/developer/cli-contract.mdx`, `docs/developer/cli-help-json.mdx`       | `packages/agentplane/src/cli/*`                                                          |
-| Release pipeline and publishing rules | `docs/developer/release-and-publishing.mdx`                                 | `.github/workflows/*`, `packages/agentplane/src/commands/release/*`, `scripts/*release*` |
-| Testing and quality gates             | `docs/developer/testing-and-quality.mdx`, `docs/developer/code-quality.mdx` | `package.json` scripts, `scripts/check-*.mjs`, `packages/**/src/**/*.test.ts`            |
+| Topic                                 | Primary docs page(s)                                                        | Code source of truth                                                                             |
+| ------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| Agent bootstrap path                  | `docs/user/agent-bootstrap.generated.mdx`, `docs/user/agents.mdx`           | `packages/agentplane/src/cli/bootstrap-guide.ts`, `packages/agentplane/src/cli/command-guide.ts` |
+| Init flow and repository bootstrap    | `docs/user/setup.mdx`                                                       | `packages/agentplane/src/cli/run-cli/commands/init/*`                                            |
+| Config keys and defaults              | `docs/user/configuration.mdx`                                               | `packages/spec/schemas/config.schema.json`, `packages/core/src/config/config.ts`                 |
+| Task lifecycle and status transitions | `docs/user/task-lifecycle.mdx`, `docs/user/workflow.mdx`                    | `packages/agentplane/src/commands/task/*`                                                        |
+| Command usage guide                   | `docs/user/commands.mdx`                                                    | `packages/agentplane/src/commands/**/*.spec.ts`                                                  |
+| Upgrade and mixed-state recovery      | `docs/user/setup.mdx`, `docs/help/legacy-upgrade-recovery.mdx`              | `packages/agentplane/src/commands/upgrade*`, `packages/agentplane/src/commands/doctor.run.ts`    |
+| Full CLI reference (generated)        | `docs/user/cli-reference.generated.mdx`                                     | `agentplane docs cli --out docs/user/cli-reference.generated.mdx`                                |
+| Backend behavior (local/redmine)      | `docs/user/backends*.mdx`, `docs/user/redmine.mdx`                          | `packages/agentplane/src/backends/task-backend/*`                                                |
+| Role and policy behavior              | `docs/user/agents.mdx`, `AGENTS.md`                                         | `AGENTS.md`, `packages/agentplane/assets/agents/*.json`                                          |
+| CLI architecture and contracts        | `docs/developer/cli-contract.mdx`, `docs/developer/cli-help-json.mdx`       | `packages/agentplane/src/cli/*`                                                                  |
+| Release pipeline and publishing rules | `docs/developer/release-and-publishing.mdx`                                 | `.github/workflows/*`, `packages/agentplane/src/commands/release/*`, `scripts/*release*`         |
+| Testing and quality gates             | `docs/developer/testing-and-quality.mdx`, `docs/developer/code-quality.mdx` | `package.json` scripts, `scripts/check-*.mjs`, `packages/**/src/**/*.test.ts`                    |
 
 ## Duplication rules
 
@@ -66,6 +79,8 @@ Use `docs/help/*` for diagnosis and recovery:
    - `docs/index.mdx`
    - `docs/docs.json`
    - `docs/README.md`
+   - `website/sidebars.ts`
+   - `website/docusaurus.config.ts`
 4. If command output changed, regenerate `docs/user/cli-reference.generated.mdx`.
 5. Run the docs task verification checklist before closing the task.
 

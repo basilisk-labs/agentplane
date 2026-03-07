@@ -3,11 +3,12 @@ title: "AgentPlane Documentation"
 description: "User and developer documentation for AgentPlane CLI workflows, governance, and release operations."
 ---
 
-This documentation follows a compact section-first structure:
+This documentation follows an agent-first structure:
 
-- `Getting Started`
-- `Workflows`
-- `Backends & Config`
+- `Start`
+- `Work on a task`
+- `Upgrade & recover`
+- `Reference & integrations`
 - `Developer Guide`
 
 ## Quick Start
@@ -15,37 +16,45 @@ This documentation follows a compact section-first structure:
 1. [Overview](user/overview)
 2. [Prerequisites](user/prerequisites)
 3. [Setup](user/setup)
-4. [Workflow](user/workflow)
-5. [Task lifecycle](user/task-lifecycle)
+4. [Agent bootstrap](user/agent-bootstrap.generated)
+5. [Workflow](user/workflow)
 
 ## Main Sections
 
-### Getting Started
+### Start
 
 1. [Overview](user/overview)
 2. [Prerequisites](user/prerequisites)
 3. [Setup](user/setup)
-4. [Breaking changes](user/breaking-changes)
+4. [Agent bootstrap](user/agent-bootstrap.generated)
 
-### Workflows
+### Work on a task
 
 1. [Workflow](user/workflow)
 2. [Task lifecycle](user/task-lifecycle)
-3. [Agents](user/agents)
-4. [Branching and PR artifacts](user/branching-and-pr-artifacts)
+3. [Commands](user/commands)
+4. [Agents](user/agents)
+5. [Branching and PR artifacts](user/branching-and-pr-artifacts)
 
-### Backends & Config
+### Upgrade & recover
+
+1. [Breaking changes](user/breaking-changes)
+2. [Workflow migration](user/workflow-migration)
+3. [Legacy upgrade recovery](help/legacy-upgrade-recovery)
+4. [Troubleshooting by symptom](help/troubleshooting-by-symptom)
+5. [Troubleshooting](help/troubleshooting)
+
+### Reference & integrations
 
 1. [Tasks and backends](user/tasks-and-backends)
 2. [Backends deep dive](user/backends)
 3. [Local backend](user/backends/local)
 4. [Redmine backend](user/backends/redmine)
-5. [Configuration](user/configuration)
-
-### CLI Reference
-
-1. [Commands (practical guide)](user/commands)
-2. [CLI reference (generated)](user/cli-reference.generated)
+5. [Redmine guide](user/redmine)
+6. [Configuration](user/configuration)
+7. [Commands (practical guide)](user/commands)
+8. [CLI reference (generated)](user/cli-reference.generated)
+9. [Generated reference](reference/generated-reference)
 
 ## Developer Guide
 
@@ -73,6 +82,7 @@ This documentation follows a compact section-first structure:
 
 ## Help
 
-1. [Troubleshooting by symptom](help/troubleshooting-by-symptom)
-2. [Troubleshooting](help/troubleshooting)
-3. [Glossary](help/glossary)
+1. [Legacy upgrade recovery](help/legacy-upgrade-recovery)
+2. [Troubleshooting by symptom](help/troubleshooting-by-symptom)
+3. [Troubleshooting](help/troubleshooting)
+4. [Glossary](help/glossary)

@@ -42,23 +42,39 @@ const sidebars: SidebarsConfig = {
   docsSidebar: [
     {
       type: "category",
-      label: "◈ Getting Started",
-      items: ["user/overview", "user/prerequisites", "user/setup", "user/breaking-changes"],
+      label: "◈ Start",
+      items: [
+        "user/overview",
+        "user/prerequisites",
+        "user/setup",
+        "user/agent-bootstrap.generated",
+      ],
     },
     {
       type: "category",
-      label: "◉ Workflows",
+      label: "◉ Work on a task",
       items: [
         "user/workflow",
-        "user/workflow-migration",
         "user/task-lifecycle",
+        "user/commands",
         "user/agents",
         "user/branching-and-pr-artifacts",
       ],
     },
     {
       type: "category",
-      label: "◌ Backends & Config",
+      label: "◌ Upgrade & recover",
+      items: [
+        "user/breaking-changes",
+        "user/workflow-migration",
+        "help/legacy-upgrade-recovery",
+        "help/troubleshooting-by-symptom",
+        "help/troubleshooting",
+      ],
+    },
+    {
+      type: "category",
+      label: "◍ Reference & integrations",
       items: [
         "user/tasks-and-backends",
         "user/backends",
@@ -66,13 +82,16 @@ const sidebars: SidebarsConfig = {
         "user/backends/redmine",
         "user/redmine",
         "user/configuration",
-        "user/commands",
+        "user/agent-discovery",
+        "user/indexing-and-webmaster-operations",
+        "user/website-ia",
         "user/cli-reference.generated",
+        "reference/generated-reference",
       ],
     },
     {
       type: "category",
-      label: "◍ Developer Guide",
+      label: "◎ Developer guide",
       items: [
         "developer/design-principles",
         "developer/architecture",
@@ -97,18 +116,13 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "◎ Release Notes",
+      label: "◇ Release notes",
       items: ["releases/index", ...releaseDocItems],
     },
     {
       type: "category",
-      label: "◇ Help",
-      items: [
-        "help/troubleshooting-by-symptom",
-        "help/broken-workflow-runbook",
-        "help/troubleshooting",
-        "help/glossary",
-      ],
+      label: "□ Help",
+      items: ["help/broken-workflow-runbook", "help/glossary"],
     },
   ],
 };

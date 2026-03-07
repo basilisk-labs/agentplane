@@ -110,23 +110,29 @@ const config = {
       items: [
         {
           to: "/docs/user/overview",
-          label: "Getting Started",
+          label: "Start",
           position: "left",
-          activeBaseRegex: "^/docs/user/(overview|prerequisites|setup|breaking-changes)$",
+          activeBaseRegex: String.raw`^/docs/user/(overview|prerequisites|setup|agent-bootstrap\.generated)$`,
         },
         {
           to: "/docs/user/workflow",
-          label: "Workflows",
+          label: "Work on a Task",
           position: "left",
           activeBaseRegex:
-            "^/docs/user/(workflow|task-lifecycle|agents|branching-and-pr-artifacts|tasks-and-backends|workflow-migration|redmine)$",
+            "^/docs/user/(workflow|task-lifecycle|commands|agents|branching-and-pr-artifacts)$",
         },
         {
-          to: "/docs/user/commands",
-          label: "Reference",
+          to: "/docs/help/legacy-upgrade-recovery",
+          label: "Upgrade & Recover",
           position: "left",
           activeBaseRegex:
-            "^/docs/(user/(commands|configuration|backends|backends/local|backends/redmine|agent-discovery|indexing-and-webmaster-operations)|reference/generated-reference)$",
+            "^/docs/(user/(breaking-changes|workflow-migration)|help/(legacy-upgrade-recovery|troubleshooting-by-symptom|troubleshooting))$",
+        },
+        {
+          to: "/docs/user/tasks-and-backends",
+          label: "Reference",
+          position: "left",
+          activeBaseRegex: String.raw`^/docs/(user/(tasks-and-backends|backends|backends/local|backends/redmine|redmine|configuration|commands|cli-reference\.generated|agent-discovery|indexing-and-webmaster-operations|website-ia)|reference/generated-reference)$`,
         },
         {
           to: "/docs/developer/architecture",

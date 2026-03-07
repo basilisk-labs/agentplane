@@ -123,6 +123,24 @@ agentplane upgrade
 
 Default mode applies the managed framework files from the installed CLI bundle and creates a dedicated upgrade commit.
 
+### Managed ownership contract
+
+Treat these files as framework-owned:
+
+- `AGENTS.md`
+- `.agentplane/policy/**`
+- other managed framework files written by `agentplane init` and `agentplane upgrade`
+
+Treat this file as the sanctioned local override area:
+
+- `.agentplane/policy/incidents.md`
+
+Operational rule:
+
+- record situational directives in `incidents.md`;
+- do not hand-edit the rest of the managed policy tree in normal project work;
+- expect `agentplane upgrade` to replace or reconcile framework-owned files on apply.
+
 ### Upgrade state model
 
 Think about upgrade in three states:
