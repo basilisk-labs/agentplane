@@ -1,7 +1,8 @@
 ---
 id: "202603072133-7PQ5X6"
 title: "Repair historical task commit metadata"
-status: "DOING"
+result_summary: "Historical task archive metadata repaired; doctor now reports only info-class historical summaries for legacy unknown hashes and non-actionable close references."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-07T22:16:28.646Z"
   updated_by: "CODER"
   note: "Deterministic historical hash remaps applied for 3 README records; 12 legacy DONE tasks backfilled with batch-derived implementation hashes; task export regenerated; doctor now returns OK with warnings=0 and only historical info summaries; doctor.command tests and lint passed."
-commit: null
+commit:
+  hash: "5e76031f3b122eeb93ff8e0d5f70f6cf910792de"
+  message: "🩺 7PQ5X6 tasks: repair historical commit archive metadata"
 comments:
   -
     author: "CODER"
     body: "Start: implement deterministic historical commit remaps where provable, refine doctor historical-archive semantics, refresh tasks export, and verify the archive checks end in the intended state."
+  -
+    author: "CODER"
+    body: "Verified: deterministic historical hash remaps and legacy batch backfills are in place; archive checks now reduce to info-only historical summaries and doctor no longer reports warning/error findings for old task metadata."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Deterministic historical hash remaps applied for 3 README records; 12 legacy DONE tasks backfilled with batch-derived implementation hashes; task export regenerated; doctor now returns OK with warnings=0 and only historical info summaries; doctor.command tests and lint passed."
+  -
+    type: "status"
+    at: "2026-03-07T22:17:38.763Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: deterministic historical hash remaps and legacy batch backfills are in place; archive checks now reduce to info-only historical summaries and doctor no longer reports warning/error findings for old task metadata."
 doc_version: 2
-doc_updated_at: "2026-03-07T22:16:28.648Z"
+doc_updated_at: "2026-03-07T22:17:38.763Z"
 doc_updated_by: "CODER"
 description: "Implement a safe repair path for historical DONE-task commit metadata, apply it to the archive, and reduce doctor noise so checks reflect real current-state problems."
 id_source: "generated"
