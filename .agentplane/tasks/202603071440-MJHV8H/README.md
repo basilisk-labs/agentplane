@@ -1,7 +1,8 @@
 ---
 id: "202603071440-MJHV8H"
 title: "Link doctor diagnostics to recovery guidance"
-status: "DOING"
+result_summary: "Doctor now links incomplete managed-policy diagnostics to the recovery documentation so mixed upgrade states are actionable."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved: doctor should point directly to the recovery path."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T16:25:06.636Z"
+  updated_by: "REVIEWER"
+  note: "Verified: doctor now points incomplete managed-policy diagnostics to the legacy upgrade recovery doc."
+commit:
+  hash: "178288f1f3b2320c6de6a51fd56574ea684b3f89"
+  message: "🩺 MJHV8H docs: clarify upgrade states and recovery hints"
 comments:
   -
     author: "CODER"
     body: "Start: make doctor diagnostics point directly to the new recovery guidance and exact upgrade commands for incomplete managed policy trees."
+  -
+    author: "CODER"
+    body: "Verified: doctor recovery messaging now points directly to the legacy-upgrade recovery guide."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: make doctor diagnostics point directly to the new recovery guidance and exact upgrade commands for incomplete managed policy trees."
+  -
+    type: "verify"
+    at: "2026-03-07T16:25:06.636Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified: doctor now points incomplete managed-policy diagnostics to the legacy upgrade recovery doc."
+  -
+    type: "status"
+    at: "2026-03-07T16:25:14.676Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor recovery messaging now points directly to the legacy-upgrade recovery guide."
 doc_version: 2
-doc_updated_at: "2026-03-07T16:20:55.350Z"
+doc_updated_at: "2026-03-07T16:25:14.676Z"
 doc_updated_by: "CODER"
 description: "Make doctor diagnostics point directly to the recovery commands and docs for missing managed policy trees and related hybrid states."
 id_source: "generated"
@@ -81,6 +100,14 @@ Make doctor diagnostics point directly to the recovery commands and docs for mis
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T16:25:06.636Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified: doctor now points incomplete managed-policy diagnostics to the legacy upgrade recovery doc.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:20:55.350Z, excerpt_hash=sha256:682d5674a3bb4d925efca0f9cabc057c814315f01dc448e2879b94eecb1a7911
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

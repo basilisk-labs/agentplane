@@ -1,7 +1,8 @@
 ---
 id: "202603071440-AA1H09"
 title: "Document upgrade state model"
-status: "DOING"
+result_summary: "Upgrade documentation now defines clean managed, partial-upgrade, and manual-drift states with explicit next actions."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved: document the upgrade state model explicitly."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-07T16:25:06.634Z"
+  updated_by: "REVIEWER"
+  note: "Verified: setup docs now describe clean, partial-upgrade, and manual-drift states with an explicit recovery path."
+commit:
+  hash: "178288f1f3b2320c6de6a51fd56574ea684b3f89"
+  message: "🩺 MJHV8H docs: clarify upgrade states and recovery hints"
 comments:
   -
     author: "DOCS"
     body: "Start: document the clean, partial, and manually drifted upgrade states so recovery guidance stops depending on implicit mental models."
+  -
+    author: "DOCS"
+    body: "Verified: documented the upgrade state model and linked the shortest recovery path for each state."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: document the clean, partial, and manually drifted upgrade states so recovery guidance stops depending on implicit mental models."
+  -
+    type: "verify"
+    at: "2026-03-07T16:25:06.634Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Verified: setup docs now describe clean, partial-upgrade, and manual-drift states with an explicit recovery path."
+  -
+    type: "status"
+    at: "2026-03-07T16:25:14.676Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: documented the upgrade state model and linked the shortest recovery path for each state."
 doc_version: 2
-doc_updated_at: "2026-03-07T16:20:55.230Z"
+doc_updated_at: "2026-03-07T16:25:14.676Z"
 doc_updated_by: "DOCS"
 description: "Explain clean managed state, partial upgrade state, and manual drift state in one upgrade-focused model."
 id_source: "generated"
@@ -79,6 +98,14 @@ Explain clean managed state, partial upgrade state, and manual drift state in on
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-07T16:25:06.634Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Verified: setup docs now describe clean, partial-upgrade, and manual-drift states with an explicit recovery path.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:20:55.230Z, excerpt_hash=sha256:2efb66c1b9c8307de67b5b4db3a8c5a993803b2b5e90338efe45457a7124187e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
