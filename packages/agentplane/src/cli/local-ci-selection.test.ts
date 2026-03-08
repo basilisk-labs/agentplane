@@ -8,7 +8,7 @@ type FastCiPlan =
   | { kind: "docs-only"; reason: string; files: string[] }
   | {
       kind: "targeted";
-      bucket: "task" | "doctor";
+      bucket: "task" | "doctor" | "hooks";
       reason: string;
       files: string[];
       lintTargets: string[];
@@ -61,8 +61,16 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("doctor");
   });
 
-  it("falls back to full fast for infra-sensitive changes", () => {
+  it("routes isolated hook and CI routing paths to the hooks bucket", () => {
     const plan = selectFastCiPlan(["scripts/run-local-ci.mjs"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("hooks");
+    expect(plan.reason).toBe("hook_and_ci_routing_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.hooks.test.ts");
+  });
+
+  it("falls back to full fast for broader infra-sensitive changes", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.ts"]);
     expect(plan.kind).toBe("full-fast");
     expect(plan.reason).toBe("broad_or_infra_sensitive_change");
   });

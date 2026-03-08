@@ -12,6 +12,17 @@ const TASK_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/task\//];
 
 const DOCTOR_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/doctor(?:\/|\.|$)/];
 
+const HOOKS_BUCKET_PATTERNS = [
+  /^scripts\/run-(?:pre-push|pre-commit|commit-msg)-hook\.mjs$/,
+  /^scripts\/run-local-ci\.mjs$/,
+  /^scripts\/lib\/local-ci-selection\.mjs$/,
+  /^scripts\/lib\/pre-push-scope\.mjs$/,
+  /^lefthook\.yml$/,
+  /^packages\/agentplane\/src\/cli\/local-ci-selection\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.hooks\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/pre-commit-staged-files\.test\.ts$/,
+];
+
 const BROAD_FALLBACK_PATTERNS = [
   /^package\.json$/,
   /^bun\.lock$/,
@@ -35,6 +46,11 @@ const TASK_TEST_FILES = [
 ];
 
 const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.fast.test.ts"];
+const HOOKS_TEST_FILES = [
+  "packages/agentplane/src/cli/local-ci-selection.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
+  "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
+];
 const CLI_DOCS_RELEVANT_PATTERNS = [
   /^packages\/agentplane\/src\/cli\//,
   /^packages\/agentplane\/src\/commands\/.+(?:command|spec)\.ts$/,
@@ -66,10 +82,6 @@ export function selectFastCiPlan(changedFiles) {
     return { kind: "full-fast", reason: "no_changed_file_scope" };
   }
 
-  if (anyPathMatches(files, BROAD_FALLBACK_PATTERNS)) {
-    return { kind: "full-fast", reason: "broad_or_infra_sensitive_change", files };
-  }
-
   if (everyPathMatches(files, DOCS_ONLY_PATTERNS)) {
     return { kind: "docs-only", reason: "docs_policy_website_only", files };
   }
@@ -94,6 +106,21 @@ export function selectFastCiPlan(changedFiles) {
       lintTargets: files,
       testFiles: DOCTOR_TEST_FILES,
     };
+  }
+
+  if (everyPathMatches(files, HOOKS_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "hooks",
+      reason: "hook_and_ci_routing_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: HOOKS_TEST_FILES,
+    };
+  }
+
+  if (anyPathMatches(files, BROAD_FALLBACK_PATTERNS)) {
+    return { kind: "full-fast", reason: "broad_or_infra_sensitive_change", files };
   }
 
   return { kind: "full-fast", reason: "unclassified_changed_paths", files };
