@@ -1,7 +1,8 @@
 ---
 id: "202603081422-QMHF8T"
 title: "Refocus blog release surface on the 0.3.x line"
-status: "DOING"
+result_summary: "Primary blog release ordering now starts at 0.3.0 and proceeds chronologically through 0.3.1 and 0.3.2, while 0.2.25 remains accessible outside the main line."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -15,15 +16,24 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Primary blog release line must start at 0.3.0 and keep 0.2.25 accessible separately."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-08T14:43:50.292Z"
+  updated_by: "DOCS"
+  note: |-
+    Checks passed:
+    - bun run docs:site:check
+    - node .agentplane/policy/check-routing.mjs
+    - reviewed website/src/pages/blog/index.tsx to confirm the primary release line is 0.3.0 -> 0.3.1 -> 0.3.2 and earlier context lives separately.
+commit:
+  hash: "ee72dbcbcb690b0e99b34dcd72a634515203691a"
+  message: "📝 QMHF8T docs: refocus blog release line on 0.3.x"
 comments:
   -
     author: "DOCS"
     body: "Start: adjust the blog landing page so the primary release line begins with 0.3.0 and earlier releases move to a secondary surface."
+  -
+    author: "DOCS"
+    body: "Verified: the custom /blog landing page now presents the 0.3.x release line first and keeps earlier context on a secondary surface."
 events:
   -
     type: "status"
@@ -32,8 +42,25 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: adjust the blog landing page so the primary release line begins with 0.3.0 and earlier releases move to a secondary surface."
+  -
+    type: "verify"
+    at: "2026-03-08T14:43:50.292Z"
+    author: "DOCS"
+    state: "ok"
+    note: |-
+      Checks passed:
+      - bun run docs:site:check
+      - node .agentplane/policy/check-routing.mjs
+      - reviewed website/src/pages/blog/index.tsx to confirm the primary release line is 0.3.0 -> 0.3.1 -> 0.3.2 and earlier context lives separately.
+  -
+    type: "status"
+    at: "2026-03-08T14:44:11.540Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the custom /blog landing page now presents the 0.3.x release line first and keeps earlier context on a secondary surface."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:43:10.147Z"
+doc_updated_at: "2026-03-08T14:44:11.540Z"
 doc_updated_by: "DOCS"
 description: "Adjust the custom blog landing page so the primary release line starts at 0.3.0 and proceeds chronologically through 0.3.1 and 0.3.2, while earlier releases stay accessible via a separate earlier-releases/archive surface instead of preceding 0.3 on the primary line."
 id_source: "generated"
@@ -64,6 +91,17 @@ Adjust the custom blog landing page so the primary release line starts at 0.3.0 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T14:43:50.292Z — VERIFY — ok
+
+By: DOCS
+
+Note: Checks passed:
+- bun run docs:site:check
+- node .agentplane/policy/check-routing.mjs
+- reviewed website/src/pages/blog/index.tsx to confirm the primary release line is 0.3.0 -> 0.3.1 -> 0.3.2 and earlier context lives separately.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-08T14:43:10.147Z, excerpt_hash=sha256:99445bbfb234e52eff894872b967fbc1dede6d9f9eefde3aa3eca3f8101fe436
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
