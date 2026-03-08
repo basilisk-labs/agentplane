@@ -158,7 +158,7 @@ describe("task verify record (unit)", () => {
     ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
-  it("cmdTaskVerifyOk records ok result, appends entry, and prints README path (quiet=false)", async () => {
+  it("cmdTaskVerifyOk preserves legacy verification scaffold for doc_version=2", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
       writes.push(String(chunk));
@@ -230,12 +230,74 @@ describe("task verify record (unit)", () => {
     expect(next?.status).toBe("DONE");
     expect(next?.commit).toEqual({ hash: "abc", message: "msg" });
     expect(next?.events?.at(-1)?.type).toBe("verify");
+    expect(next?.doc).toContain("### Plan");
+    expect(next?.doc).toContain("### Results");
     expect(next?.doc).toContain("#### 2026-02-09T00:00:00.000Z — VERIFY — ok");
     expect(next?.doc).toContain("By: TESTER");
     expect(next?.doc).toContain("Note: ok");
     expect(writes.join("")).toContain("/repo/.agentplane/tasks/T-1/README.md");
 
     writeSpy.mockRestore();
+  });
+
+  it("cmdTaskVerifyOk normalizes doc_version=3 verification to results-only layout", async () => {
+    const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      writeTask,
+      getTaskDoc: () =>
+        Promise.resolve(
+          [
+            "## Summary",
+            "x",
+            "",
+            "## Verify Steps",
+            "step",
+            "",
+            "## Verification",
+            "### Plan",
+            "",
+            "legacy notes",
+            "",
+            "### Results",
+            "",
+            "<!-- BEGIN VERIFICATION RESULTS -->",
+            "<!-- END VERIFICATION RESULTS -->",
+            "",
+          ].join("\n"),
+        ),
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        status: "DONE",
+        commit: { hash: "abc", message: "msg" },
+        doc: undefined,
+        doc_version: 3,
+        doc_updated_at: "2026-02-01T00:00:00Z",
+      }),
+    );
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    const rc = await cmdTaskVerifyOk({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      by: "TESTER",
+      note: "ok",
+      details: "",
+      quiet: true,
+    });
+    expect(rc).toBe(0);
+
+    const next = writeTask.mock.calls[0]?.[0];
+    expect(next?.doc).toContain("legacy notes");
+    expect(next?.doc).not.toContain("### Plan");
+    expect(next?.doc).not.toContain("### Results");
+    expect(next?.doc).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+    expect(next?.doc).toContain("#### 2026-02-09T00:00:00.000Z — VERIFY — ok");
   });
 
   it("cmdTaskVerifyRework records needs_rework, clears commit, forces status DOING, and does not print when quiet=true", async () => {

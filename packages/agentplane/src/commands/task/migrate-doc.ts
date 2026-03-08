@@ -11,6 +11,7 @@ import {
   parseTaskReadme,
   renderTaskReadme,
   resolveProject,
+  setMarkdownSection,
   type AgentplaneConfig,
 } from "@agentplaneorg/core";
 
@@ -19,6 +20,11 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../cli/fs-utils.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import {
+  extractDocSection,
+  normalizeTaskDocVersion,
+  normalizeVerificationSectionLayout,
+} from "./shared/docs.js";
 
 type TaskMigrateDocParams = { all: boolean; quiet: boolean; taskIds: string[] };
 
@@ -100,7 +106,14 @@ async function migrateTaskReadmeDoc(opts: {
   const required = opts.config.tasks.doc.required_sections;
   const extracted = extractTaskDoc(parsed.body);
   const baseDoc = extracted || parsed.body;
-  const nextDoc = normalizeTaskDoc(ensureDocSections(baseDoc, required));
+  let nextDoc = normalizeTaskDoc(ensureDocSections(baseDoc, required));
+  const docVersion = normalizeTaskDocVersion(frontmatter.doc_version);
+  const verificationSection = extractDocSection(nextDoc, "Verification");
+  const normalizedVerification = normalizeVerificationSectionLayout(
+    verificationSection,
+    docVersion,
+  );
+  nextDoc = setMarkdownSection(nextDoc, "Verification", normalizedVerification);
   const nextBody = extracted ? mergeTaskDoc(parsed.body, nextDoc) : nextDoc;
 
   const rendered = renderTaskReadme(frontmatter, nextBody);

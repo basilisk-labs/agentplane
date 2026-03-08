@@ -186,4 +186,67 @@ Keep scope.
     expect(migrated).toContain('note: "Approved in chat on 2026-01-02."');
     expect(migrated).not.toContain('note: "Approved in chat on 2026-01-03T03:04:05.006Z."');
   });
+
+  it("normalizes doc_version=3 verification sections to results-only layout", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const taskId = "202601040000-ABCDEF";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    const readmePath = path.join(taskDir, "README.md");
+    await mkdir(taskDir, { recursive: true });
+
+    const legacy = `---
+id: "${taskId}"
+title: "Legacy task"
+status: "TODO"
+priority: "low"
+owner: "CODER"
+depends_on: []
+tags: []
+verify: []
+comments: []
+doc_version: 3
+doc_updated_at: "2026-01-04T00:00:00.000Z"
+doc_updated_by: "CODER"
+description: "Legacy"
+id_source: "generated"
+---
+## Summary
+
+Keep me.
+
+## Scope
+
+Keep scope.
+
+## Verification
+
+### Plan
+
+Legacy verification notes.
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+`;
+
+    await writeFile(readmePath, legacy, "utf8");
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
+    expect(code).toBe(0);
+
+    const migrated = await readFile(readmePath, "utf8");
+    expect(migrated).toContain("## Verification");
+    expect(migrated).toContain("Legacy verification notes.");
+    expect(migrated).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+    expect(migrated).not.toContain("### Plan");
+    expect(migrated).not.toContain("### Results");
+  });
 });

@@ -22,6 +22,7 @@ import {
   isTransitionAllowed,
   isVerifyStepsFilled,
   normalizeTaskDocVersion,
+  normalizeVerificationSectionLayout,
   normalizeDependsOnInput,
   normalizeTaskStatus,
   parseTaskListFilters,
@@ -80,6 +81,32 @@ describe("task shared helpers", () => {
     expect(taskObservationSectionName(3)).toBe("Findings");
     expect(extractTaskObservationSection(doc, 3)).toBe("new");
     expect(extractTaskObservationSection(doc, 2)).toBe("old");
+  });
+
+  it("normalizes verification layout by doc version", () => {
+    const v3Legacy = [
+      "### Plan",
+      "",
+      "Legacy notes",
+      "",
+      "### Results",
+      "",
+      "<!-- BEGIN VERIFICATION RESULTS -->",
+      "<!-- END VERIFICATION RESULTS -->",
+    ].join("\n");
+    expect(normalizeVerificationSectionLayout(v3Legacy, 3)).toBe(
+      [
+        "Legacy notes",
+        "",
+        "<!-- BEGIN VERIFICATION RESULTS -->",
+        "<!-- END VERIFICATION RESULTS -->",
+      ].join("\n"),
+    );
+
+    const v2Empty = normalizeVerificationSectionLayout("", 2);
+    expect(v2Empty).toContain("### Plan");
+    expect(v2Empty).toContain("### Results");
+    expect(v2Empty).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
   });
 
   it("isDocSectionFilled rejects empty/TODO placeholder and accepts normal text", () => {

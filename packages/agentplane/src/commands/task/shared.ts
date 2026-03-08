@@ -6,10 +6,13 @@ export {
   taskObservationSectionName,
   extractTaskObservationSection,
   VERIFY_STEPS_PLACEHOLDER,
+  VERIFICATION_RESULTS_BEGIN,
+  VERIFICATION_RESULTS_END,
   extractDocSection,
   isVerifyStepsFilled,
   isDocSectionFilled,
   ensureAgentFilledRequiredDocSections,
+  normalizeVerificationSectionLayout,
 } from "./shared/docs.js";
 export {
   normalizeDependsOnInput,

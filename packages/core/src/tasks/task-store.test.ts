@@ -45,6 +45,11 @@ describe("task-store", () => {
     expect(readme).toContain('status: "TODO"');
     expect(readme).toContain("doc_version: 3");
     expect(readme).toContain("## Findings");
+    expect(readme).toContain("## Verification");
+    expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
+    expect(readme).toContain("<!-- END VERIFICATION RESULTS -->");
+    expect(readme).not.toContain("### Plan");
+    expect(readme).not.toContain("### Results");
 
     const loaded = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
     expect(loaded.frontmatter.title).toBe("My task");
@@ -252,7 +257,7 @@ describe("task-store", () => {
         cwd: root,
         rootOverride: root,
         taskId: created.id,
-        section: "Notes",
+        section: "Findings",
         text: "Updated notes",
         updatedBy: "CODER",
       }),

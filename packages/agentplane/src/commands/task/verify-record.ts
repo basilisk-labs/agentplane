@@ -15,33 +15,22 @@ import {
 } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
-import { appendTaskEvent, extractDocSection, nowIso } from "./shared.js";
+import {
+  appendTaskEvent,
+  extractDocSection,
+  normalizeTaskDocVersion,
+  normalizeVerificationSectionLayout,
+  nowIso,
+  VERIFICATION_RESULTS_BEGIN,
+  VERIFICATION_RESULTS_END,
+} from "./shared.js";
 
 type VerifyState = "ok" | "needs_rework";
 
-const RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
-const RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
-
-function ensureVerificationResultsMarkers(sectionText: string): string {
-  const normalized = sectionText.replaceAll("\r\n", "\n").trimEnd();
-  if (!normalized) {
-    return ["### Plan", "", "", "### Results", "", "", RESULTS_BEGIN, RESULTS_END].join("\n");
-  }
-
-  const hasBegin = normalized.includes(RESULTS_BEGIN);
-  const hasEnd = normalized.includes(RESULTS_END);
-  if (hasBegin && hasEnd) return normalized;
-
-  const out: string[] = [normalized];
-  if (!normalized.endsWith("\n")) out.push("");
-  out.push("", RESULTS_BEGIN, RESULTS_END);
-  return out.join("\n").trimEnd();
-}
-
-function appendBetweenMarkers(sectionText: string, entryText: string): string {
-  const ensured = ensureVerificationResultsMarkers(sectionText);
-  const beginIdx = ensured.indexOf(RESULTS_BEGIN);
-  const endIdx = ensured.indexOf(RESULTS_END);
+function appendBetweenMarkers(sectionText: string, entryText: string, version: 2 | 3): string {
+  const ensured = normalizeVerificationSectionLayout(sectionText, version);
+  const beginIdx = ensured.indexOf(VERIFICATION_RESULTS_BEGIN);
+  const endIdx = ensured.indexOf(VERIFICATION_RESULTS_END);
   if (beginIdx === -1 || endIdx === -1 || endIdx <= beginIdx) {
     throw new Error("Verification results markers are malformed");
   }
@@ -52,7 +41,7 @@ function appendBetweenMarkers(sectionText: string, entryText: string): string {
 
   const parts: string[] = [
     beforeEnd,
-    ...(beforeEnd.endsWith(RESULTS_BEGIN) ? [] : [""]),
+    ...(beforeEnd.endsWith(VERIFICATION_RESULTS_BEGIN) ? [] : [""]),
     entry,
     "",
     afterEnd,
@@ -130,8 +119,9 @@ async function recordVerificationResult(opts: {
   const verifyStepsHash = verifySteps
     ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
     : null;
+  const docVersion = normalizeTaskDocVersion(task.doc_version);
   const verifyStepsRef = [
-    `doc_version=${String(task.doc_version ?? "missing")}`,
+    `doc_version=${String(docVersion)}`,
     `doc_updated_at=${String(task.doc_updated_at ?? "missing")}`,
     `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
   ].join(", ");
@@ -145,7 +135,7 @@ async function recordVerificationResult(opts: {
     details: opts.details ?? null,
     verifyStepsRef,
   });
-  const nextVerification = appendBetweenMarkers(verificationSection, entry);
+  const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
   const nextDoc = ensureDocSections(
     setMarkdownSection(baseDoc, "Verification", nextVerification),
     config.tasks.doc.required_sections,

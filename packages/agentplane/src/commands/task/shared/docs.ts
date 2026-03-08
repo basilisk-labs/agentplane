@@ -10,6 +10,8 @@ export function nowIso(): string {
 
 export const VERIFY_STEPS_PLACEHOLDER =
   "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->";
+export const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
+export const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 export type TaskDocVersion = 2 | 3;
 
 export function extractDocSection(doc: string, sectionName: string): string | null {
@@ -43,6 +45,52 @@ export function normalizeTaskDocVersion(
   fallback: TaskDocVersion = 2,
 ): TaskDocVersion {
   return value === 3 ? 3 : value === 2 ? 2 : fallback;
+}
+
+export function normalizeVerificationSectionLayout(
+  sectionText: string | null,
+  version: TaskDocVersion,
+): string {
+  const normalized = (sectionText ?? "").replaceAll("\r\n", "\n").trimEnd();
+
+  if (version === 3) {
+    const stripped = normalized
+      .split("\n")
+      .filter((line) => {
+        const trimmed = line.trim();
+        return trimmed !== "### Plan" && trimmed !== "### Results";
+      })
+      .join("\n")
+      .replaceAll(/\n{3,}/g, "\n\n")
+      .trim();
+
+    if (!stripped) return [VERIFICATION_RESULTS_BEGIN, VERIFICATION_RESULTS_END].join("\n");
+
+    const hasBegin = stripped.includes(VERIFICATION_RESULTS_BEGIN);
+    const hasEnd = stripped.includes(VERIFICATION_RESULTS_END);
+    if (hasBegin && hasEnd) return stripped;
+
+    return [stripped, "", VERIFICATION_RESULTS_BEGIN, VERIFICATION_RESULTS_END].join("\n");
+  }
+
+  if (!normalized) {
+    return [
+      "### Plan",
+      "",
+      "",
+      "### Results",
+      "",
+      "",
+      VERIFICATION_RESULTS_BEGIN,
+      VERIFICATION_RESULTS_END,
+    ].join("\n");
+  }
+
+  const hasBegin = normalized.includes(VERIFICATION_RESULTS_BEGIN);
+  const hasEnd = normalized.includes(VERIFICATION_RESULTS_END);
+  if (hasBegin && hasEnd) return normalized;
+
+  return [normalized, "", VERIFICATION_RESULTS_BEGIN, VERIFICATION_RESULTS_END].join("\n");
 }
 
 export function taskObservationSectionName(version: TaskDocVersion): "Notes" | "Findings" {
