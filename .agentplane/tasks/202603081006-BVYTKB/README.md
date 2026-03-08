@@ -1,7 +1,8 @@
 ---
 id: "202603081006-BVYTKB"
 title: "Define task README v3 contract and Findings semantics"
-status: "DOING"
+result_summary: "Canonical README v3 contract recorded and roadmap task graph persisted."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T10:12:00.701Z"
   updated_by: "PLANNER"
   note: "Recorded the canonical README v3 contract in docs/user/tasks-and-backends.mdx; website build and policy routing checks passed."
-commit: null
+commit:
+  hash: "c5c0f333bcb19b6dae14162f7493e474c5a74dbc"
+  message: "📝 BVYTKB task: define README v3 contract"
 comments:
   -
     author: "PLANNER"
     body: "Start: define the canonical README v3 contract and Findings boundary before touching templates, prompts, and migration logic."
+  -
+    author: "PLANNER"
+    body: "Verified: canonical README v3 contract is documented in tasks-and-backends and aligned with current frontmatter boundaries."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Recorded the canonical README v3 contract in docs/user/tasks-and-backends.mdx; website build and policy routing checks passed."
+  -
+    type: "status"
+    at: "2026-03-08T10:12:52.896Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: canonical README v3 contract is documented in tasks-and-backends and aligned with current frontmatter boundaries."
 doc_version: 2
-doc_updated_at: "2026-03-08T10:12:00.703Z"
+doc_updated_at: "2026-03-08T10:12:52.896Z"
 doc_updated_by: "PLANNER"
 description: "Document the new v3 task README structure, including Findings as the task-local observation layer and the boundary to policy incidents."
 id_source: "generated"
