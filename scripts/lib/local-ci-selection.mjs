@@ -37,6 +37,24 @@ const CLI_HELP_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/shared\//,
 ];
 
+const CLI_CORE_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/cli\/run-cli\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\/(?!commands\/init\/)/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.test-helpers\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core(?:\.(?:boot|branch-meta|lifecycle|misc|pr-flow|tasks))?\.test\.ts$/,
+];
+
+const CLI_RUNTIME_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/bin\//,
+  /^packages\/agentplane\/src\/cli\/runtime-context\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/runtime-watch\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/dist-guard\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/stale-dist-policy\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/stale-dist-readonly\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/repo-local-handoff\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/verify-global-install-script\.test\.ts$/,
+];
+
 const RELEASE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/release\//,
   /^scripts\/check-release-(?:parity|version)\.mjs$/,
@@ -98,6 +116,25 @@ const CLI_HELP_TEST_FILES = [
   "packages/agentplane/src/cli/shared/ansi.test.ts",
   "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts",
   "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
+];
+const CLI_CORE_TEST_FILES = [
+  "packages/agentplane/src/cli/run-cli.core.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.boot.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.misc.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.test.ts",
+  "packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts",
+];
+const CLI_RUNTIME_TEST_FILES = [
+  "packages/agentplane/src/cli/runtime-context.test.ts",
+  "packages/agentplane/src/cli/runtime-watch.test.ts",
+  "packages/agentplane/src/cli/dist-guard.test.ts",
+  "packages/agentplane/src/cli/stale-dist-policy.test.ts",
+  "packages/agentplane/src/cli/stale-dist-readonly.test.ts",
+  "packages/agentplane/src/cli/repo-local-handoff.test.ts",
+  "packages/agentplane/src/cli/verify-global-install-script.test.ts",
 ];
 const RELEASE_TEST_FILES = [
   "packages/agentplane/src/commands/release/plan.test.ts",
@@ -202,6 +239,28 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: CLI_HELP_TEST_FILES,
+    };
+  }
+
+  if (everyPathMatches(files, CLI_CORE_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "cli-core",
+      reason: "cli_core_execution_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: CLI_CORE_TEST_FILES,
+    };
+  }
+
+  if (everyPathMatches(files, CLI_RUNTIME_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "cli-runtime",
+      reason: "cli_runtime_handoff_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: CLI_RUNTIME_TEST_FILES,
     };
   }
 

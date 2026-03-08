@@ -8,7 +8,16 @@ type FastCiPlan =
   | { kind: "docs-only"; reason: string; files: string[] }
   | {
       kind: "targeted";
-      bucket: "task" | "doctor" | "hooks" | "cli-help" | "release" | "upgrade" | "guard";
+      bucket:
+        | "task"
+        | "doctor"
+        | "hooks"
+        | "cli-help"
+        | "cli-core"
+        | "cli-runtime"
+        | "release"
+        | "upgrade"
+        | "guard";
       reason: string;
       files: string[];
       lintTargets: string[];
@@ -78,8 +87,30 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.help-snap.test.ts");
   });
 
-  it("keeps runtime-sensitive CLI paths on the broad fallback", () => {
-    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.ts"]);
+  it("routes isolated run-cli execution paths to the cli-core bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli/globals.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("cli-core");
+    expect(plan.reason).toBe("cli_core_execution_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.boot.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts",
+    );
+  });
+
+  it("routes isolated runtime freshness and handoff paths to the cli-runtime bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/bin/runtime-context.js"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("cli-runtime");
+    expect(plan.reason).toBe("cli_runtime_handoff_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/dist-guard.test.ts");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/repo-local-handoff.test.ts");
+  });
+
+  it("keeps residual runtime-sensitive CLI paths on the broad fallback", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts",
+    ]);
     expect(plan.kind).toBe("full-fast");
     expect(plan.reason).toBe("broad_or_infra_sensitive_change");
   });
