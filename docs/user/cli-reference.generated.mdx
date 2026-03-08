@@ -1308,6 +1308,7 @@ Options:
 
 - `--fix`: Apply safe fixes. (default=false)
 - `--dev`: Run monorepo source-layer checks (requires packages/agentplane/src). (default=false)
+- `--archive-full`: Run the full historical task archive audit instead of the bounded recent scan. (default=false)
 
 Examples:
 
@@ -1316,6 +1317,12 @@ agentplane doctor
 ```
 
 - Check installed workspace invariants.
+
+```sh
+agentplane doctor --archive-full
+```
+
+- Also scan the full historical task archive for older commit anomalies.
 
 ```sh
 agentplane doctor --dev
