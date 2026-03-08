@@ -2090,6 +2090,7 @@ describe("runCli", () => {
       ]);
       expect(code2).toBe(0);
       expect(io2.stdout).toContain(path.join(root, ".agentplane", "tasks", id, "README.md"));
+      expect(io2.stderr).toContain("task doc set updated section Summary");
     } finally {
       io2.restore();
     }
@@ -2164,6 +2165,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
+      expect(io.stderr).toContain("task doc set applied a full-doc update");
     } finally {
       io.restore();
     }

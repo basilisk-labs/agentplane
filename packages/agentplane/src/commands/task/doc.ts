@@ -9,10 +9,31 @@ import {
 } from "@agentplaneorg/core";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
-import { infoMessage, unknownEntityMessage, backendNotSupportedMessage } from "../../cli/output.js";
+import {
+  infoMessage,
+  unknownEntityMessage,
+  backendNotSupportedMessage,
+  warnMessage,
+} from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+
+function normalizeOutcomeText(value: string): string {
+  return value
+    .replaceAll("\r\n", "\n")
+    .split("\n")
+    .map((line) => line.trimEnd())
+    .join("\n")
+    .trim();
+}
+
+function readSectionContent(doc: string, section: string): string {
+  const sectionKey = normalizeDocSectionName(section);
+  const { sections } = parseDocSections(doc);
+  const lines = sections.get(sectionKey)?.lines ?? [];
+  return normalizeOutcomeText(lines.join("\n"));
+}
 
 export async function cmdTaskDocSet(opts: {
   ctx?: CommandContext;
@@ -94,6 +115,11 @@ export async function cmdTaskDocSet(opts: {
       ? String(storeTask!.doc ?? "")
       : ((await backend.getTaskDoc(opts.taskId)) ?? "");
     const baseDoc = ensureDocSections(baseDocRaw, config.tasks.doc.required_sections);
+    const baseSection = readSectionContent(baseDoc, opts.section);
+    const requestMode =
+      headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))
+        ? "full-doc"
+        : "section";
     if (headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))) {
       const fullDoc = ensureDocSections(text, config.tasks.doc.required_sections);
       await (useStore
@@ -125,8 +151,33 @@ export async function cmdTaskDocSet(opts: {
           }))
         : backend.setTaskDoc(opts.taskId, normalized, updatedBy));
     }
+    const updatedTask = useStore ? await store!.get(opts.taskId) : null;
+    const updatedDocRaw = useStore
+      ? String(updatedTask?.doc ?? "")
+      : ((await backend.getTaskDoc(opts.taskId)) ?? "");
+    const updatedDoc = ensureDocSections(updatedDocRaw, config.tasks.doc.required_sections);
+    const updatedSection = readSectionContent(updatedDoc, opts.section);
+    const docChanged = normalizeOutcomeText(baseDoc) !== normalizeOutcomeText(updatedDoc);
+    const sectionChanged = baseSection !== updatedSection;
     const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
     process.stdout.write(`${path.join(tasksDir, opts.taskId, "README.md")}\n`);
+    if (!docChanged) {
+      process.stderr.write(
+        `${warnMessage(`task doc set wrote no effective README change for section ${opts.section}`)}\n`,
+      );
+    } else if (requestMode === "full-doc") {
+      process.stderr.write(
+        `${infoMessage(
+          `task doc set applied a full-doc update; target section ${opts.section} ${sectionChanged ? "changed" : "did not change"}`,
+        )}\n`,
+      );
+    } else {
+      process.stderr.write(
+        `${infoMessage(
+          `task doc set updated section ${opts.section}${sectionChanged ? "" : " (effective section content unchanged)"}`,
+        )}\n`,
+      );
+    }
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

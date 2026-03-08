@@ -214,6 +214,7 @@ describe("commands/workflow", () => {
         file: "note.md",
       });
       expect(code).toBe(0);
+      expect(io.stderr).toContain("task doc set updated section Summary");
     } finally {
       io.restore();
     }
@@ -237,6 +238,7 @@ describe("commands/workflow", () => {
         text: "## Summary\n\nAlpha\n\n## Scope\n\nBeta",
       });
       expect(code).toBe(0);
+      expect(io.stderr).toContain("task doc set applied a full-doc update");
     } finally {
       io.restore();
     }
