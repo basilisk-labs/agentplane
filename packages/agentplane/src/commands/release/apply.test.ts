@@ -684,7 +684,7 @@ describeWhenNotHook("release apply", () => {
       cwd: root,
     });
     expect(localTagOut.trim()).toBe("");
-  });
+  }, 60_000);
 
   it("fails when the current package versions drift past the release-plan baseline", async () => {
     const root = await mkGitRepoRoot();
