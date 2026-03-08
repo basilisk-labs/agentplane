@@ -187,6 +187,19 @@ agentplane upgrade --agent
 If a legacy project ends up with a new gateway but missing policy modules after upgrade, use the
 [Legacy upgrade recovery](../help/legacy-upgrade-recovery) runbook.
 
+If `agentplane doctor` reports that active tasks still use legacy README v2 docs or that the
+workspace is in an active v2/v3 mixed state after an upgrade, normalize task docs before
+continuing active work:
+
+```bash
+agentplane task migrate-doc --all
+agentplane doctor
+```
+
+Use this after the managed framework files are already up to date. `agentplane upgrade` updates the
+framework-owned files; `task migrate-doc --all` updates task-local README docs to the README v3
+contract.
+
 ## Preflight modes
 
 Quick preflight is now the default and is optimized for fast readiness checks:

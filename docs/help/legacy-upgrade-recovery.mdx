@@ -55,6 +55,21 @@ agentplane doctor
 agentplane quickstart
 ```
 
+6. If doctor now reports active legacy task READMEs or an active README v2/v3 mixed state, migrate
+   task docs to the target contract:
+
+```bash
+agentplane task migrate-doc --all
+agentplane doctor
+```
+
+This second step is about task-local docs, not managed framework files:
+
+- `agentplane upgrade --yes` repairs framework-owned files such as `AGENTS.md` and
+  `.agentplane/policy/**`;
+- `agentplane task migrate-doc --all` upgrades task READMEs from legacy `doc_version=2` to the
+  README v3 contract.
+
 ## If `upgrade` still does nothing useful
 
 - Reinstall or update the global `agentplane` CLI first.

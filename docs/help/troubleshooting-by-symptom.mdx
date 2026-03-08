@@ -137,6 +137,22 @@ description: "Common problems and how to fix them quickly."
 - Doctor validates normal installation invariants by default.
 - If you are developing the framework itself, run doctor in that repository and keep generated/task artifacts in ignored paths.
 
+## `agentplane doctor` reports legacy task README migration drift
+
+**Symptom:** doctor reports that active tasks still use legacy README v2 docs, or that the
+workspace is in an active v2/v3 mixed state.
+
+**Fix:**
+
+- First ensure the framework-owned files are already up to date:
+  - `agentplane upgrade --yes`
+- Then normalize task-local README docs:
+  - `agentplane task migrate-doc --all`
+- Re-run diagnostics:
+  - `agentplane doctor`
+- If the warning mentions only historical DONE tasks, migration is still recommended for archive
+  consistency but no longer blocks active work.
+
 ## Policy modules are missing after upgrade
 
 **Symptom:** agents report missing policy modules referenced from `AGENTS.md`, or doctor reports an incomplete managed policy tree after an upgrade.
@@ -146,6 +162,9 @@ description: "Common problems and how to fix them quickly."
 - Run `agentplane doctor` from the repository root.
 - Apply the managed framework bundle with `agentplane upgrade --yes`.
 - If you need the latest published bundle, use `agentplane upgrade --remote --yes`.
+- If doctor then reports active legacy task READMEs or an active v2/v3 mixed state, run:
+  - `agentplane task migrate-doc --all`
+  - `agentplane doctor`
 - Keep local directives in `.agentplane/policy/incidents.md`; do not patch the rest of the managed policy tree by hand.
 - Full recovery walkthrough:
   - [Legacy upgrade recovery](legacy-upgrade-recovery)

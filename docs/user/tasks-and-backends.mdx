@@ -63,6 +63,27 @@ Section semantics:
 - `## Verify Steps` is the planned verification contract.
 - `## Verification` is the append-only result log written by `agentplane verify`.
 
+## Migrating older projects to README v3
+
+Older repositories may still contain legacy `doc_version=2` task READMEs after the framework files
+were upgraded.
+
+Use this order:
+
+```bash
+agentplane upgrade --yes
+agentplane doctor
+agentplane task migrate-doc --all
+agentplane doctor
+```
+
+Operational split:
+
+- `agentplane upgrade --yes` updates framework-managed files.
+- `agentplane task migrate-doc --all` updates task-local README docs to `doc_version=3`.
+- `agentplane doctor` tells you whether active work is still blocked by a mixed v2/v3 state or
+  whether only the historical archive remains on the old format.
+
 ## Export snapshot
 
 An export-only snapshot is written to `.agentplane/tasks.json` for integrations (gitignored by default).
