@@ -1,7 +1,8 @@
 ---
 id: "202603081006-5MRPTV"
 title: "Sync policy, docs, and agent prompts to README v3 contract"
-status: "DOING"
+result_summary: "README v3 language synced across policy, docs, and agent prompts."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T10:16:47.926Z"
   updated_by: "DOCS"
   note: "Synced policy/assets, runtime mirrors, user docs, and agent prompts to the version-aware README v3 contract; agents:check, routing, doctor, and website build passed."
-commit: null
+commit:
+  hash: "ba3bd6c59a89ec49c1395c969a7662d819967a94"
+  message: "📝 5MRPTV task: sync README v3 language surfaces"
 comments:
   -
     author: "DOCS"
     body: "Start: sync policy, docs, and agent prompts to the canonical README v3 contract without changing task runtime templates yet."
+  -
+    author: "DOCS"
+    body: "Verified: policy, docs, and agent prompt surfaces now describe the version-aware README v3 contract and Findings boundary consistently."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Synced policy/assets, runtime mirrors, user docs, and agent prompts to the version-aware README v3 contract; agents:check, routing, doctor, and website build passed."
+  -
+    type: "status"
+    at: "2026-03-08T10:17:41.508Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: policy, docs, and agent prompt surfaces now describe the version-aware README v3 contract and Findings boundary consistently."
 doc_version: 2
-doc_updated_at: "2026-03-08T10:16:47.927Z"
+doc_updated_at: "2026-03-08T10:17:41.508Z"
 doc_updated_by: "DOCS"
 description: "Update policy modules, user docs, and agent prompt assets to speak the new README v3 language, replacing Notes with Findings and clarifying Verify Steps semantics."
 id_source: "generated"
