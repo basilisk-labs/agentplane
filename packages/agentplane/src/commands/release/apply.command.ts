@@ -1,562 +1,245 @@
-import { readFile, writeFile, readdir, mkdir } from "node:fs/promises";
 import path from "node:path";
 
-import { resolveProject, loadConfig } from "@agentplaneorg/core";
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
-import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
+import { usageError } from "../../cli/spec/errors.js";
+import type { CommandHandler, CommandSpec } from "../../cli/spec/spec.js";
 import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 import { GitContext } from "../shared/git-context.js";
 import { ensureNetworkApproved } from "../shared/network-approval.js";
+import {
+  cleanHookEnv,
+  maybeRefreshGeneratedReference,
+  maybeUpdateBunLockfile,
+  replaceAgentplanePackageMetadata,
+  replacePackageVersionInFile,
+} from "./apply.mutation.js";
+import {
+  ensureCleanTrackedTree,
+  ensureNpmVersionsAvailable,
+  ensureRemoteExists,
+  ensureRemoteTagDoesNotExist,
+  ensureTagDoesNotExist,
+  fileExists,
+  loadReleasePlan,
+  readCoreDependencyVersion,
+  readPackageVersion,
+  runReleasePrepublishGate,
+  validateReleaseNotes,
+} from "./apply.preflight.js";
+import { pushReleaseRefs, writeReleaseApplyReport } from "./apply.reporting.js";
+import type { ReleaseApplyParsed, ReleaseApplyReport, ReleaseVersionPlan } from "./apply.types.js";
 
-type BumpKind = "patch" | "minor" | "major";
+async function resolveReleasePlanInputs(opts: { gitRoot: string; planOverride?: string }): Promise<{
+  planDir: string;
+  plan: ReleaseVersionPlan;
+  notesPath: string;
+  minBullets: number;
+}> {
+  const { planDir, plan, minBullets } = await loadReleasePlan({
+    gitRoot: opts.gitRoot,
+    planOverride: opts.planOverride,
+  });
 
-export type ReleaseApplyFlags = {
-  plan?: string;
-  yes: boolean;
-  push: boolean;
+  if (!/^v\d+\.\d+\.\d+$/u.test(plan.nextTag)) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: `Invalid nextTag in version.json (expected vX.Y.Z): ${plan.nextTag}`,
+    });
+  }
+
+  const notesPath = path.join(opts.gitRoot, "docs", "releases", `${plan.nextTag}.md`);
+  if (!(await fileExists(notesPath))) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message:
+        `Missing release notes: ${path.relative(opts.gitRoot, notesPath)}\n` +
+        "Write this file using a DOCS agent before applying the release.",
+    });
+  }
+  await validateReleaseNotes(notesPath, minBullets);
+
+  return { planDir, plan, notesPath, minBullets };
+}
+
+async function ensureReleasePlanMatchesRepoState(opts: {
+  gitRoot: string;
+  plan: ReleaseVersionPlan;
+  corePkgPath: string;
+  agentplanePkgPath: string;
+}): Promise<void> {
+  const [coreVersion, agentplaneVersion, coreDependencyVersion] = await Promise.all([
+    readPackageVersion(opts.corePkgPath),
+    readPackageVersion(opts.agentplanePkgPath),
+    readCoreDependencyVersion(opts.agentplanePkgPath),
+  ]);
+  if (coreVersion !== agentplaneVersion) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Package versions must match before applying a release. ` +
+        `packages/core=${coreVersion} packages/agentplane=${agentplaneVersion}`,
+    });
+  }
+  if (coreDependencyVersion !== coreVersion) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        "Release dependency parity check failed before apply. " +
+        `packages/agentplane dependency @agentplaneorg/core=${coreDependencyVersion} ` +
+        `must match packages/core version ${coreVersion}.`,
+    });
+  }
+
+  await ensureCleanTrackedTree(opts.gitRoot);
+  await ensureTagDoesNotExist(opts.gitRoot, opts.plan.nextTag);
+  if (coreVersion !== opts.plan.prevVersion) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message:
+        `Current version does not match the release-plan baseline. ` +
+        `current=${coreVersion} expected_prev=${opts.plan.prevVersion} expected_next=${opts.plan.nextVersion}\n` +
+        "Re-run `agentplane release plan` to generate a fresh plan for this repo state.",
+      context: withDiagnosticContext(
+        { command: "release apply" },
+        {
+          state: "the repository version no longer matches the prepared release-plan baseline",
+          likelyCause:
+            "package versions changed after the plan was generated, so continuing would apply the release over a partially drifted local state",
+          nextAction: {
+            command: "agentplane release plan",
+            reason:
+              "generate a fresh release plan from the current repository state before applying the release",
+            reasonCode: "release_plan_drifted",
+          },
+        },
+      ),
+    });
+  }
+}
+
+async function runPushPreflight(opts: {
+  agentplaneDir: string;
+  gitRoot: string;
   remote: string;
-};
-
-export type ReleaseApplyParsed = ReleaseApplyFlags;
-
-type ReleaseVersionPlan = {
-  prevTag: string | null;
-  prevVersion: string;
   nextTag: string;
   nextVersion: string;
-  bump: BumpKind;
-};
-
-type PlanChange = {
-  hash: string;
-  authorDateIso: string;
-  subject: string;
-};
-
-type ReleaseApplyReport = {
-  applied_at: string;
-  plan_dir: string;
-  notes_path: string;
-  prev_version: string;
-  next_version: string;
-  prev_tag: string | null;
-  next_tag: string;
-  bump: BumpKind;
-  checks: {
-    clean_tracked_tree: true;
-    tag_absent: true;
-    notes_validated: true;
-    npm_version_available_checked: boolean;
-  };
-  commit: { hash: string; subject: string } | null;
-  push: { requested: boolean; remote: string; performed: boolean };
-};
-
-async function fileExists(p: string): Promise<boolean> {
-  try {
-    await readFile(p, "utf8");
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function readJsonFile<T>(p: string): Promise<T> {
-  return JSON.parse(await readFile(p, "utf8")) as T;
-}
-
-function assertNonEmptyString(value: unknown, label: string): string {
-  if (typeof value !== "string" || !value.trim()) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Invalid ${label} (expected non-empty string).`,
-    });
-  }
-  return value.trim();
-}
-
-function parseVersionPlan(raw: unknown): ReleaseVersionPlan {
-  if (!raw || typeof raw !== "object") {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: "Invalid version.json (expected object).",
-    });
-  }
-  const obj = raw as Record<string, unknown>;
-  const bumpRaw = assertNonEmptyString(obj.bump, "bump");
-  if (bumpRaw !== "patch" && bumpRaw !== "minor" && bumpRaw !== "major") {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Invalid bump in version.json: ${bumpRaw}`,
-    });
-  }
-  const prevTagVal = obj.prevTag;
-  const prevTag = prevTagVal === null ? null : typeof prevTagVal === "string" ? prevTagVal : null;
-  const prevVersion = assertNonEmptyString(obj.prevVersion, "prevVersion");
-  const nextTag = assertNonEmptyString(obj.nextTag, "nextTag");
-  const nextVersion = assertNonEmptyString(obj.nextVersion, "nextVersion");
-  return { prevTag, prevVersion, nextTag, nextVersion, bump: bumpRaw };
-}
-
-async function findLatestPlanDir(gitRoot: string): Promise<string> {
-  const base = path.join(gitRoot, ".agentplane", ".release", "plan");
-  const runNames = await readdir(base);
-  const runs = runNames
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .toSorted();
-  const latest = runs.at(-1);
-  if (!latest) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_IO"),
-      code: "E_IO",
-      message:
-        "No release plan runs found under .agentplane/.release/plan/. Run `agentplane release plan` first.",
-    });
-  }
-  return path.join(base, latest);
-}
-
-async function readPackageVersion(pkgJsonPath: string): Promise<string> {
-  const raw = JSON.parse(await readFile(pkgJsonPath, "utf8")) as { version?: unknown };
-  const version = typeof raw.version === "string" ? raw.version.trim() : "";
-  if (!version) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Missing package.json version: ${pkgJsonPath}`,
-    });
-  }
-  return version;
-}
-
-async function readCoreDependencyVersion(pkgJsonPath: string): Promise<string> {
-  const raw = JSON.parse(await readFile(pkgJsonPath, "utf8")) as {
-    dependencies?: Record<string, unknown>;
-  };
-  const value = raw.dependencies?.["@agentplaneorg/core"];
-  const version = typeof value === "string" ? value.trim() : "";
-  if (!version) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        `Missing dependency @agentplaneorg/core in ${pkgJsonPath}. ` +
-        "Release parity requires packages/agentplane to pin @agentplaneorg/core to the same version.",
-    });
-  }
-  return version;
-}
-
-async function replacePackageVersionInFile(
-  pkgJsonPath: string,
-  nextVersion: string,
-): Promise<void> {
-  const text = await readFile(pkgJsonPath, "utf8");
-  const replaced = text.replace(/"version"\s*:\s*"[^"]*"/u, `"version": "${nextVersion}"`);
-  if (replaced === text) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Failed to update version in ${pkgJsonPath} (missing "version" field).`,
-    });
-  }
-  await writeFile(pkgJsonPath, replaced, "utf8");
-}
-
-async function replaceAgentplanePackageMetadata(
-  pkgJsonPath: string,
-  nextVersion: string,
-): Promise<void> {
-  const text = await readFile(pkgJsonPath, "utf8");
-  const withVersion = text.replace(/"version"\s*:\s*"[^"]*"/u, `"version": "${nextVersion}"`);
-  if (withVersion === text) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Failed to update version in ${pkgJsonPath} (missing "version" field).`,
-    });
-  }
-  const withDependency = withVersion.replace(
-    /("@agentplaneorg\/core"\s*:\s*")[^"]*(")/u,
-    `$1${nextVersion}$2`,
-  );
-  if (withDependency === withVersion) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        `Failed to update @agentplaneorg/core dependency in ${pkgJsonPath}. ` +
-        "Ensure packages/agentplane/package.json declares this dependency.",
-    });
-  }
-  await writeFile(pkgJsonPath, withDependency, "utf8");
-}
-
-function cleanHookEnv(): NodeJS.ProcessEnv {
-  const env: NodeJS.ProcessEnv = { ...gitEnv() };
-  delete env.AGENTPLANE_TASK_ID;
-  delete env.AGENTPLANE_STATUS_TO;
-  delete env.AGENTPLANE_AGENT_ID;
-  return env;
-}
-
-async function validateReleaseNotes(notesPath: string, minBullets: number): Promise<void> {
-  const content = await readFile(notesPath, "utf8");
-  if (!/release\s+notes/i.test(content)) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Release notes must include a "Release Notes" heading in ${notesPath}.`,
-    });
-  }
-  const bulletCount = content.split(/\r?\n/u).filter((line) => /^\s*[-*]\s+\S+/u.test(line)).length;
-  if (bulletCount < minBullets) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Release notes must include at least ${minBullets} bullet points in ${notesPath}.`,
-    });
-  }
-  if (/[\u0400-\u04FF]/u.test(content)) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Release notes must be written in English (no Cyrillic) in ${notesPath}.`,
-    });
-  }
-}
-
-async function maybeUpdateBunLockfile(gitRoot: string): Promise<void> {
-  // GitHub publish uses `bun install --frozen-lockfile`, which will fail if the lockfile
-  // needs regeneration after bumping workspace package versions.
-  const bunLockPath = path.join(gitRoot, "bun.lock");
-  const rootPkgPath = path.join(gitRoot, "package.json");
-  if (!(await fileExists(bunLockPath))) return;
-  if (!(await fileExists(rootPkgPath))) return;
-
-  try {
-    await execFileAsync("bun", ["install", "--ignore-scripts"], {
-      cwd: gitRoot,
-      env: process.env,
-      maxBuffer: 50 * 1024 * 1024,
-    });
-  } catch (err) {
-    const e = err as { message?: string } | null;
-    throw new CliError({
-      exitCode: exitCodeForError("E_IO"),
-      code: "E_IO",
-      message:
-        "Failed to update bun.lock via `bun install --ignore-scripts`.\n" +
-        "Fix:\n" +
-        "  1) Run `bun install --ignore-scripts` manually\n" +
-        "  2) Re-run `agentplane release apply`\n" +
-        (e?.message ? `\nDetails:\n${e.message}` : ""),
-    });
-  }
-}
-
-async function maybeRefreshGeneratedReference(gitRoot: string): Promise<boolean> {
-  const scriptPath = path.join(gitRoot, "scripts", "generate-website-docs.mjs");
-  if (!(await fileExists(scriptPath))) return false;
-
-  try {
-    await execFileAsync("node", [scriptPath], {
-      cwd: gitRoot,
-      env: process.env,
-      maxBuffer: 20 * 1024 * 1024,
-    });
-  } catch (err) {
-    const e = err as { message?: string } | null;
-    throw new CliError({
-      exitCode: exitCodeForError("E_IO"),
-      code: "E_IO",
-      message:
-        "Failed to refresh docs/reference/generated-reference.mdx after bumping release versions.\n" +
-        "Fix:\n" +
-        "  1) Run `node scripts/generate-website-docs.mjs`\n" +
-        "  2) Re-run `agentplane release apply`\n" +
-        (e?.message ? `\nDetails:\n${e.message}` : ""),
-    });
-  }
-
-  return await fileExists(path.join(gitRoot, "docs", "reference", "generated-reference.mdx"));
-}
-
-async function ensureCleanTrackedTree(gitRoot: string): Promise<void> {
-  const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
-    cwd: gitRoot,
-    env: gitEnv(),
-    maxBuffer: 10 * 1024 * 1024,
+  yes: boolean;
+}): Promise<boolean> {
+  const loaded = await loadConfig(opts.agentplaneDir);
+  await ensureNetworkApproved({
+    config: loaded.config,
+    yes: opts.yes,
+    reason: "release apply --push validates npm version availability and pushes over network",
+    interactive: Boolean(process.stdin.isTTY),
   });
-  const dirty = String(stdout ?? "")
-    .split(/\r?\n/u)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.length > 0);
-  if (dirty.length === 0) return;
-
-  throw new CliError({
-    exitCode: exitCodeForError("E_GIT"),
-    code: "E_GIT",
-    message:
-      "Release apply requires a clean tracked working tree.\n" +
-      `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
-    context: withDiagnosticContext(
-      { command: "release apply" },
-      {
-        state: "release apply cannot start from a dirty tracked tree",
-        likelyCause:
-          "the release flow needs to create one deterministic version-bump commit and tag, but tracked edits already exist in the workspace",
-        nextAction: {
-          command: "git status --short --untracked-files=no",
-          reason:
-            "inspect or clear tracked changes before rerunning `agentplane release apply --push --yes`",
-          reasonCode: "release_dirty_tree",
-        },
-      },
-    ),
-  });
+  await ensureRemoteExists(opts.gitRoot, opts.remote);
+  await ensureRemoteTagDoesNotExist(opts.gitRoot, opts.remote, opts.nextTag);
+  await ensureNpmVersionsAvailable(opts.gitRoot, opts.nextVersion);
+  await runReleasePrepublishGate(opts.gitRoot);
+  return true;
 }
 
-async function ensureTagDoesNotExist(gitRoot: string, tag: string): Promise<void> {
-  try {
-    await execFileAsync("git", ["rev-parse", "-q", "--verify", `refs/tags/${tag}`], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    throw new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
-      message: `Tag already exists: ${tag}`,
-      context: withDiagnosticContext(
-        { command: "release apply" },
-        {
-          state: "the target release tag already exists locally",
-          likelyCause:
-            "the release version was already applied earlier, or a previous release attempt created the tag before failing later in the flow",
-          nextAction: {
-            command: `git show --stat --oneline ${tag}`,
-            reason:
-              "inspect the existing tag before deciding whether to reuse it or plan a new version",
-            reasonCode: "release_tag_exists",
-          },
-        },
-      ),
-    });
-  } catch (err) {
-    const code = (err as { code?: number | string } | null)?.code;
-    if (code !== 1) throw err;
+async function applyReleaseMutation(opts: {
+  gitRoot: string;
+  git: GitContext;
+  notesPath: string;
+  corePkgPath: string;
+  agentplanePkgPath: string;
+  nextTag: string;
+  nextVersion: string;
+}): Promise<{ releaseCommit: { hash: string; subject: string } | null }> {
+  let releaseCommit: { hash: string; subject: string } | null = null;
+  await Promise.all([
+    replacePackageVersionInFile(opts.corePkgPath, opts.nextVersion),
+    replaceAgentplanePackageMetadata(opts.agentplanePkgPath, opts.nextVersion),
+  ]);
+
+  await maybeUpdateBunLockfile(opts.gitRoot, fileExists);
+  const generatedReferenceExists = await maybeRefreshGeneratedReference(opts.gitRoot, fileExists);
+
+  const stagePaths = [
+    "packages/core/package.json",
+    "packages/agentplane/package.json",
+    path.relative(opts.gitRoot, opts.notesPath),
+  ];
+  if (generatedReferenceExists) {
+    stagePaths.push("docs/reference/generated-reference.mdx");
   }
-}
-
-async function ensureRemoteExists(gitRoot: string, remote: string): Promise<void> {
-  try {
-    await execFileAsync("git", ["remote", "get-url", remote], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-  } catch (err) {
-    const details = String(
-      (err as { stderr?: string; message?: string } | null)?.stderr ??
-        (err as { message?: string } | null)?.message ??
-        "",
-    ).trim();
-    throw new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
-      message: `Git remote is not configured: ${remote}` + (details ? `\n\n${details}` : ""),
-      context: withDiagnosticContext(
-        { command: "release apply" },
-        {
-          state: "the configured release remote does not exist locally",
-          likelyCause:
-            "release apply was asked to push, but the selected git remote is missing or misconfigured in this checkout",
-          nextAction: {
-            command: "git remote -v",
-            reason: "inspect configured remotes before rerunning release apply with --push",
-            reasonCode: "release_remote_missing",
-          },
-        },
-      ),
-    });
+  if (await fileExists(path.join(opts.gitRoot, "bun.lock"))) {
+    stagePaths.push("bun.lock");
   }
-}
+  await opts.git.stage(stagePaths);
 
-async function ensureRemoteTagDoesNotExist(
-  gitRoot: string,
-  remote: string,
-  tag: string,
-): Promise<void> {
-  let stdout = "";
-  try {
-    const out = await execFileAsync("git", ["ls-remote", "--tags", remote, `refs/tags/${tag}`], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    stdout = String(out.stdout ?? "").trim();
-  } catch (err) {
-    const details = String(
-      (err as { stderr?: string; message?: string } | null)?.stderr ??
-        (err as { message?: string } | null)?.message ??
-        "",
-    ).trim();
-    throw new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
-      message:
-        `Failed to inspect remote tag state for ${remote}/${tag}.` +
-        (details ? `\n\n${details}` : ""),
-      context: withDiagnosticContext(
-        { command: "release apply" },
-        {
-          state: "release apply could not verify the remote tag state",
-          likelyCause:
-            "the remote is configured, but git could not query it for the target release tag before the release started",
-          nextAction: {
-            command: `git ls-remote --tags ${remote} refs/tags/${tag}`,
-            reason: "inspect remote tag visibility before retrying the release push path",
-            reasonCode: "release_remote_tag_check_failed",
-          },
-        },
-      ),
-    });
+  const staged = await opts.git.statusStagedPaths();
+  if (staged.length === 0) {
+    process.stdout.write("No changes to commit.\n");
+    return { releaseCommit };
   }
 
-  if (!stdout) return;
-
-  throw new CliError({
-    exitCode: exitCodeForError("E_GIT"),
-    code: "E_GIT",
-    message: `Remote tag already exists: ${remote}/${tag}`,
-    context: withDiagnosticContext(
-      { command: "release apply" },
-      {
-        state: "the target release tag already exists on the remote",
-        likelyCause:
-          "a previous release or partial push already published this tag upstream, so pushing the same version again would drift the local release state",
-        nextAction: {
-          command: `git ls-remote --tags ${remote} refs/tags/${tag}`,
-          reason:
-            "inspect the existing remote tag before deciding whether to recover or bump to a new version",
-          reasonCode: "release_remote_tag_exists",
-        },
-      },
-    ),
-  });
-}
-
-async function ensureNpmVersionsAvailable(gitRoot: string, version: string): Promise<void> {
-  const scriptPath = path.join(gitRoot, "scripts", "check-npm-version-availability.mjs");
-  try {
-    await execFileAsync("node", [scriptPath, "--version", version], {
-      cwd: gitRoot,
-      env: process.env,
-      maxBuffer: 10 * 1024 * 1024,
-    });
-  } catch (err) {
-    const details = String(
-      (err as { stderr?: string; stdout?: string; message?: string } | null)?.stderr ?? "",
-    ).trim();
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        `Pre-publish npm check failed for version ${version}. ` +
-        "Ensure this version is not already published for @agentplaneorg/core and agentplane." +
-        (details ? `\n\n${details}` : ""),
-      context: withDiagnosticContext(
-        { command: "release apply" },
-        {
-          state: "the target npm version is not publishable",
-          likelyCause:
-            "that version is already burned in npm history for one of the published packages, even if it is no longer the current dist-tag",
-          nextAction: {
-            command: `node scripts/check-npm-version-availability.mjs --version ${version}`,
-            reason:
-              "inspect which package already consumed the target version before choosing a new release number",
-            reasonCode: "release_npm_version_burned",
-          },
-        },
-      ),
-    });
-  }
-}
-
-async function runReleasePrepublishGate(gitRoot: string): Promise<void> {
-  try {
-    await execFileAsync("bun", ["run", "release:prepublish"], {
-      cwd: gitRoot,
-      env: {
-        ...process.env,
-        GIT_AUTHOR_NAME: process.env.GIT_AUTHOR_NAME ?? "agentplane-release",
-        GIT_AUTHOR_EMAIL: process.env.GIT_AUTHOR_EMAIL ?? "agentplane-release@example.com",
-        GIT_COMMITTER_NAME: process.env.GIT_COMMITTER_NAME ?? "agentplane-release",
-        GIT_COMMITTER_EMAIL: process.env.GIT_COMMITTER_EMAIL ?? "agentplane-release@example.com",
-      },
-      maxBuffer: 200 * 1024 * 1024,
-    });
-  } catch (err) {
-    const details = String(
-      (err as { stderr?: string; stdout?: string; message?: string } | null)?.stderr ??
-        (err as { stdout?: string; message?: string } | null)?.stdout ??
-        (err as { message?: string } | null)?.message ??
-        "",
-    ).trim();
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        "Release prepublish gate failed. `agentplane release apply --push` requires a successful local `bun run release:prepublish` run before pushing the release tag." +
-        (details ? `\n\n${details}` : ""),
-      context: withDiagnosticContext(
-        { command: "release apply" },
-        {
-          state: "release prepublish validation failed before pushing the release",
-          likelyCause:
-            "one of the local publish gates rejected the current repository state, so the release cannot be pushed safely yet",
-          nextAction: {
-            command: "bun run release:prepublish",
-            reason:
-              "rerun the exact local publish gate and fix the reported failure before retrying release apply",
-            reasonCode: "release_prepublish_failed",
-          },
-        },
-      ),
-    });
-  }
-}
-
-async function writeReleaseApplyReport(
-  gitRoot: string,
-  report: ReleaseApplyReport,
-): Promise<string> {
-  const runId = new Date().toISOString().replaceAll(":", "-").replaceAll(".", "-");
-  const dir = path.join(gitRoot, ".agentplane", ".release", "apply");
-  await mkdir(dir, { recursive: true });
-  const reportPath = path.join(dir, `${runId}.json`);
-  const latestPath = path.join(dir, "latest.json");
-  const text = `${JSON.stringify(report, null, 2)}\n`;
-  await writeFile(reportPath, text, "utf8");
-  await writeFile(latestPath, text, "utf8");
-  return reportPath;
-}
-
-export async function pushReleaseRefs(gitRoot: string, remote: string, tag: string): Promise<void> {
-  await execFileAsync("git", ["push", "--no-verify", remote, "HEAD"], {
-    cwd: gitRoot,
+  const subject = `✨ release: ${opts.nextTag}`;
+  await opts.git.commit({ message: subject, env: cleanHookEnv() });
+  const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
+    cwd: opts.gitRoot,
     env: gitEnv(),
   });
-  await execFileAsync("git", ["push", "--no-verify", remote, tag], {
-    cwd: gitRoot,
+  releaseCommit = { hash: String(headHash ?? "").trim(), subject };
+  return { releaseCommit };
+}
+
+async function finalizeReleaseApply(opts: {
+  gitRoot: string;
+  planDir: string;
+  notesPath: string;
+  plan: ReleaseVersionPlan;
+  npmVersionChecked: boolean;
+  releaseCommit: { hash: string; subject: string } | null;
+  push: boolean;
+  remote: string;
+}): Promise<number> {
+  await execFileAsync("git", ["tag", opts.plan.nextTag], {
+    cwd: opts.gitRoot,
     env: gitEnv(),
   });
+
+  process.stdout.write(`Release tag created: ${opts.plan.nextTag}\n`);
+  if (opts.push) {
+    await pushReleaseRefs(opts.gitRoot, opts.remote, opts.plan.nextTag);
+    process.stdout.write(`Pushed: ${opts.remote} HEAD + ${opts.plan.nextTag}\n`);
+  } else {
+    process.stdout.write(
+      `Next: git push <remote> HEAD && git push <remote> ${opts.plan.nextTag}\n`,
+    );
+  }
+
+  const reportPath = await writeReleaseApplyReport(opts.gitRoot, {
+    applied_at: new Date().toISOString(),
+    plan_dir: path.relative(opts.gitRoot, opts.planDir),
+    notes_path: path.relative(opts.gitRoot, opts.notesPath),
+    prev_version: opts.plan.prevVersion,
+    next_version: opts.plan.nextVersion,
+    prev_tag: opts.plan.prevTag,
+    next_tag: opts.plan.nextTag,
+    bump: opts.plan.bump,
+    checks: {
+      clean_tracked_tree: true,
+      tag_absent: true,
+      notes_validated: true,
+      npm_version_available_checked: opts.npmVersionChecked,
+    },
+    commit: opts.releaseCommit,
+    push: { requested: opts.push, remote: opts.remote, performed: opts.push },
+  } satisfies ReleaseApplyReport);
+  process.stdout.write(`Release report: ${path.relative(opts.gitRoot, reportPath)}\n`);
+  return 0;
 }
 
 export const releaseApplySpec: CommandSpec<ReleaseApplyParsed> = {
@@ -653,22 +336,10 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
 
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const gitRoot = resolved.gitRoot;
-
-  const planDir = flags.plan ? path.resolve(gitRoot, flags.plan) : await findLatestPlanDir(gitRoot);
-  const versionJsonPath = path.join(planDir, "version.json");
-  if (!(await fileExists(versionJsonPath))) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_IO"),
-      code: "E_IO",
-      message: `Missing version.json in plan dir: ${path.relative(gitRoot, versionJsonPath)}`,
-    });
-  }
-  const plan = parseVersionPlan(await readJsonFile(versionJsonPath));
-  const changesJsonPath = path.join(planDir, "changes.json");
-  const changes = (await fileExists(changesJsonPath))
-    ? await readJsonFile<PlanChange[]>(changesJsonPath)
-    : [];
-  const minBullets = Math.max(1, Array.isArray(changes) ? changes.length : 0);
+  const { planDir, plan, notesPath } = await resolveReleasePlanInputs({
+    gitRoot,
+    planOverride: flags.plan,
+  });
 
   if ((plan.bump === "minor" || plan.bump === "major") && flags.yes !== true) {
     throw usageError({
@@ -678,161 +349,48 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
     });
   }
 
-  if (!/^v\d+\.\d+\.\d+$/u.test(plan.nextTag)) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message: `Invalid nextTag in version.json (expected vX.Y.Z): ${plan.nextTag}`,
-    });
-  }
-
-  const notesPath = path.join(gitRoot, "docs", "releases", `${plan.nextTag}.md`);
-  if (!(await fileExists(notesPath))) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_IO"),
-      code: "E_IO",
-      message:
-        `Missing release notes: ${path.relative(gitRoot, notesPath)}\n` +
-        "Write this file using a DOCS agent before applying the release.",
-    });
-  }
-  await validateReleaseNotes(notesPath, minBullets);
-
   const corePkgPath = path.join(gitRoot, "packages", "core", "package.json");
   const agentplanePkgPath = path.join(gitRoot, "packages", "agentplane", "package.json");
-  const [coreVersion, agentplaneVersion, coreDependencyVersion] = await Promise.all([
-    readPackageVersion(corePkgPath),
-    readPackageVersion(agentplanePkgPath),
-    readCoreDependencyVersion(agentplanePkgPath),
-  ]);
-  if (coreVersion !== agentplaneVersion) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        `Package versions must match before applying a release. ` +
-        `packages/core=${coreVersion} packages/agentplane=${agentplaneVersion}`,
-    });
-  }
-  if (coreDependencyVersion !== coreVersion) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        "Release dependency parity check failed before apply. " +
-        `packages/agentplane dependency @agentplaneorg/core=${coreDependencyVersion} ` +
-        `must match packages/core version ${coreVersion}.`,
+  await ensureReleasePlanMatchesRepoState({
+    gitRoot,
+    plan,
+    corePkgPath,
+    agentplanePkgPath,
+  });
+
+  let npmVersionChecked = false;
+  if (flags.push) {
+    npmVersionChecked = await runPushPreflight({
+      agentplaneDir: resolved.agentplaneDir,
+      gitRoot,
+      remote: flags.remote,
+      nextTag: plan.nextTag,
+      nextVersion: plan.nextVersion,
+      yes: flags.yes,
     });
   }
 
   const git = new GitContext({ gitRoot });
-  await ensureCleanTrackedTree(gitRoot);
-  await ensureTagDoesNotExist(gitRoot, plan.nextTag);
-  if (coreVersion !== plan.prevVersion) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_VALIDATION"),
-      code: "E_VALIDATION",
-      message:
-        `Current version does not match the release-plan baseline. ` +
-        `current=${coreVersion} expected_prev=${plan.prevVersion} expected_next=${plan.nextVersion}\n` +
-        "Re-run `agentplane release plan` to generate a fresh plan for this repo state.",
-      context: withDiagnosticContext(
-        { command: "release apply" },
-        {
-          state: "the repository version no longer matches the prepared release-plan baseline",
-          likelyCause:
-            "package versions changed after the plan was generated, so continuing would apply the release over a partially drifted local state",
-          nextAction: {
-            command: "agentplane release plan",
-            reason:
-              "generate a fresh release plan from the current repository state before applying the release",
-            reasonCode: "release_plan_drifted",
-          },
-        },
-      ),
-    });
-  }
-
-  let npmVersionChecked = false;
-  if (flags.push) {
-    const loaded = await loadConfig(resolved.agentplaneDir);
-    await ensureNetworkApproved({
-      config: loaded.config,
-      yes: flags.yes,
-      reason: "release apply --push validates npm version availability and pushes over network",
-      interactive: Boolean(process.stdin.isTTY),
-    });
-    await ensureRemoteExists(gitRoot, flags.remote);
-    await ensureRemoteTagDoesNotExist(gitRoot, flags.remote, plan.nextTag);
-    await ensureNpmVersionsAvailable(gitRoot, plan.nextVersion);
-    npmVersionChecked = true;
-    await runReleasePrepublishGate(gitRoot);
-  }
-
-  let releaseCommit: { hash: string; subject: string } | null = null;
-  await Promise.all([
-    replacePackageVersionInFile(corePkgPath, plan.nextVersion),
-    replaceAgentplanePackageMetadata(agentplanePkgPath, plan.nextVersion),
-  ]);
-
-  await maybeUpdateBunLockfile(gitRoot);
-  const generatedReferenceExists = await maybeRefreshGeneratedReference(gitRoot);
-
-  const stagePaths = [
-    "packages/core/package.json",
-    "packages/agentplane/package.json",
-    path.relative(gitRoot, notesPath),
-  ];
-  if (generatedReferenceExists) {
-    stagePaths.push("docs/reference/generated-reference.mdx");
-  }
-  if (await fileExists(path.join(gitRoot, "bun.lock"))) {
-    stagePaths.push("bun.lock");
-  }
-  await git.stage(stagePaths);
-
-  const staged = await git.statusStagedPaths();
-  if (staged.length === 0) {
-    process.stdout.write("No changes to commit.\n");
-  } else {
-    const subject = `✨ release: ${plan.nextTag}`;
-    await git.commit({ message: subject, env: cleanHookEnv() });
-    const { stdout: headHash } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-      cwd: gitRoot,
-      env: gitEnv(),
-    });
-    releaseCommit = { hash: String(headHash ?? "").trim(), subject };
-  }
-
-  await execFileAsync("git", ["tag", plan.nextTag], { cwd: gitRoot, env: gitEnv() });
-
-  process.stdout.write(`Release tag created: ${plan.nextTag}\n`);
-  if (flags.push) {
-    await pushReleaseRefs(gitRoot, flags.remote, plan.nextTag);
-    process.stdout.write(`Pushed: ${flags.remote} HEAD + ${plan.nextTag}\n`);
-  } else {
-    process.stdout.write(`Next: git push <remote> HEAD && git push <remote> ${plan.nextTag}\n`);
-  }
-
-  const reportPath = await writeReleaseApplyReport(gitRoot, {
-    applied_at: new Date().toISOString(),
-    plan_dir: path.relative(gitRoot, planDir),
-    notes_path: path.relative(gitRoot, notesPath),
-    prev_version: plan.prevVersion,
-    next_version: plan.nextVersion,
-    prev_tag: plan.prevTag,
-    next_tag: plan.nextTag,
-    bump: plan.bump,
-    checks: {
-      clean_tracked_tree: true,
-      tag_absent: true,
-      notes_validated: true,
-      npm_version_available_checked: npmVersionChecked,
-    },
-    commit: releaseCommit,
-    push: { requested: flags.push, remote: flags.remote, performed: flags.push },
+  const { releaseCommit } = await applyReleaseMutation({
+    gitRoot,
+    git,
+    notesPath,
+    corePkgPath,
+    agentplanePkgPath,
+    nextTag: plan.nextTag,
+    nextVersion: plan.nextVersion,
   });
-  process.stdout.write(`Release report: ${path.relative(gitRoot, reportPath)}\n`);
 
-  return 0;
+  return await finalizeReleaseApply({
+    gitRoot,
+    planDir,
+    notesPath,
+    plan,
+    npmVersionChecked,
+    releaseCommit,
+    push: flags.push,
+    remote: flags.remote,
+  });
 };
+
+export { pushReleaseRefs } from "./apply.reporting.js";
