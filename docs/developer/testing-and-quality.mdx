@@ -163,10 +163,11 @@ By default, hooks run:
   - `targeted(task)`: task command paths run the task-focused fast suite
   - `targeted(doctor)`: doctor command paths run the doctor-focused fast suite
   - `targeted(hooks)`: hook and CI-routing paths run the hook-focused fast suite
+  - `targeted(cli-help)`: safe CLI help/spec/guidance paths run the help-focused fast suite
   - `targeted(release)`: release command/script paths run the release-focused fast suite
   - `targeted(upgrade)`: upgrade command paths run the upgrade-focused fast suite
   - `targeted(guard)`: guard command paths run the guard-focused fast suite
-  - `full-fast fallback`: mixed, unclassified, generic CLI, shared command, package metadata, and other infra-sensitive paths still run the broad fast suite on purpose
+  - `full-fast fallback`: mixed, unclassified, runtime-sensitive CLI, shared command, package metadata, and other infra-sensitive paths still run the broad fast suite on purpose
 
   Set `AGENTPLANE_HOOKS_FULL=1` to force `bun run ci:local:full`, which adds docs-site, workflows lint, platform-critical Windows tests, and the significant-file coverage guard. For release-tag pushes (or when `AGENTPLANE_HOOKS_RELEASE=1`/`AGENTPLANE_HOOKS_FULL=1`), it additionally runs release notes validation and `bun run release:prepublish`.
 
