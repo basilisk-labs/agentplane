@@ -1,7 +1,8 @@
 ---
 id: "202603081437-46C0W2"
 title: "Sync generated CLI reference after init approval UX change"
-status: "DOING"
+result_summary: "The generated CLI reference is synchronized with the init approval UX change, so pre-push no longer fails on stale CLI docs."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T14:39:02.189Z"
   updated_by: "DOCS"
   note: "Verified: regenerated docs/user/cli-reference.generated.mdx with the dist CLI, formatted it with Prettier, CLI docs freshness now passes, and docs-site checks remain green."
-commit: null
+commit:
+  hash: "112086cca91d5a6d5f57f6228dcbc4800bfdead7"
+  message: "📝 46C0W2 docs: sync generated CLI reference after init UX change"
 comments:
   -
     author: "DOCS"
     body: "Start: regenerating the generated CLI reference after the init approval UX change so the pending init package becomes pushable again without changing runtime behavior further."
+  -
+    author: "DOCS"
+    body: "Verified: regenerated docs/user/cli-reference.generated.mdx with the dist CLI, formatted it with Prettier, CLI docs freshness now passes, and docs-site checks remain green after the init approval UX change."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: regenerated docs/user/cli-reference.generated.mdx with the dist CLI, formatted it with Prettier, CLI docs freshness now passes, and docs-site checks remain green."
+  -
+    type: "status"
+    at: "2026-03-08T14:39:15.555Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: regenerated docs/user/cli-reference.generated.mdx with the dist CLI, formatted it with Prettier, CLI docs freshness now passes, and docs-site checks remain green after the init approval UX change."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:39:02.190Z"
+doc_updated_at: "2026-03-08T14:39:15.555Z"
 doc_updated_by: "DOCS"
 description: "Regenerate docs/user/cli-reference.generated.mdx after the init approval UX change so pre-push no longer fails on CLI docs freshness drift."
 id_source: "generated"
