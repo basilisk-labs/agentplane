@@ -1,7 +1,8 @@
 ---
 id: "202603080540-NZX99N"
 title: "P0: split local quality gates into fast and full tracks"
-status: "DOING"
+result_summary: "ci:local is now the fast default path, ci:local:full preserves the previous heavy local gate, and pre-push can still escalate to full/release-grade validation without forcing that cost on every standard push."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T06:30:42.114Z"
   updated_by: "CODER"
   note: "Local quality gates were split into explicit fast and full tracks. The default ci:local/pre-push path now runs the fast gate, the full gate remains available as ci:local:full and was exercised successfully after the split, lint passed, and hooks run pre-push coverage remained green."
-commit: null
+commit:
+  hash: "40a9f6c992b18b51d01c84f69d9d8b27809edc8e"
+  message: "⚡ NZX99N ci: split local quality gates into fast and full tracks"
 comments:
   -
     author: "CODER"
     body: "Start: splitting local quality checks into fast and full tracks, then wiring pre-push to use the fast gate for standard pushes while preserving the heavy release-grade path."
+  -
+    author: "CODER"
+    body: "Verified: local CI now has explicit fast and full tracks, pre-push uses the fast gate by default, the full gate remains available for heavier validation, and the docs reflect the new contract."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local quality gates were split into explicit fast and full tracks. The default ci:local/pre-push path now runs the fast gate, the full gate remains available as ci:local:full and was exercised successfully after the split, lint passed, and hooks run pre-push coverage remained green."
+  -
+    type: "status"
+    at: "2026-03-08T06:31:18.857Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: local CI now has explicit fast and full tracks, pre-push uses the fast gate by default, the full gate remains available for heavier validation, and the docs reflect the new contract."
 doc_version: 2
-doc_updated_at: "2026-03-08T06:30:42.115Z"
+doc_updated_at: "2026-03-08T06:31:18.857Z"
 doc_updated_by: "CODER"
 description: "Reduce developer push cost by separating mandatory fast local checks from full local CI while preserving release-grade verification paths."
 id_source: "generated"
