@@ -320,7 +320,7 @@ describe("runCli", () => {
       "--section",
       "Verify Steps",
       "--text",
-      "<!-- TODO: FILL VERIFY STEPS -->",
+      "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
       "--root",
       root,
     ]);
@@ -416,7 +416,7 @@ describe("runCli", () => {
       "--section",
       "Verify Steps",
       "--text",
-      "<!-- TODO: FILL VERIFY STEPS -->",
+      "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
       "--root",
       root,
     ]);

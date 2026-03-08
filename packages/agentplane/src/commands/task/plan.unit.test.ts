@@ -156,7 +156,7 @@ describe("task plan commands (unit)", () => {
           "do stuff",
           "",
           "## Verify Steps",
-          "<!-- TODO: FILL VERIFY STEPS -->",
+          "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
         ].join("\n"),
       }),
     );

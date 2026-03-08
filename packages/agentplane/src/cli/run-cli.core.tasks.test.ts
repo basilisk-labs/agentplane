@@ -246,9 +246,10 @@ describe("runCli", () => {
     const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("## Verify Steps");
-    expect(readme).toContain("Primary tag: `code`");
-    expect(readme).toContain("`bun run test:fast`");
-    expect(readme).not.toContain("<!-- TODO: FILL VERIFY STEPS -->");
+    expect(readme).toContain("Run `bun run test:fast`.");
+    expect(readme).toContain("Expected: it succeeds and confirms the requested outcome");
+    expect(readme).toContain("## Findings");
+    expect(readme).not.toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
   });
 
   it("task add creates tasks with explicit ids", async () => {
@@ -2081,7 +2082,8 @@ describe("runCli", () => {
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain("doc_version: 3");
     expect(readme).toContain("## Verify Steps");
-    expect(readme).toContain("<!-- TODO: FILL VERIFY STEPS -->");
+    expect(readme).toContain("<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->");
+    expect(readme).toContain("1. <Action>. Expected: <observable result>.");
     expect(readme).toContain("## Verification");
     expect(readme).toContain("## Findings");
     expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");

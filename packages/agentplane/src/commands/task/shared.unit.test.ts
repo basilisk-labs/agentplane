@@ -65,7 +65,11 @@ describe("task shared helpers", () => {
     expect(isVerifyStepsFilled(null)).toBe(false);
     expect(isVerifyStepsFilled("")).toBe(false);
     expect(isVerifyStepsFilled(`x\n${VERIFY_STEPS_PLACEHOLDER}\n`)).toBe(false);
-    expect(isVerifyStepsFilled("Run: bun test")).toBe(true);
+    expect(
+      isVerifyStepsFilled(
+        "1. Review the changed artifact. Expected: the requested outcome is visible.",
+      ),
+    ).toBe(true);
   });
 
   it("normalizes doc versions and resolves observation sections with fallback", () => {

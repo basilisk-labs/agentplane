@@ -8,7 +8,8 @@ export function nowIso(): string {
   return new Date().toISOString();
 }
 
-export const VERIFY_STEPS_PLACEHOLDER = "<!-- TODO: FILL VERIFY STEPS -->";
+export const VERIFY_STEPS_PLACEHOLDER =
+  "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->";
 export type TaskDocVersion = 2 | 3;
 
 export function extractDocSection(doc: string, sectionName: string): string | null {

@@ -18,6 +18,10 @@ describe("isVerifyStepsFilled", () => {
   });
 
   it("returns true when the section has real content without placeholder", () => {
-    expect(isVerifyStepsFilled("### Checks\n\n- bun run test:agentplane")).toBe(true);
+    expect(
+      isVerifyStepsFilled(
+        "1. Run `bun run test:agentplane`. Expected: it succeeds and confirms the requested outcome.",
+      ),
+    ).toBe(true);
   });
 });
