@@ -1,7 +1,8 @@
 ---
 id: "202603081756-M9PS1R"
 title: "Gate workflow artifact restore on initialized repos during upgrade"
-status: "DOING"
+result_summary: "Workflow restoration no longer breaks minimal upgrade fixtures or fast pre-push gating."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T17:59:25.463Z"
   updated_by: "CODER"
   note: "Verified gating: minimal upgrade fixtures without installed agent profiles no longer attempt workflow publish, while initialized legacy repos still restore workflow artifacts. Failing upgrade suites and the fast gate are green."
-commit: null
+commit:
+  hash: "d6d1370470c015bef9ea14518d097b79180b65f8"
+  message: "🩹 M9PS1R upgrade: gate workflow restore on initialized repos"
 comments:
   -
     author: "CODER"
     body: "Start: gating workflow artifact restoration so upgrade only publishes workflow runtime files in initialized repos that can validate them."
+  -
+    author: "CODER"
+    body: "Verified: upgrade now restores workflow artifacts only in initialized repos that can validate them, while minimal fixtures and focused upgrade tests stay green."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified gating: minimal upgrade fixtures without installed agent profiles no longer attempt workflow publish, while initialized legacy repos still restore workflow artifacts. Failing upgrade suites and the fast gate are green."
+  -
+    type: "status"
+    at: "2026-03-08T17:59:45.535Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: upgrade now restores workflow artifacts only in initialized repos that can validate them, while minimal fixtures and focused upgrade tests stay green."
 doc_version: 3
-doc_updated_at: "2026-03-08T17:59:25.464Z"
+doc_updated_at: "2026-03-08T17:59:45.535Z"
 doc_updated_by: "CODER"
 description: "Prevent upgrade from trying to publish WORKFLOW.md in minimal test or partial repo fixtures that do not yet have installed agent profiles, while still restoring workflow artifacts for normal initialized projects."
 id_source: "generated"
