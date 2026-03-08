@@ -1,7 +1,8 @@
 ---
 id: "202603080540-AZY271"
 title: "P0: split upgrade orchestration into source plan apply report modules"
-status: "DOING"
+result_summary: "upgrade.ts now acts as the orchestration layer while source resolution, agent review reporting, and apply helpers live in dedicated modules; the file dropped from 1214 to 784 lines without changing upgrade behavior."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T06:02:35.675Z"
   updated_by: "CODER"
   note: "Upgrade orchestration was split into dedicated source/report/apply/type modules. Targeted upgrade unit tests passed, upgrade integration tests passed, lint passed, TypeScript noEmit passed, agentplane build passed, and the broad run-cli init/upgrade/backend file passed in fork mode after confirming the thread-only failure was an unrelated process.chdir test-runner limitation."
-commit: null
+commit:
+  hash: "d5ae30b6397737f8e109e46990ef372f524cfd22"
+  message: "♻️ AZY271 upgrade: split orchestration into source report apply modules"
 comments:
   -
     author: "CODER"
     body: "Start: extracting upgrade source/download resolution into dedicated modules, then splitting plan/apply/report orchestration while preserving current CLI behavior and merge semantics."
+  -
+    author: "CODER"
+    body: "Verified: upgrade orchestration was split into dedicated source/report/apply/type modules, targeted and broad upgrade tests passed, and the command contract stayed stable."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Upgrade orchestration was split into dedicated source/report/apply/type modules. Targeted upgrade unit tests passed, upgrade integration tests passed, lint passed, TypeScript noEmit passed, agentplane build passed, and the broad run-cli init/upgrade/backend file passed in fork mode after confirming the thread-only failure was an unrelated process.chdir test-runner limitation."
+  -
+    type: "status"
+    at: "2026-03-08T06:03:40.656Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: upgrade orchestration was split into dedicated source/report/apply/type modules, targeted and broad upgrade tests passed, and the command contract stayed stable."
 doc_version: 2
-doc_updated_at: "2026-03-08T06:02:35.676Z"
+doc_updated_at: "2026-03-08T06:03:40.656Z"
 doc_updated_by: "CODER"
 description: "Refactor commands/upgrade.ts into narrower units for source resolution, plan construction, apply execution, and reporting while preserving behavior and tests."
 id_source: "generated"
