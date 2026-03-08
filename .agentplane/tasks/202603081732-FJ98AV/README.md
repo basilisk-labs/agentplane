@@ -1,7 +1,7 @@
 ---
 id: "202603081732-FJ98AV"
 title: "Apply and publish release v0.3.4"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -13,18 +13,30 @@ tags:
   - "release"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-08T18:06:28.492Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Release execution approved after install-first fixes and release notes landed on main."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: running the 0.3.4 release path from clean main, beginning with release:prepublish before release apply and publication checks."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T18:06:31.892Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: running the 0.3.4 release path from clean main, beginning with release:prepublish before release apply and publication checks."
 doc_version: 3
-doc_updated_at: "2026-03-08T17:32:12.516Z"
+doc_updated_at: "2026-03-08T18:06:31.892Z"
 doc_updated_by: "CODER"
 description: "Run the 0.3.4 release flow after the install-first runtime fixes and release notes land, then publish the patch release and close the release evidence path."
 id_source: "generated"
@@ -42,17 +54,15 @@ Run the 0.3.4 release flow after the install-first runtime fixes and release not
 
 ## Plan
 
-1. Implement the change for "Apply and publish release v0.3.4".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Re-run release preflight and confirm the v0.3.4 notes plus install-first stabilization changes are release-ready on a clean main branch.
+2. Execute `agentplane release apply --push --yes` to bump versions, tag v0.3.4, and publish the release artifacts.
+3. Verify npm, GitHub Release, and repository state, then close the release task with the released commit hash.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Run `bun run release:prepublish`. Expected: release preflight passes on a clean tree before any version mutation.
+2. Run `agentplane release apply --push --yes`. Expected: the release commit, tag, and remote publication flow complete without manual repository surgery.
+3. Confirm npm, GitHub Release, and `agentplane task list` reflect a published v0.3.4 state. Expected: the release artifacts are visible and the repository returns to a clean tracked state after task closure.
 
 ## Verification
 
