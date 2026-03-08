@@ -1,7 +1,8 @@
 ---
 id: "202603080853-RZXZBS"
 title: "Sync generated CLI reference after fast-gate refactors"
-status: "DOING"
+result_summary: "Regenerated and prettified docs/user/cli-reference.generated.mdx to restore CLI docs freshness for broad pre-push verification."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T08:54:58.064Z"
   updated_by: "TESTER"
   note: "Verified: docs/user/cli-reference.generated.mdx was regenerated and prettified, and docs:cli:check now passes against the current CLI specs."
-commit: null
+commit:
+  hash: "72681fb730e1529d6a347ba43979e920eff5eb87"
+  message: "📝 RZXZBS docs: refresh generated CLI reference"
 comments:
   -
     author: "CODER"
     body: "Start: refreshing the generated CLI reference so broad-fallback pre-push passes after the latest CLI and CI refactors."
+  -
+    author: "CODER"
+    body: "Verified: the generated CLI reference now matches the current CLI help output and broad-fallback docs:cli:check passes again."
 events:
   -
     type: "status"
@@ -37,9 +43,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: docs/user/cli-reference.generated.mdx was regenerated and prettified, and docs:cli:check now passes against the current CLI specs."
+  -
+    type: "status"
+    at: "2026-03-08T08:55:11.461Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the generated CLI reference now matches the current CLI help output and broad-fallback docs:cli:check passes again."
 doc_version: 2
-doc_updated_at: "2026-03-08T08:54:58.065Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-03-08T08:55:11.461Z"
+doc_updated_by: "CODER"
 description: "Refresh docs/user/cli-reference.generated.mdx so broad fallback pre-push passes after the recent CI and doctor fast-bucket changes."
 id_source: "generated"
 ---
