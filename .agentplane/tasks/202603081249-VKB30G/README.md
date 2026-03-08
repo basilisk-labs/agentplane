@@ -1,7 +1,8 @@
 ---
 id: "202603081249-VKB30G"
 title: "Add runtime-sensitive CLI targeted fast buckets"
-status: "DOING"
+result_summary: "Fast pre-push routing now targets isolated run-cli execution plumbing and bin/runtime freshness-handoff paths while leaving docs-cli and init-upgrade integration on broad fallback."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T13:07:05.186Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000; bun run lint:core -- scripts/lib/local-ci-selection.mjs packages/agentplane/src/cli/local-ci-selection.test.ts; AGENTPLANE_FAST_CHANGED_FILES=packages/agentplane/src/cli/run-cli/globals.ts node scripts/run-local-ci.mjs --mode fast; AGENTPLANE_FAST_CHANGED_FILES=packages/agentplane/bin/runtime-context.js node scripts/run-local-ci.mjs --mode fast; AGENTPLANE_FAST_CHANGED_FILES=packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts node scripts/run-local-ci.mjs --mode fast. Result: pass. Evidence: selector tests green; cli-core and cli-runtime targeted contours selected; residual init-upgrade path stayed on broad full-fast. Scope: scripts/lib/local-ci-selection.* and packages/agentplane/src/cli/local-ci-selection.test.ts."
-commit: null
+commit:
+  hash: "08c1e94417174f64f0505ae63b8370f5b81d026a"
+  message: "⚡ VKB30G task: add runtime-sensitive CLI fast buckets"
 comments:
   -
     author: "CODER"
     body: "Start: implementing focused cli-core and cli-runtime fast buckets for runtime-sensitive CLI paths, with selector regressions and fallback preservation for residual execution surfaces."
+  -
+    author: "CODER"
+    body: "Verified: added focused cli-core and cli-runtime fast buckets, confirmed live changed-file routing, and preserved broad fallback for residual runtime-sensitive CLI paths without clear focused suites."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000; bun run lint:core -- scripts/lib/local-ci-selection.mjs packages/agentplane/src/cli/local-ci-selection.test.ts; AGENTPLANE_FAST_CHANGED_FILES=packages/agentplane/src/cli/run-cli/globals.ts node scripts/run-local-ci.mjs --mode fast; AGENTPLANE_FAST_CHANGED_FILES=packages/agentplane/bin/runtime-context.js node scripts/run-local-ci.mjs --mode fast; AGENTPLANE_FAST_CHANGED_FILES=packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts node scripts/run-local-ci.mjs --mode fast. Result: pass. Evidence: selector tests green; cli-core and cli-runtime targeted contours selected; residual init-upgrade path stayed on broad full-fast. Scope: scripts/lib/local-ci-selection.* and packages/agentplane/src/cli/local-ci-selection.test.ts."
+  -
+    type: "status"
+    at: "2026-03-08T13:07:26.617Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: added focused cli-core and cli-runtime fast buckets, confirmed live changed-file routing, and preserved broad fallback for residual runtime-sensitive CLI paths without clear focused suites."
 doc_version: 3
-doc_updated_at: "2026-03-08T13:07:05.187Z"
+doc_updated_at: "2026-03-08T13:07:26.617Z"
 doc_updated_by: "CODER"
 description: "Split the remaining run-cli and runtime-sensitive CLI broad fallback into narrower targeted fast-CI buckets without weakening coverage for execution, handoff, and stale-dist behavior."
 id_source: "generated"
