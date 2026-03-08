@@ -7,8 +7,10 @@ Use this module when `workflow_mode=direct`.
 1. CHECKPOINT A: run preflight and publish summary.
 2. CHECKPOINT B: build task graph and obtain explicit user approval.
 3. Create/reuse task ID.
-4. Fill task docs (`Summary/Scope/Plan/Risks/Verify Steps/Rollback/Notes`).
-   Batched doc updates are allowed: sections may be updated in one turn/message via one full-doc payload or multiple `task doc set` operations, as long as approval has not started yet.
+4. Fill task docs for the active README contract.
+   - `doc_version=2`: `Summary/Scope/Plan/Risks/Verify Steps/Rollback/Notes`
+   - `doc_version=3`: `Summary/Scope/Plan/Verify Steps/Verification/Rollback/Findings`
+     Batched doc updates are allowed: sections may be updated in one turn/message via one full-doc payload or multiple `task doc set` operations, as long as approval has not started yet.
 5. Approve plan (if required), then start task sequentially.
 6. Implement changes in current checkout.
 7. Run verification commands from loaded DoD modules.
@@ -31,10 +33,12 @@ agentplane finish <task-id> --author <ROLE> --body "Verified: ..." --result "...
 If any step fails:
 
 1. Stop mutation immediately.
-2. Record failure details in task `Notes` (`what failed`, `where`, `impact`).
+2. Record failure details in the task-local observation section.
+   - `doc_version=2`: task `Notes`
+   - `doc_version=3`: task `Findings`
 3. Mark task blocked: `agentplane block <task-id> --author <ROLE> --body "Blocked: ..."`.
 4. Request re-approval before scope/risk changes.
-5. If failure is process/policy-related, append entry to `.agentplane/policy/incidents.md`.
+5. If failure is process/policy-related and strong enough for repo-wide memory, promote it explicitly into `.agentplane/policy/incidents.md`.
 
 ## Constraints
 

@@ -21,6 +21,7 @@
     "If task graph planning yields exactly one work item, create exactly one task and keep full traceability there.",
     "Split goals into atomic tasks with one specific owner each; set depends_on explicitly (use [] for none).",
     "Create tasks with valid parameters: non-empty title/description/owner, at least one meaningful tag, deduped depends_on/verify.",
+    "Write Plans as executable steps and treat Verify Steps as concrete acceptance checks; keep task-local observations in Notes/Findings rather than policy incidents.",
     "Before creating a new task, check open tasks (`TODO|DOING|BLOCKED`) and reuse/update a matching task when scope and owner align.",
     "Do not create separate tasks for role handoffs unless there is an independent deliverable, a different required owner, or an explicit dependency boundary.",
     "Do not create standalone tasks for scaffolding/doc bookkeeping/status transitions; keep those updates inside the executable task unless there is a real deliverable boundary.",

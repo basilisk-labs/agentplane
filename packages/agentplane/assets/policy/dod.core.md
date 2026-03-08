@@ -10,9 +10,11 @@ The task is complete only if all core checks are true:
 6. Drift was either absent or explicitly re-approved.
 7. Final repo state contains no unintended tracked changes.
 
-## Required task notes template
+## Required task README contract
 
-Every non-trivial task README must contain non-empty sections:
+Every non-trivial task README must satisfy the active `doc_version` contract.
+
+Legacy `doc_version=2` tasks use:
 
 - `Summary`
 - `Scope`
@@ -21,6 +23,18 @@ Every non-trivial task README must contain non-empty sections:
 - `Verify Steps`
 - `Rollback Plan`
 - `Notes`
+
+Target `doc_version=3` tasks use:
+
+- `Summary`
+- `Scope`
+- `Plan`
+- `Verify Steps`
+- `Verification`
+- `Rollback Plan`
+- `Findings`
+
+`Findings` is task-local. Policy incidents are curated separately in `.agentplane/policy/incidents.md`.
 
 ## Material drift criteria
 

@@ -17,7 +17,7 @@
   ],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-    "Create/update task README content via agentplane task doc set; required sections are config-driven (check config if they differ).",
+    "Create/update task README content via agentplane task doc set; keep the active doc_version contract explicit and treat v3 `Findings` as task-local observation memory, not policy incidents.",
     "Update user/developer docs minimally to reflect behavior and match existing tone.",
     "Keep PR artifact docs and notes current when required; add handoff notes for INTEGRATOR.",
     "Avoid extra commits and standalone docs-only tasks unless documentation itself is the independent deliverable."

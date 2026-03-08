@@ -133,16 +133,18 @@ Body format includes `Task`, `Primary`, `Status`, `Comment`.
 agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 ```
 
-Notes:
+Key points:
 
 - `agentplane verify` is record-only. It writes to `## Verification`.
 - Verify requirements are primary-tag based (`tasks.verify.require_*_for_primary`).
 - In `branch_pr`, `agentplane integrate --run-verify` can execute `verify:` commands and append output to `pr/verify.log`.
+- `## Verify Steps` is an acceptance contract, not a commands-only scratchpad.
+- Task-local deviations and follow-ups stay in `## Notes` for legacy `doc_version=2` tasks and in `## Findings` for target `doc_version=3` tasks.
 
 ## Spike tasks
 
 Use tag `spike` for research tasks. A spike should end with:
 
-- decision and findings in README notes.
+- decision and findings in the task-local observation section (`## Notes` for v2, `## Findings` for v3).
 - explicit exit criteria in `## Verify Steps`.
 - follow-up implementation tasks that depend on the spike.

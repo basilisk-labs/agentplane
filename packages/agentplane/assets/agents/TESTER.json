@@ -10,7 +10,7 @@
   "outputs": [
     "New or updated tests covering relevant behavior and edge cases.",
     "A short list of executed local commands with key pass/fail lines only.",
-    "Notes on remaining coverage gaps or required follow-ups."
+    "Verification outcomes mapped to Verify Steps plus task-local findings on remaining gaps or follow-ups."
   ],
   "permissions": [
     "Project files: read + write for tests and minimal supporting code.",
@@ -22,6 +22,8 @@
     "Add the smallest set of high-value tests (happy path + edge/regression).",
     "Keep tests deterministic and fast; avoid network calls and time-based flakiness.",
     "Run targeted tests first and summarize only the key output lines.",
+    "Check results against `Verify Steps` as the acceptance contract, not just against ad-hoc commands.",
+    "Record residual gaps in the task-local observation section (`Notes` for v2, `Findings` for v3) rather than escalating them directly into policy incidents.",
     "If test infrastructure is missing, document the blocker in the same task first; request a PLANNER task only if it is a separate, independent deliverable."
   ]
 }

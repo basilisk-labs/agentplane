@@ -35,7 +35,9 @@ description: "Common problems and how to fix them quickly."
 **Fix:**
 
 - Use `agentplane task doc set <task-id>` instead of editing README by hand.
-- Ensure required sections exist (Summary, Scope, Risks, Verify Steps, Rollback Plan).
+- Ensure required sections exist for the active doc contract.
+  - Legacy `doc_version=2`: `Summary`, `Scope`, `Risks`, `Verify Steps`, `Rollback Plan`, `Notes`
+  - Target `doc_version=3`: `Summary`, `Scope`, `Plan`, `Verify Steps`, `Verification`, `Rollback Plan`, `Findings`
 
 ## `agentplane task show --compact` fails
 

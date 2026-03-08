@@ -8,9 +8,9 @@ Apply when task changes docs or policy files only.
 - `agentplane doctor`
 - Targeted lint/tests if docs generation or scripts were changed.
 
-## Verification notes contract
+## Verification evidence contract
 
-Record docs/policy verification in task notes using this template:
+Record docs/policy verification via `agentplane verify ...` and keep residual deviations or follow-ups in the task-local observation section (`Notes` in `doc_version=2`, `Findings` in `doc_version=3`) using this template:
 
 - `Command`: exact command string.
 - `Result`: `pass` or `fail`.

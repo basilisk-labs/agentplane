@@ -1,7 +1,7 @@
 ---
 id: "202603081006-5MRPTV"
 title: "Sync policy, docs, and agent prompts to README v3 contract"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -10,20 +10,36 @@ tags:
   - "docs"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-08T10:14:26.735Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved the sync batch after the canonical README v3 contract was recorded."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-08T10:16:47.926Z"
+  updated_by: "DOCS"
+  note: "Synced policy/assets, runtime mirrors, user docs, and agent prompts to the version-aware README v3 contract; agents:check, routing, doctor, and website build passed."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "DOCS"
+    body: "Start: sync policy, docs, and agent prompts to the canonical README v3 contract without changing task runtime templates yet."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T10:14:32.272Z"
+    author: "DOCS"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: sync policy, docs, and agent prompts to the canonical README v3 contract without changing task runtime templates yet."
+  -
+    type: "verify"
+    at: "2026-03-08T10:16:47.926Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Synced policy/assets, runtime mirrors, user docs, and agent prompts to the version-aware README v3 contract; agents:check, routing, doctor, and website build passed."
 doc_version: 2
-doc_updated_at: "2026-03-08T10:06:27.085Z"
+doc_updated_at: "2026-03-08T10:16:47.927Z"
 doc_updated_by: "DOCS"
 description: "Update policy modules, user docs, and agent prompt assets to speak the new README v3 language, replacing Notes with Findings and clarifying Verify Steps semantics."
 id_source: "generated"
@@ -52,15 +68,9 @@ Update policy modules, user docs, and agent prompt assets to speak the new READM
 
 ## Verify Steps
 
-<!-- TODO: FILL VERIFY STEPS -->
-
-### Scope
-
-### Checks
-
-### Evidence / Commands
-
-### Pass criteria
+1. Review the touched policy, docs, and agent prompt surfaces. Expected: they consistently use Findings as the task-local section and keep incidents as curated policy memory.
+2. Run template and routing checks after syncing packaged assets into .agentplane mirrors. Expected: agent/policy sync and routing checks pass.
+3. Build the docs site. Expected: documentation changes compile without errors.
 
 ## Verification
 
@@ -69,6 +79,14 @@ Update policy modules, user docs, and agent prompt assets to speak the new READM
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T10:16:47.926Z — VERIFY — ok
+
+By: DOCS
+
+Note: Synced policy/assets, runtime mirrors, user docs, and agent prompts to the version-aware README v3 contract; agents:check, routing, doctor, and website build passed.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T10:14:32.272Z, excerpt_hash=sha256:04168bbc3d7006a154d61313632dfb08838a3ff7e8297c775a870477be65e001
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
