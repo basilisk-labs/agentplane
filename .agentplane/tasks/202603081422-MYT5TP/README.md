@@ -1,7 +1,7 @@
 ---
 id: "202603081422-MYT5TP"
 title: "Raise legacy README migration integration test timeout budget"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -10,55 +10,87 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-08T14:30:23.265Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
+  state: "ok"
+  updated_at: "2026-03-08T14:31:15.218Z"
+  updated_by: "CODER"
+  note: "Verified: the isolated legacy README v2 recovery scenario passes in about 6.5 seconds, lint is clean for the touched test file, and the test now has an explicit integration timeout budget that matches its real runtime on slower CI runners."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: treating the CI failure as a timeout-budget mismatch first, not as a migration logic regression, and narrowing the fix to the slow legacy recovery integration scenario."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T14:30:23.617Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: treating the CI failure as a timeout-budget mismatch first, not as a migration logic regression, and narrowing the fix to the slow legacy recovery integration scenario."
+  -
+    type: "verify"
+    at: "2026-03-08T14:31:15.218Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: the isolated legacy README v2 recovery scenario passes in about 6.5 seconds, lint is clean for the touched test file, and the test now has an explicit integration timeout budget that matches its real runtime on slower CI runners."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:22:30.218Z"
+doc_updated_at: "2026-03-08T14:31:15.218Z"
 doc_updated_by: "CODER"
 description: "Fix the CI-only failure where the legacy README v2 recovery scenario times out after 5000ms even though the scenario completes correctly on slower runners; give the test an explicit integration timeout that matches its real runtime."
 id_source: "generated"
 ---
 ## Summary
 
-Raise legacy README migration integration test timeout budget
-
-Fix the CI-only failure where the legacy README v2 recovery scenario times out after 5000ms even though the scenario completes correctly on slower runners; give the test an explicit integration timeout that matches its real runtime.
+- Problem: the legacy README v2 recovery integration scenario is functionally correct but exceeds the default 5000ms timeout on slower CI runners.
+- Target outcome: the scenario keeps its current behavior but runs under an explicit integration timeout budget that matches real execution time.
+- Constraint: do not weaken the scenario assertions or remove recovery coverage.
 
 ## Scope
 
-- In scope: Fix the CI-only failure where the legacy README v2 recovery scenario times out after 5000ms even though the scenario completes correctly on slower runners; give the test an explicit integration timeout that matches its real runtime.
-- Out of scope: unrelated refactors not required for "Raise legacy README migration integration test timeout budget".
+### In scope
+- confirm the timeout mismatch on the existing legacy migration scenario
+- add an explicit per-test timeout budget
+- rerun the targeted test path and record the result
+
+### Out of scope
+- refactoring the entire integration suite
+- changing recovery semantics
+- unrelated upgrade or doctor behavior changes
 
 ## Plan
 
-1. Implement the change for "Raise legacy README migration integration test timeout budget".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Confirm the scenario is timing out because of budget, not because of a functional failure.
+2. Add an explicit integration timeout to the legacy recovery test.
+3. Re-run the targeted test and close the task with traceable verification.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+1. Run the isolated legacy recovery test. Expected: the scenario passes and its runtime exceeds or approaches the previous 5000ms budget.
+2. Run the touched init/upgrade backend test path after the timeout change. Expected: the scenario passes without timing out.
+3. Run `bun run lint:core -- <touched test file>`. Expected: the touched test file lint cleanly.
 
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+## Rollback Plan
+
+1. Revert the timeout-budget change.
+2. Re-run the isolated test to confirm the previous failure mode returns only if explicitly needed for comparison.
+
+## Findings
+
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T14:31:15.218Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: the isolated legacy README v2 recovery scenario passes in about 6.5 seconds, lint is clean for the touched test file, and the test now has an explicit integration timeout budget that matches its real runtime on slower CI runners.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-08T14:30:23.617Z, excerpt_hash=sha256:b0e335d81ce7d9c61a2d0b73518379fd991dc3dd0a682d78ac43e01146f89a23
+
 <!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
-- Revert task-related commit(s).
-- Re-run required checks to confirm rollback safety.
-
-## Findings

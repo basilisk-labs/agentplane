@@ -1274,48 +1274,51 @@ describe("runCli", () => {
     expect(rootEntries.some((entry) => entry.startsWith("AGENTS.md.bak-"))).toBe(false);
   });
 
-  it("recovers a legacy README v2 task after upgrade via task migrate-doc and export", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
+  it(
+    "recovers a legacy README v2 task after upgrade via task migrate-doc and export",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
 
-    let io = captureStdIO();
-    try {
-      const code = await runCli(["init", "--yes", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+      let io = captureStdIO();
+      try {
+        const code = await runCli(["init", "--yes", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    io = captureStdIO();
-    let taskId = "";
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Legacy README migration target",
-        "--description",
-        "Exercise the README v2 to v3 recovery path.",
-        "--priority",
-        "med",
-        "--owner",
-        "TESTER",
-        "--tag",
-        "code",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      const match = /\b\d{12}-[A-Z0-9]{6}\b/.exec(io.stdout);
-      expect(match).not.toBeNull();
-      taskId = match?.[0] ?? "";
-    } finally {
-      io.restore();
-    }
+      io = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Legacy README migration target",
+          "--description",
+          "Exercise the README v2 to v3 recovery path.",
+          "--priority",
+          "med",
+          "--owner",
+          "TESTER",
+          "--tag",
+          "code",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        const match = /\b\d{12}-[A-Z0-9]{6}\b/.exec(io.stdout);
+        expect(match).not.toBeNull();
+        taskId = match?.[0] ?? "";
+      } finally {
+        io.restore();
+      }
 
-    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
-    const readmePath = path.join(taskDir, "README.md");
-    const legacyReadme = `---
+      const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+      const readmePath = path.join(taskDir, "README.md");
+      const legacyReadme = `---
 id: "${taskId}"
 title: "Legacy README migration target"
 status: "TODO"
@@ -1393,84 +1396,85 @@ Legacy verification plan.
 
 - Legacy task placeholder.
 `;
-    await writeFile(readmePath, legacyReadme, "utf8");
+      await writeFile(readmePath, legacyReadme, "utf8");
 
-    io = captureStdIO();
-    try {
-      const code = await runCli(["task", "export", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
-    await commitAll(root, "✨ fixture: legacy readme v2");
+      io = captureStdIO();
+      try {
+        const code = await runCli(["task", "export", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+      await commitAll(root, "✨ fixture: legacy readme v2");
 
-    io = captureStdIO();
-    const doctorWarn = vi.spyOn(console, "error").mockImplementation(() => {
-      /* captured separately for assertion */
-    });
-    try {
-      const code = await runCli(["doctor", "--root", root]);
-      expect(code).toBe(0);
-      const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorWarn.mock.calls.flat().join("\n")}`;
-      expect(doctorOutput).toContain("agentplane task migrate-doc --all");
-      expect(doctorOutput).toContain("active legacy");
-    } finally {
-      doctorWarn.mockRestore();
-      io.restore();
-    }
+      io = captureStdIO();
+      const doctorWarn = vi.spyOn(console, "error").mockImplementation(() => {
+        /* captured separately for assertion */
+      });
+      try {
+        const code = await runCli(["doctor", "--root", root]);
+        expect(code).toBe(0);
+        const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorWarn.mock.calls.flat().join("\n")}`;
+        expect(doctorOutput).toContain("agentplane task migrate-doc --all");
+        expect(doctorOutput).toContain("active legacy");
+      } finally {
+        doctorWarn.mockRestore();
+        io.restore();
+      }
 
-    io = captureStdIO();
-    try {
-      const code = await runCli(["upgrade", "--yes", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+      io = captureStdIO();
+      try {
+        const code = await runCli(["upgrade", "--yes", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    io = captureStdIO();
-    try {
-      const code = await runCli(["task", "migrate-doc", "--all", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+      io = captureStdIO();
+      try {
+        const code = await runCli(["task", "migrate-doc", "--all", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    io = captureStdIO();
-    try {
-      const code = await runCli(["task", "export", "--root", root]);
-      expect(code).toBe(0);
-    } finally {
-      io.restore();
-    }
+      io = captureStdIO();
+      try {
+        const code = await runCli(["task", "export", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
 
-    const migratedReadme = await readFile(readmePath, "utf8");
-    expect(migratedReadme).toContain("doc_version: 3");
-    expect(migratedReadme).toContain("## Findings");
-    expect(migratedReadme).not.toContain("## Notes");
-    expect(migratedReadme).not.toContain("### Plan");
-    expect(migratedReadme).not.toContain("### Results");
+      const migratedReadme = await readFile(readmePath, "utf8");
+      expect(migratedReadme).toContain("doc_version: 3");
+      expect(migratedReadme).toContain("## Findings");
+      expect(migratedReadme).not.toContain("## Notes");
+      expect(migratedReadme).not.toContain("### Plan");
+      expect(migratedReadme).not.toContain("### Results");
 
-    const tasksExportText = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
-    const tasksExport = JSON.parse(tasksExportText) as {
-      tasks?: { id?: string; doc_version?: number }[];
-    };
-    expect(tasksExport.tasks?.find((task) => task.id === taskId)?.doc_version).toBe(3);
+      const tasksExportText = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
+      const tasksExport = JSON.parse(tasksExportText) as {
+        tasks?: { id?: string; doc_version?: number }[];
+      };
+      expect(tasksExport.tasks?.find((task) => task.id === taskId)?.doc_version).toBe(3);
 
-    io = captureStdIO();
-    const doctorClean = vi.spyOn(console, "error").mockImplementation(() => {
-      /* captured separately for assertion */
-    });
-    try {
-      const code = await runCli(["doctor", "--root", root]);
-      expect(code).toBe(0);
-      const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorClean.mock.calls.flat().join("\n")}`;
-      expect(doctorOutput).not.toContain("agentplane task migrate-doc --all");
-      expect(doctorOutput).not.toContain("active legacy");
-    } finally {
-      doctorClean.mockRestore();
-      io.restore();
-    }
-  });
+      io = captureStdIO();
+      const doctorClean = vi.spyOn(console, "error").mockImplementation(() => {
+        /* captured separately for assertion */
+      });
+      try {
+        const code = await runCli(["doctor", "--root", root]);
+        expect(code).toBe(0);
+        const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorClean.mock.calls.flat().join("\n")}`;
+        expect(doctorOutput).not.toContain("agentplane task migrate-doc --all");
+        expect(doctorOutput).not.toContain("active legacy");
+      } finally {
+        doctorClean.mockRestore();
+        io.restore();
+      }
+    },
+  );
 
   it("upgrade fails on dirty tracked tree before applying in default apply mode", async () => {
     const root = await mkGitRepoRoot();
