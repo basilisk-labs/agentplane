@@ -78,10 +78,11 @@ This split keeps `agentplane help` fast and reduces accidental startup cost from
 ## 5) Help and startup surfaces
 
 - `agentplane quickstart` and `agentplane role <ROLE>` are generated from `packages/agentplane/src/cli/command-guide.ts`.
-- The canonical bootstrap doc is generated from `packages/agentplane/src/cli/bootstrap-guide.ts` into `docs/user/agent-bootstrap.generated.mdx`.
+- The docs-site bootstrap page is generated from `packages/agentplane/src/cli/bootstrap-guide.ts` into `docs/user/agent-bootstrap.generated.mdx`.
+- Installed runtime surfaces must stay self-contained and must not require repo-only docs files to exist locally.
 - `agentplane role <ROLE>` renders one unified surface:
-- installed `.agentplane/agents/<ROLE>.json` role/profile content when available
-- plus built-in CLI/runtime supplements for that role
+  - installed `.agentplane/agents/<ROLE>.json` role/profile content when available
+  - plus built-in CLI/runtime supplements for that role
 - For unknown role requests, CLI prints known built-in roles and discovered project role ids.
 
 ## 6) Contract boundaries

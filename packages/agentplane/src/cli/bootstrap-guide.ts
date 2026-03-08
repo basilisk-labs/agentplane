@@ -1,6 +1,7 @@
 import { COMMAND_SNIPPETS } from "./command-snippets.js";
 
 export const AGENT_BOOTSTRAP_DOC_PATH = "docs/user/agent-bootstrap.generated.mdx";
+export const AGENT_BOOTSTRAP_RUNTIME_SURFACE = "agentplane quickstart";
 
 export type BootstrapSection = {
   heading: string;
@@ -75,7 +76,7 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
 ] as const;
 
 export function renderBootstrapReferenceLine(): string {
-  return `Canonical bootstrap doc: \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`;
+  return `Canonical installed startup surface: \`${AGENT_BOOTSTRAP_RUNTIME_SURFACE}\`.`;
 }
 
 export function renderBootstrapSectionLines(sections: readonly BootstrapSection[]): string[] {
@@ -110,7 +111,7 @@ export function renderBootstrapDoc(): string {
     "",
     "This page is generated from `packages/agentplane/src/cli/bootstrap-guide.ts`.",
     "",
-    "Use it as the single startup path for agents. `AGENTS.md`, `agentplane quickstart`, and `agentplane role <ROLE>` should point here instead of restating lifecycle prose.",
+    "This is the docs-site rendering of the CLI bootstrap model. Installed repositories should rely on `agentplane quickstart` and `agentplane role <ROLE>` instead of requiring this file to exist locally.",
     "",
     "## Copy-paste start block",
     "",

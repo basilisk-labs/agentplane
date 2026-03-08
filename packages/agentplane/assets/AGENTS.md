@@ -17,7 +17,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 - Repository type: user project initialized with `agentplane`.
 - Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
 - CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`, then read `docs/user/agent-bootstrap.generated.mdx`, then apply `## LOAD RULES` before any mutation.
+- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`, then apply `## LOAD RULES` before any mutation.
 
 ---
 
@@ -28,7 +28,7 @@ Priority order (highest first):
 1. Enforcement: CI, tests, linters, hooks, CLI validations.
 2. Policy gateway: `AGENTS.md`.
 3. Canonical policy modules from `## CANONICAL DOCS`.
-4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `docs/user/agent-bootstrap.generated.mdx`, `.agentplane/config.json`.
+4. CLI guidance: `agentplane quickstart`, `agentplane role <ROLE>`, `.agentplane/config.json`.
 5. Reference examples from `## REFERENCE EXAMPLES`.
 
 Conflict rule:
@@ -83,7 +83,7 @@ node .agentplane/policy/check-routing.mjs
 ## TOOLING
 
 - Use `## COMMANDS` as the canonical command source.
-- Use `docs/user/agent-bootstrap.generated.mdx` as the canonical startup path for agent onboarding.
+- Use `agentplane quickstart` as the canonical installed startup path and `agentplane role <ROLE>` for role-specific deltas.
 - For policy changes, routing validation MUST pass via `node .agentplane/policy/check-routing.mjs`.
 
 ---

@@ -1,9 +1,5 @@
 import { COMMAND_SNIPPETS } from "./command-snippets.js";
-import {
-  AGENT_BOOTSTRAP_DOC_PATH,
-  BOOTSTRAP_PREFLIGHT_COMMANDS,
-  BOOTSTRAP_TASK_PREP_COMMANDS,
-} from "./bootstrap-guide.js";
+import { BOOTSTRAP_PREFLIGHT_COMMANDS, BOOTSTRAP_TASK_PREP_COMMANDS } from "./bootstrap-guide.js";
 
 type RoleGuide = {
   role: string;
@@ -21,7 +17,7 @@ export type RoleProfileGuide = {
   workflow?: readonly string[];
 };
 
-const CLI_REFERENCE_DOC_PATH = "docs/user/cli-reference.generated.mdx";
+const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.role}\` only for role-specific deltas.`;
 
 function renderQuickstartCommandBlock(commands: readonly string[]): string[] {
   return ["```bash", ...commands, "```"];
@@ -31,7 +27,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "ORCHESTRATOR",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       "- Owns preflight, plan summaries, approvals, and scope checkpoints.",
       "- Does not create non-executable tasks or bypass lifecycle guardrails.",
     ],
@@ -39,7 +35,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "PLANNER",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       '- Create executable tasks with `agentplane task new --title "..." --description "..." --priority med --owner <ROLE> --tag <tag>`.',
       '- Fill docs with `agentplane task doc set <task-id> --section <name> --text "..."` and set plan text with `agentplane task plan set <task-id> --text "..." --updated-by <ROLE>`.',
       "- Approve plan only after required sections and Verify Steps are ready.",
@@ -48,7 +44,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "CODER",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       "- direct: stay in the current checkout; branch_pr: start a task branch/worktree first.",
       `- Start deterministically with \`${COMMAND_SNIPPETS.core.startTask}\` after plan approval.`,
       '- Treat `agentplane task verify-show <task-id>` as the verification contract, then record `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`.',
@@ -59,7 +55,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "TESTER",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       "- Start only after plan approval and explicit Verify Steps exist.",
       '- Use `agentplane task verify-show <task-id>` before running checks, then record `agentplane verify <task-id> --ok|--rework --by <ROLE> --note "..."`.',
       `- In direct mode, close with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \` when you own final verification.`,
@@ -69,16 +65,16 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "DOCS",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       '- Keep task docs and user docs aligned with runtime behavior via `agentplane task doc set <task-id> --section <name> --text "..."`.',
       "- For implementation tasks, verify generated/help surfaces after changing CLI-facing text.",
-      `- Treat \`${CLI_REFERENCE_DOC_PATH}\` as the deep reference surface; keep first-screen help intentionally shorter.`,
+      "- The docs site may expand CLI behavior, but installed runtime guidance must stay self-contained and must not depend on repo-only docs paths.",
     ],
   },
   {
     role: "REVIEWER",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       "- Review artifacts with `agentplane task show <task-id>` and `agentplane pr check <task-id>` when relevant.",
       "- Focus on regressions, lifecycle drift, and missing verification evidence.",
     ],
@@ -86,7 +82,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "INTEGRATOR",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       '- branch_pr: `agentplane pr check <task-id>` -> `agentplane integrate <task-id> --branch task/<task-id>/<slug> --merge-strategy squash --run-verify` -> `agentplane finish <task-id> --commit <git-rev> --author INTEGRATOR --body "Verified: ..." --result "..." --close-commit`.',
       `- direct: the task owner normally closes with \`${COMMAND_SNIPPETS.core.finishTask}\` plus \`--result "..." \`.`,
       "- For branch-level flags and branch/base diagnostics, use `agentplane help work start`, `agentplane help integrate`, and `agentplane help branch base`.",
@@ -95,7 +91,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "CREATOR",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       `- Use \`${COMMAND_SNIPPETS.core.startTask}\` only when the new-agent creation task is approved and ready.`,
       "- Keep commits scoped to the created agent artifacts and task docs.",
     ],
@@ -103,7 +99,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "REDMINE",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       `- Sync explicitly with \`${COMMAND_SNIPPETS.sync.pullRedmineExplicit}\` / \`${COMMAND_SNIPPETS.sync.pushRedmineExplicitWithYes}\`.`,
       "- After sync, follow the same task/bootstrap lifecycle as local backends.",
     ],
@@ -111,7 +107,7 @@ const ROLE_GUIDES: RoleGuide[] = [
   {
     role: "UPDATER",
     lines: [
-      `- Shared bootstrap path: \`${COMMAND_SNIPPETS.core.quickstart}\` -> \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+      SHARED_STARTUP_NOTE,
       "- Read-only role: inspect state, do not mutate task or workflow artifacts.",
     ],
   },
@@ -176,7 +172,7 @@ export function renderQuickstart(): string {
     "Do not edit `.agentplane/tasks.json` by hand.",
     "If the repository is not initialized yet, stop and run `agentplane init` first.",
     "",
-    `Canonical bootstrap doc: \`${AGENT_BOOTSTRAP_DOC_PATH}\`.`,
+    `Canonical installed startup surface: \`${COMMAND_SNIPPETS.core.quickstart}\`.`,
     "",
     "## First screen",
     "",
@@ -194,8 +190,8 @@ export function renderQuickstart(): string {
     "",
     `- \`${COMMAND_SNIPPETS.core.role}\` for role-specific deltas and mode-specific ownership rules.`,
     "- `agentplane help <command>` for flags, examples, and exceptional/manual flows.",
-    `- \`${AGENT_BOOTSTRAP_DOC_PATH}\` for the full startup path instead of repeating it on the first screen.`,
-    `- \`${CLI_REFERENCE_DOC_PATH}\` for the generated full command reference.`,
+    "- Keep installed runtime guidance self-contained; do not depend on repo-only docs files.",
+    "- If you need the docs site, treat it as a public reference surface rather than a required local file.",
     "",
     "## Non-default",
     "",

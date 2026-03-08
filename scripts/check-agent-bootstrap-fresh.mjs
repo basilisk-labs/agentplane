@@ -88,6 +88,13 @@ function assertIncludesAll(source, expected, label) {
   }
 }
 
+function assertExcludesAll(source, unexpected, label) {
+  const present = unexpected.filter((fragment) => source.includes(fragment));
+  if (present.length > 0) {
+    throw new Error(`${label} drifted. Unexpected fragments:\n- ${present.join("\n- ")}`);
+  }
+}
+
 async function main() {
   if (
     !(await fileExists(BOOTSTRAP_DIST)) ||
@@ -179,10 +186,10 @@ async function main() {
     assertIncludesAll(
       quickstartText,
       [
-        bootstrapModule.AGENT_BOOTSTRAP_DOC_PATH,
+        "Canonical installed startup surface",
+        "agentplane quickstart",
         "agentplane role <ROLE>",
         "agentplane help <command>",
-        "docs/user/cli-reference.generated.mdx",
         "agentplane doctor",
         "agentplane upgrade",
         "agentplane runtime explain",
@@ -190,6 +197,11 @@ async function main() {
         "agentplane help pr",
         "agentplane help integrate",
       ],
+      "quickstart surface",
+    );
+    assertExcludesAll(
+      quickstartText,
+      [bootstrapModule.AGENT_BOOTSTRAP_DOC_PATH, "docs/user/cli-reference.generated.mdx"],
       "quickstart surface",
     );
 
@@ -200,8 +212,13 @@ async function main() {
       }
       assertIncludesAll(
         roleText,
+        ["agentplane quickstart", "agentplane role <ROLE>"],
+        `role ${role} startup reference`,
+      );
+      assertExcludesAll(
+        roleText,
         [bootstrapModule.AGENT_BOOTSTRAP_DOC_PATH],
-        `role ${role} bootstrap reference`,
+        `role ${role} startup reference`,
       );
     }
 
@@ -209,11 +226,6 @@ async function main() {
       commandGuideModule.renderRole("TESTER") ?? "",
       ["agentplane doctor", "agentplane runtime explain"],
       "role TESTER recovery guidance",
-    );
-    assertIncludesAll(
-      commandGuideModule.renderRole("DOCS") ?? "",
-      ["docs/user/cli-reference.generated.mdx"],
-      "role DOCS deep reference guidance",
     );
     assertIncludesAll(
       commandGuideModule.renderRole("INTEGRATOR") ?? "",
@@ -225,6 +237,7 @@ async function main() {
       commandsDoc,
       [
         "[Agent bootstrap](agent-bootstrap.generated)",
+        "public docs-page expansion of `agentplane quickstart`",
         "agentplane runtime explain",
         "agentplane runtime explain --json",
         "repo-local",

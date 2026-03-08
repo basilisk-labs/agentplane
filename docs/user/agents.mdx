@@ -8,12 +8,13 @@ description: "Learn how agents are defined, how responsibilities are split, and 
 Agent behavior is resolved in this order:
 
 1. `AGENTS.md`
-2. `agentplane quickstart`, `agentplane role <ROLE>`, and `docs/user/agent-bootstrap.generated.mdx`
+2. `agentplane quickstart` and `agentplane role <ROLE>`
 3. `.agentplane/config.json`
 4. `.agentplane/agents/*.json`
 
 Profiles live under `.agentplane/agents/*.json`, but they cannot override higher-level policy.
 `agentplane role <ROLE>` now renders one unified role-help surface: installed profile content first, then narrow CLI/runtime supplements for that role.
+The generated [Agent bootstrap](agent-bootstrap.generated) page is a docs-site artifact; installed repositories should not depend on that file existing locally.
 
 Managed ownership remains framework-first:
 
@@ -37,8 +38,8 @@ Use this order when an agent enters a repository:
 
 1. Read `AGENTS.md`.
 2. Run `agentplane quickstart`.
-3. Read `docs/user/agent-bootstrap.generated.mdx`.
-4. Use `agentplane role <ROLE>` for the unified role-specific surface built from the installed profile plus CLI/runtime deltas.
+3. Use `agentplane role <ROLE>` for the unified role-specific surface built from the installed profile plus CLI/runtime deltas.
+4. If you are browsing the docs site, use [Agent bootstrap](agent-bootstrap.generated) as the expanded reference page for the same startup model.
 
 ## ORCHESTRATOR
 
@@ -97,6 +98,6 @@ Use this order when an agent enters a repository:
 ## Related guidance
 
 - Role command guidance is available via `agentplane role <ROLE>` and is derived from the installed profile when one exists.
-- The canonical startup path lives in `docs/user/agent-bootstrap.generated.mdx`.
+- The canonical installed startup path lives in `agentplane quickstart`; [Agent bootstrap](agent-bootstrap.generated) is the docs-site expansion of the same flow.
 - For policy details, read `AGENTS.md`.
 - For task artifacts, keep `Verify Steps` as the acceptance contract, use `## Findings` on README v3 tasks, and treat `## Notes` as legacy v2 compatibility until the workspace is migrated with `agentplane task migrate-doc --all`.
