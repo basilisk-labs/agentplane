@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 
 import { afterEach, describe, expect, it } from "vitest";
@@ -11,6 +12,14 @@ import {
 
 const envSnapshot = { ...process.env };
 const workspaceRoot = process.cwd();
+const repoConfig = JSON.parse(
+  fs.readFileSync(path.join(workspaceRoot, ".agentplane", "config.json"), "utf8"),
+) as { framework?: { cli?: { expected_version?: string } } };
+const repoExpectedCliVersion = repoConfig.framework?.cli?.expected_version ?? "0.0.0";
+const repoPackageVersion = JSON.parse(
+  fs.readFileSync(path.join(workspaceRoot, "packages", "agentplane", "package.json"), "utf8"),
+) as { version: string };
+const agentplaneVersion = repoPackageVersion.version;
 
 afterEach(() => {
   for (const key of Object.keys(process.env)) {
@@ -72,7 +81,7 @@ describe("runtime.command", () => {
       expect(payload.frameworkDev.forceGlobalExample).toContain(
         "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
       );
-      expect(payload.repoCliExpectation.expectedVersion).toBe("0.3.2");
+      expect(payload.repoCliExpectation.expectedVersion).toBe(repoExpectedCliVersion);
       expect(payload.repoCliExpectation.state).toBe("satisfied");
     } finally {
       io.restore();
@@ -100,7 +109,7 @@ describe("runtime.command", () => {
       expect(io.stdout).toContain("Mode: repo-local-handoff");
       expect(io.stdout).toContain("Handoff from: /usr/local/bin/agentplane");
       expect(io.stdout).toContain("Resolved @agentplaneorg/core:");
-      expect(io.stdout).toContain("Repository expected agentplane CLI: 0.3.2");
+      expect(io.stdout).toContain(`Repository expected agentplane CLI: ${repoExpectedCliVersion}`);
       expect(io.stdout).toContain("Repository CLI status:");
       expect(io.stdout).toContain("Framework dev workflow:");
       expect(io.stdout).toContain("scripts/reinstall-global-agentplane.sh");
@@ -136,22 +145,22 @@ describe("runtime.command", () => {
         },
         agentplane: {
           name: "agentplane",
-          version: "0.3.2",
+          version: agentplaneVersion,
           packageRoot: "/repo/packages/agentplane",
           packageJsonPath: "/repo/packages/agentplane/package.json",
         },
         core: {
           name: "@agentplaneorg/core",
-          version: "0.3.2",
+          version: agentplaneVersion,
           packageRoot: "/repo/packages/core",
           packageJsonPath: "/repo/packages/core/package.json",
         },
       },
       {
-        expectedVersion: "0.3.2",
-        activeVersion: "0.3.2",
+        expectedVersion: repoExpectedCliVersion,
+        activeVersion: agentplaneVersion,
         state: "satisfied",
-        summary: "Active runtime 0.3.2 matches the repository expectation 0.3.2.",
+        summary: `Active runtime ${agentplaneVersion} matches the repository expectation ${repoExpectedCliVersion}.`,
         recovery: null,
       },
     );
@@ -159,7 +168,7 @@ describe("runtime.command", () => {
     expect(text).toContain("Active binary:");
     expect(text).toContain("Framework repo root:");
     expect(text).toContain("Resolved agentplane:");
-    expect(text).toContain("Repository expected agentplane CLI: 0.3.2");
+    expect(text).toContain(`Repository expected agentplane CLI: ${repoExpectedCliVersion}`);
     expect(text).toContain("Framework dev workflow:");
     expect(text).toContain("scripts/reinstall-global-agentplane.sh");
   });
@@ -184,13 +193,13 @@ describe("runtime.command", () => {
       },
       agentplane: {
         name: "agentplane",
-        version: "0.3.2",
+        version: agentplaneVersion,
         packageRoot: "/usr/local/lib/node_modules/agentplane",
         packageJsonPath: "/usr/local/lib/node_modules/agentplane/package.json",
       },
       core: {
         name: "@agentplaneorg/core",
-        version: "0.3.2",
+        version: agentplaneVersion,
         packageRoot: "/usr/local/lib/node_modules/@agentplaneorg/core",
         packageJsonPath: "/usr/local/lib/node_modules/@agentplaneorg/core/package.json",
       },
