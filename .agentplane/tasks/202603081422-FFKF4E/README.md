@@ -1,7 +1,8 @@
 ---
 id: "202603081422-FFKF4E"
 title: "Make init plan and verify approvals profile-driven defaults"
-status: "DOING"
+result_summary: "Init no longer asks separate happy-path questions for plan and verification approvals; those defaults now come from the chosen setup profile."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T14:36:53.369Z"
   updated_by: "CODER"
   note: "Verified: targeted init tests pass, CLI docs freshness is clean, docs-site checks pass, and interactive init now keeps plan/verify approvals as profile-driven defaults while leaving network approval configurable and explicit flags available."
-commit: null
+commit:
+  hash: "c34cba94996451d09c4de5e6e5bb02e4e36bf786"
+  message: "🧭 FFKF4E init: make plan and verify approvals profile-driven"
 comments:
   -
     author: "CODER"
     body: "Start: narrowing init approval UX so plan and verification approvals become profile-driven defaults, while keeping explicit flags and network approval handling intact."
+  -
+    author: "CODER"
+    body: "Verified: targeted init tests pass, CLI docs freshness is clean, docs-site checks pass, and interactive init now keeps plan and verification approvals as profile-driven defaults while leaving network approval configurable and explicit flags available for overrides."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted init tests pass, CLI docs freshness is clean, docs-site checks pass, and interactive init now keeps plan/verify approvals as profile-driven defaults while leaving network approval configurable and explicit flags available."
+  -
+    type: "status"
+    at: "2026-03-08T14:37:04.143Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: targeted init tests pass, CLI docs freshness is clean, docs-site checks pass, and interactive init now keeps plan and verification approvals as profile-driven defaults while leaving network approval configurable and explicit flags available for overrides."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:36:53.370Z"
+doc_updated_at: "2026-03-08T14:37:04.143Z"
 doc_updated_by: "CODER"
 description: "Simplify init UX so plan and verification approvals are treated as workflow defaults of the chosen setup profile instead of separate interactive happy-path questions, while keeping explicit CLI overrides available."
 id_source: "generated"
