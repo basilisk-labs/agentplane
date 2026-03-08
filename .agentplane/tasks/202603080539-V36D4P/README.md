@@ -1,7 +1,8 @@
 ---
 id: "202603080539-V36D4P"
 title: "Plan structural refactor roadmap for high-ROI hotspots"
-status: "DOING"
+result_summary: "Structural refactor roadmap captured as atomic repository tasks and handed off to execution."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T05:46:31.643Z"
   updated_by: "PLANNER"
   note: "Atomic refactor roadmap was created as repository tasks: doctor modularization, upgrade split, release-apply split, quality-gate split, run-cli decomposition, task-shared decomposition, and doctor performance optimization."
-commit: null
+commit:
+  hash: "461b6a9d9450007ba4d9f252dbce6325dea8ef3f"
+  message: "📝 V36D4P tasks: add structural refactor roadmap"
 comments:
   -
     author: "PLANNER"
     body: "Start: define the atomic refactor roadmap in repository tasks and hand off execution to the first bounded implementation task."
+  -
+    author: "PLANNER"
+    body: "Verified: the refactor roadmap is now represented as atomic repository tasks, and implementation has already started from the first bounded P0 item."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Atomic refactor roadmap was created as repository tasks: doctor modularization, upgrade split, release-apply split, quality-gate split, run-cli decomposition, task-shared decomposition, and doctor performance optimization."
+  -
+    type: "status"
+    at: "2026-03-08T05:46:58.511Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the refactor roadmap is now represented as atomic repository tasks, and implementation has already started from the first bounded P0 item."
 doc_version: 2
-doc_updated_at: "2026-03-08T05:46:31.644Z"
+doc_updated_at: "2026-03-08T05:46:58.511Z"
 doc_updated_by: "PLANNER"
 description: "Create an atomic task graph for targeted refactors of upgrade, release apply, doctor, run-cli, task shared utilities, and local quality gates; then start implementation from the highest-ROI low-risk item."
 id_source: "generated"
