@@ -1,7 +1,8 @@
 ---
 id: "202603081422-5XXATM"
 title: "Harden task doc set section replacement feedback"
-status: "DOING"
+result_summary: "task doc set no longer treats a printed README path as implicit proof that the target section changed."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,7 +19,9 @@ verification:
   updated_at: "2026-03-08T14:27:02.638Z"
   updated_by: "CODER"
   note: "Verified: targeted task doc tests and workflow-level task doc tests pass, lint is clean for the touched task-doc files, and task doc set now reports whether it updated the target section, applied a full-doc update, or produced no effective README change."
-commit: null
+commit:
+  hash: "6dd360106bd2388305aa69b87609639dcfe31ee3"
+  message: "🩺 5XXATM task: clarify task doc set outcomes"
 comments:
   -
     author: "CODER"
@@ -26,6 +29,9 @@ comments:
   -
     author: "CODER"
     body: "Start: reproduced that task doc set can print a README path without proving what changed in the targeted section, so the fix will add explicit outcome reporting around section replacement versus full-doc or no-op paths."
+  -
+    author: "CODER"
+    body: "Verified: targeted task-doc tests and workflow-level task-doc tests pass, lint is clean for the touched files, and task doc set now reports whether it updated the target section, applied a full-doc update, or made no effective change."
 events:
   -
     type: "status"
@@ -47,8 +53,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: targeted task doc tests and workflow-level task doc tests pass, lint is clean for the touched task-doc files, and task doc set now reports whether it updated the target section, applied a full-doc update, or produced no effective README change."
+  -
+    type: "status"
+    at: "2026-03-08T14:27:35.538Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: targeted task-doc tests and workflow-level task-doc tests pass, lint is clean for the touched files, and task doc set now reports whether it updated the target section, applied a full-doc update, or made no effective change."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:27:02.640Z"
+doc_updated_at: "2026-03-08T14:27:35.538Z"
 doc_updated_by: "CODER"
 description: "Make task doc set detect and report whether a section replacement actually changed the target section, so returning a README path is no longer treated as implicit success when the content was unchanged or the payload took a different write path."
 id_source: "generated"
