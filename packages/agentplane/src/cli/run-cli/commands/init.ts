@@ -269,8 +269,8 @@ export const initSpec: CommandSpec<InitParsed> = {
       why: "Non-interactive setup with flexible defaults.",
     },
     {
-      cmd: "agentplane init --workflow direct --backend local --hooks true --require-plan-approval true --require-network-approval true --require-verify-approval true --yes",
-      why: "Non-interactive setup with explicit policy flags.",
+      cmd: "agentplane init --workflow direct --backend local --hooks true --require-network-approval true --yes",
+      why: "Non-interactive setup with profile defaults plus an explicit network-approval override.",
     },
     {
       cmd: "agentplane init --force --yes",
@@ -397,16 +397,13 @@ async function cmdInit(opts: {
   if (
     !process.stdin.isTTY &&
     !flags.yes &&
-    (!flags.workflow ||
-      flags.requirePlanApproval === undefined ||
-      flags.requireNetworkApproval === undefined ||
-      flags.requireVerifyApproval === undefined)
+    (!flags.workflow || flags.requireNetworkApproval === undefined)
   ) {
     throw usageError({
       spec: initSpec,
       command: "init",
       message:
-        "Non-interactive init requires --yes or explicit values for: --workflow, --require-plan-approval, --require-network-approval, --require-verify-approval.",
+        "Non-interactive init requires --yes or explicit values for: --workflow, --require-network-approval.",
     });
   }
 
@@ -538,26 +535,14 @@ async function cmdInit(opts: {
       }
       process.stdout.write(
         renderInitSection(
-          "Approvals",
-          "Control whether plan/network/verification actions require explicit approval by default.",
+          "Network Approval",
+          "Control whether network actions require explicit approval by default. Plan and verification approvals follow the selected setup profile unless you override them with explicit flags.",
         ),
       );
-      if (flags.requirePlanApproval === undefined) {
-        requirePlanApproval = await askYesNo(
-          "Require plan approval before work starts?",
-          requirePlanApproval,
-        );
-      }
       if (flags.requireNetworkApproval === undefined) {
         requireNetworkApproval = await askYesNo(
           "Require explicit approval for network actions?",
           requireNetworkApproval,
-        );
-      }
-      if (flags.requireVerifyApproval === undefined) {
-        requireVerifyApproval = await askYesNo(
-          "Require explicit approval before recording verification?",
-          requireVerifyApproval,
         );
       }
       process.stdout.write(

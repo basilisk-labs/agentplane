@@ -71,6 +71,8 @@ You can override the default explicitly with `--hooks true|false`.
 
 Use `--setup-profile full-harness` to force the full questionnaire.
 
+In the interactive happy-path, `plan` and `verify` approvals now follow the selected setup profile instead of being asked as separate questions. Keep using `--require-plan-approval` and `--require-verify-approval` only when you want to override the profile defaults explicitly.
+
 Non-interactive setup is available through flags:
 
 ```bash
@@ -79,9 +81,7 @@ agentplane init \
   --workflow direct \
   --backend local \
   --execution-profile balanced \
-  --require-plan-approval true \
   --require-network-approval true \
-  --require-verify-approval true \
   --hooks true \
   --ide codex \
   --yes

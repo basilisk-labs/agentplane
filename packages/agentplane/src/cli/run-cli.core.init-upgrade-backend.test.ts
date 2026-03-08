@@ -931,6 +931,21 @@ describe("runCli", () => {
       expect(io.stdout).toContain("[Workflow]");
       expect(choice).toHaveBeenCalled();
       expect(yesNo).toHaveBeenCalled();
+      expect(
+        yesNo.mock.calls.some(([prompt]) =>
+          String(prompt).includes("Require explicit approval for network actions?"),
+        ),
+      ).toBe(true);
+      expect(
+        yesNo.mock.calls.some(([prompt]) =>
+          String(prompt).includes("Require plan approval before work starts?"),
+        ),
+      ).toBe(false);
+      expect(
+        yesNo.mock.calls.some(([prompt]) =>
+          String(prompt).includes("Require explicit approval before recording verification?"),
+        ),
+      ).toBe(false);
       expect(promptInput).toHaveBeenCalled();
     } finally {
       Object.defineProperty(process.stdin, "isTTY", { value: originalIsTTY, configurable: true });

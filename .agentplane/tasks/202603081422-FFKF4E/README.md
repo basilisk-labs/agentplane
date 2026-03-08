@@ -1,7 +1,7 @@
 ---
 id: "202603081422-FFKF4E"
 title: "Make init plan and verify approvals profile-driven defaults"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -10,55 +10,87 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-08T14:34:07.723Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
+  state: "ok"
+  updated_at: "2026-03-08T14:36:53.369Z"
+  updated_by: "CODER"
+  note: "Verified: targeted init tests pass, CLI docs freshness is clean, docs-site checks pass, and interactive init now keeps plan/verify approvals as profile-driven defaults while leaving network approval configurable and explicit flags available."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: narrowing init approval UX so plan and verification approvals become profile-driven defaults, while keeping explicit flags and network approval handling intact."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T14:34:08.040Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: narrowing init approval UX so plan and verification approvals become profile-driven defaults, while keeping explicit flags and network approval handling intact."
+  -
+    type: "verify"
+    at: "2026-03-08T14:36:53.369Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: targeted init tests pass, CLI docs freshness is clean, docs-site checks pass, and interactive init now keeps plan/verify approvals as profile-driven defaults while leaving network approval configurable and explicit flags available."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:22:30.685Z"
+doc_updated_at: "2026-03-08T14:36:53.370Z"
 doc_updated_by: "CODER"
 description: "Simplify init UX so plan and verification approvals are treated as workflow defaults of the chosen setup profile instead of separate interactive happy-path questions, while keeping explicit CLI overrides available."
 id_source: "generated"
 ---
 ## Summary
 
-Make init plan and verify approvals profile-driven defaults
-
-Simplify init UX so plan and verification approvals are treated as workflow defaults of the chosen setup profile instead of separate interactive happy-path questions, while keeping explicit CLI overrides available.
+- Problem: init currently asks interactive questions about plan and verification approvals even though those are agent-workflow defaults rather than meaningful user-facing safety choices in the normal happy-path.
+- Target outcome: plan and verification approvals come from the selected setup profile by default, while explicit CLI flags remain available for advanced overrides.
+- Constraint: keep network approval configurable and preserve non-interactive explicit overrides.
 
 ## Scope
 
-- In scope: Simplify init UX so plan and verification approvals are treated as workflow defaults of the chosen setup profile instead of separate interactive happy-path questions, while keeping explicit CLI overrides available.
-- Out of scope: unrelated refactors not required for "Make init plan and verify approvals profile-driven defaults".
+### In scope
+- simplify init interactive happy-path for plan/verify approvals
+- preserve setup-profile defaults and explicit flags
+- update targeted docs/help/tests to match the new behavior
+
+### Out of scope
+- silent global CLI auto-update behavior
+- changing workflow_mode semantics
+- removing network approval configurability
 
 ## Plan
 
-1. Implement the change for "Make init plan and verify approvals profile-driven defaults".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Remove interactive plan/verify approval prompts from init and keep them profile-driven unless flags override them.
+2. Update docs/help text so init explains that profile choice owns these defaults.
+3. Run targeted init tests and docs/help freshness checks, then close the task.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+1. Run targeted init tests. Expected: init still writes the correct approval values for profiles and explicit flags.
+2. Run docs/help freshness checks touched by the init wording change. Expected: generated CLI/help surfaces stay in sync.
+3. Review the interactive init flow code. Expected: only meaningful remaining approval question in the happy-path is network-related, not plan/verify orchestration defaults.
 
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+## Rollback Plan
+
+1. Revert the init approval-UX change.
+2. Re-run the targeted init tests and docs/help checks to confirm the previous prompts and wording are restored.
+
+## Findings
+
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T14:36:53.369Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: targeted init tests pass, CLI docs freshness is clean, docs-site checks pass, and interactive init now keeps plan/verify approvals as profile-driven defaults while leaving network approval configurable and explicit flags available.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-08T14:34:08.040Z, excerpt_hash=sha256:9014c1f7f9fa91e3c27c799a5ebc14b497be322d46ccb0c51b53806b7c29a4aa
+
 <!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
-- Revert task-related commit(s).
-- Re-run required checks to confirm rollback safety.
-
-## Findings
