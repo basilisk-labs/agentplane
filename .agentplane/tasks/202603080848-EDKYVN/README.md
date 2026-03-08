@@ -1,7 +1,8 @@
 ---
 id: "202603080848-EDKYVN"
 title: "Reduce doctor fast bucket runtime"
-status: "DOING"
+result_summary: "Added doctor.fast.test.ts for the fast doctor bucket and rewired path-aware local CI to use it, reducing the doctor bucket runtime while leaving doctor.command.test.ts in broader lanes."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T08:52:02.924Z"
   updated_by: "TESTER"
   note: "Verified: doctor-path fast CI now runs a narrow doctor fast suite and reduced the bucket runtime from about 135.28s to about 33.71s on this repository while preserving the broad doctor regression file in wider lanes."
-commit: null
+commit:
+  hash: "443a010663257615f32f1b42531266bfbee32f5c"
+  message: "⚡ EDKYVN ci: shrink doctor fast bucket"
 comments:
   -
     author: "CODER"
     body: "Start: extracting a narrow doctor fast-test suite and rewiring the doctor bucket in local fast CI to use it while leaving the full doctor regression file in broader lanes."
+  -
+    author: "CODER"
+    body: "Verified: the doctor-specific fast bucket now uses a narrow deterministic suite and no longer drags the full historical doctor regression file through narrow local CI paths."
 events:
   -
     type: "status"
@@ -37,9 +43,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: doctor-path fast CI now runs a narrow doctor fast suite and reduced the bucket runtime from about 135.28s to about 33.71s on this repository while preserving the broad doctor regression file in wider lanes."
+  -
+    type: "status"
+    at: "2026-03-08T08:52:25.633Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the doctor-specific fast bucket now uses a narrow deterministic suite and no longer drags the full historical doctor regression file through narrow local CI paths."
 doc_version: 2
-doc_updated_at: "2026-03-08T08:52:02.925Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-03-08T08:52:25.633Z"
+doc_updated_by: "CODER"
 description: "Replace the expensive doctor bucket verification in path-aware fast local CI with a narrower deterministic suite that still covers selector and doctor regressions."
 id_source: "generated"
 ---
