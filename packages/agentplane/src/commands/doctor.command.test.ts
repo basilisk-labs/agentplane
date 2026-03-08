@@ -228,6 +228,93 @@ describe("doctor.command", () => {
     expect(rc).toBe(1);
   });
 
+  it("warns when active tasks still use legacy README v2 format", async () => {
+    const ws = await mkWorkspace();
+    const commitHash = await gitInitWithCommit(ws.root, "feat: baseline");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks.json"),
+      JSON.stringify(
+        {
+          tasks: [
+            { id: "202603081006-LEGACY1", status: "TODO", doc_version: 2 },
+            {
+              id: "202603081006-CURRENT1",
+              status: "DONE",
+              doc_version: 3,
+              commit: { hash: commitHash },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("active v2/v3 mixed state");
+      expect(output).toContain("agentplane task migrate-doc --all");
+      expect(output).toContain("202603081006-LEGACY1");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("reports historical README v2 tasks as info when only DONE archive records remain", async () => {
+    const ws = await mkWorkspace();
+    const commitHash = await gitInitWithCommit(ws.root, "feat: baseline");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks.json"),
+      JSON.stringify(
+        {
+          tasks: [
+            {
+              id: "202603081006-LEGACY2",
+              status: "DONE",
+              doc_version: 2,
+              commit: { hash: commitHash },
+            },
+            {
+              id: "202603081006-CURRENT2",
+              status: "DONE",
+              doc_version: 3,
+              commit: { hash: commitHash },
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("historical task archive still mixes README v2 and v3");
+      expect(output).toContain("agentplane task migrate-doc --all");
+      expect(output).toContain("202603081006-LEGACY2");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
   it("reports but does not fail when DONE task references an unknown historical commit hash", async () => {
     const ws = await mkWorkspace();
     await gitInitWithCommit(ws.root, "feat: initial");

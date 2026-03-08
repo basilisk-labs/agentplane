@@ -5,6 +5,12 @@ import { fileURLToPath } from "node:url";
 import { renderDiagnosticFinding } from "../../shared/diagnostics.js";
 import { resolvePolicyGatewayForRepo } from "../../shared/policy-gateway.js";
 
+type TaskDocSnapshot = {
+  id?: unknown;
+  status?: unknown;
+  doc_version?: unknown;
+};
+
 async function pathExists(absPath: string): Promise<boolean> {
   try {
     await fs.access(absPath);
@@ -48,6 +54,81 @@ async function listMissingManagedPolicyFiles(repoRoot: string): Promise<string[]
     }
   }
   return missing.toSorted();
+}
+
+async function checkTaskReadmeMigrationState(repoRoot: string): Promise<string[]> {
+  const tasksPath = path.join(repoRoot, ".agentplane", "tasks.json");
+  let raw = "";
+  try {
+    raw = await fs.readFile(tasksPath, "utf8");
+  } catch {
+    return [];
+  }
+
+  let parsed: { tasks?: unknown };
+  try {
+    parsed = JSON.parse(raw) as { tasks?: unknown };
+  } catch {
+    return [];
+  }
+
+  const tasks = Array.isArray(parsed.tasks) ? (parsed.tasks as TaskDocSnapshot[]) : [];
+  if (tasks.length === 0) return [];
+
+  const legacy = tasks.filter((task) => task.doc_version !== 3);
+  if (legacy.length === 0) return [];
+
+  const legacyActive = legacy.filter((task) => {
+    const status = typeof task.status === "string" ? task.status.trim().toUpperCase() : "";
+    return status !== "DONE";
+  });
+  const v3Count = tasks.length - legacy.length;
+  const exampleIds = legacy
+    .map((task) => (typeof task.id === "string" ? task.id : ""))
+    .filter(Boolean)
+    .slice(0, 5)
+    .join(", ");
+  const hasMixedVersions = v3Count > 0;
+
+  if (legacyActive.length > 0) {
+    return [
+      renderDiagnosticFinding({
+        severity: "WARN",
+        state: hasMixedVersions
+          ? "task README migration is incomplete (active v2/v3 mixed state)"
+          : "task README format is still on legacy v2",
+        likelyCause:
+          "the workspace still contains active task READMEs that were never migrated to the README v3 contract",
+        nextAction: {
+          command: "agentplane task migrate-doc --all",
+          reason: "upgrade all task READMEs to doc_version=3 before continuing active work",
+        },
+        details: [
+          `Legacy tasks: ${legacy.length}; active legacy tasks: ${legacyActive.length}; README v3 tasks: ${v3Count}`,
+          exampleIds ? `Examples: ${exampleIds}` : "Examples unavailable in tasks snapshot.",
+        ],
+      }),
+    ];
+  }
+
+  return [
+    renderDiagnosticFinding({
+      severity: "INFO",
+      state: hasMixedVersions
+        ? "historical task archive still mixes README v2 and v3"
+        : "historical task archive still uses README v2",
+      likelyCause:
+        "older DONE tasks were never backfilled to README v3 after the task-document contract changed",
+      nextAction: {
+        command: "agentplane task migrate-doc --all",
+        reason: "normalize archived task READMEs to the README v3 contract when convenient",
+      },
+      details: [
+        `Legacy tasks: ${legacy.length}; active legacy tasks: 0; README v3 tasks: ${v3Count}`,
+        exampleIds ? `Examples: ${exampleIds}` : "Examples unavailable in tasks snapshot.",
+      ],
+    }),
+  ];
 }
 
 export async function checkWorkspace(repoRoot: string): Promise<string[]> {
@@ -102,5 +183,6 @@ export async function checkWorkspace(repoRoot: string): Promise<string[]> {
   if (!hasJson) {
     problems.push("No agent profiles found in .agentplane/agents (*.json expected).");
   }
+  problems.push(...(await checkTaskReadmeMigrationState(repoRoot)));
   return problems;
 }
