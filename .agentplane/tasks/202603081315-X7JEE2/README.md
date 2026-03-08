@@ -1,7 +1,8 @@
 ---
 id: "202603081315-X7JEE2"
 title: "Restore chronological release ordering in blog surfaces"
-status: "DOING"
+result_summary: "Release posts on the custom blog landing page now read from the earliest shipped version to the latest shipped version."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T14:12:44.380Z"
   updated_by: "DOCS"
   note: "Verified: bun run docs:site:check passes, the custom blog landing page now lists release posts chronologically from 0.2.25 through 0.3.2, and the roadmap entry remains separate from the release line."
-commit: null
+commit:
+  hash: "36455810bd175d103c7b809636e3709db8222cac"
+  message: "📝 X7JEE2 docs: restore chronological blog release order"
 comments:
   -
     author: "DOCS"
     body: "Start: confirmed the custom blog landing page is the only surface that still keeps release posts in a non-chronological manual order; I will narrow the fix to that array, verify docs-site health, and leave unrelated navigation unchanged."
+  -
+    author: "DOCS"
+    body: "Verified: docs-site checks pass, the custom blog landing page now shows release posts in chronological order from 0.2.25 through 0.3.2, and the roadmap entry remains outside the release line."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified: bun run docs:site:check passes, the custom blog landing page now lists release posts chronologically from 0.2.25 through 0.3.2, and the roadmap entry remains separate from the release line."
+  -
+    type: "status"
+    at: "2026-03-08T14:13:26.128Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: docs-site checks pass, the custom blog landing page now shows release posts in chronological order from 0.2.25 through 0.3.2, and the roadmap entry remains outside the release line."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:12:44.382Z"
+doc_updated_at: "2026-03-08T14:13:26.128Z"
 doc_updated_by: "DOCS"
 description: "Ensure release posts on the blog index and related navigation surfaces are ordered from earliest to latest so version 0.3 appears before 0.3.1 and 0.3.2 consistently."
 id_source: "generated"
