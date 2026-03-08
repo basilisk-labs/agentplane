@@ -41,7 +41,8 @@ User requested syncing config format with code; use packages/spec/examples/confi
 
 ## Scope
 
-- Reformat .agent-plane/config.json to match canonical ordering/structure.\n- Preserve existing values.
+- Reformat .agent-plane/config.json to match canonical ordering/structure.
+- Preserve existing values.
 
 ## Plan
 

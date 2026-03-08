@@ -65,7 +65,13 @@ Current upgrade behavior mixes bundle scanning and broad allowlists, and can be 
 
 ## Plan
 
-1. Define strict managed-set manifest for framework files (paths, types, merge strategy).\n2. Implement local framework source (npm-installed assets) as the default upgrade input; keep remote source behind explicit flags.\n3. Implement .agentplane/.upgrade state (state.json, baseline snapshots, backups, lock).\n4. Enforce denylist invariants (never touch .agentplane/tasks/**, .agentplane/.upgrade/**, .git/**; no path traversal).\n5. Implement deterministic merge strategies (AGENTS.md block preservation; agent JSON 3-way).\n6. Update and extend tests (upgrade safety, plan computation, baseline merges).\n7. Cut a release.
+1. Define strict managed-set manifest for framework files (paths, types, merge strategy).
+2. Implement local framework source (npm-installed assets) as the default upgrade input; keep remote source behind explicit flags.
+3. Implement .agentplane/.upgrade state (state.json, baseline snapshots, backups, lock).
+4. Enforce denylist invariants (never touch .agentplane/tasks/**, .agentplane/.upgrade/**, .git/**; no path traversal).
+5. Implement deterministic merge strategies (AGENTS.md block preservation; agent JSON 3-way).
+6. Update and extend tests (upgrade safety, plan computation, baseline merges).
+7. Cut a release.
 
 ## Verify Steps
 
@@ -81,6 +87,16 @@ Commands:\n- bun run lint\n- bun run test:full\n- bun run coverage\n\nPass crite
 
 ## Findings
 
-### Implementation Notes\n- Implemented strict framework-managed file set via packages/agentplane/assets/framework.manifest.json; upgrade applies only manifest entries (no directory scans).\n- Default upgrade source is now the locally installed agentplane package assets (no network). Remote GitHub mode requires --remote.\n- Added denylist enforcement for .agentplane/tasks/**, .agentplane/.upgrade/**, and .git/**.\n- Added .agentplane/.upgrade/{lock.json,state.json,baseline/} and legacy baseline fallback from .agentplane/upgrade/baseline.\n- Added safety regression test ensuring upgrade never writes into .agentplane/tasks/**.\n\n### Deferred\n- Structured backups under .agentplane/.upgrade/backups (current behavior still uses sibling .bak-* backups).\n- Explicit conflict reporting / finalize / rollback subcommands.\n- Manifest checksums/signing for remote sources beyond optional bundle sha256.
+### Implementation Notes
+- Implemented strict framework-managed file set via packages/agentplane/assets/framework.manifest.json; upgrade applies only manifest entries (no directory scans).
+- Default upgrade source is now the locally installed agentplane package assets (no network). Remote GitHub mode requires --remote.
+- Added denylist enforcement for .agentplane/tasks/**, .agentplane/.upgrade/**, and .git/**.
+- Added .agentplane/.upgrade/{lock.json,state.json,baseline/} and legacy baseline fallback from .agentplane/upgrade/baseline.
+- Added safety regression test ensuring upgrade never writes into .agentplane/tasks/**.
+
+### Deferred
+- Structured backups under .agentplane/.upgrade/backups (current behavior still uses sibling .bak-* backups).
+- Explicit conflict reporting / finalize / rollback subcommands.
+- Manifest checksums/signing for remote sources beyond optional bundle sha256.
 
 ## Risks

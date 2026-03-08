@@ -42,7 +42,9 @@ Use package.json as the single source for CLI version and remove hardcoded versi
 
 ## Scope
 
-- Locate current CLI version source.\n- Read version from package.json.\n- Update tests/docs.
+- Locate current CLI version source.
+- Read version from package.json.
+- Update tests/docs.
 
 - Locate current CLI version source.
 - Read version from package.json.

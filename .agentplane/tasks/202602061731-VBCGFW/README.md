@@ -45,7 +45,9 @@ Implement P0/P1 items from FIX.md in code and hooks; add/adjust tests as needed;
 
 ## Plan
 
-1) Create atomic tasks for each P0/P1 fix.\n2) For each task: set plan, approve, start, implement, run tests, record verify ok, commit via guard with tight allowlist, finish.\n3) Ensure hooks and CLI share the same commit subject validation.
+1) Create atomic tasks for each P0/P1 fix.
+2) For each task: set plan, approve, start, implement, run tests, record verify ok, commit via guard with tight allowlist, finish.
+3) Ensure hooks and CLI share the same commit subject validation.
 
 ## Verify Steps
 

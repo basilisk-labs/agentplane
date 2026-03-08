@@ -36,11 +36,13 @@ description: "Convert docs/ markdown to Mintlify-ready pages: add required YAML 
 ---
 ## Summary
 
-- Docs are already in Mintlify-ready format with docs.json navigation.\n- Closing the migration task as completed.
+- Docs are already in Mintlify-ready format with docs.json navigation.
+- Closing the migration task as completed.
 
 ## Scope
 
-- Validate Mintlify frontmatter and headings.\n- Ensure docs.json navigation and links are in place.
+- Validate Mintlify frontmatter and headings.
+- Ensure docs.json navigation and links are in place.
 
 ## Plan
 

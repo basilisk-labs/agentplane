@@ -40,11 +40,15 @@ description: "Implement cleanup command to remove branch_pr worktrees and task b
 ---
 ## Summary
 
-- Added cleanup merged command to remove branch_pr worktrees/branches safely, with optional PR artifact archiving.\n- Normalized worktree path checks via realpath to avoid /private path mismatches.\n- Added CLI help and tests to cover cleanup usage and scenarios.
+- Added cleanup merged command to remove branch_pr worktrees/branches safely, with optional PR artifact archiving.
+- Normalized worktree path checks via realpath to avoid /private path mismatches.
+- Added CLI help and tests to cover cleanup usage and scenarios.
 
 ## Scope
 
-- packages/agentplane/src/run-cli.ts: add cleanup merged command, path normalization, archive helper.\n- packages/agentplane/src/help.ts: document cleanup command usage.\n- packages/agentplane/src/run-cli.test.ts: add cleanup tests and usage validation.
+- packages/agentplane/src/run-cli.ts: add cleanup merged command, path normalization, archive helper.
+- packages/agentplane/src/help.ts: document cleanup command usage.
+- packages/agentplane/src/run-cli.test.ts: add cleanup tests and usage validation.
 
 ## Plan
 

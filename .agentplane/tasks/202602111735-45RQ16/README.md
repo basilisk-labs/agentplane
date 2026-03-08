@@ -86,7 +86,10 @@ Revert doctor.run.ts and doctor.command.test.ts changes.
 
 ## Findings
 
-### Decisions\n- Use tasks snapshot to avoid backend/env coupling in doctor.\n### Implementation Notes\n- Pending.
+### Decisions
+- Use tasks snapshot to avoid backend/env coupling in doctor.
+### Implementation Notes
+- Pending.
 
 ## Risks
 

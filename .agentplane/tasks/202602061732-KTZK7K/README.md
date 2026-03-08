@@ -47,7 +47,9 @@ packages/agentplane/src/commands/guard/index.ts: commitFromComment env for git c
 
 ## Plan
 
-1) Update commitFromComment to set AGENTPLANE_ALLOW_BASE=0 by default.\n2) Add/adjust CLI test to ensure commit-from-comment cannot bypass branch_pr base restriction.\n3) Run relevant vitest suite.
+1) Update commitFromComment to set AGENTPLANE_ALLOW_BASE=0 by default.
+2) Add/adjust CLI test to ensure commit-from-comment cannot bypass branch_pr base restriction.
+3) Run relevant vitest suite.
 
 ## Verify Steps
 

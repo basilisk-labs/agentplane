@@ -71,7 +71,10 @@ In-scope: docs/user/overview.mdx, docs/user/prerequisites.mdx, docs/user/setup.m
 
 ## Plan
 
-1. Audit getting-started pages for drift vs current CLI behavior and policies.\n2. Update init/setup description to mention AGENTS.md + .agentplane layout + init flags (including --gitignore-agents).\n3. Update upgrade section to reflect default agent-mode planning and --auto apply mode; mention upgrade artifacts location and network gating.\n4. Update overview/prerequisites/breaking changes notes where they reference outdated assumptions.
+1. Audit getting-started pages for drift vs current CLI behavior and policies.
+2. Update init/setup description to mention AGENTS.md + .agentplane layout + init flags (including --gitignore-agents).
+3. Update upgrade section to reflect default agent-mode planning and --auto apply mode; mention upgrade artifacts location and network gating.
+4. Update overview/prerequisites/breaking changes notes where they reference outdated assumptions.
 
 ## Verify Steps
 

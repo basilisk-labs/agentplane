@@ -46,7 +46,9 @@ Add tests for `agentplane task derive`: new task depends_on includes spike id, a
 
 ## Plan
 
-1) Add CLI test: task derive creates depends_on=[spikeId].\n2) Assert task list prints deps=wait:<spikeId> until spike is DONE.\n3) Run bun run test:cli:core.
+1) Add CLI test: task derive creates depends_on=[spikeId].
+2) Assert task list prints deps=wait:<spikeId> until spike is DONE.
+3) Run bun run test:cli:core.
 
 ## Verify Steps
 

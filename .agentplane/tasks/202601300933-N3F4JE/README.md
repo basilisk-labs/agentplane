@@ -41,7 +41,10 @@ Removed unintended Redmine cached task artifacts committed during sync validatio
 
 ## Scope
 
-- Remove .agent-plane/tasks/202601291651-9D0NT9\n- Remove .agent-plane/tasks/202601291653-MZG75F\n- Remove .agent-plane/tasks/202601291654-5N5QR5\n- Remove .agent-plane/tasks/202601291655-EKSR2G
+- Remove .agent-plane/tasks/202601291651-9D0NT9
+- Remove .agent-plane/tasks/202601291653-MZG75F
+- Remove .agent-plane/tasks/202601291654-5N5QR5
+- Remove .agent-plane/tasks/202601291655-EKSR2G
 
 ## Plan
 

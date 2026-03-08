@@ -62,7 +62,10 @@ packages/agentplane/src/cli/exit-codes.ts, packages/agentplane/src/shared/errors
 
 ## Plan
 
-1. Add helper (e.g. cliError(code, message, opts?)) that computes exitCode via exitCodeForError.\n2. Replace mismatched hardcoded exitCode sites (init/conflicts.ts, recipes/apply.ts, upgrade.ts, etc.).\n3. Add/adjust unit tests around exit code mapping where needed.\n4. bun run lint + bun run test:full.
+1. Add helper (e.g. cliError(code, message, opts?)) that computes exitCode via exitCodeForError.
+2. Replace mismatched hardcoded exitCode sites (init/conflicts.ts, recipes/apply.ts, upgrade.ts, etc.).
+3. Add/adjust unit tests around exit code mapping where needed.
+4. bun run lint + bun run test:full.
 
 ## Verify Steps
 

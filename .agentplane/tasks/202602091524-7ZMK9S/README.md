@@ -69,7 +69,10 @@ packages/agentplane/src/commands/upgrade.ts and upgrade merge tests.
 
 ## Plan
 
-1) Implement canonical JSON equality helpers (key-order agnostic) for agent merge routines.\n2) Replace JSON.stringify-based comparisons/dedup in mergeAgentJson + mergeAgentJson3Way with canonical equality and Set-based dedup.\n3) Add a regression test ensuring 3-way merge does not treat key-order-only changes as user edits.\n4) Run bun run lint and bun run test:full.
+1) Implement canonical JSON equality helpers (key-order agnostic) for agent merge routines.
+2) Replace JSON.stringify-based comparisons/dedup in mergeAgentJson + mergeAgentJson3Way with canonical equality and Set-based dedup.
+3) Add a regression test ensuring 3-way merge does not treat key-order-only changes as user edits.
+4) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

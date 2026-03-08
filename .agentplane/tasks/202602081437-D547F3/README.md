@@ -46,7 +46,11 @@ Track the second MONO wave: decompose remaining large production modules (exclud
 
 ## Plan
 
-Close out MONO2 decomposition wave by completing TS9W64 and XJXVKN and verifying the full suite.\n\nSteps:\n1) Ensure TS9W64 and XJXVKN are DONE.\n2) Verify: bun run test:full on main.
+Close out MONO2 decomposition wave by completing TS9W64 and XJXVKN and verifying the full suite.
+
+Steps:
+1) Ensure TS9W64 and XJXVKN are DONE.
+2) Verify: bun run test:full on main.
 
 ## Verify Steps
 

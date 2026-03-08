@@ -64,7 +64,13 @@ Publish v0.2.2 to npm (and tag the repo) with the upgrade tarball_url fallback f
 
 ## Scope
 
-In scope:\n- docs/releases/v0.2.2.md\n- packages/core/package.json\n- packages/agentplane/package.json\n\nOut of scope:\n- Any breaking CLI changes.
+In scope:
+- docs/releases/v0.2.2.md
+- packages/core/package.json
+- packages/agentplane/package.json
+
+Out of scope:
+- Any breaking CLI changes.
 
 ## Plan
 

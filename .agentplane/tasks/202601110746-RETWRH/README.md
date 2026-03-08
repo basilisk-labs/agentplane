@@ -42,7 +42,8 @@ Task 202601071438-C7W2GE frontmatter is malformed (`Яstatus`) and contains esca
 ## Scope
 
 - Rewrite C7W2GE frontmatter via agentctl so status=DONE is respected and docs render correctly.
-- Replace escaped `\n` bullets in C7W2GE with proper Markdown list items.
+- Replace escaped `
+` bullets in C7W2GE with proper Markdown list items.
 - Populate GH5YSV task README sections (Summary/Context/Scope/Risks/Verify Steps/Rollback Plan/Notes).
 
 ## Plan

@@ -69,7 +69,10 @@ Change agentplane upgrade so the default mode applies framework-managed files im
 
 ## Plan
 
-1. Redefine upgrade CLI semantics so the default invocation applies managed files, while --dry-run becomes the explicit preview path and the command reports the bundle source/version before acting.\n2. Update parsing, help text, docs, and implementation so local-assets/remote/bundle sources all follow the new default-apply contract.\n3. Adjust and extend upgrade tests for the new defaults, including no-op messaging, dry-run behavior, and default apply of managed policy/gateway files.\n4. Run targeted upgrade test suites and validate the new UX does not regress safety invariants.
+1. Redefine upgrade CLI semantics so the default invocation applies managed files, while --dry-run becomes the explicit preview path and the command reports the bundle source/version before acting.
+2. Update parsing, help text, docs, and implementation so local-assets/remote/bundle sources all follow the new default-apply contract.
+3. Adjust and extend upgrade tests for the new defaults, including no-op messaging, dry-run behavior, and default apply of managed policy/gateway files.
+4. Run targeted upgrade test suites and validate the new UX does not regress safety invariants.
 
 ## Verify Steps
 

@@ -22,7 +22,23 @@ verification:
   state: "ok"
   updated_at: "2026-03-06T15:45:19.957Z"
   updated_by: "CODER"
-  note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts\nResult: pass\nEvidence: 8/8 tests passed, including the regression that proves internal release pushes use git push --no-verify and do not execute a failing local pre-push hook.\nScope: release apply command flow, release plan flow, internal push behavior.\n\nCommand: bun run release:check\nResult: pass\nEvidence: release build/parity gate completed successfully after the sandbox-path stabilization.\nScope: release packaging and publish-readiness checks.\n\nCommand: git log --oneline -3\nResult: pass\nEvidence: final implementation commit is d3443b9f on top of the earlier partial close, so the task can now be closed against the latest implementation revision.\nScope: traceability for the final fix set.\n\nNote: The approved verify step agentplane release apply --push --yes was not re-executed against the live repository because it is destructive on version/tag state; the deterministic regression test exercises that path in an isolated repository with a failing local pre-push hook."
+  note: |-
+    Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts
+    Result: pass
+    Evidence: 8/8 tests passed, including the regression that proves internal release pushes use git push --no-verify and do not execute a failing local pre-push hook.
+    Scope: release apply command flow, release plan flow, internal push behavior.
+    
+    Command: bun run release:check
+    Result: pass
+    Evidence: release build/parity gate completed successfully after the sandbox-path stabilization.
+    Scope: release packaging and publish-readiness checks.
+    
+    Command: git log --oneline -3
+    Result: pass
+    Evidence: final implementation commit is d3443b9f on top of the earlier partial close, so the task can now be closed against the latest implementation revision.
+    Scope: traceability for the final fix set.
+    
+    Note: The approved verify step agentplane release apply --push --yes was not re-executed against the live repository because it is destructive on version/tag state; the deterministic regression test exercises that path in an isolated repository with a failing local pre-push hook.
 commit:
   hash: "d3443b9f75d0460d8b3e11d6ead8ee59bc9f7a6b"
   message: "🧪 9Y41NM release: stabilize push regression sandbox"
@@ -49,7 +65,21 @@ events:
     at: "2026-03-06T15:39:55.738Z"
     author: "CODER"
     state: "ok"
-    note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts\nResult: pass\nEvidence: 8/8 tests passed, including the new pushReleaseRefs regression that proves internal release pushes bypass local pre-push hooks.\nScope: release apply command flow, release plan flow, internal push behavior.\n\nCommand: bun run release:check\nResult: pass\nEvidence: package builds and release pack/parity checks completed successfully for 0.3.1.\nScope: release build/parity gate.\n\nCommand: git diff -- packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts docs/developer/release-and-publishing.mdx\nResult: pass\nEvidence: release apply now calls git push with --no-verify, plus docs and regression coverage were updated.\nScope: implemented fix and documentation alignment."
+    note: |-
+      Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts
+      Result: pass
+      Evidence: 8/8 tests passed, including the new pushReleaseRefs regression that proves internal release pushes bypass local pre-push hooks.
+      Scope: release apply command flow, release plan flow, internal push behavior.
+      
+      Command: bun run release:check
+      Result: pass
+      Evidence: package builds and release pack/parity checks completed successfully for 0.3.1.
+      Scope: release build/parity gate.
+      
+      Command: git diff -- packages/agentplane/src/commands/release/apply.command.ts packages/agentplane/src/commands/release/apply.test.ts docs/developer/release-and-publishing.mdx
+      Result: pass
+      Evidence: release apply now calls git push with --no-verify, plus docs and regression coverage were updated.
+      Scope: implemented fix and documentation alignment.
   -
     type: "status"
     at: "2026-03-06T15:40:03.844Z"
@@ -68,7 +98,23 @@ events:
     at: "2026-03-06T15:45:19.957Z"
     author: "CODER"
     state: "ok"
-    note: "Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts\nResult: pass\nEvidence: 8/8 tests passed, including the regression that proves internal release pushes use git push --no-verify and do not execute a failing local pre-push hook.\nScope: release apply command flow, release plan flow, internal push behavior.\n\nCommand: bun run release:check\nResult: pass\nEvidence: release build/parity gate completed successfully after the sandbox-path stabilization.\nScope: release packaging and publish-readiness checks.\n\nCommand: git log --oneline -3\nResult: pass\nEvidence: final implementation commit is d3443b9f on top of the earlier partial close, so the task can now be closed against the latest implementation revision.\nScope: traceability for the final fix set.\n\nNote: The approved verify step agentplane release apply --push --yes was not re-executed against the live repository because it is destructive on version/tag state; the deterministic regression test exercises that path in an isolated repository with a failing local pre-push hook."
+    note: |-
+      Command: bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts
+      Result: pass
+      Evidence: 8/8 tests passed, including the regression that proves internal release pushes use git push --no-verify and do not execute a failing local pre-push hook.
+      Scope: release apply command flow, release plan flow, internal push behavior.
+      
+      Command: bun run release:check
+      Result: pass
+      Evidence: release build/parity gate completed successfully after the sandbox-path stabilization.
+      Scope: release packaging and publish-readiness checks.
+      
+      Command: git log --oneline -3
+      Result: pass
+      Evidence: final implementation commit is d3443b9f on top of the earlier partial close, so the task can now be closed against the latest implementation revision.
+      Scope: traceability for the final fix set.
+      
+      Note: The approved verify step agentplane release apply --push --yes was not re-executed against the live repository because it is destructive on version/tag state; the deterministic regression test exercises that path in an isolated repository with a failing local pre-push hook.
   -
     type: "status"
     at: "2026-03-06T15:45:30.443Z"
@@ -94,7 +140,10 @@ In scope: release/apply command flow, subprocess lifecycle and exit handling, re
 
 ## Plan
 
-1. Reproduce and trace the exact point where release apply stops after local commit/tag creation.\n2. Patch the release apply implementation so subprocesses and push stages terminate deterministically and surface actionable errors.\n3. Add regression coverage for the previously hanging path.\n4. Verify with targeted release tests and command-level checks, then record evidence and close the task.
+1. Reproduce and trace the exact point where release apply stops after local commit/tag creation.
+2. Patch the release apply implementation so subprocesses and push stages terminate deterministically and surface actionable errors.
+3. Add regression coverage for the previously hanging path.
+4. Verify with targeted release tests and command-level checks, then record evidence and close the task.
 
 ## Verify Steps
 

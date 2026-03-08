@@ -64,11 +64,16 @@ Fix CLI so --json (JSON errors mode) is honored even when parseGlobalArgs throws
 
 ## Scope
 
-- packages/agentplane/src/cli/run-cli.ts\n- packages/agentplane/src/cli/run-cli.core*.test.ts (new/updated test)\nOut of scope: any change to --json semantics beyond honoring it on global parse errors.
+- packages/agentplane/src/cli/run-cli.ts
+- packages/agentplane/src/cli/run-cli.core*.test.ts (new/updated test)
+Out of scope: any change to --json semantics beyond honoring it on global parse errors.
 
 ## Plan
 
-1) Implement argv prescan for --json in global zone before parseGlobalArgs.\n2) Ensure the prescan does not interpret command-level --json (after first non-global token).\n3) Add regression test: agentplane --json --root (missing value) returns JSON error payload.\n4) Run bun run test:cli:core and bun run typecheck.
+1) Implement argv prescan for --json in global zone before parseGlobalArgs.
+2) Ensure the prescan does not interpret command-level --json (after first non-global token).
+3) Add regression test: agentplane --json --root (missing value) returns JSON error payload.
+4) Run bun run test:cli:core and bun run typecheck.
 
 ## Verify Steps
 
@@ -95,7 +100,12 @@ Revert the commit for this task; re-run bun run test:cli:core to confirm baselin
 
 ## Findings
 
-### Approvals / Overrides\n- 2026-02-08: no overrides.\n\n### Implementation Notes\n- Use a lightweight argv prescan to set jsonErrors before parseGlobalArgs.\n- Add regression test for missing --root value with --json.
+### Approvals / Overrides
+- 2026-02-08: no overrides.
+
+### Implementation Notes
+- Use a lightweight argv prescan to set jsonErrors before parseGlobalArgs.
+- Add regression test for missing --root value with --json.
 
 ## Risks
 

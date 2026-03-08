@@ -67,7 +67,10 @@ id_source: "generated"
 
 ## Plan
 
-1) Add per-command metadata (needsProject/needsConfig/needsTaskContext) to command catalog entries.\n2) In runCli, match command id early using specs and decide whether to resolveProject/loadDotEnv/loadConfig/update-check/loadCommandContext.\n3) Add targeted tests: quickstart/role should not resolve project; commands needing ctx still work.\n4) Run lint + cli core tests + typecheck.
+1) Add per-command metadata (needsProject/needsConfig/needsTaskContext) to command catalog entries.
+2) In runCli, match command id early using specs and decide whether to resolveProject/loadDotEnv/loadConfig/update-check/loadCommandContext.
+3) Add targeted tests: quickstart/role should not resolve project; commands needing ctx still work.
+4) Run lint + cli core tests + typecheck.
 
 ## Verify Steps
 

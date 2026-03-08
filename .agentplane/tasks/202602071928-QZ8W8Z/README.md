@@ -18,7 +18,11 @@ verification:
   state: "ok"
   updated_at: "2026-02-08T05:59:01.177Z"
   updated_by: "ORCHESTRATOR"
-  note: "typecheck: bun run typecheck\\ncli core: bun run test:cli:core\\nfast suite: bun run test:fast\\nResult: OK"
+  note: |-
+    typecheck: bun run typecheck
+    cli core: bun run test:cli:core
+    fast suite: bun run test:fast
+    Result: OK
 commit:
   hash: "0e23faa882e29effd88018e208efe4d376dc4039"
   message: "🚧 QZ8W8Z cli: migrate task update to cli2"
@@ -52,7 +56,13 @@ Out of scope:
 
 ## Plan
 
-Plan:\n1. Define cli2 spec for task update (args/options/choices/repeatable/minCount) matching current semantics.\n2. Refactor cmdTaskUpdate implementation to accept parsed structured opts (no argv parsing).\n3. Wire spec into cli2 registry and remove legacy dispatcher branch for task update.\n4. Update/extend unit tests (workflow and run-cli core) to cover key flags: replace-tags/verify/depends-on, status, comment metadata, and E_USAGE cases.\n5. Run bun run typecheck and bun run test:cli:core (plus bun run test:fast if needed).\n6. Record verification, commit implementation, finish task, and commit closure README.
+Plan:
+1. Define cli2 spec for task update (args/options/choices/repeatable/minCount) matching current semantics.
+2. Refactor cmdTaskUpdate implementation to accept parsed structured opts (no argv parsing).
+3. Wire spec into cli2 registry and remove legacy dispatcher branch for task update.
+4. Update/extend unit tests (workflow and run-cli core) to cover key flags: replace-tags/verify/depends-on, status, comment metadata, and E_USAGE cases.
+5. Run bun run typecheck and bun run test:cli:core (plus bun run test:fast if needed).
+6. Record verification, commit implementation, finish task, and commit closure README.
 
 ## Verify Steps
 

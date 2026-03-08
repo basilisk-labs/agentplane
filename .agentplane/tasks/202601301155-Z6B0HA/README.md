@@ -44,7 +44,10 @@ User requested applying relevant AGENTS.md recommendations to current policy fil
 
 ## Scope
 
-- Update AGENTS.md version header and add PURPOSE section.\n- Add MANDATORY PREFLIGHT runbook and network approval definitions.\n- Clarify orchestration, status transitions exception, and commit workflow modes.\n- Add CONFIG PATCH recommendation block.
+- Update AGENTS.md version header and add PURPOSE section.
+- Add MANDATORY PREFLIGHT runbook and network approval definitions.
+- Clarify orchestration, status transitions exception, and commit workflow modes.
+- Add CONFIG PATCH recommendation block.
 
 ## Plan
 

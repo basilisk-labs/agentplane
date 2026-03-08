@@ -67,7 +67,10 @@ id_source: "generated"
 
 ## Plan
 
-1) Change command catalog entries to define load() that dynamic-imports handler modules and builds handler with deps (getCtx/getHelpJsonForDocs).\n2) Update registry.run.ts to register wrapper handlers that await load() once and cache the loaded handler.\n3) Keep help registry spec-only (no handler loads).\n4) Run lint + cli core tests + typecheck.
+1) Change command catalog entries to define load() that dynamic-imports handler modules and builds handler with deps (getCtx/getHelpJsonForDocs).
+2) Update registry.run.ts to register wrapper handlers that await load() once and cache the loaded handler.
+3) Keep help registry spec-only (no handler loads).
+4) Run lint + cli core tests + typecheck.
 
 ## Verify Steps
 

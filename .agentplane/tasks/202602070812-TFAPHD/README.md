@@ -66,7 +66,10 @@ Update only the root AGENTS.md policy file section 'Required task doc sections (
 
 ## Plan
 
-1) Update AGENTS.md required task doc sections list to match tasks.doc.required_sections.\n2) Run agentplane task lint.\n3) Record verification OK.\n4) Commit via agentplane guard commit and finish the task.
+1) Update AGENTS.md required task doc sections list to match tasks.doc.required_sections.
+2) Run agentplane task lint.
+3) Record verification OK.
+4) Commit via agentplane guard commit and finish the task.
 
 ## Verify Steps
 

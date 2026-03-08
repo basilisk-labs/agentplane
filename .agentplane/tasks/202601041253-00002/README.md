@@ -34,11 +34,13 @@ dirty: false
 ---
 ## Summary
 
-- Confirmed agent registry lives under .agent-plane/agents as JSON.\n- Closed the legacy backfill task to match current state.
+- Confirmed agent registry lives under .agent-plane/agents as JSON.
+- Closed the legacy backfill task to match current state.
 
 ## Scope
 
-- Verify agent registry uses JSON files under .agent-plane/agents.\n- Close the legacy task with updated documentation.
+- Verify agent registry uses JSON files under .agent-plane/agents.
+- Close the legacy task with updated documentation.
 
 ## Plan
 

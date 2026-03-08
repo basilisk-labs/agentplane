@@ -65,11 +65,14 @@ Add unit tests for task finish command implementation to cover key branches (com
 
 ## Scope
 
-- packages/agentplane/src/commands/task/finish.ts\n- packages/agentplane/src/commands/task/finish.unit.test.ts (new)
+- packages/agentplane/src/commands/task/finish.ts
+- packages/agentplane/src/commands/task/finish.unit.test.ts (new)
 
 ## Plan
 
-1. Проанализировать missed branches в packages/agentplane/src/commands/task/finish.ts.\n2. Добавить unit-тесты на ветки: валидация args/флагов, обработка commit/close metadata, enforce verify gates и ошибки.\n3. Прогнать bun run lint, bun run test:full, bun run coverage.
+1. Проанализировать missed branches в packages/agentplane/src/commands/task/finish.ts.
+2. Добавить unit-тесты на ветки: валидация args/флагов, обработка commit/close metadata, enforce verify gates и ошибки.
+3. Прогнать bun run lint, bun run test:full, bun run coverage.
 
 ## Verify Steps
 

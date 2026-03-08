@@ -65,11 +65,15 @@ Add regression test to ensure help-fast registry and run registry expose the sam
 
 ## Scope
 
-- packages/agentplane/src/cli/run-cli/registry.ts\n- packages/agentplane/src/cli/run-cli.core.help-contract.test.ts (or similar core test)\nOut of scope: refactor registry implementation (handled by later tasks).
+- packages/agentplane/src/cli/run-cli/registry.ts
+- packages/agentplane/src/cli/run-cli.core.help-contract.test.ts (or similar core test)
+Out of scope: refactor registry implementation (handled by later tasks).
 
 ## Plan
 
-1) Write a test that compares sets of command ids from buildHelpFastRegistry().list() and buildRegistry(getCtx).list().\n2) Use a minimal getCtx stub that should never be called.\n3) Run bun run test:cli:core and bun run typecheck.
+1) Write a test that compares sets of command ids from buildHelpFastRegistry().list() and buildRegistry(getCtx).list().
+2) Use a minimal getCtx stub that should never be called.
+3) Run bun run test:cli:core and bun run typecheck.
 
 ## Verify Steps
 
@@ -96,7 +100,8 @@ Revert the commit for this test if it blocks planned registry refactors; update 
 
 ## Findings
 
-### Approvals / Overrides\n- 2026-02-08: no overrides.
+### Approvals / Overrides
+- 2026-02-08: no overrides.
 
 ## Risks
 

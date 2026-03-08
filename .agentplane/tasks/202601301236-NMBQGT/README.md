@@ -41,7 +41,8 @@ Prior commit 5338827 included .agent-plane/tasks/202601301231-MATZR4/README.md u
 
 ## Scope
 
-- Remove .agent-plane/tasks/202601301231-MATZR4/README.md from the repo.\n- Record the cleanup in the task doc.
+- Remove .agent-plane/tasks/202601301231-MATZR4/README.md from the repo.
+- Record the cleanup in the task doc.
 
 ## Plan
 

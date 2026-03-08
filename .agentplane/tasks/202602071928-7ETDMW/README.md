@@ -52,7 +52,14 @@ Out of scope:
 
 ## Plan
 
-Scope: add tests that lock cli2 help output and validate spec/registry invariants to prevent drift.\n\nPlan:\n1) Add snapshot tests for agentplane help (text), and for selected commands in --compact and --json modes.\n2) Add registry/spec invariant tests: unique command ids; unique option names/shorts within a command; no longest-prefix ambiguities.\n3) Ensure tests are deterministic (stable ordering).\n\nVerification: bun run typecheck; bun run test:cli:core; bun run test:fast.
+Scope: add tests that lock cli2 help output and validate spec/registry invariants to prevent drift.
+
+Plan:
+1) Add snapshot tests for agentplane help (text), and for selected commands in --compact and --json modes.
+2) Add registry/spec invariant tests: unique command ids; unique option names/shorts within a command; no longest-prefix ambiguities.
+3) Ensure tests are deterministic (stable ordering).
+
+Verification: bun run typecheck; bun run test:cli:core; bun run test:fast.
 
 ## Verify Steps
 

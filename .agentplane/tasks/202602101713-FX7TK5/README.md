@@ -57,7 +57,8 @@ id_source: "generated"
 
 ## Scope
 
-- In scope: packages/agentplane/src/cli/archive.ts tar validation logic; tests that assert exit codes for unsafe tar archives.\n- Out of scope: tar extraction (still uses system tar for now).
+- In scope: packages/agentplane/src/cli/archive.ts tar validation logic; tests that assert exit codes for unsafe tar archives.
+- Out of scope: tar extraction (still uses system tar for now).
 
 ## Plan
 

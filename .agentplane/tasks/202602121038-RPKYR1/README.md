@@ -65,7 +65,10 @@ id_source: "generated"
 
 ## Plan
 
-1. Update quickstart examples to prefer finish --close-commit for single-task completion.\n2. Update docs where close workflow is described so status/close commits are presented as one command path.\n3. Validate docs/help references and run focused tests.\n4. Commit docs updates and finish the task.
+1. Update quickstart examples to prefer finish --close-commit for single-task completion.
+2. Update docs where close workflow is described so status/close commits are presented as one command path.
+3. Validate docs/help references and run focused tests.
+4. Commit docs updates and finish the task.
 
 ## Verify Steps
 

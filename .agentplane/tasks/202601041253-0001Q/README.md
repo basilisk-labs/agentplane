@@ -35,7 +35,16 @@ comments:
 doc_version: 3
 doc_updated_at: "2026-02-03T12:08:22.260Z"
 doc_updated_by: "agentplane"
-description: "Update agent workflows so they avoid extra commits beyond what is necessary. Target a default 3-commit cadence per task:\\\\n1) Planning: add the task + create initial workflow artifact @docs/workflow/T-###.md (skeleton/spec).\\\\n2) Implementation: implement the change set (preferably including tests) in a single work commit.\\\\n3) Verification/closure: run tests + review, update the workflow artifact with what was implemented, and mark the task DONE (tasks.json) in one final commit.\\\\n\\\\nAcceptance criteria:\\\\n- @AGENTS.md COMMIT_WORKFLOW reflects the 3-commit default and explicitly discourages extra 'start/status' commits.\\\\n- Agent prompts (.AGENTS/*.json) align: TESTER does not commit by default; DOCS artifacts are committed as part of planning/closure; REVIEWER closes tasks with a single final commit; CODER bundles implementation+tests into one work commit where practical.\\\\n- Existing guardrails (agentctl) remain usable (finish may reference the implementation commit hash)."
+description: |-
+  Update agent workflows so they avoid extra commits beyond what is necessary. Target a default 3-commit cadence per task:\
+  1) Planning: add the task + create initial workflow artifact @docs/workflow/T-###.md (skeleton/spec).\
+  2) Implementation: implement the change set (preferably including tests) in a single work commit.\
+  3) Verification/closure: run tests + review, update the workflow artifact with what was implemented, and mark the task DONE (tasks.json) in one final commit.\
+  \
+  Acceptance criteria:\
+  - @AGENTS.md COMMIT_WORKFLOW reflects the 3-commit default and explicitly discourages extra 'start/status' commits.\
+  - Agent prompts (.AGENTS/*.json) align: TESTER does not commit by default; DOCS artifacts are committed as part of planning/closure; REVIEWER closes tasks with a single final commit; CODER bundles implementation+tests into one work commit where practical.\
+  - Existing guardrails (agentctl) remain usable (finish may reference the implementation commit hash).
 dirty: false
 ---
 ## Summary

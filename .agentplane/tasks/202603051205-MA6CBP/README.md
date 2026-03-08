@@ -67,7 +67,11 @@ In scope: packages/agentplane/src/cli/run-cli.ts, new reason-code map module, JS
 
 ## Plan
 
-1. Add canonical reason-code map module.\n2. Use map in run-cli error writer to print decode details.\n3. Extend JSON error shape with reason_decode.\n4. Update tests and docs.\n5. Run targeted tests and typecheck.
+1. Add canonical reason-code map module.
+2. Use map in run-cli error writer to print decode details.
+3. Extend JSON error shape with reason_decode.
+4. Update tests and docs.
+5. Run targeted tests and typecheck.
 
 ## Verify Steps
 

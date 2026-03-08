@@ -52,7 +52,15 @@ Out of scope:
 
 ## Plan
 
-Scope: remove legacy static help implementation and eliminate manual *_USAGE/*_USAGE_EXAMPLE constants from CLI error paths, consolidating usage/help rendering via cli2 specs.\n\nPlan:\n1) Replace legacy top-level help rendering with cli2 registry help output.\n2) Remove packages/agentplane/src/cli/help.ts and any remaining imports.\n3) Remove or stop exporting manual usage constants that are no longer used by CLI routing.\n4) Update tests/snapshots as needed to reflect new help output.\n\nVerification: bun run typecheck; bun run test:cli:core.
+Scope: remove legacy static help implementation and eliminate manual *_USAGE/*_USAGE_EXAMPLE constants from CLI error paths, consolidating usage/help rendering via cli2 specs.
+
+Plan:
+1) Replace legacy top-level help rendering with cli2 registry help output.
+2) Remove packages/agentplane/src/cli/help.ts and any remaining imports.
+3) Remove or stop exporting manual usage constants that are no longer used by CLI routing.
+4) Update tests/snapshots as needed to reflect new help output.
+
+Verification: bun run typecheck; bun run test:cli:core.
 
 ## Verify Steps
 

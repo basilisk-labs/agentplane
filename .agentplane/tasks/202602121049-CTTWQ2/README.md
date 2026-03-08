@@ -65,7 +65,9 @@ id_source: "generated"
 
 ## Plan
 
-1. Enumerate local/remote pr/internal/* branches and compute merge/divergence status relative to main.\n2. Identify branches needing integration, archival, or deletion and apply safe cleanup actions.\n3. Record outcomes in task notes and verify no stale pr/internal branches remain unresolved.
+1. Enumerate local/remote pr/internal/* branches and compute merge/divergence status relative to main.
+2. Identify branches needing integration, archival, or deletion and apply safe cleanup actions.
+3. Record outcomes in task notes and verify no stale pr/internal branches remain unresolved.
 
 ## Verify Steps
 

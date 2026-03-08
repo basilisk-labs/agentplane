@@ -36,11 +36,13 @@ description: "Analyze repo and produce an English README with badges, clear sect
 ---
 ## Summary
 
-- Rewrite root README in English as a user-facing guide.\n- Add badges and structure by sections.
+- Rewrite root README in English as a user-facing guide.
+- Add badges and structure by sections.
 
 ## Scope
 
-- Analyze repo features and workflow.\n- Update README.md with clear sections, badges, and quickstart.
+- Analyze repo features and workflow.
+- Update README.md with clear sections, badges, and quickstart.
 
 ## Plan
 

@@ -64,7 +64,9 @@ In-scope: docs/user/workflow.mdx, docs/user/task-lifecycle.mdx, docs/user/agents
 
 ## Plan
 
-1. Update direct-mode wording to reflect single-stream lock behavior (no per-task branches by default).\n2. Make export step explicit/optional via .agentplane/tasks.json.\n3. Add a concise sources-of-truth note to Agents docs.
+1. Update direct-mode wording to reflect single-stream lock behavior (no per-task branches by default).
+2. Make export step explicit/optional via .agentplane/tasks.json.
+3. Add a concise sources-of-truth note to Agents docs.
 
 ## Verify Steps
 

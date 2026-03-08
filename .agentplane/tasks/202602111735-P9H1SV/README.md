@@ -90,7 +90,10 @@ Reopen failed child task and revert its commits if regression is found.
 
 ## Findings
 
-### Decisions\n- Prioritized deterministic gates over broad heuristic checks.\n### Implementation Notes\n- Epic closed after child task completion.
+### Decisions
+- Prioritized deterministic gates over broad heuristic checks.
+### Implementation Notes
+- Epic closed after child task completion.
 
 ## Risks
 

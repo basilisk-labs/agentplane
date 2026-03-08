@@ -47,7 +47,10 @@ id_source: "generated"
 
 ## Plan
 
-1) Add ensureNetworkApproved guard (interactive prompt; non-interactive requires --yes)\n2) Apply to recipes list-remote/install, upgrade, backend sync\n3) Add/adjust tests for --yes enforcement and preserve existing error mapping coverage\n4) Verify: bun run format:check, lint, test:fast, test:cli:core
+1) Add ensureNetworkApproved guard (interactive prompt; non-interactive requires --yes)
+2) Apply to recipes list-remote/install, upgrade, backend sync
+3) Add/adjust tests for --yes enforcement and preserve existing error mapping coverage
+4) Verify: bun run format:check, lint, test:fast, test:cli:core
 
 ## Verify Steps
 

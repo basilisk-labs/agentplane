@@ -48,11 +48,28 @@ Replace generic close commit messages with deterministic, informative close comm
 
 ## Scope
 
-In scope:\n- Close commit message format and generation logic\n- Finish command: capture one-line result summary for non-spike tasks\n- Commit command: add deterministic close mode (stages only task README)\n- Docs explaining .js import specifiers in TS sources\n- Tests enforcing the contract\n\nOut of scope:\n- Rewriting unrelated git/guard policies\n- Changing task backend persistence model
+In scope:
+- Close commit message format and generation logic
+- Finish command: capture one-line result summary for non-spike tasks
+- Commit command: add deterministic close mode (stages only task README)
+- Docs explaining .js import specifiers in TS sources
+- Tests enforcing the contract
+
+Out of scope:
+- Rewriting unrelated git/guard policies
+- Changing task backend persistence model
 
 ## Plan
 
-Implement deterministic, informative close commit messages built from task state + verification + git diff summary.\n\nDecomposition:\n- X2E2QD: docs for TS ESM import specifiers (.js in TS sources)\n- GYB2MA: finish requires --result for non-spike tasks; store result_summary\n- R18Y1Q: add agentplane commit --close that generates close commit message and commits task README\n- JYTFF2: tests enforcing the close message contract and determinism\n\nVerification: bun run typecheck; bun run lint; bun run test:full.
+Implement deterministic, informative close commit messages built from task state + verification + git diff summary.
+
+Decomposition:
+- X2E2QD: docs for TS ESM import specifiers (.js in TS sources)
+- GYB2MA: finish requires --result for non-spike tasks; store result_summary
+- R18Y1Q: add agentplane commit --close that generates close commit message and commits task README
+- JYTFF2: tests enforcing the close message contract and determinism
+
+Verification: bun run typecheck; bun run lint; bun run test:full.
 
 ## Verify Steps
 

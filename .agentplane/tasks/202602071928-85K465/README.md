@@ -52,7 +52,15 @@ Out of scope:
 
 ## Plan
 
-Scope: delete the legacy manual run-cli dispatcher and route all commands through the cli2 CommandRegistry, making cli2 the only command router.\n\nPlan:\n1) Build a single registry for all commands and route runCli through registry.match + parseCommandArgv.\n2) Remove the legacy dispatcher branches and any now-unused legacy parsers/imports.\n3) Ensure unknown command and unknown option errors are consistent (E_USAGE with cli2 help hints).\n4) Update tests if behavior/output changed.\n\nVerification: bun run typecheck; bun run test:cli:core; bun run test:fast.
+Scope: delete the legacy manual run-cli dispatcher and route all commands through the cli2 CommandRegistry, making cli2 the only command router.
+
+Plan:
+1) Build a single registry for all commands and route runCli through registry.match + parseCommandArgv.
+2) Remove the legacy dispatcher branches and any now-unused legacy parsers/imports.
+3) Ensure unknown command and unknown option errors are consistent (E_USAGE with cli2 help hints).
+4) Update tests if behavior/output changed.
+
+Verification: bun run typecheck; bun run test:cli:core; bun run test:fast.
 
 ## Verify Steps
 

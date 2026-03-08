@@ -65,7 +65,10 @@ id_source: "generated"
 
 ## Plan
 
-1. Inspect guard allow implementation and current tests for duplication/complexity hotspots.\n2. Refactor allow matching logic to reduce branching and clarify precedence semantics.\n3. Add or update focused unit tests for prefix rules, edge paths, and backward compatibility.\n4. Run targeted test suite and lint/build checks.
+1. Inspect guard allow implementation and current tests for duplication/complexity hotspots.
+2. Refactor allow matching logic to reduce branching and clarify precedence semantics.
+3. Add or update focused unit tests for prefix rules, edge paths, and backward compatibility.
+4. Run targeted test suite and lint/build checks.
 
 ## Verify Steps
 

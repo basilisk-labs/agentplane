@@ -83,7 +83,13 @@ Revert the task README updates; local backend config and tasks.json already rest
 
 ## Findings
 
-Observations:\n- Local backend export contains 317 tasks.\n- Redmine backend task list returned 4 tasks in sandbox.\n- sync pull: ✅ pulled 4 task(s).\n- sync push: ℹ️ no dirty tasks to push.\n\nAssessment: Redmine backend sync works, but data volume differs because only issues with task_id custom field are surfaced. Local task storage should remain enabled unless Redmine becomes the single canonical backend for all tasks.
+Observations:
+- Local backend export contains 317 tasks.
+- Redmine backend task list returned 4 tasks in sandbox.
+- sync pull: ✅ pulled 4 task(s).
+- sync push: ℹ️ no dirty tasks to push.
+
+Assessment: Redmine backend sync works, but data volume differs because only issues with task_id custom field are surfaced. Local task storage should remain enabled unless Redmine becomes the single canonical backend for all tasks.
 
 ## Risks
 

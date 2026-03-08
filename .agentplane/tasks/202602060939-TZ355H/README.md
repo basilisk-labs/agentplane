@@ -48,7 +48,11 @@ id_source: "generated"
 
 ## Plan
 
-1) Add agentplane task migrate-doc command to migrate existing task READMEs\n2) Migration: add missing ## Plan/## Verification sections without deleting content\n3) Initialize missing frontmatter plan_approval + verification with pending state\n4) Ensure YAML formatting uses current diff-friendly renderer\n5) Tests: migration preserves content; second run is idempotent (0 diff)
+1) Add agentplane task migrate-doc command to migrate existing task READMEs
+2) Migration: add missing ## Plan/## Verification sections without deleting content
+3) Initialize missing frontmatter plan_approval + verification with pending state
+4) Ensure YAML formatting uses current diff-friendly renderer
+5) Tests: migration preserves content; second run is idempotent (0 diff)
 
 ## Verify Steps
 

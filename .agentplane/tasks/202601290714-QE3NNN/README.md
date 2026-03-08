@@ -42,7 +42,10 @@ Apply recipe agents/scenarios during install, with deterministic conflict handli
 
 ## Scope
 
-- Apply recipe agents into .agentplane/agents with namespacing\n- Add --on-conflict handling for install (fail/rename/overwrite)\n- Register recipe scenarios metadata\n- Update CLI help/docs and tests
+- Apply recipe agents into .agentplane/agents with namespacing
+- Add --on-conflict handling for install (fail/rename/overwrite)
+- Register recipe scenarios metadata
+- Update CLI help/docs and tests
 
 ## Plan
 

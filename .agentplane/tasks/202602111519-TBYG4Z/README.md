@@ -85,7 +85,10 @@ In-scope: init.ts wiring на core buildExecutionProfile и связанные �
 
 ## Findings
 
-### Decisions\n- Источник истины для execution preset-ов: @agentplaneorg/core.\n### Implementation Notes\n- Заполнить после реализации.
+### Decisions
+- Источник истины для execution preset-ов: @agentplaneorg/core.
+### Implementation Notes
+- Заполнить после реализации.
 
 ## Risks
 

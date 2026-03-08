@@ -37,11 +37,13 @@ description: "Bump package versions to 0.1.0 and run npm pack check for agentpla
 ---
 ## Summary
 
-- Set package versions to 0.1.0.\n- Run npm pack to verify publish contents.
+- Set package versions to 0.1.0.
+- Run npm pack to verify publish contents.
 
 ## Scope
 
-- Update version fields to 0.1.0 (agentplane + core).\n- Run npm pack in packages/agentplane and inspect output.
+- Update version fields to 0.1.0 (agentplane + core).
+- Run npm pack in packages/agentplane and inspect output.
 
 ## Plan
 

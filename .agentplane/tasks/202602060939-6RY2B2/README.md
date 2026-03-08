@@ -46,7 +46,10 @@ id_source: "generated"
 
 ## Plan
 
-1) Audit non-atomic writes (config, index/meta, caches)\n2) Replace with atomicWriteFile where safe\n3) Add targeted unit tests for critical writers\n4) Verify: format:check, lint, test:fast
+1) Audit non-atomic writes (config, index/meta, caches)
+2) Replace with atomicWriteFile where safe
+3) Add targeted unit tests for critical writers
+4) Verify: format:check, lint, test:fast
 
 ## Verify Steps
 

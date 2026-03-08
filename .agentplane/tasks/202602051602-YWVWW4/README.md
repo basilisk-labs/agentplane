@@ -44,7 +44,8 @@ Normalize spacing between sections in historical task READMEs.
 
 - Accept whitespace normalization in existing task README files under .agentplane/tasks.
 
-- Accept whitespace normalization in existing task README files under .agentplane/tasks.\n- Format BRANCH.md to satisfy repo-wide Prettier hook.
+- Accept whitespace normalization in existing task README files under .agentplane/tasks.
+- Format BRANCH.md to satisfy repo-wide Prettier hook.
 
 ## Plan
 

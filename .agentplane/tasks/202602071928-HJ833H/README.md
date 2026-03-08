@@ -18,7 +18,11 @@ verification:
   state: "ok"
   updated_at: "2026-02-08T06:05:26.389Z"
   updated_by: "ORCHESTRATOR"
-  note: "typecheck: bun run typecheck\\ncli core: bun run test:cli:core\\nfast suite: bun run test:fast\\nResult: OK"
+  note: |-
+    typecheck: bun run typecheck
+    cli core: bun run test:cli:core
+    fast suite: bun run test:fast
+    Result: OK
 commit:
   hash: "361c40852799e1d13bc6fe55040bb7e869679d1f"
   message: "🚧 HJ833H cli: migrate task comment/set-status to cli2"
@@ -52,7 +56,13 @@ Out of scope:
 
 ## Plan
 
-Plan:\n1. Add cli2 specs for task comment and task set-status (args/options, including commit flags and policy toggles).\n2. Refactor command implementations to accept structured inputs (no argv parsing).\n3. Wire specs into cli2 registry and remove legacy dispatcher branches.\n4. Update unit tests for both direct command functions and run-cli core suites (including error wording changes from cli2 parser).\n5. Run bun run typecheck and bun run test:cli:core (plus bun run test:fast for hook parity).\n6. Record verification, commit implementation, finish task, and commit closure README.
+Plan:
+1. Add cli2 specs for task comment and task set-status (args/options, including commit flags and policy toggles).
+2. Refactor command implementations to accept structured inputs (no argv parsing).
+3. Wire specs into cli2 registry and remove legacy dispatcher branches.
+4. Update unit tests for both direct command functions and run-cli core suites (including error wording changes from cli2 parser).
+5. Run bun run typecheck and bun run test:cli:core (plus bun run test:fast for hook parity).
+6. Record verification, commit implementation, finish task, and commit closure README.
 
 ## Verify Steps
 

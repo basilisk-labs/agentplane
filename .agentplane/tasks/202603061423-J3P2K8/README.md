@@ -68,7 +68,9 @@ In scope: website/src/pages/index.tsx, website/src/pages/index.module.css, websi
 
 ## Plan
 
-1. Restore the homepage to the earlier placeholder-style typographic landing using the prior website version as the source.\n2. Remove visual illustrations from the blog index while keeping linked post entries and the blog content intact.\n3. Run website generation/typecheck/build/design checks, then push main and confirm Docs CI plus Pages Deploy.
+1. Restore the homepage to the earlier placeholder-style typographic landing using the prior website version as the source.
+2. Remove visual illustrations from the blog index while keeping linked post entries and the blog content intact.
+3. Run website generation/typecheck/build/design checks, then push main and confirm Docs CI plus Pages Deploy.
 
 ## Verify Steps
 

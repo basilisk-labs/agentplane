@@ -37,11 +37,13 @@ description: "Populate package metadata (description/keywords/etc.) for npm disp
 ---
 ## Summary
 
-- Add npm metadata for Agent Plane packages.\n- Keep CLI installable via npm i -g agentplane@latest.
+- Add npm metadata for Agent Plane packages.
+- Keep CLI installable via npm i -g agentplane@latest.
 
 ## Scope
 
-- Update package.json metadata for packages/agentplane and packages/core.\n- Add descriptive fields to internal packages for consistency.
+- Update package.json metadata for packages/agentplane and packages/core.
+- Add descriptive fields to internal packages for consistency.
 
 ## Plan
 

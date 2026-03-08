@@ -46,7 +46,9 @@ packages/core/src/git/base-branch.ts + tests; adjust agentplane hook behavior if
 
 ## Plan
 
-1) Update resolveBaseBranch: when mode=branch_pr and unpinned, prefer main/master if present, else return null.\n2) Update core base-branch tests.\n3) Run bun run test:core and bun run test:cli:core.
+1) Update resolveBaseBranch: when mode=branch_pr and unpinned, prefer main/master if present, else return null.
+2) Update core base-branch tests.
+3) Run bun run test:core and bun run test:cli:core.
 
 ## Verify Steps
 

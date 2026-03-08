@@ -112,7 +112,8 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T20:55:25.066Z, excerpt_
 
 ## Findings
 
-- This is the consumer-side half of the snapshot redesign introduced in 202603072032-1BC7VQ.\n- Prefer additive reasons and changedPaths so existing stale-dist warning/output surfaces stay readable while becoming more accurate.
+- This is the consumer-side half of the snapshot redesign introduced in 202603072032-1BC7VQ.
+- Prefer additive reasons and changedPaths so existing stale-dist warning/output surfaces stay readable while becoming more accurate.
 
 ## Risks
 

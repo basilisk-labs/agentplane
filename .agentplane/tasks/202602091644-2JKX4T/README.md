@@ -69,7 +69,11 @@ packages/agentplane/src/usecases/context/** and 2-3 pilot commands (task list, t
 
 ## Plan
 
-1) Implement resolveContext returning a typed CommandContext-like object for usecases (ports/adapters + config + project roots).\n2) Create usecases for task list and task new (thin wrappers around existing logic initially).\n3) Rewire CLI command handlers to call resolveContext + usecase.\n4) Add unit tests for resolveContext and usecases; rely on existing CLI tests for regressions.\n5) Run bun run lint and bun run test:full.
+1) Implement resolveContext returning a typed CommandContext-like object for usecases (ports/adapters + config + project roots).
+2) Create usecases for task list and task new (thin wrappers around existing logic initially).
+3) Rewire CLI command handlers to call resolveContext + usecase.
+4) Add unit tests for resolveContext and usecases; rely on existing CLI tests for regressions.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

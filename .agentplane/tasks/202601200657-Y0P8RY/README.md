@@ -34,11 +34,13 @@ description: "Trim the core framework to the minimum runtime after recipe migrat
 ---
 ## Summary
 
-- Confirmed core cleanup scope after Phase 2; no additional runtime removals required.\n- Kept migration follow-up tracked in recipes rather than core changes.
+- Confirmed core cleanup scope after Phase 2; no additional runtime removals required.
+- Kept migration follow-up tracked in recipes rather than core changes.
 
 ## Scope
 
-- Review remaining extension hooks after Phase 2 migration.\n- Only make core changes if redundant features remain.
+- Review remaining extension hooks after Phase 2 migration.
+- Only make core changes if redundant features remain.
 
 ## Plan
 

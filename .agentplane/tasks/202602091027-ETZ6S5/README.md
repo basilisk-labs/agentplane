@@ -67,7 +67,10 @@ Increase HTTP download timeouts for the upgrade command so GitHub tarball_url (a
 
 ## Plan
 
-1. Define a reasonable upgrade download timeout constant (e.g. 60s).\n2. Pass timeoutMs to all downloadToFile calls in upgrade (bundle/checksum/assets/tarball).\n3. Add a focused unit test that asserts downloadToFile is invoked with the larger timeout in tarball fallback mode (mocking fetch).\n4. Run lint + affected tests.
+1. Define a reasonable upgrade download timeout constant (e.g. 60s).
+2. Pass timeoutMs to all downloadToFile calls in upgrade (bundle/checksum/assets/tarball).
+3. Add a focused unit test that asserts downloadToFile is invoked with the larger timeout in tarball fallback mode (mocking fetch).
+4. Run lint + affected tests.
 
 ## Verify Steps
 

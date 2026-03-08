@@ -47,7 +47,10 @@ packages/core/src/git/git-utils.ts; packages/agentplane/src/commands/guard/index
 
 ## Plan
 
-1) Update core getStagedFiles/getUnstagedFiles to use -z outputs.\n2) Replace guard gitStatusChangedPaths with -z based enumeration (diff + ls-files).\n3) Add CLI regression test ensuring commit-from-comment stages a path with spaces.\n4) Run bun run test:cli:core and bun run test:core.
+1) Update core getStagedFiles/getUnstagedFiles to use -z outputs.
+2) Replace guard gitStatusChangedPaths with -z based enumeration (diff + ls-files).
+3) Add CLI regression test ensuring commit-from-comment stages a path with spaces.
+4) Run bun run test:cli:core and bun run test:core.
 
 ## Verify Steps
 

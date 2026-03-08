@@ -43,7 +43,10 @@ id_source: "generated"
 
 ## Plan
 
-1) Switch cmdStart/cmdBlock/cmdFinish to call loadCommandContext once per invocation.\n2) Load tasks via loadTaskFromContext instead of loadBackendTask (no repeated loadTaskBackend).\n3) In finish: remove per-task loadBackendTask call inside loop; reuse ctx.backend.\n4) Run bun run test:agentplane.
+1) Switch cmdStart/cmdBlock/cmdFinish to call loadCommandContext once per invocation.
+2) Load tasks via loadTaskFromContext instead of loadBackendTask (no repeated loadTaskBackend).
+3) In finish: remove per-task loadBackendTask call inside loop; reuse ctx.backend.
+4) Run bun run test:agentplane.
 
 ## Verify Steps
 

@@ -58,7 +58,16 @@ In scope: packages/agentplane/src/** (new usecases/, ports/, adapters/, doctor c
 
 ## Plan
 
-Sequence:\n1) 202602091644-5RH64E Ports/adapters\n2) 202602091644-JS84Q6 PolicyEngine\n3) 202602091644-2JKX4T resolveContext + pilot usecases\n4) 202602091644-TXYQAY Import-layer guardrails\n5) 202602091644-PNW35M Doctor\n6) 202602091644-03VNRE Tasks index v2 + rebuild-index\n7) 202602091644-60R2T4 Upgrade --agent/--auto + anchors\n\nVerification for each task: bun run lint + bun run test:full.
+Sequence:
+1) 202602091644-5RH64E Ports/adapters
+2) 202602091644-JS84Q6 PolicyEngine
+3) 202602091644-2JKX4T resolveContext + pilot usecases
+4) 202602091644-TXYQAY Import-layer guardrails
+5) 202602091644-PNW35M Doctor
+6) 202602091644-03VNRE Tasks index v2 + rebuild-index
+7) 202602091644-60R2T4 Upgrade --agent/--auto + anchors
+
+Verification for each task: bun run lint + bun run test:full.
 
 ## Verify Steps
 

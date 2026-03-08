@@ -49,7 +49,9 @@ In scope: switch task README writes in LocalBackend and task scaffold to writeTe
 
 ## Plan
 
-1) Replace unconditional task README writes (LocalBackend writeTask/setTaskDoc/touchTaskDocMetadata and task scaffold) with writeTextIfChanged while keeping atomic writes.\n2) Use writeJsonStableIfChanged for init backend.json templates to canonicalize key order.\n3) Run typecheck, lint, test:agentplane.
+1) Replace unconditional task README writes (LocalBackend writeTask/setTaskDoc/touchTaskDocMetadata and task scaffold) with writeTextIfChanged while keeping atomic writes.
+2) Use writeJsonStableIfChanged for init backend.json templates to canonicalize key order.
+3) Run typecheck, lint, test:agentplane.
 
 ## Verify Steps
 

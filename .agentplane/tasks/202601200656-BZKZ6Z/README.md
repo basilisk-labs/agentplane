@@ -39,11 +39,13 @@ description: "Define the minimal core agent/task workflow, allow recipe tool/age
 ---
 ## Summary
 
-- Defined core-vs-recipes boundaries and enforced core minimum in docs and agents.\n- Scoped migration into phases with separate tasks for execution and cleanup.
+- Defined core-vs-recipes boundaries and enforced core minimum in docs and agents.
+- Scoped migration into phases with separate tasks for execution and cleanup.
 
 ## Scope
 
-- Establish the minimal core workflow and permissions.\n- Plan migration of extension features into recipes and split execution into phased tasks.
+- Establish the minimal core workflow and permissions.
+- Plan migration of extension features into recipes and split execution into phased tasks.
 
 ## Plan
 

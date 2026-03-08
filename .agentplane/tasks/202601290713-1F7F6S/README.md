@@ -42,7 +42,9 @@ Add conflict-safe init handling: detect conflicts, list them, and support --forc
 
 ## Scope
 
-- Extend init flags with --force and --backup and update usage/help text.\n- Detect init file/dir conflicts and list them before writing.\n- Implement overwrite (force) and timestamped backups (backup) with tests.
+- Extend init flags with --force and --backup and update usage/help text.
+- Detect init file/dir conflicts and list them before writing.
+- Implement overwrite (force) and timestamped backups (backup) with tests.
 
 ## Plan
 

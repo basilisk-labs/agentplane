@@ -29,22 +29,44 @@ comments:
     body: "Start: Split commands/workflow.ts and run-cli.core.test.ts into smaller domain/scenario modules; keep CLI API stable; run full CLI test suite and agentplane verify before finish."
   -
     author: "VERIFY"
-    body: "Verify failed: Verify command failed: bun run typecheck\\ncmd: bun run lint\\ncmd: bun run test:cli:core\\ncmd: bun run test:cli:unit\\ncmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ (command: bun run typecheck\\ncmd: bun run lint\\ncmd: bun run test:cli:core\\ncmd: bun run test:cli:unit\\ncmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ)"
+    body: |-
+      Verify failed: Verify command failed: bun run typecheck
+      cmd: bun run lint
+      cmd: bun run test:cli:core
+      cmd: bun run test:cli:unit
+      cmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ (command: bun run typecheck
+      cmd: bun run lint
+      cmd: bun run test:cli:core
+      cmd: bun run test:cli:unit
+      cmd: node packages/agentplane/bin/agentplane.js verify 202602060427-AFQFMQ)
   -
     author: "ORCHESTRATOR"
     body: "Verified: agentplane verify passed (2026-02-06); commit 53f2c70644c2. Ran typecheck, lint, and test:cli:unit."
 doc_version: 3
 doc_updated_at: "2026-02-06T05:37:07.671Z"
 doc_updated_by: "ORCHESTRATOR"
-description: "Goal: reduce churn and review scope by splitting the largest prod file and the largest test file.\\n\\nDeliverables:\\n- Decompose packages/agentplane/src/commands/workflow.ts into domain modules under packages/agentplane/src/commands/{task,branch,pr,guard,hooks}/\\n- Keep stable workflow entrypoint for CLI (run-cli.ts import stays simple)\\n- Split packages/agentplane/src/cli/run-cli.core.test.ts into multiple scenario/command-focused files; keep smoke/contract separate\\n\\nConstraints:\\n- direct mode; no manual edits to .agentplane/tasks.json; commits via agentplane\\n"
+description: |-
+  Goal: reduce churn and review scope by splitting the largest prod file and the largest test file.
+  
+  Deliverables:
+  - Decompose packages/agentplane/src/commands/workflow.ts into domain modules under packages/agentplane/src/commands/{task,branch,pr,guard,hooks}/
+  - Keep stable workflow entrypoint for CLI (run-cli.ts import stays simple)
+  - Split packages/agentplane/src/cli/run-cli.core.test.ts into multiple scenario/command-focused files; keep smoke/contract separate
+  
+  Constraints:
+  - direct mode; no manual edits to .agentplane/tasks.json; commits via agentplane
 ---
 ## Summary
 
-- Refactored packages/agentplane/src/commands/workflow.ts into domain modules (task/branch/pr/guard/hooks) while keeping workflow.ts as a stable re-export entrypoint.\n- Split packages/agentplane/src/cli/run-cli.core.test.ts into multiple core test files (scenario/command focused) and updated root test scripts to target run-cli.core*.test.ts.
+- Refactored packages/agentplane/src/commands/workflow.ts into domain modules (task/branch/pr/guard/hooks) while keeping workflow.ts as a stable re-export entrypoint.
+- Split packages/agentplane/src/cli/run-cli.core.test.ts into multiple core test files (scenario/command focused) and updated root test scripts to target run-cli.core*.test.ts.
 
 ## Scope
 
-- Added domain command modules under packages/agentplane/src/commands/{task,branch,pr,guard,hooks}/ and shared helpers under packages/agentplane/src/commands/shared/.\n- Left packages/agentplane/src/commands/workflow.ts as the compatibility surface (explicit re-exports; no export *).\n- Split core CLI tests into packages/agentplane/src/cli/run-cli.core.*.test.ts and adjusted root package.json CLI test scripts to include the new glob.\n- No intended behavior changes; change is structural for review/scope isolation.
+- Added domain command modules under packages/agentplane/src/commands/{task,branch,pr,guard,hooks}/ and shared helpers under packages/agentplane/src/commands/shared/.
+- Left packages/agentplane/src/commands/workflow.ts as the compatibility surface (explicit re-exports; no export *).
+- Split core CLI tests into packages/agentplane/src/cli/run-cli.core.*.test.ts and adjusted root package.json CLI test scripts to include the new glob.
+- No intended behavior changes; change is structural for review/scope isolation.
 
 ## Plan
 

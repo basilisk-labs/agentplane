@@ -42,7 +42,9 @@ Add agentplane ide sync to generate Cursor/Windsurf rules from AGENTS.md.
 
 ## Scope
 
-- Implement ide sync command and file generation in CLI.\n- Update help output.\n- Add run-cli tests for ide sync.
+- Implement ide sync command and file generation in CLI.
+- Update help output.
+- Add run-cli tests for ide sync.
 
 ## Plan
 

@@ -69,7 +69,10 @@ Make agentplane finish in direct mode perform a deterministic close commit by de
 
 ## Plan
 
-1. Inspect finish/task close-commit flow and identify the minimal direct-mode-only toggle point that can enable automatic close commits without changing branch_pr semantics.\n2. Implement direct-mode default auto-close behavior, preserving an explicit override for callers that intentionally want metadata-only finish without the close commit.\n3. Add/update unit tests covering direct-mode default close behavior, branch_pr unchanged behavior, and failure handling when auto-close cannot complete.\n4. Run targeted finish/task tests and confirm the direct happy-path no longer leaves task README metadata as a tracked dirty tail.
+1. Inspect finish/task close-commit flow and identify the minimal direct-mode-only toggle point that can enable automatic close commits without changing branch_pr semantics.
+2. Implement direct-mode default auto-close behavior, preserving an explicit override for callers that intentionally want metadata-only finish without the close commit.
+3. Add/update unit tests covering direct-mode default close behavior, branch_pr unchanged behavior, and failure handling when auto-close cannot complete.
+4. Run targeted finish/task tests and confirm the direct happy-path no longer leaves task README metadata as a tracked dirty tail.
 
 ## Verify Steps
 

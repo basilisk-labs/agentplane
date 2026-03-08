@@ -42,7 +42,9 @@ Implemented comment-driven commit support for start flow, added shared comment f
 
 ## Scope
 
-- Add start command comment-driven commit flow with status_commit_policy checks.\n- Extract comment formatting into a reusable module.\n- Add CLI tests for start usage, flags, and hooks errors.
+- Add start command comment-driven commit flow with status_commit_policy checks.
+- Extract comment formatting into a reusable module.
+- Add CLI tests for start usage, flags, and hooks errors.
 
 ## Plan
 

@@ -52,7 +52,14 @@ Out of scope:
 
 ## Plan
 
-Scope: migrate  to cli2 spec-driven parsing and help, preserving existing runtime behavior (guard checks, allowlist, auto-allow, quiet).\n\nSteps:\n1) Add cli2 spec + handler for  (including -m/--message and allow flags).\n2) Wire command into cli2 registries (fast help + runtime).\n3) Remove legacy  parsing from run-cli.ts.\n4) Update/extend CLI core tests for usage/help and behavior parity.\n5) Verify: bun run typecheck; bun run test:cli:core.
+Scope: migrate  to cli2 spec-driven parsing and help, preserving existing runtime behavior (guard checks, allowlist, auto-allow, quiet).
+
+Steps:
+1) Add cli2 spec + handler for  (including -m/--message and allow flags).
+2) Wire command into cli2 registries (fast help + runtime).
+3) Remove legacy  parsing from run-cli.ts.
+4) Update/extend CLI core tests for usage/help and behavior parity.
+5) Verify: bun run typecheck; bun run test:cli:core.
 
 ## Verify Steps
 

@@ -58,11 +58,16 @@ Add `agentplane release apply` to apply a prepared release plan: validate agent-
 
 ## Scope
 
-- In scope: `packages/agentplane/src/commands/release/apply.command.ts`, `packages/agentplane/src/commands/release/apply.test.ts`, `packages/agentplane/src/cli/run-cli/command-catalog.ts`, help snapshots.\n- Out of scope: publishing to npm/GitHub (handled by existing CI workflow), auto-authoring release notes.
+- In scope: `packages/agentplane/src/commands/release/apply.command.ts`, `packages/agentplane/src/commands/release/apply.test.ts`, `packages/agentplane/src/cli/run-cli/command-catalog.ts`, help snapshots.
+- Out of scope: publishing to npm/GitHub (handled by existing CI workflow), auto-authoring release notes.
 
 ## Plan
 
-1. Implement `release apply` command to read `version.json` from a release plan directory and require `docs/releases/<tag>.md`.\n2. Validate release notes minimally (Release Notes heading, >=3 bullets, English-only) to match repo checks.\n3. Bump versions in `packages/core/package.json` and `packages/agentplane/package.json` (idempotent if already bumped).\n4. Stage + commit changes (if any) and create a git tag `vX.Y.Z` (refuse to overwrite).\n5. Register in command catalog and update help snapshots + add unit test.
+1. Implement `release apply` command to read `version.json` from a release plan directory and require `docs/releases/<tag>.md`.
+2. Validate release notes minimally (Release Notes heading, >=3 bullets, English-only) to match repo checks.
+3. Bump versions in `packages/core/package.json` and `packages/agentplane/package.json` (idempotent if already bumped).
+4. Stage + commit changes (if any) and create a git tag `vX.Y.Z` (refuse to overwrite).
+5. Register in command catalog and update help snapshots + add unit test.
 
 ## Verify Steps
 

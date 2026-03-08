@@ -84,7 +84,10 @@ In-scope: package.json scripts и lefthook.yml. Out-of-scope: изменение
 
 ## Findings
 
-### Decisions\n- Pre-commit profile должен быть фиксированным и коротким.\n### Implementation Notes\n- Заполняется после реализации.
+### Decisions
+- Pre-commit profile должен быть фиксированным и коротким.
+### Implementation Notes
+- Заполняется после реализации.
 
 ## Risks
 

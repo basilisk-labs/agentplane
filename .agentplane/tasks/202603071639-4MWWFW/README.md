@@ -30,7 +30,10 @@ comments:
     body: "Start: inspect the global bin wrapper and make PATH-launched agentplane hand off to the repo-local binary automatically inside this framework checkout."
   -
     author: "ORCHESTRATOR"
-    body: "Verified: 202603071639-4MWWFW is a bookkeeping duplicate of 202603071647-M0Q79C (Detect framework checkout and prefer repo-local agentplane); no code/config changes are expected in this task and closure is recorded as no-op.\n\nReason: Superseded by the decomposed repo-local handoff task graph after the exploratory wrapper analysis was interrupted before implementation."
+    body: |-
+      Verified: 202603071639-4MWWFW is a bookkeeping duplicate of 202603071647-M0Q79C (Detect framework checkout and prefer repo-local agentplane); no code/config changes are expected in this task and closure is recorded as no-op.
+      
+      Reason: Superseded by the decomposed repo-local handoff task graph after the exploratory wrapper analysis was interrupted before implementation.
 events:
   -
     type: "status"
@@ -45,7 +48,10 @@ events:
     author: "ORCHESTRATOR"
     from: "DOING"
     to: "DONE"
-    note: "Verified: 202603071639-4MWWFW is a bookkeeping duplicate of 202603071647-M0Q79C (Detect framework checkout and prefer repo-local agentplane); no code/config changes are expected in this task and closure is recorded as no-op.\n\nReason: Superseded by the decomposed repo-local handoff task graph after the exploratory wrapper analysis was interrupted before implementation."
+    note: |-
+      Verified: 202603071639-4MWWFW is a bookkeeping duplicate of 202603071647-M0Q79C (Detect framework checkout and prefer repo-local agentplane); no code/config changes are expected in this task and closure is recorded as no-op.
+      
+      Reason: Superseded by the decomposed repo-local handoff task graph after the exploratory wrapper analysis was interrupted before implementation.
 doc_version: 3
 doc_updated_at: "2026-03-07T16:47:27.089Z"
 doc_updated_by: "ORCHESTRATOR"

@@ -46,7 +46,10 @@ packages/core/src/commit/commit-policy.ts + tests.
 
 ## Plan
 
-1) Make task id/suffix detection case-insensitive.\n2) Update validateCommitSubject to evaluate genericness after stripping task ref (and emoji/punctuation).\n3) Update unit tests.\n4) Run bun run test:core.
+1) Make task id/suffix detection case-insensitive.
+2) Update validateCommitSubject to evaluate genericness after stripping task ref (and emoji/punctuation).
+3) Update unit tests.
+4) Run bun run test:core.
 
 ## Verify Steps
 

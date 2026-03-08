@@ -45,7 +45,11 @@ id_source: "generated"
 
 ## Plan
 
-1) Extract shared commit/allowlist path policy helpers.\n2) Use config.paths.tasks_path in guard, and switch allowlist matching to path.relative-based logic.\n3) Add branch_pr base-branch restrictions to guard commit (align with pre-commit hook).\n4) Make commit-msg hook avoid backend/network (require AGENTPLANE_TASK_ID if needed).\n5) Update tests and run bun run test:agentplane.
+1) Extract shared commit/allowlist path policy helpers.
+2) Use config.paths.tasks_path in guard, and switch allowlist matching to path.relative-based logic.
+3) Add branch_pr base-branch restrictions to guard commit (align with pre-commit hook).
+4) Make commit-msg hook avoid backend/network (require AGENTPLANE_TASK_ID if needed).
+5) Update tests and run bun run test:agentplane.
 
 ## Verify Steps
 

@@ -44,7 +44,10 @@ Completed tasks had empty tags, which made filtering and browsing less useful.
 
 ## Scope
 
-- Export tasks snapshot from local backend.\n- Identify DONE tasks with empty/missing tags.\n- Add 1-2 minimal tags per task via agentctl task update.\n- Export tasks and document changes.
+- Export tasks snapshot from local backend.
+- Identify DONE tasks with empty/missing tags.
+- Add 1-2 minimal tags per task via agentctl task update.
+- Export tasks and document changes.
 
 ## Plan
 

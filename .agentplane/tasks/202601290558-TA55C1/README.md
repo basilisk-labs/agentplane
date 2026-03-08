@@ -42,11 +42,13 @@ description: "Track and sequence closure of remaining AP-* roadmap tasks; execut
 ---
 ## Summary
 
-- Confirmed remaining Node.js roadmap tasks are closed and documented.\n- Closed the meta tracker for roadmap completion.
+- Confirmed remaining Node.js roadmap tasks are closed and documented.
+- Closed the meta tracker for roadmap completion.
 
 ## Scope
 
-- Review remaining AP-* roadmap tasks and confirm DONE state.\n- Close this tracking task once dependencies are satisfied.
+- Review remaining AP-* roadmap tasks and confirm DONE state.
+- Close this tracking task once dependencies are satisfied.
 
 ## Plan
 

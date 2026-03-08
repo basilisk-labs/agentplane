@@ -69,7 +69,10 @@ Improve doctor and upgrade diagnostics so workspaces with a new AGENTS gateway b
 
 ## Plan
 
-1. Inspect doctor/workspace checks and upgrade messaging to find where a new policy gateway can coexist with missing managed policy modules after a partial/manual update.\n2. Add explicit diagnostics that identify missing managed policy files, explain the likely stale-CLI/partial-upgrade cause, and point to the correct recovery command.\n3. Add test coverage for the new diagnostics and update docs/help where the new recovery guidance should appear.\n4. Run targeted doctor/upgrade tests and confirm the resulting messages are specific enough to explain the failure mode described by users.
+1. Inspect doctor/workspace checks and upgrade messaging to find where a new policy gateway can coexist with missing managed policy modules after a partial/manual update.
+2. Add explicit diagnostics that identify missing managed policy files, explain the likely stale-CLI/partial-upgrade cause, and point to the correct recovery command.
+3. Add test coverage for the new diagnostics and update docs/help where the new recovery guidance should appear.
+4. Run targeted doctor/upgrade tests and confirm the resulting messages are specific enough to explain the failure mode described by users.
 
 ## Verify Steps
 

@@ -61,7 +61,9 @@ In-scope: docs/developer/release-and-publishing.mdx.
 
 ## Plan
 
-1. Replace manual publish-first instructions with the standard flow: release plan -> notes -> release apply -> tag push -> GitHub Actions publish.\n2. Document bump rules: patch default; minor/major requires --yes; pushing requires --yes.\n3. Keep an emergency manual publish section as discouraged fallback.
+1. Replace manual publish-first instructions with the standard flow: release plan -> notes -> release apply -> tag push -> GitHub Actions publish.
+2. Document bump rules: patch default; minor/major requires --yes; pushing requires --yes.
+3. Keep an emergency manual publish section as discouraged fallback.
 
 ## Verify Steps
 

@@ -86,7 +86,10 @@ Revert release apply report writer and test updates.
 
 ## Findings
 
-### Decisions\n- Write both timestamped report and latest.json pointer for easy consumption.\n### Implementation Notes\n- Pending.
+### Decisions
+- Write both timestamped report and latest.json pointer for easy consumption.
+### Implementation Notes
+- Pending.
 
 ## Risks
 

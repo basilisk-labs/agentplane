@@ -18,7 +18,26 @@ verification:
   state: "ok"
   updated_at: "2026-03-08T06:41:20.991Z"
   updated_by: "CODER"
-  note: "Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit completed with exit code 0 after extracting globals, catalog, error-guidance, and update-warning helpers.\nScope: run-cli orchestration typing and module boundaries.\n\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 4 files, 19 tests passed; help, misc, and boot behavior remained green.\nScope: run-cli help surfaces and boot path behavior.\n\nCommand: bun run lint:core -- packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/cli/run-cli/catalog.ts packages/agentplane/src/cli/run-cli/globals.ts packages/agentplane/src/cli/run-cli/error-guidance.ts packages/agentplane/src/cli/run-cli/update-warning.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts\nResult: pass\nEvidence: eslint finished clean after import/type cleanup in extracted helpers.\nScope: modified run-cli source files and targeted regression tests.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build\nResult: pass\nEvidence: both package builds exited with code 0 after the extraction.\nScope: build output freshness for framework checkout and agentplane package assembly."
+  note: |-
+    Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit
+    Result: pass
+    Evidence: TypeScript no-emit completed with exit code 0 after extracting globals, catalog, error-guidance, and update-warning helpers.
+    Scope: run-cli orchestration typing and module boundaries.
+    
+    Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000
+    Result: pass
+    Evidence: 4 files, 19 tests passed; help, misc, and boot behavior remained green.
+    Scope: run-cli help surfaces and boot path behavior.
+    
+    Command: bun run lint:core -- packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/cli/run-cli/catalog.ts packages/agentplane/src/cli/run-cli/globals.ts packages/agentplane/src/cli/run-cli/error-guidance.ts packages/agentplane/src/cli/run-cli/update-warning.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts
+    Result: pass
+    Evidence: eslint finished clean after import/type cleanup in extracted helpers.
+    Scope: modified run-cli source files and targeted regression tests.
+    
+    Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
+    Result: pass
+    Evidence: both package builds exited with code 0 after the extraction.
+    Scope: build output freshness for framework checkout and agentplane package assembly.
 commit:
   hash: "358b354fa40f9e812df92c6a8a44117354d99729"
   message: "♻️ 5M0ZZW cli: split run-cli orchestration helpers"
@@ -42,7 +61,26 @@ events:
     at: "2026-03-08T06:41:20.991Z"
     author: "CODER"
     state: "ok"
-    note: "Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit completed with exit code 0 after extracting globals, catalog, error-guidance, and update-warning helpers.\nScope: run-cli orchestration typing and module boundaries.\n\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 4 files, 19 tests passed; help, misc, and boot behavior remained green.\nScope: run-cli help surfaces and boot path behavior.\n\nCommand: bun run lint:core -- packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/cli/run-cli/catalog.ts packages/agentplane/src/cli/run-cli/globals.ts packages/agentplane/src/cli/run-cli/error-guidance.ts packages/agentplane/src/cli/run-cli/update-warning.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts\nResult: pass\nEvidence: eslint finished clean after import/type cleanup in extracted helpers.\nScope: modified run-cli source files and targeted regression tests.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build\nResult: pass\nEvidence: both package builds exited with code 0 after the extraction.\nScope: build output freshness for framework checkout and agentplane package assembly."
+    note: |-
+      Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit
+      Result: pass
+      Evidence: TypeScript no-emit completed with exit code 0 after extracting globals, catalog, error-guidance, and update-warning helpers.
+      Scope: run-cli orchestration typing and module boundaries.
+      
+      Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000
+      Result: pass
+      Evidence: 4 files, 19 tests passed; help, misc, and boot behavior remained green.
+      Scope: run-cli help surfaces and boot path behavior.
+      
+      Command: bun run lint:core -- packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/cli/run-cli/catalog.ts packages/agentplane/src/cli/run-cli/globals.ts packages/agentplane/src/cli/run-cli/error-guidance.ts packages/agentplane/src/cli/run-cli/update-warning.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts
+      Result: pass
+      Evidence: eslint finished clean after import/type cleanup in extracted helpers.
+      Scope: modified run-cli source files and targeted regression tests.
+      
+      Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
+      Result: pass
+      Evidence: both package builds exited with code 0 after the extraction.
+      Scope: build output freshness for framework checkout and agentplane package assembly.
   -
     type: "status"
     at: "2026-03-08T06:41:57.906Z"

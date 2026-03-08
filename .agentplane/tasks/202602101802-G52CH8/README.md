@@ -65,7 +65,9 @@ In-scope: docs/user/tasks-and-backends.mdx, docs/user/backends.mdx, docs/user/ba
 
 ## Plan
 
-1. Replace legacy sync commands with  in user docs.\n2. Replace legacy export wording with .agentplane/tasks.json.\n3. Ensure conflict policy terms and network gating notes remain accurate.
+1. Replace legacy sync commands with  in user docs.
+2. Replace legacy export wording with .agentplane/tasks.json.
+3. Ensure conflict policy terms and network gating notes remain accurate.
 
 ## Verify Steps
 

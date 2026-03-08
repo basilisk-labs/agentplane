@@ -85,7 +85,10 @@ In-scope: обработка ошибок commit wrapper. Out-of-scope: изме
 
 ## Findings
 
-### Decisions\n- Сначала показываем короткий корень причины, затем hint на полный лог.\n### Implementation Notes\n- Заполняется после реализации.
+### Decisions
+- Сначала показываем короткий корень причины, затем hint на полный лог.
+### Implementation Notes
+- Заполняется после реализации.
 
 ## Risks
 

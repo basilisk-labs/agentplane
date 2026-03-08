@@ -67,7 +67,11 @@ packages/agentplane/src/ports/**, packages/agentplane/src/adapters/**, minimal w
 
 ## Plan
 
-1) Add ports interfaces: FileSystemPort, GitPort, TaskBackendPort, ClockPort.\n2) Add local adapters for Node fs and existing GitContext/task backend.\n3) Add a tiny adapter composition helper (buildAdapters) for tests and commands.\n4) Add minimal unit tests for adapters where practical.\n5) Run bun run lint and bun run test:full.
+1) Add ports interfaces: FileSystemPort, GitPort, TaskBackendPort, ClockPort.
+2) Add local adapters for Node fs and existing GitContext/task backend.
+3) Add a tiny adapter composition helper (buildAdapters) for tests and commands.
+4) Add minimal unit tests for adapters where practical.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

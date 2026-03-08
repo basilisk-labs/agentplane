@@ -85,7 +85,10 @@ In-scope: redmine env parser/messages и связанные call-site в backend
 
 ## Findings
 
-### Decisions\n- Ошибки должны ссылаться на конкретные AGENTPLANE_REDMINE_* ключи.\n### Implementation Notes\n- Заполняется после реализации.
+### Decisions
+- Ошибки должны ссылаться на конкретные AGENTPLANE_REDMINE_* ключи.
+### Implementation Notes
+- Заполняется после реализации.
 
 ## Risks
 

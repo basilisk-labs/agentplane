@@ -46,7 +46,9 @@ Add tests to ensure `agentplane task scaffold` includes `## Verify Steps` (with 
 
 ## Plan
 
-1) Extend existing scaffold test to assert Verify Steps section + placeholder marker.\n2) Assert Verification section exists and includes BEGIN/END markers.\n3) Run bun run test:cli:core.
+1) Extend existing scaffold test to assert Verify Steps section + placeholder marker.
+2) Assert Verification section exists and includes BEGIN/END markers.
+3) Run bun run test:cli:core.
 
 ## Verify Steps
 

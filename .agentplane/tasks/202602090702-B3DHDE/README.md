@@ -64,11 +64,18 @@ Add focused unit tests for low-coverage core modules to raise global branch cove
 
 ## Scope
 
-- packages/core/src/tasks/task-doc.ts (+ tests)\n- packages/agentplane/src/cli/parse/lifecycle.ts (+ tests)\n- packages/agentplane/src/meta/release.ts (+ tests)
+- packages/core/src/tasks/task-doc.ts (+ tests)
+- packages/agentplane/src/cli/parse/lifecycle.ts (+ tests)
+- packages/agentplane/src/meta/release.ts (+ tests)
 
 ## Plan
 
-1) Identify lowest branch-coverage files from coverage-final.json.\n2) Add unit tests hitting key branches in task-doc.ts (normalize, split headings, merge, setMarkdownSection).\n3) Add unit tests for lifecycle parser covering error branches and flag parsing.\n4) Add unit tests for release metadata resolving git root and tag lookup branches.\n5) Run bun run coverage and ensure branch threshold passes.\n6) Run bun run test:full.
+1) Identify lowest branch-coverage files from coverage-final.json.
+2) Add unit tests hitting key branches in task-doc.ts (normalize, split headings, merge, setMarkdownSection).
+3) Add unit tests for lifecycle parser covering error branches and flag parsing.
+4) Add unit tests for release metadata resolving git root and tag lookup branches.
+5) Run bun run coverage and ensure branch threshold passes.
+6) Run bun run test:full.
 
 ## Verify Steps
 

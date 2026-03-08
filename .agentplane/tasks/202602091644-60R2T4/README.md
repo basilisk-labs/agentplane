@@ -70,7 +70,12 @@ packages/agentplane/src/commands/upgrade.* and assets/AGENTS anchors. No semanti
 
 ## Plan
 
-1) Extend upgrade spec with --agent/--auto modes (default to --agent).\n2) Implement --agent mode: compute manifest diff and write artifacts under .agentplane/.upgrade/agent/ (plan.md, constraints.md, report.md skeleton, optional diff.patch).\n3) Implement --auto mode: only add missing managed files, update anchors, and apply canonical section updates; never merge arbitrary user text.\n4) Ensure upgrade still respects allow/deny manifest and never touches tasks/backends/config.\n5) Add tests for both modes.\n6) Run bun run lint and bun run test:full.
+1) Extend upgrade spec with --agent/--auto modes (default to --agent).
+2) Implement --agent mode: compute manifest diff and write artifacts under .agentplane/.upgrade/agent/ (plan.md, constraints.md, report.md skeleton, optional diff.patch).
+3) Implement --auto mode: only add missing managed files, update anchors, and apply canonical section updates; never merge arbitrary user text.
+4) Ensure upgrade still respects allow/deny manifest and never touches tasks/backends/config.
+5) Add tests for both modes.
+6) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

@@ -107,4 +107,40 @@ Hello world.
     expect(rendered).toContain('to: "DOING"');
     expect(rendered).toContain('note: "Start: work in progress."');
   });
+
+  it("renders multiline human-facing frontmatter as YAML block scalars", () => {
+    const parsed = parseTaskReadme(sample);
+    const withMultiline = {
+      ...parsed.frontmatter,
+      description: String.raw`Line one\n\nLine two`,
+      comments: [
+        {
+          author: "CODER",
+          body: String.raw`Start line 1\nStart line 2\nStart line 3`,
+        },
+      ],
+      verification: {
+        state: "ok",
+        updated_at: "2026-03-08T13:00:00.000Z",
+        updated_by: "TESTER",
+        note: String.raw`First line\nSecond line\nThird line`,
+      },
+    };
+
+    const rendered = renderTaskReadme(withMultiline as Record<string, unknown>, parsed.body);
+    expect(rendered).toContain("description: |-");
+    expect(rendered).toContain("  Line one");
+    expect(rendered).toContain("  Line two");
+    expect(rendered).toContain("body: |-");
+    expect(rendered).toContain("note: |-");
+
+    const roundtrip = parseTaskReadme(rendered).frontmatter;
+    expect(roundtrip.description).toBe("Line one\n\nLine two");
+    expect((roundtrip.comments as Record<string, unknown>[])[0]?.body).toBe(
+      "Start line 1\nStart line 2\nStart line 3",
+    );
+    expect((roundtrip.verification as Record<string, unknown>).note).toBe(
+      "First line\nSecond line\nThird line",
+    );
+  });
 });

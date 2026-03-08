@@ -44,7 +44,9 @@ Added block/finish commands, enabled env task-id fallback, and expanded CLI cove
 
 ## Scope
 
-- Implement block and finish CLI flows with comment validation and status updates.\n- Add env-based task id fallback for start/block/finish.\n- Expand CLI tests to meet coverage gates.
+- Implement block and finish CLI flows with comment validation and status updates.
+- Add env-based task id fallback for start/block/finish.
+- Expand CLI tests to meet coverage gates.
 
 ## Plan
 

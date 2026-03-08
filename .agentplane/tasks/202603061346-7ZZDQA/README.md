@@ -18,7 +18,31 @@ verification:
   state: "ok"
   updated_at: "2026-03-06T13:58:23.088Z"
   updated_by: "CODER"
-  note: "Command: git diff -- website/docusaurus.config.ts website/src/css/custom.css website/src/data/homepageContent.ts website/src/pages/index.tsx website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/blog/2026-02-26-release-0-2-25-safer-commits-cleaner-release-flow.mdx website/blog/2026-03-06-release-0-3-0-policy-gateway-and-release-discipline.mdx website/static/img/blog/release-0-2-25-kandinsky-agentplane.svg website/static/img/blog/release-0-3-0-kandinsky-agentplane.svg\nResult: pass\nEvidence: docs shell, homepage, blog index, release post covers, and navbar active-state changes are all present in the staged scope\nScope: website config, global CSS, homepage, blog index, blog posts, static blog artwork\n\nCommand: bun run docs:site:generate\nResult: pass\nEvidence: generated docs/reference/generated-reference.mdx without drift\nScope: generated website reference content\n\nCommand: bun run --cwd website typecheck\nResult: pass\nEvidence: tsc completed without errors\nScope: website TypeScript surface\n\nCommand: bun run --cwd website build\nResult: pass\nEvidence: Docusaurus build completed and generated static files in build\nScope: production website build\n\nCommand: node scripts/check-design-language.mjs\nResult: pass\nEvidence: DESIGN.md compliance check passed\nScope: website visual language contract"
+  note: |-
+    Command: git diff -- website/docusaurus.config.ts website/src/css/custom.css website/src/data/homepageContent.ts website/src/pages/index.tsx website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/blog/2026-02-26-release-0-2-25-safer-commits-cleaner-release-flow.mdx website/blog/2026-03-06-release-0-3-0-policy-gateway-and-release-discipline.mdx website/static/img/blog/release-0-2-25-kandinsky-agentplane.svg website/static/img/blog/release-0-3-0-kandinsky-agentplane.svg
+    Result: pass
+    Evidence: docs shell, homepage, blog index, release post covers, and navbar active-state changes are all present in the staged scope
+    Scope: website config, global CSS, homepage, blog index, blog posts, static blog artwork
+    
+    Command: bun run docs:site:generate
+    Result: pass
+    Evidence: generated docs/reference/generated-reference.mdx without drift
+    Scope: generated website reference content
+    
+    Command: bun run --cwd website typecheck
+    Result: pass
+    Evidence: tsc completed without errors
+    Scope: website TypeScript surface
+    
+    Command: bun run --cwd website build
+    Result: pass
+    Evidence: Docusaurus build completed and generated static files in build
+    Scope: production website build
+    
+    Command: node scripts/check-design-language.mjs
+    Result: pass
+    Evidence: DESIGN.md compliance check passed
+    Scope: website visual language contract
 commit:
   hash: "a1d3418b4592ad9606d9f95668875eedafb3e0ea"
   message: "✨ 7ZZDQA website: refine docs shell and homepage copy"
@@ -42,7 +66,31 @@ events:
     at: "2026-03-06T13:58:23.088Z"
     author: "CODER"
     state: "ok"
-    note: "Command: git diff -- website/docusaurus.config.ts website/src/css/custom.css website/src/data/homepageContent.ts website/src/pages/index.tsx website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/blog/2026-02-26-release-0-2-25-safer-commits-cleaner-release-flow.mdx website/blog/2026-03-06-release-0-3-0-policy-gateway-and-release-discipline.mdx website/static/img/blog/release-0-2-25-kandinsky-agentplane.svg website/static/img/blog/release-0-3-0-kandinsky-agentplane.svg\nResult: pass\nEvidence: docs shell, homepage, blog index, release post covers, and navbar active-state changes are all present in the staged scope\nScope: website config, global CSS, homepage, blog index, blog posts, static blog artwork\n\nCommand: bun run docs:site:generate\nResult: pass\nEvidence: generated docs/reference/generated-reference.mdx without drift\nScope: generated website reference content\n\nCommand: bun run --cwd website typecheck\nResult: pass\nEvidence: tsc completed without errors\nScope: website TypeScript surface\n\nCommand: bun run --cwd website build\nResult: pass\nEvidence: Docusaurus build completed and generated static files in build\nScope: production website build\n\nCommand: node scripts/check-design-language.mjs\nResult: pass\nEvidence: DESIGN.md compliance check passed\nScope: website visual language contract"
+    note: |-
+      Command: git diff -- website/docusaurus.config.ts website/src/css/custom.css website/src/data/homepageContent.ts website/src/pages/index.tsx website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css website/blog/2026-02-26-release-0-2-25-safer-commits-cleaner-release-flow.mdx website/blog/2026-03-06-release-0-3-0-policy-gateway-and-release-discipline.mdx website/static/img/blog/release-0-2-25-kandinsky-agentplane.svg website/static/img/blog/release-0-3-0-kandinsky-agentplane.svg
+      Result: pass
+      Evidence: docs shell, homepage, blog index, release post covers, and navbar active-state changes are all present in the staged scope
+      Scope: website config, global CSS, homepage, blog index, blog posts, static blog artwork
+      
+      Command: bun run docs:site:generate
+      Result: pass
+      Evidence: generated docs/reference/generated-reference.mdx without drift
+      Scope: generated website reference content
+      
+      Command: bun run --cwd website typecheck
+      Result: pass
+      Evidence: tsc completed without errors
+      Scope: website TypeScript surface
+      
+      Command: bun run --cwd website build
+      Result: pass
+      Evidence: Docusaurus build completed and generated static files in build
+      Scope: production website build
+      
+      Command: node scripts/check-design-language.mjs
+      Result: pass
+      Evidence: DESIGN.md compliance check passed
+      Scope: website visual language contract
   -
     type: "status"
     at: "2026-03-06T14:00:13.831Z"

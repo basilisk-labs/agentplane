@@ -42,7 +42,9 @@ Implement agentplane upgrade to fetch a release bundle, verify sha256, support 2
 
 ## Scope
 
-- Add upgrade command with GitHub release downloads, checksum validation, and safe bundle extraction.\n- Apply bundle files to AGENTS/.agentplane with default backups and 202601041253-00001 reporting.\n- Add CLI help text and upgrade tests using local bundles.
+- Add upgrade command with GitHub release downloads, checksum validation, and safe bundle extraction.
+- Apply bundle files to AGENTS/.agentplane with default backups and 202601041253-00001 reporting.
+- Add CLI help text and upgrade tests using local bundles.
 
 ## Plan
 

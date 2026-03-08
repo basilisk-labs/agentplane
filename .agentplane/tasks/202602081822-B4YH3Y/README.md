@@ -65,11 +65,18 @@ Pilot spec/handler split for heavy commands (commit and task new): move CommandS
 
 ## Scope
 
-- packages/agentplane/src/commands/commit.spec.ts (new)\n- packages/agentplane/src/commands/commit.command.ts (refactor)\n- packages/agentplane/src/commands/task/new.spec.ts (new)\n- packages/agentplane/src/commands/task/new.command.ts (refactor)\n- packages/agentplane/src/cli/run-cli/command-catalog.ts (update imports)
+- packages/agentplane/src/commands/commit.spec.ts (new)
+- packages/agentplane/src/commands/commit.command.ts (refactor)
+- packages/agentplane/src/commands/task/new.spec.ts (new)
+- packages/agentplane/src/commands/task/new.command.ts (refactor)
+- packages/agentplane/src/cli/run-cli/command-catalog.ts (update imports)
 
 ## Plan
 
-1) Split commit: move commitSpec + types into commit.spec.ts; keep makeRunCommitHandler in commit.command.ts.\n2) Split task new similarly.\n3) Update command-catalog.ts to import specs from *.spec.ts and handlers from *.command.ts.\n4) Run bun run lint; bun run test:cli:core; bun run typecheck.
+1) Split commit: move commitSpec + types into commit.spec.ts; keep makeRunCommitHandler in commit.command.ts.
+2) Split task new similarly.
+3) Update command-catalog.ts to import specs from *.spec.ts and handlers from *.command.ts.
+4) Run bun run lint; bun run test:cli:core; bun run typecheck.
 
 ## Verify Steps
 
@@ -96,7 +103,8 @@ Revert split and restore single-module exports if import graph breaks.
 
 ## Findings
 
-### Approvals / Overrides\n- 2026-02-08: no overrides.
+### Approvals / Overrides
+- 2026-02-08: no overrides.
 
 ## Risks
 

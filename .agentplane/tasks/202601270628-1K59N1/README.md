@@ -33,7 +33,9 @@ Create ROADMAP.md (repo root) describing the full work breakdown to port the cur
 
 ## Scope
 
-- Add a detailed roadmap in ROADMAP.md covering: init, task lifecycle, guard/commit/hooks, branch/pr/integrate/finish, backends (local + redmine), recipes toolchain, viewer, upgrade, CI/release.\n- Capture v1 constraints: Node 20+, TS+ESM, offline init, explicit upgrade, .agentplane (breaking change).\n- No implementation of the Node port in this task.
+- Add a detailed roadmap in ROADMAP.md covering: init, task lifecycle, guard/commit/hooks, branch/pr/integrate/finish, backends (local + redmine), recipes toolchain, viewer, upgrade, CI/release.
+- Capture v1 constraints: Node 20+, TS+ESM, offline init, explicit upgrade, .agentplane (breaking change).
+- No implementation of the Node port in this task.
 
 ## Plan
 

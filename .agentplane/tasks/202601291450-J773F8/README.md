@@ -40,7 +40,8 @@ Add agentplane-recipes as a git submodule in the repo root.
 
 ## Scope
 
-- Add submodule at agentplane-recipes/ pointing to basilisk-labs/agentplane-recipes\n- Remove ignore rule that blocks submodule tracking
+- Add submodule at agentplane-recipes/ pointing to basilisk-labs/agentplane-recipes
+- Remove ignore rule that blocks submodule tracking
 
 ## Plan
 

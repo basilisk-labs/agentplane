@@ -41,7 +41,8 @@ User provided a full replacement policy block for AGENTS.md and requested a comp
 
 ## Scope
 
-- Replace AGENTS.md content with the provided prod-v1.0 policy text.\n- Keep all formatting consistent with Prettier.
+- Replace AGENTS.md content with the provided prod-v1.0 policy text.
+- Keep all formatting consistent with Prettier.
 
 ## Plan
 

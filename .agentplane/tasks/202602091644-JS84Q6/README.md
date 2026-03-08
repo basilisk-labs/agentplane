@@ -69,7 +69,11 @@ packages/agentplane/src/policy/** (new engine wrapper), packages/agentplane/src/
 
 ## Plan
 
-1) Add PolicyEngine with evaluate(actionId, ctx)->Decision.\n2) Define a minimal actionId set for the pilot commands.\n3) Wire engine into usecases (no CLI-side checks).\n4) Add unit tests for PolicyEngine decisions and formatting.\n5) Run bun run lint and bun run test:full.
+1) Add PolicyEngine with evaluate(actionId, ctx)->Decision.
+2) Define a minimal actionId set for the pilot commands.
+3) Wire engine into usecases (no CLI-side checks).
+4) Add unit tests for PolicyEngine decisions and formatting.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

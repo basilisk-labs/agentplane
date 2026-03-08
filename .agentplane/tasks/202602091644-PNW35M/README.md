@@ -69,7 +69,11 @@ packages/agentplane/src/commands/doctor* and supporting checks; integrate with e
 
 ## Plan
 
-1) Add doctor command spec + handler.\n2) Implement checks: forbidden imports (reuse guardrail logic), AGENTS anchor presence, tasks index schema presence, framework manifest sanity.\n3) Implement --fix for safe-only operations (anchors insertion, index rebuild hook if available).\n4) Add tests for doctor output and exit codes.\n5) Run bun run lint and bun run test:full.
+1) Add doctor command spec + handler.
+2) Implement checks: forbidden imports (reuse guardrail logic), AGENTS anchor presence, tasks index schema presence, framework manifest sanity.
+3) Implement --fix for safe-only operations (anchors insertion, index rebuild hook if available).
+4) Add tests for doctor output and exit codes.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

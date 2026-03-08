@@ -96,7 +96,12 @@ In-scope: задачи 1-11 roadmap и их интеграция. Out-of-scope: 
 
 ## Findings
 
-### Decisions\n- Execution profile escalates approvals, не capability.\n- Redmine config contract перенесён в env-first модель.\n- Init presets берутся из core единого источника.\n### Implementation Notes\n- Эпик закрывается после DONE по всем зависимым задачам.
+### Decisions
+- Execution profile escalates approvals, не capability.
+- Redmine config contract перенесён в env-first модель.
+- Init presets берутся из core единого источника.
+### Implementation Notes
+- Эпик закрывается после DONE по всем зависимым задачам.
 
 ## Risks
 

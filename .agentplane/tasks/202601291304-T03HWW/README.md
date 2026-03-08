@@ -40,7 +40,8 @@ Remove the accidental submodule tracking of agentplane-recipes in the main repo 
 
 ## Scope
 
-- Remove gitlink entry for agentplane-recipes from the main repo index\n- Add ignore rule to keep the nested repo out of version control
+- Remove gitlink entry for agentplane-recipes from the main repo index
+- Add ignore rule to keep the nested repo out of version control
 
 ## Plan
 

@@ -42,7 +42,9 @@ Speed up local git hooks by moving full ci to pre-push and keeping pre-commit fa
 
 ## Scope
 
-- Update lefthook pre-commit to run format + lint only.\n- Add pre-push hook to run full ci.\n- Update code-quality docs.
+- Update lefthook pre-commit to run format + lint only.
+- Add pre-push hook to run full ci.
+- Update code-quality docs.
 
 ## Plan
 

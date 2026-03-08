@@ -42,7 +42,9 @@ Allow recipe install to resolve ids via the cached remote index.
 
 ## Scope
 
-- Extend recipe install to accept id and URL sources.\n- Resolve ids via the cached remote index and verify checksums.\n- Add tests for id-based installs using a cached index.
+- Extend recipe install to accept id and URL sources.
+- Resolve ids via the cached remote index and verify checksums.
+- Add tests for id-based installs using a cached index.
 
 ## Plan
 

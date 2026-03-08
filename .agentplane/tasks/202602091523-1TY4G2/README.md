@@ -69,7 +69,10 @@ packages/agentplane/assets/framework.manifest.json, packages/agentplane/src/comm
 
 ## Plan
 
-1. Update manifest to include only AGENTS.md and .agentplane/agents/**.\n2. Update upgrade allow/deny checks to enforce the same (deny by default).\n3. Add tests: does not touch tasks.json/tasks/**; does not touch backends/**; rejects unknown manifest paths.\n4. bun run lint + bun run test:full.
+1. Update manifest to include only AGENTS.md and .agentplane/agents/**.
+2. Update upgrade allow/deny checks to enforce the same (deny by default).
+3. Add tests: does not touch tasks.json/tasks/**; does not touch backends/**; rejects unknown manifest paths.
+4. bun run lint + bun run test:full.
 
 ## Verify Steps
 

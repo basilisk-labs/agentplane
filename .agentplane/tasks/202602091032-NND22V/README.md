@@ -67,7 +67,11 @@ Publish v0.2.3 to npm (and tag the repo) with the upgrade download timeout fix.
 
 ## Plan
 
-1. Add release notes for v0.2.3.\n2. Bump package versions to 0.2.3.\n3. Run release note/version check scripts.\n4. Run bun run test:full.\n5. Commit and tag v0.2.3; push main + tag.
+1. Add release notes for v0.2.3.
+2. Bump package versions to 0.2.3.
+3. Run release note/version check scripts.
+4. Run bun run test:full.
+5. Commit and tag v0.2.3; push main + tag.
 
 ## Verify Steps
 

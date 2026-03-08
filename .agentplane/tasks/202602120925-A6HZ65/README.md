@@ -66,7 +66,9 @@ id_source: "generated"
 
 ## Plan
 
-1. Thread resolved project/config cache into task context creation.\n2. Extend backend loader to accept preloaded resolved/config.\n3. Verify no command behavior regressions via core task/branch CLI suites.
+1. Thread resolved project/config cache into task context creation.
+2. Extend backend loader to accept preloaded resolved/config.
+3. Verify no command behavior regressions via core task/branch CLI suites.
 
 ## Verify Steps
 

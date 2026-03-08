@@ -65,11 +65,14 @@ Add runtime guard in CommandRegistry.register() to reject duplicate command ids 
 
 ## Scope
 
-- packages/agentplane/src/cli/spec/registry.ts\n- packages/agentplane/src/cli/spec/registry.test.ts (new)
+- packages/agentplane/src/cli/spec/registry.ts
+- packages/agentplane/src/cli/spec/registry.test.ts (new)
 
 ## Plan
 
-1) Update CommandRegistry to track registered id strings and throw CliError(E_INTERNAL) on duplicates.\n2) Add unit test ensuring duplicate registration throws.\n3) Run bun run lint; bun run test:agentplane; bun run typecheck.
+1) Update CommandRegistry to track registered id strings and throw CliError(E_INTERNAL) on duplicates.
+2) Add unit test ensuring duplicate registration throws.
+3) Run bun run lint; bun run test:agentplane; bun run typecheck.
 
 ## Verify Steps
 
@@ -96,7 +99,8 @@ Revert the commit if a caller relies on duplicate ids; update those call sites i
 
 ## Findings
 
-### Approvals / Overrides\n- 2026-02-08: no overrides.
+### Approvals / Overrides
+- 2026-02-08: no overrides.
 
 ## Risks
 

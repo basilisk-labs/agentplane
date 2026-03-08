@@ -111,7 +111,8 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T21:00:24.599Z, excerpt_
 
 ## Findings
 
-- Keep this task intentionally narrow: extend the read-only inspection set, do not reopen the freshness algorithm itself.\n- Prefer command-shape helpers over ad-hoc string checks so future additions remain reviewable.
+- Keep this task intentionally narrow: extend the read-only inspection set, do not reopen the freshness algorithm itself.
+- Prefer command-shape helpers over ad-hoc string checks so future additions remain reviewable.
 
 ## Risks
 

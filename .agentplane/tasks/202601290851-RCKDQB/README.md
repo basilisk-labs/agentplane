@@ -42,7 +42,9 @@ Added scoped CI scripts for per-package checks (format/lint/typecheck/tests) plu
 
 ## Scope
 
-- Add @scripts/ci-scope.mjs to run scoped format/lint/typecheck/tests per package scope.\n- Add scoped scripts in @package.json (ci:agentplane, ci:core, ci:recipes, ci:spec, ci:testkit).\n- Document scoped checks in @docs/code-quality.mdx.
+- Add @scripts/ci-scope.mjs to run scoped format/lint/typecheck/tests per package scope.
+- Add scoped scripts in @package.json (ci:agentplane, ci:core, ci:recipes, ci:spec, ci:testkit).
+- Document scoped checks in @docs/code-quality.mdx.
 
 ## Plan
 

@@ -69,7 +69,9 @@ Commit the regenerated CLI reference required by pre-push after recent CLI help/
 
 ## Plan
 
-1. Regenerate and commit docs/user/cli-reference.generated.mdx so the CLI docs freshness gate passes.\n2. Re-run the local gate relevant to the publish path.\n3. Push main and confirm Docs CI plus Pages Deploy succeeded for the current site.
+1. Regenerate and commit docs/user/cli-reference.generated.mdx so the CLI docs freshness gate passes.
+2. Re-run the local gate relevant to the publish path.
+3. Push main and confirm Docs CI plus Pages Deploy succeeded for the current site.
 
 ## Verify Steps
 

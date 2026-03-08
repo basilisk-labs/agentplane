@@ -41,7 +41,11 @@ Redmine must be optional and enabled via recipes; the recipe needs a self-contai
 
 ## Scope
 
-Recipe slug: redmine-backend.\nScenarios: install (copy backend files + set config), disable (switch to local backend), status (show current backend + env), sync-pull (agentctl sync redmine --direction pull), sync-push (agentctl sync redmine --direction push --yes), verify-connection (ping Redmine API).\nInputs schema: redmine_url, api_key, project_id, assignee_id (optional), owner_agent (optional), status_map, custom_fields, cache_dir, conflict_policy, confirm_push.\nOutputs: .agent-plane/backends/redmine/backend.json, .agent-plane/backends/redmine/backend.py, updated .agent-plane/config.json, run artifacts under .agent-plane/.runs/<run_id>/artifacts/*.\nMini-CLI: node or python runner with commands (install|disable|status|sync|verify) and --json output; errors follow RECIPES.md format; exit non-zero on failure.
+Recipe slug: redmine-backend.
+Scenarios: install (copy backend files + set config), disable (switch to local backend), status (show current backend + env), sync-pull (agentctl sync redmine --direction pull), sync-push (agentctl sync redmine --direction push --yes), verify-connection (ping Redmine API).
+Inputs schema: redmine_url, api_key, project_id, assignee_id (optional), owner_agent (optional), status_map, custom_fields, cache_dir, conflict_policy, confirm_push.
+Outputs: .agent-plane/backends/redmine/backend.json, .agent-plane/backends/redmine/backend.py, updated .agent-plane/config.json, run artifacts under .agent-plane/.runs/<run_id>/artifacts/*.
+Mini-CLI: node or python runner with commands (install|disable|status|sync|verify) and --json output; errors follow RECIPES.md format; exit non-zero on failure.
 
 ## Plan
 

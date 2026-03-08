@@ -43,11 +43,24 @@ Refactor backends/task-backend/shared.ts into smaller modules with stable export
 
 ## Scope
 
-In scope:\n- packages/agentplane/src/backends/task-backend/shared.ts (split into multiple files)\n- New modules under packages/agentplane/src/backends/task-backend/shared/\n- Import rewires across the codebase (no public API changes)\n\nOut of scope:\n- Behavior changes\n- CLI changes\n- Task backend semantics changes
+In scope:
+- packages/agentplane/src/backends/task-backend/shared.ts (split into multiple files)
+- New modules under packages/agentplane/src/backends/task-backend/shared/
+- Import rewires across the codebase (no public API changes)
+
+Out of scope:
+- Behavior changes
+- CLI changes
+- Task backend semantics changes
 
 ## Plan
 
-Refactor: split packages/agentplane/src/backends/task-backend/shared.ts into smaller modules under backends/task-backend/shared/ and keep shared.ts as a stable re-export layer.\n\nSteps:\n1) Extract cohesive groups (types/constants, id/doc helpers, doc_updated_by resolution, misc utils, concurrency utils, backend errors).\n2) Keep exported names stable.\n3) Verify: bun run typecheck; bun run lint; bun run test:full.
+Refactor: split packages/agentplane/src/backends/task-backend/shared.ts into smaller modules under backends/task-backend/shared/ and keep shared.ts as a stable re-export layer.
+
+Steps:
+1) Extract cohesive groups (types/constants, id/doc helpers, doc_updated_by resolution, misc utils, concurrency utils, backend errors).
+2) Keep exported names stable.
+3) Verify: bun run typecheck; bun run lint; bun run test:full.
 
 ## Verify Steps
 

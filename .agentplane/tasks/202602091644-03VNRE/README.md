@@ -69,7 +69,11 @@ packages/agentplane/src/backends/task-backend/** and task-index module; add a re
 
 ## Plan
 
-1) Design tasks-index.v2 schema: byId/byPath, schema_version=2.\n2) Implement load/save for v2 while keeping v1 read compat.\n3) Add rebuild-index usecase/command and unit tests.\n4) Wire doctor --fix to call rebuild-index when safe.\n5) Run bun run lint and bun run test:full.
+1) Design tasks-index.v2 schema: byId/byPath, schema_version=2.
+2) Implement load/save for v2 while keeping v1 read compat.
+3) Add rebuild-index usecase/command and unit tests.
+4) Wire doctor --fix to call rebuild-index when safe.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

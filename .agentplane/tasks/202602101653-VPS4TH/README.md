@@ -57,11 +57,15 @@ id_source: "generated"
 
 ## Scope
 
-- In scope: release apply command implementation and tests under packages/agentplane.\n- Out of scope: changing CI workflow or bun version.
+- In scope: release apply command implementation and tests under packages/agentplane.
+- Out of scope: changing CI workflow or bun version.
 
 ## Plan
 
-1. Detect bun monorepo by presence of bun.lock at repo root.\n2. In release apply, after version bump (or when already at nextVersion), run bun install (non-frozen, ignore scripts) to update bun.lock.\n3. Stage bun.lock if it exists.\n4. Add/adjust unit tests for release apply behavior; keep tests hermetic.
+1. Detect bun monorepo by presence of bun.lock at repo root.
+2. In release apply, after version bump (or when already at nextVersion), run bun install (non-frozen, ignore scripts) to update bun.lock.
+3. Stage bun.lock if it exists.
+4. Add/adjust unit tests for release apply behavior; keep tests hermetic.
 
 ## Verify Steps
 

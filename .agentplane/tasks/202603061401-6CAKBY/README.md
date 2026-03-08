@@ -18,7 +18,26 @@ verification:
   state: "ok"
   updated_at: "2026-03-06T14:07:58.732Z"
   updated_by: "CODER"
-  note: "Command: git diff -- .agentplane/policy/workflow.direct.md .agentplane/policy/workflow.branch_pr.md packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/commands/task/doc.command.ts\nResult: pass\nEvidence: policy and CLI guidance now explicitly allow batched task-doc updates before approval while keeping approve -> start-ready sequential\nScope: workflow policy and task-doc guidance surfaces\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy gateway and canonical module routing\n\nCommand: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor\nResult: pass\nEvidence: doctor OK with historical warning-only task archive findings\nScope: repository workflow health\n\nCommand: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts\nResult: pass\nEvidence: 67 tests passed across command-guide/help/task CLI surfaces\nScope: CLI guidance/help/task-doc behavior"
+  note: |-
+    Command: git diff -- .agentplane/policy/workflow.direct.md .agentplane/policy/workflow.branch_pr.md packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/commands/task/doc.command.ts
+    Result: pass
+    Evidence: policy and CLI guidance now explicitly allow batched task-doc updates before approval while keeping approve -> start-ready sequential
+    Scope: workflow policy and task-doc guidance surfaces
+    
+    Command: node .agentplane/policy/check-routing.mjs
+    Result: pass
+    Evidence: policy routing OK
+    Scope: policy gateway and canonical module routing
+    
+    Command: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor
+    Result: pass
+    Evidence: doctor OK with historical warning-only task archive findings
+    Scope: repository workflow health
+    
+    Command: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts
+    Result: pass
+    Evidence: 67 tests passed across command-guide/help/task CLI surfaces
+    Scope: CLI guidance/help/task-doc behavior
 commit:
   hash: "3758c4b0bc071ce082c5e10bdc298b65dc023de4"
   message: "📝 6CAKBY policy: allow batched task-doc updates before approval"
@@ -42,7 +61,26 @@ events:
     at: "2026-03-06T14:07:58.732Z"
     author: "CODER"
     state: "ok"
-    note: "Command: git diff -- .agentplane/policy/workflow.direct.md .agentplane/policy/workflow.branch_pr.md packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/commands/task/doc.command.ts\nResult: pass\nEvidence: policy and CLI guidance now explicitly allow batched task-doc updates before approval while keeping approve -> start-ready sequential\nScope: workflow policy and task-doc guidance surfaces\n\nCommand: node .agentplane/policy/check-routing.mjs\nResult: pass\nEvidence: policy routing OK\nScope: policy gateway and canonical module routing\n\nCommand: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor\nResult: pass\nEvidence: doctor OK with historical warning-only task archive findings\nScope: repository workflow health\n\nCommand: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts\nResult: pass\nEvidence: 67 tests passed across command-guide/help/task CLI surfaces\nScope: CLI guidance/help/task-doc behavior"
+    note: |-
+      Command: git diff -- .agentplane/policy/workflow.direct.md .agentplane/policy/workflow.branch_pr.md packages/agentplane/src/cli/command-guide.ts packages/agentplane/src/commands/task/doc.command.ts
+      Result: pass
+      Evidence: policy and CLI guidance now explicitly allow batched task-doc updates before approval while keeping approve -> start-ready sequential
+      Scope: workflow policy and task-doc guidance surfaces
+      
+      Command: node .agentplane/policy/check-routing.mjs
+      Result: pass
+      Evidence: policy routing OK
+      Scope: policy gateway and canonical module routing
+      
+      Command: AGENTPLANE_DEV_ALLOW_STALE_DIST=1 agentplane doctor
+      Result: pass
+      Evidence: doctor OK with historical warning-only task archive findings
+      Scope: repository workflow health
+      
+      Command: bunx vitest run packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts
+      Result: pass
+      Evidence: 67 tests passed across command-guide/help/task CLI surfaces
+      Scope: CLI guidance/help/task-doc behavior
   -
     type: "status"
     at: "2026-03-06T14:08:28.820Z"

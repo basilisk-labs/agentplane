@@ -108,7 +108,8 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T21:06:24.422Z, excerpt_
 
 ## Findings
 
-- Assume the custom blog landing should present the 0.3.x line in the requested top-down order: 0.3.0, 0.3.1, 0.3.2.\n- Keep the liquid-glass effect compatible with the current design checker by avoiding radius and box-shadow changes unless the checker itself is intentionally revised.
+- Assume the custom blog landing should present the 0.3.x line in the requested top-down order: 0.3.0, 0.3.1, 0.3.2.
+- Keep the liquid-glass effect compatible with the current design checker by avoiding radius and box-shadow changes unless the checker itself is intentionally revised.
 
 ## Risks
 

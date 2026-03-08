@@ -47,7 +47,10 @@ packages/agentplane/src/commands/hooks/index.ts + hook CLI tests.
 
 ## Plan
 
-1) In hooks run commit-msg, load config and call validateCommitSubject.\n2) When AGENTPLANE_TASK_ID is unset, select a matching task based on suffix occurrence before validating.\n3) Update hook tests to cover anti-generic rejection (e.g., '✨ ABCDEF update').\n4) Run bun run test:cli:core.
+1) In hooks run commit-msg, load config and call validateCommitSubject.
+2) When AGENTPLANE_TASK_ID is unset, select a matching task based on suffix occurrence before validating.
+3) Update hook tests to cover anti-generic rejection (e.g., '✨ ABCDEF update').
+4) Run bun run test:cli:core.
 
 ## Verify Steps
 

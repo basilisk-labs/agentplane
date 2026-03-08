@@ -45,7 +45,9 @@ In scope: per-command context bootstrap (CommandContext), memoized Git facade (G
 
 ## Plan
 
-1) Complete dependent tasks: CS7KA9 (write-if-changed), ZXJ9M4 (CommandContext), JBHZSB (GitContext), B7WC12 (TaskStore), 5Z7C2Y (normalizeTasks), JRBN0P (batch APIs), G8K609 (stable writes), 96MNE3 (tests).\n2) Confirm CI-equivalent verify commands pass (typecheck, lint, test:agentplane).\n3) Mark epic done once all deps are DONE.
+1) Complete dependent tasks: CS7KA9 (write-if-changed), ZXJ9M4 (CommandContext), JBHZSB (GitContext), B7WC12 (TaskStore), 5Z7C2Y (normalizeTasks), JRBN0P (batch APIs), G8K609 (stable writes), 96MNE3 (tests).
+2) Confirm CI-equivalent verify commands pass (typecheck, lint, test:agentplane).
+3) Mark epic done once all deps are DONE.
 
 ## Verify Steps
 

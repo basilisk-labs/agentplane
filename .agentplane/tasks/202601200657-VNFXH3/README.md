@@ -34,11 +34,13 @@ description: "Move QA/test planning, release checklists, and docs scaffolding in
 ---
 ## Summary
 
-- Added QA plan, release checklist, and docs scaffold recipes.\n- Refreshed the recipes inventory to include the new recipes.
+- Added QA plan, release checklist, and docs scaffold recipes.
+- Refreshed the recipes inventory to include the new recipes.
 
 ## Scope
 
-- Create recipes for QA/test planning, release checklists, and docs scaffolding.\n- Update the recipes inventory for discovery.
+- Create recipes for QA/test planning, release checklists, and docs scaffolding.
+- Update the recipes inventory for discovery.
 
 ## Plan
 

@@ -91,7 +91,21 @@ No rollback needed: task is read-only and does not change repository code or Git
 
 ## Findings
 
-Findings:\n- Open PRs: #1 (chore: apply safer config defaults), #2 (feat: agent schema validation + tool restrictions + lint CLI).\n- Both PRs are from a fork (isCrossRepository=true) and are currently merge-conflicting (mergeable=CONFLICTING, mergeStateStatus=DIRTY).\n- Both touch >300 files (1080+), so GitHub diff endpoint returns HTTP 406 (diff too_large); signals the branches are based on an old repo state and include many unrelated historical changes (notably .agent-plane/* plus .agentplane/*).\n- PR #1 adds .agentplane/config.json with status_commit_policy=confirm and finish_auto_status_commit=false (already true on current main via config show).\n- PR #2 adds agent JSON Schema + core validation + CLI lint, but also adds .agentplane/config.json with status_commit_policy=warn and finish_auto_status_commit=true and base_branch=main (regresses current safer defaults).\n\nDecision:\n- Do not merge either PR as-is.\n- PR #1: redundant for current main; close or ask for rebase with a minimal diff if something is still missing.\n- PR #2: concept is useful, but must be rebased and split; current PR bundles massive unrelated changes and regresses config defaults.\n\nNext Steps:\n- If you want to accept PR #2 idea: request contributor to rebase onto current main and submit a focused PR containing only agent schema + lint (no repo history cleanup, no config default regressions).\n- Alternatively, implement agent schema + lint internally as a new task, reusing existing AJV config pattern in packages/core/src/config/config.ts.
+Findings:
+- Open PRs: #1 (chore: apply safer config defaults), #2 (feat: agent schema validation + tool restrictions + lint CLI).
+- Both PRs are from a fork (isCrossRepository=true) and are currently merge-conflicting (mergeable=CONFLICTING, mergeStateStatus=DIRTY).
+- Both touch >300 files (1080+), so GitHub diff endpoint returns HTTP 406 (diff too_large); signals the branches are based on an old repo state and include many unrelated historical changes (notably .agent-plane/* plus .agentplane/*).
+- PR #1 adds .agentplane/config.json with status_commit_policy=confirm and finish_auto_status_commit=false (already true on current main via config show).
+- PR #2 adds agent JSON Schema + core validation + CLI lint, but also adds .agentplane/config.json with status_commit_policy=warn and finish_auto_status_commit=true and base_branch=main (regresses current safer defaults).
+
+Decision:
+- Do not merge either PR as-is.
+- PR #1: redundant for current main; close or ask for rebase with a minimal diff if something is still missing.
+- PR #2: concept is useful, but must be rebased and split; current PR bundles massive unrelated changes and regresses config defaults.
+
+Next Steps:
+- If you want to accept PR #2 idea: request contributor to rebase onto current main and submit a focused PR containing only agent schema + lint (no repo history cleanup, no config default regressions).
+- Alternatively, implement agent schema + lint internally as a new task, reusing existing AJV config pattern in packages/core/src/config/config.ts.
 
 ## Risks
 

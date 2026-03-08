@@ -48,7 +48,11 @@ In scope: add TaskBackend.normalizeTasks(); implement LocalBackend.normalizeTask
 
 ## Plan
 
-1) Add TaskBackend.normalizeTasks() optional API + return stats.\n2) Implement LocalBackend.normalizeTasks(): single-pass over task READMEs; parse + render stable; writeTextIfChanged; count changed/scanned; never update timestamps unless file content changes.\n3) Implement RedmineBackend.normalizeTasks(): normalize cache if present, otherwise no-op.\n4) Update task normalize command to call backend.normalizeTasks() when available; keep old fallback for backends without it.\n5) Add/adjust tests if needed; run typecheck, lint, test:agentplane.
+1) Add TaskBackend.normalizeTasks() optional API + return stats.
+2) Implement LocalBackend.normalizeTasks(): single-pass over task READMEs; parse + render stable; writeTextIfChanged; count changed/scanned; never update timestamps unless file content changes.
+3) Implement RedmineBackend.normalizeTasks(): normalize cache if present, otherwise no-op.
+4) Update task normalize command to call backend.normalizeTasks() when available; keep old fallback for backends without it.
+5) Add/adjust tests if needed; run typecheck, lint, test:agentplane.
 
 ## Verify Steps
 

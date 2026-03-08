@@ -2,13 +2,37 @@ import { setMarkdownSection } from "@agentplaneorg/core";
 
 export const TASK_DOC_VERSION_V3 = 3;
 
+function normalizeTaskHumanText(text: string): string {
+  let next = text.replaceAll("\r\n", "\n");
+  const escapedDoubleNewline =
+    next.includes(String.raw`\n\n`) || next.includes(String.raw`\r\n\r\n`);
+  const escapedNewlineMatches = next.match(/\\n/g) ?? [];
+  if (escapedDoubleNewline || escapedNewlineMatches.length >= 2) {
+    next = next.replaceAll(String.raw`\r\n`, "\n").replaceAll(String.raw`\n`, "\n");
+  }
+  return next.trim();
+}
+
+function normalizeTaskHumanInlineText(text: string): string {
+  return normalizeTaskHumanText(text)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(" ");
+}
+
+function ensureTrailingSentence(text: string): string {
+  return /[.!?]$/.test(text) ? text : `${text}.`;
+}
+
 function buildDefaultSummary(opts: { title: string; description: string }): string {
-  return `${opts.title}\n\n${opts.description}`;
+  return `${opts.title}\n\n${normalizeTaskHumanText(opts.description)}`;
 }
 
 function buildDefaultScope(opts: { title: string; description: string }): string {
+  const summary = ensureTrailingSentence(normalizeTaskHumanInlineText(opts.description));
   return [
-    `- In scope: ${opts.description}.`,
+    `- In scope: ${summary}`,
     `- Out of scope: unrelated refactors not required for "${opts.title}".`,
   ].join("\n");
 }

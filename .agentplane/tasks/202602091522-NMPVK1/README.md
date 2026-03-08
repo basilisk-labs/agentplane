@@ -75,7 +75,11 @@ Test/lint layer only (e.g. vitest grep test or eslint rule config + fixtures).
 
 ## Plan
 
-1) Scan codebase for new CliError({... exitCode: <number> ...}).\n2) Define allowlist for the small set of modules where numeric exit codes are permitted (e.g., exit-codes mapping itself / test fixtures).\n3) Add a test that fails if any disallowed hardcoded exitCode literals appear.\n4) Update any remaining offenders to use exitCodeForError(...) or throwCliError helpers.\n5) Run bun run lint and bun run test:full.
+1) Scan codebase for new CliError({... exitCode: <number> ...}).
+2) Define allowlist for the small set of modules where numeric exit codes are permitted (e.g., exit-codes mapping itself / test fixtures).
+3) Add a test that fails if any disallowed hardcoded exitCode literals appear.
+4) Update any remaining offenders to use exitCodeForError(...) or throwCliError helpers.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

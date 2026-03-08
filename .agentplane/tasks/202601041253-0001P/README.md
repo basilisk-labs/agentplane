@@ -34,7 +34,12 @@ comments:
 doc_version: 3
 doc_updated_at: "2026-02-03T12:08:21.951Z"
 doc_updated_by: "agentplane"
-description: "Update @clean.sh so cleanup removes framework-development artifacts (including @docs/) when preparing a reusable snapshot.\\\\n\\\\nAcceptance criteria:\\\\n- Running clean.sh removes @docs/ and other framework-specific files/directories it currently leaves behind.\\\\n- Script remains idempotent and safe (no unscoped rm outside repo root)."
+description: |-
+  Update @clean.sh so cleanup removes framework-development artifacts (including @docs/) when preparing a reusable snapshot.\
+  \
+  Acceptance criteria:\
+  - Running clean.sh removes @docs/ and other framework-specific files/directories it currently leaves behind.\
+  - Script remains idempotent and safe (no unscoped rm outside repo root).
 dirty: false
 ---
 ## Summary

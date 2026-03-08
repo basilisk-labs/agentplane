@@ -59,7 +59,9 @@ Update the documentation information architecture (TOC) and Mintlify navigation 
 
 ## Plan
 
-1. Update docs/index.mdx reading order and links (add CLI reference, move Breaking changes to Start here).\n2. Update docs/docs.json navigation to expose generated CLI reference and match reading order.\n3. Validate JSON and ensure referenced pages exist.
+1. Update docs/index.mdx reading order and links (add CLI reference, move Breaking changes to Start here).
+2. Update docs/docs.json navigation to expose generated CLI reference and match reading order.
+3. Validate JSON and ensure referenced pages exist.
 
 ## Verify Steps
 
@@ -75,7 +77,13 @@ Update the documentation information architecture (TOC) and Mintlify navigation 
 
 ## Findings
 
-### Implementation Notes\n- Updated docs index reading order and links: docs/index.mdx\n- Exposed generated CLI reference in Mintlify nav: docs/docs.json\n\n### Verification\n- docs/docs.json parses as JSON.\n- docs/user/cli-reference.generated.mdx exists.
+### Implementation Notes
+- Updated docs index reading order and links: docs/index.mdx
+- Exposed generated CLI reference in Mintlify nav: docs/docs.json
+
+### Verification
+- docs/docs.json parses as JSON.
+- docs/user/cli-reference.generated.mdx exists.
 
 ## Risks
 

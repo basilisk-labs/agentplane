@@ -63,11 +63,21 @@ id_source: "generated"
 
 ## Scope
 
-In scope:\n- packages/agentplane/src/commands/upgrade.ts\n- packages/agentplane/src/commands/upgrade.release-assets.unit.test.ts\n\nOut of scope:\n- Publishing new GitHub release assets (we support tarball fallback instead).\n- Changing default network approval policy.
+In scope:
+- packages/agentplane/src/commands/upgrade.ts
+- packages/agentplane/src/commands/upgrade.release-assets.unit.test.ts
+
+Out of scope:
+- Publishing new GitHub release assets (we support tarball fallback instead).
+- Changing default network approval policy.
 
 ## Plan
 
-1. Implement tarball_url fallback when expected release assets are missing.\n2. When using tarball_url fallback, ignore non-upgrade paths and only apply AGENTS.md + .agentplane/* allowlist.\n3. Add unit tests for release download resolution (assets vs tarball).\n4. Run lint + full test suite + coverage.\n5. Ship patch release (bump versions + release notes + tag).
+1. Implement tarball_url fallback when expected release assets are missing.
+2. When using tarball_url fallback, ignore non-upgrade paths and only apply AGENTS.md + .agentplane/* allowlist.
+3. Add unit tests for release download resolution (assets vs tarball).
+4. Run lint + full test suite + coverage.
+5. Ship patch release (bump versions + release notes + tag).
 
 ## Verify Steps
 

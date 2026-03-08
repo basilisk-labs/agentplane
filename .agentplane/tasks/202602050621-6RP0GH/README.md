@@ -46,7 +46,11 @@ Extracted upgrade/recipes/scenario command logic into dedicated modules, added C
 
 Move recipes and upgrade command logic out of run-cli.ts into commands/ modules with shared helpers.
 
-- Added  and  for command logic.\n- Added  and .\n- Updated  to delegate to new modules.\n- Added unit tests: , .\n- Updated  to export shared archive helpers.
+- Added  and  for command logic.
+- Added  and .
+- Updated  to delegate to new modules.
+- Added unit tests: , .
+- Updated  to export shared archive helpers.
 
 - Added packages/agentplane/src/commands/recipes.ts and packages/agentplane/src/commands/upgrade.ts for command logic.
 - Added packages/agentplane/src/cli/checksum.ts and packages/agentplane/src/cli/error-map.ts.

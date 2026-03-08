@@ -65,11 +65,15 @@ Introduce a single command catalog as the source of truth and derive both help-f
 
 ## Scope
 
-- packages/agentplane/src/cli/run-cli/command-catalog.ts (new)\n- packages/agentplane/src/cli/run-cli/registry.ts (refactor to use catalog)
+- packages/agentplane/src/cli/run-cli/command-catalog.ts (new)
+- packages/agentplane/src/cli/run-cli/registry.ts (refactor to use catalog)
 
 ## Plan
 
-1) Create command-catalog.ts exporting COMMANDS entries (spec + handler factory).\n2) Refactor buildHelpFastRegistry/buildRegistry to iterate COMMANDS and register specs/handlers.\n3) Keep behavior identical; ensure help handler registration remains last and uses the registry instance.\n4) Run bun run lint; bun run test:cli:core; bun run typecheck.
+1) Create command-catalog.ts exporting COMMANDS entries (spec + handler factory).
+2) Refactor buildHelpFastRegistry/buildRegistry to iterate COMMANDS and register specs/handlers.
+3) Keep behavior identical; ensure help handler registration remains last and uses the registry instance.
+4) Run bun run lint; bun run test:cli:core; bun run typecheck.
 
 ## Verify Steps
 
@@ -96,7 +100,8 @@ Revert the commit to restore manual lists if catalog refactor causes regressions
 
 ## Findings
 
-### Approvals / Overrides\n- 2026-02-08: no overrides.
+### Approvals / Overrides
+- 2026-02-08: no overrides.
 
 ## Risks
 

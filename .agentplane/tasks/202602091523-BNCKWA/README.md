@@ -69,7 +69,11 @@ packages/agentplane/src/commands/upgrade.ts and unit tests around release downlo
 
 ## Plan
 
-1) Inspect current upgrade source selection and GitHub release download logic.\n2) Make local (npm-installed) framework assets the default source; require explicit flags to use GitHub.\n3) If GitHub is used and release assets are missing, either (a) fail with actionable message, or (b) fallback to codeload tar.gz URL (not api.github.com tarball_url) but only if the archive contains framework.manifest.json under assets root.\n4) Add unit tests covering: missing assets behavior; fallback URL builder; redirect handling; manifest-required guard.\n5) Run bun run lint and bun run test:full.
+1) Inspect current upgrade source selection and GitHub release download logic.
+2) Make local (npm-installed) framework assets the default source; require explicit flags to use GitHub.
+3) If GitHub is used and release assets are missing, either (a) fail with actionable message, or (b) fallback to codeload tar.gz URL (not api.github.com tarball_url) but only if the archive contains framework.manifest.json under assets root.
+4) Add unit tests covering: missing assets behavior; fallback URL builder; redirect handling; manifest-required guard.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

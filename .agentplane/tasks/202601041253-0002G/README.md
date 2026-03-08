@@ -33,7 +33,16 @@ comments:
 doc_version: 3
 doc_updated_at: "2026-02-03T12:08:27.295Z"
 doc_updated_by: "agentplane"
-description: "Reduce manual PR bookkeeping by having `agentctl integrate` refresh the tracked PR artifacts on main.\\n\\nAcceptance:\\n- During `python scripts/agentctl.py integrate T-123 ...` (workflow_mode=branch_pr), after merge it updates:\\n  - `docs/workflow/T-123/pr/diffstat.txt` (recomputed for the task branch vs base), and\\n  - `docs/workflow/T-123/README.md` auto-summary block (between `<!-- BEGIN AUTO SUMMARY -->` / `<!-- END AUTO SUMMARY -->`) using the changed files list.\\n- No writes happen to the task branch; updates are only in the main checkout after merge.\\n- Works with `--merge-strategy squash|merge|rebase`.\\n- Update `.agent-plane/agentctl.md` to state `integrate` refreshes these artifacts automatically."
+description: |-
+  Reduce manual PR bookkeeping by having `agentctl integrate` refresh the tracked PR artifacts on main.
+  
+  Acceptance:
+  - During `python scripts/agentctl.py integrate T-123 ...` (workflow_mode=branch_pr), after merge it updates:
+    - `docs/workflow/T-123/pr/diffstat.txt` (recomputed for the task branch vs base), and
+    - `docs/workflow/T-123/README.md` auto-summary block (between `<!-- BEGIN AUTO SUMMARY -->` / `<!-- END AUTO SUMMARY -->`) using the changed files list.
+  - No writes happen to the task branch; updates are only in the main checkout after merge.
+  - Works with `--merge-strategy squash|merge|rebase`.
+  - Update `.agent-plane/agentctl.md` to state `integrate` refreshes these artifacts automatically.
 dirty: false
 ---
 ## Summary

@@ -36,11 +36,15 @@ description: "Deepen core docs pages, add contributing/design principles, and ad
 ---
 ## Summary
 
-- Expand existing core docs pages with deeper explanations.\n- Add contributing and design principles pages.\n- Add backends deep-dive and recipes safety guides.
+- Expand existing core docs pages with deeper explanations.
+- Add contributing and design principles pages.
+- Add backends deep-dive and recipes safety guides.
 
 ## Scope
 
-- Expand architecture/workflow/tasks-and-backends/commands pages.\n- Add contributing and design-principles pages.\n- Add backends and recipes-safety pages and wire into docs navigation.
+- Expand architecture/workflow/tasks-and-backends/commands pages.
+- Add contributing and design-principles pages.
+- Add backends and recipes-safety pages and wire into docs navigation.
 
 ## Plan
 

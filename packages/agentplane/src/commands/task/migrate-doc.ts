@@ -41,6 +41,7 @@ const V3_CANONICAL_ORDER = [
   "Rollback Plan",
   "Findings",
 ] as const;
+const HUMAN_TEXT_SECTIONS = new Set(["summary", "context", "scope", "plan", "findings", "notes"]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
@@ -89,6 +90,18 @@ function renderMarkdownSections(sections: MarkdownSection[]): string {
     .trimEnd();
 }
 
+function normalizeLiteralNewlinesInHumanSection(title: string, text: string): string {
+  if (!HUMAN_TEXT_SECTIONS.has(normalizeSectionKey(title))) return text.trimEnd();
+  let next = text.replaceAll("\r\n", "\n");
+  const escapedDoubleNewline =
+    next.includes(String.raw`\n\n`) || next.includes(String.raw`\r\n\r\n`);
+  const escapedNewlineMatches = next.match(/\\n/g) ?? [];
+  if (escapedDoubleNewline || escapedNewlineMatches.length >= 2) {
+    next = next.replaceAll(String.raw`\r\n`, "\n").replaceAll(String.raw`\n`, "\n");
+  }
+  return next.trimEnd();
+}
+
 function firstSectionText(sections: MarkdownSection[], title: string): string | null {
   const target = normalizeSectionKey(title);
   return sections.find((section) => normalizeSectionKey(section.title) === target)?.text ?? null;
@@ -130,6 +143,7 @@ function migrateDocToV3(opts: { title: string; description: string; doc: string 
       nextText = observationText || defaultText;
     }
     if (nextText === null) continue;
+    nextText = normalizeLiteralNewlinesInHumanSection(title, nextText);
 
     nextSections.push({ title, text: nextText.trimEnd() });
     emitted.add(key);
@@ -236,6 +250,15 @@ async function migrateTaskReadmeDoc(opts: {
       docVersion,
     );
     nextDoc = setMarkdownSection(nextDoc, "Verification", normalizedVerification);
+    for (const sectionTitle of ["Summary", "Context", "Scope", "Plan", "Findings", "Notes"]) {
+      const sectionText = extractDocSection(nextDoc, sectionTitle);
+      if (sectionText == null) continue;
+      nextDoc = setMarkdownSection(
+        nextDoc,
+        sectionTitle,
+        normalizeLiteralNewlinesInHumanSection(sectionTitle, sectionText),
+      );
+    }
   }
   const nextBody = extracted ? mergeTaskDoc(parsed.body, nextDoc) : nextDoc;
 

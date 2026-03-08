@@ -18,7 +18,11 @@ verification:
   state: "ok"
   updated_at: "2026-02-08T06:15:40.153Z"
   updated_by: "ORCHESTRATOR"
-  note: "typecheck: bun run typecheck\\ncli core: bun run test:cli:core\\nfast suite: bun run test:fast\\nResult: OK"
+  note: |-
+    typecheck: bun run typecheck
+    cli core: bun run test:cli:core
+    fast suite: bun run test:fast
+    Result: OK
 commit:
   hash: "c560d5cbaf9375f1a61129998aad790126859ace"
   message: "🚧 6MRYS0 cli: migrate task doc set/show to cli2"
@@ -52,7 +56,13 @@ Out of scope:
 
 ## Plan
 
-Plan:\n1. Define cli2 specs for task doc show and task doc set (subcommands under task doc).\n2. Preserve current behavior for section selection, quiet mode, --file vs inline text, and --updated-by validation.\n3. Wire specs into cli2 registry and remove legacy dispatcher for task doc.\n4. Update run-cli core tests to match cli2 error wording (missing value/unknown option) while preserving semantics.\n5. Run bun run typecheck, bun run test:cli:core, bun run test:fast.\n6. Record verification, commit, finish, and closure commit.
+Plan:
+1. Define cli2 specs for task doc show and task doc set (subcommands under task doc).
+2. Preserve current behavior for section selection, quiet mode, --file vs inline text, and --updated-by validation.
+3. Wire specs into cli2 registry and remove legacy dispatcher for task doc.
+4. Update run-cli core tests to match cli2 error wording (missing value/unknown option) while preserving semantics.
+5. Run bun run typecheck, bun run test:cli:core, bun run test:fast.
+6. Record verification, commit, finish, and closure commit.
 
 ## Verify Steps
 

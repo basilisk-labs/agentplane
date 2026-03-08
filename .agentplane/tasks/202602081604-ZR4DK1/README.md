@@ -91,6 +91,15 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T16:07:07.465Z, excerpt_
 
 ## Findings
 
-Findings:\n- 2026-02-08: PR #1 was OPEN; closed with maintainer comment explaining it is superseded (defaults already in main) and too-large/conflicting diff.\n- 2026-02-08: PR #2 remains OPEN; posted maintainer comment requesting rebase onto current main, splitting into focused PR(s), and avoiding .agentplane/config.json regressions. Comment URL: https://github.com/basilisk-labs/agentplane/pull/2#issuecomment-3867467789\n\nDecision:\n- PR #1: closed.\n- PR #2: keep open; request rebase/split.\n\nNext Steps:\n- Wait for contributor response; if they rebase/split, re-review the smaller PR(s).
+Findings:
+- 2026-02-08: PR #1 was OPEN; closed with maintainer comment explaining it is superseded (defaults already in main) and too-large/conflicting diff.
+- 2026-02-08: PR #2 remains OPEN; posted maintainer comment requesting rebase onto current main, splitting into focused PR(s), and avoiding .agentplane/config.json regressions. Comment URL: https://github.com/basilisk-labs/agentplane/pull/2#issuecomment-3867467789
+
+Decision:
+- PR #1: closed.
+- PR #2: keep open; request rebase/split.
+
+Next Steps:
+- Wait for contributor response; if they rebase/split, re-review the smaller PR(s).
 
 ## Risks

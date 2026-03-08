@@ -44,7 +44,9 @@ id_source: "generated"
 
 ## Plan
 
-1) Locate all occurrences of the current chain-of-thought rule in repo (root + template).\n2) Replace with stricter guidance: no raw internal chain-of-thought; express reasoning via structured artifacts list.\n3) Verify via ripgrep: old phrase removed; new text present in both files.
+1) Locate all occurrences of the current chain-of-thought rule in repo (root + template).
+2) Replace with stricter guidance: no raw internal chain-of-thought; express reasoning via structured artifacts list.
+3) Verify via ripgrep: old phrase removed; new text present in both files.
 
 ## Verify Steps
 

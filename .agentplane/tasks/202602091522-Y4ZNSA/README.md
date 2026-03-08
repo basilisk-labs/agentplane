@@ -68,7 +68,10 @@ Prevent upgrade baseline/state artifacts from showing up in PRs by ignoring .age
 
 ## Plan
 
-1) Inspect current .gitignore.\n2) Add ignore entries for upgrade state/baseline dirs (.agentplane/.upgrade/** and legacy .agentplane/upgrade/**).\n3) Ensure ignores do not hide user-owned tracked files (only upgrade state).\n4) Run bun run lint and bun run test:full (sanity).
+1) Inspect current .gitignore.
+2) Add ignore entries for upgrade state/baseline dirs (.agentplane/.upgrade/** and legacy .agentplane/upgrade/**).
+3) Ensure ignores do not hide user-owned tracked files (only upgrade state).
+4) Run bun run lint and bun run test:full (sanity).
 
 ## Verify Steps
 

@@ -45,7 +45,9 @@ Add minimal scenario runner to execute recipe tools and store run artifacts.
 
 ## Scope
 
-- Implement scenario run command with node/bash tool execution\n- Emit permission warnings from manifest\n- Store stdout/stderr and meta under .agentplane/recipes/<id>/runs
+- Implement scenario run command with node/bash tool execution
+- Emit permission warnings from manifest
+- Store stdout/stderr and meta under .agentplane/recipes/<id>/runs
 
 ## Plan
 

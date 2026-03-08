@@ -40,7 +40,8 @@ Remove ROADMAP.md after completion.
 
 ## Scope
 
-- Delete ROADMAP.md.\n- Commit removal as standalone task.
+- Delete ROADMAP.md.
+- Commit removal as standalone task.
 
 ## Plan
 

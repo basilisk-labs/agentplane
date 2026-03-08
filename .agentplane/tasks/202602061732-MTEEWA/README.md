@@ -47,7 +47,10 @@ packages/agentplane/src/commands/guard/index.ts; add CLI regression tests for ./
 
 ## Plan
 
-1) Replace ad-hoc allow prefix trimming with a single normalizeAllowPrefix implementation.\n2) Use it in guardCommitCheck and stageAllowlist.\n3) Add CLI regression test for comment-driven commit with --commit-allow ./<path>.\n4) Run bun run test:cli:core.
+1) Replace ad-hoc allow prefix trimming with a single normalizeAllowPrefix implementation.
+2) Use it in guardCommitCheck and stageAllowlist.
+3) Add CLI regression test for comment-driven commit with --commit-allow ./<path>.
+4) Run bun run test:cli:core.
 
 ## Verify Steps
 

@@ -86,7 +86,10 @@ Remove script and package.json wiring.
 
 ## Findings
 
-### Decisions\n- Threshold: branch >=72 for selected critical files.\n### Implementation Notes\n- Pending.
+### Decisions
+- Threshold: branch >=72 for selected critical files.
+### Implementation Notes
+- Pending.
 
 ## Risks
 

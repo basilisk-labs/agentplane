@@ -66,6 +66,35 @@ function renderScalar(value: unknown): string {
   throw new TypeError(`Unsupported scalar type: ${typeof value}`);
 }
 
+const MULTILINE_FRIENDLY_KEYS = new Set([
+  "description",
+  "body",
+  "note",
+  "message",
+  "result_summary",
+]);
+
+function shouldDecodeEscapedNewlines(value: string): boolean {
+  const escapedDoubleNewline =
+    value.includes(String.raw`\n\n`) || value.includes(String.raw`\r\n\r\n`);
+  const escapedNewlineMatches = value.match(/\\n/g) ?? [];
+  return escapedDoubleNewline || escapedNewlineMatches.length >= 2;
+}
+
+function normalizeReadableMultilineString(key: string, value: string): string {
+  let next = value.replaceAll("\r\n", "\n");
+  if (MULTILINE_FRIENDLY_KEYS.has(key) && shouldDecodeEscapedNewlines(next)) {
+    next = next.replaceAll(String.raw`\r\n`, "\n").replaceAll(String.raw`\n`, "\n");
+  }
+  return next;
+}
+
+function renderBlockScalar(key: string, value: string, indent: string): string[] {
+  const normalized = normalizeReadableMultilineString(key, value);
+  const lines = normalized.split("\n");
+  return [`${indent}${key}: |-`, ...lines.map((line) => `${indent}  ${line}`)];
+}
+
 function renderFlowSeq(value: unknown[]): string {
   const parts = value
     .filter((v) => v !== undefined)
@@ -102,6 +131,12 @@ function isStringArray(value: unknown[]): value is string[] {
 
 function renderValueLines(key: string, value: unknown, indent: string): string[] {
   if (value === undefined) return [];
+  if (typeof value === "string") {
+    const normalized = normalizeReadableMultilineString(key, value);
+    if (normalized.includes("\n")) return renderBlockScalar(key, normalized, indent);
+    return [`${indent}${key}: ${renderScalar(normalized)}`];
+  }
+
   if (Array.isArray(value)) {
     if (value.length === 0) return [`${indent}${key}: []`];
 

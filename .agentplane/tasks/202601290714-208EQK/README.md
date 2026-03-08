@@ -42,7 +42,9 @@ Keep .agentplane/RECIPES.md in sync with recipe list output by centralizing inde
 
 ## Scope
 
-- Add shared helpers to build/write RECIPES.md from recipes.lock.json.\n- Use the same summaries for recipe list output and RECIPES.md.\n- Add tests to ensure list syncs RECIPES.md when manifest summaries change.
+- Add shared helpers to build/write RECIPES.md from recipes.lock.json.
+- Use the same summaries for recipe list output and RECIPES.md.
+- Add tests to ensure list syncs RECIPES.md when manifest summaries change.
 
 ## Plan
 

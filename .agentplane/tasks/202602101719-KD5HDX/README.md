@@ -57,11 +57,15 @@ id_source: "generated"
 
 ## Scope
 
-- In scope: packages/agentplane/src/cli/run-cli.test-helpers.ts (createUnsafeRecipeArchive), recipes CLI tests relying on it.\n- Out of scope: production archive extraction/validation logic.
+- In scope: packages/agentplane/src/cli/run-cli.test-helpers.ts (createUnsafeRecipeArchive), recipes CLI tests relying on it.
+- Out of scope: production archive extraction/validation logic.
 
 ## Plan
 
-1. Add a minimal tar writer (header + payload + padding + end blocks) and gzip it.\n2. For createUnsafeRecipeArchive(format=tar), write the tar.gz directly with a traversal entry name (default ../evil.txt).\n3. Keep zip path as-is.\n4. Run run-cli.recipes.test.ts and full test suite sanity.
+1. Add a minimal tar writer (header + payload + padding + end blocks) and gzip it.
+2. For createUnsafeRecipeArchive(format=tar), write the tar.gz directly with a traversal entry name (default ../evil.txt).
+3. Keep zip path as-is.
+4. Run run-cli.recipes.test.ts and full test suite sanity.
 
 ## Verify Steps
 

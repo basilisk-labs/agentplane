@@ -86,7 +86,10 @@ Revert script changes in package.json and any release command adjustments.
 
 ## Findings
 
-### Decisions\n- Keep patch-release flow strict but deterministic.\n### Implementation Notes\n- Pending.
+### Decisions
+- Keep patch-release flow strict but deterministic.
+### Implementation Notes
+- Pending.
 
 ## Risks
 

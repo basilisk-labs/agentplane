@@ -47,7 +47,12 @@ Refactor cli/run-cli/commands/init.ts into smaller modules while preserving init
 
 ## Plan
 
-Refactor: split packages/agentplane/src/cli/run-cli/commands/init.ts into smaller internal modules under cli/run-cli/commands/init/ while keeping init.ts as a thin orchestrator.\n\nSteps:\n1) Extract cohesive helpers (prompts, filesystem writes, git bootstrap, hooks install, recipes validation).\n2) Preserve CLI outputs and error messages used by tests.\n3) Verify: bun run typecheck; bun run lint; bun run test:full.
+Refactor: split packages/agentplane/src/cli/run-cli/commands/init.ts into smaller internal modules under cli/run-cli/commands/init/ while keeping init.ts as a thin orchestrator.
+
+Steps:
+1) Extract cohesive helpers (prompts, filesystem writes, git bootstrap, hooks install, recipes validation).
+2) Preserve CLI outputs and error messages used by tests.
+3) Verify: bun run typecheck; bun run lint; bun run test:full.
 
 ## Verify Steps
 

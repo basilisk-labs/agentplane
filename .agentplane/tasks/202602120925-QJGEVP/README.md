@@ -73,7 +73,10 @@ id_source: "generated"
 
 ## Plan
 
-1. Update setup docs for compact prod init and explicit dev full mode.\n2. Update release docs with parity checks and dependency-version contract.\n3. Add troubleshooting entry for parity-related publish failures.\n4. Verify formatting and targeted CLI tests.
+1. Update setup docs for compact prod init and explicit dev full mode.
+2. Update release docs with parity checks and dependency-version contract.
+3. Add troubleshooting entry for parity-related publish failures.
+4. Verify formatting and targeted CLI tests.
 
 ## Verify Steps
 

@@ -72,7 +72,9 @@ Switch backend to Redmine using env config and prove end-to-end sync from local 
 
 ## Findings
 
-- Full migration of 150 tasks to Redmine hit HTTP timeouts; migrated a 3-task subset for smoke testing instead.\n- Created test task 202601111002-FZ099X via Redmine backend, updated docs, and added a comment to verify custom fields/journals.\n-  succeeds; owners/priorities reflect Redmine assignee/priority names (e.g., Via Mentis Assistant / "normal").
+- Full migration of 150 tasks to Redmine hit HTTP timeouts; migrated a 3-task subset for smoke testing instead.
+- Created test task 202601111002-FZ099X via Redmine backend, updated docs, and added a comment to verify custom fields/journals.
+-  succeeds; owners/priorities reflect Redmine assignee/priority names (e.g., Via Mentis Assistant / "normal").
 
 ## Risks
 

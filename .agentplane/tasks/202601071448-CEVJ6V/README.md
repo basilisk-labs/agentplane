@@ -42,7 +42,8 @@ User asked to make agentctl CLI outputs more informative so agents avoid extra s
 
 ## Scope
 
-- Enrich task list/show/ready outputs with dependency readiness and metadata.\n- Keep outputs compact and stable for CLI use.
+- Enrich task list/show/ready outputs with dependency readiness and metadata.
+- Keep outputs compact and stable for CLI use.
 
 ## Plan
 

@@ -65,7 +65,10 @@ Align the install/init AGENTS.md asset required task doc sections list with conf
 
 ## Plan
 
-1) Update packages/agentplane/assets/AGENTS.md required task doc sections list to match tasks.doc.required_sections.\n2) Run agentplane task lint.\n3) Record verification OK.\n4) Commit via agentplane and finish the task.
+1) Update packages/agentplane/assets/AGENTS.md required task doc sections list to match tasks.doc.required_sections.
+2) Run agentplane task lint.
+3) Record verification OK.
+4) Commit via agentplane and finish the task.
 
 ## Verify Steps
 

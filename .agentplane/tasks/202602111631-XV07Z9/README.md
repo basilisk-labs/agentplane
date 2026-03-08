@@ -84,7 +84,10 @@ In-scope: side-effect suites в командах release/upgrade/recipes. Out-of
 
 ## Findings
 
-### Decisions\n- Guard только для тестов с побочными эффектами.\n### Implementation Notes\n- Заполняется после реализации.
+### Decisions
+- Guard только для тестов с побочными эффектами.
+### Implementation Notes
+- Заполняется после реализации.
 
 ## Risks
 

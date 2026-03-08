@@ -36,11 +36,13 @@ description: "Expand recipes docs with examples and add troubleshooting-by-sympt
 ---
 ## Summary
 
-- Expand recipes docs with concrete examples.\n- Add troubleshooting-by-symptom page and link it in navigation.
+- Expand recipes docs with concrete examples.
+- Add troubleshooting-by-symptom page and link it in navigation.
 
 ## Scope
 
-- Extend docs/recipes-how-it-works.mdx and docs/recipes-spec.mdx with examples.\n- Create a troubleshooting-by-symptom doc and update docs.json/index.
+- Extend docs/recipes-how-it-works.mdx and docs/recipes-spec.mdx with examples.
+- Create a troubleshooting-by-symptom doc and update docs.json/index.
 
 ## Plan
 
@@ -60,7 +62,8 @@ description: "Expand recipes docs with examples and add troubleshooting-by-sympt
 
 ## Findings
 
-- Added examples to recipes how-it-works and spec.\n- Linked troubleshooting-by-symptom in docs index and navigation.
+- Added examples to recipes how-it-works and spec.
+- Linked troubleshooting-by-symptom in docs index and navigation.
 
 ## Risks
 

@@ -42,7 +42,9 @@ Add recipe list-remote with cached index loading and optional refresh.
 
 ## Scope
 
-- Add list-remote subcommand with cache file under .agentplane/cache/recipes-index.json.\n- Validate remote index schema and print latest version per recipe.\n- Add tests for cached and refreshed index reading.
+- Add list-remote subcommand with cache file under .agentplane/cache/recipes-index.json.
+- Validate remote index schema and print latest version per recipe.
+- Add tests for cached and refreshed index reading.
 
 ## Plan
 

@@ -37,11 +37,14 @@ description: "Add agentplane quickstart to mirror agentctl quickstart output and
 ---
 ## Summary
 
-- Add agentplane quickstart command mirroring agentctl quickstart output.\n- Update help output and tests.
+- Add agentplane quickstart command mirroring agentctl quickstart output.
+- Update help output and tests.
 
 ## Scope
 
-- Implement quickstart command in run-cli.\n- Add help entry and a unit test.\n- Keep output compatible with agentctl quickstart.
+- Implement quickstart command in run-cli.
+- Add help entry and a unit test.
+- Keep output compatible with agentctl quickstart.
 
 ## Plan
 

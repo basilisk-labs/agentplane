@@ -47,7 +47,9 @@ packages/agentplane/src/commands/guard/index.ts: stageAllowlist.
 
 ## Plan
 
-1) Switch stageAllowlist to git add -A.\n2) Add CLI lifecycle regression test covering deleted file staging under allowlist.\n3) Run bun run test:cli:core.
+1) Switch stageAllowlist to git add -A.
+2) Add CLI lifecycle regression test covering deleted file staging under allowlist.
+3) Run bun run test:cli:core.
 
 ## Verify Steps
 

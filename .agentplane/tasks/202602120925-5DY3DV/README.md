@@ -66,7 +66,10 @@ id_source: "generated"
 
 ## Plan
 
-1. Add setup-profile switch (prod/dev) to init.\n2. Keep prod interactive flow compact (essential prompts only).\n3. Preserve full questionnaire for dev mode.\n4. Update interactive init tests.
+1. Add setup-profile switch (prod/dev) to init.
+2. Keep prod interactive flow compact (essential prompts only).
+3. Preserve full questionnaire for dev mode.
+4. Update interactive init tests.
 
 ## Verify Steps
 

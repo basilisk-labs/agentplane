@@ -69,7 +69,12 @@ packages/agentplane/src/commands/upgrade.ts, packages/agentplane/src/cli/http.ts
 
 ## Plan
 
-1) Inspect current upgrade I/O patterns and network timeouts.\n2) Implement streaming downloadToFile to avoid buffering entire archives in memory.\n3) Use longer timeout for upgrade release metadata fetch (separate from update-check).\n4) Reduce redundant readFile calls in upgrade apply path (read-once buffers, only decode to utf8 when needed).\n5) Add/adjust tests for http download streaming and upgrade release fetch timeout wiring.\n6) Run bun run lint and bun run test:full.
+1) Inspect current upgrade I/O patterns and network timeouts.
+2) Implement streaming downloadToFile to avoid buffering entire archives in memory.
+3) Use longer timeout for upgrade release metadata fetch (separate from update-check).
+4) Reduce redundant readFile calls in upgrade apply path (read-once buffers, only decode to utf8 when needed).
+5) Add/adjust tests for http download streaming and upgrade release fetch timeout wiring.
+6) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

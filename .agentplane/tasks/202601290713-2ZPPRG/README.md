@@ -57,11 +57,13 @@ description: "Plan and deliver remaining Node.js roadmap items starting at AP-02
 ---
 ## Summary
 
-- Confirmed AP-025..AP-044 tasks are completed and documented.\n- Closed the execution tracker after validating dependency status.
+- Confirmed AP-025..AP-044 tasks are completed and documented.
+- Closed the execution tracker after validating dependency status.
 
 ## Scope
 
-- Review dependent AP-025..AP-044 tasks for DONE status.\n- Close this meta task with status and commit metadata.
+- Review dependent AP-025..AP-044 tasks for DONE status.
+- Close this meta task with status and commit metadata.
 
 ## Plan
 

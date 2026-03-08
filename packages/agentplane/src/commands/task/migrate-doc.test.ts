@@ -256,6 +256,81 @@ Legacy verification notes.
     expect(migrated).not.toContain("### Results");
   });
 
+  it("normalizes escaped newlines in doc_version=3 summary, scope, and frontmatter description", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const taskId = "202601040001-ABCDEF";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    const readmePath = path.join(taskDir, "README.md");
+    await mkdir(taskDir, { recursive: true });
+
+    const legacy = `---
+id: "${taskId}"
+title: "Legacy task"
+status: "TODO"
+priority: "low"
+owner: "CODER"
+depends_on: []
+tags: []
+verify: []
+comments:
+  -
+    author: "CODER"
+    body: "${String.raw`Start line 1\nStart line 2\nStart line 3`}"
+doc_version: 3
+doc_updated_at: "2026-01-04T00:00:00.000Z"
+doc_updated_by: "CODER"
+description: "${String.raw`Line one\n\nLine two`}"
+id_source: "generated"
+---
+## Summary
+
+${String.raw`Line one\n\nLine two`}
+
+## Scope
+
+- In scope: ${String.raw`Line one\n\nLine two`}.
+
+## Plan
+
+1. Keep ${String.raw`line one\nline two\nline three`}.
+
+## Verify Steps
+
+1. Review. Expected: okay.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert.
+
+## Findings
+`;
+
+    await writeFile(readmePath, legacy, "utf8");
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
+    expect(code).toBe(0);
+
+    const migrated = await readFile(readmePath, "utf8");
+    expect(migrated).toContain("description: |-");
+    expect(migrated).toContain("  Line one");
+    expect(migrated).toContain("  Line two");
+    expect(migrated).toContain("Line one\n\nLine two");
+    expect(migrated).not.toContain(String.raw`Line one\n\nLine two`);
+    expect(migrated).toContain("body: |-");
+  });
+
   it("migrates all requested legacy task READMEs to v3 and leaves existing v3 tasks intact", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

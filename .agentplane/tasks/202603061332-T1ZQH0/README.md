@@ -18,7 +18,26 @@ verification:
   state: "ok"
   updated_at: "2026-03-06T13:36:31.389Z"
   updated_by: "CODER"
-  note: "Command: git diff -- website/src/css/custom.css website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css\nResult: pass\nEvidence: homepage and blog copy are left-aligned; navbar frame removed; active nav link stays visible; blog converted to editorial index\nScope: website homepage, blog landing, global navbar styles\n\nCommand: bun run --cwd website typecheck\nResult: pass\nEvidence: tsc completed without errors\nScope: website TypeScript surface\n\nCommand: bun run --cwd website build\nResult: pass\nEvidence: client and server compiled successfully; static files generated in build\nScope: production website build\n\nCommand: node scripts/check-design-language.mjs\nResult: pass\nEvidence: DESIGN.md compliance check passed\nScope: website visual language contract"
+  note: |-
+    Command: git diff -- website/src/css/custom.css website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css
+    Result: pass
+    Evidence: homepage and blog copy are left-aligned; navbar frame removed; active nav link stays visible; blog converted to editorial index
+    Scope: website homepage, blog landing, global navbar styles
+    
+    Command: bun run --cwd website typecheck
+    Result: pass
+    Evidence: tsc completed without errors
+    Scope: website TypeScript surface
+    
+    Command: bun run --cwd website build
+    Result: pass
+    Evidence: client and server compiled successfully; static files generated in build
+    Scope: production website build
+    
+    Command: node scripts/check-design-language.mjs
+    Result: pass
+    Evidence: DESIGN.md compliance check passed
+    Scope: website visual language contract
 commit:
   hash: "f803dcb94ef25421623aae102fd4e48cec4cca71"
   message: "✨ T1ZQH0 website: simplify layout and blog index"
@@ -42,7 +61,26 @@ events:
     at: "2026-03-06T13:36:31.389Z"
     author: "CODER"
     state: "ok"
-    note: "Command: git diff -- website/src/css/custom.css website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css\nResult: pass\nEvidence: homepage and blog copy are left-aligned; navbar frame removed; active nav link stays visible; blog converted to editorial index\nScope: website homepage, blog landing, global navbar styles\n\nCommand: bun run --cwd website typecheck\nResult: pass\nEvidence: tsc completed without errors\nScope: website TypeScript surface\n\nCommand: bun run --cwd website build\nResult: pass\nEvidence: client and server compiled successfully; static files generated in build\nScope: production website build\n\nCommand: node scripts/check-design-language.mjs\nResult: pass\nEvidence: DESIGN.md compliance check passed\nScope: website visual language contract"
+    note: |-
+      Command: git diff -- website/src/css/custom.css website/src/pages/index.module.css website/src/pages/blog/index.tsx website/src/pages/blog/index.module.css
+      Result: pass
+      Evidence: homepage and blog copy are left-aligned; navbar frame removed; active nav link stays visible; blog converted to editorial index
+      Scope: website homepage, blog landing, global navbar styles
+      
+      Command: bun run --cwd website typecheck
+      Result: pass
+      Evidence: tsc completed without errors
+      Scope: website TypeScript surface
+      
+      Command: bun run --cwd website build
+      Result: pass
+      Evidence: client and server compiled successfully; static files generated in build
+      Scope: production website build
+      
+      Command: node scripts/check-design-language.mjs
+      Result: pass
+      Evidence: DESIGN.md compliance check passed
+      Scope: website visual language contract
   -
     type: "status"
     at: "2026-03-06T13:37:22.952Z"
@@ -132,7 +170,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T13:33:00.555Z, excerpt_
 
 ## Findings
 
-- Homepage typography and section headings were moved to a consistent left-aligned layout.\n- Navbar chrome was reduced to a simple underline navigation pattern and the active state now keeps readable foreground contrast.\n- The blog landing was rewritten as an editorial index with featured entry, recent entries, and reference links.
+- Homepage typography and section headings were moved to a consistent left-aligned layout.
+- Navbar chrome was reduced to a simple underline navigation pattern and the active state now keeps readable foreground contrast.
+- The blog landing was rewritten as an editorial index with featured entry, recent entries, and reference links.
 
 ## Risks
 

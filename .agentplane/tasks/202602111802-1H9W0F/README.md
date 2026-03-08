@@ -86,7 +86,8 @@ If publish fails after tag/commit, fix issue and republish same tagged commit if
 
 ## Findings
 
-### Implementation Notes\n- Pending.
+### Implementation Notes
+- Pending.
 
 ## Risks
 

@@ -58,11 +58,14 @@ Make tar-based archive validation robust to GNU tar warning exit codes by parsin
 
 ## Scope
 
-- In scope: packages/agentplane/src/cli/archive.ts and related tests.\n- Out of scope: changing archive extraction (tar -xzf / unzip) behavior.
+- In scope: packages/agentplane/src/cli/archive.ts and related tests.
+- Out of scope: changing archive extraction (tar -xzf / unzip) behavior.
 
 ## Plan
 
-1. Replace tar list helpers to capture stdout/stderr even when tar exits non-zero.\n2. If stdout contains entries, proceed with validation; if stdout empty, surface E_IO with stderr.\n3. Run the affected CLI recipe archive tests locally (run-cli.recipes.test.ts) and ensure exit codes match expectations.
+1. Replace tar list helpers to capture stdout/stderr even when tar exits non-zero.
+2. If stdout contains entries, proceed with validation; if stdout empty, surface E_IO with stderr.
+3. Run the affected CLI recipe archive tests locally (run-cli.recipes.test.ts) and ensure exit codes match expectations.
 
 ## Verify Steps
 

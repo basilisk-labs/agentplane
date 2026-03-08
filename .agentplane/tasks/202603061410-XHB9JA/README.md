@@ -69,7 +69,9 @@ Sync mirrored policy templates required by pre-push after batched task-doc polic
 
 ## Plan
 
-1. Sync mirrored policy templates so pre-push policy/template enforcement passes after the batched task-doc policy wording change.\n2. Run the required repository checks for the touched policy/documentation surface.\n3. Push main and confirm Docs CI plus Pages Deploy succeeded for the current website state.
+1. Sync mirrored policy templates so pre-push policy/template enforcement passes after the batched task-doc policy wording change.
+2. Run the required repository checks for the touched policy/documentation surface.
+3. Push main and confirm Docs CI plus Pages Deploy succeeded for the current website state.
 
 ## Verify Steps
 

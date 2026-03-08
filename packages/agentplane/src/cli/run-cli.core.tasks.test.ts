@@ -119,6 +119,43 @@ describe("runCli", () => {
     expect(readme).not.toContain("## Risks");
   });
 
+  it("task new normalizes escaped newlines into readable summary and scope text", async () => {
+    const root = await mkGitRepoRoot();
+    const io = captureStdIO();
+    let id = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Multiline task",
+        "--description",
+        String.raw`Line one\n\nLine two`,
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "nodejs",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      id = io.stdout.trim();
+    } finally {
+      io.restore();
+    }
+
+    const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("description: |-");
+    expect(readme).toContain("  Line one");
+    expect(readme).toContain("  Line two");
+    expect(readme).toContain("Line one\n\nLine two");
+    expect(readme).not.toContain(String.raw`literal \n sequences`);
+    expect(readme).toContain("- In scope: Line one Line two.");
+  });
+
   it("task new supports depends-on and verify flags", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

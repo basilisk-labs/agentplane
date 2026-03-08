@@ -33,7 +33,15 @@ comments:
 doc_version: 3
 doc_updated_at: "2026-02-03T12:08:26.363Z"
 doc_updated_by: "agentplane"
-description: "Make `agentctl verify` faster by defaulting the log file when a PR artifact exists.\\n\\nAcceptance:\\n- `python scripts/agentctl.py verify T-123` appends to `docs/workflow/T-123/pr/verify.log` when that PR dir exists.\\n- `--log` still overrides.\\n- Supports legacy `docs/workflow/prs/T-123/verify.log` during migration.\\n- `--skip-if-unchanged` continues to work and uses PR `meta.json:head_sha` when the effective log path is under the PR directory.\\n- Update `.agent-plane/agentctl.md` to document the new default."
+description: |-
+  Make `agentctl verify` faster by defaulting the log file when a PR artifact exists.
+  
+  Acceptance:
+  - `python scripts/agentctl.py verify T-123` appends to `docs/workflow/T-123/pr/verify.log` when that PR dir exists.
+  - `--log` still overrides.
+  - Supports legacy `docs/workflow/prs/T-123/verify.log` during migration.
+  - `--skip-if-unchanged` continues to work and uses PR `meta.json:head_sha` when the effective log path is under the PR directory.
+  - Update `.agent-plane/agentctl.md` to document the new default.
 dirty: false
 ---
 ## Summary

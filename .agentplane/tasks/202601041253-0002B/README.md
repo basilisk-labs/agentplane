@@ -33,7 +33,20 @@ comments:
 doc_version: 3
 doc_updated_at: "2026-02-03T12:08:26.086Z"
 doc_updated_by: "agentplane"
-description: "Add a single command to reduce startup friction for a task branch in workflow_mode=branch_pr.\\n\\nAcceptance:\\n- New command: `python scripts/agentctl.py work start T-123 --agent CODER --slug x --worktree`.\\n- Performs the equivalent of:\\n  - `python scripts/agentctl.py branch create T-123 --agent CODER --slug x --worktree`\\n  - `python scripts/agentctl.py pr open T-123 --author CODER --branch task/T-123/x`\\n  - `python scripts/agentctl.py task scaffold T-123` (writes `docs/workflow/T-123/README.md`)\\n- Creates PR artifacts at `docs/workflow/T-123/pr/` (meta/diffstat/verify.log/review.md).\\n- Idempotent with `--reuse`; does not clobber existing artifacts unless `--overwrite` is passed through to scaffold.\\n- Prints clear NEXT steps.\\n- Never writes `tasks.json`.\\n- Update `.agent-plane/agentctl.md` to document the new command."
+description: |-
+  Add a single command to reduce startup friction for a task branch in workflow_mode=branch_pr.
+  
+  Acceptance:
+  - New command: `python scripts/agentctl.py work start T-123 --agent CODER --slug x --worktree`.
+  - Performs the equivalent of:
+    - `python scripts/agentctl.py branch create T-123 --agent CODER --slug x --worktree`
+    - `python scripts/agentctl.py pr open T-123 --author CODER --branch task/T-123/x`
+    - `python scripts/agentctl.py task scaffold T-123` (writes `docs/workflow/T-123/README.md`)
+  - Creates PR artifacts at `docs/workflow/T-123/pr/` (meta/diffstat/verify.log/review.md).
+  - Idempotent with `--reuse`; does not clobber existing artifacts unless `--overwrite` is passed through to scaffold.
+  - Prints clear NEXT steps.
+  - Never writes `tasks.json`.
+  - Update `.agent-plane/agentctl.md` to document the new command.
 dirty: false
 ---
 ## Summary

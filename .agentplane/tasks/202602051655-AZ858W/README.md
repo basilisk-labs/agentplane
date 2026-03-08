@@ -40,7 +40,8 @@ Document recommended Redmine env values in .env.example and align local .env own
 
 ## Scope
 
-- Update .env.example with recommended Redmine env defaults and custom field placeholders.\n- Set AGENTPLANE_REDMINE_OWNER_AGENT in .env to match owner (local only).
+- Update .env.example with recommended Redmine env defaults and custom field placeholders.
+- Set AGENTPLANE_REDMINE_OWNER_AGENT in .env to match owner (local only).
 
 ## Plan
 

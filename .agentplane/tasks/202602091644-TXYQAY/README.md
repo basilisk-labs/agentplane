@@ -69,7 +69,10 @@ New tests and/or lint checks under packages/agentplane/src/ enforcing import bou
 
 ## Plan
 
-1) Implement a test scanning TS sources for forbidden imports (cli->adapters, non-adapters importing node:fs/path, etc.).\n2) Add an allowlist for known exceptions (tests, generated fixtures).\n3) Ensure failures are actionable (file:line, rule name).\n4) Run bun run lint and bun run test:full.
+1) Implement a test scanning TS sources for forbidden imports (cli->adapters, non-adapters importing node:fs/path, etc.).
+2) Add an allowlist for known exceptions (tests, generated fixtures).
+3) Ensure failures are actionable (file:line, rule name).
+4) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

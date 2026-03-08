@@ -43,7 +43,9 @@ Add scenario schema parsing and scenario list/info CLI commands for installed re
 
 ## Scope
 
-- Parse scenario definitions from recipes/scenarios/*.json\n- Generate and read scenarios index for list/info\n- Add scenario list/info commands and update docs/tests
+- Parse scenario definitions from recipes/scenarios/*.json
+- Generate and read scenarios index for list/info
+- Add scenario list/info commands and update docs/tests
 
 ## Plan
 

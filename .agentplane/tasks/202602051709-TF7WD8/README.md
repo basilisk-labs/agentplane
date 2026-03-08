@@ -40,7 +40,9 @@ Resolve remaining ESLint no-unsafe warnings in key modules and note ignored-file
 
 ## Scope
 
-- Address no-unsafe-* ESLint warnings in workflow.ts, config.ts, archive.ts, recipes tests, run-cli recipes tests, task-backend/test.\n- Keep behavior unchanged; add explicit typing/casts where needed.\n- Note ignored-file ESLint warning for agentplane-recipes/scripts/sign-index.ts.
+- Address no-unsafe-* ESLint warnings in workflow.ts, config.ts, archive.ts, recipes tests, run-cli recipes tests, task-backend/test.
+- Keep behavior unchanged; add explicit typing/casts where needed.
+- Note ignored-file ESLint warning for agentplane-recipes/scripts/sign-index.ts.
 
 ## Plan
 

@@ -44,11 +44,25 @@ Decompose the integrate command core into smaller focused modules while preservi
 
 ## Scope
 
-In scope:\n- packages/agentplane/src/commands/pr/integrate/cmd.ts (split into smaller modules)\n- New modules under packages/agentplane/src/commands/pr/integrate/ (internal-only)\n- Any required import rewires and test updates\n\nOut of scope:\n- CLI surface changes\n- Behavior changes to integrate/PR flows\n- Git policy/commit format changes
+In scope:
+- packages/agentplane/src/commands/pr/integrate/cmd.ts (split into smaller modules)
+- New modules under packages/agentplane/src/commands/pr/integrate/ (internal-only)
+- Any required import rewires and test updates
+
+Out of scope:
+- CLI surface changes
+- Behavior changes to integrate/PR flows
+- Git policy/commit format changes
 
 ## Plan
 
-Refactor: split packages/agentplane/src/commands/pr/integrate/cmd.ts into focused internal modules (strategy selection, verification runner, PR meta updates) while keeping CLI behavior unchanged.\n\nExecution steps:\n1) Extract cohesive helpers into packages/agentplane/src/commands/pr/integrate/*.ts with explicit inputs/outputs.\n2) Keep cmd.ts as a thin orchestrator.\n3) Update imports/tests as needed (especially run-cli.core.pr-flow.test.ts).\n4) Verify: bun run typecheck; bun run lint; bun run test:full.
+Refactor: split packages/agentplane/src/commands/pr/integrate/cmd.ts into focused internal modules (strategy selection, verification runner, PR meta updates) while keeping CLI behavior unchanged.
+
+Execution steps:
+1) Extract cohesive helpers into packages/agentplane/src/commands/pr/integrate/*.ts with explicit inputs/outputs.
+2) Keep cmd.ts as a thin orchestrator.
+3) Update imports/tests as needed (especially run-cli.core.pr-flow.test.ts).
+4) Verify: bun run typecheck; bun run lint; bun run test:full.
 
 ## Verify Steps
 

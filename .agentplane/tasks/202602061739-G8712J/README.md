@@ -45,7 +45,9 @@ Only FIX.md formatting; no semantic changes.
 
 ## Plan
 
-1) Run Prettier on FIX.md only.\n2) Ensure bun run format:check passes.\n3) Commit with allowlist=FIX.md.
+1) Run Prettier on FIX.md only.
+2) Ensure bun run format:check passes.
+3) Commit with allowlist=FIX.md.
 
 ## Verify Steps
 

@@ -61,7 +61,9 @@ In scope: packages/agentplane/assets/AGENTS.md. Out of scope: CLI behavior chang
 
 ## Plan
 
-1. Edit packages/agentplane/assets/AGENTS.md: reframe to agentplane-managed workspace; unify terms (workspace/outside-workspace); make preflight conditional; document approvals (interactive vs non-interactive flags); treat commit/push guidance as default with override protocol.\n2. Run bun run lint and bun run test:full.\n3. Commit with allowlist + allow-policy.
+1. Edit packages/agentplane/assets/AGENTS.md: reframe to agentplane-managed workspace; unify terms (workspace/outside-workspace); make preflight conditional; document approvals (interactive vs non-interactive flags); treat commit/push guidance as default with override protocol.
+2. Run bun run lint and bun run test:full.
+3. Commit with allowlist + allow-policy.
 
 ## Verify Steps
 

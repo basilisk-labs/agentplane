@@ -47,7 +47,10 @@ id_source: "generated"
 
 ## Plan
 
-1) Add ensureVerificationSatisfiedIfRequired guard (pending/needs_rework blocks)\n2) Wire guard into finish (direct) + integrate (branch_pr)\n3) Update workflow/run-cli tests to set verification ok before finish/integrate\n4) Verify: format:check, lint, test:fast, test:cli:core
+1) Add ensureVerificationSatisfiedIfRequired guard (pending/needs_rework blocks)
+2) Wire guard into finish (direct) + integrate (branch_pr)
+3) Update workflow/run-cli tests to set verification ok before finish/integrate
+4) Verify: format:check, lint, test:fast, test:cli:core
 
 ## Verify Steps
 

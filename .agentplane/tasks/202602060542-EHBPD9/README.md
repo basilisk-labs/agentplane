@@ -32,15 +32,27 @@ comments:
 doc_version: 3
 doc_updated_at: "2026-02-06T06:04:47.956Z"
 doc_updated_by: "ORCHESTRATOR"
-description: "Goal: reduce churn and review scope by splitting packages/agentplane/src/commands/task/index.ts into multiple command-specific modules.\\n\\nDeliverables:\\n- Move cmdTask* and lifecycle handlers into files under packages/agentplane/src/commands/task/*.ts (one command per file).\\n- Keep packages/agentplane/src/commands/task/index.ts as stable explicit re-export surface.\\n- No intended behavior changes; preserve public exports and CLI behavior.\\n\\nConstraints:\\n- direct mode; commits via agentplane; run agentplane verify before finish."
+description: |-
+  Goal: reduce churn and review scope by splitting packages/agentplane/src/commands/task/index.ts into multiple command-specific modules.
+  
+  Deliverables:
+  - Move cmdTask* and lifecycle handlers into files under packages/agentplane/src/commands/task/*.ts (one command per file).
+  - Keep packages/agentplane/src/commands/task/index.ts as stable explicit re-export surface.
+  - No intended behavior changes; preserve public exports and CLI behavior.
+  
+  Constraints:
+  - direct mode; commits via agentplane; run agentplane verify before finish.
 ---
 ## Summary
 
-- Split packages/agentplane/src/commands/task/index.ts into per-command modules under packages/agentplane/src/commands/task/.\n- Keep index.ts as stable explicit re-export surface to avoid wide import churn.
+- Split packages/agentplane/src/commands/task/index.ts into per-command modules under packages/agentplane/src/commands/task/.
+- Keep index.ts as stable explicit re-export surface to avoid wide import churn.
 
 ## Scope
 
-- Move cmdTaskNew/Add/Update/Scrub/List/Next/Ready/Search/Scaffold/Normalize/Migrate/Comment/SetStatus/Show/List/Export/Lint and lifecycle cmdStart/cmdBlock/cmdFinish/cmdVerify + doc cmdTaskDocSet/Show into separate files.\n- Preserve public exports by re-exporting the same identifiers from packages/agentplane/src/commands/task/index.ts.\n- No intended behavior changes.
+- Move cmdTaskNew/Add/Update/Scrub/List/Next/Ready/Search/Scaffold/Normalize/Migrate/Comment/SetStatus/Show/List/Export/Lint and lifecycle cmdStart/cmdBlock/cmdFinish/cmdVerify + doc cmdTaskDocSet/Show into separate files.
+- Preserve public exports by re-exporting the same identifiers from packages/agentplane/src/commands/task/index.ts.
+- No intended behavior changes.
 
 ## Plan
 

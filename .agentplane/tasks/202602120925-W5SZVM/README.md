@@ -70,7 +70,9 @@ id_source: "generated"
 
 ## Plan
 
-1. Consolidate prod UX improvements from child tasks (next_action, compact init, context cache, runtime cleanup, release parity).\n2. Verify dependent tasks are DONE with implementation commits.\n3. Close umbrella task as orchestrator bookkeeping.
+1. Consolidate prod UX improvements from child tasks (next_action, compact init, context cache, runtime cleanup, release parity).
+2. Verify dependent tasks are DONE with implementation commits.
+3. Close umbrella task as orchestrator bookkeeping.
 
 ## Verify Steps
 

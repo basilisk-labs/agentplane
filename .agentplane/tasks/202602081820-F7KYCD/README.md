@@ -63,7 +63,10 @@ In scope: packages/agentplane/src/cli/** and minimal supporting changes under pa
 
 ## Plan
 
-1) Create downstream tasks 1–9 with strict depends_on ordering.\n2) Execute tasks sequentially: fix jsonErrors prescan; add registry equality test; add duplicate-id guard; introduce command catalog; split registries; pilot spec/handler split; add lazy import; simplify help fast; add metadata-driven bootstrapping.\n3) After each task: run targeted tests (bun run test:cli:core; typecheck; add smoke tests where appropriate).\n4) Finish each task with agentplane commit/finish once verified; keep allowlist tight to touched paths.
+1) Create downstream tasks 1–9 with strict depends_on ordering.
+2) Execute tasks sequentially: fix jsonErrors prescan; add registry equality test; add duplicate-id guard; introduce command catalog; split registries; pilot spec/handler split; add lazy import; simplify help fast; add metadata-driven bootstrapping.
+3) After each task: run targeted tests (bun run test:cli:core; typecheck; add smoke tests where appropriate).
+4) Finish each task with agentplane commit/finish once verified; keep allowlist tight to touched paths.
 
 ## Verify Steps
 
@@ -90,7 +93,19 @@ If a task causes regressions: revert the last commit (agentplane commit history)
 
 ## Findings
 
-### Approvals / Overrides\n- 2026-02-08: User approved plan/tasks 0–9; no network/outside-repo overrides requested.\n\n### Decomposition\n- Task 1: prescan --json for global parse errors + test\n- Task 2: test guard help registry == run registry\n- Task 3: CommandRegistry.register duplicate id guard + test\n- Task 4: introduce command-catalog.ts as single source of truth\n- Task 5: split registry into help/run modules to avoid static imports\n- Task 6: pilot spec/handler split (commit, task new)\n- Task 7: lazy handler loading via import()\n- Task 8: remove/simplify help-fast registry\n- Task 9: metadata-driven bootstrapping (needsProject/needsConfig/needsTaskContext)
+### Approvals / Overrides
+- 2026-02-08: User approved plan/tasks 0–9; no network/outside-repo overrides requested.
+
+### Decomposition
+- Task 1: prescan --json for global parse errors + test
+- Task 2: test guard help registry == run registry
+- Task 3: CommandRegistry.register duplicate id guard + test
+- Task 4: introduce command-catalog.ts as single source of truth
+- Task 5: split registry into help/run modules to avoid static imports
+- Task 6: pilot spec/handler split (commit, task new)
+- Task 7: lazy handler loading via import()
+- Task 8: remove/simplify help-fast registry
+- Task 9: metadata-driven bootstrapping (needsProject/needsConfig/needsTaskContext)
 
 ## Risks
 

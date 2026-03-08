@@ -44,7 +44,10 @@ id_source: "generated"
 
 ## Plan
 
-1) Add CommandContext builder that loads resolved+config+backend once per command.\n2) Add ctx-aware helpers to load tasks without reloading backend.\n3) Migrate a small initial call site to validate wiring.\n4) Add/adjust tests for context builder.
+1) Add CommandContext builder that loads resolved+config+backend once per command.
+2) Add ctx-aware helpers to load tasks without reloading backend.
+3) Migrate a small initial call site to validate wiring.
+4) Add/adjust tests for context builder.
 
 ## Verify Steps
 

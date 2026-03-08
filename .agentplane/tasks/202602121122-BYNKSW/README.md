@@ -65,7 +65,10 @@ id_source: "generated"
 
 ## Plan
 
-1. Generate release plan and write docs/releases/v0.2.21.md from plan inputs.\n2. Run bun run release:prepublish and resolve failures if any.\n3. Apply release via agentplane release apply --push --yes.\n4. Verify pushed tag and provide workflow follow-up checks.
+1. Generate release plan and write docs/releases/v0.2.21.md from plan inputs.
+2. Run bun run release:prepublish and resolve failures if any.
+3. Apply release via agentplane release apply --push --yes.
+4. Verify pushed tag and provide workflow follow-up checks.
 
 ## Verify Steps
 

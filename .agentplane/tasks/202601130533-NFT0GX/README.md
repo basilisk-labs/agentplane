@@ -44,7 +44,9 @@ Clarify when status/comment-driven commits should be allowed so agents can updat
 
 ## Scope
 
-- Add status_commit_policy config and enforcement for comment-driven commits.\n- Add unit tests for warn/confirm/invalid policy handling.\n- Update agentctl docs to describe the policy and confirmation flag.
+- Add status_commit_policy config and enforcement for comment-driven commits.
+- Add unit tests for warn/confirm/invalid policy handling.
+- Update agentctl docs to describe the policy and confirmation flag.
 
 ## Plan
 

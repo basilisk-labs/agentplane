@@ -48,7 +48,10 @@ In scope: new tests under packages/agentplane/src for GitContext.statusChangedPa
 
 ## Plan
 
-1) Add GitContext.statusChangedPaths tests for porcelain -z parsing (spaces, renames, deletes, untracked).\n2) Add TaskStore.update test that simulates concurrent modification (mtime change) and asserts retry/guard behavior.\n3) Add write-if-changed tests: identical content yields changed=false and does not modify file.\n4) Run typecheck, lint, test:agentplane.
+1) Add GitContext.statusChangedPaths tests for porcelain -z parsing (spaces, renames, deletes, untracked).
+2) Add TaskStore.update test that simulates concurrent modification (mtime change) and asserts retry/guard behavior.
+3) Add write-if-changed tests: identical content yields changed=false and does not modify file.
+4) Run typecheck, lint, test:agentplane.
 
 ## Verify Steps
 

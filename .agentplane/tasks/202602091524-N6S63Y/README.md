@@ -68,7 +68,11 @@ packages/agentplane/src/backends/task-backend/local-backend.ts and associated te
 
 ## Plan
 
-1) Inspect current local backend listTasks implementation and identify sequential I/O hotspots.\n2) Introduce concurrency-limited parallel read/parse of task readmes (mapLimit style).\n3) Preserve stable ordering in returned list and deterministic index updates.\n4) Add/update unit tests for listTasks behavior (ordering, correctness) and ensure performance logic is covered.\n5) Run bun run lint and bun run test:full.
+1) Inspect current local backend listTasks implementation and identify sequential I/O hotspots.
+2) Introduce concurrency-limited parallel read/parse of task readmes (mapLimit style).
+3) Preserve stable ordering in returned list and deterministic index updates.
+4) Add/update unit tests for listTasks behavior (ordering, correctness) and ensure performance logic is covered.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

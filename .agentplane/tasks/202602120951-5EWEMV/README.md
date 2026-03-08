@@ -65,7 +65,10 @@ id_source: "generated"
 
 ## Plan
 
-1. Add a shared release parity utility for scripts.\n2. Enforce parity in release/CI workflows and root scripts.\n3. Update release plan/apply commands to validate and synchronize @agentplaneorg/core dependency with version bumps.\n4. Extend tests for release scripts and commands.
+1. Add a shared release parity utility for scripts.
+2. Enforce parity in release/CI workflows and root scripts.
+3. Update release plan/apply commands to validate and synchronize @agentplaneorg/core dependency with version bumps.
+4. Extend tests for release scripts and commands.
 
 ## Verify Steps
 

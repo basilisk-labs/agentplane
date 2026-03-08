@@ -71,7 +71,11 @@ In scope: work start behavior in direct mode, direct-mode lock file, clearing lo
 
 ## Plan
 
-1) Update work start: in direct mode, do not create/check out task branches; enforce single-stream via a lock under .agentplane/cache; require clean tree except task artifacts.\n2) Clear the lock on finish in direct mode.\n3) Update CLI help/command guide + shipped AGENTS.md to match behavior.\n4) Update and add tests; update snapshots.\n5) Verify: bun run lint and bun run test:full.
+1) Update work start: in direct mode, do not create/check out task branches; enforce single-stream via a lock under .agentplane/cache; require clean tree except task artifacts.
+2) Clear the lock on finish in direct mode.
+3) Update CLI help/command guide + shipped AGENTS.md to match behavior.
+4) Update and add tests; update snapshots.
+5) Verify: bun run lint and bun run test:full.
 
 ## Verify Steps
 

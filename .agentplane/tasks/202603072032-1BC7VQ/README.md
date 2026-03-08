@@ -111,7 +111,8 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T20:48:05.978Z, excerpt_
 
 ## Findings
 
-- Keep this task producer-only: write the richer snapshot into manifests now, then switch stale-dist freshness consumption in 202603072032-V9VGT2.\n- Reuse one helper for manifest generation so the next task can import the exact same snapshot logic instead of reimplementing directory walking and hashing.
+- Keep this task producer-only: write the richer snapshot into manifests now, then switch stale-dist freshness consumption in 202603072032-V9VGT2.
+- Reuse one helper for manifest generation so the next task can import the exact same snapshot logic instead of reimplementing directory walking and hashing.
 
 ## Risks
 

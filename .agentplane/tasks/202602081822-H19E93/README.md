@@ -65,11 +65,16 @@ Split registry implementation so help path can import a lightweight module (help
 
 ## Scope
 
-- packages/agentplane/src/cli/run-cli/registry.ts (split)\n- packages/agentplane/src/cli/run-cli.ts (update imports; ideally dynamic import for help module)\n- packages/agentplane/src/cli/run-cli/run-registry*.ts (new)
+- packages/agentplane/src/cli/run-cli/registry.ts (split)
+- packages/agentplane/src/cli/run-cli.ts (update imports; ideally dynamic import for help module)
+- packages/agentplane/src/cli/run-cli/run-registry*.ts (new)
 
 ## Plan
 
-1) Split registry.ts into registry.help.ts and registry.run.ts (or equivalent).\n2) Ensure run-cli.ts imports help registry only on help branch (prefer dynamic import).\n3) Keep current behavior and tests passing.\n4) Run bun run lint; bun run test:cli:core; bun run typecheck.
+1) Split registry.ts into registry.help.ts and registry.run.ts (or equivalent).
+2) Ensure run-cli.ts imports help registry only on help branch (prefer dynamic import).
+3) Keep current behavior and tests passing.
+4) Run bun run lint; bun run test:cli:core; bun run typecheck.
 
 ## Verify Steps
 
@@ -96,7 +101,8 @@ Revert to single registry.ts module if split causes ESM resolution regressions.
 
 ## Findings
 
-### Approvals / Overrides\n- 2026-02-08: no overrides.
+### Approvals / Overrides
+- 2026-02-08: no overrides.
 
 ## Risks
 

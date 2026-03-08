@@ -44,7 +44,9 @@ Restore the explicit reasoning bullets section in AGENTS policy docs while keepi
 
 ## Plan
 
-1) Ensure AGENTS.md and packages/agentplane/assets/AGENTS.md include the explicit reasoning bullets (Plan/Assumptions/Decisions/Trade-offs/Verification criteria/Inference trace).\n2) Keep OUTPUT CONTRACTS section intact.\n3) Run bun run test:fast and bun run lint.
+1) Ensure AGENTS.md and packages/agentplane/assets/AGENTS.md include the explicit reasoning bullets (Plan/Assumptions/Decisions/Trade-offs/Verification criteria/Inference trace).
+2) Keep OUTPUT CONTRACTS section intact.
+3) Run bun run test:fast and bun run lint.
 
 ## Verify Steps
 

@@ -48,7 +48,9 @@ Add CLI lifecycle tests to enforce Verify Steps gates on plan approval and start
 
 ## Plan
 
-1) Add CLI tests for plan approve Verify Steps gate.\n2) Add CLI tests for start Verify Steps gate when require_plan=false.\n3) Run bun run test:cli:core.
+1) Add CLI tests for plan approve Verify Steps gate.
+2) Add CLI tests for start Verify Steps gate when require_plan=false.
+3) Run bun run test:cli:core.
 
 ## Verify Steps
 

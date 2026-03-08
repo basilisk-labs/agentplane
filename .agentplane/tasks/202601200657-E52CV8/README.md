@@ -42,7 +42,9 @@ The framework should keep only agent runtime and guardrails; all higher-level wo
 
 ## Scope
 
-Phase 1 (202601200657-W1Y6ND): move planning/analysis helpers into recipes (roadmap/spec/decomposition).\nPhase 2 (202601200657-VNFXH3): move QA/test planning, release checklists, docs scaffolding into recipes.\nPhase 3 (202601200657-Y0P8RY): prune core to agent runtime + agentctl guardrails; update docs and inventory.
+Phase 1 (202601200657-W1Y6ND): move planning/analysis helpers into recipes (roadmap/spec/decomposition).
+Phase 2 (202601200657-VNFXH3): move QA/test planning, release checklists, docs scaffolding into recipes.
+Phase 3 (202601200657-Y0P8RY): prune core to agent runtime + agentctl guardrails; update docs and inventory.
 
 ## Plan
 

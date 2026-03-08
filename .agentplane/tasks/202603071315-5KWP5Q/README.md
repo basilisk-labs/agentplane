@@ -69,7 +69,9 @@ Regenerate docs/user/cli-reference.generated.mdx after the local pre-push build 
 
 ## Plan
 
-1. Regenerate docs/user/cli-reference.generated.mdx from the built CLI.\n2. Verify the working tree contains only the generated reference update and that docs:cli freshness passes.\n3. Commit the generated reference refresh, record verification, and retry git push origin main.
+1. Regenerate docs/user/cli-reference.generated.mdx from the built CLI.
+2. Verify the working tree contains only the generated reference update and that docs:cli freshness passes.
+3. Commit the generated reference refresh, record verification, and retry git push origin main.
 
 ## Verify Steps
 

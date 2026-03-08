@@ -66,7 +66,9 @@ Raise the timeout for runCli bootstrapping unit tests to avoid flaky failures du
 
 ## Plan
 
-1. Increase per-test timeout for the boot tests (quickstart/role).\n2. Run targeted vitest for the file.\n3. Commit and close the task.
+1. Increase per-test timeout for the boot tests (quickstart/role).
+2. Run targeted vitest for the file.
+3. Commit and close the task.
 
 ## Verify Steps
 

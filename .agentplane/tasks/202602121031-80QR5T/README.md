@@ -65,7 +65,10 @@ id_source: "generated"
 
 ## Plan
 
-1. Extend finish CLI spec with --close-commit and optional close preflight flags.\n2. Reuse commit close path from guard layer after finish state update.\n3. Add regression tests for one-command finish+close workflow and failure cases.\n4. Update help/docs snippets where needed.
+1. Extend finish CLI spec with --close-commit and optional close preflight flags.
+2. Reuse commit close path from guard layer after finish state update.
+3. Add regression tests for one-command finish+close workflow and failure cases.
+4. Update help/docs snippets where needed.
 
 ## Verify Steps
 

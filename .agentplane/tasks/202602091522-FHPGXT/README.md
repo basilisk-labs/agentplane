@@ -69,7 +69,11 @@ packages/agentplane/src/cli/run-cli/commands/init/* backend stub writer and rela
 
 ## Plan
 
-1) Locate init backend stub templates (writeBackendStubs).\n2) Remove legacy module/class fields from generated backend.json templates; keep only id/version/settings.\n3) Update docs/comments if they mention legacy fields.\n4) Update/add tests to assert generated backend.json does not include legacy keys.\n5) Run bun run lint and bun run test:full.
+1) Locate init backend stub templates (writeBackendStubs).
+2) Remove legacy module/class fields from generated backend.json templates; keep only id/version/settings.
+3) Update docs/comments if they mention legacy fields.
+4) Update/add tests to assert generated backend.json does not include legacy keys.
+5) Run bun run lint and bun run test:full.
 
 ## Verify Steps
 

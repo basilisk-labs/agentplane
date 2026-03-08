@@ -27,7 +27,12 @@ comments: []
 doc_version: 3
 doc_updated_at: "2026-01-11T08:06:07+00:00"
 doc_updated_by: "agentctl"
-description: "Update @README.md to include a short description and a Mermaid diagram (flowchart) showing the default agent workflow and handoffs (ORCHESTRATOR, PLANNER, CODER, TESTER, DOCS, REVIEWER).\\\\n\\\\nAcceptance criteria:\\\\n- README includes a Mermaid flowchart block describing the typical flow (plan -> implement -> test -> docs -> review -> finish).\\\\n- Diagram matches current agent rules (3-phase commits, DOCS artifact before DONE, CODER -> TESTER for dev work)."
+description: |-
+  Update @README.md to include a short description and a Mermaid diagram (flowchart) showing the default agent workflow and handoffs (ORCHESTRATOR, PLANNER, CODER, TESTER, DOCS, REVIEWER).\
+  \
+  Acceptance criteria:\
+  - README includes a Mermaid flowchart block describing the typical flow (plan -> implement -> test -> docs -> review -> finish).\
+  - Diagram matches current agent rules (3-phase commits, DOCS artifact before DONE, CODER -> TESTER for dev work).
 id_source: "custom"
 dirty: false
 ---

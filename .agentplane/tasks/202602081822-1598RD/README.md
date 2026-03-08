@@ -67,7 +67,9 @@ id_source: "generated"
 
 ## Plan
 
-1) Remove registry.help.ts and route help path through buildRegistry with a stub getCtx (must not be called).\n2) Update help-contract test to assert registry ids match COMMANDS ids (plus help).\n3) Run lint + cli core tests + typecheck.
+1) Remove registry.help.ts and route help path through buildRegistry with a stub getCtx (must not be called).
+2) Update help-contract test to assert registry ids match COMMANDS ids (plus help).
+3) Run lint + cli core tests + typecheck.
 
 ## Verify Steps
 

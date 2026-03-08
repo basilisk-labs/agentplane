@@ -45,7 +45,10 @@ Scaffold agentplane-recipes repo with schemas, manifests, index, and a release b
 
 ## Scope
 
-- Populate @agentplane-recipes/schemas with recipe manifest and index schemas.\n- Add starter manifests for viewer/redmine recipes.\n- Create build-release script and GitHub release workflow.\n- Initialize index.json and README.
+- Populate @agentplane-recipes/schemas with recipe manifest and index schemas.
+- Add starter manifests for viewer/redmine recipes.
+- Create build-release script and GitHub release workflow.
+- Initialize index.json and README.
 
 ## Plan
 

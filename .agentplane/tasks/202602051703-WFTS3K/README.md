@@ -40,7 +40,9 @@ Remove ESLint no-unsafe-* warnings in task backend/tests by ensuring typed expor
 
 ## Scope
 
-- Ensure extractTaskDoc/mergeTaskDoc/atomicWriteFile/generateTaskId have explicit types in task backend.\n- Verify lint/test:fast.\n- Leave ignored-file ESLint warning for agentplane-recipes as non-issue.
+- Ensure extractTaskDoc/mergeTaskDoc/atomicWriteFile/generateTaskId have explicit types in task backend.
+- Verify lint/test:fast.
+- Leave ignored-file ESLint warning for agentplane-recipes as non-issue.
 
 ## Plan
 

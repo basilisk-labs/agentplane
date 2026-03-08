@@ -44,7 +44,9 @@ Bundle an offline recipes catalog for init and validate selected recipes against
 
 ## Scope
 
-- Add bundled recipes catalog data in @packages/agentplane/src/bundled-recipes.ts.\n- Use catalog for init prompts/validation without network.\n- Add tests for init recipe validation.
+- Add bundled recipes catalog data in @packages/agentplane/src/bundled-recipes.ts.
+- Use catalog for init prompts/validation without network.
+- Add tests for init recipe validation.
 
 ## Plan
 

@@ -44,7 +44,9 @@ Add viewer recipe with tasks.html asset, viewer-server tool, and scenario.
 
 ## Scope
 
-- Add viewer recipe files (manifest, assets, tools, scenarios)\n- Ensure recipe install can run viewer tool via scenario run\n- Add minimal documentation/tests if needed
+- Add viewer recipe files (manifest, assets, tools, scenarios)
+- Ensure recipe install can run viewer tool via scenario run
+- Add minimal documentation/tests if needed
 
 ## Plan
 

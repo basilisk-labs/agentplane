@@ -68,7 +68,13 @@ id_source: "generated"
 
 ## Scope
 
-In scope:\n- packages/agentplane/assets/AGENTS.md\n- workspace install/upgrade behavior for AGENTS.md (symlink + managed copy under .agentplane/)\n- root repo AGENTS.md kept in sync via symlink\n\nOut of scope:\n- changes to agent JSON content beyond references to AGENTS.md
+In scope:
+- packages/agentplane/assets/AGENTS.md
+- workspace install/upgrade behavior for AGENTS.md (symlink + managed copy under .agentplane/)
+- root repo AGENTS.md kept in sync via symlink
+
+Out of scope:
+- changes to agent JSON content beyond references to AGENTS.md
 
 ## Plan
 

@@ -49,7 +49,10 @@ In scope: add TaskBackend.getTasks(); implement LocalBackend.getTasks and Redmin
 
 ## Plan
 
-1) Add TaskBackend.getTasks(taskIds) optional API.\n2) Implement bounded-parallel mapLimit helper (internal) and use it for LocalBackend.getTasks/writeTasks/normalizeTasks and RedmineBackend.getTasks.\n3) Keep behavior compatible: ordering stable; errors still surface.\n4) Run typecheck, lint, test:agentplane.
+1) Add TaskBackend.getTasks(taskIds) optional API.
+2) Implement bounded-parallel mapLimit helper (internal) and use it for LocalBackend.getTasks/writeTasks/normalizeTasks and RedmineBackend.getTasks.
+3) Keep behavior compatible: ordering stable; errors still surface.
+4) Run typecheck, lint, test:agentplane.
 
 ## Verify Steps
 
