@@ -1,7 +1,8 @@
 ---
 id: "202603081732-301XC8"
 title: "Make upgrade restore workflow runtime artifacts"
-status: "DOING"
+result_summary: "Upgrade restores .agentplane/WORKFLOW.md and last-known-good automatically for legacy repos."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T17:52:41.759Z"
   updated_by: "CODER"
   note: "Verified shared workflow publish path: init/upgrade reuse the same workflow-artifact helper; no-op upgrade restores .agentplane/WORKFLOW.md and last-known-good; integration, workflow, lint, and docs-site checks passed."
-commit: null
+commit:
+  hash: "af4f9c8376b710f2056633e170f98ea67ee11c36"
+  message: "⬆️ 301XC8 upgrade: restore workflow runtime artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: making upgrade restore workflow runtime artifacts through the same publish path used by init."
+  -
+    author: "CODER"
+    body: "Verified: upgrade now republishes required workflow runtime artifacts through the same shared helper used by init; legacy upgrade recovery docs and integration coverage were updated."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified shared workflow publish path: init/upgrade reuse the same workflow-artifact helper; no-op upgrade restores .agentplane/WORKFLOW.md and last-known-good; integration, workflow, lint, and docs-site checks passed."
+  -
+    type: "status"
+    at: "2026-03-08T17:53:47.493Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: upgrade now republishes required workflow runtime artifacts through the same shared helper used by init; legacy upgrade recovery docs and integration coverage were updated."
 doc_version: 3
-doc_updated_at: "2026-03-08T17:52:41.760Z"
+doc_updated_at: "2026-03-08T17:53:47.493Z"
 doc_updated_by: "CODER"
 description: "Ensure agentplane upgrade brings legacy projects to the current runnable workflow state by generating or refreshing .agentplane/WORKFLOW.md and .agentplane/workflows/last-known-good.md instead of leaving workflow bootstrap to init only."
 id_source: "generated"
