@@ -265,6 +265,77 @@ describe("doctor.command", () => {
     }
   });
 
+  it("skips older archive-only historical commit anomalies by default", async () => {
+    const ws = await mkWorkspace();
+    const goodHash = await gitInitWithCommit(ws.root, "feat: initial");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    const tasks = [
+      {
+        id: "202602111750-OLD111",
+        status: "DONE",
+        commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+      },
+      ...Array.from({ length: 205 }, (_, index) => ({
+        id: `2026021118${String(index).padStart(2, "0")}-R${String(index).padStart(5, "0")}`,
+        status: "DONE",
+        commit: { hash: goodHash },
+      })),
+    ];
+    try {
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify({ tasks }),
+        "utf8",
+      );
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      expect(stderr.mock.calls.flat().join("\n")).not.toContain("unknown historical commit hash");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("surfaces older historical archive anomalies when archive-full is enabled", async () => {
+    const ws = await mkWorkspace();
+    const goodHash = await gitInitWithCommit(ws.root, "feat: initial");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    const tasks = [
+      {
+        id: "202602111750-OLD111",
+        status: "DONE",
+        commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+      },
+      ...Array.from({ length: 205 }, (_, index) => ({
+        id: `2026021118${String(index).padStart(2, "0")}-R${String(index).padStart(5, "0")}`,
+        status: "DONE",
+        commit: { hash: goodHash },
+      })),
+    ];
+    try {
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify({ tasks }),
+        "utf8",
+      );
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false, archiveFull: true },
+      );
+      expect(rc).toBe(0);
+      expect(stderr.mock.calls.flat().join("\n")).toContain("unknown historical commit hash");
+      expect(stderr.mock.calls.flat().join("\n")).toContain("202602111750-OLD111");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
   it("warns but does not fail when DONE task commit points to a close commit subject", async () => {
     const ws = await mkWorkspace();
     const closeHash = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");

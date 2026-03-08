@@ -22,7 +22,7 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
     let checks = [
       ...(await checkWorkspace(repoRoot)),
       ...checkRuntimeSourceFacts(ctx.cwd),
-      ...(await checkDoneTaskCommitInvariants(repoRoot)),
+      ...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })),
     ];
     if (!isWorkflowEnforcementDisabled()) {
       checks = [...checks, ...(await checkWorkflowContract(repoRoot))];

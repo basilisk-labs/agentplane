@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { execFileAsync, gitEnv } from "../shared/git.js";
 
+const DEFAULT_RECENT_DONE_TASK_LIMIT = 200;
+
 type TaskSnapshotRecord = {
   id?: unknown;
   title?: unknown;
@@ -137,7 +139,10 @@ function summarizeHistoricalFindings(
   ];
 }
 
-export async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<string[]> {
+export async function checkDoneTaskCommitInvariants(
+  repoRoot: string,
+  opts: { fullArchive?: boolean } = {},
+): Promise<string[]> {
   const tasksPath = path.join(repoRoot, ".agentplane", "tasks.json");
   let raw = "";
   try {
@@ -153,10 +158,11 @@ export async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<s
     return [`Invalid JSON snapshot: ${path.relative(repoRoot, tasksPath)}`];
   }
   const all = Array.isArray(parsed.tasks) ? (parsed.tasks as TaskSnapshotRecord[]) : [];
-  const done = all.filter((t) => {
+  const allDone = all.filter((t) => {
     const status = typeof t.status === "string" ? t.status : "";
     return status.toUpperCase() === "DONE";
   });
+  const done = opts.fullArchive ? allDone : allDone.slice(-DEFAULT_RECENT_DONE_TASK_LIMIT);
   if (done.length === 0) return [];
 
   const problems: string[] = [];
@@ -177,18 +183,7 @@ export async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<s
   }
   if (hashes.size === 0) return problems;
 
-  const subjectByHash = new Map<string, string>();
-  for (const hash of hashes) {
-    try {
-      const { stdout } = await execFileAsync("git", ["show", "-s", "--format=%s", hash], {
-        cwd: repoRoot,
-        env: gitEnv(),
-      });
-      subjectByHash.set(hash, String(stdout ?? "").trim());
-    } catch {
-      subjectByHash.set(hash, "");
-    }
-  }
+  const subjectByHash = await resolveCommitSubjects(repoRoot, [...hashes]);
 
   for (const task of done) {
     const id = typeof task.id === "string" ? task.id : "<unknown>";
@@ -238,4 +233,44 @@ export async function checkDoneTaskCommitInvariants(repoRoot: string): Promise<s
   );
 
   return problems;
+}
+
+async function resolveCommitSubjects(
+  repoRoot: string,
+  hashes: string[],
+): Promise<Map<string, string>> {
+  const subjectByHash = new Map<string, string>();
+  if (hashes.length === 0) return subjectByHash;
+
+  for (const chunk of chunked(hashes, 200)) {
+    try {
+      const { stdout } = await execFileAsync(
+        "git",
+        ["show", "-s", "--no-patch", "--format=%H%x00%s%x00", "--ignore-missing", ...chunk],
+        {
+          cwd: repoRoot,
+          env: gitEnv(),
+        },
+      );
+      const parts = String(stdout ?? "").split("\u0000");
+      for (let i = 0; i + 1 < parts.length; i += 2) {
+        const hash = parts[i]?.trim() ?? "";
+        const subject = parts[i + 1]?.trim() ?? "";
+        if (!hash) continue;
+        subjectByHash.set(hash, subject);
+      }
+    } catch {
+      // Preserve old behavior: unknown/unreadable hashes are reported later as empty subject.
+    }
+  }
+
+  return subjectByHash;
+}
+
+function chunked<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
 }

@@ -1,7 +1,7 @@
 ---
 id: "202603080540-AKTBET"
 title: "P1: optimize doctor archive scan and heavy-path performance"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -9,18 +9,36 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-08T06:44:10.474Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
+  state: "ok"
+  updated_at: "2026-03-08T07:03:39.222Z"
+  updated_by: "CODER"
+  note: "Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 1 file, 19 tests passed, including new default bounded archive scan and --archive-full coverage.\nScope: doctor archive behavior and runtime/workspace regressions.\n\nCommand: bun run lint:core -- packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.spec.ts packages/agentplane/src/commands/doctor/archive.ts packages/agentplane/src/commands/doctor.command.test.ts\nResult: pass\nEvidence: eslint completed clean on the modified doctor sources and tests.\nScope: doctor implementation and test files.\n\nCommand: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit completed with the new doctor flag and archive options.\nScope: agentplane package typing after doctor changes.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && agentplane doctor && agentplane doctor --archive-full\nResult: pass\nEvidence: rebuild completed; default doctor finished in real 0.88s with bounded archive info, archive-full finished in real 0.75s and preserved deep historical findings.\nScope: framework checkout runtime freshness and doctor default/full command behavior."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: optimizing doctor so the default path stops paying full historical archive cost while preserving an explicit deep archive mode."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T06:44:10.767Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: optimizing doctor so the default path stops paying full historical archive cost while preserving an explicit deep archive mode."
+  -
+    type: "verify"
+    at: "2026-03-08T07:03:39.222Z"
+    author: "CODER"
+    state: "ok"
+    note: "Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 1 file, 19 tests passed, including new default bounded archive scan and --archive-full coverage.\nScope: doctor archive behavior and runtime/workspace regressions.\n\nCommand: bun run lint:core -- packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.spec.ts packages/agentplane/src/commands/doctor/archive.ts packages/agentplane/src/commands/doctor.command.test.ts\nResult: pass\nEvidence: eslint completed clean on the modified doctor sources and tests.\nScope: doctor implementation and test files.\n\nCommand: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit completed with the new doctor flag and archive options.\nScope: agentplane package typing after doctor changes.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && agentplane doctor && agentplane doctor --archive-full\nResult: pass\nEvidence: rebuild completed; default doctor finished in real 0.88s with bounded archive info, archive-full finished in real 0.75s and preserved deep historical findings.\nScope: framework checkout runtime freshness and doctor default/full command behavior."
 doc_version: 2
-doc_updated_at: "2026-03-08T05:40:02.846Z"
+doc_updated_at: "2026-03-08T07:03:39.223Z"
 doc_updated_by: "CODER"
 description: "Reduce doctor latency on large archives via clearer archive boundaries, optional deeper modes, and cheap-path shortcuts after module extraction."
 id_source: "generated"
@@ -38,9 +56,9 @@ Reduce doctor latency on large archives via clearer archive boundaries, optional
 
 ## Plan
 
-1. Implement the change for "P1: optimize doctor archive scan and heavy-path performance".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Add an explicit deep-archive mode to doctor and keep the default path focused on actionable current-state checks plus a bounded recent archive window.
+2. Replace per-hash historical git lookups with batched subject resolution so archive checks do not spawn one git process per task.
+3. Verify doctor behavior with targeted tests, lint, and timing-sensitive local runs for default and deep modes.
 
 ## Risks
 
@@ -68,9 +86,40 @@ Reduce doctor latency on large archives via clearer archive boundaries, optional
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T07:03:39.222Z — VERIFY — ok
+
+By: CODER
+
+Note: Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000
+Result: pass
+Evidence: 1 file, 19 tests passed, including new default bounded archive scan and --archive-full coverage.
+Scope: doctor archive behavior and runtime/workspace regressions.
+
+Command: bun run lint:core -- packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.spec.ts packages/agentplane/src/commands/doctor/archive.ts packages/agentplane/src/commands/doctor.command.test.ts
+Result: pass
+Evidence: eslint completed clean on the modified doctor sources and tests.
+Scope: doctor implementation and test files.
+
+Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit
+Result: pass
+Evidence: TypeScript no-emit completed with the new doctor flag and archive options.
+Scope: agentplane package typing after doctor changes.
+
+Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && agentplane doctor && agentplane doctor --archive-full
+Result: pass
+Evidence: rebuild completed; default doctor finished in real 0.88s with bounded archive info, archive-full finished in real 0.75s and preserved deep historical findings.
+Scope: framework checkout runtime freshness and doctor default/full command behavior.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T06:44:10.767Z, excerpt_hash=sha256:682d5674a3bb4d925efca0f9cabc057c814315f01dc448e2879b94eecb1a7911
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Notes
+
+- Optimize default doctor for daily use; do not remove deep historical validation, only move it behind an explicit flag.
+- Preserve current runtime/workspace/workflow diagnostics and only narrow the archive-heavy default path.
