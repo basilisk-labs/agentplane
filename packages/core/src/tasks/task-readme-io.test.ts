@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { setMarkdownSection } from "./task-doc.js";
 import { updateTaskReadmeAtomic } from "./task-readme-io.js";
 
 const BASE = `---
@@ -38,5 +39,29 @@ describe("updateTaskReadmeAtomic", () => {
     expect(next).toContain('title: "Updated"');
     expect(next).toContain("## Notes");
     expect(next.endsWith("\n")).toBe(true);
+  });
+
+  it("serializes concurrent updates so neither section change is lost", async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), "agentplane-core-"));
+    const readmePath = path.join(dir, "README.md");
+    await writeFile(readmePath, `${BASE}\n## Notes\n\nOriginal note\n`, "utf8");
+
+    await Promise.all([
+      updateTaskReadmeAtomic(readmePath, async ({ frontmatter, body }) => {
+        await new Promise((resolve) => setTimeout(resolve, 75));
+        return {
+          frontmatter,
+          body: setMarkdownSection(body, "Summary", "Updated summary"),
+        };
+      }),
+      updateTaskReadmeAtomic(readmePath, ({ frontmatter, body }) => ({
+        frontmatter,
+        body: setMarkdownSection(body, "Notes", "Updated notes"),
+      })),
+    ]);
+
+    const next = await readFile(readmePath, "utf8");
+    expect(next).toContain("Updated summary");
+    expect(next).toContain("Updated notes");
   });
 });

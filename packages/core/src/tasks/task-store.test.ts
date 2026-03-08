@@ -222,6 +222,45 @@ describe("task-store", () => {
     }
   });
 
+  it("setTaskDocSection preserves both concurrent section updates", async () => {
+    const root = await mkGitRepoRoot();
+
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "My task",
+      description: "Why it matters",
+      owner: "CODER",
+      priority: "med",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    await Promise.all([
+      setTaskDocSection({
+        cwd: root,
+        rootOverride: root,
+        taskId: created.id,
+        section: "Summary",
+        text: "Updated summary",
+        updatedBy: "CODER",
+      }),
+      setTaskDocSection({
+        cwd: root,
+        rootOverride: root,
+        taskId: created.id,
+        section: "Notes",
+        text: "Updated notes",
+        updatedBy: "CODER",
+      }),
+    ]);
+
+    const updated = await readFile(created.readmePath, "utf8");
+    expect(updated).toContain("Updated summary");
+    expect(updated).toContain("Updated notes");
+  });
+
   it("setTaskDocSection dedupes repeated section headings", async () => {
     const root = await mkGitRepoRoot();
 
