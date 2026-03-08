@@ -1,7 +1,8 @@
 ---
 id: "202603081006-CT5BE1"
 title: "Add dual-read compatibility for task README v2 and v3"
-status: "DOING"
+result_summary: "Dual-read compatibility for task README v2/v3 is now enforced across metadata validation, task export/lint, backend writes, and lifecycle gates."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved compatibility-first runtime work before flipping templates to README v3."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-08T10:38:20.940Z"
+  updated_by: "CODER"
+  note: "Targeted core/task tests, lint, builds, routing check, and doctor passed; dual-read compatibility and version-preserving write paths are covered."
+commit:
+  hash: "19cd97e14d22408b48ba4b509a0bff13704b5078"
+  message: "🧩 CT5BE1 task: add README v2/v3 dual-read compatibility"
 comments:
   -
     author: "CODER"
     body: "Start: add dual-read compatibility for task README v2 and v3 before changing task new/scaffold defaults."
+  -
+    author: "CODER"
+    body: "Verified: dual-read compatibility now accepts doc_version=2 and doc_version=3, preserves task doc versions on lifecycle writes, and treats Notes/Findings as version-aware observation sections."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: add dual-read compatibility for task README v2 and v3 before changing task new/scaffold defaults."
+  -
+    type: "verify"
+    at: "2026-03-08T10:38:20.940Z"
+    author: "CODER"
+    state: "ok"
+    note: "Targeted core/task tests, lint, builds, routing check, and doctor passed; dual-read compatibility and version-preserving write paths are covered."
+  -
+    type: "status"
+    at: "2026-03-08T10:38:47.195Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: dual-read compatibility now accepts doc_version=2 and doc_version=3, preserves task doc versions on lifecycle writes, and treats Notes/Findings as version-aware observation sections."
 doc_version: 2
-doc_updated_at: "2026-03-08T10:23:58.961Z"
+doc_updated_at: "2026-03-08T10:38:47.195Z"
 doc_updated_by: "CODER"
 description: "Teach task readers and lifecycle commands to understand both legacy v2 and new v3 task README formats without breaking old projects."
 id_source: "generated"
@@ -73,6 +92,14 @@ Teach task readers and lifecycle commands to understand both legacy v2 and new v
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T10:38:20.940Z — VERIFY — ok
+
+By: CODER
+
+Note: Targeted core/task tests, lint, builds, routing check, and doctor passed; dual-read compatibility and version-preserving write paths are covered.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T10:23:58.961Z, excerpt_hash=sha256:b16cfa373391c89fd9a9e18b17a7396dd46cf3515553e0114bccd23aec49509d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
