@@ -16,6 +16,48 @@ For local backend, records are persisted under:
 
 - `.agentplane/tasks/<task-id>/README.md`
 
+## README contract versions
+
+- `doc_version=2` is the legacy task README layout and remains readable.
+- `doc_version=3` is the target layout for new tasks and future migrations.
+- Frontmatter remains a machine-oriented state layer.
+- Body sections remain the human working document for planning, verification, and findings.
+
+### README v3 body contract
+
+`doc_version=3` uses this body structure:
+
+- `## Summary`
+- `## Scope`
+- `## Plan`
+- `## Verify Steps`
+- `## Verification`
+- `## Rollback Plan`
+- `## Findings`
+
+Section semantics:
+
+- `## Summary` states the problem, target outcome, and material constraint.
+- `## Scope` separates `In scope` from `Out of scope`.
+- `## Plan` contains executable task steps only.
+- `## Verify Steps` contains acceptance-oriented checks. These may be commands, manual checks, artifact checks, state checks, or review criteria.
+- `## Verification` is the append-only result log written by `agentplane verify`.
+- `## Rollback Plan` records the shortest safe rollback path.
+- `## Findings` records local observations, deviations, follow-up items, and incident candidates.
+
+### Findings vs incidents
+
+- `## Findings` is task-local and may contain raw incident candidates.
+- `.agentplane/policy/incidents.md` stores only curated strong incidents with repository-wide value.
+- Promotion from `Findings` to policy incidents is explicit, not automatic.
+
+### Frontmatter boundaries
+
+- `plan_approval` stores only the approval state of the plan, not the plan text.
+- `verification` stores only the latest verification status, not the full verification log.
+- Plan text stays in `## Plan`.
+- Detailed verification evidence stays in `## Verification`.
+
 ## Verification sections
 
 - `## Verify Steps` is the planned verification contract.
