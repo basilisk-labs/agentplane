@@ -1,6 +1,8 @@
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 
+import { eslintTargets, prettierTargets } from "./lib/pre-commit-staged-files.mjs";
+
 function run(command, args, env) {
   execFileSync(command, args, {
     stdio: "inherit",
@@ -28,39 +30,19 @@ function localBin(root, name) {
   return path.join(root, "node_modules", ".bin", `${name}${ext}`);
 }
 
-function hasAnyFileWithExt(files, extensions) {
-  return files.some((file) => extensions.some((ext) => file.endsWith(ext)));
-}
-
-function filesWithExt(files, extensions) {
-  return files.filter((file) => extensions.some((ext) => file.endsWith(ext)));
-}
-
 const root = repoRoot();
 const files = stagedFiles();
 
-const prettierExts = [
-  ".js",
-  ".jsx",
-  ".ts",
-  ".tsx",
-  ".mjs",
-  ".cjs",
-  ".json",
-  ".yml",
-  ".yaml",
-  ".md",
-  ".mdx",
-];
-if (hasAnyFileWithExt(files, prettierExts)) {
-  run(localBin(root, "prettier"), ["--check", ...filesWithExt(files, prettierExts)]);
+const prettierFiles = prettierTargets(files);
+if (prettierFiles.length > 0) {
+  run(localBin(root, "prettier"), ["--check", ...prettierFiles]);
 } else {
   process.stdout.write("pre-commit: no staged files for Prettier, skipping.\n");
 }
 
-const eslintExts = [".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"];
-if (hasAnyFileWithExt(files, eslintExts)) {
-  run(localBin(root, "eslint"), filesWithExt(files, eslintExts));
+const eslintFiles = eslintTargets(files);
+if (eslintFiles.length > 0) {
+  run(localBin(root, "eslint"), eslintFiles);
 } else {
   process.stdout.write("pre-commit: no staged files for ESLint, skipping.\n");
 }

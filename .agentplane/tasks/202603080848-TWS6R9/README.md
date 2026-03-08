@@ -1,7 +1,7 @@
 ---
 id: "202603080848-TWS6R9"
 title: "Remove ignored d.ts lint noise in local hooks"
-status: "TODO"
+status: "DOING"
 priority: "low"
 owner: "CODER"
 depends_on: []
@@ -9,19 +9,43 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-08T08:57:40.532Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
+  state: "ok"
+  updated_at: "2026-03-08T08:59:32.443Z"
+  updated_by: "TESTER"
+  note: "Verified: pre-commit file selection now excludes declaration files from ESLint targets while preserving Prettier coverage and ordinary source-file lint coverage. Lint and the regression test both passed."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: extracting the pre-commit staged-file selector and excluding declaration files from ESLint targets while keeping normal source-file lint coverage intact."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T08:57:40.842Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extracting the pre-commit staged-file selector and excluding declaration files from ESLint targets while keeping normal source-file lint coverage intact."
+  -
+    type: "verify"
+    at: "2026-03-08T08:59:11.933Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: pre-commit file selection now excludes declaration files from ESLint targets while preserving Prettier coverage and ordinary source-file lint coverage. Lint and the regression test both passed."
+  -
+    type: "verify"
+    at: "2026-03-08T08:59:32.443Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: pre-commit file selection now excludes declaration files from ESLint targets while preserving Prettier coverage and ordinary source-file lint coverage. Lint and the regression test both passed."
 doc_version: 2
-doc_updated_at: "2026-03-08T08:48:34.296Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-08T08:59:32.445Z"
+doc_updated_by: "TESTER"
 description: "Stop local hook and targeted lint paths from printing ignored .d.ts warnings while preserving lint coverage for relevant runtime files."
 id_source: "generated"
 ---
@@ -38,9 +62,9 @@ Stop local hook and targeted lint paths from printing ignored .d.ts warnings whi
 
 ## Plan
 
-1. Implement the change for "Remove ignored d.ts lint noise in local hooks".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Extract pre-commit staged-file selection into a small helper so the ESLint target set is deterministic and testable.
+2. Exclude ignored declaration files such as .d.ts from ESLint targets while preserving Prettier coverage and normal source-file linting.
+3. Verify the selector with a regression test and lint the touched hook files.
 
 ## Risks
 
@@ -53,13 +77,14 @@ Stop local hook and targeted lint paths from printing ignored .d.ts warnings whi
 - Primary tag: `code`
 
 ### Checks
-- Add explicit checks/commands for this task before approval.
+- `bun run lint:core -- scripts/run-pre-commit-hook.mjs scripts/lib/pre-commit-staged-files.mjs packages/agentplane/src/cli/pre-commit-staged-files.test.ts`
+- `bunx vitest run packages/agentplane/src/cli/pre-commit-staged-files.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000`
 
 ### Evidence / Commands
-- Record executed commands and key outputs.
+- Record that declaration files remain eligible for Prettier when relevant but are excluded from the ESLint target list.
 
 ### Pass criteria
-- Steps are reproducible and produce expected results.
+- Local pre-commit selection no longer emits ignored .d.ts ESLint warnings while preserving coverage for regular lintable source files.
 
 ## Verification
 
@@ -68,9 +93,30 @@ Stop local hook and targeted lint paths from printing ignored .d.ts warnings whi
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T08:59:11.933Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: pre-commit file selection now excludes declaration files from ESLint targets while preserving Prettier coverage and ordinary source-file lint coverage. Lint and the regression test both passed.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T08:57:40.842Z, excerpt_hash=sha256:99368444755b95d8a7ec2dd0d4e310d02a47c4962e5e87131afea3d3b89237dd
+
+#### 2026-03-08T08:59:32.443Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: pre-commit file selection now excludes declaration files from ESLint targets while preserving Prettier coverage and ordinary source-file lint coverage. Lint and the regression test both passed.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T08:59:11.934Z, excerpt_hash=sha256:99368444755b95d8a7ec2dd0d4e310d02a47c4962e5e87131afea3d3b89237dd
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Notes
+
+- Motivation: recent commits still printed non-actionable ESLint warnings because .d.ts files were forwarded into targeted lint invocations even though ESLint ignores them.
+- Non-goal: changing the repository-wide ESLint config or weakening source-file lint coverage.
