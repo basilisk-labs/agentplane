@@ -1,7 +1,8 @@
 ---
 id: "202603081249-DCW05J"
 title: "Document runtime-sensitive CLI fast contours"
-status: "DOING"
+result_summary: "Developer testing docs now explain the two new runtime-sensitive CLI fast buckets and the runtime-sensitive paths that intentionally remain on broad fallback."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T13:11:13.180Z"
   updated_by: "DOCS"
   note: "Command: bun run docs:site:check; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: updated pre-push contour docs list cli-core and cli-runtime, and explicitly preserve docs-cli plus init-upgrade runtime paths on broad fallback. Scope: docs/developer/testing-and-quality.mdx."
-commit: null
+commit:
+  hash: "fd095f25d6ade2c776a5f20af240be266d55ff2a"
+  message: "📝 DCW05J docs: document runtime-sensitive CLI contours"
 comments:
   -
     author: "DOCS"
     body: "Start: updating developer guidance for the new runtime-sensitive CLI fast buckets and the residual broad-fallback boundary, without changing selector behavior."
+  -
+    author: "DOCS"
+    body: "Verified: documented cli-core and cli-runtime contours, aligned the residual broad-fallback boundary with the implemented selector, and re-ran docs plus routing checks."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Command: bun run docs:site:check; node .agentplane/policy/check-routing.mjs. Result: pass. Evidence: updated pre-push contour docs list cli-core and cli-runtime, and explicitly preserve docs-cli plus init-upgrade runtime paths on broad fallback. Scope: docs/developer/testing-and-quality.mdx."
+  -
+    type: "status"
+    at: "2026-03-08T13:11:40.013Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: documented cli-core and cli-runtime contours, aligned the residual broad-fallback boundary with the implemented selector, and re-ran docs plus routing checks."
 doc_version: 3
-doc_updated_at: "2026-03-08T13:11:13.182Z"
+doc_updated_at: "2026-03-08T13:11:40.013Z"
 doc_updated_by: "DOCS"
 description: "Update developer guidance so the pre-push contour documentation includes the new runtime-sensitive CLI buckets and their remaining fallback boundaries."
 id_source: "generated"
