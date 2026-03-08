@@ -1,7 +1,8 @@
 ---
 id: "202603080540-WNE4RR"
 title: "P1: split task shared helpers by semantics"
-status: "DOING"
+result_summary: "task shared helper logic is now split by semantics behind the same ./shared.js import surface, reducing maintenance cost without changing lifecycle behavior."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T07:09:58.162Z"
   updated_by: "CODER"
   note: "Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit succeeded after splitting task/shared.ts into semantic modules and keeping the barrel surface stable.\nScope: task command helper typings and export surface.\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/task/shared.verify-steps.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 6 files, 66 tests passed after the split; shared helper, finish, verify-record, and plan behavior stayed green.\nScope: task helper semantics and representative lifecycle unit coverage.\n\nCommand: bun run lint:core -- packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/*.ts packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/task/shared.verify-steps.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts\nResult: pass\nEvidence: eslint completed clean on the new shared module set and related tests.\nScope: barrel file plus extracted task helper modules.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build\nResult: pass\nEvidence: both builds completed after the refactor, confirming the task command source tree still assembles cleanly.\nScope: package build integrity after task helper modularization."
-commit: null
+commit:
+  hash: "077bc4af0a11179b765081d005b475f4fdf7d345"
+  message: "♻️ WNE4RR task: split shared helpers by semantics"
 comments:
   -
     author: "CODER"
     body: "Start: splitting task shared helpers by semantics while preserving ./shared.js as the public barrel for task lifecycle commands."
+  -
+    author: "CODER"
+    body: "Verified: task/shared.ts was reduced to a stable barrel over docs, tags, dependencies, transitions, and listing helpers; TypeScript, task helper unit suites, lint, and package builds all passed."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit succeeded after splitting task/shared.ts into semantic modules and keeping the barrel surface stable.\nScope: task command helper typings and export surface.\n\nCommand: bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/task/shared.verify-steps.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 6 files, 66 tests passed after the split; shared helper, finish, verify-record, and plan behavior stayed green.\nScope: task helper semantics and representative lifecycle unit coverage.\n\nCommand: bun run lint:core -- packages/agentplane/src/commands/task/shared.ts packages/agentplane/src/commands/task/shared/*.ts packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/task/shared.verify-steps.test.ts packages/agentplane/src/commands/task/warn-owner.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts\nResult: pass\nEvidence: eslint completed clean on the new shared module set and related tests.\nScope: barrel file plus extracted task helper modules.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build\nResult: pass\nEvidence: both builds completed after the refactor, confirming the task command source tree still assembles cleanly.\nScope: package build integrity after task helper modularization."
+  -
+    type: "status"
+    at: "2026-03-08T07:10:20.385Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task/shared.ts was reduced to a stable barrel over docs, tags, dependencies, transitions, and listing helpers; TypeScript, task helper unit suites, lint, and package builds all passed."
 doc_version: 2
-doc_updated_at: "2026-03-08T07:09:58.163Z"
+doc_updated_at: "2026-03-08T07:10:20.385Z"
 doc_updated_by: "CODER"
 description: "Refactor commands/task/shared.ts into focused helpers for transitions, verify-step docs, filters, and close/commit utilities while preserving lifecycle behavior."
 id_source: "generated"
