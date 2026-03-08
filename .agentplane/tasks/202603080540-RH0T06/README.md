@@ -1,7 +1,8 @@
 ---
 id: "202603080540-RH0T06"
 title: "P0: refactor release apply into explicit state machine helpers"
-status: "DOING"
+result_summary: "release/apply.command.ts now acts as the orchestration layer while preflight, mutation, and reporting responsibilities live in dedicated modules; release apply behavior and safeguards stayed intact under targeted tests."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T06:08:39.807Z"
   updated_by: "CODER"
   note: "Release apply was refactored into explicit preflight, mutation, reporting, and orchestration helpers. Release apply tests and release plan tests passed, lint passed, TypeScript noEmit passed, and agentplane build passed while preserving the release push/report contract."
-commit: null
+commit:
+  hash: "ee48ef39b48b04d418170f82e3910c0bb222c080"
+  message: "♻️ RH0T06 release: split apply flow into explicit state helpers"
 comments:
   -
     author: "CODER"
     body: "Start: extracting release apply into explicit preflight, mutation, report, and push/publish helpers while keeping release semantics stable."
+  -
+    author: "CODER"
+    body: "Verified: release apply now runs through explicit preflight, mutation, reporting, and push helpers, and the release tests remained green after the refactor."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release apply was refactored into explicit preflight, mutation, reporting, and orchestration helpers. Release apply tests and release plan tests passed, lint passed, TypeScript noEmit passed, and agentplane build passed while preserving the release push/report contract."
+  -
+    type: "status"
+    at: "2026-03-08T06:09:28.794Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release apply now runs through explicit preflight, mutation, reporting, and push helpers, and the release tests remained green after the refactor."
 doc_version: 2
-doc_updated_at: "2026-03-08T06:08:39.808Z"
+doc_updated_at: "2026-03-08T06:09:28.794Z"
 doc_updated_by: "CODER"
 description: "Decompose release apply into preflight, version mutation, artifact sync, commit/tag, and push/publish helpers to reduce orchestration risk and improve recovery clarity."
 id_source: "generated"
