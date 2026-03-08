@@ -1,7 +1,8 @@
 ---
 id: "202603080540-JMMNDZ"
 title: "P0: extract doctor checks into modular runners"
-status: "DOING"
+result_summary: "Doctor command refactored into modular check runners without changing diagnostics semantics."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T05:46:12.154Z"
   updated_by: "CODER"
   note: "Doctor checks were extracted into dedicated runtime/workspace/layering/workflow/archive/fixes modules. Targeted doctor.command tests passed, lint passed, agentplane build passed, and agentplane doctor preserved the current diagnostics contract."
-commit: null
+commit:
+  hash: "9df68b8eeda50d0f90acc06816965e016de79b43"
+  message: "♻️ JMMNDZ doctor: extract modular check runners"
 comments:
   -
     author: "CODER"
     body: "Start: extract doctor checks into narrower modules, keep diagnostics behavior stable, and verify the refactor with targeted doctor tests plus command-level checks."
+  -
+    author: "CODER"
+    body: "Verified: doctor checks now live in dedicated modules and doctor.run is reduced to command orchestration while preserving existing diagnostics behavior."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Doctor checks were extracted into dedicated runtime/workspace/layering/workflow/archive/fixes modules. Targeted doctor.command tests passed, lint passed, agentplane build passed, and agentplane doctor preserved the current diagnostics contract."
+  -
+    type: "status"
+    at: "2026-03-08T05:47:37.023Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor checks now live in dedicated modules and doctor.run is reduced to command orchestration while preserving existing diagnostics behavior."
 doc_version: 2
-doc_updated_at: "2026-03-08T05:46:12.155Z"
+doc_updated_at: "2026-03-08T05:47:37.023Z"
 doc_updated_by: "CODER"
 description: "Split doctor.run into isolated workspace, runtime, workflow, and historical-archive check modules without changing current diagnostics semantics."
 id_source: "generated"
