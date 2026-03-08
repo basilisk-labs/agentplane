@@ -1,7 +1,8 @@
 ---
 id: "202603081006-SDFADJ"
 title: "Extend task migrate-doc for README v2 to v3 migration"
-status: "TODO"
+result_summary: "Extended task migrate-doc into a real v2-to-v3 migrator with doc_version promotion, Findings migration, canonical v3 ordering, preserved extra sections, and bulk/idempotent coverage."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -17,15 +18,43 @@ plan_approval:
   updated_by: null
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
-comments: []
-events: []
+  state: "ok"
+  updated_at: "2026-03-08T11:21:37.600Z"
+  updated_by: "CODER"
+  note: "Extended task migrate-doc to upgrade legacy README v2 tasks into v3 with Findings, doc_version promotion, preserved extra sections, and targeted migrate-doc/lifecycle tests plus builds and doctor passing."
+commit:
+  hash: "4b922007fc719a46db01b9df358c89a4bc331c58"
+  message: "♻️ SDFADJ task: migrate legacy task docs to README v3"
+comments:
+  -
+    author: "CODER"
+    body: "Start: extend task migrate-doc to normalize legacy README v2 tasks into README v3 with Findings, new Verification layout, and idempotent migration behavior."
+  -
+    author: "CODER"
+    body: "Verified: task migrate-doc now upgrades legacy README v2 tasks into README v3, promotes Notes into Findings, preserves extra sections, and keeps existing v3 files compatible while normalizing required metadata."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T11:17:07.896Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extend task migrate-doc to normalize legacy README v2 tasks into README v3 with Findings, new Verification layout, and idempotent migration behavior."
+  -
+    type: "verify"
+    at: "2026-03-08T11:21:37.600Z"
+    author: "CODER"
+    state: "ok"
+    note: "Extended task migrate-doc to upgrade legacy README v2 tasks into v3 with Findings, doc_version promotion, preserved extra sections, and targeted migrate-doc/lifecycle tests plus builds and doctor passing."
+  -
+    type: "status"
+    at: "2026-03-08T11:21:57.863Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task migrate-doc now upgrades legacy README v2 tasks into README v3, promotes Notes into Findings, preserves extra sections, and keeps existing v3 files compatible while normalizing required metadata."
 doc_version: 2
-doc_updated_at: "2026-03-08T10:06:37.389Z"
+doc_updated_at: "2026-03-08T11:21:57.863Z"
 doc_updated_by: "CODER"
 description: "Add explicit migration from legacy task README v2 to the new v3 format, including dry-run and stable normalization rules."
 id_source: "generated"
@@ -43,9 +72,7 @@ Add explicit migration from legacy task README v2 to the new v3 format, includin
 
 ## Plan
 
-1. Implement the change for "Extend task migrate-doc for README v2 to v3 migration".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Extend task migrate-doc so legacy README v2 tasks are upgraded to doc_version=3 with Findings, v3 section ordering, and normalized Verification while preserving existing content. 2. Add migration coverage for single-task, --all, and dry-run/idempotent paths so old projects can be normalized without manual README surgery. 3. Run targeted migrate-doc/lifecycle checks plus build and doctor, then verify, finish, and push main.
 
 ## Risks
 
@@ -54,17 +81,7 @@ Add explicit migration from legacy task README v2 to the new v3 format, includin
 
 ## Verify Steps
 
-### Scope
-- Primary tag: `code`
-
-### Checks
-- Add explicit checks/commands for this task before approval.
-
-### Evidence / Commands
-- Record executed commands and key outputs.
-
-### Pass criteria
-- Steps are reproducible and produce expected results.
+1. Migrate a README v2 task with Notes and legacy Verification. Expected: output is doc_version=3 with Findings, preserved content, and a results-only Verification block. 2. Run task migrate-doc on repeated or bulk inputs. Expected: migration is idempotent, supports --all, and does not rewrite already-normalized tasks unexpectedly. 3. Run targeted migrate-doc tests, builds, and doctor. Expected: legacy-to-v3 migration passes without breaking current task lifecycle behavior.
 
 ## Verification
 
@@ -73,6 +90,14 @@ Add explicit migration from legacy task README v2 to the new v3 format, includin
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T11:21:37.600Z — VERIFY — ok
+
+By: CODER
+
+Note: Extended task migrate-doc to upgrade legacy README v2 tasks into v3 with Findings, doc_version promotion, preserved extra sections, and targeted migrate-doc/lifecycle tests plus builds and doctor passing.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T11:17:07.896Z, excerpt_hash=sha256:e91deab19801ac61b8332f8be83b5f13c4d1bbfed0e1a3e7a8e42e893249f49b
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
