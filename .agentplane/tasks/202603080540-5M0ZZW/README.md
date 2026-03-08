@@ -1,7 +1,8 @@
 ---
 id: "202603080540-5M0ZZW"
 title: "P1: decompose run-cli orchestration layers"
-status: "DOING"
+result_summary: "run-cli.ts is now a narrower orchestrator around extracted helper modules, and the requested fast-gate optimization backlog task was persisted in the task graph."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T06:41:20.991Z"
   updated_by: "CODER"
   note: "Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit completed with exit code 0 after extracting globals, catalog, error-guidance, and update-warning helpers.\nScope: run-cli orchestration typing and module boundaries.\n\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 4 files, 19 tests passed; help, misc, and boot behavior remained green.\nScope: run-cli help surfaces and boot path behavior.\n\nCommand: bun run lint:core -- packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/cli/run-cli/catalog.ts packages/agentplane/src/cli/run-cli/globals.ts packages/agentplane/src/cli/run-cli/error-guidance.ts packages/agentplane/src/cli/run-cli/update-warning.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts\nResult: pass\nEvidence: eslint finished clean after import/type cleanup in extracted helpers.\nScope: modified run-cli source files and targeted regression tests.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build\nResult: pass\nEvidence: both package builds exited with code 0 after the extraction.\nScope: build output freshness for framework checkout and agentplane package assembly."
-commit: null
+commit:
+  hash: "358b354fa40f9e812df92c6a8a44117354d99729"
+  message: "♻️ 5M0ZZW cli: split run-cli orchestration helpers"
 comments:
   -
     author: "CODER"
     body: "Start: splitting run-cli into narrower orchestration helpers while preserving help, boot, and dispatch behavior."
+  -
+    author: "CODER"
+    body: "Verified: run-cli orchestration was split into globals, catalog, error-guidance, and update-warning helpers; targeted run-cli tests, lint, TypeScript no-emit, and package builds all passed without CLI contract drift."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit completed with exit code 0 after extracting globals, catalog, error-guidance, and update-warning helpers.\nScope: run-cli orchestration typing and module boundaries.\n\nCommand: bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 4 files, 19 tests passed; help, misc, and boot behavior remained green.\nScope: run-cli help surfaces and boot path behavior.\n\nCommand: bun run lint:core -- packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/cli/run-cli/catalog.ts packages/agentplane/src/cli/run-cli/globals.ts packages/agentplane/src/cli/run-cli/error-guidance.ts packages/agentplane/src/cli/run-cli/update-warning.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts\nResult: pass\nEvidence: eslint finished clean after import/type cleanup in extracted helpers.\nScope: modified run-cli source files and targeted regression tests.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build\nResult: pass\nEvidence: both package builds exited with code 0 after the extraction.\nScope: build output freshness for framework checkout and agentplane package assembly."
+  -
+    type: "status"
+    at: "2026-03-08T06:41:57.906Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: run-cli orchestration was split into globals, catalog, error-guidance, and update-warning helpers; targeted run-cli tests, lint, TypeScript no-emit, and package builds all passed without CLI contract drift."
 doc_version: 2
-doc_updated_at: "2026-03-08T06:41:20.992Z"
+doc_updated_at: "2026-03-08T06:41:57.906Z"
 doc_updated_by: "CODER"
 description: "Split run-cli bootstrap, dispatch, runtime diagnostics, and render/error glue into narrower modules without changing command contracts."
 id_source: "generated"
