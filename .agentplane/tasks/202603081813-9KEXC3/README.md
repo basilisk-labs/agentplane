@@ -1,7 +1,8 @@
 ---
 id: "202603081813-9KEXC3"
 title: "Raise remote release-tag preflight test timeout for release apply"
-status: "DOING"
+result_summary: "Release prepublish no longer fails on the remote-tag guard test; the 0.3.4 release path is unblocked."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T18:21:33.982Z"
   updated_by: "CODER"
   note: "Raised the remote-tag release/apply integration test timeout to 60s, the targeted suite passed, and bun run release:prepublish completed cleanly afterwards."
-commit: null
+commit:
+  hash: "a5e9588779379376dc9a9ef54e5dae0e2579e333"
+  message: "🧪 9KEXC3 release: raise remote-tag preflight timeout"
 comments:
   -
     author: "CODER"
     body: "Start: fixing the remote-tag release/apply regression timeout uncovered by release:prepublish, then rerunning the full release gate before resuming v0.3.4 publication."
+  -
+    author: "CODER"
+    body: "Verified: the remote-tag preflight regression now has a realistic 60s budget, the targeted release/apply suite passes, and the full release:prepublish gate is green again."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Raised the remote-tag release/apply integration test timeout to 60s, the targeted suite passed, and bun run release:prepublish completed cleanly afterwards."
+  -
+    type: "status"
+    at: "2026-03-08T18:21:51.041Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the remote-tag preflight regression now has a realistic 60s budget, the targeted release/apply suite passes, and the full release:prepublish gate is green again."
 doc_version: 3
-doc_updated_at: "2026-03-08T18:21:33.983Z"
+doc_updated_at: "2026-03-08T18:21:51.041Z"
 doc_updated_by: "CODER"
 description: "Fix the release/apply regression test that times out in release:prepublish when checking an existing remote tag before mutation, then rerun the 0.3.4 release gate."
 id_source: "generated"
