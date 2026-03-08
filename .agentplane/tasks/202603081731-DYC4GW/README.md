@@ -1,7 +1,8 @@
 ---
 id: "202603081731-DYC4GW"
 title: "Remove repo-only bootstrap references from install surfaces"
-status: "DOING"
+result_summary: "Install/runtime startup guidance is self-contained for npm-installed agentplane users."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T17:43:14.859Z"
   updated_by: "CODER"
   note: "Verified install-first startup contract: quickstart/role surfaces are self-contained; bootstrap docs remain docs-site only; AGENTS/runtime checks pass."
-commit: null
+commit:
+  hash: "f6eb8e49e61b5356fedc4ec373cbc3f125e71c74"
+  message: "✨ DYC4GW cli: make installed startup surfaces self-contained"
 comments:
   -
     author: "CODER"
     body: "Start: remove repo-only bootstrap doc references from installed runtime surfaces, keep docs bootstrap generation as a docs-only artifact, and lock the new install-first contract with targeted checks."
+  -
+    author: "CODER"
+    body: "Verified: install-first startup surfaces no longer depend on repo-only bootstrap docs; quickstart/role/AGENTS contract and parity checks are aligned."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified install-first startup contract: quickstart/role surfaces are self-contained; bootstrap docs remain docs-site only; AGENTS/runtime checks pass."
+  -
+    type: "status"
+    at: "2026-03-08T17:43:41.323Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: install-first startup surfaces no longer depend on repo-only bootstrap docs; quickstart/role/AGENTS contract and parity checks are aligned."
 doc_version: 3
-doc_updated_at: "2026-03-08T17:43:14.860Z"
+doc_updated_at: "2026-03-08T17:43:41.323Z"
 doc_updated_by: "CODER"
 description: "Treat npm-installed agentplane as the primary product surface by removing runtime/help/managed-file references to docs artifacts that are not shipped in the npm package or installed into user repositories."
 id_source: "generated"
