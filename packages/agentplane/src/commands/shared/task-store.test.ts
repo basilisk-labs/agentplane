@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { defaultConfig, renderTaskReadme } from "@agentplaneorg/core";
+import { defaultConfig, renderTaskReadme, writeTasksExport } from "@agentplaneorg/core";
 
 import { LocalBackend } from "../../backends/task-backend.js";
 import type { CommandContext } from "./task-backend.js";
@@ -25,7 +25,7 @@ function makeCtx(root: string): CommandContext {
   };
 }
 
-function baseReadme(taskId: string, title: string): string {
+function baseReadme(taskId: string, title: string, docVersion: 2 | 3 = 2): string {
   const fm = {
     id: taskId,
     title,
@@ -38,7 +38,7 @@ function baseReadme(taskId: string, title: string): string {
     plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
     verification: { state: "pending", updated_at: null, updated_by: null, note: null },
     comments: [],
-    doc_version: 2,
+    doc_version: docVersion,
     doc_updated_at: "2026-02-07T00:00:00Z",
     doc_updated_by: "CODER",
     description: "",
@@ -95,5 +95,30 @@ describe("commands/shared/TaskStore", () => {
         return { ...current, title: "after" };
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
+  it("preserves doc_version=3 across task-store updates and task export", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    await mkdir(path.join(root, ".git"), { recursive: true });
+    const taskId = "202602070000-V3OK";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(readmePath, baseReadme(taskId, "before", 3), "utf8");
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    const result = await store.update(taskId, (current) => {
+      return { ...current, doc: `${current.doc ?? ""}\nUpdated.`, doc_version: 3 };
+    });
+
+    expect(result.task.doc_version).toBe(3);
+
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain("doc_version: 3");
+
+    const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const exported = snapshot.tasks.find((task) => task.id === taskId);
+    expect(exported?.doc_version).toBe(3);
   });
 });

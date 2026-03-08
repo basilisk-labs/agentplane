@@ -27,6 +27,10 @@ function taskReadmePath(ctx: CommandContext, taskId: string): string {
   return path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir, taskId, "README.md");
 }
 
+function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 2): 2 | 3 {
+  return value === 3 ? 3 : value === 2 ? 2 : fallback;
+}
+
 async function readTaskReadmeCached(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -123,17 +127,22 @@ export class TaskStore {
       let body = entry.parsed.body ?? "";
       const existingDoc = extractTaskDoc(body);
       const now = new Date().toISOString();
+      const currentDocVersion = normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version);
+      const requestedDocVersion = normalizeTaskDocVersion(next.doc_version, currentDocVersion);
       if (next.doc !== undefined) {
         const nextDoc = String(next.doc ?? "");
         body = mergeTaskDoc(body, nextDoc);
         if (docChanged(existingDoc, nextDoc) || !frontmatter.doc_updated_at) {
-          frontmatter.doc_version = 2;
+          frontmatter.doc_version = requestedDocVersion;
           frontmatter.doc_updated_at = now;
           frontmatter.doc_updated_by = resolveDocUpdatedBy(next);
         }
       }
 
-      if (frontmatter.doc_version !== 2) frontmatter.doc_version = 2;
+      frontmatter.doc_version = normalizeTaskDocVersion(
+        frontmatter.doc_version,
+        requestedDocVersion,
+      );
       if (
         typeof frontmatter.doc_updated_at !== "string" ||
         frontmatter.doc_updated_at.trim() === ""
