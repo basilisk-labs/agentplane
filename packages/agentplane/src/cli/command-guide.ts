@@ -10,6 +10,17 @@ type RoleGuide = {
   lines: string[];
 };
 
+export type RoleProfileGuide = {
+  filename?: string;
+  id?: string;
+  role?: string;
+  description?: string;
+  inputs?: readonly string[];
+  outputs?: readonly string[];
+  permissions?: readonly string[];
+  workflow?: readonly string[];
+};
+
 const CLI_REFERENCE_DOC_PATH = "docs/user/cli-reference.generated.mdx";
 
 function renderQuickstartCommandBlock(commands: readonly string[]): string[] {
@@ -110,13 +121,50 @@ export function listRoles(): string[] {
   return ROLE_GUIDES.map((guide) => guide.role);
 }
 
-export function renderRole(roleRaw: string): string | null {
+export function getRoleSupplementLines(roleRaw: string): string[] | null {
   const trimmed = roleRaw.trim();
   if (!trimmed) return null;
   const normalized = trimmed.toUpperCase();
   const guide = ROLE_GUIDES.find((entry) => entry.role.toUpperCase() === normalized);
-  if (!guide) return null;
-  return [`### ${guide.role}`, ...guide.lines].join("\n").trimEnd();
+  return guide ? guide.lines : null;
+}
+
+function renderRoleList(title: string, items: readonly string[] | undefined): string[] {
+  return items && items.length > 0 ? ["", `${title}:`, ...items.map((item) => `- ${item}`)] : [];
+}
+
+export function renderRole(
+  roleRaw: string,
+  opts: { profile?: RoleProfileGuide | null } = {},
+): string | null {
+  const trimmed = roleRaw.trim();
+  if (!trimmed) return null;
+  const normalized = trimmed.toUpperCase();
+  const supplementLines = getRoleSupplementLines(normalized);
+  const profile = opts.profile ?? null;
+  if (!supplementLines && !profile) return null;
+
+  const heading = (typeof profile?.id === "string" && profile.id.trim()) || normalized;
+  const role = typeof profile?.role === "string" ? profile.role.trim() : "";
+  const description = typeof profile?.description === "string" ? profile.description.trim() : "";
+
+  const lines: string[] = [
+    `### ${heading}`,
+    ...(role ? [`Role: ${role}`] : []),
+    ...(description ? [`Description: ${description}`] : []),
+    ...renderRoleList("Inputs", profile?.inputs),
+    ...renderRoleList("Outputs", profile?.outputs),
+    ...renderRoleList("Permissions", profile?.permissions),
+    ...renderRoleList("Workflow", profile?.workflow),
+    ...(supplementLines ? ["", "CLI/runtime notes:", ...supplementLines] : []),
+    ...(profile?.filename
+      ? [
+          "",
+          `Source: .agentplane/agents/${profile.filename} (role-specific content); policy gateway files still have higher priority.`,
+        ]
+      : []),
+  ];
+  return lines.join("\n").trimEnd();
 }
 
 export function renderQuickstart(): string {

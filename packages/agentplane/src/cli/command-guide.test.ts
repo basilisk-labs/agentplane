@@ -4,7 +4,21 @@ import { renderBootstrapDoc } from "./bootstrap-guide.js";
 import { listRoles, renderQuickstart, renderRole } from "./command-guide.js";
 
 const listRolesTyped = listRoles as () => string[];
-const renderRoleTyped = renderRole as (role: string) => string | null;
+const renderRoleTyped = renderRole as (
+  role: string,
+  opts?: {
+    profile?: {
+      filename?: string;
+      id?: string;
+      role?: string;
+      description?: string;
+      inputs?: readonly string[];
+      outputs?: readonly string[];
+      permissions?: readonly string[];
+      workflow?: readonly string[];
+    } | null;
+  },
+) => string | null;
 const renderQuickstartTyped = renderQuickstart as () => string;
 
 describe("command-guide", () => {
@@ -17,11 +31,29 @@ describe("command-guide", () => {
   it("renders role blocks case-insensitively", () => {
     const text = renderRoleTyped("coder");
     expect(text).toContain("### CODER");
+    expect(text).toContain("CLI/runtime notes:");
   });
 
   it("returns null for missing or unknown roles", () => {
     expect(renderRoleTyped("")).toBeNull();
     expect(renderRoleTyped("unknown")).toBeNull();
+  });
+
+  it("renders installed profile content and CLI/runtime supplements together", () => {
+    const text = renderRoleTyped("coder", {
+      profile: {
+        filename: "CODER.json",
+        id: "CODER",
+        role: "Implement approved task scope with the smallest coherent diff.",
+        description: "Task-scoped implementation role.",
+        inputs: ["Task id"],
+        outputs: ["Scoped code changes"],
+      },
+    });
+    expect(text).toContain("Role: Implement approved task scope with the smallest coherent diff.");
+    expect(text).toContain("Inputs:");
+    expect(text).toContain("CLI/runtime notes:");
+    expect(text).toContain("Source: .agentplane/agents/CODER.json");
   });
 
   it("renders the canonical bootstrap path in quickstart", () => {

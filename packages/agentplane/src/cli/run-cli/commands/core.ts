@@ -11,7 +11,13 @@ import { CliError } from "../../../shared/errors.js";
 import { dedupeStrings } from "../../../shared/strings.js";
 import { usageError } from "../../spec/errors.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
-import { listRoles, renderQuickstart, renderRole } from "../../command-guide.js";
+import {
+  getRoleSupplementLines,
+  listRoles,
+  renderQuickstart,
+  renderRole,
+  type RoleProfileGuide,
+} from "../../command-guide.js";
 import {
   isWorkflowEnforcementDisabled,
   validateWorkflowAtPath,
@@ -514,11 +520,11 @@ async function readAgentProfile(opts: {
   return { agentplaneDir: listing.agentplaneDir, filename, profile: raw };
 }
 
-function renderAgentProfileBlock(opts: {
+function toRoleProfileGuide(opts: {
   filename: string;
   roleId: string;
   profile: AgentProfile;
-}): string {
+}): RoleProfileGuide {
   const id = (typeof opts.profile.id === "string" ? opts.profile.id : "").trim() || opts.roleId;
   const role = (typeof opts.profile.role === "string" ? opts.profile.role : "").trim();
   const description = (
@@ -530,18 +536,16 @@ function renderAgentProfileBlock(opts: {
   const permissions = toStringList(opts.profile.permissions);
   const workflow = toStringList(opts.profile.workflow);
 
-  const lines: string[] = [
-    `### ${id}`,
-    ...(role ? [`Role: ${role}`] : []),
-    ...(description ? [`Description: ${description}`] : []),
-    ...(inputs.length > 0 ? ["", "Inputs:", ...inputs.map((s) => `- ${s}`)] : []),
-    ...(outputs.length > 0 ? ["", "Outputs:", ...outputs.map((s) => `- ${s}`)] : []),
-    ...(permissions.length > 0 ? ["", "Permissions:", ...permissions.map((s) => `- ${s}`)] : []),
-    ...(workflow.length > 0 ? ["", "Workflow:", ...workflow.map((s) => `- ${s}`)] : []),
-    "",
-    `Source: .agentplane/agents/${opts.filename} (lower priority; see policy gateway file AGENTS.md or CLAUDE.md)`,
-  ];
-  return lines.join("\n").trimEnd();
+  return {
+    filename: opts.filename,
+    id,
+    role,
+    description,
+    inputs,
+    outputs,
+    permissions,
+    workflow,
+  };
 }
 
 async function cmdRole(opts: {
@@ -561,12 +565,19 @@ async function cmdRole(opts: {
     }
 
     const normalizedRole = normalizeRoleId(roleRaw);
-    const guide = renderRole(normalizedRole);
     const agentProfile = await readAgentProfile({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       roleId: normalizedRole,
     });
+    const normalizedProfile = agentProfile
+      ? toRoleProfileGuide({
+          filename: agentProfile.filename,
+          roleId: normalizedRole,
+          profile: agentProfile.profile,
+        })
+      : null;
+    const guide = renderRole(normalizedRole, { profile: normalizedProfile });
 
     if (!guide && !agentProfile) {
       const builtin = listRoles();
@@ -589,11 +600,15 @@ async function cmdRole(opts: {
       if (opts.json) {
         const payload: Record<string, unknown> = {
           role: normalizedRole,
-          builtin_guide: guide
+          guide: guide
             .split("\n")
             .map((line) => line.trim())
             .filter((line) => line.length > 0),
         };
+        const supplementLines = getRoleSupplementLines(normalizedRole);
+        if (supplementLines) {
+          payload.builtin_guide = supplementLines;
+        }
         if (agentProfile) {
           payload.agent_profile = {
             filename: agentProfile.filename,
@@ -604,14 +619,6 @@ async function cmdRole(opts: {
         return 0;
       }
       process.stdout.write(`${guide}\n`);
-      if (agentProfile) {
-        const block = renderAgentProfileBlock({
-          filename: agentProfile.filename,
-          roleId: normalizedRole,
-          profile: agentProfile.profile,
-        });
-        process.stdout.write(`\n## Agent profile\n\n${block}\n`);
-      }
       return 0;
     }
 
@@ -624,16 +631,23 @@ async function cmdRole(opts: {
       });
     }
 
-    const block = renderAgentProfileBlock({
-      filename: agentProfile.filename,
-      roleId: normalizedRole,
-      profile: agentProfile.profile,
-    });
+    const block = renderRole(normalizedRole, { profile: normalizedProfile });
+    if (!block) {
+      throw usageError({
+        spec: roleSpec,
+        command: "role",
+        message: `Unknown role: ${roleRaw}.`,
+      });
+    }
     if (opts.json) {
       process.stdout.write(
         `${JSON.stringify(
           {
             role: normalizedRole,
+            guide: block
+              .split("\n")
+              .map((line) => line.trim())
+              .filter((line) => line.length > 0),
             agent_profile: {
               filename: agentProfile.filename,
               profile: agentProfile.profile,

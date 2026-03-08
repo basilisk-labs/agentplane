@@ -11,7 +11,24 @@ const mockReaddir = vi.fn<(dir: string) => Promise<string[]>>();
 const mockReadFile = vi.fn<(p: string, enc: string) => Promise<string>>();
 
 const mockRenderQuickstart = vi.fn<() => string>();
-const mockRenderRole = vi.fn<(role: string) => string | null>();
+const mockRenderRole = vi.fn<
+  (
+    role: string,
+    opts?: {
+      profile?: {
+        filename?: string;
+        id?: string;
+        role?: string;
+        description?: string;
+        inputs?: readonly string[];
+        outputs?: readonly string[];
+        permissions?: readonly string[];
+        workflow?: readonly string[];
+      } | null;
+    },
+  ) => string | null
+>();
+const mockGetRoleSupplementLines = vi.fn<(role: string) => string[] | null>();
 const mockListRoles = vi.fn<() => string[]>();
 
 vi.mock("@agentplaneorg/core", async (importOriginal) => {
@@ -25,6 +42,7 @@ vi.mock("@agentplaneorg/core", async (importOriginal) => {
 vi.mock("../../fs-utils.js", () => ({ fileExists: mockFileExists }));
 vi.mock("node:fs/promises", () => ({ readdir: mockReaddir, readFile: mockReadFile }));
 vi.mock("../../command-guide.js", () => ({
+  getRoleSupplementLines: mockGetRoleSupplementLines,
   listRoles: mockListRoles,
   renderQuickstart: mockRenderQuickstart,
   renderRole: mockRenderRole,
@@ -40,6 +58,7 @@ describe("core commands (unit)", () => {
     mockReadFile.mockReset();
     mockRenderQuickstart.mockReset();
     mockRenderRole.mockReset();
+    mockGetRoleSupplementLines.mockReset();
     mockListRoles.mockReset();
   });
 
@@ -98,16 +117,50 @@ describe("core commands (unit)", () => {
         outputs: ["reconciled files"],
       }),
     );
-    mockRenderRole.mockReturnValue(null);
+    mockRenderRole.mockImplementation((_role, opts) => (opts?.profile ? "GUIDE" : null));
 
     const { runRole } = await import("./core.js");
     const rc = await runRole(ctx, { role: "UPGRADER" });
     expect(rc).toBe(0);
     const out = writes.join("");
-    expect(out).toContain("### UPGRADER");
-    expect(out).toContain("Role: Semantic merge");
-    expect(out).toContain("Inputs:");
-    expect(out).toContain("Source: .agentplane/agents/UPGRADER.json");
+    expect(out).toContain("GUIDE");
+
+    writeSpy.mockRestore();
+  });
+
+  it("role: renders unified JSON payload when built-in guide and installed profile are both present", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation(((chunk: unknown) => {
+      writes.push(String(chunk));
+      return true;
+    }) as unknown as typeof process.stdout.write);
+
+    mockResolveProject.mockResolvedValue({ agentplaneDir: "/repo/.agentplane" });
+    mockFileExists.mockResolvedValue(true);
+    mockReaddir.mockResolvedValue(["CODER.json"]);
+    mockReadFile.mockResolvedValue(
+      JSON.stringify({
+        id: "CODER",
+        role: "Implement scope",
+        description: "Task-scoped implementation role",
+      }),
+    );
+    mockRenderRole.mockReturnValue("### CODER\nRole: Implement scope\nCLI/runtime notes:\n- note");
+    mockGetRoleSupplementLines.mockReturnValue(["- note"]);
+
+    const { runRole } = await import("./core.js");
+    const rc = await runRole(ctx, { role: "CODER", json: true });
+    expect(rc).toBe(0);
+    const payload = JSON.parse(writes.join("")) as {
+      role: string;
+      guide: string[];
+      builtin_guide: string[];
+      agent_profile: { filename: string };
+    };
+    expect(payload.role).toBe("CODER");
+    expect(payload.guide).toContain("### CODER");
+    expect(payload.builtin_guide).toEqual(["- note"]);
+    expect(payload.agent_profile.filename).toBe("CODER.json");
 
     writeSpy.mockRestore();
   });

@@ -79,9 +79,9 @@ This split keeps `agentplane help` fast and reduces accidental startup cost from
 
 - `agentplane quickstart` and `agentplane role <ROLE>` are generated from `packages/agentplane/src/cli/command-guide.ts`.
 - The canonical bootstrap doc is generated from `packages/agentplane/src/cli/bootstrap-guide.ts` into `docs/user/agent-bootstrap.generated.mdx`.
-- `agentplane role <ROLE>` can display:
-- built-in CLI role guide blocks
-- and project-local `.agentplane/agents/<ROLE>.json` profile details when available.
+- `agentplane role <ROLE>` renders one unified surface:
+- installed `.agentplane/agents/<ROLE>.json` role/profile content when available
+- plus built-in CLI/runtime supplements for that role
 - For unknown role requests, CLI prints known built-in roles and discovered project role ids.
 
 ## 6) Contract boundaries
