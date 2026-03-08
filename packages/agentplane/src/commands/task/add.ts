@@ -3,39 +3,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { dedupeStrings, normalizeTaskStatus, nowIso } from "./shared.js";
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
-
-function defaultTaskDoc(opts: {
-  requiredSections: string[];
-  title: string;
-  description: string;
-}): string {
-  const baseDoc = ensureDocSections("", opts.requiredSections);
-  const summary = `${opts.title}\n\n${opts.description}`;
-  const scope = [
-    `- In scope: ${opts.description}.`,
-    `- Out of scope: unrelated refactors not required for "${opts.title}".`,
-  ].join("\n");
-  const plan = [
-    `1. Implement the change for "${opts.title}".`,
-    "2. Run required checks and capture verification evidence.",
-    "3. Finalize task notes and finish with traceable commit metadata.",
-  ].join("\n");
-  const risks = [
-    "- Risk: hidden regressions in touched paths.",
-    "- Mitigation: run required checks before finish and record evidence.",
-  ].join("\n");
-  const rollback = [
-    "- Revert task-related commit(s).",
-    "- Re-run required checks to confirm rollback safety.",
-  ].join("\n");
-
-  const withSummary = setMarkdownSection(baseDoc, "Summary", summary);
-  const withScope = setMarkdownSection(withSummary, "Scope", scope);
-  const withPlan = setMarkdownSection(withScope, "Plan", plan);
-  const withRisks = setMarkdownSection(withPlan, "Risks", risks);
-  return setMarkdownSection(withRisks, "Rollback Plan", rollback);
-}
+import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
 
 export async function cmdTaskAdd(opts: {
   ctx?: CommandContext;
@@ -89,15 +57,11 @@ export async function cmdTaskAdd(opts: {
         opts.commentAuthor && opts.commentBody
           ? [{ author: opts.commentAuthor, body: opts.commentBody }]
           : [],
-      doc_version: 2,
+      doc_version: TASK_DOC_VERSION_V3,
       doc_updated_at: nowIso(),
       doc_updated_by: docUpdatedBy,
       id_source: "explicit",
-      doc: defaultTaskDoc({
-        requiredSections: ctx.config.tasks.doc.required_sections,
-        title: opts.title,
-        description: opts.description,
-      }),
+      doc: defaultTaskDocV3({ title: opts.title, description: opts.description }),
     }));
     if (ctx.taskBackend.writeTasks) {
       await ctx.taskBackend.writeTasks(tasks);

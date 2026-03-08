@@ -1,7 +1,7 @@
 ---
 id: "202603081006-0GEVRW"
 title: "Update task new/template/scaffold to README v3"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -10,20 +10,30 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-08T10:41:17.700Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved after CT5BE1: template/default switch can proceed now that v2/v3 dual-read and version-preserving writes are in place."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: switch task creation and scaffold outputs to README v3 now that compatibility-first runtime support has landed."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T10:41:18.803Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: switch task creation and scaffold outputs to README v3 now that compatibility-first runtime support has landed."
 doc_version: 2
-doc_updated_at: "2026-03-08T10:06:27.078Z"
+doc_updated_at: "2026-03-08T10:41:18.803Z"
 doc_updated_by: "CODER"
 description: "Make new tasks and scaffolds render the v3 README structure with the new section layout and doc_version marker."
 id_source: "generated"
@@ -52,17 +62,9 @@ Make new tasks and scaffolds render the v3 README structure with the new section
 
 ## Verify Steps
 
-### Scope
-- Primary tag: `code`
-
-### Checks
-- Add explicit checks/commands for this task before approval.
-
-### Evidence / Commands
-- Record executed commands and key outputs.
-
-### Pass criteria
-- Steps are reproducible and produce expected results.
+1. Run targeted task creation/scaffold tests. Expected: new tasks and scaffolded docs render doc_version=3 with the v3 section order.
+2. Exercise CLI/task creation paths that write README files. Expected: no path still emits the legacy v2 layout for new tasks.
+3. Run agentplane doctor after the template changes. Expected: no new errors or warnings in this repository.
 
 ## Verification
 

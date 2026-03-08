@@ -110,10 +110,13 @@ describe("runCli", () => {
     const readmePath = path.join(root, ".agentplane", "tasks", id, "README.md");
     const readme = await readFile(readmePath, "utf8");
     expect(readme).toContain(`id: "${id}"`);
+    expect(readme).toContain("doc_version: 3");
     expect(readme).toContain('status: "TODO"');
     expect(readme).toContain('title: "My task"');
     expect(readme).toContain("## Summary");
     expect(readme).toContain("## Scope");
+    expect(readme).toContain("## Findings");
+    expect(readme).not.toContain("## Risks");
   });
 
   it("task new supports depends-on and verify flags", async () => {
@@ -279,6 +282,7 @@ describe("runCli", () => {
       const task = await readTask({ cwd: root, rootOverride: root, taskId });
       expect(task.frontmatter.id).toBe(taskId);
       expect(task.frontmatter.title).toBe("Added task");
+      expect(task.frontmatter.doc_version).toBe(3);
     }
   });
 
@@ -2075,9 +2079,11 @@ describe("runCli", () => {
 
     const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
     const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("doc_version: 3");
     expect(readme).toContain("## Verify Steps");
     expect(readme).toContain("<!-- TODO: FILL VERIFY STEPS -->");
     expect(readme).toContain("## Verification");
+    expect(readme).toContain("## Findings");
     expect(readme).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
     expect(readme).toContain("<!-- END VERIFICATION RESULTS -->");
     expect(readme.indexOf("## Verify Steps")).toBeLessThan(readme.indexOf("## Verification"));
@@ -2377,7 +2383,8 @@ describe("runCli", () => {
     expect(updated).toContain("## Summary");
     expect(updated).toContain("Updated");
     expect(updated).toContain("## Scope");
-    expect(updated).toContain("## Risks");
+    expect(updated).toContain("## Plan");
+    expect(updated).toContain("## Verification");
   });
 
   it("task doc set dedupes repeated section headings", async () => {
@@ -2398,7 +2405,7 @@ describe("runCli", () => {
         tags: [],
         verify: [],
       },
-      "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n",
+      "## Summary\n\n## Scope\n\n## Verification\n\n## Rollback Plan\n",
     );
     const duplicated = `${readme}\n## Summary\n\nOld summary\n\n## Scope\n\nOld scope\n`;
     await writeFile(path.join(taskDir, "README.md"), duplicated, "utf8");
@@ -2446,7 +2453,7 @@ describe("runCli", () => {
         tags: [],
         verify: [],
       },
-      "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n",
+      "## Summary\n\n## Scope\n\n## Verification\n\n## Rollback Plan\n",
     );
     const duplicated = `${readme}\n## Summary## Summary\n\nOld summary\n\n## Scope\n\nOld scope\n`;
     await writeFile(path.join(taskDir, "README.md"), duplicated, "utf8");
@@ -2495,7 +2502,7 @@ describe("runCli", () => {
         tags: [],
         verify: [],
       },
-      "## Summary\n\n## Scope\n\n## Risks\n\n## Verify Steps\n\n## Rollback Plan\n",
+      "## Summary\n\n## Scope\n\n## Verification\n\n## Rollback Plan\n",
     );
     await writeFile(path.join(taskDir, "README.md"), readme, "utf8");
 
@@ -2508,13 +2515,9 @@ describe("runCli", () => {
       "",
       "Filled scope.",
       "",
-      "## Risks",
+      "## Verification",
       "",
-      "Filled risks.",
-      "",
-      "## Verify Steps",
-      "",
-      "Filled verify.",
+      "Filled verification.",
       "",
       "## Rollback Plan",
       "",
@@ -2543,10 +2546,10 @@ describe("runCli", () => {
     const updated = await readFile(path.join(taskDir, "README.md"), "utf8");
     const summaryCount = (updated.match(/^## Summary$/gm) ?? []).length;
     const scopeCount = (updated.match(/^## Scope$/gm) ?? []).length;
-    const risksCount = (updated.match(/^## Risks$/gm) ?? []).length;
+    const verificationCount = (updated.match(/^## Verification$/gm) ?? []).length;
     expect(summaryCount).toBe(1);
     expect(scopeCount).toBe(1);
-    expect(risksCount).toBe(1);
+    expect(verificationCount).toBe(1);
     expect(updated).toContain("Filled summary.");
     expect(updated).toContain("Filled scope.");
   });

@@ -1,4 +1,4 @@
-import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
+import { setMarkdownSection } from "@agentplaneorg/core";
 
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
@@ -12,6 +12,11 @@ import {
   resolvePrimaryTag,
   warnIfUnknownOwner,
 } from "./shared.js";
+import {
+  buildDefaultVerifyStepsSection,
+  defaultTaskDocV3,
+  TASK_DOC_VERSION_V3,
+} from "./doc-template.js";
 
 export type TaskNewParsed = {
   title: string;
@@ -72,144 +77,6 @@ function sanitizeTaskNewParsed(p: TaskNewParsed): TaskNewParsed {
   return { ...p, title, description, owner, tags, dependsOn, verify };
 }
 
-function insertMarkdownSectionBefore(opts: {
-  body: string;
-  section: string;
-  text: string;
-  beforeSection: string;
-}): string {
-  const normalized = opts.body.replaceAll("\r\n", "\n");
-  if (normalized.includes(`## ${opts.section}`)) {
-    return setMarkdownSection(normalized, opts.section, opts.text);
-  }
-
-  const lines = normalized.split("\n");
-  const beforeHeading = `## ${opts.beforeSection}`;
-  const beforeIdx = lines.findIndex((line) => line.trim() === beforeHeading);
-  if (beforeIdx === -1) return setMarkdownSection(normalized, opts.section, opts.text);
-
-  const textLines = opts.text.replaceAll("\r\n", "\n").split("\n");
-  const sectionLines = [`## ${opts.section}`, "", ...textLines, "", ""];
-  const out = [...lines.slice(0, beforeIdx), ...sectionLines, ...lines.slice(beforeIdx)];
-  return `${out.join("\n").trimEnd()}\n`;
-}
-
-function buildDefaultSummary(opts: { title: string; description: string }): string {
-  return `${opts.title}\n\n${opts.description}`;
-}
-
-function buildDefaultScope(opts: { title: string; description: string }): string {
-  return [
-    `- In scope: ${opts.description}.`,
-    `- Out of scope: unrelated refactors not required for "${opts.title}".`,
-  ].join("\n");
-}
-
-function buildDefaultPlan(opts: { title: string }): string {
-  return [
-    `1. Implement the change for "${opts.title}".`,
-    "2. Run required checks and capture verification evidence.",
-    "3. Finalize task notes and finish with traceable commit metadata.",
-  ].join("\n");
-}
-
-function buildDefaultRisks(): string {
-  return [
-    "- Risk: hidden regressions in touched paths.",
-    "- Mitigation: run required checks before finish and record evidence.",
-  ].join("\n");
-}
-
-function buildDefaultRollbackPlan(): string {
-  return [
-    "- Revert task-related commit(s).",
-    "- Re-run required checks to confirm rollback safety.",
-  ].join("\n");
-}
-
-function defaultTaskDoc(opts: {
-  requiredSections: string[];
-  title: string;
-  description: string;
-}): string {
-  const verifyStepsTemplate = [
-    "<!-- TODO: FILL VERIFY STEPS -->",
-    "",
-    "### Scope",
-    "",
-    "",
-    "### Checks",
-    "",
-    "",
-    "### Evidence / Commands",
-    "",
-    "",
-    "### Pass criteria",
-    "",
-    "",
-  ].join("\n");
-  const verificationTemplate = [
-    "### Plan",
-    "",
-    "",
-    "### Results",
-    "",
-    "",
-    "<!-- BEGIN VERIFICATION RESULTS -->",
-    "<!-- END VERIFICATION RESULTS -->",
-  ].join("\n");
-
-  const baseDoc = ensureDocSections("", opts.requiredSections);
-  const withVerifySteps = insertMarkdownSectionBefore({
-    body: baseDoc,
-    section: "Verify Steps",
-    text: verifyStepsTemplate,
-    beforeSection: "Verification",
-  });
-  const withVerification = setMarkdownSection(
-    withVerifySteps,
-    "Verification",
-    verificationTemplate,
-  );
-  const withSummary = setMarkdownSection(
-    withVerification,
-    "Summary",
-    buildDefaultSummary({ title: opts.title, description: opts.description }),
-  );
-  const withScope = setMarkdownSection(
-    withSummary,
-    "Scope",
-    buildDefaultScope({ title: opts.title, description: opts.description }),
-  );
-  const withPlan = setMarkdownSection(withScope, "Plan", buildDefaultPlan({ title: opts.title }));
-  const withRisks = setMarkdownSection(withPlan, "Risks", buildDefaultRisks());
-  return setMarkdownSection(withRisks, "Rollback Plan", buildDefaultRollbackPlan());
-}
-
-function buildDefaultVerifyStepsSection(opts: {
-  primary: string;
-  verifyCommands: string[];
-}): string {
-  const checks =
-    opts.verifyCommands.length > 0
-      ? opts.verifyCommands.map((command) => `- \`${command}\``).join("\n")
-      : "- Add explicit checks/commands for this task before approval.";
-  return [
-    "### Scope",
-    `- Primary tag: \`${opts.primary}\``,
-    "",
-    "### Checks",
-    checks,
-    "",
-    "### Evidence / Commands",
-    "- Record executed commands and key outputs.",
-    "",
-    "### Pass criteria",
-    "- Steps are reproducible and produce expected results.",
-    "",
-  ].join("\n");
-}
-
 export async function runTaskNewParsed(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -241,15 +108,11 @@ export async function runTaskNewParsed(opts: {
       depends_on: p.dependsOn,
       verify: p.verify,
       comments: [],
-      doc_version: 2,
+      doc_version: TASK_DOC_VERSION_V3,
       doc_updated_at: nowIso(),
       doc_updated_by: p.owner,
       id_source: "generated",
-      doc: defaultTaskDoc({
-        requiredSections: ctx.config.tasks.doc.required_sections,
-        title: p.title,
-        description: p.description,
-      }),
+      doc: defaultTaskDocV3({ title: p.title, description: p.description }),
     };
 
     const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();

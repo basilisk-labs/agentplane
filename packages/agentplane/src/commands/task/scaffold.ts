@@ -1,12 +1,7 @@
 import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import {
-  ensureDocSections,
-  renderTaskReadme,
-  setMarkdownSection,
-  taskReadmePath,
-} from "@agentplaneorg/core";
+import { renderTaskReadme, taskReadmePath } from "@agentplaneorg/core";
 
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
@@ -20,31 +15,7 @@ import {
 import { writeTextIfChanged } from "../../shared/write-if-changed.js";
 import { nowIso } from "./shared.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
-
-function insertMarkdownSectionBefore(opts: {
-  body: string;
-  section: string;
-  text: string;
-  beforeSection: string;
-}): string {
-  const normalized = opts.body.replaceAll("\r\n", "\n");
-  if (normalized.includes(`## ${opts.section}`)) {
-    return setMarkdownSection(normalized, opts.section, opts.text);
-  }
-
-  const lines = normalized.split("\n");
-  const beforeHeading = `## ${opts.beforeSection}`;
-  const beforeIdx = lines.findIndex((line) => line.trim() === beforeHeading);
-  if (beforeIdx === -1) {
-    // Fallback: append at the end if we can't find the insertion anchor.
-    return setMarkdownSection(normalized, opts.section, opts.text);
-  }
-
-  const textLines = opts.text.replaceAll("\r\n", "\n").split("\n");
-  const sectionLines = [`## ${opts.section}`, "", ...textLines, "", ""];
-  const out = [...lines.slice(0, beforeIdx), ...sectionLines, ...lines.slice(beforeIdx)];
-  return `${out.join("\n").trimEnd()}\n`;
-}
+import { defaultTaskDocV3, TASK_DOC_VERSION_V3 } from "./doc-template.js";
 
 export async function cmdTaskScaffold(opts: {
   ctx?: CommandContext;
@@ -114,7 +85,7 @@ export async function cmdTaskScaffold(opts: {
         tags: [],
         verify: [],
         comments: [],
-        doc_version: 2,
+        doc_version: TASK_DOC_VERSION_V3,
         doc_updated_at: nowIso(),
         doc_updated_by: "UNKNOWN",
       } satisfies TaskData);
@@ -126,42 +97,13 @@ export async function cmdTaskScaffold(opts: {
     ) {
       baseTask.doc_updated_by = baseTask.owner?.trim() ? baseTask.owner : "UNKNOWN";
     }
+    baseTask.doc_version = TASK_DOC_VERSION_V3;
 
     const frontmatter = taskDataToFrontmatter(baseTask);
-    const verifyStepsTemplate = [
-      "<!-- TODO: FILL VERIFY STEPS -->",
-      "",
-      "### Scope",
-      "",
-      "",
-      "### Checks",
-      "",
-      "",
-      "### Evidence / Commands",
-      "",
-      "",
-      "### Pass criteria",
-      "",
-      "",
-    ].join("\n");
-    const verificationTemplate = [
-      "### Plan",
-      "",
-      "",
-      "### Results",
-      "",
-      "",
-      "<!-- BEGIN VERIFICATION RESULTS -->",
-      "<!-- END VERIFICATION RESULTS -->",
-    ].join("\n");
-    const baseDoc = ensureDocSections("", config.tasks.doc.required_sections);
-    const withVerifySteps = insertMarkdownSectionBefore({
-      body: baseDoc,
-      section: "Verify Steps",
-      text: verifyStepsTemplate,
-      beforeSection: "Verification",
+    const body = defaultTaskDocV3({
+      title: baseTask.title,
+      description: baseTask.description ?? "",
     });
-    const body = setMarkdownSection(withVerifySteps, "Verification", verificationTemplate);
     const text = renderTaskReadme(frontmatter, body);
     await mkdir(path.dirname(readmePath), { recursive: true });
     await writeTextIfChanged(readmePath, text.endsWith("\n") ? text : `${text}\n`);

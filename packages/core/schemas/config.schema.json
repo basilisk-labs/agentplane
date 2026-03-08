@@ -223,20 +223,13 @@
             "Context",
             "Scope",
             "Plan",
-            "Risks",
             "Verify Steps",
             "Verification",
             "Rollback Plan",
-            "Notes"
+            "Notes",
+            "Findings"
           ],
-          "required_sections": [
-            "Summary",
-            "Scope",
-            "Plan",
-            "Risks",
-            "Verification",
-            "Rollback Plan"
-          ]
+          "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
         },
         "comments": {
           "start": { "prefix": "Start:", "min_chars": 40 },
@@ -328,20 +321,13 @@
               "Context",
               "Scope",
               "Plan",
-              "Risks",
               "Verify Steps",
               "Verification",
               "Rollback Plan",
-              "Notes"
+              "Notes",
+              "Findings"
             ],
-            "required_sections": [
-              "Summary",
-              "Scope",
-              "Plan",
-              "Risks",
-              "Verification",
-              "Rollback Plan"
-            ]
+            "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
           },
           "properties": {
             "sections": {
@@ -352,17 +338,17 @@
                 "Context",
                 "Scope",
                 "Plan",
-                "Risks",
                 "Verify Steps",
                 "Verification",
                 "Rollback Plan",
-                "Notes"
+                "Notes",
+                "Findings"
               ]
             },
             "required_sections": {
               "type": "array",
               "items": { "type": "string", "minLength": 1 },
-              "default": ["Summary", "Scope", "Plan", "Risks", "Verification", "Rollback Plan"]
+              "default": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
             }
           }
         },

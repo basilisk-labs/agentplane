@@ -8,7 +8,7 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
   group: "Task",
   summary: "Create a new task (prints the generated task id).",
   description:
-    "Creates a TODO task with doc_version=2, seeds standard README sections, and writes it via the configured task backend.",
+    "Creates a TODO task with doc_version=3, seeds the README v3 section layout, and writes it via the configured task backend.",
   options: [
     {
       kind: "string",
