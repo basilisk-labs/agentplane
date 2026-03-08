@@ -1,7 +1,8 @@
 ---
 id: "202603081422-MYT5TP"
 title: "Raise legacy README migration integration test timeout budget"
-status: "DOING"
+result_summary: "The legacy README migration scenario no longer fails CI because its timeout budget was smaller than its real integration runtime."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T14:31:15.218Z"
   updated_by: "CODER"
   note: "Verified: the isolated legacy README v2 recovery scenario passes in about 6.5 seconds, lint is clean for the touched test file, and the test now has an explicit integration timeout budget that matches its real runtime on slower CI runners."
-commit: null
+commit:
+  hash: "777bc2d0b6f35611774f83b313e72edb4dbb8ff7"
+  message: "🧪 MYT5TP test: raise legacy migration timeout budget"
 comments:
   -
     author: "CODER"
     body: "Start: treating the CI failure as a timeout-budget mismatch first, not as a migration logic regression, and narrowing the fix to the slow legacy recovery integration scenario."
+  -
+    author: "CODER"
+    body: "Verified: the isolated legacy README v2 recovery scenario still passes, its measured runtime is about 6.5 seconds, lint is clean for the touched test file, and the scenario now carries an explicit integration timeout budget instead of relying on the default 5000ms limit."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: the isolated legacy README v2 recovery scenario passes in about 6.5 seconds, lint is clean for the touched test file, and the test now has an explicit integration timeout budget that matches its real runtime on slower CI runners."
+  -
+    type: "status"
+    at: "2026-03-08T14:31:31.622Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the isolated legacy README v2 recovery scenario still passes, its measured runtime is about 6.5 seconds, lint is clean for the touched test file, and the scenario now carries an explicit integration timeout budget instead of relying on the default 5000ms limit."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:31:15.218Z"
+doc_updated_at: "2026-03-08T14:31:31.622Z"
 doc_updated_by: "CODER"
 description: "Fix the CI-only failure where the legacy README v2 recovery scenario times out after 5000ms even though the scenario completes correctly on slower runners; give the test an explicit integration timeout that matches its real runtime."
 id_source: "generated"
