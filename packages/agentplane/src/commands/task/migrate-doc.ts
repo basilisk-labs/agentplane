@@ -22,14 +22,128 @@ import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import {
   extractDocSection,
+  extractTaskObservationSection,
   normalizeTaskDocVersion,
   normalizeVerificationSectionLayout,
+  type TaskDocVersion,
 } from "./shared/docs.js";
+import { defaultTaskDocV3 } from "./doc-template.js";
 
 type TaskMigrateDocParams = { all: boolean; quiet: boolean; taskIds: string[] };
+type MarkdownSection = { title: string; text: string };
+const V3_CANONICAL_ORDER = [
+  "Summary",
+  "Context",
+  "Scope",
+  "Plan",
+  "Verify Steps",
+  "Verification",
+  "Rollback Plan",
+  "Findings",
+] as const;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizeSectionKey(section: string): string {
+  return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
+}
+
+function parseMarkdownSections(doc: string): MarkdownSection[] {
+  const lines = doc.replaceAll("\r\n", "\n").split("\n");
+  const sections: MarkdownSection[] = [];
+  let current: MarkdownSection | null = null;
+
+  for (const line of lines) {
+    const match = /^##\s+(.*)$/.exec(line.trim());
+    if (match) {
+      if (current) {
+        current.text = current.text.trimEnd();
+        sections.push(current);
+      }
+      current = { title: (match[1] ?? "").trim(), text: "" };
+      continue;
+    }
+
+    if (current) {
+      current.text = current.text.length > 0 ? `${current.text}\n${line}` : line;
+    }
+  }
+
+  if (current) {
+    current.text = current.text.trimEnd();
+    sections.push(current);
+  }
+
+  return sections;
+}
+
+function renderMarkdownSections(sections: MarkdownSection[]): string {
+  return sections
+    .map((section) => {
+      const text = section.text.trimEnd();
+      return text ? `## ${section.title}\n\n${text}` : `## ${section.title}\n`;
+    })
+    .join("\n\n")
+    .trimEnd();
+}
+
+function firstSectionText(sections: MarkdownSection[], title: string): string | null {
+  const target = normalizeSectionKey(title);
+  return sections.find((section) => normalizeSectionKey(section.title) === target)?.text ?? null;
+}
+
+function mergeObservationText(doc: string, version: TaskDocVersion): string {
+  const preferred = extractTaskObservationSection(doc, version)?.trim() ?? "";
+  const notes = extractDocSection(doc, "Notes")?.trim() ?? "";
+  const findings = extractDocSection(doc, "Findings")?.trim() ?? "";
+  const out: string[] = [];
+  for (const candidate of [preferred, findings, notes]) {
+    if (!candidate) continue;
+    if (out.includes(candidate)) continue;
+    out.push(candidate);
+  }
+  return out.join("\n\n").trim();
+}
+
+function migrateDocToV3(opts: { title: string; description: string; doc: string }): string {
+  const currentSections = parseMarkdownSections(opts.doc);
+  const defaultSections = parseMarkdownSections(
+    defaultTaskDocV3({ title: opts.title, description: opts.description }),
+  );
+  const emitted = new Set<string>();
+  const nextSections: MarkdownSection[] = [];
+  const observationText = mergeObservationText(opts.doc, 2);
+
+  for (const title of V3_CANONICAL_ORDER) {
+    const key = normalizeSectionKey(title);
+    const currentText = firstSectionText(currentSections, title);
+    const defaultText = firstSectionText(defaultSections, title) ?? "";
+
+    let nextText: string | null = currentText ?? defaultText;
+    if (title === "Context" && !(currentText ?? "").trim()) continue;
+    if (title === "Verification") {
+      nextText = normalizeVerificationSectionLayout(currentText ?? defaultText, 3);
+    }
+    if (title === "Findings") {
+      nextText = observationText || defaultText;
+    }
+    if (nextText === null) continue;
+
+    nextSections.push({ title, text: nextText.trimEnd() });
+    emitted.add(key);
+    if (title === "Findings") emitted.add("notes");
+  }
+
+  for (const section of currentSections) {
+    const key = normalizeSectionKey(section.title);
+    if (emitted.has(key)) continue;
+    nextSections.push({ title: section.title, text: section.text.trimEnd() });
+    emitted.add(key);
+  }
+
+  return renderMarkdownSections(nextSections);
 }
 
 function ensurePlanApprovalFrontmatter(frontmatter: Record<string, unknown>): void {
@@ -108,12 +222,21 @@ async function migrateTaskReadmeDoc(opts: {
   const baseDoc = extracted || parsed.body;
   let nextDoc = normalizeTaskDoc(ensureDocSections(baseDoc, required));
   const docVersion = normalizeTaskDocVersion(frontmatter.doc_version);
-  const verificationSection = extractDocSection(nextDoc, "Verification");
-  const normalizedVerification = normalizeVerificationSectionLayout(
-    verificationSection,
-    docVersion,
-  );
-  nextDoc = setMarkdownSection(nextDoc, "Verification", normalizedVerification);
+  if (docVersion === 2) {
+    frontmatter.doc_version = 3;
+    nextDoc = migrateDocToV3({
+      title: typeof frontmatter.title === "string" ? frontmatter.title : "",
+      description: typeof frontmatter.description === "string" ? frontmatter.description : "",
+      doc: nextDoc,
+    });
+  } else {
+    const verificationSection = extractDocSection(nextDoc, "Verification");
+    const normalizedVerification = normalizeVerificationSectionLayout(
+      verificationSection,
+      docVersion,
+    );
+    nextDoc = setMarkdownSection(nextDoc, "Verification", normalizedVerification);
+  }
   const nextBody = extracted ? mergeTaskDoc(parsed.body, nextDoc) : nextDoc;
 
   const rendered = renderTaskReadme(frontmatter, nextBody);

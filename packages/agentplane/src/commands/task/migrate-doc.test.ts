@@ -7,7 +7,7 @@ import { mkGitRepoRoot, writeDefaultConfig } from "../../cli/run-cli.test-helper
 import { cmdTaskMigrateDoc } from "./migrate-doc.js";
 
 describe("cmdTaskMigrateDoc", () => {
-  it("adds missing Plan/Verification sections and approval frontmatter without losing content (idempotent)", async () => {
+  it("migrates legacy doc_version=2 tasks to README v3 without losing content (idempotent)", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -55,8 +55,14 @@ Keep scope.
     const migrated = await readFile(readmePath, "utf8");
     expect(migrated).toContain("plan_approval:");
     expect(migrated).toContain("verification:");
+    expect(migrated).toContain("doc_version: 3");
     expect(migrated).toContain("## Plan");
+    expect(migrated).toContain("## Verify Steps");
     expect(migrated).toContain("## Verification");
+    expect(migrated).toContain("## Findings");
+    expect(migrated).not.toContain("## Notes");
+    expect(migrated).not.toContain("### Plan");
+    expect(migrated).not.toContain("### Results");
     expect(migrated).toContain("Keep me.");
     expect(migrated).toContain("Keep scope.");
 
@@ -248,5 +254,119 @@ Legacy verification notes.
     expect(migrated).toContain("<!-- BEGIN VERIFICATION RESULTS -->");
     expect(migrated).not.toContain("### Plan");
     expect(migrated).not.toContain("### Results");
+  });
+
+  it("migrates all requested legacy task READMEs to v3 and leaves existing v3 tasks intact", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const legacyTaskId = "202601050000-AAAAAA";
+    const currentTaskId = "202601050001-BBBBBB";
+    const legacyTaskDir = path.join(root, ".agentplane", "tasks", legacyTaskId);
+    const currentTaskDir = path.join(root, ".agentplane", "tasks", currentTaskId);
+    await mkdir(legacyTaskDir, { recursive: true });
+    await mkdir(currentTaskDir, { recursive: true });
+
+    await writeFile(
+      path.join(legacyTaskDir, "README.md"),
+      `---
+id: "${legacyTaskId}"
+title: "Legacy task"
+status: "TODO"
+priority: "low"
+owner: "CODER"
+depends_on: []
+tags: []
+verify: []
+comments: []
+doc_version: 2
+doc_updated_at: "2026-01-05T00:00:00.000Z"
+doc_updated_by: "CODER"
+description: "Legacy"
+id_source: "generated"
+---
+## Summary
+
+Legacy summary.
+
+## Scope
+
+Legacy scope.
+
+## Notes
+
+Legacy follow-up.
+`,
+      "utf8",
+    );
+
+    const currentV3 = `---
+id: "${currentTaskId}"
+title: "Current task"
+status: "TODO"
+priority: "low"
+owner: "CODER"
+depends_on: []
+tags: []
+verify: []
+comments: []
+doc_version: 3
+doc_updated_at: "2026-01-05T00:00:00.000Z"
+doc_updated_by: "CODER"
+description: "Current"
+id_source: "generated"
+---
+## Summary
+
+Current summary.
+
+## Scope
+
+Current scope.
+
+## Plan
+
+1. Keep.
+
+## Verify Steps
+
+1. Review. Expected: okay.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert.
+
+## Findings
+
+Already normalized.
+`;
+    await writeFile(path.join(currentTaskDir, "README.md"), currentV3, "utf8");
+
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: true,
+      quiet: false,
+      taskIds: [],
+    });
+    expect(code).toBe(0);
+
+    const migratedLegacy = await readFile(path.join(legacyTaskDir, "README.md"), "utf8");
+    const migratedCurrent = await readFile(path.join(currentTaskDir, "README.md"), "utf8");
+    expect(migratedLegacy).toContain("doc_version: 3");
+    expect(migratedLegacy).toContain("## Findings");
+    expect(migratedLegacy).toContain("Legacy follow-up.");
+    expect(migratedLegacy).not.toContain("## Notes");
+    expect(migratedCurrent).toContain("doc_version: 3");
+    expect(migratedCurrent).toContain("plan_approval:");
+    expect(migratedCurrent).toContain("verification:");
+    expect(migratedCurrent).toContain("Current summary.");
+    expect(migratedCurrent).toContain("Already normalized.");
+    expect(migratedCurrent).not.toContain("## Notes");
   });
 });
