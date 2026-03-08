@@ -20,12 +20,15 @@ verification:
   updated_by: "DOCS"
   note: "Managed agent/policy mirror was synced successfully. bun run agents:check now passes and the previous pre-push failure cause is removed."
 commit:
-  hash: "3b47932398f035822a9a68baf7e0dd0a26375d69"
-  message: "✅ 7PQ5X6 close: Historical task archive metadata repaired; doctor now reports only info-class historica... (202603072133-7PQ5X6) [code]"
+  hash: "e0cf6e9d87340b5dc010d6cb4a2488730b9d13d5"
+  message: "📝 AP717H docs: sync managed policy mirror"
 comments:
   -
     author: "DOCS"
     body: "Start: sync the managed agent/policy mirror, verify the template checks stop failing, then push main."
+  -
+    author: "DOCS"
+    body: "Verified: managed agent/policy mirror is synced and the local pre-push agent-template gate no longer fails on template drift."
   -
     author: "DOCS"
     body: "Verified: managed agent/policy mirror is synced and the local pre-push agent-template gate no longer fails on template drift."
@@ -50,8 +53,15 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: managed agent/policy mirror is synced and the local pre-push agent-template gate no longer fails on template drift."
+  -
+    type: "status"
+    at: "2026-03-08T05:25:39.831Z"
+    author: "DOCS"
+    from: "DONE"
+    to: "DONE"
+    note: "Verified: managed agent/policy mirror is synced and the local pre-push agent-template gate no longer fails on template drift."
 doc_version: 2
-doc_updated_at: "2026-03-08T05:24:45.045Z"
+doc_updated_at: "2026-03-08T05:25:39.831Z"
 doc_updated_by: "DOCS"
 description: "Run managed agent/policy sync after recent policy edits so pre-push agent-template checks pass, then push main."
 id_source: "generated"
