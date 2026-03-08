@@ -2,14 +2,7 @@ import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
 import styles from "./index.module.css";
 
-const entries = [
-  {
-    href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
-    title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
-    excerpt:
-      "Why stricter commit scope and cleaner release checks mattered once agents started touching real repositories.",
-    meta: "Release journal • 4 min read",
-  },
+const releaseLineEntries = [
   {
     href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
     title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
@@ -30,6 +23,16 @@ const entries = [
     excerpt:
       "Why upgrades got less weird, why finish now leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
     meta: "Release journal • 5 min read",
+  },
+];
+
+const archiveEntries = [
+  {
+    href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
+    title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
+    excerpt:
+      "Why stricter commit scope and cleaner release checks mattered once agents started touching real repositories.",
+    meta: "Earlier release • 4 min read",
   },
   {
     href: "/blog/roadmap-0-5-agentplane-runner",
@@ -78,11 +81,33 @@ export default function BlogLanding() {
           <section className={styles.entriesSection} aria-labelledby="blog-entries-title">
             <div className={styles.sectionHeading}>
               <p className={styles.sectionLabel}>Release line</p>
-              <h2 id="blog-entries-title">Recent entries</h2>
+              <h2 id="blog-entries-title">AgentPlane 0.3.x</h2>
             </div>
 
             <div className={styles.entryList}>
-              {entries.map((entry) => (
+              {releaseLineEntries.map((entry) => (
+                <article key={entry.href} className={styles.entryItem}>
+                  <p className={styles.entryMeta}>{entry.meta}</p>
+                  <h3>
+                    <Link className={styles.entryTitleLink} to={entry.href}>
+                      {entry.title}
+                    </Link>
+                  </h3>
+                  <p>{entry.excerpt}</p>
+                  <Link className={styles.entryLink} to={entry.href}>
+                    Open entry
+                  </Link>
+                </article>
+              ))}
+            </div>
+
+            <div className={styles.sectionHeading}>
+              <p className={styles.sectionLabel}>Earlier context</p>
+              <h2>Earlier releases and roadmap</h2>
+            </div>
+
+            <div className={styles.entryList}>
+              {archiveEntries.map((entry) => (
                 <article key={entry.href} className={styles.entryItem}>
                   <p className={styles.entryMeta}>{entry.meta}</p>
                   <h3>
