@@ -158,7 +158,7 @@ By default, hooks run:
   - Status/comment-driven task commits derive `<emoji>` from the executor agent id and enforce it via `AGENTPLANE_AGENT_ID`
   - Finish commits must use `✅` (enforced via `AGENTPLANE_STATUS_TO=DONE`)
 - `pre-commit`: staged-only format/lint checks + `test:precommit`
-- `pre-push`: runs `bun run ci:local` (format/schemas/agents/release parity/build/docs checks/workflows lint/lint core/tests/coverage guard). For release-tag pushes (or when `AGENTPLANE_HOOKS_RELEASE=1`/`AGENTPLANE_HOOKS_FULL=1`), it additionally runs release notes validation and `bun run release:prepublish`.
+- `pre-push`: runs `bun run ci:local` (the fast local gate: format/schemas/agents/release parity/build/CLI docs freshness/onboarding/lint core/fast tests/critical CLI checks). Set `AGENTPLANE_HOOKS_FULL=1` to force `bun run ci:local:full`, which adds docs-site, workflows lint, platform-critical Windows tests, and the significant-file coverage guard. For release-tag pushes (or when `AGENTPLANE_HOOKS_RELEASE=1`/`AGENTPLANE_HOOKS_FULL=1`), it additionally runs release notes validation and `bun run release:prepublish`.
 
 `commit-msg` stale-dist guard is path-aware: it is enforced for staged `packages/agentplane/src/**`, `packages/core/src/**`, and `packages/agentplane/bin/agentplane.js` changes; docs-only/config-only commits skip this guard.
 

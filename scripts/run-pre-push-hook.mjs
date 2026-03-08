@@ -38,6 +38,7 @@ const envFull =
 const isReleasePush = envRelease || envFull || hasReleaseTagPush();
 const mode = isReleasePush ? "release" : "standard";
 process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
+const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
 
 process.stdout.write("\n== Format (write) ==\n");
 run("bun", ["run", "format"]);
@@ -50,11 +51,11 @@ if (afterFormat) {
   throw new Error("pre-push blocked due to uncommitted formatter edits");
 }
 
-run("bun", ["run", "ci:local"]);
+run("bun", ["run", ciScript]);
 const afterCi = trackedChangesShort();
 if (afterCi) {
   process.stderr.write(
-    "\npre-push blocked: ci:local changed tracked files. Commit or revert those changes and push again.\n",
+    `\npre-push blocked: ${ciScript} changed tracked files. Commit or revert those changes and push again.\n`,
   );
   process.stderr.write(`${afterCi}\n`);
   throw new Error("pre-push blocked due to post-ci tracked file mutations");
