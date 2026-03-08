@@ -1,7 +1,8 @@
 ---
 id: "202603081315-E6P3T0"
 title: "Write CLI bug report from observed framework workflow failures"
-status: "DOING"
+result_summary: "Added a developer-facing CLI bug ledger for the v0.3.x stabilization cycle, classifying observed framework-workflow failures by symptom, root cause, shipped fix, and remaining gap."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -17,15 +18,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-08T14:07:55.288Z"
+  updated_by: "DOCS"
+  note: "Commands: bun run docs:site:check. Result: the new developer bug ledger page builds cleanly, is linked from docs navigation, and records the observed v0.3.x CLI failures with symptom, root cause, shipped fix, and remaining gap sections grounded in repository evidence. Scope: docs/developer/cli-bug-ledger-v0-3-x.mdx, docs/docs.json, website/sidebars.ts."
+commit:
+  hash: "37fe3af6cb6cce7048a690d149d10a7ee5cf9c86"
+  message: "📝 E6P3T0 docs: add v0.3.x CLI bug ledger"
 comments:
   -
     author: "DOCS"
     body: "Start: compiling a release-grade CLI defect ledger from observed framework workflow failures, with evidence, shipped fixes, and remaining gaps before the next patch release."
+  -
+    author: "DOCS"
+    body: "Verified: the CLI defect ledger is now published in developer docs, linked in navigation, and grounded in repository evidence instead of memory-only claims."
 events:
   -
     type: "status"
@@ -34,8 +40,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: compiling a release-grade CLI defect ledger from observed framework workflow failures, with evidence, shipped fixes, and remaining gaps before the next patch release."
+  -
+    type: "verify"
+    at: "2026-03-08T14:07:55.288Z"
+    author: "DOCS"
+    state: "ok"
+    note: "Commands: bun run docs:site:check. Result: the new developer bug ledger page builds cleanly, is linked from docs navigation, and records the observed v0.3.x CLI failures with symptom, root cause, shipped fix, and remaining gap sections grounded in repository evidence. Scope: docs/developer/cli-bug-ledger-v0-3-x.mdx, docs/docs.json, website/sidebars.ts."
+  -
+    type: "status"
+    at: "2026-03-08T14:08:04.386Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the CLI defect ledger is now published in developer docs, linked in navigation, and grounded in repository evidence instead of memory-only claims."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:07:28.482Z"
+doc_updated_at: "2026-03-08T14:08:04.386Z"
 doc_updated_by: "DOCS"
 description: "Capture the concrete CLI bugs observed in this session, classify their causes, and propose fixes or safeguards so the next patch release has an explicit defect ledger."
 id_source: "generated"
@@ -72,6 +91,14 @@ id_source: "generated"
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T14:07:55.288Z — VERIFY — ok
+
+By: DOCS
+
+Note: Commands: bun run docs:site:check. Result: the new developer bug ledger page builds cleanly, is linked from docs navigation, and records the observed v0.3.x CLI failures with symptom, root cause, shipped fix, and remaining gap sections grounded in repository evidence. Scope: docs/developer/cli-bug-ledger-v0-3-x.mdx, docs/docs.json, website/sidebars.ts.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-08T14:07:28.482Z, excerpt_hash=sha256:b5d317a70581ea4b4ceeab50b88b7ce428f2850eacec8fefcf976ac4267e2c4d
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
