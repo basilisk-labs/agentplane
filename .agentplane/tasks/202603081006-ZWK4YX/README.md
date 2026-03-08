@@ -1,7 +1,7 @@
 ---
 id: "202603081006-ZWK4YX"
 title: "Validate README v3 migration on a legacy project scenario"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "TESTER"
 depends_on:
@@ -10,20 +10,36 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-08T12:04:45.877Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-08T12:13:31.886Z"
+  updated_by: "TESTER"
+  note: "Added a real CLI integration scenario that creates a project, commits a legacy README v2 task state, confirms doctor recommends agentplane task migrate-doc --all, then validates upgrade --yes, task migrate-doc --all, task export, and a clean final doctor run on the migrated snapshot."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "TESTER"
+    body: "Start: codify a real CLI legacy-project migration scenario covering upgrade, doctor, task migrate-doc --all, and export."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T12:04:50.279Z"
+    author: "TESTER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: codify a real CLI legacy-project migration scenario covering upgrade, doctor, task migrate-doc --all, and export."
+  -
+    type: "verify"
+    at: "2026-03-08T12:13:31.886Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Added a real CLI integration scenario that creates a project, commits a legacy README v2 task state, confirms doctor recommends agentplane task migrate-doc --all, then validates upgrade --yes, task migrate-doc --all, task export, and a clean final doctor run on the migrated snapshot."
 doc_version: 3
-doc_updated_at: "2026-03-08T10:06:47.524Z"
+doc_updated_at: "2026-03-08T12:13:31.888Z"
 doc_updated_by: "TESTER"
 description: "Exercise upgrade, doctor, and migrate-doc against a legacy-style project to confirm the v2 to v3 rollout path is stable."
 id_source: "generated"
@@ -41,27 +57,23 @@ Exercise upgrade, doctor, and migrate-doc against a legacy-style project to conf
 
 ## Plan
 
-1. Implement the change for "Validate README v3 migration on a legacy project scenario".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Build a reproducible legacy-project scenario under a temporary nested git repo inside this repository, using the real CLI path rather than unit-only helpers. 2. Exercise the current recovery path end to end: create a project, inject a legacy README v2 task state, run upgrade/doctor, then run task migrate-doc --all plus task export and confirm the workspace reaches a clean README v3 snapshot. 3. Codify the scenario as an automated regression test and update any touched guidance only if the runtime behavior diverges from the documented recovery path.
 
 ## Verify Steps
 
-### Scope
-- Primary tag: `code`
-
-### Checks
-- Add explicit checks/commands for this task before approval.
-
-### Evidence / Commands
-- Record executed commands and key outputs.
-
-### Pass criteria
-- Steps are reproducible and produce expected results.
+1. Run the automated legacy-project scenario through the real CLI. Expected: doctor reports the active legacy README v2 state before migration and points to agentplane task migrate-doc --all. 2. Run the recovery path in the scenario. Expected: agentplane upgrade --yes succeeds, task migrate-doc --all upgrades the task docs, and task export refreshes tasks.json to doc_version=3. 3. Re-run doctor on the migrated scenario. Expected: warnings=0 for README migration state and the workspace reports a clean README v3 snapshot.
 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T12:13:31.886Z — VERIFY — ok
+
+By: TESTER
+
+Note: Added a real CLI integration scenario that creates a project, commits a legacy README v2 task state, confirms doctor recommends agentplane task migrate-doc --all, then validates upgrade --yes, task migrate-doc --all, task export, and a clean final doctor run on the migrated snapshot.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-08T12:04:50.279Z, excerpt_hash=sha256:b52d31308f1d15ca254534ca936207b5b01dae8ab2df4a333acef174f30e127e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
