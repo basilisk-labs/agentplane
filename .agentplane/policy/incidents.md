@@ -1,17 +1,12 @@
 # Policy Incidents Log
 
-This is the single file for high-signal incident-derived policy rules.
+This is the single file for incident-derived and situational policy rules.
 
 ## Entry contract
 
 - Add entries append-only.
 - Every entry MUST include: `id`, `date`, `scope`, `failure`, `rule`, `evidence`, `enforcement`, `state`.
 - `rule` MUST be concrete and testable (`MUST` / `MUST NOT`).
-- Entries MUST capture only strong incident classes:
-  - repeatable or severe operational failures;
-  - non-obvious failure modes that are not already clear from canonical docs or command help;
-  - failures with concrete enforcement or a named path to enforcement.
-- MUST NOT log local preferences, one-off operator notes, weak heuristics, or guidance that belongs in normal docs/help.
 - `state` values: `open`, `stabilized`, `promoted`.
 
 ## Entry template
@@ -38,38 +33,4 @@ example:end -->
 
 ## Entries
 
-- id: INC-20260308-01
-  date: 2026-03-08
-  scope: framework checkout runtime selection
-  failure: PATH-launched global agentplane kept executing the installed CLI inside the framework repo, creating runtime drift against the current checkout
-  rule: Inside a framework checkout, the wrapper MUST hand off to the repo-local binary by default; using the global binary there MUST require explicit opt-out
-  evidence: tasks 202603071647-M0Q79C, 202603071647-Y4BZ1T, 202603071647-25WS52; commits 093183c0, ec5b7b41, f4c55030
-  enforcement: wrapper tests + docs
-  state: promoted
-
-- id: INC-20260308-02
-  date: 2026-03-08
-  scope: stale-dist freshness and diagnostics
-  failure: stale-dist checks blocked read-only diagnostics on dirty runtime paths even after a local rebuild because freshness was keyed to git dirtiness instead of the built source snapshot
-  rule: Stale-dist freshness MUST compare the current watched-runtime snapshot against the build-manifest snapshot; read-only diagnostics MUST warn-and-run instead of hard-failing
-  evidence: tasks 202603072032-2M0V8V, 202603072032-1BC7VQ, 202603072032-V9VGT2, 202603072032-4D9ASG; commits 0c259fa8, 30e9ba26, 4771172d, cc2b4a20
-  enforcement: dist-guard tests + build manifest snapshotting + docs
-  state: promoted
-
-- id: INC-20260308-05
-  date: 2026-03-08
-  scope: release preflight against burned npm versions
-  failure: release publication attempted to reuse an npm version that had already been burned, which cannot be republished even after unpublish
-  rule: Release preflight MUST fail before local release apply when the target npm version is already burned or otherwise not publishable
-  evidence: task 202603071710-PQVS2V; commit d5961272
-  enforcement: release preflight checks + tests
-  state: promoted
-
-- id: INC-20260308-06
-  date: 2026-03-08
-  scope: release-generated docs synchronization
-  failure: release apply could bump versions and complete the local release path while leaving generated reference docs dirty afterward
-  rule: Release apply MUST regenerate and stage version-sensitive generated docs after version bump and before the release commit/tag is finalized
-  evidence: task 202603071745-T3QE04; commit 41b3e1ae
-  enforcement: release apply tests + docs
-  state: promoted
+- None yet.
