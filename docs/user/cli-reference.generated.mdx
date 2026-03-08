@@ -1765,10 +1765,10 @@ agentplane init --setup-profile light --yes
 - Non-interactive setup with flexible defaults.
 
 ```sh
-agentplane init --workflow direct --backend local --hooks true --require-plan-approval true --require-network-approval true --require-verify-approval true --yes
+agentplane init --workflow direct --backend local --hooks true --require-network-approval true --yes
 ```
 
-- Non-interactive setup with explicit policy flags.
+- Non-interactive setup with profile defaults plus an explicit network-approval override.
 
 ```sh
 agentplane init --force --yes
