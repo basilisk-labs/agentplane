@@ -1,7 +1,8 @@
 ---
 id: "202603081315-H2E5Q5"
 title: "Fix literal newline escaping in task README sections"
-status: "DOING"
+result_summary: "Task README rendering now preserves literal escape tokens when intentional and normalizes multiline-like escaped newlines into readable README output."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T13:41:35.008Z"
   updated_by: "TESTER"
   note: "targeted vitest, lint, builds, migrate-doc, and doctor passed"
-commit: null
+commit:
+  hash: "407702e6e1e60fbde10e203bc0ab2c458d065181"
+  message: "🔧 H2E5Q5 task: normalize multiline task README rendering"
 comments:
   -
     author: "CODER"
     body: "Start: reproducing literal newline leakage across task README rendering and write paths; scope is renderer/template normalization plus deterministic cleanup of affected task docs."
+  -
+    author: "CODER"
+    body: "Verified: targeted task-readme, migrate-doc, and task-new tests passed; lint, local builds, migrate-doc --all, and doctor all succeeded."
 events:
   -
     type: "status"
@@ -38,9 +44,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "targeted vitest, lint, builds, migrate-doc, and doctor passed"
+  -
+    type: "status"
+    at: "2026-03-08T13:42:14.617Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: targeted task-readme, migrate-doc, and task-new tests passed; lint, local builds, migrate-doc --all, and doctor all succeeded."
 doc_version: 3
-doc_updated_at: "2026-03-08T13:41:35.009Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-03-08T13:42:14.617Z"
+doc_updated_by: "CODER"
 description: "Find why some task README sections render literal \\\\n sequences instead of actual line breaks, then fix the write path and normalize affected examples or fixtures."
 id_source: "generated"
 ---
