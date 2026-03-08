@@ -5,6 +5,7 @@ import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import type { CommandHandler, CommandSpec } from "../cli/spec/spec.js";
 import { successMessage, warnMessage } from "../cli/output.js";
+import { buildWorkflowRuntimeContext } from "../shared/workflow-artifacts.js";
 import {
   DEFAULT_WORKFLOW_TEMPLATE,
   buildWorkflowFromTemplates,
@@ -68,22 +69,15 @@ export const runWorkflowBuild: CommandHandler<WorkflowBuildParsed> = async (ctx,
   const workflowPaths = resolveWorkflowPaths(resolved.gitRoot);
   const configApprovals = configLoaded.config.agents?.approvals;
 
-  const runtimeContext = {
-    workflow: {
-      mode: configLoaded.config.workflow_mode,
-      version: 1,
-      approvals: {
-        require_plan: configApprovals?.require_plan ?? true,
-        require_verify: configApprovals?.require_verify ?? true,
-        require_network: configApprovals?.require_network ?? true,
-      },
+  const runtimeContext = buildWorkflowRuntimeContext({
+    gitRoot: resolved.gitRoot,
+    workflowMode: configLoaded.config.workflow_mode,
+    approvals: {
+      requirePlanApproval: configApprovals?.require_plan ?? true,
+      requireVerifyApproval: configApprovals?.require_verify ?? true,
+      requireNetworkApproval: configApprovals?.require_network ?? true,
     },
-    runtime: {
-      repo_name: path.basename(resolved.gitRoot),
-      repo_root: resolved.gitRoot,
-      timestamp: new Date().toISOString(),
-    },
-  };
+  });
 
   const overrideTemplate = await maybeReadOverride(workflowPaths);
   const built = buildWorkflowFromTemplates({

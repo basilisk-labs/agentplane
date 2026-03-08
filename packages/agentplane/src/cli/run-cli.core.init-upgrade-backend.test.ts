@@ -1290,6 +1290,58 @@ describe("runCli", () => {
   });
 
   it(
+    "upgrade restores workflow runtime artifacts even when managed files are otherwise unchanged",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      let io = captureStdIO();
+      try {
+        const code = await runCli(["init", "--yes", "--root", root]);
+        expect(code).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      const workflowPath = path.join(root, ".agentplane", "WORKFLOW.md");
+      const lastKnownGoodPath = path.join(root, ".agentplane", "workflows", "last-known-good.md");
+      await rm(workflowPath, { force: true });
+      await rm(lastKnownGoodPath, { force: true });
+      await commitAll(root, "✨ fixture: remove workflow runtime artifacts");
+
+      io = captureStdIO();
+      try {
+        const code = await runCli(["upgrade", "--yes", "--root", root]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("Workflow artifacts refreshed:");
+      } finally {
+        io.restore();
+      }
+
+      expect(await pathExists(workflowPath)).toBe(true);
+      expect(await pathExists(lastKnownGoodPath)).toBe(true);
+      const workflowText = await readFile(workflowPath, "utf8");
+      const snapshotText = await readFile(lastKnownGoodPath, "utf8");
+      expect(snapshotText).toBe(workflowText);
+
+      io = captureStdIO();
+      const doctorSpy = vi.spyOn(console, "error").mockImplementation(() => {
+        /* captured separately for assertion */
+      });
+      try {
+        const code = await runCli(["doctor", "--root", root]);
+        expect(code).toBe(0);
+        const output = `${io.stdout}\n${io.stderr}\n${doctorSpy.mock.calls.flat().join("\n")}`;
+        expect(output).not.toContain("WF_MISSING_FILE");
+      } finally {
+        doctorSpy.mockRestore();
+        io.restore();
+      }
+    },
+  );
+
+  it(
     "recovers a legacy README v2 task after upgrade via task migrate-doc and export",
     { timeout: 60_000 },
     async () => {

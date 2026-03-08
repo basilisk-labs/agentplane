@@ -12,6 +12,7 @@ import { extractArchive } from "../cli/archive.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
 import { warnMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
+import { ensureWorkflowArtifacts } from "../shared/workflow-artifacts.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
 import { getVersion } from "../meta/version.js";
 import {
@@ -748,8 +749,23 @@ export async function cmdUpgradeParsed(opts: {
       updates: updates.length,
       skipped: skipped.length,
     });
+    const configApprovals = loaded.config.agents?.approvals;
+    const workflowArtifacts = await ensureWorkflowArtifacts({
+      gitRoot: resolved.gitRoot,
+      workflowMode: loaded.config.workflow_mode,
+      approvals: {
+        requirePlanApproval: configApprovals?.require_plan ?? true,
+        requireVerifyApproval: configApprovals?.require_verify ?? true,
+        requireNetworkApproval: configApprovals?.require_network ?? true,
+      },
+    });
     const commitPaths = [
-      ...new Set([...additions, ...updates, ...(shouldMutateConfig ? [CONFIG_REL_PATH] : [])]),
+      ...new Set([
+        ...additions,
+        ...updates,
+        ...workflowArtifacts.commitPaths,
+        ...(shouldMutateConfig ? [CONFIG_REL_PATH] : []),
+      ]),
     ];
     const commit = await createUpgradeCommit({
       gitRoot: resolved.gitRoot,
@@ -766,6 +782,11 @@ export async function cmdUpgradeParsed(opts: {
     process.stdout.write(
       `Upgrade applied: ${additions.length} add, ${updates.length} update, ${skipped.length} unchanged\n`,
     );
+    if (workflowArtifacts.changedPaths.length > 0) {
+      process.stdout.write(
+        `Workflow artifacts refreshed: ${workflowArtifacts.commitPaths.join(", ")}\n`,
+      );
+    }
     if (commit) {
       process.stdout.write(`Upgrade commit: ${commit.hash.slice(0, 12)} ${commit.subject}\n`);
     }

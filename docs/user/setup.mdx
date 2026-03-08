@@ -147,7 +147,7 @@ Operational rule:
 Think about upgrade in three states:
 
 1. **Clean managed state**
-   `AGENTS.md`, `.agentplane/policy/**`, and other managed framework files match the installed CLI bundle.
+   `AGENTS.md`, `.agentplane/policy/**`, `.agentplane/WORKFLOW.md`, `.agentplane/workflows/last-known-good.md`, and other managed/runtime framework files match the installed CLI bundle.
    Normal path:
 
    ```bash
@@ -173,6 +173,7 @@ Think about upgrade in three states:
    ```
 
 - managed files are replace-first on apply, except `.agentplane/policy/incidents.md`, which is append-only when local content already exists;
+- upgrade also restores required workflow runtime artifacts for the current contract, even when those files were missing from an older initialized repository;
 - upgrade prints the bundle source, resolved version label, and selected mode before doing any work.
 
 Non-default modes:

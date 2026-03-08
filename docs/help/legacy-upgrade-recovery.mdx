@@ -66,7 +66,8 @@ agentplane doctor
 This second step is about task-local docs, not managed framework files:
 
 - `agentplane upgrade --yes` repairs framework-owned files such as `AGENTS.md` and
-  `.agentplane/policy/**`;
+  `.agentplane/policy/**`, and it restores required workflow runtime artifacts such as
+  `.agentplane/WORKFLOW.md` and `.agentplane/workflows/last-known-good.md`;
 - `agentplane task migrate-doc --all` upgrades task READMEs from legacy `doc_version=2` to the
   README v3 contract.
 
