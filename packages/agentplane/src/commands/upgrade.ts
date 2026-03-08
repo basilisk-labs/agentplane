@@ -1,35 +1,40 @@
-import {
-  lstat,
-  mkdir,
-  mkdtemp,
-  readdir,
-  readFile,
-  readlink,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { loadConfig, resolveProject, saveConfig, setByDottedKey } from "@agentplaneorg/core";
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
-import { backupPath, fileExists, getPathKind } from "../cli/fs-utils.js";
+import { fileExists, getPathKind } from "../cli/fs-utils.js";
 import { downloadToFile, fetchJson } from "../cli/http.js";
 import { parseSha256Text, sha256File } from "../cli/checksum.js";
 import { extractArchive } from "../cli/archive.js";
-import {
-  invalidFieldMessage,
-  invalidValueMessage,
-  requiredFieldMessage,
-  warnMessage,
-} from "../cli/output.js";
 import { exitCodeForError } from "../cli/exit-codes.js";
-import { withDiagnosticContext } from "../shared/diagnostics.js";
+import { warnMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
-import { execFileAsync, gitEnv } from "./shared/git.js";
 import { getVersion } from "../meta/version.js";
+import {
+  applyManagedFiles,
+  cleanupAutoUpgradeArtifacts,
+  createUpgradeCommit,
+  ensureCleanTrackedTreeForUpgrade,
+  persistUpgradeState,
+} from "./upgrade/apply.js";
+import { printUpgradeDryRun, writeUpgradeAgentReview } from "./upgrade/report.js";
+import {
+  describeUpgradeSource,
+  loadFrameworkManifestFromPath,
+  normalizeFrameworkSourceForUpgrade,
+  resolveRepoTarballUrl,
+  resolveUpgradeDownloadFromRelease,
+  resolveUpgradeRoot,
+} from "./upgrade/source.js";
+import type {
+  FrameworkManifestEntry,
+  GitHubRelease,
+  UpgradeReviewRecord,
+} from "./upgrade/types.js";
 
 const DEFAULT_UPGRADE_ASSET = "agentplane-upgrade.tar.gz";
 const DEFAULT_UPGRADE_CHECKSUM_ASSET = "agentplane-upgrade.tar.gz.sha256";
@@ -51,89 +56,7 @@ export type UpgradeFlags = {
   yes: boolean;
 };
 
-type GitHubRelease = {
-  tag_name?: string;
-  assets?: { name?: string; browser_download_url?: string }[];
-  tarball_url?: string;
-};
-
-type FrameworkManifest = {
-  schema_version: 1;
-  files: FrameworkManifestEntry[];
-};
-
-type FrameworkManifestEntry = {
-  path: string;
-  source_path?: string;
-  type: "markdown" | "json" | "text";
-  merge_strategy: "agents_policy_markdown" | "agent_json_3way" | "agent_json_merge";
-  required?: boolean;
-};
-
-type UpgradeReviewRecord = {
-  relPath: string;
-  mergeStrategy: FrameworkManifestEntry["merge_strategy"];
-  hasBaseline: boolean;
-  changedCurrentVsBaseline: boolean | null;
-  changedIncomingVsBaseline: boolean | null;
-  currentDiffersFromIncoming: boolean;
-  needsSemanticReview: boolean;
-  mergeApplied: boolean;
-  mergePath:
-    | "none"
-    | "markdownOverrides"
-    | "3way"
-    | "incomingWins"
-    | "incomingWinsFallback"
-    | "parseFailed"
-    | "incidentsAppend";
-};
-
-function describeUpgradeSource(opts: {
-  bundleLayout: "local_assets" | "upgrade_bundle" | "repo_tarball";
-  hasExplicitBundle: boolean;
-  useRemote: boolean;
-}): string {
-  if (opts.bundleLayout === "local_assets") return "local installed agentplane CLI assets";
-  if (opts.bundleLayout === "repo_tarball") return "GitHub repo tarball fallback";
-  if (opts.hasExplicitBundle) return "explicit upgrade bundle";
-  if (opts.useRemote) return "GitHub release bundle";
-  return "upgrade bundle";
-}
-
-async function safeRemovePath(targetPath: string): Promise<void> {
-  try {
-    await rm(targetPath, { recursive: true, force: true });
-  } catch {
-    // best-effort cleanup
-  }
-}
-
-async function cleanupAutoUpgradeArtifacts(opts: {
-  upgradeStateDir: string;
-  createdBackups: string[];
-}): Promise<void> {
-  for (const backupPath of opts.createdBackups) {
-    await safeRemovePath(backupPath);
-  }
-  // Keep durable state files at .upgrade root; remove transient per-run agent artifacts.
-  await safeRemovePath(path.join(opts.upgradeStateDir, "agent"));
-}
-
 const ASSETS_DIR_URL = new URL("../../assets/", import.meta.url);
-
-async function loadFrameworkManifestFromPath(manifestPath: string): Promise<FrameworkManifest> {
-  const text = await readFile(manifestPath, "utf8");
-  const parsed = JSON.parse(text) as FrameworkManifest;
-  if (parsed?.schema_version !== 1 || !Array.isArray(parsed?.files)) {
-    throw new CliError({
-      exitCode: 3,
-      code: "E_VALIDATION",
-      message: "Invalid framework.manifest.json (expected schema_version=1 and files array).",
-    });
-  }
-  return parsed;
-}
 
 function isDeniedUpgradePath(relPath: string): boolean {
   if (relPath === ".agentplane/config.json") return true;
@@ -145,113 +68,6 @@ function isDeniedUpgradePath(relPath: string): boolean {
   if (relPath.startsWith(".agentplane/.upgrade/")) return true;
   if (relPath === ".git" || relPath.startsWith(".git/")) return true;
   return false;
-}
-
-function parseGitHubRepo(source: string): { owner: string; repo: string } {
-  const trimmed = source.trim();
-  if (!trimmed) throw new Error(requiredFieldMessage("config.framework.source"));
-  if (!trimmed.includes("github.com")) {
-    throw new Error(invalidFieldMessage("config.framework.source", "GitHub URL"));
-  }
-  try {
-    const url = new URL(trimmed);
-    const parts = url.pathname.replaceAll(".git", "").split("/").filter(Boolean);
-    if (parts.length < 2)
-      throw new Error(invalidValueMessage("GitHub repo URL", trimmed, "owner/repo"));
-    return { owner: parts[0], repo: parts[1] };
-  } catch {
-    throw new Error(invalidValueMessage("GitHub repo URL", trimmed, "owner/repo"));
-  }
-}
-
-export function normalizeFrameworkSourceForUpgrade(source: string): {
-  source: string;
-  owner: string;
-  repo: string;
-  migrated: boolean;
-} {
-  const { owner, repo } = parseGitHubRepo(source);
-  if (owner === "basilisk-labs" && repo === "agent-plane") {
-    return {
-      source: `https://github.com/${owner}/agentplane`,
-      owner,
-      repo: "agentplane",
-      migrated: true,
-    };
-  }
-  return { source: `https://github.com/${owner}/${repo}`, owner, repo, migrated: false };
-}
-
-export function resolveUpgradeDownloadFromRelease(opts: {
-  release: GitHubRelease;
-  owner: string;
-  repo: string;
-  assetName: string;
-  checksumName: string;
-}):
-  | { kind: "assets"; bundleUrl: string; checksumUrl: string }
-  | { kind: "tarball"; tarballUrl: string } {
-  const assets = Array.isArray(opts.release.assets) ? opts.release.assets : [];
-  const asset = assets.find((a) => a?.name === opts.assetName);
-  const checksumAsset = assets.find((a) => a?.name === opts.checksumName);
-  if (asset?.browser_download_url && checksumAsset?.browser_download_url) {
-    return {
-      kind: "assets",
-      bundleUrl: asset.browser_download_url,
-      checksumUrl: checksumAsset.browser_download_url,
-    };
-  }
-
-  const tarballUrl = typeof opts.release.tarball_url === "string" ? opts.release.tarball_url : "";
-  if (!tarballUrl) {
-    throw new CliError({
-      exitCode: exitCodeForError("E_NETWORK"),
-      code: "E_NETWORK",
-      message: `Upgrade assets not found in ${opts.owner}/${opts.repo} release`,
-    });
-  }
-  return { kind: "tarball", tarballUrl };
-}
-
-function buildCodeloadTarGzUrl(opts: { owner: string; repo: string; tag: string }): string {
-  // Prefer codeload over api.github.com tarball_url. It is less brittle and does not require
-  // GitHub API-specific behavior/rate limits.
-  const tag = opts.tag.trim();
-  if (!tag) throw new Error("tag is required");
-  return `https://codeload.github.com/${opts.owner}/${opts.repo}/tar.gz/${encodeURIComponent(tag)}`;
-}
-
-export function resolveRepoTarballUrl(opts: {
-  release: GitHubRelease;
-  owner: string;
-  repo: string;
-  explicitTag?: string;
-}): string {
-  const tag =
-    (typeof opts.explicitTag === "string" && opts.explicitTag.trim()) ||
-    (typeof opts.release.tag_name === "string" && opts.release.tag_name.trim()) ||
-    "";
-  if (tag) return buildCodeloadTarGzUrl({ owner: opts.owner, repo: opts.repo, tag });
-
-  const tarballUrl = typeof opts.release.tarball_url === "string" ? opts.release.tarball_url : "";
-  if (tarballUrl) return tarballUrl;
-
-  throw new CliError({
-    exitCode: exitCodeForError("E_NETWORK"),
-    code: "E_NETWORK",
-    message:
-      "GitHub release did not provide tag_name or tarball_url; cannot fall back to repo tarball.",
-  });
-}
-
-async function resolveUpgradeRoot(extractedDir: string): Promise<string> {
-  const entries = await readdir(extractedDir, { withFileTypes: true });
-  const dirs = entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
-  const files = entries.filter((entry) => entry.isFile()).map((entry) => entry.name);
-  if (files.length === 0 && dirs.length === 1) {
-    return path.join(extractedDir, dirs[0]);
-  }
-  return extractedDir;
 }
 
 function isAllowedUpgradePath(relPath: string): boolean {
@@ -430,118 +246,6 @@ function normalizeUpgradeVersionLabel(input: string): string {
   if (!trimmed) return "unknown";
   if (/^v\d/i.test(trimmed)) return trimmed;
   return `v${trimmed}`;
-}
-
-async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise<void> {
-  const { stdout } = await execFileAsync("git", ["status", "--short", "--untracked-files=no"], {
-    cwd: gitRoot,
-    env: gitEnv(),
-    maxBuffer: 10 * 1024 * 1024,
-  });
-  const dirty = String(stdout ?? "")
-    .split(/\r?\n/u)
-    .map((line) => line.trimEnd())
-    .filter((line) => line.length > 0);
-  if (dirty.length === 0) return;
-  throw new CliError({
-    exitCode: exitCodeForError("E_GIT"),
-    code: "E_GIT",
-    message:
-      "Upgrade --auto requires a clean tracked working tree.\n" +
-      `Found tracked changes:\n${dirty.map((line) => `  ${line}`).join("\n")}`,
-    context: withDiagnosticContext(
-      { command: "upgrade" },
-      {
-        state: "managed upgrade cannot apply over tracked local edits",
-        likelyCause:
-          "auto-apply upgrade is about to replace framework-managed files, but the repository already has tracked modifications",
-        nextAction: {
-          command: "git status --short --untracked-files=no",
-          reason: "inspect or clear tracked changes before rerunning `agentplane upgrade --yes`",
-          reasonCode: "upgrade_dirty_tree",
-        },
-      },
-    ),
-  });
-}
-
-async function createUpgradeCommit(opts: {
-  gitRoot: string;
-  paths: string[];
-  versionLabel: string;
-  source: "local_assets" | "upgrade_bundle" | "repo_tarball";
-  additions: number;
-  updates: number;
-  unchanged: number;
-  incidentsAppendedCount: number;
-}): Promise<{ hash: string; subject: string } | null> {
-  const uniquePaths = [...new Set(opts.paths.filter(Boolean))];
-  if (uniquePaths.length === 0) return null;
-  await execFileAsync("git", ["add", "--", ...uniquePaths], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-    maxBuffer: 10 * 1024 * 1024,
-  });
-
-  const { stdout: stagedOut } = await execFileAsync(
-    "git",
-    ["diff", "--cached", "--name-only", "-z"],
-    {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-      encoding: "buffer",
-      maxBuffer: 10 * 1024 * 1024,
-    },
-  );
-  const staged = (Buffer.isBuffer(stagedOut) ? stagedOut.toString("utf8") : String(stagedOut ?? ""))
-    .split("\0")
-    .map((entry) => entry.trim())
-    .some(Boolean);
-  if (!staged) return null;
-
-  const subject = `⬆️ upgrade: apply framework ${opts.versionLabel}`;
-  const body =
-    `Upgrade-Version: ${opts.versionLabel}\n` +
-    `Source: ${opts.source}\n` +
-    `Managed-Changes: add=${opts.additions}, update=${opts.updates}, unchanged=${opts.unchanged}\n` +
-    `Incidents-Appended: ${opts.incidentsAppendedCount}\n`;
-  try {
-    await execFileAsync("git", ["commit", "-m", subject, "-m", body], {
-      cwd: opts.gitRoot,
-      env: gitEnv(),
-      maxBuffer: 10 * 1024 * 1024,
-    });
-  } catch (err) {
-    const details = (err as { stderr?: string; message?: string } | null)?.stderr ?? "";
-    throw new CliError({
-      exitCode: exitCodeForError("E_GIT"),
-      code: "E_GIT",
-      message:
-        "Upgrade applied but failed to create the upgrade commit.\n" +
-        "Fix commit policy/hook issues and commit the staged upgrade files as a dedicated upgrade commit.\n" +
-        (String(details).trim() ? `Details:\n${String(details).trim()}` : ""),
-      context: withDiagnosticContext(
-        { command: "upgrade" },
-        {
-          state: "managed files were updated, but the upgrade commit was blocked",
-          likelyCause:
-            "the generated upgrade commit hit a git hook or commit policy failure after the framework files were already staged",
-          nextAction: {
-            command: `git commit -m "⬆️ upgrade: apply framework ${opts.versionLabel}"`,
-            reason:
-              "record the already-staged framework changes as one dedicated upgrade commit after fixing the blocking hook or policy",
-            reasonCode: "upgrade_commit_blocked",
-          },
-        },
-      ),
-    });
-  }
-
-  const { stdout: hashOut } = await execFileAsync("git", ["rev-parse", "HEAD"], {
-    cwd: opts.gitRoot,
-    env: gitEnv(),
-  });
-  return { hash: String(hashOut ?? "").trim(), subject };
 }
 
 export async function cmdUpgradeParsed(opts: {
@@ -984,13 +688,7 @@ export async function cmdUpgradeParsed(opts: {
     }
 
     if (flags.dryRun) {
-      process.stdout.write(
-        `Upgrade dry-run: ${additions.length} add, ${updates.length} update, ${skipped.length} unchanged\n`,
-      );
-      for (const rel of additions) process.stdout.write(`ADD ${rel}\n`);
-      for (const rel of updates) process.stdout.write(`UPDATE ${rel}\n`);
-      for (const rel of skipped) process.stdout.write(`SKIP ${rel}\n`);
-      for (const rel of merged) process.stdout.write(`MERGE ${rel}\n`);
+      printUpgradeDryRun({ additions, updates, skipped, merged });
       return 0;
     }
 
@@ -1004,180 +702,46 @@ export async function cmdUpgradeParsed(opts: {
         return 0;
       }
 
-      const agentDir = path.join(upgradeStateDir, "agent");
-      const runId = new Date().toISOString().replaceAll(":", "-").replaceAll(".", "-");
-      const runDir = path.join(agentDir, runId);
-      await mkdir(runDir, { recursive: true });
-
-      const managedFiles = manifest.files.map((f) => f.path.replaceAll("\\", "/").trim());
-      const planMd =
-        `# agentplane upgrade plan (${runId})\n\n` +
-        `Mode: agent-assisted review (no files modified)\n\n` +
-        `## Summary\n\n` +
-        `- additions: ${additions.length}\n` +
-        `- updates: ${updates.length}\n` +
-        `- unchanged: ${skipped.length}\n` +
-        `- merged (auto-safe transforms already applied to incoming): ${merged.length}\n\n` +
-        `## Managed files (manifest)\n\n` +
-        managedFiles.map((p) => `- ${p}`).join("\n") +
-        `\n\n` +
-        `## Proposed changes\n\n` +
-        additions.map((p) => `- ADD ${p}`).join("\n") +
-        (additions.length > 0 ? "\n" : "") +
-        updates.map((p) => `- UPDATE ${p}`).join("\n") +
-        (updates.length > 0 ? "\n" : "") +
-        merged.map((p) => `- MERGE ${p}`).join("\n") +
-        (merged.length > 0 ? "\n" : "") +
-        skipped.map((p) => `- SKIP ${p}`).join("\n") +
-        (skipped.length > 0 ? "\n" : "") +
-        `\n` +
-        `## Next steps\n\n` +
-        `1. Review the proposed changes list.\n` +
-        `2. Apply changes manually or re-run without \`--agent\` to apply managed files.\n` +
-        `3. Run \`agentplane doctor\` (or \`agentplane doctor --fix\`) and ensure checks pass.\n`;
-
-      const constraintsMd =
-        `# Upgrade constraints\n\n` +
-        `This upgrade is restricted to framework-managed files only.\n\n` +
-        `## Must not touch\n\n` +
-        `- .agentplane/tasks/** (task data)\n` +
-        `- .agentplane/tasks.json (export snapshot)\n` +
-        `- .agentplane/backends/** (backend configuration)\n` +
-        `- .agentplane/config.json (project config)\n` +
-        `- .git/**\n\n` +
-        `## Notes\n\n` +
-        `- The upgrade bundle is validated against framework.manifest.json.\n` +
-        `- The policy gateway file at workspace root is AGENTS.md or CLAUDE.md.\n`;
-
-      const reportMd =
-        `# Upgrade report (${runId})\n\n` +
-        `## Actions taken\n\n` +
-        `- [ ] Reviewed plan.md\n` +
-        `- [ ] Applied changes (manual or --auto)\n` +
-        `- [ ] Ran doctor\n` +
-        `- [ ] Ran tests / lint\n\n` +
-        `## Notes\n\n` +
-        `- \n`;
-
-      await writeFile(path.join(runDir, "plan.md"), planMd, "utf8");
-      await writeFile(path.join(runDir, "constraints.md"), constraintsMd, "utf8");
-      await writeFile(path.join(runDir, "report.md"), reportMd, "utf8");
-      await writeFile(
-        path.join(runDir, "files.json"),
-        JSON.stringify({ additions, updates, skipped, merged }, null, 2) + "\n",
-        "utf8",
-      );
-
-      await writeFile(
-        path.join(runDir, "review.json"),
-        JSON.stringify(
-          {
-            generated_at: new Date().toISOString(),
-            counts: {
-              total: reviewRecords.length,
-              needsSemanticReview: needsReview.length,
-            },
-            files: reviewRecords,
-          },
-          null,
-          2,
-        ) + "\n",
-        "utf8",
-      );
-
-      const relRunDir = path.relative(resolved.gitRoot, runDir);
+      const { relRunDir, needsReviewCount } = await writeUpgradeAgentReview({
+        gitRoot: resolved.gitRoot,
+        runRoot: path.join(upgradeStateDir, "agent"),
+        manifest,
+        additions,
+        updates,
+        skipped,
+        merged,
+        reviewRecords,
+      });
       process.stdout.write(`Upgrade plan written: ${relRunDir}\n`);
-      process.stdout.write(`Review-required files: ${needsReview.length}\n`);
+      process.stdout.write(`Review-required files: ${needsReviewCount}\n`);
       return 0;
     }
 
-    for (const rel of [...additions, ...updates]) {
-      const destPath = path.join(resolved.gitRoot, rel);
-      if (flags.backup && (await fileExists(destPath))) {
-        const backup = await backupPath(destPath);
-        createdBackups.push(backup);
-      }
-      await mkdir(path.dirname(destPath), { recursive: true });
-      const data = fileContents.get(rel);
-      if (data) {
-        if (rel === "AGENTS.md" || rel === "CLAUDE.md") {
-          // If policy gateway file is a symlink, avoid overwriting an arbitrary external target.
-          // This permits repo-internal symlinks (e.g. the agentplane repo itself) while
-          // keeping user workspaces safe.
-          try {
-            const st = await lstat(destPath);
-            if (st.isSymbolicLink()) {
-              const linkTarget = await readlink(destPath);
-              const targetAbs = path.resolve(path.dirname(destPath), linkTarget);
-              const relFromRoot = path.relative(resolved.gitRoot, targetAbs);
-              if (relFromRoot.startsWith("..") || path.isAbsolute(relFromRoot)) {
-                throw new CliError({
-                  exitCode: exitCodeForError("E_VALIDATION"),
-                  code: "E_VALIDATION",
-                  message:
-                    `Refusing to overwrite symlinked ${rel} target outside repo: ${linkTarget}. ` +
-                    "Replace the symlink with a regular file and retry.",
-                });
-              }
-            }
-          } catch (err) {
-            const code = (err as { code?: string } | null)?.code;
-            if (code !== "ENOENT") throw err;
-          }
-        }
-
-        await writeFile(destPath, data);
-      }
-
-      // Record a baseline copy for future three-way merges.
-      const baselineKey = toBaselineKey(rel);
-      if (baselineKey && data) {
-        const baselinePath = path.join(baselineDirNew, baselineKey);
-        await mkdir(path.dirname(baselinePath), { recursive: true });
-        await writeFile(baselinePath, data);
-      }
-    }
+    await applyManagedFiles({
+      gitRoot: resolved.gitRoot,
+      additions,
+      updates,
+      backup: flags.backup,
+      fileContents,
+      baselineDir: baselineDirNew,
+      createdBackups,
+      toBaselineKey,
+    });
 
     const hasManagedMutations = additions.length > 0 || updates.length > 0;
-    const hasSourceMigration = normalizedSourceToPersist !== null;
-    const shouldMutateConfig = hasManagedMutations || hasSourceMigration;
-    if (shouldMutateConfig) {
-      const raw = { ...loaded.raw };
-      if (normalizedSourceToPersist) {
-        setByDottedKey(raw, "framework.source", normalizedSourceToPersist);
-      }
-      setByDottedKey(raw, "framework.last_update", new Date().toISOString());
-      await saveConfig(resolved.agentplaneDir, raw);
-    }
-    await writeFile(
+    const shouldMutateConfig = await persistUpgradeState({
+      agentplaneDir: resolved.agentplaneDir,
+      rawConfig: loaded.raw,
+      normalizedSourceToPersist,
+      hasManagedMutations,
       statePath,
-      JSON.stringify(
-        {
-          applied_at: new Date().toISOString(),
-          source: bundleLayout,
-          updated: { add: additions.length, update: updates.length, unchanged: skipped.length },
-        },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(upgradeStateDir, "last-review.json"),
-      JSON.stringify(
-        {
-          generated_at: new Date().toISOString(),
-          counts: {
-            total: reviewRecords.length,
-            needsSemanticReview: reviewRecords.filter((r) => r.needsSemanticReview).length,
-          },
-          files: reviewRecords,
-        },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
+      upgradeStateDir,
+      source: bundleLayout,
+      reviewRecords,
+      additions: additions.length,
+      updates: updates.length,
+      skipped: skipped.length,
+    });
     const commitPaths = [
       ...new Set([...additions, ...updates, ...(shouldMutateConfig ? [CONFIG_REL_PATH] : [])]),
     ];
@@ -1212,3 +776,9 @@ export async function cmdUpgradeParsed(opts: {
     }
   }
 }
+
+export {
+  normalizeFrameworkSourceForUpgrade,
+  resolveRepoTarballUrl,
+  resolveUpgradeDownloadFromRelease,
+} from "./upgrade/source.js";

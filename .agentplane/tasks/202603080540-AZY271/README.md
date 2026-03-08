@@ -1,7 +1,7 @@
 ---
 id: "202603080540-AZY271"
 title: "P0: split upgrade orchestration into source plan apply report modules"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -9,18 +9,36 @@ tags:
   - "code"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-08T05:50:33.517Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-comments: []
+  state: "ok"
+  updated_at: "2026-03-08T06:02:35.675Z"
+  updated_by: "CODER"
+  note: "Upgrade orchestration was split into dedicated source/report/apply/type modules. Targeted upgrade unit tests passed, upgrade integration tests passed, lint passed, TypeScript noEmit passed, agentplane build passed, and the broad run-cli init/upgrade/backend file passed in fork mode after confirming the thread-only failure was an unrelated process.chdir test-runner limitation."
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: extracting upgrade source/download resolution into dedicated modules, then splitting plan/apply/report orchestration while preserving current CLI behavior and merge semantics."
+events:
+  -
+    type: "status"
+    at: "2026-03-08T05:50:38.815Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: extracting upgrade source/download resolution into dedicated modules, then splitting plan/apply/report orchestration while preserving current CLI behavior and merge semantics."
+  -
+    type: "verify"
+    at: "2026-03-08T06:02:35.675Z"
+    author: "CODER"
+    state: "ok"
+    note: "Upgrade orchestration was split into dedicated source/report/apply/type modules. Targeted upgrade unit tests passed, upgrade integration tests passed, lint passed, TypeScript noEmit passed, agentplane build passed, and the broad run-cli init/upgrade/backend file passed in fork mode after confirming the thread-only failure was an unrelated process.chdir test-runner limitation."
 doc_version: 2
-doc_updated_at: "2026-03-08T05:40:02.195Z"
+doc_updated_at: "2026-03-08T06:02:35.676Z"
 doc_updated_by: "CODER"
 description: "Refactor commands/upgrade.ts into narrower units for source resolution, plan construction, apply execution, and reporting while preserving behavior and tests."
 id_source: "generated"
@@ -38,9 +56,7 @@ Refactor commands/upgrade.ts into narrower units for source resolution, plan con
 
 ## Plan
 
-1. Implement the change for "P0: split upgrade orchestration into source plan apply report modules".
-2. Run required checks and capture verification evidence.
-3. Finalize task notes and finish with traceable commit metadata.
+1. Inventory the current responsibilities inside commands/upgrade.ts and carve out the lowest-risk module boundaries: source resolution, plan creation, apply execution, and reporting. 2. Extract those helpers into dedicated modules while keeping command contracts, merge semantics, and tests stable. 3. Run targeted upgrade tests, lint, build, and a representative CLI upgrade flow to confirm no behavioral drift.
 
 ## Risks
 
@@ -68,6 +84,14 @@ Refactor commands/upgrade.ts into narrower units for source resolution, plan con
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T06:02:35.675Z — VERIFY — ok
+
+By: CODER
+
+Note: Upgrade orchestration was split into dedicated source/report/apply/type modules. Targeted upgrade unit tests passed, upgrade integration tests passed, lint passed, TypeScript noEmit passed, agentplane build passed, and the broad run-cli init/upgrade/backend file passed in fork mode after confirming the thread-only failure was an unrelated process.chdir test-runner limitation.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T05:50:38.815Z, excerpt_hash=sha256:682d5674a3bb4d925efca0f9cabc057c814315f01dc448e2879b94eecb1a7911
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
