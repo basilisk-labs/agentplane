@@ -34,7 +34,7 @@ const TASK_TEST_FILES = [
   "packages/agentplane/src/commands/task/plan.unit.test.ts",
 ];
 
-const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.command.test.ts"];
+const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.fast.test.ts"];
 const CLI_DOCS_RELEVANT_PATTERNS = [
   /^packages\/agentplane\/src\/cli\//,
   /^packages\/agentplane\/src\/commands\/.+(?:command|spec)\.ts$/,
