@@ -46,7 +46,7 @@ export type TaskFrontmatter = {
   };
   comments: { author: string; body: string }[];
   events?: TaskEvent[];
-  doc_version: 2;
+  doc_version: 2 | 3;
   doc_updated_at: string;
   doc_updated_by: string;
   description: string;
@@ -71,7 +71,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 export function validateTaskDocMetadata(frontmatter: Record<string, unknown>): string[] {
   const errors: string[] = [];
 
-  if (frontmatter.doc_version !== 2) errors.push("doc_version must be 2");
+  if (frontmatter.doc_version !== 2 && frontmatter.doc_version !== 3) {
+    errors.push("doc_version must be 2 or 3");
+  }
 
   const updatedAt = frontmatter.doc_updated_at;
   if (typeof updatedAt !== "string" || Number.isNaN(Date.parse(updatedAt))) {
@@ -84,6 +86,10 @@ export function validateTaskDocMetadata(frontmatter: Record<string, unknown>): s
   }
 
   return errors;
+}
+
+function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 2): 2 | 3 {
+  return value === 3 ? 3 : value === 2 ? 2 : fallback;
 }
 
 async function fileExists(filePath: string): Promise<boolean> {
@@ -271,7 +277,7 @@ export async function setTaskDocSection(opts: {
     const updatedBy = resolveDocUpdatedBy(parsed.frontmatter, opts.updatedBy);
     const nextFrontmatter: Record<string, unknown> = {
       ...parsed.frontmatter,
-      doc_version: 2,
+      doc_version: normalizeTaskDocVersion(parsed.frontmatter.doc_version),
       doc_updated_at: nowIso(),
       doc_updated_by: updatedBy,
     };

@@ -25,6 +25,7 @@ import {
   enforceStatusCommitPolicy,
   ensureAgentFilledRequiredDocSections,
   ensureVerificationSatisfiedIfRequired,
+  normalizeTaskDocVersion,
   nowIso,
   readCommitInfo,
   readHeadCommit,
@@ -276,7 +277,7 @@ export async function cmdFinish(opts: {
           taskId === metaTaskId && resultSummary ? resultSummary : task.result_summary,
         risk_level: taskId === metaTaskId && riskLevel ? riskLevel : task.risk_level,
         breaking: taskId === metaTaskId && breaking ? true : task.breaking,
-        doc_version: 2,
+        doc_version: normalizeTaskDocVersion(task.doc_version),
         doc_updated_at: at,
         doc_updated_by: opts.author,
       };
@@ -351,7 +352,7 @@ export async function cmdFinish(opts: {
       const updatedAfterCommit: TaskData = {
         ...taskAfterCommit,
         commit: { hash: committed.hash, message: committed.message },
-        doc_version: 2,
+        doc_version: normalizeTaskDocVersion(taskAfterCommit.doc_version),
         doc_updated_at: nowIso(),
         doc_updated_by: opts.author,
       };

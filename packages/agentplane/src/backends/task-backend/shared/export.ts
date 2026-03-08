@@ -6,8 +6,8 @@ import { canonicalizeJson } from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../shared/write-if-changed.js";
 
-import { DEFAULT_DOC_UPDATED_BY, DOC_VERSION } from "./constants.js";
-import { resolveDocUpdatedByFromTask } from "./doc.js";
+import { DEFAULT_DOC_UPDATED_BY } from "./constants.js";
+import { normalizeDocVersion, resolveDocUpdatedByFromTask } from "./doc.js";
 import { toStringArray } from "./strings.js";
 import type { TaskData, TaskEvent } from "./types.js";
 
@@ -30,7 +30,7 @@ function taskDataToExport(task: TaskData): TaskData & { dirty: boolean; id_sourc
             !!item && typeof item.author === "string" && typeof item.body === "string",
         )
       : [],
-    doc_version: task.doc_version ?? DOC_VERSION,
+    doc_version: normalizeDocVersion(task.doc_version),
     doc_updated_at: task.doc_updated_at ?? "",
     doc_updated_by: resolveDocUpdatedByFromTask(task, DEFAULT_DOC_UPDATED_BY),
     dirty: Boolean(task.dirty),

@@ -11,6 +11,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
+function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 2): 2 | 3 {
+  return value === 3 ? 3 : value === 2 ? 2 : fallback;
+}
+
 export function canonicalizeJson(value: unknown): unknown {
   if (Array.isArray(value)) return value.map((v) => canonicalizeJson(v));
 
@@ -52,7 +56,7 @@ export type TasksExportTask = {
     note?: string;
     body?: string;
   }[];
-  doc_version: 2;
+  doc_version: 2 | 3;
   doc_updated_at: string;
   doc_updated_by: string;
   description: string;
@@ -156,7 +160,7 @@ export async function buildTasksExportSnapshot(opts: {
       verify,
       commit,
       comments,
-      doc_version: 2,
+      doc_version: normalizeTaskDocVersion(fm.doc_version),
       doc_updated_at: typeof fm.doc_updated_at === "string" ? fm.doc_updated_at : "",
       doc_updated_by: typeof fm.doc_updated_by === "string" ? fm.doc_updated_by : "",
       description: typeof fm.description === "string" ? fm.description : "",

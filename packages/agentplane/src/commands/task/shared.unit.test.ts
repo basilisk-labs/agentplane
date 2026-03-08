@@ -14,18 +14,21 @@ import {
   ensureTaskDependsOnGraphIsAcyclic,
   ensureVerificationSatisfiedIfRequired,
   extractDocSection,
+  extractTaskObservationSection,
   formatTaskLine,
   handleTaskListWarnings,
   isDocSectionFilled,
   isMajorStatusCommitTransition,
   isTransitionAllowed,
   isVerifyStepsFilled,
+  normalizeTaskDocVersion,
   normalizeDependsOnInput,
   normalizeTaskStatus,
   parseTaskListFilters,
   resolvePrimaryTag,
   requireStructuredComment,
   requiresVerify,
+  taskObservationSectionName,
   taskTextBlob,
   toStringArray,
 } from "./shared.js";
@@ -63,6 +66,16 @@ describe("task shared helpers", () => {
     expect(isVerifyStepsFilled("")).toBe(false);
     expect(isVerifyStepsFilled(`x\n${VERIFY_STEPS_PLACEHOLDER}\n`)).toBe(false);
     expect(isVerifyStepsFilled("Run: bun test")).toBe(true);
+  });
+
+  it("normalizes doc versions and resolves observation sections with fallback", () => {
+    const doc = ["## Summary", "S", "", "## Findings", "new", "", "## Notes", "old"].join("\n");
+    expect(normalizeTaskDocVersion(null)).toBe(2);
+    expect(normalizeTaskDocVersion(3)).toBe(3);
+    expect(taskObservationSectionName(2)).toBe("Notes");
+    expect(taskObservationSectionName(3)).toBe("Findings");
+    expect(extractTaskObservationSection(doc, 3)).toBe("new");
+    expect(extractTaskObservationSection(doc, 2)).toBe("old");
   });
 
   it("isDocSectionFilled rejects empty/TODO placeholder and accepts normal text", () => {

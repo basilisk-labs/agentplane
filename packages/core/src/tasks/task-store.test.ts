@@ -423,7 +423,7 @@ describe("task-store", () => {
       doc_updated_by: "",
     });
     expect(errors).toEqual([
-      "doc_version must be 2",
+      "doc_version must be 2 or 3",
       "doc_updated_at must be an ISO timestamp",
       "doc_updated_by must be a non-empty string",
     ]);
@@ -431,7 +431,7 @@ describe("task-store", () => {
 
   it("validateTaskDocMetadata returns no errors for valid metadata", () => {
     const errors = validateTaskDocMetadata({
-      doc_version: 2,
+      doc_version: 3,
       doc_updated_at: "2026-02-05T00:00:00Z",
       doc_updated_by: "CODER",
     });
@@ -499,5 +499,39 @@ describe("task-store", () => {
 
     const updated = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
     expect(updated.frontmatter.doc_updated_by).toBe("CODER");
+  });
+
+  it("setTaskDocSection preserves doc_version=3 tasks", async () => {
+    const root = await mkGitRepoRoot();
+    const created = await createTask({
+      cwd: root,
+      rootOverride: root,
+      title: "My task",
+      description: "Why it matters",
+      owner: "CODER",
+      priority: "med",
+      tags: ["nodejs"],
+      dependsOn: [],
+      verify: [],
+    });
+
+    const original = await readFile(created.readmePath, "utf8");
+    await writeFile(
+      created.readmePath,
+      original.replace("doc_version: 2", "doc_version: 3"),
+      "utf8",
+    );
+
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId: created.id,
+      section: "Summary",
+      text: "Updated summary",
+      updatedBy: "CODER",
+    });
+
+    const updated = await readTask({ cwd: root, rootOverride: root, taskId: created.id });
+    expect(updated.frontmatter.doc_version).toBe(3);
   });
 });

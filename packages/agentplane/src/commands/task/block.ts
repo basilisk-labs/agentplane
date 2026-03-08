@@ -20,6 +20,7 @@ import {
   defaultCommitEmojiForAgentId,
   ensureCommentCommitAllowed,
   ensureStatusTransitionAllowed,
+  normalizeTaskDocVersion,
   nowIso,
   requireStructuredComment,
   resolvePrimaryTag,
@@ -108,7 +109,7 @@ export async function cmdBlock(opts: {
         to: "BLOCKED",
         note: commentBody,
       }),
-      doc_version: 2,
+      doc_version: normalizeTaskDocVersion(task.doc_version),
       doc_updated_at: at,
       doc_updated_by: opts.author,
     };

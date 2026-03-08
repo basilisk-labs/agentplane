@@ -21,7 +21,6 @@ import {
 
 import {
   DEFAULT_DOC_UPDATED_BY,
-  DOC_VERSION,
   defaultPlanApproval,
   defaultVerificationResult,
   extractTaskDoc,
@@ -30,6 +29,7 @@ import {
   mapLimit,
   mergeTaskDoc,
   missingTaskIdMessage,
+  normalizeDocVersion,
   nowIso,
   resolveDocUpdatedByFromFrontmatter,
   resolveDocUpdatedByFromTask,
@@ -276,19 +276,19 @@ export class LocalBackend implements TaskBackend {
       payload.verification = defaultVerificationResult();
     }
 
+    const existingDocVersion = normalizeDocVersion(existingFrontmatter.doc_version);
+
     if (task.doc !== undefined) {
       const docText = String(task.doc ?? "");
       body = mergeTaskDoc(body, docText);
       if (docChanged(existingDoc, docText)) {
-        payload.doc_version = DOC_VERSION;
+        payload.doc_version = normalizeDocVersion(task.doc_version, existingDocVersion);
         payload.doc_updated_at = nowIso();
         payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
       }
     }
 
-    if (payload.doc_version !== DOC_VERSION) {
-      payload.doc_version = DOC_VERSION;
-    }
+    payload.doc_version = normalizeDocVersion(payload.doc_version, existingDocVersion);
     if (payload.doc_updated_at === undefined || payload.doc_updated_at === "") {
       payload.doc_updated_at = nowIso();
     }
@@ -308,8 +308,9 @@ export class LocalBackend implements TaskBackend {
     const docText = String(doc ?? "");
     const body = mergeTaskDoc(parsed.body, docText);
     const frontmatter = { ...parsed.frontmatter } as Record<string, unknown>;
+    const currentDocVersion = normalizeDocVersion(frontmatter.doc_version);
     if (docChanged(extractTaskDoc(parsed.body), docText) || !frontmatter.doc_updated_at) {
-      frontmatter.doc_version = DOC_VERSION;
+      frontmatter.doc_version = currentDocVersion;
       frontmatter.doc_updated_at = nowIso();
       frontmatter.doc_updated_by = resolveDocUpdatedByFromFrontmatter(
         frontmatter,
@@ -317,9 +318,7 @@ export class LocalBackend implements TaskBackend {
         this.updatedBy,
       );
     }
-    if (frontmatter.doc_version !== DOC_VERSION) {
-      frontmatter.doc_version = DOC_VERSION;
-    }
+    frontmatter.doc_version = normalizeDocVersion(frontmatter.doc_version, currentDocVersion);
     const next = renderTaskReadme(frontmatter, body);
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
@@ -329,7 +328,7 @@ export class LocalBackend implements TaskBackend {
     const text = await readFile(readme, "utf8");
     const parsed = parseTaskReadme(text);
     const frontmatter = { ...parsed.frontmatter } as Record<string, unknown>;
-    frontmatter.doc_version = DOC_VERSION;
+    frontmatter.doc_version = normalizeDocVersion(frontmatter.doc_version);
     frontmatter.doc_updated_at = nowIso();
     frontmatter.doc_updated_by = resolveDocUpdatedByFromFrontmatter(
       frontmatter,
@@ -405,7 +404,10 @@ export class LocalBackend implements TaskBackend {
         }
         if (payload.verification === undefined) payload.verification = defaultVerificationResult();
 
-        if (payload.doc_version !== DOC_VERSION) payload.doc_version = DOC_VERSION;
+        payload.doc_version = normalizeDocVersion(
+          payload.doc_version,
+          normalizeDocVersion(fm.doc_version),
+        );
         if (payload.doc_updated_at === undefined || payload.doc_updated_at === "") {
           payload.doc_updated_at = nowIso();
         }

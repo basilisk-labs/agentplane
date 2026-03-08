@@ -186,6 +186,43 @@ describe("task plan commands (unit)", () => {
     });
   });
 
+  it("cmdTaskPlanApprove accepts Findings for doc_version=3 spike tasks", async () => {
+    const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      writeTask,
+      getTaskDoc: () => Promise.resolve(""),
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mockLoadTaskFromContext.mockResolvedValue(
+      mkTask({
+        tags: ["spike"],
+        doc_version: 3,
+        doc: [
+          "## Summary",
+          "x",
+          "",
+          "## Plan",
+          "do",
+          "",
+          "## Verify Steps",
+          "ok",
+          "",
+          "## Findings",
+          "Decision: proceed",
+        ].join("\n"),
+      }),
+    );
+
+    const { cmdTaskPlanApprove } = await import("./plan.js");
+    const rc = await cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: "T-1", by: "A" });
+    expect(rc).toBe(0);
+    expect(writeTask).toHaveBeenCalledTimes(1);
+    expect(writeTask.mock.calls[0]?.[0]?.plan_approval?.state).toBe("approved");
+  });
+
   it("cmdTaskPlanApprove writes approved state with timestamps and optional note", async () => {
     const writeTask = vi.fn<(task: TaskData) => Promise<void>>(() => Promise.resolve());
     const backend: TaskBackend = {

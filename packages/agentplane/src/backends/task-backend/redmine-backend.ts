@@ -39,6 +39,7 @@ import {
   generateTaskId,
   mapLimit,
   missingTaskIdMessage,
+  normalizeDocVersion,
   nowIso,
   redmineConfigMissingEnvMessage,
   redmineIssueIdMissingMessage,
@@ -209,7 +210,11 @@ export class RedmineBackend implements TaskBackend {
       if (!issue) throw new Error(unknownTaskIdMessage(taskId));
       const issueIdText = toStringSafe(issue.id);
       if (!issueIdText) throw new Error(redmineIssueIdMissingMessage());
-      const taskDoc: TaskDocMeta = { doc: String(doc ?? "") };
+      const cachedTask = this.issueToTask(issue, taskId);
+      const taskDoc: TaskDocMeta = {
+        doc: String(doc ?? ""),
+        doc_version: cachedTask?.doc_version,
+      };
       ensureDocMetadata(taskDoc, updatedBy);
       const customFields: Record<string, unknown>[] = [];
       this.appendCustomField(customFields, "doc", taskDoc.doc);
@@ -219,13 +224,12 @@ export class RedmineBackend implements TaskBackend {
       await this.requestJson("PUT", `issues/${issueIdText}.json`, {
         issue: { custom_fields: customFields },
       });
-      const task = this.issueToTask(issue, taskId);
-      if (task) {
-        task.doc = taskDoc.doc;
-        task.doc_version = taskDoc.doc_version;
-        task.doc_updated_at = taskDoc.doc_updated_at;
-        task.doc_updated_by = taskDoc.doc_updated_by;
-        await this.cacheTask(task, false);
+      if (cachedTask) {
+        cachedTask.doc = taskDoc.doc;
+        cachedTask.doc_version = taskDoc.doc_version;
+        cachedTask.doc_updated_at = taskDoc.doc_updated_at;
+        cachedTask.doc_updated_by = taskDoc.doc_updated_by;
+        await this.cacheTask(cachedTask, false);
       }
     } catch (err) {
       if (err instanceof RedmineUnavailable) {
@@ -249,7 +253,11 @@ export class RedmineBackend implements TaskBackend {
       const issueIdText = toStringSafe(issue.id);
       if (!issueIdText) throw new Error(redmineIssueIdMissingMessage());
       const docValue = this.customFieldValue(issue, this.customFields.doc);
-      const taskDoc: TaskDocMeta = { doc: docValue ?? "" };
+      const cachedTask = this.issueToTask(issue, taskId);
+      const taskDoc: TaskDocMeta = {
+        doc: docValue ?? "",
+        doc_version: cachedTask?.doc_version,
+      };
       ensureDocMetadata(taskDoc, updatedBy);
       const customFields: Record<string, unknown>[] = [];
       this.appendCustomField(customFields, "doc_version", taskDoc.doc_version);
@@ -259,12 +267,11 @@ export class RedmineBackend implements TaskBackend {
         await this.requestJson("PUT", `issues/${issueIdText}.json`, {
           issue: { custom_fields: customFields },
         });
-        const task = this.issueToTask(issue, taskId);
-        if (task) {
-          task.doc_version = taskDoc.doc_version;
-          task.doc_updated_at = taskDoc.doc_updated_at;
-          task.doc_updated_by = taskDoc.doc_updated_by;
-          await this.cacheTask(task, false);
+        if (cachedTask) {
+          cachedTask.doc_version = taskDoc.doc_version;
+          cachedTask.doc_updated_at = taskDoc.doc_updated_at;
+          cachedTask.doc_updated_by = taskDoc.doc_updated_by;
+          await this.cacheTask(cachedTask, false);
         }
       }
     } catch (err) {
@@ -371,7 +378,7 @@ export class RedmineBackend implements TaskBackend {
 
   private ensureDocMetadata(task: TaskDocMeta): void {
     if (task.doc === undefined) return;
-    if (task.doc_version !== DOC_VERSION) task.doc_version = DOC_VERSION;
+    task.doc_version = normalizeDocVersion(task.doc_version);
     task.doc_updated_at ??= nowIso();
     task.doc_updated_by ??= DEFAULT_DOC_UPDATED_BY;
   }

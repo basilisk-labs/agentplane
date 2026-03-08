@@ -9,6 +9,7 @@ export function nowIso(): string {
 }
 
 export const VERIFY_STEPS_PLACEHOLDER = "<!-- TODO: FILL VERIFY STEPS -->";
+export type TaskDocVersion = 2 | 3;
 
 export function extractDocSection(doc: string, sectionName: string): string | null {
   const lines = doc.replaceAll("\r\n", "\n").split("\n");
@@ -34,6 +35,23 @@ export function isVerifyStepsFilled(sectionText: string | null): boolean {
   if (!normalized) return false;
   if (normalized.includes(VERIFY_STEPS_PLACEHOLDER)) return false;
   return true;
+}
+
+export function normalizeTaskDocVersion(
+  value: unknown,
+  fallback: TaskDocVersion = 2,
+): TaskDocVersion {
+  return value === 3 ? 3 : value === 2 ? 2 : fallback;
+}
+
+export function taskObservationSectionName(version: TaskDocVersion): "Notes" | "Findings" {
+  return version === 3 ? "Findings" : "Notes";
+}
+
+export function extractTaskObservationSection(doc: string, version: TaskDocVersion): string | null {
+  const primary = taskObservationSectionName(version);
+  const fallback = primary === "Findings" ? "Notes" : "Findings";
+  return extractDocSection(doc, primary) ?? extractDocSection(doc, fallback);
 }
 
 const DOC_PLACEHOLDER_RE = /<!--\s*TODO\b/i;

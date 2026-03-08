@@ -2,6 +2,9 @@ export { dedupeStrings } from "../../shared/strings.js";
 
 export {
   nowIso,
+  normalizeTaskDocVersion,
+  taskObservationSectionName,
+  extractTaskObservationSection,
   VERIFY_STEPS_PLACEHOLDER,
   extractDocSection,
   isVerifyStepsFilled,

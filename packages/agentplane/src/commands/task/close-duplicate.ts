@@ -4,7 +4,12 @@ import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
-import { appendTaskEvent, nowIso, requireStructuredComment } from "./shared.js";
+import {
+  appendTaskEvent,
+  normalizeTaskDocVersion,
+  nowIso,
+  requireStructuredComment,
+} from "./shared.js";
 
 export async function cmdTaskCloseDuplicate(opts: {
   ctx: CommandContext;
@@ -87,7 +92,7 @@ export async function cmdTaskCloseDuplicate(opts: {
       result_summary: `Closed as duplicate of ${duplicateOf}.`,
       risk_level: "low",
       breaking: false,
-      doc_version: 2,
+      doc_version: normalizeTaskDocVersion(task.doc_version),
       doc_updated_at: at,
       doc_updated_by: opts.author,
     };

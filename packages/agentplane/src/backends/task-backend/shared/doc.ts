@@ -71,11 +71,15 @@ export function resolveDocUpdatedByFromTask(task: TaskData, fallback: string): s
   return fallbackValue || fallback;
 }
 
+export function normalizeDocVersion(value: unknown, fallback: 2 | 3 = DOC_VERSION): 2 | 3 {
+  return value === 3 ? 3 : value === 2 ? 2 : fallback;
+}
+
 export function ensureDocMetadata(
   task: TaskDocMeta & Partial<Pick<TaskData, "comments" | "owner">>,
   updatedBy?: string,
 ): void {
-  task.doc_version = DOC_VERSION;
+  task.doc_version = normalizeDocVersion(task.doc_version);
   task.doc_updated_at = nowIso();
   const explicit = normalizeUpdatedBy(updatedBy);
   if (updatedBy !== undefined) {

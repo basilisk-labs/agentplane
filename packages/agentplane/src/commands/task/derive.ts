@@ -3,7 +3,12 @@ import { unknownEntityMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 
-import { extractDocSection, nowIso, toStringArray } from "./shared.js";
+import {
+  extractTaskObservationSection,
+  normalizeTaskDocVersion,
+  nowIso,
+  toStringArray,
+} from "./shared.js";
 
 function normalizeOneLine(text: string, maxChars: number): string {
   const normalized = text.trim().replaceAll(/\s+/g, " ");
@@ -52,8 +57,9 @@ export async function cmdTaskDerive(opts: {
     }
 
     const spikeDoc = typeof spike.doc === "string" ? spike.doc : "";
-    const notes = extractDocSection(spikeDoc, "Notes") ?? "";
-    const excerpt = notes.trim() ? normalizeOneLine(notes, 180) : "";
+    const observation =
+      extractTaskObservationSection(spikeDoc, normalizeTaskDocVersion(spike.doc_version)) ?? "";
+    const excerpt = observation.trim() ? normalizeOneLine(observation, 180) : "";
 
     const suffixLength = ctx.config.tasks.id_suffix_length_default;
     const taskId = await ctx.taskBackend.generateTaskId({ length: suffixLength, attempts: 1000 });

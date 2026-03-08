@@ -147,7 +147,7 @@ describe("tasks-lint", () => {
       verify: [""],
       commit: null,
       comments: [],
-      doc_version: 2,
+      doc_version: 3,
       doc_updated_at: now,
       doc_updated_by: "DOCS",
       description: "ok",
@@ -171,7 +171,7 @@ describe("tasks-lint", () => {
     expect(joined).toContain("A: status must be TODO|DOING|DONE|BLOCKED");
     expect(joined).toContain("A: priority must be low|normal|med|high");
     expect(joined).toContain("A: owner must be non-empty");
-    expect(joined).toContain("A: doc_version must be 2");
+    expect(joined).toContain("A: doc_version must be 2 or 3");
     expect(joined).toContain("A: doc_updated_at must be ISO date-time");
     expect(joined).toContain("A: doc_updated_by must be non-empty");
     expect(joined).toContain("A: description must be string");

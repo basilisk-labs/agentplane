@@ -8,7 +8,7 @@ import {
   type CommandContext,
 } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
-import { appendTaskEvent, nowIso } from "./shared.js";
+import { appendTaskEvent, normalizeTaskDocVersion, nowIso } from "./shared.js";
 
 export async function cmdTaskComment(opts: {
   ctx?: CommandContext;
@@ -43,7 +43,7 @@ export async function cmdTaskComment(opts: {
         author: opts.author,
         body: opts.body,
       }),
-      doc_version: 2,
+      doc_version: normalizeTaskDocVersion(task.doc_version),
       doc_updated_at: at,
       doc_updated_by: opts.author,
     };

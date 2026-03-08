@@ -19,6 +19,7 @@ import {
   defaultCommitEmojiForStatus,
   ensureCommentCommitAllowed,
   ensureStatusTransitionAllowed,
+  normalizeTaskDocVersion,
   normalizeTaskStatus,
   nowIso,
   readCommitInfo,
@@ -149,7 +150,7 @@ export async function cmdTaskSetStatus(opts: {
         to: nextStatus,
         note: commentBody,
       }),
-      doc_version: 2,
+      doc_version: normalizeTaskDocVersion(task.doc_version),
       doc_updated_at: at,
       doc_updated_by: eventAuthor,
     };

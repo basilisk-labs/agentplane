@@ -20,14 +20,17 @@ import {
   ensurePlanApprovedIfRequired,
   ensureCommentCommitAllowed,
   ensureStatusTransitionAllowed,
+  extractTaskObservationSection,
   defaultCommitEmojiForAgentId,
   extractDocSection,
   isVerifyStepsFilled,
+  normalizeTaskDocVersion,
   nowIso,
   requiresVerifyStepsByPrimary,
   requireStructuredComment,
   resolveTaskDependencyState,
   resolvePrimaryTag,
+  taskObservationSectionName,
   toStringArray,
 } from "./shared.js";
 
@@ -95,13 +98,15 @@ export async function cmdStart(opts: {
         }
 
         if (isSpike) {
-          const notes = extractDocSection(doc, "Notes");
-          if (!notes || notes.trim().length === 0) {
+          const docVersion = normalizeTaskDocVersion(task.doc_version);
+          const observationSection = taskObservationSectionName(docVersion);
+          const observation = extractTaskObservationSection(doc, docVersion);
+          if (!observation || observation.trim().length === 0) {
             throw new CliError({
               exitCode: 3,
               code: "E_VALIDATION",
               message:
-                `${task.id}: cannot start spike: ## Notes section is missing or empty ` +
+                `${task.id}: cannot start spike: ## ${observationSection} section is missing or empty ` +
                 "(include Findings/Decision/Next Steps)",
             });
           }
@@ -177,7 +182,7 @@ export async function cmdStart(opts: {
         to: "DOING",
         note: commentBody,
       }),
-      doc_version: 2,
+      doc_version: normalizeTaskDocVersion(task.doc_version),
       doc_updated_at: at,
       doc_updated_by: opts.author,
     };

@@ -175,4 +175,38 @@ describe("tasks-export", () => {
     expect(exported?.events?.length).toBe(1);
     expect(exported?.events?.[0]?.type).toBe("status");
   });
+
+  it("preserves doc_version=3 in exported snapshots", async () => {
+    const root = await mkGitRepoRoot();
+
+    const taskId = "202602070901-ABCDE";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      [
+        "---",
+        `id: "${taskId}"`,
+        `title: "Versioned task"`,
+        "status: TODO",
+        "priority: med",
+        "owner: CODER",
+        "depends_on: []",
+        "tags: []",
+        "verify: []",
+        "comments: []",
+        "doc_version: 3",
+        `doc_updated_at: "${new Date().toISOString()}"`,
+        "doc_updated_by: CODER",
+        'description: "v3 task"',
+        "---",
+        "## Summary",
+      ].join("\n"),
+      "utf8",
+    );
+
+    const { snapshot } = await writeTasksExport({ cwd: root, rootOverride: root });
+    const exported = snapshot.tasks.find((t) => t.id === taskId);
+    expect(exported?.doc_version).toBe(3);
+  });
 });

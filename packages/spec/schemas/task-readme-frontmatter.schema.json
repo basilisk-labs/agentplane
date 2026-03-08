@@ -29,7 +29,7 @@
     "owner": { "type": "string", "minLength": 1 },
     "depends_on": { "type": "array", "items": { "type": "string", "minLength": 1 } },
     "tags": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "doc_version": { "type": "integer", "const": 2 },
+    "doc_version": { "type": "integer", "enum": [2, 3] },
     "doc_updated_at": { "type": "string", "format": "date-time" },
     "doc_updated_by": { "type": "string", "minLength": 1 },
     "description": { "type": "string" },

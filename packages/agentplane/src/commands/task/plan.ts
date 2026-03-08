@@ -17,8 +17,11 @@ import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js
 import {
   ensureAgentFilledRequiredDocSections,
   extractDocSection,
+  extractTaskObservationSection,
   isVerifyStepsFilled,
   nowIso,
+  normalizeTaskDocVersion,
+  taskObservationSectionName,
   requiresVerifyStepsByPrimary,
   toStringArray,
 } from "./shared.js";
@@ -215,13 +218,19 @@ export async function cmdTaskPlanApprove(opts: {
         }
       }
       if (isSpike) {
-        const notes = extractDocSection(baseDoc, "Notes");
-        if (!notes || notes.trim().length === 0) {
+        const observationSection = taskObservationSectionName(
+          normalizeTaskDocVersion(task.doc_version),
+        );
+        const observation = extractTaskObservationSection(
+          baseDoc,
+          normalizeTaskDocVersion(task.doc_version),
+        );
+        if (!observation || observation.trim().length === 0) {
           throw new CliError({
             exitCode: 3,
             code: "E_VALIDATION",
             message:
-              `${task.id}: cannot approve plan for spike: ## Notes section is missing or empty ` +
+              `${task.id}: cannot approve plan for spike: ## ${observationSection} section is missing or empty ` +
               "(include Findings/Decision/Next Steps)",
           });
         }

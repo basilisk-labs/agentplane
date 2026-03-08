@@ -3,7 +3,12 @@ import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import { appendTaskEvent, nowIso, requireStructuredComment } from "./shared.js";
+import {
+  appendTaskEvent,
+  normalizeTaskDocVersion,
+  nowIso,
+  requireStructuredComment,
+} from "./shared.js";
 
 export async function cmdTaskCloseNoop(opts: {
   ctx?: CommandContext;
@@ -72,7 +77,7 @@ export async function cmdTaskCloseNoop(opts: {
       result_summary: "No-op closure recorded.",
       risk_level: "low" as const,
       breaking: false,
-      doc_version: 2,
+      doc_version: normalizeTaskDocVersion(task.doc_version),
       doc_updated_at: at,
       doc_updated_by: opts.author,
     };
