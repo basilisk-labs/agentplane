@@ -21,7 +21,10 @@
   },
   "framework": {
     "source": "https://github.com/basilisk-labs/agentplane",
-    "last_update": null
+    "last_update": null,
+    "cli": {
+      "expected_version": "0.3.2"
+    }
   },
   "tasks": {
     "id_suffix_length_default": 6,

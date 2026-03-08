@@ -51,7 +51,13 @@ export type AgentplaneConfig = {
     worktrees_dir: string;
   };
   branch: { task_prefix: string };
-  framework: { source: string; last_update: string | null };
+  framework: {
+    source: string;
+    last_update: string | null;
+    cli: {
+      expected_version: string | null;
+    };
+  };
   tasks: {
     id_suffix_length_default: number;
     verify: {

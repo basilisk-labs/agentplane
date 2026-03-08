@@ -4,6 +4,7 @@ import path from "node:path";
 import { defaultConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
 
 import { writeJsonStableIfChanged } from "../../../../shared/write-if-changed.js";
+import { getVersion } from "../../../../meta/version.js";
 
 export type InitExecutionConfig = {
   profile: "conservative" | "balanced" | "aggressive";
@@ -62,6 +63,7 @@ export async function writeInitConfig(opts: {
     String(opts.requireNetworkApproval),
   );
   setByDottedKey(rawConfig, "agents.approvals.require_verify", String(opts.requireVerifyApproval));
+  setByDottedKey(rawConfig, "framework.cli.expected_version", getVersion());
   setByDottedKey(rawConfig, "execution", JSON.stringify(opts.execution));
   await saveConfig(opts.agentplaneDir, rawConfig);
 }

@@ -92,6 +92,7 @@ describe("config", () => {
     expect(cfg.execution.stop_conditions.length).toBeGreaterThan(0);
     expect(cfg.execution.handoff_conditions.length).toBeGreaterThan(0);
     expect(cfg.execution.unsafe_actions_requiring_explicit_user_ok.length).toBeGreaterThan(0);
+    expect(cfg.framework.cli.expected_version).toBeNull();
   });
 
   it("setByDottedKey handles edge scalar parsing cases", () => {
@@ -99,6 +100,7 @@ describe("config", () => {
 
     setByDottedKey(cfg, "finish_auto_status_commit", "true");
     setByDottedKey(cfg, "framework.last_update", "null");
+    setByDottedKey(cfg, "framework.cli.expected_version", "0.3.2");
 
     setByDottedKey(cfg, "misc.decimal", "1.5");
     setByDottedKey(cfg, "misc.bad_object", "{not-json");
@@ -110,6 +112,7 @@ describe("config", () => {
     const validated = validateConfig(cfg);
     expect(validated.finish_auto_status_commit).toBe(true);
     expect(validated.framework.last_update).toBeNull();
+    expect(validated.framework.cli.expected_version).toBe("0.3.2");
 
     const rawCfg = cfg as unknown as {
       misc: { decimal: unknown; bad_object: unknown; bad_array: unknown };
@@ -283,6 +286,19 @@ describe("config", () => {
         "framework.last_update",
         (raw) => ((raw.framework as Record<string, unknown>).last_update = 123),
         schemaPath("framework.last_update"),
+      ],
+      [
+        "framework.cli",
+        (raw) => ((raw.framework as Record<string, unknown>).cli = "nope"),
+        schemaPath("framework.cli"),
+      ],
+      [
+        "framework.cli.expected_version",
+        (raw) =>
+          ((
+            (raw.framework as Record<string, unknown>).cli as Record<string, unknown>
+          ).expected_version = 123) as unknown,
+        schemaPath("framework.cli.expected_version"),
       ],
       [
         "tasks.verify.required_tags",

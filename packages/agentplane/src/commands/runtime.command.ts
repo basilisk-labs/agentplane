@@ -1,6 +1,12 @@
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
+
 import type { CommandHandler, CommandSpec } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
 import { suggestOne } from "../cli/spec/suggest.js";
+import {
+  evaluateRepoCliVersionExpectation,
+  type RepoCliVersionExpectation,
+} from "../shared/repo-cli-version.js";
 import {
   describeRuntimeMode,
   resolveRuntimeSourceInfo,
@@ -18,6 +24,7 @@ export type FrameworkDevWorkflow = {
 
 export type RuntimeExplainPayload = RuntimeSourceInfo & {
   frameworkDev: FrameworkDevWorkflow;
+  repoCliExpectation: RepoCliVersionExpectation;
 };
 
 export type RuntimeGroupParsed = { cmd: string[] };
@@ -103,10 +110,20 @@ function buildRuntimeExplainPayload(report: RuntimeSourceInfo): RuntimeExplainPa
   return {
     ...report,
     frameworkDev: buildFrameworkDevWorkflow(report),
+    repoCliExpectation: {
+      expectedVersion: null,
+      activeVersion: report.agentplane.version,
+      state: "unconfigured",
+      summary: null,
+      recovery: null,
+    },
   };
 }
 
-export function renderRuntimeExplainText(report: RuntimeSourceInfo): string {
+export function renderRuntimeExplainText(
+  report: RuntimeSourceInfo,
+  repoCliExpectation: RepoCliVersionExpectation,
+): string {
   const frameworkDev = buildFrameworkDevWorkflow(report);
   const lines = [
     `Mode: ${report.mode} (${describeRuntimeMode(report.mode)})`,
@@ -119,6 +136,15 @@ export function renderRuntimeExplainText(report: RuntimeSourceInfo): string {
     `Resolved agentplane: ${report.agentplane.version ?? "unknown"} @ ${renderPath(report.agentplane.packageRoot)}`,
     `Resolved @agentplaneorg/core: ${report.core.version ?? "unknown"} @ ${renderPath(report.core.packageRoot)}`,
   ];
+  if (repoCliExpectation.expectedVersion) {
+    lines.push(`Repository expected agentplane CLI: ${repoCliExpectation.expectedVersion}`);
+    if (repoCliExpectation.summary) {
+      lines.push(`Repository CLI status: ${repoCliExpectation.summary}`);
+    }
+    if (repoCliExpectation.recovery) {
+      lines.push(`Recovery: ${repoCliExpectation.recovery}`);
+    }
+  }
   if (report.handoffFromBinaryPath) {
     lines.push(`Handoff from: ${report.handoffFromBinaryPath}`);
   }
@@ -142,6 +168,29 @@ export function renderRuntimeExplainText(report: RuntimeSourceInfo): string {
   return lines.join("\n");
 }
 
+async function resolveRepoCliExpectation(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  report: RuntimeSourceInfo;
+}): Promise<RepoCliVersionExpectation> {
+  try {
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const loaded = await loadConfig(resolved.agentplaneDir);
+    return evaluateRepoCliVersionExpectation(loaded.config, opts.report);
+  } catch {
+    return {
+      expectedVersion: null,
+      activeVersion: opts.report.agentplane.version,
+      state: "unconfigured",
+      summary: null,
+      recovery: null,
+    };
+  }
+}
+
 export const runRuntime: CommandHandler<RuntimeGroupParsed> = (_ctx, p) => {
   const input = p.cmd.join(" ");
   const suggestion = suggestOne(input, ["explain"]);
@@ -162,10 +211,17 @@ export const runRuntimeExplain: CommandHandler<RuntimeExplainParsed> = (ctx, p) 
     cwd: ctx.cwd,
     entryModuleUrl: import.meta.url,
   });
-  if (p.json) {
-    process.stdout.write(`${JSON.stringify(buildRuntimeExplainPayload(report), null, 2)}\n`);
-    return Promise.resolve(0);
-  }
-  process.stdout.write(`${renderRuntimeExplainText(report)}\n`);
-  return Promise.resolve(0);
+  return resolveRepoCliExpectation({
+    cwd: ctx.cwd,
+    rootOverride: ctx.rootOverride ?? null,
+    report,
+  }).then((repoCliExpectation) => {
+    const payload = { ...buildRuntimeExplainPayload(report), repoCliExpectation };
+    if (p.json) {
+      process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+      return 0;
+    }
+    process.stdout.write(`${renderRuntimeExplainText(report, repoCliExpectation)}\n`);
+    return 0;
+  });
 };

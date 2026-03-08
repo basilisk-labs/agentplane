@@ -53,6 +53,13 @@ describe("runtime.command", () => {
           forceGlobalExample: string;
           recommendation: string | null;
         };
+        repoCliExpectation: {
+          expectedVersion: string | null;
+          activeVersion: string | null;
+          state: string;
+          summary: string | null;
+          recovery: string | null;
+        };
       };
       expect(payload.mode).toBe("repo-local");
       expect(payload.activeBinaryPath).toContain("packages/agentplane/bin/agentplane.js");
@@ -65,6 +72,8 @@ describe("runtime.command", () => {
       expect(payload.frameworkDev.forceGlobalExample).toContain(
         "AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1",
       );
+      expect(payload.repoCliExpectation.expectedVersion).toBe("0.3.2");
+      expect(payload.repoCliExpectation.state).toBe("satisfied");
     } finally {
       io.restore();
     }
@@ -91,6 +100,8 @@ describe("runtime.command", () => {
       expect(io.stdout).toContain("Mode: repo-local-handoff");
       expect(io.stdout).toContain("Handoff from: /usr/local/bin/agentplane");
       expect(io.stdout).toContain("Resolved @agentplaneorg/core:");
+      expect(io.stdout).toContain("Repository expected agentplane CLI: 0.3.2");
+      expect(io.stdout).toContain("Repository CLI status:");
       expect(io.stdout).toContain("Framework dev workflow:");
       expect(io.stdout).toContain("scripts/reinstall-global-agentplane.sh");
       expect(io.stdout).toContain("AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 agentplane <command>");
@@ -100,45 +111,55 @@ describe("runtime.command", () => {
   });
 
   it("formats runtime reports with stable field labels", () => {
-    const text = renderRuntimeExplainText({
-      cwd: "/repo",
-      activeBinaryPath: "/repo/packages/agentplane/bin/agentplane.js",
-      handoffFromBinaryPath: null,
-      mode: "repo-local",
-      framework: {
-        inFrameworkCheckout: true,
-        isRepoLocalBinary: true,
-        isRepoLocalRuntime: true,
-        checkout: {
-          repoRoot: "/repo",
-          packageRoot: "/repo/packages/agentplane",
-          repoBin: "/repo/packages/agentplane/bin/agentplane.js",
-          repoCli: "/repo/packages/agentplane/src/cli.ts",
+    const text = renderRuntimeExplainText(
+      {
+        cwd: "/repo",
+        activeBinaryPath: "/repo/packages/agentplane/bin/agentplane.js",
+        handoffFromBinaryPath: null,
+        mode: "repo-local",
+        framework: {
+          inFrameworkCheckout: true,
+          isRepoLocalBinary: true,
+          isRepoLocalRuntime: true,
+          checkout: {
+            repoRoot: "/repo",
+            packageRoot: "/repo/packages/agentplane",
+            repoBin: "/repo/packages/agentplane/bin/agentplane.js",
+            repoCli: "/repo/packages/agentplane/src/cli.ts",
+          },
+          thisBin: "/repo/packages/agentplane/bin/agentplane.js",
         },
-        thisBin: "/repo/packages/agentplane/bin/agentplane.js",
+        frameworkSources: {
+          repoRoot: "/repo",
+          agentplaneRoot: "/repo/packages/agentplane",
+          coreRoot: "/repo/packages/core",
+        },
+        agentplane: {
+          name: "agentplane",
+          version: "0.3.2",
+          packageRoot: "/repo/packages/agentplane",
+          packageJsonPath: "/repo/packages/agentplane/package.json",
+        },
+        core: {
+          name: "@agentplaneorg/core",
+          version: "0.3.2",
+          packageRoot: "/repo/packages/core",
+          packageJsonPath: "/repo/packages/core/package.json",
+        },
       },
-      frameworkSources: {
-        repoRoot: "/repo",
-        agentplaneRoot: "/repo/packages/agentplane",
-        coreRoot: "/repo/packages/core",
+      {
+        expectedVersion: "0.3.2",
+        activeVersion: "0.3.2",
+        state: "satisfied",
+        summary: "Active runtime 0.3.2 matches the repository expectation 0.3.2.",
+        recovery: null,
       },
-      agentplane: {
-        name: "agentplane",
-        version: "0.3.2",
-        packageRoot: "/repo/packages/agentplane",
-        packageJsonPath: "/repo/packages/agentplane/package.json",
-      },
-      core: {
-        name: "@agentplaneorg/core",
-        version: "0.3.2",
-        packageRoot: "/repo/packages/core",
-        packageJsonPath: "/repo/packages/core/package.json",
-      },
-    });
+    );
 
     expect(text).toContain("Active binary:");
     expect(text).toContain("Framework repo root:");
     expect(text).toContain("Resolved agentplane:");
+    expect(text).toContain("Repository expected agentplane CLI: 0.3.2");
     expect(text).toContain("Framework dev workflow:");
     expect(text).toContain("scripts/reinstall-global-agentplane.sh");
   });

@@ -182,10 +182,13 @@
     "framework": {
       "type": "object",
       "additionalProperties": true,
-      "required": ["source", "last_update"],
+      "required": ["source", "last_update", "cli"],
       "default": {
         "source": "https://github.com/basilisk-labs/agentplane",
-        "last_update": null
+        "last_update": null,
+        "cli": {
+          "expected_version": null
+        }
       },
       "properties": {
         "source": {
@@ -197,6 +200,20 @@
           "type": ["string", "null"],
           "format": "date-time",
           "default": null
+        },
+        "cli": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["expected_version"],
+          "default": {
+            "expected_version": null
+          },
+          "properties": {
+            "expected_version": {
+              "type": ["string", "null"],
+              "default": null
+            }
+          }
         }
       }
     },

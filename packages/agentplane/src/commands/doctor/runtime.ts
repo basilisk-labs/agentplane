@@ -1,8 +1,36 @@
+import type { AgentplaneConfig } from "@agentplaneorg/core";
+
+import {
+  evaluateRepoCliVersionExpectation,
+  type RepoCliVersionExpectation,
+} from "../../shared/repo-cli-version.js";
 import { describeRuntimeMode, resolveRuntimeSourceInfo } from "../../shared/runtime-source.js";
 
-export function checkRuntimeSourceFacts(cwd: string): string[] {
+function renderCliVersionFacts(expectation: RepoCliVersionExpectation): string[] {
+  if (!expectation.expectedVersion) return [];
+  if (
+    expectation.state === "older_than_expected" ||
+    expectation.state === "active_version_unresolved"
+  ) {
+    return [
+      `[WARN] ${expectation.summary}`,
+      ...(expectation.recovery ? [`[WARN] Recovery: ${expectation.recovery}`] : []),
+    ];
+  }
+  return [
+    `[INFO] Repository expected agentplane CLI: ${expectation.expectedVersion}`,
+    ...(expectation.summary ? [`[INFO] ${expectation.summary}`] : []),
+  ];
+}
+
+export function checkRuntimeSourceFacts(cwd: string, config?: AgentplaneConfig): string[] {
   const report = resolveRuntimeSourceInfo({ cwd, entryModuleUrl: import.meta.url });
-  if (!report.framework.inFrameworkCheckout) return [];
+  const cliVersionFacts = config
+    ? renderCliVersionFacts(evaluateRepoCliVersionExpectation(config, report))
+    : [];
+  if (!report.framework.inFrameworkCheckout) {
+    return cliVersionFacts;
+  }
 
   const warning =
     report.mode === "global-in-framework"
@@ -14,6 +42,7 @@ export function checkRuntimeSourceFacts(cwd: string): string[] {
 
   return [
     ...(warning ? [warning] : []),
+    ...cliVersionFacts,
     `[INFO] Runtime mode: ${report.mode} (${describeRuntimeMode(report.mode)})`,
     `[INFO] Active binary: ${report.activeBinaryPath ?? "unresolved"}`,
     ...(report.handoffFromBinaryPath

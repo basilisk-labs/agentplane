@@ -248,6 +248,11 @@ function normalizeUpgradeVersionLabel(input: string): string {
   return `v${trimmed}`;
 }
 
+function normalizeVersionForConfig(input: string): string | null {
+  const trimmed = input.trim().replace(/^v/i, "");
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 export async function cmdUpgradeParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -733,6 +738,7 @@ export async function cmdUpgradeParsed(opts: {
       agentplaneDir: resolved.agentplaneDir,
       rawConfig: loaded.raw,
       normalizedSourceToPersist,
+      expectedCliVersionToPersist: normalizeVersionForConfig(upgradeVersionLabel),
       hasManagedMutations,
       statePath,
       upgradeStateDir,

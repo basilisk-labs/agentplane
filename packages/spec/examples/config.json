@@ -22,7 +22,10 @@
   "branch": { "task_prefix": "task" },
   "framework": {
     "source": "https://github.com/basilisk-labs/agentplane",
-    "last_update": null
+    "last_update": null,
+    "cli": {
+      "expected_version": null
+    }
   },
   "tasks": {
     "id_suffix_length_default": 6,

@@ -1,4 +1,4 @@
-import { resolveProject } from "@agentplaneorg/core";
+import { loadConfig, resolveProject } from "@agentplaneorg/core";
 
 import type { CommandHandler } from "../cli/spec/spec.js";
 import { warnMessage, successMessage } from "../cli/output.js";
@@ -17,11 +17,12 @@ import {
 export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const repoRoot = resolved.gitRoot;
+  const loadedConfig = await loadConfig(resolved.agentplaneDir);
 
   const runChecks = async (): Promise<string[]> => {
     let checks = [
       ...(await checkWorkspace(repoRoot)),
-      ...checkRuntimeSourceFacts(ctx.cwd),
+      ...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config),
       ...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })),
     ];
     if (!isWorkflowEnforcementDisabled()) {

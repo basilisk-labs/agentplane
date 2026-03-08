@@ -199,6 +199,7 @@ export async function persistUpgradeState(opts: {
   agentplaneDir: string;
   rawConfig: Record<string, unknown>;
   normalizedSourceToPersist: string | null;
+  expectedCliVersionToPersist: string | null;
   hasManagedMutations: boolean;
   statePath: string;
   upgradeStateDir: string;
@@ -216,6 +217,9 @@ export async function persistUpgradeState(opts: {
       setByDottedKey(raw, "framework.source", opts.normalizedSourceToPersist);
     }
     setByDottedKey(raw, "framework.last_update", new Date().toISOString());
+    if (opts.expectedCliVersionToPersist) {
+      setByDottedKey(raw, "framework.cli.expected_version", opts.expectedCliVersionToPersist);
+    }
     await saveConfig(opts.agentplaneDir, raw);
   }
   await writeFile(

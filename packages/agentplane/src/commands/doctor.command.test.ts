@@ -680,6 +680,46 @@ describe("doctor.command", () => {
     }
   });
 
+  it("warns when the active CLI is older than the repository expectation", async () => {
+    const ws = await mkWorkspace();
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    await writeFile(
+      path.join(ws.root, ".agentplane", "config.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          workflow_mode: "direct",
+          framework: {
+            source: "https://github.com/basilisk-labs/agentplane",
+            last_update: null,
+            cli: { expected_version: "9.9.9" },
+          },
+          agents: {
+            approvals: { require_plan: false, require_verify: false, require_network: true },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("expects agentplane 9.9.9");
+      expect(output).toContain("Run: npm i -g agentplane@9.9.9");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
   it("fails when the managed policy tree is incomplete for the active gateway", async () => {
     const ws = await mkWorkspace();
     await rm(path.join(ws.root, ".agentplane", "policy", "workflow.upgrade.md"), { force: true });
