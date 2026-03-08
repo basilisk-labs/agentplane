@@ -111,4 +111,4 @@ jobs:
           bun run coverage:significant
       - name: Unit tests (platform-critical)
         if: matrix.os == 'windows-latest'
-        run: bun test packages/agentplane/src/commands/shared/pr-meta.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
+        run: bun run test:platform-critical
