@@ -1,7 +1,8 @@
 ---
 id: "202603080540-AKTBET"
 title: "P1: optimize doctor archive scan and heavy-path performance"
-status: "DOING"
+result_summary: "doctor default path is materially cheaper on this repository, and archive-heavy history checks remain available on demand with batched commit-subject lookups."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T07:03:39.222Z"
   updated_by: "CODER"
   note: "Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 1 file, 19 tests passed, including new default bounded archive scan and --archive-full coverage.\nScope: doctor archive behavior and runtime/workspace regressions.\n\nCommand: bun run lint:core -- packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.spec.ts packages/agentplane/src/commands/doctor/archive.ts packages/agentplane/src/commands/doctor.command.test.ts\nResult: pass\nEvidence: eslint completed clean on the modified doctor sources and tests.\nScope: doctor implementation and test files.\n\nCommand: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit completed with the new doctor flag and archive options.\nScope: agentplane package typing after doctor changes.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && agentplane doctor && agentplane doctor --archive-full\nResult: pass\nEvidence: rebuild completed; default doctor finished in real 0.88s with bounded archive info, archive-full finished in real 0.75s and preserved deep historical findings.\nScope: framework checkout runtime freshness and doctor default/full command behavior."
-commit: null
+commit:
+  hash: "36996a3409fd38a7fbf4feea62d9ed0f30253e31"
+  message: "⚡ AKTBET doctor: bound archive scan and batch commit lookups"
 comments:
   -
     author: "CODER"
     body: "Start: optimizing doctor so the default path stops paying full historical archive cost while preserving an explicit deep archive mode."
+  -
+    author: "CODER"
+    body: "Verified: default doctor now uses a bounded recent archive scan while --archive-full preserves deep historical audit; doctor tests, lint, TypeScript, rebuild, and both command modes passed."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000\nResult: pass\nEvidence: 1 file, 19 tests passed, including new default bounded archive scan and --archive-full coverage.\nScope: doctor archive behavior and runtime/workspace regressions.\n\nCommand: bun run lint:core -- packages/agentplane/src/commands/doctor.run.ts packages/agentplane/src/commands/doctor.spec.ts packages/agentplane/src/commands/doctor/archive.ts packages/agentplane/src/commands/doctor.command.test.ts\nResult: pass\nEvidence: eslint completed clean on the modified doctor sources and tests.\nScope: doctor implementation and test files.\n\nCommand: bunx tsc -p packages/agentplane/tsconfig.json --noEmit\nResult: pass\nEvidence: TypeScript no-emit completed with the new doctor flag and archive options.\nScope: agentplane package typing after doctor changes.\n\nCommand: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && agentplane doctor && agentplane doctor --archive-full\nResult: pass\nEvidence: rebuild completed; default doctor finished in real 0.88s with bounded archive info, archive-full finished in real 0.75s and preserved deep historical findings.\nScope: framework checkout runtime freshness and doctor default/full command behavior."
+  -
+    type: "status"
+    at: "2026-03-08T07:04:07.169Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: default doctor now uses a bounded recent archive scan while --archive-full preserves deep historical audit; doctor tests, lint, TypeScript, rebuild, and both command modes passed."
 doc_version: 2
-doc_updated_at: "2026-03-08T07:03:39.223Z"
+doc_updated_at: "2026-03-08T07:04:07.169Z"
 doc_updated_by: "CODER"
 description: "Reduce doctor latency on large archives via clearer archive boundaries, optional deeper modes, and cheap-path shortcuts after module extraction."
 id_source: "generated"
