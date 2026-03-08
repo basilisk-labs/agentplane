@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   createUpgradeBundle,
   mkGitRepoRoot,
+  pathExists,
   writeDefaultConfig,
 } from "../cli/run-cli.test-helpers.js";
 import { cmdUpgradeParsed } from "./upgrade.js";
@@ -65,5 +66,6 @@ describe("upgrade agent JSON replacement stability", () => {
     expect(final.role).toBe("Coder v2");
     expect(final.settings?.b).toBe(3);
     expect(finalText).toBe(incoming);
+    expect(await pathExists(path.join(root, ".agentplane", "WORKFLOW.md"))).toBe(false);
   });
 });

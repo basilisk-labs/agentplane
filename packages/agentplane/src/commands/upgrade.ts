@@ -749,16 +749,22 @@ export async function cmdUpgradeParsed(opts: {
       updates: updates.length,
       skipped: skipped.length,
     });
-    const configApprovals = loaded.config.agents?.approvals;
-    const workflowArtifacts = await ensureWorkflowArtifacts({
-      gitRoot: resolved.gitRoot,
-      workflowMode: loaded.config.workflow_mode,
-      approvals: {
-        requirePlanApproval: configApprovals?.require_plan ?? true,
-        requireVerifyApproval: configApprovals?.require_verify ?? true,
-        requireNetworkApproval: configApprovals?.require_network ?? true,
-      },
-    });
+    const orchestratorProfilePath = path.join(
+      resolved.agentplaneDir,
+      "agents",
+      "ORCHESTRATOR.json",
+    );
+    const workflowArtifacts = (await fileExists(orchestratorProfilePath))
+      ? await ensureWorkflowArtifacts({
+          gitRoot: resolved.gitRoot,
+          workflowMode: loaded.config.workflow_mode,
+          approvals: {
+            requirePlanApproval: loaded.config.agents?.approvals?.require_plan ?? true,
+            requireVerifyApproval: loaded.config.agents?.approvals?.require_verify ?? true,
+            requireNetworkApproval: loaded.config.agents?.approvals?.require_network ?? true,
+          },
+        })
+      : { installPaths: [], commitPaths: [], changedPaths: [] };
     const commitPaths = [
       ...new Set([
         ...additions,
