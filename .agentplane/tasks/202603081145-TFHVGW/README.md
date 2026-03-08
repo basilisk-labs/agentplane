@@ -1,7 +1,8 @@
 ---
 id: "202603081145-TFHVGW"
 title: "Preserve README v3 doc_version through task store updates and export"
-status: "DOING"
+result_summary: "Stopped task-store updates from normalizing migrated README v3 tasks back to legacy v2."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T11:49:09.918Z"
   updated_by: "CODER"
   note: "Task-store writes now preserve doc_version=3 instead of normalizing migrated task READMEs back to v2; focused task-store/tasks-export tests passed, agentplane task migrate-doc --all plus task export now leave the repository on README v3, and doctor no longer reports a false active legacy README v2 warning."
-commit: null
+commit:
+  hash: "5746ff3f1efe060b5345933c35f2766d07dae284"
+  message: "🐛 TFHVGW task: preserve README v3 doc_version on task updates"
 comments:
   -
     author: "CODER"
     body: "Start: fix the task-store write/export path so README v3 doc_version survives updates, task export, and doctor diagnostics."
+  -
+    author: "CODER"
+    body: "Verified: task-store writes now preserve README v3 doc_version through task updates, export, and doctor diagnostics."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Task-store writes now preserve doc_version=3 instead of normalizing migrated task READMEs back to v2; focused task-store/tasks-export tests passed, agentplane task migrate-doc --all plus task export now leave the repository on README v3, and doctor no longer reports a false active legacy README v2 warning."
+  -
+    type: "status"
+    at: "2026-03-08T11:50:22.651Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task-store writes now preserve README v3 doc_version through task updates, export, and doctor diagnostics."
 doc_version: 3
-doc_updated_at: "2026-03-08T11:49:09.920Z"
+doc_updated_at: "2026-03-08T11:50:22.651Z"
 doc_updated_by: "CODER"
 description: "Fix task store update/export paths so migrated README v3 tasks keep doc_version=3 in frontmatter snapshots, task export, and doctor diagnostics instead of being normalized back to legacy v2."
 id_source: "generated"
