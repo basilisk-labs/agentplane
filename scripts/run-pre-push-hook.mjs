@@ -1,8 +1,19 @@
-import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
+
+import {
+  hasReleaseTagPush,
+  parsePrePushStdin,
+  readChangedFilesForRange,
+  selectBranchDiffRange,
+} from "./lib/pre-push-scope.mjs";
 
 function run(command, args) {
   execFileSync(command, args, { stdio: "inherit" });
+}
+
+function runWithEnv(command, args, env) {
+  execFileSync(command, args, { stdio: "inherit", env });
 }
 
 function read(command, args) {
@@ -13,19 +24,8 @@ function trackedChangesShort() {
   return String(read("git", ["status", "--short", "--untracked-files=no"])).trim();
 }
 
-function hasReleaseTagPush() {
-  const stdin = readFileSync(0, "utf8").trim();
-  if (!stdin) return false;
-  return stdin
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .some((line) => {
-      const parts = line.split(/\s+/);
-      const remoteRef = parts[2] ?? "";
-      return remoteRef.startsWith("refs/tags/");
-    });
-}
+const stdin = readFileSync(0, "utf8");
+const updates = parsePrePushStdin(stdin);
 
 const envRelease =
   String(process.env.AGENTPLANE_HOOKS_RELEASE ?? "")
@@ -35,10 +35,15 @@ const envFull =
   String(process.env.AGENTPLANE_HOOKS_FULL ?? "")
     .trim()
     .toLowerCase() === "1";
-const isReleasePush = envRelease || envFull || hasReleaseTagPush();
+const isReleasePush = envRelease || envFull || hasReleaseTagPush(updates);
 const mode = isReleasePush ? "release" : "standard";
 process.stdout.write(`Running pre-push checks in ${mode} mode.\n`);
 const ciScript = envFull ? "ci:local:full" : "ci:local:fast";
+const changedFiles = readChangedFilesForRange(selectBranchDiffRange(updates));
+const ciEnv =
+  changedFiles.length > 0
+    ? { ...process.env, AGENTPLANE_FAST_CHANGED_FILES: changedFiles.join("\n") }
+    : process.env;
 
 process.stdout.write("\n== Format (write) ==\n");
 run("bun", ["run", "format"]);
@@ -51,7 +56,7 @@ if (afterFormat) {
   throw new Error("pre-push blocked due to uncommitted formatter edits");
 }
 
-run("bun", ["run", ciScript]);
+runWithEnv("bun", ["run", ciScript], ciEnv);
 const afterCi = trackedChangesShort();
 if (afterCi) {
   process.stderr.write(

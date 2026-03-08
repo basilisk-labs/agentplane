@@ -1,7 +1,7 @@
 ---
 id: "202603080632-VZYM0B"
 title: "Optimize fast local gate runtime"
-status: "BLOCKED"
+status: "DOING"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -10,14 +10,14 @@ tags:
 verify: []
 plan_approval:
   state: "approved"
-  updated_at: "2026-03-08T07:14:13.442Z"
+  updated_at: "2026-03-08T08:33:28.388Z"
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-08T08:46:45.860Z"
+  updated_by: "TESTER"
+  note: "Verified: path-aware fast CI selection is deterministic and materially cheaper for narrow scopes. Lint and hook tests passed; measured runtimes on this repository were docs-only ~16.66s, targeted task ~18.48s, and broad fallback ~153.11s."
 commit: null
 comments:
   -
@@ -26,6 +26,9 @@ comments:
   -
     author: "CODER"
     body: "Blocked: moving release-specific tests out of the default fast unit sweep did not materially improve runtime. Measured baseline remained about 64s on this repository, so the dominant cost is broader than release-only suites; the next iteration should use path-aware or bucketed fast-test selection rather than a simple exclusion split."
+  -
+    author: "CODER"
+    body: "Start: switching the fast gate to path-aware selection with targeted buckets and full fallback for broad changes."
 events:
   -
     type: "status"
@@ -41,9 +44,22 @@ events:
     from: "DOING"
     to: "BLOCKED"
     note: "Blocked: moving release-specific tests out of the default fast unit sweep did not materially improve runtime. Measured baseline remained about 64s on this repository, so the dominant cost is broader than release-only suites; the next iteration should use path-aware or bucketed fast-test selection rather than a simple exclusion split."
+  -
+    type: "status"
+    at: "2026-03-08T08:33:28.682Z"
+    author: "CODER"
+    from: "BLOCKED"
+    to: "DOING"
+    note: "Start: switching the fast gate to path-aware selection with targeted buckets and full fallback for broad changes."
+  -
+    type: "verify"
+    at: "2026-03-08T08:46:45.860Z"
+    author: "TESTER"
+    state: "ok"
+    note: "Verified: path-aware fast CI selection is deterministic and materially cheaper for narrow scopes. Lint and hook tests passed; measured runtimes on this repository were docs-only ~16.66s, targeted task ~18.48s, and broad fallback ~153.11s."
 doc_version: 2
-doc_updated_at: "2026-03-08T07:16:49.202Z"
-doc_updated_by: "CODER"
+doc_updated_at: "2026-03-08T08:46:45.861Z"
+doc_updated_by: "TESTER"
 description: "Reduce the cost of ci:local/test:fast so the default pre-push path stays materially cheaper than the full local CI track without weakening required coverage."
 id_source: "generated"
 ---
@@ -60,9 +76,9 @@ Reduce the cost of ci:local/test:fast so the default pre-push path stays materia
 
 ## Plan
 
-1. Remove release-specific unit tests from the default fast unit sweep and group them behind an explicit release/full-local gate.
-2. Keep default pre-push coverage for general code paths while preserving a heavier local path that still runs release tests before full/release work.
-3. Verify script wiring, release test execution, and the new test:fast runtime on this repository.
+1. Parse pushed refs in the pre-push hook and compute the changed tracked paths for branch pushes when a remote base is available.
+2. Route fast local CI by path buckets: skip heavy tests for docs-only changes, run narrow targeted suites for bounded code areas, and fall back to the existing blanket fast suite for broad or infra-sensitive changes.
+3. Verify selector behavior, preserved coverage paths, and the measured fast-path runtime on this repository.
 
 ## Risks
 
@@ -75,9 +91,9 @@ Reduce the cost of ci:local/test:fast so the default pre-push path stays materia
 - Primary tag: `code`
 
 ### Checks
-- `bun run lint:core -- scripts/run-local-ci.mjs package.json`
-- `bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/release-check-script.test.ts packages/agentplane/src/commands/release/check-release-version-script.test.ts packages/agentplane/src/commands/release/check-release-parity-script.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000`
-- `sh -c '/usr/bin/time -p bun run test:fast >/tmp/test-fast.out 2>/tmp/test-fast.err'`\n\n### Evidence / Commands\n- Record the new fast-path runtime and confirm release tests still have an explicit local execution path.\n\n### Pass criteria\n- Default fast gate is materially cheaper than before, and release-specific tests remain covered by an explicit full/release path.
+- `bun run lint:core -- scripts/run-local-ci.mjs scripts/run-pre-push-hook.mjs scripts/lib/local-ci-selection.mjs scripts/lib/pre-push-scope.mjs packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts`
+- `bunx vitest run packages/agentplane/src/cli/local-ci-selection.test.ts packages/agentplane/src/cli/run-cli.core.hooks.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000`
+- `sh -c '/usr/bin/time -p env AGENTPLANE_FAST_CHANGED_FILES="docs/README.md" node scripts/run-local-ci.mjs --mode fast >/tmp/ci-fast-docs.out 2>/tmp/ci-fast-docs.err'`\n- `sh -c '/usr/bin/time -p env AGENTPLANE_FAST_CHANGED_FILES="packages/agentplane/src/commands/task/shared.ts" node scripts/run-local-ci.mjs --mode fast >/tmp/ci-fast-task.out 2>/tmp/ci-fast-task.err'`\n- `sh -c '/usr/bin/time -p env AGENTPLANE_FAST_CHANGED_FILES="scripts/run-local-ci.mjs" node scripts/run-local-ci.mjs --mode fast >/tmp/ci-fast-broad.out 2>/tmp/ci-fast-broad.err'`\n\n### Evidence / Commands\n- Record selector choice and wall-clock runtime for docs-only, targeted task, and broad fallback scopes.\n\n### Pass criteria\n- Docs-only and narrow task changes take the cheaper path, broad/infra-sensitive changes still force the blanket fast sweep, and the selector remains deterministic under pre-push.
 
 ## Verification
 
@@ -86,9 +102,24 @@ Reduce the cost of ci:local/test:fast so the default pre-push path stays materia
 ### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T08:46:45.860Z — VERIFY — ok
+
+By: TESTER
+
+Note: Verified: path-aware fast CI selection is deterministic and materially cheaper for narrow scopes. Lint and hook tests passed; measured runtimes on this repository were docs-only ~16.66s, targeted task ~18.48s, and broad fallback ~153.11s.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T08:46:37.165Z, excerpt_hash=sha256:64dc598958d8e830a0078e41bdee985dfc6e442175f9ae0a14ec218688e35d4b
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Notes
+
+- First hypothesis failed: moving release tests out of the default fast sweep did not materially improve runtime.
+- Implemented approach: diff-aware pre-push scope + path buckets in local fast CI.
+- Measured on this repository after implementation: docs-only path ~16.66s, targeted task path ~18.48s, broad fallback path ~153.11s.
+- Residual tradeoff: the doctor-specific bucket is still expensive because doctor.command.test.ts is itself heavy; that path may need separate test-bucket work later.
