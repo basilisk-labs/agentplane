@@ -1,7 +1,8 @@
 ---
 id: "202603081006-0G67DX"
 title: "Add upgrade guidance for task README v3 migration"
-status: "DOING"
+result_summary: "Documented the two-step recovery path for framework upgrade plus README v3 migration."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T11:33:16.792Z"
   updated_by: "DOCS"
   note: "Docs now explain the two-step upgrade path: update framework-managed files with agentplane upgrade, then run task migrate-doc --all when doctor reports active legacy README v2/v3 drift; docs site check passed and doctor only shows the expected transitional warning for this repository archive."
-commit: null
+commit:
+  hash: "dc69f5e3c7f96e46d50099af116f9a1546568ffb"
+  message: "📝 0G67DX task: document README v3 upgrade recovery"
 comments:
   -
     author: "DOCS"
     body: "Start: add upgrade guidance for task README v3 migration and explain when old projects must run task migrate-doc --all after upgrade."
+  -
+    author: "DOCS"
+    body: "Verified: upgrade docs now explain when legacy workspaces must run task migrate-doc --all after framework upgrade and doctor drift warnings."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Docs now explain the two-step upgrade path: update framework-managed files with agentplane upgrade, then run task migrate-doc --all when doctor reports active legacy README v2/v3 drift; docs site check passed and doctor only shows the expected transitional warning for this repository archive."
+  -
+    type: "status"
+    at: "2026-03-08T11:34:04.219Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: upgrade docs now explain when legacy workspaces must run task migrate-doc --all after framework upgrade and doctor drift warnings."
 doc_version: 2
-doc_updated_at: "2026-03-08T11:33:16.794Z"
+doc_updated_at: "2026-03-08T11:34:04.219Z"
 doc_updated_by: "DOCS"
 description: "Teach upgrade and user-facing recovery docs how to move old projects from task README v2 to v3 without hidden mixed states."
 id_source: "generated"
