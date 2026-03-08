@@ -1953,6 +1953,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
+      expect(io.stdout).toContain("creating deterministic close commit");
       expect(io.stdout).toContain("✅ finished");
     } finally {
       io.restore();

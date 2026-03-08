@@ -653,6 +653,55 @@ describe("task finish (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("prints close-commit progress before the deterministic close commit runs", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "direct";
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      get: vi.fn(() => mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+      update: vi.fn((_taskId: string, updater: (task: TaskData) => TaskData) =>
+        updater(mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+      ),
+    });
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: close commit progress should be visible in stdout.",
+      result: "close-commit-observability",
+      commit: "abc123",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.cmdCommit).toHaveBeenCalledTimes(1);
+    expect(writes.join("")).toContain("creating deterministic close commit");
+    expect(writes.join("")).toContain("finished");
+
+    writeSpy.mockRestore();
+  });
+
   it("propagates E_VALIDATION when require_verify=true and task is not verified", async () => {
     const ctx = mkCtx();
     ctx.config.agents = {

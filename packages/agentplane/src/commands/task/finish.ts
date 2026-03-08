@@ -1,7 +1,7 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { ensureDocSections } from "@agentplaneorg/core";
 import { mapBackendError } from "../../cli/error-map.js";
-import { invalidValueMessage, successMessage } from "../../cli/output.js";
+import { infoMessage, invalidValueMessage, successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 import { readFile, rm } from "node:fs/promises";
@@ -417,6 +417,11 @@ export async function cmdFinish(opts: {
     }
 
     if (shouldCloseCommit && primaryTaskId) {
+      if (!opts.quiet) {
+        process.stdout.write(
+          `${infoMessage("task marked DONE; creating deterministic close commit")}\n`,
+        );
+      }
       await cmdCommit({
         ctx,
         cwd: opts.cwd,
