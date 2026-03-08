@@ -12,6 +12,7 @@ type FastCiPlan =
         | "task"
         | "doctor"
         | "hooks"
+        | "workflow"
         | "cli-help"
         | "cli-core"
         | "cli-runtime"
@@ -76,6 +77,14 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("hooks");
     expect(plan.reason).toBe("hook_and_ci_routing_paths_only");
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.hooks.test.ts");
+  });
+
+  it("routes isolated workflow lint and command-contract paths to the workflow bucket", () => {
+    const plan = selectFastCiPlan([".github/workflows/ci.yml"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("workflow");
+    expect(plan.reason).toBe("workflow_contract_paths_only");
+    expect(plan.testFiles).toEqual([]);
   });
 
   it("routes isolated CLI help and spec paths to the cli-help bucket", () => {

@@ -15,6 +15,7 @@ export type FastCiPlan =
         | "task"
         | "doctor"
         | "hooks"
+        | "workflow"
         | "cli-help"
         | "cli-core"
         | "cli-runtime"

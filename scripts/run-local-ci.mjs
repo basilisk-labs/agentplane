@@ -142,6 +142,18 @@ function runTargetedFastPath(plan) {
   runStep("Agent onboarding scenario (check)", () =>
     runCommand("bun", ["run", "docs:onboarding:check"]),
   );
+  if (plan.bucket === "workflow") {
+    const scriptLintTargets = plan.lintTargets.filter(
+      (target) => !target.startsWith(".github/workflows/") && !target.endsWith(".yml"),
+    );
+    if (scriptLintTargets.length > 0) {
+      runStep(`Lint (targeted:${plan.bucket})`, () =>
+        runCommand("bun", ["run", "lint:core", "--", ...scriptLintTargets]),
+      );
+    }
+    runStep("Workflow lint + command contract", () => runCommand("bun", ["run", "workflows:lint"]));
+    return;
+  }
   runStep(`Lint (targeted:${plan.bucket})`, () =>
     runCommand("bun", ["run", "lint:core", "--", ...plan.lintTargets]),
   );

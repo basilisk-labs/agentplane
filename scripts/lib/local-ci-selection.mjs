@@ -23,6 +23,13 @@ const HOOKS_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/pre-commit-staged-files\.test\.ts$/,
 ];
 
+const WORKFLOW_BUCKET_PATTERNS = [
+  /^\.github\/workflows\//,
+  /^\.github\/actionlint\.yaml$/,
+  /^scripts\/run-workflows-lint\.mjs$/,
+  /^scripts\/check-workflow-command-contract\.mjs$/,
+];
+
 const CLI_HELP_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/bootstrap-guide\.ts$/,
   /^packages\/agentplane\/src\/cli\/command-guide(?:\.test)?\.ts$/,
@@ -102,6 +109,7 @@ const HOOKS_TEST_FILES = [
   "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
   "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
 ];
+const WORKFLOW_TEST_FILES = [];
 const CLI_HELP_TEST_FILES = [
   "packages/agentplane/src/cli/command-guide.test.ts",
   "packages/agentplane/src/cli/cli-contract.test.ts",
@@ -228,6 +236,17 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: HOOKS_TEST_FILES,
+    };
+  }
+
+  if (everyPathMatches(files, WORKFLOW_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "workflow",
+      reason: "workflow_contract_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: WORKFLOW_TEST_FILES,
     };
   }
 
