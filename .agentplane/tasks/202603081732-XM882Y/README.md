@@ -1,7 +1,8 @@
 ---
 id: "202603081732-XM882Y"
 title: "Draft release notes for v0.3.4"
-status: "DOING"
+result_summary: "Release notes for v0.3.4 are drafted, verified, and ready for release apply."
+status: "DONE"
 priority: "high"
 owner: "DOCS"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-08T18:05:33.530Z"
   updated_by: "DOCS"
   note: "Release notes drafted in docs/releases/v0.3.4.md and checked against the active release plan with docs:site:check passing."
-commit: null
+commit:
+  hash: "3a5728f76fd224a67e883ab504e6daf94f78ed11"
+  message: "📝 XM882Y docs: draft v0.3.4 release notes"
 comments:
   -
     author: "DOCS"
     body: "Start: drafting v0.3.4 notes around install-first startup surfaces, installed-role prompt alignment, and workflow artifact restoration during upgrade for npm-installed users."
+  -
+    author: "DOCS"
+    body: "Verified: docs/releases/v0.3.4.md now covers the install-first startup cleanup, installed profile role-help alignment, and workflow-artifact restoration during upgrade for npm-installed repositories."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Release notes drafted in docs/releases/v0.3.4.md and checked against the active release plan with docs:site:check passing."
+  -
+    type: "status"
+    at: "2026-03-08T18:05:53.750Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: docs/releases/v0.3.4.md now covers the install-first startup cleanup, installed profile role-help alignment, and workflow-artifact restoration during upgrade for npm-installed repositories."
 doc_version: 3
-doc_updated_at: "2026-03-08T18:05:33.531Z"
+doc_updated_at: "2026-03-08T18:05:53.750Z"
 doc_updated_by: "DOCS"
 description: "Write release notes for v0.3.4 that explain the install-first runtime guidance fix and workflow-upgrade bootstrap repair in clear user-facing language."
 id_source: "generated"
