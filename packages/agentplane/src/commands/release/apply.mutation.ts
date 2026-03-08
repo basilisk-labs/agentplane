@@ -1,6 +1,8 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { loadConfig, saveConfig, setByDottedKey } from "@agentplaneorg/core";
+
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
@@ -108,6 +110,19 @@ export async function maybeRefreshGeneratedReference(
   }
 
   return await fileExists(path.join(gitRoot, "docs", "reference", "generated-reference.mdx"));
+}
+
+export async function maybePersistExpectedCliVersion(
+  agentplaneDir: string,
+  nextVersion: string,
+): Promise<boolean> {
+  const loaded = await loadConfig(agentplaneDir);
+  if (!loaded.exists) return false;
+
+  const raw = { ...loaded.raw };
+  setByDottedKey(raw, "framework.cli.expected_version", nextVersion);
+  await saveConfig(agentplaneDir, raw);
+  return true;
 }
 
 export function cleanHookEnv(): NodeJS.ProcessEnv {

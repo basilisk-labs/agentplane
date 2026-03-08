@@ -141,14 +141,23 @@ describeWhenNotHook("release apply", () => {
       path.join(root, "packages", "agentplane", "package.json"),
       "utf8",
     );
+    const configText = await readFile(path.join(root, ".agentplane", "config.json"), "utf8");
     expect(coreText).toContain('"version": "0.2.7"');
     expect(agentplaneText).toContain('"version": "0.2.7"');
     expect(agentplaneText).toContain('"@agentplaneorg/core": "0.2.7"');
+    expect(configText).toContain('"expected_version": "0.2.7"');
 
     const { stdout: tagOut } = await execFileAsync("git", ["tag", "--list", "v0.2.7"], {
       cwd: root,
     });
     expect(tagOut.trim()).toBe("v0.2.7");
+
+    const { stdout: committedFiles } = await execFileAsync(
+      "git",
+      ["show", "--name-only", "--format=", "HEAD"],
+      { cwd: root },
+    );
+    expect(committedFiles).toContain(".agentplane/config.json");
 
     const reportPath = path.join(root, ".agentplane", ".release", "apply", "latest.json");
     const report = JSON.parse(await readFile(reportPath, "utf8")) as {

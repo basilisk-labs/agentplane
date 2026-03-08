@@ -12,6 +12,7 @@ import { GitContext } from "../shared/git-context.js";
 import { ensureNetworkApproved } from "../shared/network-approval.js";
 import {
   cleanHookEnv,
+  maybePersistExpectedCliVersion,
   maybeRefreshGeneratedReference,
   maybeUpdateBunLockfile,
   replaceAgentplanePackageMetadata,
@@ -149,6 +150,7 @@ async function runPushPreflight(opts: {
 }
 
 async function applyReleaseMutation(opts: {
+  agentplaneDir: string;
   gitRoot: string;
   git: GitContext;
   notesPath: string;
@@ -163,6 +165,10 @@ async function applyReleaseMutation(opts: {
     replaceAgentplanePackageMetadata(opts.agentplanePkgPath, opts.nextVersion),
   ]);
 
+  const expectedCliVersionPersisted = await maybePersistExpectedCliVersion(
+    opts.agentplaneDir,
+    opts.nextVersion,
+  );
   await maybeUpdateBunLockfile(opts.gitRoot, fileExists);
   const generatedReferenceExists = await maybeRefreshGeneratedReference(opts.gitRoot, fileExists);
 
@@ -171,6 +177,9 @@ async function applyReleaseMutation(opts: {
     "packages/agentplane/package.json",
     path.relative(opts.gitRoot, opts.notesPath),
   ];
+  if (expectedCliVersionPersisted) {
+    stagePaths.push(".agentplane/config.json");
+  }
   if (generatedReferenceExists) {
     stagePaths.push("docs/reference/generated-reference.mdx");
   }
@@ -372,6 +381,7 @@ export const runReleaseApply: CommandHandler<ReleaseApplyParsed> = async (ctx, f
 
   const git = new GitContext({ gitRoot });
   const { releaseCommit } = await applyReleaseMutation({
+    agentplaneDir: resolved.agentplaneDir,
     gitRoot,
     git,
     notesPath,
