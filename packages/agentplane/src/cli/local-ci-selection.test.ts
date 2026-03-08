@@ -8,7 +8,7 @@ type FastCiPlan =
   | { kind: "docs-only"; reason: string; files: string[] }
   | {
       kind: "targeted";
-      bucket: "task" | "doctor" | "hooks" | "release" | "upgrade" | "guard";
+      bucket: "task" | "doctor" | "hooks" | "cli-help" | "release" | "upgrade" | "guard";
       reason: string;
       files: string[];
       lintTargets: string[];
@@ -69,6 +69,21 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.hooks.test.ts");
   });
 
+  it("routes isolated CLI help and spec paths to the cli-help bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/command-guide.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("cli-help");
+    expect(plan.reason).toBe("cli_help_and_spec_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/command-guide.test.ts");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.help-snap.test.ts");
+  });
+
+  it("keeps runtime-sensitive CLI paths on the broad fallback", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.ts"]);
+    expect(plan.kind).toBe("full-fast");
+    expect(plan.reason).toBe("broad_or_infra_sensitive_change");
+  });
+
   it("routes isolated release paths to the release bucket", () => {
     const plan = selectFastCiPlan(["packages/agentplane/src/commands/release/apply.command.ts"]);
     expect(plan.kind).toBe("targeted");
@@ -94,7 +109,7 @@ describe("local CI fast selection", () => {
   });
 
   it("falls back to full fast for broader infra-sensitive changes", () => {
-    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.ts"]);
+    const plan = selectFastCiPlan(["package.json"]);
     expect(plan.kind).toBe("full-fast");
     expect(plan.reason).toBe("broad_or_infra_sensitive_change");
   });

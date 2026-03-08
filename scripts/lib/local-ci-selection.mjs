@@ -23,6 +23,20 @@ const HOOKS_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/pre-commit-staged-files\.test\.ts$/,
 ];
 
+const CLI_HELP_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/cli\/bootstrap-guide\.ts$/,
+  /^packages\/agentplane\/src\/cli\/command-guide(?:\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/cli\/command-snippets\.ts$/,
+  /^packages\/agentplane\/src\/cli\/output(?:\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/cli\/error-map(?:\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/cli\/prompts(?:\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/cli\/cli-contract\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/help\.all-commands\.contract\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.help-(?:contract|snap)\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/spec\//,
+  /^packages\/agentplane\/src\/cli\/shared\//,
+];
+
 const RELEASE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/release\//,
   /^scripts\/check-release-(?:parity|version)\.mjs$/,
@@ -69,6 +83,21 @@ const HOOKS_TEST_FILES = [
   "packages/agentplane/src/cli/local-ci-selection.test.ts",
   "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
   "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
+];
+const CLI_HELP_TEST_FILES = [
+  "packages/agentplane/src/cli/command-guide.test.ts",
+  "packages/agentplane/src/cli/cli-contract.test.ts",
+  "packages/agentplane/src/cli/help.all-commands.contract.test.ts",
+  "packages/agentplane/src/cli/output.test.ts",
+  "packages/agentplane/src/cli/error-map.test.ts",
+  "packages/agentplane/src/cli/prompts.test.ts",
+  "packages/agentplane/src/cli/spec/parse.test.ts",
+  "packages/agentplane/src/cli/spec/help-render.test.ts",
+  "packages/agentplane/src/cli/spec/registry.test.ts",
+  "packages/agentplane/src/cli/spec/suggest.test.ts",
+  "packages/agentplane/src/cli/shared/ansi.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
 ];
 const RELEASE_TEST_FILES = [
   "packages/agentplane/src/commands/release/plan.test.ts",
@@ -162,6 +191,17 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: HOOKS_TEST_FILES,
+    };
+  }
+
+  if (everyPathMatches(files, CLI_HELP_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "cli-help",
+      reason: "cli_help_and_spec_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: CLI_HELP_TEST_FILES,
     };
   }
 
