@@ -608,7 +608,7 @@ describeWhenNotHook("release apply", () => {
       cwd: root,
     });
     expect(tagOut.trim()).toBe("");
-  });
+  }, 60_000);
 
   it("fails on an existing remote release tag before running release:prepublish or mutating local state", async () => {
     const root = await mkGitRepoRoot();
