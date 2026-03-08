@@ -1,7 +1,8 @@
 ---
 id: "202603080632-VZYM0B"
 title: "Optimize fast local gate runtime"
-status: "DOING"
+result_summary: "Implemented diff-aware pre-push scope selection and path-aware fast CI routing with docs-only and targeted task/doctor buckets, plus explicit full-fast fallback for broad changes."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,7 +19,9 @@ verification:
   updated_at: "2026-03-08T08:46:45.860Z"
   updated_by: "TESTER"
   note: "Verified: path-aware fast CI selection is deterministic and materially cheaper for narrow scopes. Lint and hook tests passed; measured runtimes on this repository were docs-only ~16.66s, targeted task ~18.48s, and broad fallback ~153.11s."
-commit: null
+commit:
+  hash: "4cdbaa5fdac15bcc7150ff92da7f29f474a2f6a5"
+  message: "⚡ VZYM0B ci: make fast local gate path-aware"
 comments:
   -
     author: "CODER"
@@ -29,6 +32,9 @@ comments:
   -
     author: "CODER"
     body: "Start: switching the fast gate to path-aware selection with targeted buckets and full fallback for broad changes."
+  -
+    author: "CODER"
+    body: "Verified: the fast local gate now routes docs-only and narrow task changes through cheaper deterministic buckets while keeping a broad full-fast fallback for infra-sensitive scopes."
 events:
   -
     type: "status"
@@ -57,9 +63,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: path-aware fast CI selection is deterministic and materially cheaper for narrow scopes. Lint and hook tests passed; measured runtimes on this repository were docs-only ~16.66s, targeted task ~18.48s, and broad fallback ~153.11s."
+  -
+    type: "status"
+    at: "2026-03-08T08:47:09.789Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the fast local gate now routes docs-only and narrow task changes through cheaper deterministic buckets while keeping a broad full-fast fallback for infra-sensitive scopes."
 doc_version: 2
-doc_updated_at: "2026-03-08T08:46:45.861Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-03-08T08:47:09.789Z"
+doc_updated_by: "CODER"
 description: "Reduce the cost of ci:local/test:fast so the default pre-push path stays materially cheaper than the full local CI track without weakening required coverage."
 id_source: "generated"
 ---
