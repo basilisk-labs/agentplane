@@ -1,7 +1,8 @@
 ---
 id: "202603081421-EJW1BT"
 title: "Plan patch-prep fixes for task doc set, legacy migration timeout, init approvals, and blog release surface"
-status: "DOING"
+result_summary: "Created the patch-prep execution graph for task-doc feedback, legacy migration timeout, init approval UX, and the 0.3.x blog release surface."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T14:23:06.541Z"
   updated_by: "PLANNER"
   note: "Verified: agentplane task list shows the new patch-prep task graph with the intended linear dependency order, the new tasks have narrow non-overlapping scopes, and 202603081422-5XXATM is the first ready implementation task."
-commit: null
+commit:
+  hash: "40612793ac69e0821d8dba7a77296b2d6f4e7fae"
+  message: "📝 EJW1BT tasks: add patch-prep execution graph"
 comments:
   -
     author: "PLANNER"
     body: "Start: creating a narrow patch-prep task graph for the four approved fixes, with reliability tasks first and UX/blog cleanup after them so implementation stays deterministic and low-risk."
+  -
+    author: "PLANNER"
+    body: "Verified: the new patch-prep task graph exists with explicit sequencing, narrow non-overlapping scopes, and the first ready implementation task is 202603081422-5XXATM."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Verified: agentplane task list shows the new patch-prep task graph with the intended linear dependency order, the new tasks have narrow non-overlapping scopes, and 202603081422-5XXATM is the first ready implementation task."
+  -
+    type: "status"
+    at: "2026-03-08T14:23:18.044Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the new patch-prep task graph exists with explicit sequencing, narrow non-overlapping scopes, and the first ready implementation task is 202603081422-5XXATM."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:23:06.543Z"
+doc_updated_at: "2026-03-08T14:23:18.044Z"
 doc_updated_by: "PLANNER"
 description: "Sequence a narrow pre-release package: harden task doc set success semantics, fix the legacy README migration test timeout mismatch, simplify init plan/verify approval prompts into profile-driven defaults, and adjust the custom blog release surface so the primary line starts at 0.3.0 and advances chronologically through 0.3.2."
 id_source: "generated"
