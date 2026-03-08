@@ -164,10 +164,21 @@ By default, hooks run:
   - `targeted(doctor)`: doctor command paths run the doctor-focused fast suite
   - `targeted(hooks)`: hook and CI-routing paths run the hook-focused fast suite
   - `targeted(cli-help)`: safe CLI help/spec/guidance paths run the help-focused fast suite
+  - `targeted(cli-core)`: isolated `run-cli` execution-plumbing paths run the focused core CLI suite
+  - `targeted(cli-runtime)`: isolated bin/runtime freshness, handoff, and stale-dist paths run the focused runtime CLI suite
   - `targeted(release)`: release command/script paths run the release-focused fast suite
   - `targeted(upgrade)`: upgrade command paths run the upgrade-focused fast suite
   - `targeted(guard)`: guard command paths run the guard-focused fast suite
-  - `full-fast fallback`: mixed, unclassified, runtime-sensitive CLI, shared command, package metadata, and other infra-sensitive paths still run the broad fast suite on purpose
+  - `full-fast fallback`: mixed, unclassified, shared command, package metadata, and residual runtime-sensitive CLI paths without a clear focused suite still run the broad fast suite on purpose
+
+  Runtime-sensitive CLI paths are intentionally split along two safe boundaries:
+  - `cli-core`: `run-cli` execution plumbing and its focused core tests
+  - `cli-runtime`: repo-local handoff, runtime-watch, stale-dist, and global-install verification paths
+
+  The following still stay on the broad fallback by design:
+  - docs-generation stability paths such as `run-cli.core.docs-cli.test.ts`
+  - init/upgrade integration paths such as `run-cli.core.init-upgrade-backend.test.ts`
+  - any mixed CLI change that crosses help, runtime, hooks, guard, or broader infra-sensitive boundaries
 
   Set `AGENTPLANE_HOOKS_FULL=1` to force `bun run ci:local:full`, which adds docs-site, workflows lint, platform-critical Windows tests, and the significant-file coverage guard. For release-tag pushes (or when `AGENTPLANE_HOOKS_RELEASE=1`/`AGENTPLANE_HOOKS_FULL=1`), it additionally runs release notes validation and `bun run release:prepublish`.
 
