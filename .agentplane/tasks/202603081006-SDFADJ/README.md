@@ -5,6 +5,8 @@ status: "TODO"
 priority: "high"
 owner: "CODER"
 depends_on:
+  - "202603081006-BD4X83"
+  - "202603081006-9Y3YGR"
   - "202603081006-CT5BE1"
 tags:
   - "code"
