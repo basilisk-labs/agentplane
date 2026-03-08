@@ -1,7 +1,8 @@
 ---
 id: "202603081453-HQ24GQ"
 title: "Plan workflow test orchestration cleanup"
-status: "DOING"
+result_summary: "Workflow cleanup now has an explicit sequence: extract shared coverage scripts first, then add a workflow command-contract check, then update documentation."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
 depends_on: []
@@ -14,15 +15,24 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Sequence is extract shared scripts first, then enforce workflow contract, then sync docs."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-08T14:54:46.922Z"
+  updated_by: "PLANNER"
+  note: |-
+    Checks passed:
+    - inventoried the remaining inline workflow test logic in .github/workflows/ci.yml and .github/workflows/prepublish.yml
+    - split cleanup into extraction, drift-guard, and docs follow-up tasks
+    - recorded the execution order in the planning task README
+commit:
+  hash: "3762bba8a87b1655df0408d88a6f0b844b856cf2"
+  message: "📝 HQ24GQ tasks: plan workflow test orchestration cleanup"
 comments:
   -
     author: "PLANNER"
     body: "Start: lock the sequence for removing remaining inline workflow test logic by extracting shared scripts before adding enforcement."
+  -
+    author: "PLANNER"
+    body: "Verified: the remaining inline workflow test logic is inventoried and split into sequenced follow-up tasks for extraction, enforcement, and docs sync."
 events:
   -
     type: "status"
@@ -31,8 +41,25 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: lock the sequence for removing remaining inline workflow test logic by extracting shared scripts before adding enforcement."
+  -
+    type: "verify"
+    at: "2026-03-08T14:54:46.922Z"
+    author: "PLANNER"
+    state: "ok"
+    note: |-
+      Checks passed:
+      - inventoried the remaining inline workflow test logic in .github/workflows/ci.yml and .github/workflows/prepublish.yml
+      - split cleanup into extraction, drift-guard, and docs follow-up tasks
+      - recorded the execution order in the planning task README
+  -
+    type: "status"
+    at: "2026-03-08T14:55:00.767Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the remaining inline workflow test logic is inventoried and split into sequenced follow-up tasks for extraction, enforcement, and docs sync."
 doc_version: 3
-doc_updated_at: "2026-03-08T14:54:24.206Z"
+doc_updated_at: "2026-03-08T14:55:00.767Z"
 doc_updated_by: "PLANNER"
 description: "Inventory remaining inline test and coverage commands in GitHub workflows, define canonical shared scripts, and sequence the cleanup so CI behavior stays unchanged while removing YAML-level test logic drift."
 id_source: "generated"
@@ -64,6 +91,17 @@ Inventory remaining inline test and coverage commands in GitHub workflows, defin
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-08T14:54:46.922Z — VERIFY — ok
+
+By: PLANNER
+
+Note: Checks passed:
+- inventoried the remaining inline workflow test logic in .github/workflows/ci.yml and .github/workflows/prepublish.yml
+- split cleanup into extraction, drift-guard, and docs follow-up tasks
+- recorded the execution order in the planning task README
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-08T14:54:24.206Z, excerpt_hash=sha256:e2818b17509c1fd0edff0634137c066b1bedd16daabd847c196b80a05fdd030a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
