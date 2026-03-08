@@ -9,6 +9,7 @@ function escText(text: string): string {
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
+    .replaceAll("*", String.raw`\*`)
     .replaceAll("`", "\\`");
 }
 
