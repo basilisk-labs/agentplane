@@ -1,7 +1,8 @@
 ---
 id: "202603081731-BW7YA2"
 title: "Plan 0.3.4 install-first stabilization"
-status: "DOING"
+result_summary: "Planned 0.3.4 as an install-first stabilization release with separate implementation tasks for runtime guidance, upgrade workflow bootstrap, release notes, and release apply."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
 depends_on: []
@@ -27,11 +28,16 @@ verification:
     Result: pass
     Evidence: planning README states the install-first product boundary and narrows release scope to runtime guidance, workflow bootstrap, notes, and publish.
     Scope: planning task contract and release sequencing.
-commit: null
+commit:
+  hash: "545cbf1786b952887bcc23cef8b61e599a00df63"
+  message: "🗺️ BW7YA2 tasks: plan 0.3.4 install-first stabilization"
 comments:
   -
     author: "PLANNER"
     body: "Start: define the install-first 0.3.4 boundary, create the executable task graph, and sequence release work so runtime fixes land before notes and publish."
+  -
+    author: "PLANNER"
+    body: "Verified: defined the install-first 0.3.4 boundary, created the executable task graph, and confirmed release ordering so runtime fixes block notes and publish."
 events:
   -
     type: "status"
@@ -55,8 +61,15 @@ events:
       Result: pass
       Evidence: planning README states the install-first product boundary and narrows release scope to runtime guidance, workflow bootstrap, notes, and publish.
       Scope: planning task contract and release sequencing.
+  -
+    type: "status"
+    at: "2026-03-08T17:34:05.042Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: defined the install-first 0.3.4 boundary, created the executable task graph, and confirmed release ordering so runtime fixes block notes and publish."
 doc_version: 3
-doc_updated_at: "2026-03-08T17:32:41.604Z"
+doc_updated_at: "2026-03-08T17:34:05.042Z"
 doc_updated_by: "PLANNER"
 description: "Define and sequence the 0.3.4 work needed to treat npm-installed agentplane as the primary product surface: remove repo-only bootstrap dependencies from runtime guidance, make upgrade restore workflow runtime artifacts, and prepare the patch release."
 id_source: "generated"
