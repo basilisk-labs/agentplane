@@ -1,7 +1,8 @@
 ---
 id: "202603080903-A16E7Z"
 title: "Make docs cli regenerate formatted reference in one command"
-status: "DOING"
+result_summary: "Made CLI reference generation self-contained and aligned check guidance with the one-command recovery path."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T09:09:37.629Z"
   updated_by: "CODER"
   note: "Renderer now emits stable markdown, docs cli regeneration passes freshness without a separate Prettier step, and targeted test/lint checks passed."
-commit: null
+commit:
+  hash: "a8c2e10c41cb7a1b126b3304e26c594d0053b88a"
+  message: "📝 docs: make CLI reference regeneration self-contained"
 comments:
   -
     author: "CODER"
     body: "Start: making docs cli self-contained so the generated CLI reference can be refreshed and validated with one deterministic command path."
+  -
+    author: "CODER"
+    body: "Verified: docs cli now regenerates the CLI reference in the formatted state accepted by freshness checks, with a regression test covering the no-op Prettier path."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Renderer now emits stable markdown, docs cli regeneration passes freshness without a separate Prettier step, and targeted test/lint checks passed."
+  -
+    type: "status"
+    at: "2026-03-08T09:10:21.343Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: docs cli now regenerates the CLI reference in the formatted state accepted by freshness checks, with a regression test covering the no-op Prettier path."
 doc_version: 2
-doc_updated_at: "2026-03-08T09:09:37.630Z"
+doc_updated_at: "2026-03-08T09:10:21.343Z"
 doc_updated_by: "CODER"
 description: "Make agentplane docs cli write the generated CLI reference in the same formatted state expected by docs freshness checks, and sync the related guidance."
 id_source: "generated"
