@@ -1,7 +1,8 @@
 ---
 id: "202603081006-0D6TGG"
 title: "Update lifecycle tests and CLI/docs surfaces for README v3"
-status: "DOING"
+result_summary: "Aligned lifecycle docs, task help, snapshots, and generated CLI reference with the README v3 contract."
+status: "DONE"
 priority: "high"
 owner: "TESTER"
 depends_on:
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-08T11:39:40.080Z"
   updated_by: "TESTER"
   note: "Lifecycle/help/docs surfaces now describe README v3 consistently: task new and task verify-show help use the acceptance-contract wording, task migrate-doc explicitly covers legacy v2/v3 recovery after upgrade, user lifecycle docs point old workspaces to task migrate-doc --all, targeted help/tasks/lifecycle vitest passed, docs site check passed, CLI reference freshness is green, and doctor only shows the expected legacy-task migration warning for this repository."
-commit: null
+commit:
+  hash: "ace355e71560dca5e0720698af8ff36fcd8b7274"
+  message: "🧪 0D6TGG task: align README v3 lifecycle surfaces"
 comments:
   -
     author: "TESTER"
     body: "Start: align lifecycle tests, task help surfaces, and generated docs with the README v3 contract and migration guidance."
+  -
+    author: "TESTER"
+    body: "Verified: lifecycle help, task command surfaces, and generated reference now describe README v3 and migrate-doc recovery consistently."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Lifecycle/help/docs surfaces now describe README v3 consistently: task new and task verify-show help use the acceptance-contract wording, task migrate-doc explicitly covers legacy v2/v3 recovery after upgrade, user lifecycle docs point old workspaces to task migrate-doc --all, targeted help/tasks/lifecycle vitest passed, docs site check passed, CLI reference freshness is green, and doctor only shows the expected legacy-task migration warning for this repository."
+  -
+    type: "status"
+    at: "2026-03-08T11:40:15.771Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: lifecycle help, task command surfaces, and generated reference now describe README v3 and migrate-doc recovery consistently."
 doc_version: 2
-doc_updated_at: "2026-03-08T11:39:40.082Z"
+doc_updated_at: "2026-03-08T11:40:15.771Z"
 doc_updated_by: "TESTER"
 description: "Refresh tests, help surfaces, and generated references so the new README v3 contract is enforced consistently."
 id_source: "generated"
