@@ -1,0 +1,134 @@
+---
+title: "CLI bug ledger (v0.3.x)"
+description: "Observed CLI failures, root causes, shipped fixes, and remaining gaps from the v0.3.x stabilization cycle."
+---
+
+This ledger captures concrete `agentplane` CLI failures observed while stabilizing the `v0.3.x`
+framework workflow. It is intentionally narrow: every entry is tied to repository evidence and
+distinguishes shipped fixes from still-open gaps.
+
+## 1. Task closure looked hung after `finish`
+
+- **Symptom:** logs showed that `finish` marked the task `DONE`, but contributors saw only the task
+  README left in the index and inferred a hang before the deterministic close commit.
+- **Hidden premise:** the command had already crossed the main state transition, but the user-facing
+  output did not expose that phase boundary.
+- **Root cause:** weak observability between the `DONE` transition and the close-commit phase.
+- **Shipped fix:** `finish` now emits an explicit progress line before the deterministic close
+  commit.
+- **Evidence:** task `202603081315-NV76YZ`, `packages/agentplane/src/commands/task/finish.ts`.
+- **Remaining gap:** if a hook blocks the close commit, the command still depends on git/hook
+  output for the final diagnosis; that is now visible, but still not fully state-oriented.
+
+## 2. Task README files rendered literal `\\n` instead of newlines
+
+- **Symptom:** some task READMEs displayed literal `\\n` in `Summary`, `Scope`, or frontmatter notes.
+- **Hidden premise:** multiline human text was treated like a JSON string instead of a human-facing
+  markdown/YAML payload.
+- **Root cause:** README rendering serialized multiline fields too mechanically, and the task body
+  template copied escaped text through unchanged.
+- **Shipped fix:** multiline human-facing fields now render as YAML block scalars, README template
+  seeding normalizes multiline-like escaped text, and `task migrate-doc` can clean older task docs.
+- **Evidence:** task `202603081315-H2E5Q5`, `packages/core/src/tasks/task-readme.ts`, `packages/agentplane/src/commands/task/migrate-doc.ts`.
+- **Remaining gap:** the normalization is deliberately conservative; single literal `\\n` tokens
+  remain untouched when they look intentional.
+
+## 3. Repository CLI version expectations were implicit
+
+- **Symptom:** a repository could effectively require a newer `agentplane` CLI than the active
+  install, but that mismatch stayed invisible until workflow behavior drifted.
+- **Hidden premise:** project configuration tracked framework state, but not the minimum CLI version
+  needed to operate that state safely.
+- **Root cause:** missing repository-owned version expectation and no runtime diagnostic that
+  compared it against the active CLI.
+- **Shipped fix:** `.agentplane/config.json` now supports `framework.cli.expected_version`; `init`
+  and `upgrade` persist it, and `runtime explain` plus `doctor` report older active CLI versions
+  with an explicit recovery path.
+- **Evidence:** task `202603081315-Y4D6AE`, `packages/core/src/config/config.ts`, `packages/agentplane/src/commands/runtime.command.ts`, `packages/agentplane/src/commands/doctor/runtime.ts`.
+- **Remaining gap:** this stays detection-only by design. Silent global CLI mutation from repo
+  config remains intentionally unsupported.
+
+## 4. `release apply --push` could stall after local commit and tag creation
+
+- **Symptom:** release apply completed local mutation work, then appeared to hang before pushing.
+- **Hidden premise:** the internal push path was treated like a normal developer push, even though
+  it was already inside the release orchestration.
+- **Root cause:** recursive entry into local `pre-push` hooks from inside `release apply`.
+- **Shipped fix:** internal release push now uses `git push --no-verify`, and the regression is
+  covered by tests.
+- **Evidence:** task `202603061532-9Y41NM`, `packages/agentplane/src/commands/release/apply.command.ts`, `packages/agentplane/src/commands/release/apply.test.ts`.
+- **Remaining gap:** partial-release recovery is still a specialist flow; the main fix removed the
+  recursion bug, but recovery ergonomics can still improve.
+
+## 5. Release mutation drifted generated reference docs
+
+- **Symptom:** after version bump and release mutation, generated package reference docs could be
+  stale until a later manual sync or pre-push failure.
+- **Hidden premise:** version mutation was considered complete after package updates and release
+  notes staging, even though generated reference docs also encode package versions.
+- **Root cause:** `release apply` did not regenerate `docs/reference/generated-reference.mdx` as
+  part of the release mutation itself.
+- **Shipped fix:** `release apply` now refreshes and stages the generated reference docs as part of
+  the release mutation path.
+- **Evidence:** task `202603071745-T3QE04`, `packages/agentplane/src/commands/release/apply.mutation.ts`.
+- **Remaining gap:** the release flow still depends on generated-surface parity checks elsewhere in
+  the pipeline; mutation is safer now, but not yet minimal.
+
+## 6. Stale-dist checks conflated dirty git state with stale runtime
+
+- **Symptom:** contributors hit stale-dist failures on diagnostics or even after a rebuild, because
+  the guard was reasoning about git dirtiness rather than the actual build/source relationship.
+- **Hidden premise:** a dirty runtime tree was treated as equivalent to an out-of-date `dist`.
+- **Root cause:** stale-dist freshness was keyed off git changes instead of a snapshot of watched
+  runtime inputs used for the build.
+- **Shipped fix:** build manifests now store watched runtime snapshots; freshness compares current
+  source against that snapshot, and read-only diagnostics are allowed to warn-and-run.
+- **Evidence:** tasks `202603072032-2M0V8V`, `202603072032-1BC7VQ`, `202603072032-V9VGT2`, `202603072032-4D9ASG`; `packages/agentplane/bin/dist-guard.js`, `packages/agentplane/bin/runtime-watch.js`.
+- **Remaining gap:** strict commands still require a fresh build, which is correct, but the
+  framework-dev loop can still feel heavy on broad runtime changes.
+
+## 7. Framework development could run the wrong binary from `PATH`
+
+- **Symptom:** inside the framework checkout, contributors could run a global `agentplane` binary
+  that did not match the code they were editing.
+- **Hidden premise:** `PATH` resolution was assumed to be “good enough” even in the framework repo
+  itself.
+- **Root cause:** no automatic handoff from a global install to the repo-local runtime when the
+  current working directory was the framework checkout.
+- **Shipped fix:** the wrapper now detects framework checkout context and hands off to the repo-local
+  binary by default, with an explicit opt-out.
+- **Evidence:** tasks `202603071647-M0Q79C`, `202603071647-Y4BZ1T`, `202603071647-25WS52`; `packages/agentplane/bin/agentplane.js`, `packages/agentplane/bin/runtime-context.js`.
+- **Remaining gap:** if a contributor’s global install is itself outdated, the repo-local handoff
+  fix only helps after that global wrapper is reinstalled or updated.
+
+## 8. `task doc set` lost updates under concurrent writes
+
+- **Symptom:** `Verify Steps` and other task sections sometimes looked as if replacement failed, but
+  the actual behavior was a lost update after overlapping README writes.
+- **Hidden premise:** task README updates were effectively atomic at the command level even when two
+  CLI actions touched the same file close together.
+- **Root cause:** missing serialization around concurrent task README writes.
+- **Shipped fix:** task README update paths now serialize concurrent writes through a lock, with
+  regressions at both the low-level README IO layer and the task-store command layer.
+- **Evidence:** task `202603080913-TJC9WG`, `packages/core/src/tasks/task-readme-io.ts`, `packages/agentplane/src/commands/shared/task-store.test.ts`.
+- **Remaining gap:** the lock fixes correctness, but task-doc editing still has more CLI surface
+  complexity than the happy path really needs.
+
+## Remaining open gaps before the next patch release
+
+1. **Do not auto-update the global CLI by default.**
+   The repository can now declare the expected CLI version, but automatic global mutation is still a
+   safety-sensitive feature. If it ever lands, it should stay opt-in and explicitly approved.
+
+2. **Keep long-running lifecycle commands phase-visible.**
+   The `finish` progress fix closed the most visible case, but the broader rule should be:
+   state transition boundaries must be user-visible when the command still has follow-up phases.
+
+3. **Keep broad `pre-push` paths under control.**
+   Narrow buckets already reduced a lot of latency, but broad runtime-sensitive changes still carry
+   a heavy local loop cost.
+
+4. **Consider syncing repository CLI expectation during release version bumps.**
+   `init` and `upgrade` now persist the expected CLI version. The framework release flow is a
+   remaining place where that repository-owned expectation could drift if it is not updated as part
+   of the release mutation.

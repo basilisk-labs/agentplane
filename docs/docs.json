@@ -50,6 +50,7 @@
         "pages": [
           "architecture",
           "cli-contract",
+          "cli-bug-ledger-v0-3-x",
           "harness-engeneering",
           "recipes-spec",
           "code-quality"

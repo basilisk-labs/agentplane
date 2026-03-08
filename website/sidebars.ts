@@ -100,6 +100,7 @@ const sidebars: SidebarsConfig = {
         "developer/workflow-harness-test-matrix",
         "developer/documentation-information-architecture",
         "developer/cli-contract",
+        "developer/cli-bug-ledger-v0-3-x",
         "developer/cli-help-json",
         "developer/typescript-esm-imports",
         "developer/recipes-spec",
