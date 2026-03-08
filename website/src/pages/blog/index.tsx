@@ -4,6 +4,13 @@ import styles from "./index.module.css";
 
 const entries = [
   {
+    href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
+    title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
+    excerpt:
+      "Why stricter commit scope and cleaner release checks mattered once agents started touching real repositories.",
+    meta: "Release journal • 4 min read",
+  },
+  {
     href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
     title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
     excerpt:
@@ -23,13 +30,6 @@ const entries = [
     excerpt:
       "Why upgrades got less weird, why finish now leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
     meta: "Release journal • 5 min read",
-  },
-  {
-    href: "/blog/release-0-2-25-safer-commits-cleaner-release-flow",
-    title: "AgentPlane 0.2.25: safer commits, cleaner release flow",
-    excerpt:
-      "Why stricter commit scope and cleaner release checks mattered once agents started touching real repositories.",
-    meta: "Release journal • 4 min read",
   },
   {
     href: "/blog/roadmap-0-5-agentplane-runner",
