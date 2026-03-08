@@ -1,7 +1,8 @@
 ---
 id: "202603081006-TT7N3B"
 title: "Migrate repository task archive to README v3"
-status: "DOING"
+result_summary: "Migrated the repository task archive to README v3 so all task READMEs and exported task snapshots now use doc_version=3 consistently."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T12:00:29.873Z"
   updated_by: "DOCS"
   note: "Repository task archive was migrated to README v3. agentplane task migrate-doc --all now leaves all 1066 task READMEs at doc_version=3, agentplane task export refreshed .agentplane/tasks.json accordingly, and agentplane doctor reports warnings=0 on the updated snapshot."
-commit: null
+commit:
+  hash: "f39a4e5ff66381142e1824273e52e082ebfb2564"
+  message: "📝 TT7N3B task: migrate repository task archive to README v3"
 comments:
   -
     author: "DOCS"
     body: "Start: run the controlled repository-wide task README migration to v3, then verify that doctor and representative archive samples reflect the new contract cleanly."
+  -
+    author: "DOCS"
+    body: "Verified: migrated the repository task archive to README v3, refreshed tasks.json, and confirmed doctor is clean on the updated snapshot."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Repository task archive was migrated to README v3. agentplane task migrate-doc --all now leaves all 1066 task READMEs at doc_version=3, agentplane task export refreshed .agentplane/tasks.json accordingly, and agentplane doctor reports warnings=0 on the updated snapshot."
+  -
+    type: "status"
+    at: "2026-03-08T12:00:43.329Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: migrated the repository task archive to README v3, refreshed tasks.json, and confirmed doctor is clean on the updated snapshot."
 doc_version: 3
-doc_updated_at: "2026-03-08T12:00:29.875Z"
+doc_updated_at: "2026-03-08T12:00:43.329Z"
 doc_updated_by: "DOCS"
 description: "Run a controlled migration of repository task READMEs to the new v3 format after runtime support is complete."
 id_source: "generated"
