@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: Example/config formatting change only | details: no automated tests run beyond pre-commit format/lint hooks."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:28.824Z"
 doc_updated_by: "agentplane"
 description: "Make config examples use the same .agent-plane namespace format as the repo config."
@@ -43,19 +43,25 @@ User requested a single unified configuration format across the repo; align spec
 
 - Update packages/spec/examples/config.json path values to use .agent-plane namespace.\n- Keep ordering/format consistent with existing config files.
 
-## Risks
+## Plan
 
-- Example paths may be used externally; ensure .agent-plane is intended in this repo.\n- No behavior change; documentation/example only.
 
 ## Verify Steps
 
 - N/A (example/formatting change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert packages/spec/examples/config.json to previous values.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Example paths may be used externally; ensure .agent-plane is intended in this repo.\n- No behavior change; documentation/example only.

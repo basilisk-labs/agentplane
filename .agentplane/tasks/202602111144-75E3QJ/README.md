@@ -36,9 +36,35 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: write-env.ts no longer uses immediate array mutations and passes lint."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T11:45:10.802Z"
 doc_updated_by: "CODER"
 description: "Refactor init write-env implementation to satisfy no-array-mutation lint rules and unblock publish pipeline."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

@@ -30,7 +30,7 @@ comments:
   -
     author: "REDMINE"
     body: "verified: align stored comments with formatted commit subjects | details: docs updated; tests not run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:49.105Z"
 doc_updated_by: "agentplane"
 description: "Ensure comment-driven commits store the same formatted comment text used in commit subjects so length/content stay aligned and nothing is truncated across systems."
@@ -49,23 +49,26 @@ Comment-driven commit subjects are formatted from the raw comment body, which ca
 
 Update agentctl comment/commit handling so formatted comment text is reused for both storage and commit subjects; document the behavior in agentctl.md.
 
-## Risks
+## Plan
 
-Normalizing comments may alter formatting for multi-line notes; keep the normalization consistent with commit subject formatting and document the change.
 
 ## Verify Steps
 
 Manual: run a comment-driven start/block/finish and confirm the stored task comment matches the commit subject body.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the agentctl commit that normalizes stored comments to restore previous comment storage behavior.
 
-## Notes
+## Findings
 
 The normalized comment text should be identical to the commit subject body fragment produced by comment-driven commits.
 
-## Plan
+## Risks
 
-
-## Verification
+Normalizing comments may alter formatting for multi-line notes; keep the normalization consistent with commit subject formatting and document the change.

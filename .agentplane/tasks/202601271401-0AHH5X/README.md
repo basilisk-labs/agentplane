@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci (2026-01-29) | details: cleanup merged command and tests pass with coverage >= thresholds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:13.235Z"
 doc_updated_by: "agentplane"
 description: "Implement cleanup command to remove branch_pr worktrees and task branches safely."
@@ -46,19 +46,25 @@ description: "Implement cleanup command to remove branch_pr worktrees and task b
 
 - packages/agentplane/src/run-cli.ts: add cleanup merged command, path normalization, archive helper.\n- packages/agentplane/src/help.ts: document cleanup command usage.\n- packages/agentplane/src/run-cli.test.ts: add cleanup tests and usage validation.
 
-## Risks
+## Plan
 
-- Cleanup deletes branches/worktrees; guardrails depend on DONE status and clean diff, but incorrect task metadata could still remove a branch.
 
 ## Verify Steps
 
 - bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the cleanup command changes and test additions with git revert.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Cleanup deletes branches/worktrees; guardrails depend on DONE status and clean diff, but incorrect task metadata could still remove a branch.

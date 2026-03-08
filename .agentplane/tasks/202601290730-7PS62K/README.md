@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: pre-commit runs format+lint | details: pre-push runs bun run ci; docs updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:21.979Z"
 doc_updated_by: "agentplane"
 description: "Adjust lefthook pre-commit to avoid running full ci on every commit while keeping ci on pre-push, and update docs accordingly."
@@ -44,19 +44,25 @@ Speed up local git hooks by moving full ci to pre-push and keeping pre-commit fa
 
 - Update lefthook pre-commit to run format + lint only.\n- Add pre-push hook to run full ci.\n- Update code-quality docs.
 
-## Risks
+## Plan
 
-- Pre-commit no longer runs full tests; failures may surface at pre-push instead.\n- Developers can still bypass hooks with --no-verify (unchanged).
 
 ## Verify Steps
 
 git commit (runs pre-commit: format + lint); bun run ci runs on pre-push
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 01acf3f4e41b.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Pre-commit no longer runs full tests; failures may surface at pre-push instead.\n- Developers can still bypass hooks with --no-verify (unchanged).

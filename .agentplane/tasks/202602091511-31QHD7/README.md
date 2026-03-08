@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated the packaged policy text to be workspace-generic, consistent about terminology (workspace/outside-workspace), robust on uninitialized/non-git directories via conditional preflight guidance, and explicit about approvals in interactive vs non-interactive runs. Ran bun run lint and bun run test:full."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T15:17:09.709Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Update packages/agentplane/assets/AGENTS.md to describe a universal agentplane-managed development workspace: consistent terminology (workspace/outside-workspace), conditional preflight for uninitialized/non-git dirs, clarify approvals in interactive vs non-interactive runs, and avoid repo-specific/dev-contour/VSCode-extension assumptions."
@@ -63,18 +63,11 @@ In scope: packages/agentplane/assets/AGENTS.md. Out of scope: CLI behavior chang
 
 1. Edit packages/agentplane/assets/AGENTS.md: reframe to agentplane-managed workspace; unify terms (workspace/outside-workspace); make preflight conditional; document approvals (interactive vs non-interactive flags); treat commit/push guidance as default with override protocol.\n2. Run bun run lint and bun run test:full.\n3. Commit with allowlist + allow-policy.
 
-## Risks
-
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
@@ -82,3 +75,8 @@ In scope: packages/agentplane/assets/AGENTS.md. Out of scope: CLI behavior chang
 ## Rollback Plan
 
 Revert the commit for this task or restore packages/agentplane/assets/AGENTS.md from git history.
+
+## Findings
+
+
+## Risks

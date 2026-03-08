@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run test:full; close mode stages only the task README, builds a policy-compliant subject, and derives key files from the recorded implementation commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T15:44:30.296Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add a close-commit mode that builds commit subject/body deterministically from task snapshot + verification + git diff summary; stage only the task README and commit with the generated message."
@@ -50,15 +50,23 @@ id_source: "generated"
 
 (See task README Plan section.)
 
-## Risks
+## Verify Steps
 
-- Regressions in CLI behavior or tests due to contract changes.
+### Scope
+- Implement `agentplane commit <task-id> --close`.
+- Ensure generated close message is deterministic and policy-compliant.
+- Ensure key files are derived from the recorded implementation commit.
+
+### Checks
+- bun run typecheck
+- bun run lint
+- bun run test:full
+
+### Pass criteria
+- All checks pass.
+- CLI tests cover `agentplane commit <task-id> --close`.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T15:44:11.711Z — VERIFY — ok
@@ -75,18 +83,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T15:43:49.261Z, excerpt_
 
 - Revert the implementation commit and re-run bun run test:full.
 
-## Verify Steps
+## Findings
 
-### Scope
-- Implement `agentplane commit <task-id> --close`.
-- Ensure generated close message is deterministic and policy-compliant.
-- Ensure key files are derived from the recorded implementation commit.
 
-### Checks
-- bun run typecheck
-- bun run lint
-- bun run test:full
+## Risks
 
-### Pass criteria
-- All checks pass.
-- CLI tests cover `agentplane commit <task-id> --close`.
+- Regressions in CLI behavior or tests due to contract changes.

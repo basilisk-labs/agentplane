@@ -48,9 +48,35 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: all dependent documentation tasks are done, committed separately, and merged into a consistent publication-ready docs set."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T08:10:44.654Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Umbrella task: restructure documentation, update every section based on current code behavior, and finalize editorial polish/consistency across all docs."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

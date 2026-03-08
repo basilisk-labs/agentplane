@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: status/comment-driven commits are now limited to major transitions, and generated subjects/bodies encode primary tag plus target status for machine-readable audit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T04:32:20.717Z"
 doc_updated_by: "CODER"
 description: "Allow status/comment-driven commits only on major transitions, enforce branch_pr final commit behavior, and change commit-from-comment scope to primary tag with structured body."
@@ -68,14 +68,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/core/src/commit/commit-policy.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts
+2. bun run --filter=@agentplaneorg/core build
+3. bun run --filter=agentplane build
+4. bun run lint
+Expected: status commits are allowed only for major transitions; comment-driven commit subject uses primary tag + status token; tests pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T04:32:20.416Z — VERIFY — ok
@@ -91,10 +92,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T04:29:56.039Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/core/src/commit/commit-policy.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts
-2. bun run --filter=@agentplaneorg/core build
-3. bun run --filter=agentplane build
-4. bun run lint
-Expected: status commits are allowed only for major transitions; comment-driven commit subject uses primary tag + status token; tests pass.
+
+## Risks

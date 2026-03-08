@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: mode get/set are cli2-routed with spec-derived help/usage; legacy dispatcher removed; tests passing (typecheck/lint/format/test:cli:core)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T20:52:49.404Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `mode get` and `mode set`."
@@ -60,11 +60,6 @@ Out of scope:
 - spec-derived help includes all options
 - parse errors produce E_USAGE with compact usage
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -85,10 +80,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T20:52:24.719Z — VERIFY — ok
 
@@ -105,3 +96,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:51:11.616Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

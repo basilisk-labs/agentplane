@@ -26,7 +26,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: set batch_size=5 and batch_pause=0.5 in redmine backend.json; py_compile backend.py; no workflow_mode or sync changes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:39.557Z"
 doc_updated_by: "agentplane"
 description: "Set batch_size/batch_pause in redmine backend config"
@@ -46,19 +46,25 @@ Set explicit batch_size (5) and batch_pause in redmine/backend.json for sync/mig
 - Use batch_size=5 tasks and a small pause for throttling.
 - Do not change workflow_mode or trigger sync.
 
-## Risks
+## Plan
 
-- Too small batch or pause slows large migrations; too small pause may still hit server rate limits.
 
 ## Verify Steps
 
 - python -m py_compile .agent-plane/backends/redmine/backend.py
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert .agent-plane/backends/redmine/backend.json.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Too small batch or pause slows large migrations; too small pause may still hit server rate limits.

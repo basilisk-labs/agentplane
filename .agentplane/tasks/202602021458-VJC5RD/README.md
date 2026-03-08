@@ -52,7 +52,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: migration committed; task lint OK; tracked .agentplane and updated task snapshot."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:44.892Z"
 doc_updated_by: "agentplane"
 description: "Commit all current changes for the migration to the new .agentplane-based framework layout."
@@ -64,16 +64,21 @@ id_source: "generated"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

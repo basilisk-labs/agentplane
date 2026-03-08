@@ -23,7 +23,7 @@ commit:
   hash: "85e3a6149c131b329fea8576cf49bda4d86bec9f"
   message: "🐛 AHRAHM fix board/list toggle"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Ensure the board/list toggle switches views immediately without requiring a page reload."
@@ -40,23 +40,26 @@ The current toggle updates only after a reload. We need to force the DOM display
 
 - Adjust view toggle logic in `.agent-plane/viewer/tasks.html`.
 
-## Risks
+## Plan
 
-Risk: display logic could conflict with existing CSS; ensure both hidden and display attributes align.
 
 ## Verify Steps
 
 - Click BOARD/LIST in the viewer and confirm the view switches immediately.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the toggle logic in `.agent-plane/viewer/tasks.html`.
 
-## Notes
+## Findings
 
 Keep the change small and localized to the view mode handler.
 
-## Plan
+## Risks
 
-
-## Verification
+Risk: display logic could conflict with existing CSS; ensure both hidden and display attributes align.

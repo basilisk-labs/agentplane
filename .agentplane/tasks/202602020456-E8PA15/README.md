@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran bun run test:cli:core | details: pre-commit hooks ran prettier check, eslint, and bun run test:fast during commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:41.360Z"
 doc_updated_by: "agentplane"
 description: "Update installed AGENTS.md and agent JSON templates to reference system 'agentplane' CLI and .agentplane paths; refresh docs/tests accordingly."
@@ -44,19 +44,25 @@ Switch installed agent templates to use the system agentplane CLI and .agentplan
 
 Update packages/agentplane/assets/AGENTS.md and agents/*.json to reference agentplane CLI and .agentplane folder; refresh related docs/tests.
 
-## Risks
+## Plan
 
-Template changes may break tests that assert exact text; docs may already have pending edits.
 
 ## Verify Steps
 
 Run bun run test:cli:core (and any template-related tests that fail).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert template/doc/test changes to restore previous agentctl.py references if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Template changes may break tests that assert exact text; docs may already have pending edits.

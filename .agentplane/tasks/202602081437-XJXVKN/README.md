@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run typecheck PASS; bun run lint PASS; bun run test:full PASS (vitest, 704 tests). Refactor-only: extracted init command helpers into cli/run-cli/commands/init/* and kept init.ts as a thin orchestrator; behavior and init-related tests preserved."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T14:55:48.161Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split cli/run-cli/commands/init.ts into smaller internal modules (prompts, file writes, git bootstrap, hooks, recipes validation) while preserving behavior and keeping init-related tests green."
@@ -49,14 +49,11 @@ Refactor cli/run-cli/commands/init.ts into smaller modules while preserving init
 
 Refactor: split packages/agentplane/src/cli/run-cli/commands/init.ts into smaller internal modules under cli/run-cli/commands/init/ while keeping init.ts as a thin orchestrator.\n\nSteps:\n1) Extract cohesive helpers (prompts, filesystem writes, git bootstrap, hooks install, recipes validation).\n2) Preserve CLI outputs and error messages used by tests.\n3) Verify: bun run typecheck; bun run lint; bun run test:full.
 
-## Risks
+## Verify Steps
 
+### Scope\n- Refactor-only: init behavior and outputs must remain unchanged.\n\n### Checks\n- bun run typecheck\n- bun run lint\n- bun run test:full\n\n### Evidence / Commands\n- Include the exact commands run in the verification note.\n- Pay special attention to: packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts\n\n### Pass criteria\n- typecheck/lint/test:full all pass.\n- init/upgrade/backend tests remain green with no output regressions.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T14:53:59.124Z — VERIFY — ok
@@ -73,6 +70,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T14:48:41.663Z, excerpt_
 
 - Revert the implementation commit and re-run bun run test:full.\n- If a regression is isolated to a single extracted module, inline it back into init.ts and retry extraction with clearer boundaries.
 
-## Verify Steps
+## Findings
 
-### Scope\n- Refactor-only: init behavior and outputs must remain unchanged.\n\n### Checks\n- bun run typecheck\n- bun run lint\n- bun run test:full\n\n### Evidence / Commands\n- Include the exact commands run in the verification note.\n- Pay special attention to: packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts\n\n### Pass criteria\n- typecheck/lint/test:full all pass.\n- init/upgrade/backend tests remain green with no output regressions.
+
+## Risks

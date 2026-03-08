@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: policy gateway now enforces explicit canonical routing, a single incidents file, and immutability-by-default governance with passing checks/tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T15:34:14.580Z"
 doc_updated_by: "CODER"
 description: "Introduce a single incidents policy file, remove wildcard policy path guidance, and enforce immutable canonical policy modules with explicit governance rules and routing checks."
@@ -69,10 +69,6 @@ In scope: packages/agentplane/assets/AGENTS.md, packages/agentplane/assets/polic
 
 1) Replace wildcard policy module references in AGENTS with explicit routing and docs links. 2) Add single incidents policy file and route it explicitly. 3) Rewrite governance with incident source-of-truth, stabilization criteria, and canonical-module immutability rules. 4) Extend policy routing check to enforce no wildcard module paths and single incidents file. 5) Sync policy templates and run routing/template/tests verification.
 
-## Risks
-
-Risk: stricter wildcard rejection could block legitimate future notation. Mitigation: keep checks scoped to inline wildcard paths in AGENTS and require explicit module references. Risk: governance wording could drift from implementation. Mitigation: enforce via policy:routing:check and template sync checks.
-
 ## Verify Steps
 
 ### Scope
@@ -88,10 +84,6 @@ Risk: stricter wildcard rejection could block legitimate future notation. Mitiga
 - Steps are reproducible and produce expected results.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T15:33:22.748Z — VERIFY — ok
@@ -111,3 +103,10 @@ Commands:\n- bun run policy:routing:check\n- bun run agents:check\n- bun test pa
 ## Rollback Plan
 
 Revert commits from this task. Then rerun: bun run agents:sync, bun run policy:routing:check, bun run agents:check, and targeted tests to confirm gateway/policy parity is restored.
+
+## Findings
+
+
+## Risks
+
+Risk: stricter wildcard rejection could block legitimate future notation. Mitigation: keep checks scoped to inline wildcard paths in AGENTS and require explicit module references. Risk: governance wording could drift from implementation. Mitigation: enforce via policy:routing:check and template sync checks.

@@ -23,7 +23,7 @@ commit:
   hash: "76d362097fa5d7237d78e4142d9d4ce7f9511513"
   message: "Legacy completion (backfill)"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-11T08:06:07+00:00"
 doc_updated_by: "agentctl"
 description: "Summarize the overall multi-agent workflow so newcomers can understand the repository quickly."
@@ -39,10 +39,23 @@ dirty: false
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

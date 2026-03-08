@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Docs-only change; updated agentctl role/phase mapping and task artifact; no runtime impact."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:45.104Z"
 doc_updated_by: "agentplane"
 description: "Analyze agentctl docs and agent specs to map which agent can use which agentctl commands at each workflow stage, then update agentctl.md so agents can avoid extra help calls."
@@ -43,23 +43,26 @@ Request was to map agentctl commands to agents and workflow phases based on agen
 
 Updated only .agent-plane/agentctl.md; no CLI behavior changes.
 
-## Risks
+## Plan
 
-Low; docs could drift if commands change.
 
 ## Verify Steps
 
 None (docs-only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the doc change and task artifacts.
 
-## Notes
+## Findings
 
 Commands listed align with .agent-plane/agents/*.json and current agentctl.md examples.
 
-## Plan
+## Risks
 
-
-## Verification
+Low; docs could drift if commands change.

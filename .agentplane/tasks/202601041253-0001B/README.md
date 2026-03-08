@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: ".gitignore now ignores `.env` variants following the cleanup."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:18.135Z"
 doc_updated_by: "agentplane"
 description: "Ignore `.env*` so sensitive environment overrides stay out of the repo."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

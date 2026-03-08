@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ran bun run lint, bun run test:fast, and pre-commit hooks; local listTasks now uses index cache."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:08:31.001Z"
 doc_updated_by: "CODER"
 description: "Use tasks index for task list/search to avoid full README scans; add fallback to rebuild."
@@ -45,9 +45,8 @@ Wire task index into task list/search flows to avoid full README scans.
 
 Use backend listTasks with index support for task list/search; ensure fallback to parse on cache miss.
 
-## Risks
+## Plan
 
-Behavioral regressions in list/search if cached fields are incomplete; ensure cached task data matches TaskData used by search.
 
 ## Verify Steps
 
@@ -57,8 +56,16 @@ Behavioral regressions in list/search if cached fields are incomplete; ensure ca
 
 Verified on 2026-02-05: bun run lint; bun run test:fast; node packages/agentplane/bin/agentplane.js hooks run pre-commit; list/search outputs unchanged.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Disable index usage and restore list/search to full README scans.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Behavioral regressions in list/search if cached fields are incomplete; ensure cached task data matches TaskData used by search.

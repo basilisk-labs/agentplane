@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: split commands/recipes.ts into recipes/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T12:55:01.329Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split packages/agentplane/src/commands/recipes.ts into focused modules (index/cache, install, manifest validation, IO helpers). Keep CLI2 specs unchanged and preserve behavior; update tests as needed."
@@ -50,14 +50,19 @@ id_source: "generated"
 3) Keep public exports stable; update import sites and tests.
 4) Run bun typecheck/lint/test:full; update snapshots if needed.
 
-## Risks
+## Verify Steps
 
+### Commands
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:full`
+
+### Pass criteria
+- `packages/agentplane/src/commands/recipes.ts` is split into smaller modules under `packages/agentplane/src/commands/recipes/` (or `internal/`) with clear boundaries.
+- No behavior changes (CLI2 tests + recipes/scenario/cli smoke tests still pass).
+- No legacy CLI patterns reintroduced (legacy regression tests pass).
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T12:53:29.731Z — VERIFY — ok
@@ -73,14 +78,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:39:30.095Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-### Commands
-- `bun run typecheck`
-- `bun run lint`
-- `bun run test:full`
 
-### Pass criteria
-- `packages/agentplane/src/commands/recipes.ts` is split into smaller modules under `packages/agentplane/src/commands/recipes/` (or `internal/`) with clear boundaries.
-- No behavior changes (CLI2 tests + recipes/scenario/cli smoke tests still pass).
-- No legacy CLI patterns reintroduced (legacy regression tests pass).
+## Risks

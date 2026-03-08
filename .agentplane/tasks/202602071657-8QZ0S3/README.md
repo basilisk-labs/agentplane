@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: config now supports Verify Steps gating settings with schema defaults; legacy required_tags fallback preserved; removed verify-command lint requirement; tests: bun run test:fast, bun run test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T18:13:41.631Z"
 doc_updated_by: "CODER"
 description: "Add optional config keys for require_steps_for_tags/spike_tag/enforce_on_plan_approve/enforce_on_start_when_no_plan."
@@ -49,27 +49,6 @@ description: "Add optional config keys for require_steps_for_tags/spike_tag/enfo
 2) Wire code to use new settings with backward-compatible fallbacks to tasks.verify.required_tags.
 3) Remove legacy lint rule that required frontmatter verify commands for code tags (verify commands are now optional).
 4) Run bun run test:fast.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T18:07:42.494Z — VERIFY — ok
-
-By: CODER
-
-Note: Added config keys for Verify Steps gates (require_steps_for_tags/spike_tag/enforce flags) with schema + type updates; removed legacy lint requiring verify commands; bun run test:fast + bun run test:cli:core.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -90,3 +69,22 @@ Make Verify Steps gating configurable and transparent.
 ### Pass criteria
 
 - All tests pass and gating can be toggled via config.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T18:07:42.494Z — VERIFY — ok
+
+By: CODER
+
+Note: Added config keys for Verify Steps gates (require_steps_for_tags/spike_tag/enforce flags) with schema + type updates; removed legacy lint requiring verify commands; bun run test:fast + bun run test:cli:core.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

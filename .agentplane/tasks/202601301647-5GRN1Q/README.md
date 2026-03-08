@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: expanded recipes docs with examples, added troubleshooting-by-symptom page, and updated docs navigation."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:34.214Z"
 doc_updated_by: "agentplane"
 description: "Expand recipes docs with examples and add troubleshooting-by-symptom page."
@@ -42,23 +42,26 @@ description: "Expand recipes docs with examples and add troubleshooting-by-sympt
 
 - Extend docs/recipes-how-it-works.mdx and docs/recipes-spec.mdx with examples.\n- Create a troubleshooting-by-symptom doc and update docs.json/index.
 
-## Risks
+## Plan
 
-- Examples may diverge from current CLI behavior if not kept updated.\n- Troubleshooting page could become too long without careful structure.
 
 ## Verify Steps
 
 - Review examples for accuracy.\n- Check docs/docs.json includes the new troubleshooting page.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert docs changes and navigation updates.
 
-## Notes
+## Findings
 
 - Added examples to recipes how-it-works and spec.\n- Linked troubleshooting-by-symptom in docs index and navigation.
 
-## Plan
+## Risks
 
-
-## Verification
+- Examples may diverge from current CLI behavior if not kept updated.\n- Troubleshooting page could become too long without careful structure.

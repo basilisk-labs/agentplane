@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ran .venv/bin/ruff format ., .venv/bin/ruff check ., and .venv/bin/mypy; all passed. Updated GitHub sync labeling/status handling and preserved viewer.sh in cleanup scripts."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:40.862Z"
 doc_updated_by: "agentplane"
 description: "Align GitHub task sync scripts with current backend/schema and keep viewer.sh during cleanup."
@@ -49,10 +49,8 @@ Update GitHub task sync scripts/workflow to match current backend schema and kee
 - Adjust .github/workflows/sync-tasks.yml if needed for new args/envs.
 - Remove viewer.sh from clean scripts so it is preserved.
 
-## Risks
+## Plan
 
-- GitHub API schema or project fields may differ from expected values.
-- Workflow token permissions could block updates.
 
 ## Verify Steps
 
@@ -60,11 +58,19 @@ Update GitHub task sync scripts/workflow to match current backend schema and kee
 - .venv/bin/ruff check .
 - .venv/bin/mypy
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert sync script and clean script changes; rerun ruff/mypy to confirm previous behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- GitHub API schema or project fields may differ from expected values.
+- Workflow token permissions could block updates.

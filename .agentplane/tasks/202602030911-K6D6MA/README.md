@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: version bump committed (0.1.2), tag v0.1.2 pushed to trigger GitHub Actions publish."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:50.445Z"
 doc_updated_by: "agentplane"
 description: "Bump to 0.1.2, tag release, push to trigger GitHub Actions trusted publishing."
@@ -44,19 +44,25 @@ Normalized task doc sections (dedupe).
 
 Release bump for agentplane and @agentplaneorg/core packages.
 
-## Risks
+## Plan
 
-Low; release tag will trigger GitHub Actions publishing.
 
 ## Verify Steps
 
 1) bun run test:fast\n2) git tag -l v0.1.2\n3) git push --follow-tags
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Delete the tag and revert the version bump commit if publish fails.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low; release tag will trigger GitHub Actions publishing.

@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Restored helper script for local build+global reinstall workflow and validated usage output."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T10:43:47.159Z"
 doc_updated_by: "CODER"
 description: "Add scripts/reinstall-global-agentplane.sh to rebuild local package and reinstall global agentplane without npm publish."
@@ -65,18 +65,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 1) bash scripts/reinstall-global-agentplane.sh --help 2) Dry run manually: verify script exits if run outside repo root. 3) Optional: run script and confirm 0.2.25 works after reinstall.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T10:43:42.382Z — VERIFY — ok
@@ -90,3 +83,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T10:42:57.521Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

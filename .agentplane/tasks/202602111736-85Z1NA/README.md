@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: significant file coverage script enforces branch>=72 for guard critical files and CI workflow now runs the targeted guard coverage gate."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:53:20.958Z"
 doc_updated_by: "TESTER"
 description: "Add a deterministic check for branch coverage on selected critical files so regressions fail CI even when global coverage passes."
@@ -57,6 +57,10 @@ id_source: "generated"
 
 Add deterministic file-level branch coverage gate for selected critical files.
 
+## Context
+
+Global coverage can pass while critical files regress; need explicit per-file thresholds.
+
 ## Scope
 
 In scope: new coverage check script, npm script wiring, and CI/root script integration.
@@ -65,26 +69,25 @@ In scope: new coverage check script, npm script wiring, and CI/root script integ
 
 1) Implement script that reads coverage-final.json and enforces per-file branch threshold. 2) Wire script into root ci pipeline. 3) Validate with focused guard coverage run.
 
-## Risks
+## Verify Steps
 
-Risk: false negatives if coverage report path/schema changes; keep parser defensive and clear errors.
+bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=json --coverage.include='packages/agentplane/src/commands/guard/**'\nbun run coverage:significant
 
 ## Verification
 
 Pending execution.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Remove script and package.json wiring.
 
-## Context
-
-Global coverage can pass while critical files regress; need explicit per-file thresholds.
-
-## Verify Steps
-
-bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=json --coverage.include='packages/agentplane/src/commands/guard/**'\nbun run coverage:significant
-
-## Notes
+## Findings
 
 ### Decisions\n- Threshold: branch >=72 for selected critical files.\n### Implementation Notes\n- Pending.
+
+## Risks
+
+Risk: false negatives if coverage report path/schema changes; keep parser defensive and clear errors.

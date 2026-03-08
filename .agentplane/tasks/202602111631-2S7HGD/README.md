@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-commit now executes deterministic test:precommit allowlist, hook integration remains in test:hooks, and lint/tests/build pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:33:18.996Z"
 doc_updated_by: "CODER"
 description: "Create a strict test:precommit script with explicit test file allowlist (no hook/release side effects) and switch lefthook pre-commit to use it."
@@ -57,6 +57,10 @@ id_source: "generated"
 
 Ввести детерминированный pre-commit тест-профиль на явном allowlist и убрать нестабильные side-effect тесты из hook-пути.
 
+## Context
+
+Текущий pre-commit использует широкий профиль, который иногда приводит к нестабильности/шуму. Нужен короткий и предсказуемый набор тестов.
+
 ## Scope
 
 In-scope: package.json scripts и lefthook.yml. Out-of-scope: изменение логики самих тестов.
@@ -65,25 +69,23 @@ In-scope: package.json scripts и lefthook.yml. Out-of-scope: изменение
 
 1) Добавить script test:precommit с явным списком unit/safe тестов. 2) Перевести lefthook pre-commit на этот скрипт. 3) Проверить lint + test:precommit + test:hooks + build.
 
-## Risks
+## Verify Steps
 
-Риск: снизить coverage pre-commit. Смягчение: hook-интеграционные тесты остаются в отдельном test:hooks и CI.
+1) bun run lint\n2) bun run test:precommit\n3) bun run test:hooks\n4) bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Откатить коммит задачи и вернуть pre-commit на прежний test профиль.
 
-## Context
-
-Текущий pre-commit использует широкий профиль, который иногда приводит к нестабильности/шуму. Нужен короткий и предсказуемый набор тестов.
-
-## Verify Steps
-
-1) bun run lint\n2) bun run test:precommit\n3) bun run test:hooks\n4) bun run --filter=agentplane build
-
-## Notes
+## Findings
 
 ### Decisions\n- Pre-commit profile должен быть фиксированным и коротким.\n### Implementation Notes\n- Заполняется после реализации.
+
+## Risks
+
+Риск: снизить coverage pre-commit. Смягчение: hook-интеграционные тесты остаются в отдельном test:hooks и CI.

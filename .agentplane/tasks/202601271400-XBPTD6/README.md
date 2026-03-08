@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci completed (format, typecheck, lint, coverage) for AP-020 work start."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:12.942Z"
 doc_updated_by: "agentplane"
 description: "Implement branch_pr work start to create task branches and worktrees."
@@ -47,19 +47,25 @@ Added branch_pr work start command that creates task branches and worktrees, wit
 
 CLI parsing for work start; git worktree creation; help/docs updates; tests for work start/guard edge cases; .gitignore worktrees path.
 
-## Risks
+## Plan
 
-Work start depends on git worktree behavior and requires base branch; misconfigured worktrees_dir could block creation.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 3a188d1a8960.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Work start depends on git worktree behavior and requires base branch; misconfigured worktrees_dir could block creation.

@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Migrated branch remove to cli2 spec + handler; registered in help fast-path and main cli2 registry; removed legacy parsing; kept runtime behavior. Evidence: bun run typecheck, bun run lint, bun run test:cli."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T04:40:23.629Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `branch remove`."
@@ -60,11 +60,6 @@ Out of scope:
 - spec-derived help includes all options
 - parse errors produce E_USAGE with compact usage
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -85,10 +80,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T04:39:49.455Z — VERIFY — ok
 
@@ -105,3 +96,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T04:37:56.809Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: incidents.md now keeps only strong incident classes, governance forbids weak/local notes in the incident log, routing passed, and doctor stayed green aside from known historical archive warnings."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T21:37:25.051Z"
 doc_updated_by: "DOCS"
 description: "Keep only high-value incident rules in .agentplane/policy/incidents.md and update the incidents contract so only strong, actionable, enforced entries belong there."
@@ -67,10 +67,6 @@ In scope: .agentplane/policy/incidents.md, governance/load guidance that defines
 ## Plan
 
 1. Tighten the incidents log entry contract so only high-signal, enforced, high-impact entries belong there. 2. Remove medium-strength entries from incidents.md and keep only the strongest, system-shaping incident classes. 3. Verify routing/doctor/docs consistency and close the task.
-
-## Risks
-
-Main risk: deleting incident memory that should have remained local context. Mitigation: keep entries only when they encode repeatable, non-obvious failure classes with enforcement; weaker items can live in docs or diagnostics instead.
 
 ## Verify Steps
 
@@ -113,6 +109,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T21:37:02.306Z, excerpt_
 
 Revert incidents/governance text if the stricter contract proves too narrow or removes an entry later needed for recovery.
 
-## Notes
+## Findings
 
 Candidate weak entries to drop: direct-finish auto-close and legacy upgrade recovery. Candidate strong keepers: repo-local handoff, stale-dist snapshot freshness, burned npm version preflight, release-generated docs synchronization.
+
+## Risks
+
+Main risk: deleting incident memory that should have remained local context. Mitigation: keep entries only when they encode repeatable, non-obvious failure classes with enforcement; weaker items can live in docs or diagnostics instead.

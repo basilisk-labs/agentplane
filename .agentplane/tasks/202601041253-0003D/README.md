@@ -22,7 +22,7 @@ commit:
   hash: "e27d9a325ee6e9a8c6e202d19e63eb206eb70c20"
   message: "Legacy completion (backfill)"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-11T08:06:07+00:00"
 doc_updated_by: "agentctl"
 description: "Restructure docs into modular, numbered files and update the documentation index to match the new order."
@@ -37,10 +37,23 @@ dirty: false
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

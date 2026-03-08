@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: upgrade now applies managed files by default, keeps dry-run as preview, and reports source/version before acting."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T10:17:30.759Z"
 doc_updated_by: "CODER"
 description: "Change agentplane upgrade so the default mode applies framework-managed files immediately, while --dry-run remains the preview path and command output makes the source/version of the bundle explicit."
@@ -71,20 +71,11 @@ Change agentplane upgrade so the default mode applies framework-managed files im
 
 1. Redefine upgrade CLI semantics so the default invocation applies managed files, while --dry-run becomes the explicit preview path and the command reports the bundle source/version before acting.\n2. Update parsing, help text, docs, and implementation so local-assets/remote/bundle sources all follow the new default-apply contract.\n3. Adjust and extend upgrade tests for the new defaults, including no-op messaging, dry-run behavior, and default apply of managed policy/gateway files.\n4. Run targeted upgrade test suites and validate the new UX does not regress safety invariants.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Run upgrade coverage: bunx vitest run packages/agentplane/src/commands/upgrade.agent-mode.test.ts packages/agentplane/src/commands/upgrade.merge.test.ts packages/agentplane/src/commands/upgrade.safety.test.ts packages/agentplane/src/commands/upgrade.spec-parse.test.ts --hookTimeout 60000 --testTimeout 60000\n2. Check CLI help/docs text for the new default apply semantics and explicit --dry-run preview path.\n3. Validate that managed policy files and AGENTS.md are applied by default, while denied paths remain protected.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T10:17:30.316Z — VERIFY — ok
@@ -101,3 +92,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T09:59:55.044Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

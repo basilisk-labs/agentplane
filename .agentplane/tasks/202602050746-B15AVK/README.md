@@ -28,7 +28,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run test:agentplane; bun run coverage; node packages/agentplane/bin/agentplane.js hooks run pre-commit"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T08:33:14.221Z"
 doc_updated_by: "CODER"
 description: "Increase test coverage for packages/agentplane (lines>=80, branches>=70), add tests for recent CLI modules, and fix warnings in run-cli tests."
@@ -42,9 +42,8 @@ Raised test coverage past the global branch threshold and silenced noisy test ou
 
 Added fs-utils and update-check tests, expanded silent CLI helpers in run-cli tests, and muted task-backend/recipes test output while keeping command behavior unchanged.
 
-## Risks
+## Plan
 
-Low risk. Test-only output capture could hide useful debug logs, so failures may show less context if the capture is too broad.
 
 ## Verify Steps
 
@@ -52,11 +51,18 @@ Low risk. Test-only output capture could hide useful debug logs, so failures may
 2. bun run coverage
 3. node packages/agentplane/bin/agentplane.js hooks run pre-commit
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit for this task or restore the prior versions of the modified test files and rerun the test suite.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk. Test-only output capture could hide useful debug logs, so failures may show less context if the capture is too broad.

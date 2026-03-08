@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: AGENTS now stays a compact gateway and routes startup reading to the canonical bootstrap doc instead of duplicating lower-level lifecycle prose."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T14:55:17.474Z"
 doc_updated_by: "DOCS"
 description: "Keep AGENTS.md as a compact gateway that points agents to the canonical bootstrap path without duplicate workflow prose."
@@ -69,10 +69,6 @@ Keep AGENTS compact, preserve routing and command contracts, and point all start
 
 1. Remove startup duplication from AGENTS where possible. 2. Preserve command contracts and routing. 3. Add a single reference to the canonical bootstrap doc.
 
-## Risks
-
-Gateway edits can break routing assumptions or line-budget constraints.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -86,10 +82,6 @@ Gateway edits can break routing assumptions or line-budget constraints.
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T14:55:05.672Z — VERIFY — ok
@@ -105,3 +97,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:54:58.600Z, excerpt_
 ## Rollback Plan
 
 Restore the previous gateway wording if the new structure weakens routing clarity or fails policy checks.
+
+## Findings
+
+
+## Risks
+
+Gateway edits can break routing assumptions or line-budget constraints.

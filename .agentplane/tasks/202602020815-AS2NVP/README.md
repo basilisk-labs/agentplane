@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: not run (metadata/docs changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:43.727Z"
 doc_updated_by: "agentplane"
 description: "Rename core package to @agentplaneorg/core, update agentplane dependency and release docs, then push."
@@ -41,19 +41,25 @@ Rename core package to @agentplaneorg/core, update agentplane dependency and rel
 
 Update packages/core/package.json, packages/agentplane/package.json, and release docs for @agentplaneorg scope.
 
-## Risks
+## Plan
 
-Scope change requires republishing core and agentplane; consumers must install from the new @agentplaneorg scope.
 
 ## Verify Steps
 
 Not run (metadata/docs changes only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit for 202602020815-AS2NVP.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Scope change requires republishing core and agentplane; consumers must install from the new @agentplaneorg scope.

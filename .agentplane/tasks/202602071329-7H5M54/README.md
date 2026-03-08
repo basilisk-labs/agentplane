@@ -33,7 +33,7 @@ comments:
     author: "CODER"
     body: "Verified: .agentplane/tasks.json is no longer tracked and is ignored; only cache/snapshot paths are excluded from commits."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T13:46:03.013Z"
 doc_updated_by: "CODER"
 description: "Ensure .agentplane commits include only the intended files (agents/tasks/backends/config), and .gitignore ignores only export snapshot tasks.json plus caches (.agentplane/cache, .agentplane/recipes-cache, etc.). Remove .agentplane/tasks.json from the git index if it is tracked."
@@ -51,14 +51,15 @@ id_source: "generated"
 2. If .agentplane/tasks.json is tracked, remove it from the index (keep the working file intact).
 3. Confirm that .agentplane/tasks, .agentplane/agents, .agentplane/backends, and .agentplane/config.json remain committed.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T13:45:55.109Z — VERIFY — ok
@@ -70,3 +71,9 @@ Note: Repository no longer tracks .agentplane/tasks.json; .gitignore ignores onl
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

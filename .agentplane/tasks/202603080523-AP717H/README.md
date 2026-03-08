@@ -60,7 +60,7 @@ events:
     from: "DONE"
     to: "DONE"
     note: "Verified: managed agent/policy mirror is synced and the local pre-push agent-template gate no longer fails on template drift."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T05:25:39.831Z"
 doc_updated_by: "DOCS"
 description: "Run managed agent/policy sync after recent policy edits so pre-push agent-template checks pass, then push main."
@@ -81,11 +81,6 @@ Run managed agent/policy sync after recent policy edits so pre-push agent-templa
 
 1. Run the managed agent/policy sync so canonical assets and .agentplane mirror match after recent policy edits. 2. Verify the sync with the agent-template check and confirm pre-push no longer fails on mirror drift. 3. Commit only the mirror-sync/task-traceability changes, then push main to origin.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -99,10 +94,6 @@ Run managed agent/policy sync after recent policy edits so pre-push agent-templa
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T05:24:25.303Z — VERIFY — ok
@@ -119,3 +110,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T05:24:13.245Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

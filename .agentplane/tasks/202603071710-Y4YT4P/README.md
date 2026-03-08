@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: quickstart is now shorter on the first screen and pushes deeper details into role, help, bootstrap, and reference surfaces."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T19:48:09.114Z"
 doc_updated_by: "DOCS"
 description: "Shorten first-screen quickstart/help output and move detailed or exceptional flows into on-demand role and reference surfaces."
@@ -71,11 +71,6 @@ Shorten first-screen quickstart/help output and move detailed or exceptional flo
 ## Plan
 
 1. Shorten renderQuickstart() so the first screen contains only the canonical bootstrap pointer, preflight, one minimal direct route, and explicit pointers to deeper role/help/reference surfaces instead of duplicating the full bootstrap doc. 2. Move any detailed or exceptional guidance that no longer belongs on the first screen into role-oriented or on-demand help references, keeping the quickstart narrative layered rather than flat. 3. Update targeted CLI help tests, run the command-guide and run-cli quickstart checks, rebuild agentplane, and verify that the shorter quickstart still points agents to the right deeper surfaces.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -97,10 +92,6 @@ Shorten first-screen quickstart/help output and move detailed or exceptional flo
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T19:47:38.919Z — VERIFY — ok
 
@@ -117,8 +108,13 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T19:45:10.627Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Keep the first quickstart screen intentionally short; do not re-expand it with fallback flags or commit-format detail.
 - Prefer pointers to role/help/reference surfaces over inline duplication.
 - Do not break quickstart JSON output or the canonical bootstrap link.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

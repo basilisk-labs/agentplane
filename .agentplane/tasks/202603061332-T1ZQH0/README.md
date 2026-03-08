@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: left-aligned homepage/blog copy, simplified navbar chrome and active state, blog index rebuilt into an editorial layout; website typecheck, production build, and design-language checks all passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T13:37:22.952Z"
 doc_updated_by: "CODER"
 description: "Left-align homepage/blog typography, remove navbar frame background, simplify the visual system further, fix active navbar state visibility, and turn /blog into a true blog index instead of a homepage-like hero."
@@ -70,11 +70,6 @@ Left-align homepage/blog typography, remove navbar frame background, simplify th
 ## Plan
 
 1) Left-align homepage and blog typography and section headings so the pages read as editorial/product surfaces rather than centered promo blocks. 2) Simplify the navbar by removing the extra framed brand/background treatment and fixing active-link contrast so the selected item remains visible. 3) Reduce visual noise across homepage and shared theme by trimming chrome, hover treatments, and redundant container styling. 4) Rework /blog into a true blog index with a list/journal structure instead of a homepage-like hero composition. 5) Run website typecheck, build, and design-language validation; then publish the updated site.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -100,10 +95,6 @@ Validate the left-aligned, more minimal homepage/blog refinements and the navbar
 - Website build and design-language checks pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T13:36:31.389Z — VERIFY — ok
@@ -139,6 +130,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T13:33:00.555Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Homepage typography and section headings were moved to a consistent left-aligned layout.\n- Navbar chrome was reduced to a simple underline navigation pattern and the active state now keeps readable foreground contrast.\n- The blog landing was rewritten as an editorial index with featured entry, recent entries, and reference links.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

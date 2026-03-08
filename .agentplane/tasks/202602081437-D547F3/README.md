@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: TS9W64 and XJXVKN are DONE; bun run test:full PASS on main (vitest, 704 tests). Epic closed without additional code changes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T14:57:40.064Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Decompose remaining large production modules (excluding tests) after the previous MONO wave, focusing on backends/task-backend/shared.ts and cli/run-cli/commands/init.ts."
@@ -48,15 +48,11 @@ Track the second MONO wave: decompose remaining large production modules (exclud
 
 Close out MONO2 decomposition wave by completing TS9W64 and XJXVKN and verifying the full suite.\n\nSteps:\n1) Ensure TS9W64 and XJXVKN are DONE.\n2) Verify: bun run test:full on main.
 
-## Risks
+## Verify Steps
 
-- Export surface regressions from shared.ts refactor.\n- Subtle init command output changes breaking tests.\n- Import cycles after extracting modules.
+1. Ensure dependent tasks TS9W64 and XJXVKN are DONE.\nPass: agentplane task show reports status DONE for both.\n2. Run bun run test:full on main.\nPass: exit code 0.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T14:57:32.729Z — VERIFY — ok
@@ -73,6 +69,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T14:57:25.879Z, excerpt_
 
 Rollback is per-task and per-commit.\n1. Revert the failing task's implementation commit.\n2. Re-run bun run test:full.\n3. If needed, revert the close metadata commit.
 
-## Verify Steps
+## Findings
 
-1. Ensure dependent tasks TS9W64 and XJXVKN are DONE.\nPass: agentplane task show reports status DONE for both.\n2. Run bun run test:full on main.\nPass: exit code 0.
+
+## Risks
+
+- Export surface regressions from shared.ts refactor.\n- Subtle init command output changes breaking tests.\n- Import cycles after extracting modules.

@@ -29,7 +29,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: bun run coverage (branch 76.68% >= 75%). Coverage threshold confirmed for this cycle."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T10:53:03.134Z"
 doc_updated_by: "TESTER"
 description: "Run coverage, confirm threshold, and close task 202602050837-5HTSEG."
@@ -43,19 +43,25 @@ Ran coverage and confirmed global branch coverage 76.68% (>=75%).
 
 Coverage check only.
 
-## Risks
+## Plan
 
-None; verification only.
 
 ## Verify Steps
 
 bun run coverage
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 No code changes; nothing to rollback.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+None; verification only.

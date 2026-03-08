@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: execution profile and init UX overhaul completed across all dependent tasks"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:26:03.049Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Top-level tracking task for execution profile config, human-friendly init UI, policy/docs alignment, runtime hookup, and verification."
@@ -71,9 +71,10 @@ In scope: orchestration and closure of tasks GJ3Z4Z, E2QZPQ, YFC1QB, JXA2R9, J6T
 
 1) Завершить implementation/docs/verification задачи цепочки. 2) Подтвердить полную матрицу проверок. 3) Закрыть top-level tracking task.
 
-## Risks
+## Verify Steps
 
-Остаточный риск: commit metadata в J6TQ04 зафиксирован старым hash из неудавшегося finish --commit-from-comment. Функциональные изменения и тесты валидированы.
+- Проверить DONE-статусы всех зависимых задач
+- Проверить успешный прогон build/lint/test:fast/test:critical из 3G35DW
 
 ## Verification
 
@@ -98,7 +99,9 @@ All dependent tasks are DONE and validation matrix passed in 202602111000-3G35DW
 
 При регрессиях откатывать соответствующие task-коммиты по одному (git revert), начиная с последних verification/docs коммитов.
 
-## Verify Steps
+## Findings
 
-- Проверить DONE-статусы всех зависимых задач
-- Проверить успешный прогон build/lint/test:fast/test:critical из 3G35DW
+
+## Risks
+
+Остаточный риск: commit metadata в J6TQ04 зафиксирован старым hash из неудавшегося finish --commit-from-comment. Функциональные изменения и тесты валидированы.

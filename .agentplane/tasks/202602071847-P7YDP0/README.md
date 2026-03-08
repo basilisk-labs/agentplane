@@ -30,7 +30,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: Restored explicit reasoning bullets in AGENTS.md and packages/agentplane/assets/AGENTS.md while keeping OUTPUT CONTRACTS; bun run test:fast and bun run lint passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T18:49:18.732Z"
 doc_updated_by: "DOCS"
 description: "Bring AGENTS.md and packages/agentplane/assets/AGENTS.md back to the expanded reasoning guidance while preserving the explicit reasoning bullets section."
@@ -46,9 +46,6 @@ Restore the explicit reasoning bullets section in AGENTS policy docs while keepi
 
 1) Ensure AGENTS.md and packages/agentplane/assets/AGENTS.md include the explicit reasoning bullets (Plan/Assumptions/Decisions/Trade-offs/Verification criteria/Inference trace).\n2) Keep OUTPUT CONTRACTS section intact.\n3) Run bun run test:fast and bun run lint.
 
-## Risks
-
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -62,10 +59,6 @@ Restore the explicit reasoning bullets section in AGENTS policy docs while keepi
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T18:49:13.872Z — VERIFY — ok
@@ -83,3 +76,9 @@ bun run test:fast (pass); bun run lint (pass)
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

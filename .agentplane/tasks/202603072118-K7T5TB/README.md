@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: incidents.md now captures six promoted, session-confirmed incident classes with concrete evidence, routing passed, and doctor returned OK with only historical archive warnings."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T21:26:01.192Z"
 doc_updated_by: "DOCS"
 description: "Analyze this session for confirmed incident classes and append stabilized or open entries to .agentplane/policy/incidents.md with evidence and enforcement."
@@ -68,10 +68,6 @@ Only .agentplane/policy/incidents.md and this task README. No canonical policy r
 
 1. Audit incidents.md contract and filter this session down to confirmed incident classes with concrete evidence. 2. Append only those incident entries that have a resolved failure mode, a testable MUST/MUST NOT rule, and named enforcement. 3. Verify routing, doctor, and task traceability; then record verification and finish the task.
 
-## Risks
-
-Main risk: encoding preferences or hypotheses as hard incident rules. Mitigation: include only failures with concrete task IDs, commits, and enforcement added during this session.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -85,10 +81,6 @@ Main risk: encoding preferences or hypotheses as hard incident rules. Mitigation
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T21:23:13.339Z — VERIFY — ok
@@ -105,6 +97,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T21:23:07.662Z, excerpt_
 
 Revert the incidents.md append if entries are found to overstate evidence or encode policy that belongs in canonical modules instead.
 
-## Notes
+## Findings
 
 Included only confirmed session incidents with successful resolution and enforcement: repo-local handoff, stale-dist snapshot freshness, direct finish auto-close, hybrid legacy upgrade recovery, burned npm version preflight, and release-generated docs sync.
+
+## Risks
+
+Main risk: encoding preferences or hypotheses as hard incident rules. Mitigation: include only failures with concrete task IDs, commits, and enforcement added during this session.

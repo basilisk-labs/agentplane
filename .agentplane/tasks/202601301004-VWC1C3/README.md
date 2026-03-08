@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: bun run test | details: packages/agentplane/src/run-cli.test.ts"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:26.449Z"
 doc_updated_by: "agentplane"
 description: "Bring start/block/finish in Node CLI to agentctl parity (commit-from-comment options, allow/auto-allow, require-clean, quiet/force, multi-task finish, status-commit behavior, skip-verify)."
@@ -45,19 +45,25 @@ Extend start/block/finish parity, add readiness checks, and align integrate->fin
 
 Update run-cli start/block/finish flag parsing and behaviors, allow multi-task finish, enforce dependency readiness, update integrate finish call, refresh help text, and add/adjust run-cli tests.
 
-## Risks
+## Plan
 
-Potential behavior change if DONE tasks are re-finished without --force or if status commit policy is misapplied; finish now exports/lints tasks.json on every call.
 
 ## Verify Steps
 
 bun run test -- packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 git revert <commit>
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Potential behavior change if DONE tasks are re-finished without --force or if status commit policy is misapplied; finish now exports/lints tasks.json on every call.

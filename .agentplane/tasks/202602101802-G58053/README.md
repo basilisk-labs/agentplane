@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated commands guide and regenerated the generated CLI reference to match the current registry/spec."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:29:10.082Z"
 doc_updated_by: "DOCS"
 description: "Align commands guide with current CLI and regenerate docs/user/cli-reference.generated.mdx via agentplane docs tooling."
@@ -53,6 +53,10 @@ id_source: "generated"
 ---
 ## Summary
 
+
+## Context
+
+The generated CLI reference is the authoritative, up-to-date command surface. The practical commands page should focus on common workflows and link to the generated reference.
 
 ## Scope
 
@@ -64,19 +68,12 @@ In-scope: docs/user/commands.mdx, docs/user/cli-reference.generated.mdx (regener
 2. Regenerate docs/user/cli-reference.generated.mdx via `agentplane docs cli --out docs/user/cli-reference.generated.mdx`.
 3. Sanity-check that the generated file includes new/updated commands and options.
 
-## Risks
-
-
 ## Verify Steps
 
 - Run `agentplane docs cli --out docs/user/cli-reference.generated.mdx` and ensure it updates the file.
 - Confirm docs/user/commands.mdx examples use existing commands (`agentplane backend sync`, `agentplane task export`).
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
@@ -85,6 +82,7 @@ In-scope: docs/user/commands.mdx, docs/user/cli-reference.generated.mdx (regener
 
 Revert the commits for this task and regenerate the CLI reference from the previous revision if needed.
 
-## Context
+## Findings
 
-The generated CLI reference is the authoritative, up-to-date command surface. The practical commands page should focus on common workflows and link to the generated reference.
+
+## Risks

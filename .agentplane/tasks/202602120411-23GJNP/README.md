@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: schemas:check, config tests, and init tests pass with new tasks.tags/verify fields and direct/branch_pr status defaults."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T04:14:45.505Z"
 doc_updated_by: "CODER"
 description: "Add config fields for primary tag allowlist/strict fallback and verify-by-primary; set init defaults: direct=warn, branch_pr=confirm with finish_auto_status_commit true."
@@ -61,15 +61,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) bun run schemas:check
@@ -78,3 +69,16 @@ Expected: schema sync check passes.
 Expected: config defaults/validation tests pass with new fields.
 3) bunx vitest run packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
 Expected: init tests pass with workflow-mode status defaults.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

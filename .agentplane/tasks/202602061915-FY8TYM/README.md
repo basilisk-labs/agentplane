@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: start/block/finish now reuse CommandContext (loadTaskBackend once per command) and load tasks via ctx; bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T19:29:06.811Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Перевести команды start/block/finish на CommandContext: один backend на команду; в finish не вызывать loadBackendTask в цикле."
@@ -45,14 +45,15 @@ id_source: "generated"
 
 1) Switch cmdStart/cmdBlock/cmdFinish to call loadCommandContext once per invocation.\n2) Load tasks via loadTaskFromContext instead of loadBackendTask (no repeated loadTaskBackend).\n3) In finish: remove per-task loadBackendTask call inside loop; reuse ctx.backend.\n4) Run bun run test:agentplane.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T19:26:48.681Z — VERIFY — ok
@@ -64,3 +65,9 @@ Note: bun run test:agentplane passed.
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: UPGRADER is now a semantic merge agent post-upgrade; protocol documented in AGENTS.md; lint and tests passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T13:10:42.255Z"
 doc_updated_by: "CODER"
 description: "Rewrite UPGRADER profile to focus on semantic merge after upgrade; update AGENTS.md protocol for when to create UPGRADER tasks."
@@ -64,6 +64,10 @@ id_source: "generated"
 
 Redefine UPGRADER as the semantic merge agent invoked after agentplane upgrade when mechanical merges leave meaning-level conflicts.
 
+## Context
+
+agentplane upgrade already handles mechanical merges and metadata updates. The remaining risk is semantic drift between local prompt/policy edits and upstream framework changes; UPGRADER should focus exclusively on resolving those conflicts against AGENTS.md canonical policy.
+
 ## Scope
 
 In scope: packages/agentplane/assets/agents/UPGRADER.json; .agentplane/agents/UPGRADER.json; packages/agentplane/assets/AGENTS.md (add a framework upgrade/prompt merge protocol section). Out of scope: changing upgrade implementation (handled in T4).
@@ -72,19 +76,11 @@ In scope: packages/agentplane/assets/agents/UPGRADER.json; .agentplane/agents/UP
 
 1. Rewrite UPGRADER agent profile (assets + installed) to remove stale-date and last_update mechanics; define inputs/outputs for semantic merge after upgrade, anchored on AGENTS.md. 2. Add AGENTS.md section describing when to create an UPGRADER task, who creates it, and done criteria. 3. Run agents-template tests and lint.
 
-## Risks
-
-Risk: unclear separation between upgrade mechanics and semantic review could cause duplicate work. Mitigation: make UPGRADER explicitly post-upgrade and report-driven; treat upgrade artifacts as inputs.
-
 ## Verify Steps
 
 Commands:\n- bun run test:agentplane -- agents template tests must pass\n- bun run lint\nPass criteria:\n- UPGRADER profile no longer mentions stale timers or manual last_update updates.\n- AGENTS.md documents an explicit post-upgrade semantic merge protocol.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T13:09:32.294Z — VERIFY — ok
@@ -101,6 +97,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T13:07:28.092Z, excerpt_
 
 Revert UPGRADER.json and AGENTS.md edits and re-run the same tests.
 
-## Context
+## Findings
 
-agentplane upgrade already handles mechanical merges and metadata updates. The remaining risk is semantic drift between local prompt/policy edits and upstream framework changes; UPGRADER should focus exclusively on resolving those conflicts against AGENTS.md canonical policy.
+
+## Risks
+
+Risk: unclear separation between upgrade mechanics and semantic review could cause duplicate work. Mitigation: make UPGRADER explicitly post-upgrade and report-driven; treat upgrade artifacts as inputs.

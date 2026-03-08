@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release prepublish passed; tag v0.2.18 pushed; npm packages @agentplaneorg/core@0.2.18 and agentplane@0.2.18 published successfully."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T18:21:55.500Z"
 doc_updated_by: "INTEGRATOR"
 description: "Generate release plan, prepare release notes, run release prepublish checks, apply release, publish npm packages, and push tag."
@@ -57,6 +57,10 @@ id_source: "generated"
 
 Publish the next patch release with full release pipeline gates.
 
+## Context
+
+User requested immediate publish of next patch release.
+
 ## Scope
 
 In scope: release plan/apply, release notes for next version, prepublish checks, npm publish, git push tag/commit.
@@ -65,26 +69,25 @@ In scope: release plan/apply, release notes for next version, prepublish checks,
 
 1) Run release plan (patch). 2) Create docs/releases/vX.Y.Z.md from generated plan. 3) Run release:prepublish. 4) Run release apply --push --yes. 5) Publish @agentplaneorg/core and agentplane. 6) Verify npm versions and close task.
 
-## Risks
+## Verify Steps
 
-Publish is network/auth dependent; failures can leave local tag/commit state that must be reconciled.
+bun run release:prepublish\nagentplane release plan --bump patch\nagentplane release apply --push --yes\ncd packages/core && npm publish --provenance --access public --tag latest\ncd packages/agentplane && npm publish --provenance --access public --tag latest
 
 ## Verification
 
 Pending.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 If publish fails after tag/commit, fix issue and republish same tagged commit if version not consumed; otherwise plan next patch.
 
-## Context
-
-User requested immediate publish of next patch release.
-
-## Verify Steps
-
-bun run release:prepublish\nagentplane release plan --bump patch\nagentplane release apply --push --yes\ncd packages/core && npm publish --provenance --access public --tag latest\ncd packages/agentplane && npm publish --provenance --access public --tag latest
-
-## Notes
+## Findings
 
 ### Implementation Notes\n- Pending.
+
+## Risks
+
+Publish is network/auth dependent; failures can leave local tag/commit state that must be reconciled.

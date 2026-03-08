@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: init is now cli2-routed with spec-derived parsing/help/usage; errors include compact help hint; tests updated and passing (typecheck/lint/format/test:cli:core)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T20:08:49.680Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Register `init` in cli2; make parsing/help/usage spec-derived; preserve behavior."
@@ -60,11 +60,6 @@ Out of scope:
 - spec-derived help includes all options
 - parse errors produce E_USAGE with compact usage
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -85,10 +80,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T20:08:16.884Z — VERIFY — ok
 
@@ -105,3 +96,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-07T20:04:30.933Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

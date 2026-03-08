@@ -35,7 +35,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci passed | details: lefthook + GitHub Actions CI enforce quality gates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:05.824Z"
 doc_updated_by: "agentplane"
 description: "Add local git hooks (pre-commit/pre-push) and a GitHub Actions workflow to enforce bun-based quality gates (format/lint/typecheck/tests/coverage) for all changes."
@@ -50,10 +50,8 @@ Enforce bun-based quality gates by adding local git hooks (lefthook) and CI (Git
 - Add GitHub Actions workflow that runs `bun run ci` on PRs and pushes to `main`
 - Document how to install/restore hooks and how enforcement works
 
-## Risks
+## Plan
 
-- Local hooks can be bypassed with `--no-verify`; CI still enforces for PRs, but branch protection must be enabled in GitHub settings to block direct pushes.
-- Running `bun run ci` on every commit may be slow for large changes; adjust hook scope only if it becomes a productivity issue.
 
 ## Verify Steps
 
@@ -62,13 +60,21 @@ Enforce bun-based quality gates by adding local git hooks (lefthook) and CI (Git
 - GitHub Actions workflow passes for a PR / push
 - `bun run ci` passes locally
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Remove `lefthook.yml` and the `lefthook` dependency
 - Remove `postinstall` / `hooks:install` scripts from `package.json`
 - Remove `.github/workflows/ci.yml`
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Local hooks can be bypassed with `--no-verify`; CI still enforces for PRs, but branch protection must be enabled in GitHub settings to block direct pushes.
+- Running `bun run ci` on every commit may be slow for large changes; adjust hook scope only if it becomes a productivity issue.

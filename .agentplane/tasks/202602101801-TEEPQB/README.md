@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: documentation IA refresh, section rewrites, and post-doc workflow fixes were completed in dependent tasks including doctor alignment and upgrade artifact cleanup."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T04:49:15.771Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Update Mintlify docs to match current agentplane code and policies; produce a coherent TOC, update user/developer/help docs, regenerate generated references, and run full verification."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -77,11 +74,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

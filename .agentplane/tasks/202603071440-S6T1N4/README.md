@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: made managed ownership explicit across setup, recovery, troubleshooting, and agent guidance."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T16:35:05.866Z"
 doc_updated_by: "DOCS"
 description: "Make the contract explicit that AGENTS.md and .agentplane/policy/** are framework-managed while incidents.md remains the sanctioned local override area."
@@ -72,11 +72,6 @@ Make the contract explicit that AGENTS.md and .agentplane/policy/** are framewor
 
 1. Make ownership of AGENTS.md and .agentplane/policy/** explicit in setup and recovery docs. 2. Mirror the same ownership contract in upgrade guidance and doctor-facing docs. 3. Regenerate site docs if needed and verify routing/docs checks.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -90,10 +85,6 @@ Make the contract explicit that AGENTS.md and .agentplane/policy/** are framewor
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T16:35:05.640Z — VERIFY — ok
@@ -110,3 +101,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:26:27.780Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

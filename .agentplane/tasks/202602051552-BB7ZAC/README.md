@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: format:check, lint, test:fast passed; env vars normalized to AGENTPLANE_* across code, tests, docs, and .env.example."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T16:49:39.811Z"
 doc_updated_by: "CODER"
 description: "Normalize env names with compatibility window and update docs/tests."
@@ -46,10 +46,8 @@ Normalize environment variable names to the AGENTPLANE_ prefix (no legacy aliase
 - Update tests and docs to match.
 - Update .env.example.
 
-## Risks
+## Plan
 
-- Breaking change for users relying on legacy env names.
-- Docs/tests may drift if any references are missed.
 
 ## Verify Steps
 
@@ -62,8 +60,17 @@ Normalize environment variable names to the AGENTPLANE_ prefix (no legacy aliase
 
 - ✅ bun run format:check.\n- ✅ bun run lint.\n- ✅ bun run test:fast.\n- ✅ Docs/.env.example updated to AGENTPLANE_* env names.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert to previous env names and restore docs/tests if needed.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Breaking change for users relying on legacy env names.
+- Docs/tests may drift if any references are missed.

@@ -39,7 +39,7 @@ comments:
     author: "ORCHESTRATOR"
     body: "Verified: all dependent decomposition tasks are DONE; bun run test:full PASS on main (vitest, 704 tests). Epic closed without additional code changes."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T14:35:00.378Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Second wave of monolith decomposition after CLI2 migration: split remaining large production files into smaller modules with stable boundaries and tests."
@@ -68,12 +68,6 @@ Out of scope:
 4. Further decompose integrate core (task 202602081344-7KD2TP).
 5. Run bun run test:full on main after each task and at the end.
 
-## Risks
-
-1. Accidental behavior changes due to moving logic across modules.
-2. Type-level circular dependencies or import cycles after splitting.
-3. Test brittleness (string snapshots) when touching help/output code.
-
 ## Verify Steps
 
 1. Ensure all dependent decomposition tasks are DONE and pushed.
@@ -82,10 +76,6 @@ Pass: agentplane task list shows no DOING/TODO for the listed tasks.
 Pass: exit code 0.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T14:34:53.505Z — VERIFY — ok
@@ -104,3 +94,12 @@ Rollback is per-task and per-commit.
 1. Revert the implementation commit(s) for the failing task id.
 2. Re-run bun run test:full.
 3. If needed, revert the corresponding close metadata commit.
+
+## Findings
+
+
+## Risks
+
+1. Accidental behavior changes due to moving logic across modules.
+2. Type-level circular dependencies or import cycles after splitting.
+3. Test brittleness (string snapshots) when touching help/output code.

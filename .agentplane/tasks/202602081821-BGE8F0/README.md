@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added --json prescan so JSON error formatting applies even when global argv parsing fails; covered by run-cli.core test and typecheck."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T18:27:15.229Z"
 doc_updated_by: "CODER"
 description: "Fix runCli so --json is honored even when parseGlobalArgs throws; add regression test for agentplane --json --root (missing value)."
@@ -70,9 +70,9 @@ Fix CLI so --json (JSON errors mode) is honored even when parseGlobalArgs throws
 
 1) Implement argv prescan for --json in global zone before parseGlobalArgs.\n2) Ensure the prescan does not interpret command-level --json (after first non-global token).\n3) Add regression test: agentplane --json --root (missing value) returns JSON error payload.\n4) Run bun run test:cli:core and bun run typecheck.
 
-## Risks
+## Verify Steps
 
-- Risk: prescan may mis-detect --json when used as command option (e.g. help --json). Mitigation: prescan only before first command token (same scoping rule as today).\n- Risk: test becomes brittle vs JSON schema changes. Mitigation: assert key fields (code/exitCode) rather than full string.
+- bun run test:cli:core\n- bun run typecheck\nPass criteria: tests pass; new test fails on main before fix and passes after fix.
 
 ## Verification
 
@@ -93,10 +93,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T18:24:15.080Z, excerpt_
 
 Revert the commit for this task; re-run bun run test:cli:core to confirm baseline behavior restored.
 
-## Verify Steps
-
-- bun run test:cli:core\n- bun run typecheck\nPass criteria: tests pass; new test fails on main before fix and passes after fix.
-
-## Notes
+## Findings
 
 ### Approvals / Overrides\n- 2026-02-08: no overrides.\n\n### Implementation Notes\n- Use a lightweight argv prescan to set jsonErrors before parseGlobalArgs.\n- Add regression test for missing --root value with --json.
+
+## Risks
+
+- Risk: prescan may mis-detect --json when used as command option (e.g. help --json). Mitigation: prescan only before first command token (same scoping rule as today).\n- Risk: test becomes brittle vs JSON schema changes. Mitigation: assert key fields (code/exitCode) rather than full string.

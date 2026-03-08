@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: upgrade docs now explain when legacy workspaces must run task migrate-doc --all after framework upgrade and doctor drift warnings."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T11:34:04.219Z"
 doc_updated_by: "DOCS"
 description: "Teach upgrade and user-facing recovery docs how to move old projects from task README v2 to v3 without hidden mixed states."
@@ -72,11 +72,6 @@ Teach upgrade and user-facing recovery docs how to move old projects from task R
 
 1. Inspect setup, workflow-migration, and legacy upgrade recovery docs to locate the current upgrade path and the right place to introduce README v3 migration guidance. 2. Update user-facing upgrade/recovery guidance so old projects learn when to run task migrate-doc --all, what mixed v2/v3 state means, and how doctor/upgrade interact after README v3 rollout. 3. Run targeted docs checks plus doctor and finish with a docs-only commit pushed to main.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -90,10 +85,6 @@ Teach upgrade and user-facing recovery docs how to move old projects from task R
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T11:33:16.792Z — VERIFY — ok
@@ -110,3 +101,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T11:32:00.579Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

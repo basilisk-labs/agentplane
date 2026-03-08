@@ -40,7 +40,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: strict mypy typing for redmine backend/agentctl, cleanup scripts keep viewer; ruff and mypy pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:41.247Z"
 doc_updated_by: "agentplane"
 description: "Refactor agentctl and backend modules to pass strict mypy without exclusions while preserving behavior."
@@ -56,10 +56,8 @@ Refactor agentctl/backends to satisfy strict mypy without exclusions while prese
 - Narrow dynamic imports and casts so mypy can validate module loading.
 - Remove mypy excludes for agentctl/backends in pyproject.toml.
 
-## Risks
+## Plan
 
-- Type refactors may change CLI edge cases or backend error handling.
-- Large surface area could require incremental migration to avoid regressions.
 
 ## Verify Steps
 
@@ -67,15 +65,20 @@ Refactor agentctl/backends to satisfy strict mypy without exclusions while prese
 - .venv/bin/ruff check .
 - .venv/bin/mypy
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert refactor commits and restore previous mypy excludes; rerun ruff/mypy to confirm prior behavior.
 
-## Notes
+## Findings
 
 Aim for incremental, well-tested typing improvements rather than broad rewrites.
 
-## Plan
+## Risks
 
-
-## Verification
+- Type refactors may change CLI edge cases or backend error handling.
+- Large surface area could require incremental migration to avoid regressions.

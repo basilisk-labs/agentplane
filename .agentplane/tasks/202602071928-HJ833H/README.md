@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: task comment and task set-status migrated to cli2 spec-driven parsing/help; bun run typecheck; bun run test:cli:core; bun run test:fast; bun run lint."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T06:07:40.535Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task comment` and `task set-status`."
@@ -54,11 +54,6 @@ Out of scope:
 
 Plan:\n1. Add cli2 specs for task comment and task set-status (args/options, including commit flags and policy toggles).\n2. Refactor command implementations to accept structured inputs (no argv parsing).\n3. Wire specs into cli2 registry and remove legacy dispatcher branches.\n4. Update unit tests for both direct command functions and run-cli core suites (including error wording changes from cli2 parser).\n5. Run bun run typecheck and bun run test:cli:core (plus bun run test:fast for hook parity).\n6. Record verification, commit implementation, finish task, and commit closure README.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -79,10 +74,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T06:05:26.389Z — VERIFY — ok
 
@@ -99,3 +90,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T06:01:08.967Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: plan approval now blocks verify-required tasks unless Verify Steps is filled (no placeholder); bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:19:49.310Z"
 doc_updated_by: "CODER"
 description: "Block task plan approve when Verify Steps is missing/empty/placeholder for verify-required tasks."
@@ -50,14 +50,15 @@ description: "Block task plan approve when Verify Steps is missing/empty/placeho
 3) Add/update tests later in the dedicated test tasks.
 4) Run bun run test:agentplane.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T17:18:53.234Z — VERIFY — ok
@@ -69,3 +70,9 @@ Note: Plan approve now enforces filled Verify Steps for verify-required tags; bu
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

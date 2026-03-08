@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: doctor now detects legacy and mixed task README migration drift, emits exact task migrate-doc next actions, and distinguishes active drift from archive-only leftovers."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T11:27:53.947Z"
 doc_updated_by: "CODER"
 description: "Surface legacy v2 and mixed v2/v3 task README states in doctor with exact migration next actions."
@@ -72,20 +72,11 @@ Surface legacy v2 and mixed v2/v3 task README states in doctor with exact migrat
 
 1. Extend doctor to detect legacy README v2 tasks and mixed v2/v3 task-doc states after the README v3 rollout, with exact next actions instead of silent drift. 2. Add focused doctor coverage for legacy-only, mixed, and already-migrated workspaces so the signal stays actionable and non-noisy. 3. Run targeted doctor tests plus build and doctor, then verify, finish, and push main.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Run doctor on a workspace with only legacy doc_version=2 task READMEs. Expected: doctor reports a precise README migration next action instead of a generic or silent state. 2. Run doctor on a mixed v2/v3 workspace. Expected: doctor distinguishes mixed-state migration drift from a fully migrated repository. 3. Run targeted doctor tests, builds, and doctor. Expected: README migration diagnostics pass without adding noisy findings to already-normalized workspaces.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T11:27:34.854Z — VERIFY — ok
@@ -102,3 +93,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T11:24:05.140Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

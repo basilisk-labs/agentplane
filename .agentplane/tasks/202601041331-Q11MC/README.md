@@ -23,7 +23,7 @@ commit:
   hash: "a13b7c8bf9ce6143bad33fb58ac0fed49089c83c"
   message: "✅ P7AMW3 close task"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Remove legacy workspace/PR fallback paths (keep legacy ID reid), add task normalize, use backend export fast path, reduce redundant backend writes, add per-run task cache, and unify repeated error messaging in agentctl."
@@ -39,32 +39,38 @@ dirty: false
 - Add per-run task cache for repeated reads.
 - Unify repeated error messaging helpers.
 
-## Goal
-
-- Simplify agentctl by removing old path support and make core operations faster and less noisy.
-
 ## Scope
 
 - `.agent-plane/agentctl.py`: remove legacy path helpers, add normalize, cache, fast export, helper errors.
 - `.agent-plane/backends/local/backend.py`: helpers for normalization or hash comparison.
 
-## Risks
+## Plan
 
-- Removing legacy paths may break old repos without migration.
 
 ## Verify Steps
 
 - `python3 .agent-plane/agentctl.py task normalize`
 - `python3 .agent-plane/agentctl.py task export --out .agent-plane/tasks.json`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Restore `.agent-plane/agentctl.py` and backend files from git history.
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Simplify agentctl by removing old path support and make core operations faster and less noisy.
+
+## Risks
+
+- Removing legacy paths may break old repos without migration.
 
 ## Changes Summary (auto)
 

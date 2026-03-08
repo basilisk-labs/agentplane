@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci (format:check, typecheck, lint, vitest coverage)"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:12.288Z"
 doc_updated_by: "agentplane"
 description: "Implement verify command with skip-if-unchanged and PR verify logs/meta updates."
@@ -47,19 +47,25 @@ Implemented agentplane verify command with skip-if-unchanged, log handling, and 
 
 Added verify execution logic in run-cli, extended CLI help, and added extensive run-cli tests for verify/pr/hook edge cases.
 
-## Risks
+## Plan
 
-Verify executes shell commands; misconfigured commands may fail. Skip-if-unchanged relies on git status and ignores files per gitignore.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the AP-022 commit; no data migrations.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Verify executes shell commands; misconfigured commands may fail. Skip-if-unchanged relies on git status and ignores files per gitignore.

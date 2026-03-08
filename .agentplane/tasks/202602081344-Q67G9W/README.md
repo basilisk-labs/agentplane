@@ -33,7 +33,7 @@ comments:
     author: "ORCHESTRATOR"
     body: "Verified: cli/run-cli.ts now delegates registry construction to cli/run-cli/registry.ts; bun run typecheck, bun run lint, and bun run test:full all pass."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T14:11:09.554Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split cli/run-cli.ts into smaller modules (globals parsing, command routing, error/help plumbing) while preserving behavior and keeping full test suite green."
@@ -52,9 +52,6 @@ Decompose the CLI entrypoint (cli/run-cli.ts) into smaller modules with clear re
 3. Keep existing tests stable; update imports only where needed.
 4. Run bun run typecheck, bun run lint, bun run test:full.
 
-## Risks
-
-
 ## Verify Steps
 
 Commands:
@@ -67,10 +64,6 @@ Pass criteria:
 - Full suite passes.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T14:10:15.355Z — VERIFY — ok
@@ -88,3 +81,8 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T14:03:10.235Z, excerpt_
 1. Revert the implementation commit for 202602081344-Q67G9W.
 2. Re-run bun run test:full.
 3. Revert the close metadata commit if needed.
+
+## Findings
+
+
+## Risks

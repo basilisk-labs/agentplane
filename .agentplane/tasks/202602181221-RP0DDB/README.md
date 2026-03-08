@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: required check matrix, Pages workflow config, and docs-site build/check pipeline are all valid after CI contour split."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:08:14.565Z"
 doc_updated_by: "TESTER"
 description: "Verify docs-only, core-only, mixed, and main deploy scenarios to ensure contour isolation and reliability."
@@ -59,9 +59,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -80,11 +77,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

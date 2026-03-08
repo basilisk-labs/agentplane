@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: docs/user/cli-reference.generated.mdx now reflects the README v3 task creation summary, and the CLI reference freshness check passes again."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T10:53:42.485Z"
 doc_updated_by: "DOCS"
 description: "Regenerate and commit docs/user/cli-reference.generated.mdx so pre-push reflects the README v3 task creation/help text introduced by recent task template changes."
@@ -80,10 +80,6 @@ Regenerate and commit docs/user/cli-reference.generated.mdx so pre-push reflects
 3. Run `node scripts/check-cli-reference-fresh.mjs`. Expected: the CLI reference freshness check passes.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T10:52:59.126Z — VERIFY — ok

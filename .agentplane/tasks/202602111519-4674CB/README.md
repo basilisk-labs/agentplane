@@ -48,7 +48,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: init UI now calculates box width by visible characters (ANSI stripped), and added regression test confirms border alignment when colors are enabled."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:13:27.898Z"
 doc_updated_by: "CODER"
 description: "Fix ui.ts box width/padding for ANSI-colored lines via visible length helper and add tests."
@@ -58,6 +58,10 @@ id_source: "generated"
 
 Исправить расчёт ширины ASCII-рамки в init UI при ANSI-цветах.
 
+## Context
+
+Сейчас ширина считается по .length, поэтому при цветных escape-последовательностях рамки плывут.
+
 ## Scope
 
 In-scope: init/ui.ts + unit tests для visible length/padding. Out-of-scope: редизайн самого UI.
@@ -66,25 +70,23 @@ In-scope: init/ui.ts + unit tests для visible length/padding. Out-of-scope: �
 
 1) Добавить stripAnsi/visibleLen helper. 2) Пересчитать box width и padding по видимой длине. 3) Добавить тест на цветной контент.
 
-## Risks
+## Verify Steps
 
-Риск: регресс текстового вывода в non-TTY. Смягчение: тест с цветом и обычным режимом.
+1) bun run test:agentplane -- packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts\n2) bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Откатить коммит задачи и вернуть прежнюю реализацию box/padLine.
 
-## Context
-
-Сейчас ширина считается по .length, поэтому при цветных escape-последовательностях рамки плывут.
-
-## Verify Steps
-
-1) bun run test:agentplane -- packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts packages/agentplane/src/cli/run-cli.core.misc.test.ts\n2) bun run --filter=agentplane build
-
-## Notes
+## Findings
 
 ### Decisions\n- Видимая ширина должна игнорировать ANSI escape-коды.\n### Implementation Notes\n- Заполнить после реализации.
+
+## Risks
+
+Риск: регресс текстового вывода в non-TTY. Смягчение: тест с цветом и обычным режимом.

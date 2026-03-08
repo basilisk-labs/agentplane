@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: default doctor now uses a bounded recent archive scan while --archive-full preserves deep historical audit; doctor tests, lint, TypeScript, rebuild, and both command modes passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T07:04:07.169Z"
 doc_updated_by: "CODER"
 description: "Reduce doctor latency on large archives via clearer archive boundaries, optional deeper modes, and cheap-path shortcuts after module extraction."
@@ -73,11 +73,6 @@ Reduce doctor latency on large archives via clearer archive boundaries, optional
 2. Replace per-hash historical git lookups with batched subject resolution so archive checks do not spawn one git process per task.
 3. Verify doctor behavior with targeted tests, lint, and timing-sensitive local runs for default and deep modes.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -93,10 +88,6 @@ Reduce doctor latency on large archives via clearer archive boundaries, optional
 - Steps are reproducible and produce expected results.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T07:03:39.222Z — VERIFY — ok
@@ -132,7 +123,12 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T06:44:10.767Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Optimize default doctor for daily use; do not remove deep historical validation, only move it behind an explicit flag.
 - Preserve current runtime/workspace/workflow diagnostics and only narrow the archive-heavy default path.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

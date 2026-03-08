@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: doctor now validates normal installed workspaces by default and runs source-layer checks only with --dev. Added unit tests for default/dev behavior and updated CLI help snapshot."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T04:43:29.256Z"
 doc_updated_by: "CODER"
 description: "Audit agentplane doctor behavior to ensure it validates a normal user installation/workspace (AGENTS.md, .agentplane/, backends config, managed paths) and does not assume the agentplane monorepo source tree exists. Remove/replace checks that require packages/agentplane/src/{cli,usecases,ports} in non-dev contexts."
@@ -76,14 +76,6 @@ Out of scope:
 4. Add command tests for default mode and `--dev` mode.
 5. Run required builds + lint + targeted tests.
 
-## Risks
-
-- Risk: weakening doctor could hide regressions in repository architecture checks.
-Mitigation: keep existing layering checks under explicit `--dev` flag.
-
-- Risk: help snapshots can break from option changes.
-Mitigation: run related CLI tests and update snapshots only when expected.
-
 ## Verify Steps
 
 - `bun run --filter=@agentplaneorg/core build`
@@ -97,13 +89,20 @@ Pass criteria:
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert the task commit. This restores previous doctor behavior and removes the `--dev` mode split.
+
+## Findings
+
+
+## Risks
+
+- Risk: weakening doctor could hide regressions in repository architecture checks.
+Mitigation: keep existing layering checks under explicit `--dev` flag.
+
+- Risk: help snapshots can break from option changes.
+Mitigation: run related CLI tests and update snapshots only when expected.

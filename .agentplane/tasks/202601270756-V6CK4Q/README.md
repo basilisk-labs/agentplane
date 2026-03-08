@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: implemented .agentplane/config.json defaults+validation in @agentplane/core and wired agentplane config show | details: set (requires npm install+build to run)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:03.922Z"
 doc_updated_by: "agentplane"
 description: "Implement .agentplane/config.json read/write with defaults and schema validation, plus agentplane config show|set commands."
@@ -51,10 +51,8 @@ Implement `.agentplane/config.json` defaults + schema validation and expose `age
   - `agentplane config show` (prints JSON)
   - `agentplane config set <path> <value>` (writes config)
 
-## Risks
+## Plan
 
-- Schema/format mismatches can cascade into guardrails and workflow behavior.
-- `config set` must avoid clobbering unknown fields to keep forward-compat.
 
 ## Verify Steps
 
@@ -62,11 +60,19 @@ Implement `.agentplane/config.json` defaults + schema validation and expose `age
 - `agentplane config set workflow_mode direct` updates the file and still validates.
 - Unit tests cover invalid config rejection.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert config read/write changes and keep config hard-coded until schema stabilizes.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Schema/format mismatches can cascade into guardrails and workflow behavior.
+- `config set` must avoid clobbering unknown fields to keep forward-compat.

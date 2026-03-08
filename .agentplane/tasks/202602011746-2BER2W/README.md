@@ -25,7 +25,7 @@ comments:
   -
     author: "CODER"
     body: "Start: audit current test tooling, locate slow suites/timeouts, and propose fast vs full split; will avoid touching unrelated docs changes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:38.491Z"
 doc_updated_by: "agentplane"
 description: "Inspect current test tooling/config, measure or infer slow suites/timeouts, and propose fast vs full test split."
@@ -38,19 +38,25 @@ Identified slow CLI integration tests (cli-smoke/run-cli) and proposed a fast vs
 
 Scope limited to test tooling/scripts and workflow guidance; no production code changes.
 
-## Risks
+## Plan
 
-Fast suite skips CLI integration coverage; mitigate by requiring full suite before push/commit.
 
 ## Verify Steps
 
 bun run test:fast
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert test script and hook changes to restore the previous single-suite workflow.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Fast suite skips CLI integration coverage; mitigate by requiring full suite before push/commit.

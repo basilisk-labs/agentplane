@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: tasks and backend docs now describe actual storage and sync contracts with clear separation between quick usage and backend reference."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T07:50:46.776Z"
 doc_updated_by: "DOCS"
 description: "Refresh docs/user/tasks-and-backends.mdx, backends.mdx, backends/local.mdx, backends/redmine.mdx, redmine.mdx with current backend contracts, env-first rules, and sync semantics."
@@ -66,14 +66,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T07:50:46.620Z — VERIFY — ok
@@ -87,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T07:48:53.995Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

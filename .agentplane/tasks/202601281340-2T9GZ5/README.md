@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: manual review of ROADMAP.md and code/docs (2026-01-29) | details: no automated tests. Notes: summary delivered to user."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:13.911Z"
 doc_updated_by: "agentplane"
 description: "Review ROADMAP.md and current codebase to report completed items and remaining work."
@@ -40,19 +40,25 @@ Assessed ROADMAP.md against the current codebase and reported completed vs remai
 - Scan core code/docs/tests for implementation evidence
 - Summarize done vs remaining items
 
-## Risks
+## Plan
 
-Assessment can become stale if roadmap or code changes; re-check before major planning.
 
 ## Verify Steps
 
 Manual review of ROADMAP.md and key code/docs; no automated tests.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 No code changes; nothing to roll back.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Assessment can become stale if roadmap or code changes; re-check before major planning.

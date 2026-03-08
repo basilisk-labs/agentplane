@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the refactor roadmap is now represented as atomic repository tasks, and implementation has already started from the first bounded P0 item."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T05:46:58.511Z"
 doc_updated_by: "PLANNER"
 description: "Create an atomic task graph for targeted refactors of upgrade, release apply, doctor, run-cli, task shared utilities, and local quality gates; then start implementation from the highest-ROI low-risk item."
@@ -71,11 +71,6 @@ Create an atomic task graph for targeted refactors of upgrade, release apply, do
 
 1. Capture a linear refactor roadmap for the current high-ROI hotspots: upgrade, release apply, doctor, run-cli, task shared helpers, and pre-push/doctor performance. 2. Create one atomic repository task per hotspot with explicit scope boundaries so each unit can ship independently. 3. Start implementation with the smallest high-value refactor that reduces orchestration complexity without changing user-facing behavior: doctor module extraction and archive-check isolation.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -92,10 +87,6 @@ Create an atomic task graph for targeted refactors of upgrade, release apply, do
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T05:46:31.643Z — VERIFY — ok
 
@@ -111,3 +102,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T05:39:43.457Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run format:check, bun run lint, bun run test:agentplane."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T16:58:07.029Z"
 doc_updated_by: "CODER"
 description: "Ensure release apply regenerates and stages bun.lock when bumping package versions, so publish workflow bun install --frozen-lockfile succeeds."
@@ -63,16 +63,21 @@ id_source: "generated"
 
 1. Detect bun monorepo by presence of bun.lock at repo root.\n2. In release apply, after version bump (or when already at nextVersion), run bun install (non-frozen, ignore scripts) to update bun.lock.\n3. Stage bun.lock if it exists.\n4. Add/adjust unit tests for release apply behavior; keep tests hermetic.
 
-## Risks
+## Verify Steps
 
+- bun run format:check\n- bun run lint\n- bun run test:agentplane\n- (manual) run: node packages/agentplane/bin/agentplane.js release apply --plan <planDir> (dry run in a scratch repo) and ensure bun.lock is staged when present.
 
 ## Verification
 
 - bun run format:check: OK\n- bun run lint: OK\n- bun run test:agentplane: OK
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-- bun run format:check\n- bun run lint\n- bun run test:agentplane\n- (manual) run: node packages/agentplane/bin/agentplane.js release apply --plan <planDir> (dry run in a scratch repo) and ensure bun.lock is staged when present.
+
+## Risks

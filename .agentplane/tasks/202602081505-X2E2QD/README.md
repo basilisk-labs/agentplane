@@ -30,7 +30,7 @@ comments:
     author: "ORCHESTRATOR"
     body: "Verified: documented .js import specifiers for TS Node ESM builds; typecheck/lint pass; no runtime behavior changes."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T15:10:19.564Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Document why TS sources import with .js specifiers in NodeNext/ESM builds, and how editors should interpret it; reduce confusion from IDE warnings."
@@ -48,15 +48,11 @@ id_source: "generated"
 
 (See task README Plan section.)
 
-## Risks
+## Verify Steps
 
-- Regressions in CLI behavior or tests due to contract changes.
+### Scope\n- See task description.\n\n### Checks\n- bun run typecheck\n- bun run lint\n- bun run test:full\n\n### Pass criteria\n- All checks pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T15:09:40.690Z — VERIFY — ok
@@ -73,6 +69,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T15:08:34.390Z, excerpt_
 
 - Revert the implementation commit and re-run bun run test:full.
 
-## Verify Steps
+## Findings
 
-### Scope\n- See task description.\n\n### Checks\n- bun run typecheck\n- bun run lint\n- bun run test:full\n\n### Pass criteria\n- All checks pass.
+
+## Risks
+
+- Regressions in CLI behavior or tests due to contract changes.

@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify (Verification section updated)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T12:50:42.459Z"
 doc_updated_by: "CODER"
 description: "Add config flag to require verify confirmation, enable it during init, and add Verification to task README section schema/templates."
@@ -48,9 +48,8 @@ Add require_verify approval config and init flag; document new verification appr
 
 Update config schema/examples and core config types; add init flag + help/usage; update docs and init tests; include Verification section in defaults.
 
-## Risks
+## Plan
 
-Interactive verify approval may interrupt automation if enabled; docs/backends without task docs will now block verification.
 
 ## Verify Steps
 
@@ -58,12 +57,20 @@ cmd: bun run lint
 cmd: bun run test:fast
 cmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit
 
-## Rollback Plan
-
-Revert commits for config/init and docs changes; reset config schema/example to previous approvals and sections.
-
 ## Verification
 
 Pending: execute verify after implementation.
 
-## Plan
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+Revert commits for config/init and docs changes; reset config schema/example to previous approvals and sections.
+
+## Findings
+
+
+## Risks
+
+Interactive verify approval may interrupt automation if enabled; docs/backends without task docs will now block verification.

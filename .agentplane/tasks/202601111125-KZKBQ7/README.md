@@ -26,7 +26,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: owner mapping now uses configured agent (default REDMINE); updated six tasks to REDMINE owner; ran python -m py_compile .agent-plane/backends/redmine/backend.py."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:39.905Z"
 doc_updated_by: "agentplane"
 description: "Ensure Redmine-backed tasks use a configured agent owner (REDMINE) and retag existing tasks."
@@ -46,21 +46,27 @@ Ensure Redmine tasks map owner to configured agent (default REDMINE) and clean e
 - Map owner from Redmine issues to the configured agent when listing.
 - Update existing local task READMEs that used the assignee name to use REDMINE.
 
-## Risks
+## Plan
 
-- Changing owner mapping could surprise consumers expecting assignee names.
-- Legacy exports may still contain old owners until refreshed.
 
 ## Verify Steps
 
 - python -m py_compile .agent-plane/backends/redmine/backend.py
 - python .agent-plane/agentctl.py task list --owner REDMINE
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert .agent-plane/backends/redmine/backend.py and the adjusted task READMEs.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Changing owner mapping could surprise consumers expecting assignee names.
+- Legacy exports may still contain old owners until refreshed.

@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added clarifying notes for sync alias vs backend sync to reduce ambiguity across docs."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:39:08.410Z"
 doc_updated_by: "DOCS"
 description: "Final editorial pass: terminology consistency, cross-links, nav ordering, and remove stale statements."
@@ -65,10 +65,6 @@ In-scope: docs/user/tasks-and-backends.mdx, docs/user/backends.mdx (and any cros
 2. Add concise notes to reduce confusion (for example: sync alias vs backend sync).
 3. Run format check.
 
-## Risks
-
-Risk: small wording changes introduce new drift. Mitigation: keep edits scoped to ambiguity reduction and verify via `rg` searches.
-
 ## Verify Steps
 
 - Confirm the docs explicitly mention the `agentplane sync` alias and the preferred `agentplane backend sync` form.
@@ -76,13 +72,16 @@ Risk: small wording changes introduce new drift. Mitigation: keep edits scoped t
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert the commits for this task to restore prior wording.
+
+## Findings
+
+
+## Risks
+
+Risk: small wording changes introduce new drift. Mitigation: keep edits scoped to ambiguity reduction and verify via `rg` searches.

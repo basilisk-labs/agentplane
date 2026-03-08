@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: AGENTS.md and POLICY.md now explicitly require committing all tracked code changes (packages/**) as part of a task before finishing work."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:35:29.326Z"
 doc_updated_by: "DOCS"
 description: "Pin a canonical rule that any code changes (e.g. under packages/**) must be recorded in a git commit as part of a task; avoid leaving uncommitted tracked diffs after completing work."
@@ -68,14 +68,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+### Scope\n- Policy docs only (AGENTS.md and/or POLICY.md).\n\n### Checks\n- Ensure the rule is stated unambiguously and does not contradict existing commit/task rules.\n\n### Evidence / Commands\n- rg -n "commit" AGENTS.md POLICY.md\n\n### Pass criteria\n- Both documents contain a clear rule requiring a commit for any code changes.\n- Wording is English-only.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:34:30.172Z — VERIFY — ok
@@ -91,6 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:33:47.147Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-### Scope\n- Policy docs only (AGENTS.md and/or POLICY.md).\n\n### Checks\n- Ensure the rule is stated unambiguously and does not contradict existing commit/task rules.\n\n### Evidence / Commands\n- rg -n "commit" AGENTS.md POLICY.md\n\n### Pass criteria\n- Both documents contain a clear rule requiring a commit for any code changes.\n- Wording is English-only.
+
+## Risks

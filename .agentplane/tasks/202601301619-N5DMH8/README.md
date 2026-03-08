@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: README rewritten with badges and structured user guide sections."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:32.602Z"
 doc_updated_by: "agentplane"
 description: "Analyze repo and produce an English README with badges, clear sections, and user guidance."
@@ -42,19 +42,25 @@ description: "Analyze repo and produce an English README with badges, clear sect
 
 - Analyze repo features and workflow.\n- Update README.md with clear sections, badges, and quickstart.
 
-## Risks
+## Plan
 
-- Inaccurate claims if README diverges from actual CLI behavior.\n- Overly long README could reduce usability.
 
 ## Verify Steps
 
 - Read README.md to confirm sections and commands are accurate.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert README.md changes if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Inaccurate claims if README diverges from actual CLI behavior.\n- Overly long README could reduce usability.

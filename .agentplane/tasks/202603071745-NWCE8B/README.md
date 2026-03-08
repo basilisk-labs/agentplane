@@ -40,7 +40,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: release journal posts for 0.3.0, 0.3.1, and 0.3.2 are published on the blog, the in-post Kandinsky hero images are hidden, and the site deploy succeeded on the same commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T18:02:25.689Z"
 doc_updated_by: "DOCS"
 description: "Write human-readable blog posts for releases 0.3.0, 0.3.1, and 0.3.2 based on the release notes, hide the header illustrations inside the posts for now, publish the site, and verify the pages deploy."
@@ -61,11 +61,6 @@ Write human-readable blog posts for releases 0.3.0, 0.3.1, and 0.3.2 based on th
 
 1. Review existing release notes and blog conventions for 0.3.0, 0.3.1, and 0.3.2. 2. Write human-readable posts that explain the practical changes in plain language. 3. Keep the kandinsky header illustrations hidden inside the post pages for now, update the blog index as needed, publish the site, and verify the deployed pages.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -79,10 +74,6 @@ Write human-readable blog posts for releases 0.3.0, 0.3.1, and 0.3.2 based on th
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T18:02:14.302Z — VERIFY — ok
@@ -99,3 +90,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T17:46:07.599Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

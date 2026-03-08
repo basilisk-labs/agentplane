@@ -29,7 +29,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: ROADMAP.md formatted with Prettier and pre-commit format:check passes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T06:00:06.249Z"
 doc_updated_by: "DOCS"
 description: "Apply Prettier formatting to ROADMAP.md so pre-commit checks pass."
@@ -43,19 +43,25 @@ Format ROADMAP.md to satisfy Prettier checks.
 
 Apply Prettier formatting to ROADMAP.md only.
 
-## Risks
+## Plan
 
-Low risk; formatting-only change.
 
 ## Verify Steps
 
 Run Prettier check to ensure ROADMAP.md passes.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the formatting commit to restore prior ROADMAP.md formatting.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; formatting-only change.

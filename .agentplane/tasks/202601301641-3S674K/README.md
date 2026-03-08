@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: expanded core docs pages and added contributing/design/backends/recipes safety guides | details: navigation updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:33.306Z"
 doc_updated_by: "agentplane"
 description: "Deepen core docs pages, add contributing/design principles, and add backends + recipes safety guides."
@@ -42,19 +42,25 @@ description: "Deepen core docs pages, add contributing/design principles, and ad
 
 - Expand architecture/workflow/tasks-and-backends/commands pages.\n- Add contributing and design-principles pages.\n- Add backends and recipes-safety pages and wire into docs navigation.
 
-## Risks
+## Plan
 
-- Documentation may drift from implementation if not kept updated.\n- Large doc additions may overwhelm readers if not structured well.
 
 ## Verify Steps
 
 - Read updated docs pages to confirm clarity and consistency.\n- Check docs/docs.json includes new pages.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert doc changes and navigation updates.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Documentation may drift from implementation if not kept updated.\n- Large doc additions may overwhelm readers if not structured well.

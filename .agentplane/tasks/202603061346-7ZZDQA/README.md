@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: docs shell spacing and divider rhythm were refined, active navbar routing is explicit, homepage copy was rewritten against the CONTENT.md contract without runtime parsing, and the blog now uses clickable titles, hidden featured state, and abstract release artwork; website generation, typecheck, build, and design checks all passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T14:00:13.831Z"
 doc_updated_by: "CODER"
 description: "Adjust documentation spacing/dividers and nav affordances, rewrite homepage copy to match CONTENT.md, and improve blog index/post presentation including deferred featured post handling and generated art treatment."
@@ -72,11 +72,6 @@ Adjust documentation spacing/dividers and nav affordances, rewrite homepage copy
 1. Implement the change for "Refine docs spacing and blog presentation".
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -109,10 +104,6 @@ Validate docs shell spacing and divider rhythm, navbar active states, homepage c
 - Website generation, build, and design checks pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T13:58:23.088Z — VERIFY — ok
@@ -153,8 +144,13 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T13:57:02.230Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Homepage copy was rewritten manually from the CONTENT.md content contract; the page does not parse CONTENT.md at runtime.
 - Docs-shell spacing and divider fixes were made in global website CSS because Docusaurus shell behavior is theme-level, not page-local.
 - Blog index now hides the featured block, uses clickable post titles, and includes Kandinsky-like abstract SVG covers for release posts.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run test:fast; bun run lint; bun run test:fast (post-lint)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T12:09:10.752Z"
 doc_updated_by: "CODER"
 description: "Replace/extend zip validation to use yauzl for safe entry inspection (zip-slip prevention) across updates/recipes."
@@ -47,19 +47,25 @@ Switched zip entry validation to yauzl (zip-slip/symlink detection) and added ya
 
 Updated archive validation to use yauzl for zip entry inspection; kept tar handling via tar/unzip; added @types/yauzl; retained existing extract flow.
 
-## Risks
+## Plan
 
-Zip symlink detection relies on externalFileAttributes; archives without proper attributes may bypass symlink detection.
 
 ## Verify Steps
 
 bun run test:fast -- --run packages/agentplane/src/cli/archive.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert this task commit to restore unzip-based zip validation.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Zip symlink detection relies on externalFileAttributes; archives without proper attributes may bypass symlink detection.

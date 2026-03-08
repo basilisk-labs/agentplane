@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T17:23:06.412Z"
 doc_updated_by: "TESTER"
 description: "Make createUnsafeRecipeArchive (tar) generate a deterministic tar.gz with a path-traversal member name in JS, avoiding GNU tar sanitization/exit-code variance that causes CI-only failures."
@@ -63,14 +63,28 @@ id_source: "generated"
 
 1. Add a minimal tar writer (header + payload + padding + end blocks) and gzip it.\n2. For createUnsafeRecipeArchive(format=tar), write the tar.gz directly with a traversal entry name (default ../evil.txt).\n3. Keep zip path as-is.\n4. Run run-cli.recipes.test.ts and full test suite sanity.
 
-## Risks
+## Verify Steps
 
-- Risk: invalid tar format breaks tests. Mitigation: implement ustar header + checksum correctly; keep fixture minimal.\n- Risk: lint/format noise. Mitigation: localized helpers within test-helpers.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
 - bun run format:check: OK\n- bun run lint: OK\n- bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts: OK
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the change commit; tests will again rely on system tar and may fail in Linux CI.
+
+## Findings
+
+
+## Risks
+
+- Risk: invalid tar format breaks tests. Mitigation: implement ustar header + checksum correctly; keep fixture minimal.\n- Risk: lint/format noise. Mitigation: localized helpers within test-helpers.

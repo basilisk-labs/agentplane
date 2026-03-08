@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: close: redmine migration steps and dependencies recorded."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:00.897Z"
 doc_updated_by: "agentplane"
 description: "Define the migration steps and dependencies for replacing the Redmine backend with a recipe-driven integration."
@@ -44,23 +44,26 @@ We want optional Redmine integration without core backend coupling, using recipe
 
 1) Extract redmine backend files into recipe payload (backend.py, backend.json).\n2) Add recipe runner (mini-CLI) with install/disable/status/sync/verify commands.\n3) Update docs to point to recipe enable/disable and remove redmine backend from core listing.\n4) Validate that local backend remains default; update config via agentctl during install/disable.\n5) Add recipe to inventory and provide sample inputs schema.\nDependencies: recipe spec (202601200743-6CQN5R) before implementation; docs update after runner is in place.
 
-## Risks
+## Plan
 
-Migration can break existing Redmine users if install/disable flows are not robust; ensure fallback to local backend is reversible and documented.
 
 ## Verify Steps
 
 Review the migration steps with the recipe spec to ensure all required backend behaviors are covered.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Keep core local backend untouched; re-enable local backend via recipe disable command or config reset if migration fails.
 
-## Notes
+## Findings
 
 Implementation task should include updating docs/12-redmine.md to point to the recipe enable/disable workflow.
 
-## Plan
+## Risks
 
-
-## Verification
+Migration can break existing Redmine users if install/disable flows are not robust; ensure fallback to local backend is reversible and documented.

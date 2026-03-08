@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Unified allow prefix normalization so ./ prefixes, trailing slashes, and backslashes behave consistently across staging and guard checks; added CLI regressions for commit wrapper and comment-driven start; bun run test:cli:core passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T18:10:39.798Z"
 doc_updated_by: "CODER"
 description: "Make allow prefix normalization consistent across staging and guard checks (trim ./, trailing slashes, backslashes, double slashes)."
@@ -49,15 +49,11 @@ packages/agentplane/src/commands/guard/index.ts; add CLI regression tests for ./
 
 1) Replace ad-hoc allow prefix trimming with a single normalizeAllowPrefix implementation.\n2) Use it in guardCommitCheck and stageAllowlist.\n3) Add CLI regression test for comment-driven commit with --commit-allow ./<path>.\n4) Run bun run test:cli:core.
 
-## Risks
+## Verify Steps
 
-Risk: Changing normalization may alter edge-case behavior; ensure '.' stays special-cased and empty prefixes are rejected.
+- bun run test:cli:core\n- bun run test:agentplane
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T18:01:45.799Z — VERIFY — ok
@@ -72,6 +68,9 @@ Note: bun run test:cli:core passed; added regressions for ./ allow prefixes in c
 
 Revert the commit(s) for this task.
 
-## Verify Steps
+## Findings
 
-- bun run test:cli:core\n- bun run test:agentplane
+
+## Risks
+
+Risk: Changing normalization may alter edge-case behavior; ensure '.' stays special-cased and empty prefixes are rejected.

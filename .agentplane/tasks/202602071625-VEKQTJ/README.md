@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Task doc migration now rewrites date-only timestamps inside metadata notes to the canonical ISO updated_at when safe; tests and task lint passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T16:32:15.623Z"
 doc_updated_by: "CODER"
 description: "Ensure plan_approval.note and verification.note use ISO timestamps when they refer to dates; keep semantics by only rewriting when the note date matches updated_at."
@@ -62,9 +62,13 @@ Some task READMEs contain date-only strings inside YAML frontmatter notes (for e
 3. Run `agentplane task migrate-doc --all` and confirm the number of changed docs.
 4. Run `agentplane task lint` and `bun run test:cli:core`.
 
-## Risks
+## Verify Steps
 
-- Unintended semantic changes if notes are rewritten when their date does not represent the approval timestamp.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -85,3 +89,10 @@ Note: Verified: Updated task migrate-doc to normalize date-only timestamps in pl
 
 - Revert the commit(s) for this task.
 - Re-run `agentplane task migrate-doc --all` from the previous revision if needed.
+
+## Findings
+
+
+## Risks
+
+- Unintended semantic changes if notes are rewritten when their date does not represent the approval timestamp.

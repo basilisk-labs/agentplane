@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: implemented one-task-one-commit fix so finish refreshes commit metadata after commitFromComment and amends README into the same commit in local backend mode. Verified with focused unit tests, lint, test:fast, and required package builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T04:34:57.278Z"
 doc_updated_by: "CODER"
 description: "Design and implement a workflow where completing a task does not require a second 'close' commit solely to record README metadata. Prefer a single commit that includes both code changes and final task README updates, or a deterministic close commit integrated into the implementation commit flow."
@@ -56,16 +56,16 @@ id_source: "generated"
 ## Summary
 
 
+## Context
+
+Current flow writes DONE metadata before creating a finish commit, so README stores stale commit hash and users need an extra close commit. This task aligns finish behavior with the one-task-one-commit expectation.
+
 ## Scope
 
 In-scope: packages/agentplane/src/commands/task/finish.ts, packages/agentplane/src/commands/shared/git-context.ts, related unit tests.
 
 ## Plan
 
-
-## Risks
-
-Risk: amend triggers hooks and may increase finish latency; mitigation: keep amend scoped to local backend and stage only task README.
 
 ## Verify Steps
 
@@ -75,10 +75,6 @@ Risk: amend triggers hooks and may increase finish latency; mitigation: keep ame
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
@@ -86,6 +82,9 @@ Risk: amend triggers hooks and may increase finish latency; mitigation: keep ame
 
 Revert the task commit to restore previous finish behavior and remove amend step.
 
-## Context
+## Findings
 
-Current flow writes DONE metadata before creating a finish commit, so README stores stale commit hash and users need an extra close commit. This task aligns finish behavior with the one-task-one-commit expectation.
+
+## Risks
+
+Risk: amend triggers hooks and may increase finish latency; mitigation: keep amend scoped to local backend and stage only task README.

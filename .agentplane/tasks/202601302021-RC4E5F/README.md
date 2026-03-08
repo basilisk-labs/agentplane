@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: backfilled commit metadata during migration to satisfy lint; no code changes for this task."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:35.869Z"
 doc_updated_by: "agentplane"
 description: "Remove root-level scripts/assets from Python agentctl era (clean scripts, viewer, etc.) that are no longer needed for Node CLI, and update docs/references accordingly."
@@ -41,19 +41,25 @@ Removed legacy Python-era root scripts (clean.sh/clean.ps1/viewer.sh) and Python
 
 Deleted clean.sh, clean.ps1, viewer.sh, pyproject.toml, requirements-dev.txt from repo root; updated docs/setup and audit docs to remove references.
 
-## Risks
+## Plan
 
-Removing legacy scripts may affect workflows that depended on clean.sh/viewer.sh; users should use Node CLI recipes and repo tools instead.
 
 ## Verify Steps
 
 (Docs-only change)
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Restore removed root scripts/files and re-add doc references if legacy workflows are required.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Removing legacy scripts may affect workflows that depended on clean.sh/viewer.sh; users should use Node CLI recipes and repo tools instead.

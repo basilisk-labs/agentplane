@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T13:22:32.542Z"
 doc_updated_by: "CODER"
 description: "Keep documentation as the primary homepage CTA and surface CLI installation as the secondary action on the public home page."
@@ -74,12 +74,6 @@ Keep documentation as the primary homepage CTA and surface CLI installation as t
 3. Adjust adjacent homepage copy so the install command and secondary CTA reinforce the same action model.
 4. Run the required verification and record evidence.
 
-## Risks
-
-- The homepage can regress into install-first messaging if copy and CTA hierarchy diverge; mitigation: keep docs as primary and installation as explicit secondary.
-- Existing repository drift is unrelated; mitigation: constrain edits to homepage files only.
-- External npm link introduces a product handoff; mitigation: keep docs and install visible together rather than replacing docs with npm.
-
 ## Verify Steps
 
 ### Scope
@@ -102,10 +96,6 @@ Validate the homepage CTA hierarchy and build integrity after the docs-first adj
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T13:20:54.055Z — VERIFY — ok
 
@@ -122,3 +112,12 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T11:28:39.298Z, excerpt_
 1. Revert the homepage CTA changes in website/src/pages/index.tsx.
 2. Re-run website typecheck and build to confirm the previous homepage state.
 3. Leave unrelated repository changes untouched.
+
+## Findings
+
+
+## Risks
+
+- The homepage can regress into install-first messaging if copy and CTA hierarchy diverge; mitigation: keep docs as primary and installation as explicit secondary.
+- Existing repository drift is unrelated; mitigation: constrain edits to homepage files only.
+- External npm link introduces a product handoff; mitigation: keep docs and install visible together rather than replacing docs with npm.

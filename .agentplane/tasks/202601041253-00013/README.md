@@ -26,7 +26,7 @@ comments:
   -
     author: "reviewer"
     body: "Confirmed the description label is no longer italicized yet still stands out via bold styling."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:16.086Z"
 doc_updated_by: "agentplane"
 description: "Render the description label without italics so only the bold text shows."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

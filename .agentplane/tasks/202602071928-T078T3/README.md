@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: migrated task add to cli2; bun run test:fast; bun run lint; bun run typecheck; help/usage derived from spec."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T05:51:46.875Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task add`."
@@ -61,11 +61,6 @@ Steps:
 4) Update CLI core tests for usage/errors parity.
 5) Verify: bun run typecheck; bun run test:cli:core.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -86,10 +81,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T05:44:28.877Z — VERIFY — ok
 
@@ -106,3 +97,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T05:36:49.329Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

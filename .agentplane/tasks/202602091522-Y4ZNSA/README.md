@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Added .gitignore entries for .agentplane/.upgrade and legacy .agentplane/upgrade to prevent upgrade baselines/state from leaking into commits."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:28:02.330Z"
 doc_updated_by: "DOCS"
 description: "Ensure upgrade state (baseline, lock, reports) is not accidentally tracked or committed by adding .agentplane/.upgrade/** to .gitignore and aligning any docs/tests."
@@ -70,19 +70,11 @@ Prevent upgrade baseline/state artifacts from showing up in PRs by ignoring .age
 
 1) Inspect current .gitignore.\n2) Add ignore entries for upgrade state/baseline dirs (.agentplane/.upgrade/** and legacy .agentplane/upgrade/**).\n3) Ensure ignores do not hide user-owned tracked files (only upgrade state).\n4) Run bun run lint and bun run test:full (sanity).
 
-## Risks
-
-Low risk; only affects git ignore behavior.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:28:02.109Z — VERIFY — ok
@@ -98,3 +90,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:26:49.349Z, excerpt_
 ## Rollback Plan
 
 Revert .gitignore changes.
+
+## Findings
+
+
+## Risks
+
+Low risk; only affects git ignore behavior.

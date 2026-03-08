@@ -35,7 +35,7 @@ comments:
     author: "CODER"
     body: "Verified: Correct commit pointer to the implementation commit that introduced the new help banner."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T13:54:56.322Z"
 doc_updated_by: "CODER"
 description: "Replace 'agentplane (v1 prototype)' in help with: current version from packages/agentplane/package.json + release commit date for tag v<version> + a short, more informative tagline."
@@ -55,14 +55,15 @@ id_source: "generated"
 4. Update banner format: version + release date + a short informative tagline.
 5. Update/add tests to lock the new banner.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T13:45:54.959Z — VERIFY — ok
@@ -74,3 +75,9 @@ Note: Help banner now shows version and release commit date in this repo; help r
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

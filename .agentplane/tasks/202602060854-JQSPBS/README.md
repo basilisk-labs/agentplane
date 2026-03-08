@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: scaffolded ## Verification with ### Plan/### Results + append-only results markers; fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T08:57:05.269Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Update task README templates to scaffold ## Verification with suggested ### Plan / ### Results structure (no command parsing/execution)."
@@ -46,10 +46,23 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -34,7 +34,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Note: Exported .agentplane/tasks.json snapshot after completing FIX2.md work."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T20:38:23.739Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Реализовать пункты из FIX2.md: убрать повторные resolve/load в командах, унифицировать guard/hooks policy, стандартизовать commit message (без обратной совместимости), дедуп утилит и распил монолитов."
@@ -57,14 +57,15 @@ Work breakdown:
 - 202602061915-KNHP1Y (DONE): split scenario command, colon-safe git log parsing, reduce duplicated utils.
 - 202602061915-D3QVVY (DONE): tests for CommandContext + commit body generation.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T20:36:11.296Z — VERIFY — ok
@@ -76,3 +77,9 @@ Note: Verified locally on 2026-02-06: FIX2.md work completed via subtasks; bun r
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

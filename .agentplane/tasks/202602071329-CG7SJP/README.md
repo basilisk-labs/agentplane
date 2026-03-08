@@ -34,7 +34,7 @@ comments:
     author: "CODER"
     body: "Verified: legacy commit-policy/parity code removed (no-op finish flags, deprecated base_branch config/meta). Guard/hooks share a single policy engine and a shared deny helper. Integrate now produces commit subjects compliant with the enforced template. format:check, lint, and test:cli:core passed."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T15:59:09.236Z"
 doc_updated_by: "CODER"
 description: "After migrating to evaluatePolicy, delete old entry points/helpers for commit-policy and other legacy code that duplicates domain logic. Prune dependencies and align package structure to the domain layout."
@@ -56,9 +56,13 @@ In scope: remove dead commit-policy entrypoints/helpers and duplicate validation
 4. Update imports, help/usage strings, and tests to match the new structure.
 5. Run format:check, lint, and test:cli:core.
 
-## Risks
+## Verify Steps
 
-Risk: removing legacy code may break undocumented invocations. Mitigation: rely on CLI core tests and keep a strict allowlist for commits.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -78,3 +82,10 @@ Note: Verified: removed legacy parity/no-op flags and duplicate policy-deny plum
 ## Rollback Plan
 
 Revert the implementation commit(s) for this task to restore the removed legacy code paths.
+
+## Findings
+
+
+## Risks
+
+Risk: removing legacy code may break undocumented invocations. Mitigation: rely on CLI core tests and keep a strict allowlist for commits.

@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: committed only docs/assets image updates (git show --name-only 2f10e74bae8e). No code changes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T08:03:23.073Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Commit updated docs/assets images that were changed in the workspace."
@@ -44,14 +44,16 @@ id_source: "generated"
 
 Stage docs/assets updates and commit via agentplane.
 
-## Risks
+## Verify Steps
 
+Run:
+- git diff --name-only
+
+Pass criteria:
+- only docs/assets/* files are changed
+- commit includes only those files.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T08:03:16.239Z — VERIFY — ok
@@ -67,11 +69,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T08:01:59.239Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-Run:
-- git diff --name-only
 
-Pass criteria:
-- only docs/assets/* files are changed
-- commit includes only those files.
+## Risks

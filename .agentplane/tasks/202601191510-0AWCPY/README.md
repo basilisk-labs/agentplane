@@ -27,7 +27,7 @@ comments:
   -
     author: "CODER"
     body: "verified: ran python .agent-plane/recipes.py --help to confirm CLI wiring and subcommand registration."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:54.620Z"
 doc_updated_by: "agentplane"
 description: "Build .agent-plane/recipes.py with scan/show/compile/explain, manifest normalization, context assembly, and inventory generation per recipes PRD."
@@ -44,23 +44,26 @@ Added .agent-plane/recipes.py per the recipes PRD and enforced local-only behavi
 
 CLI supports manifest normalization (v1 + legacy), inventory generation, bundle compilation with context hashing/inline policy, env/input validation, and bundle markdown output; added gitignore rules for run/cache artifacts.
 
-## Risks
+## Plan
 
-Minimal JSON schema validation may diverge from full schema; large context globs could still be slow if include patterns are broad.
 
 ## Verify Steps
 
 python .agent-plane/recipes.py --help
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit b5d407ce6f52 to remove the recipes CLI and related ignore rules.
 
-## Notes
+## Findings
 
 CLI remains non-executing (scan/show/compile/explain only) and enforces no-network, no-task-writes behavior.
 
-## Plan
+## Risks
 
-
-## Verification
+Minimal JSON schema validation may diverge from full schema; large context globs could still be slow if include patterns are broad.

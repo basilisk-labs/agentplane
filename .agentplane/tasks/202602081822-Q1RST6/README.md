@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added needsProject/needsConfig/needsTaskContext metadata in command catalog and used it in runCli to skip resolveProject/config/update-check/context when not needed; added tests ensuring quickstart/role do not call resolveProject/loadConfig; lint, cli core tests, and typecheck pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T19:12:31.131Z"
 doc_updated_by: "CODER"
 description: "Add needsProject/needsConfig/needsTaskContext metadata to command catalog and adjust runCli to avoid unnecessary resolveProject/loadConfig/loadTaskBackend and update-check work."
@@ -69,14 +69,11 @@ id_source: "generated"
 
 1) Add per-command metadata (needsProject/needsConfig/needsTaskContext) to command catalog entries.\n2) In runCli, match command id early using specs and decide whether to resolveProject/loadDotEnv/loadConfig/update-check/loadCommandContext.\n3) Add targeted tests: quickstart/role should not resolve project; commands needing ctx still work.\n4) Run lint + cli core tests + typecheck.
 
-## Risks
+## Verify Steps
 
+- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: commands marked as not needing project/context do not trigger resolveProject/loadDotEnv/update-check/loadCommandContext; tests pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T19:11:53.606Z — VERIFY — ok
@@ -92,6 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T19:07:24.607Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: commands marked as not needing project/context do not trigger resolveProject/loadDotEnv/update-check/loadCommandContext; tests pass.
+
+## Risks

@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: Documentation-only change | details: no automated tests run beyond pre-commit format/lint hooks; AGENTS.md formatted with Prettier."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:27.937Z"
 doc_updated_by: "agentplane"
 description: "Replace AGENTS.md content with the provided prod-v1.0 policy text."
@@ -43,23 +43,26 @@ User provided a full replacement policy block for AGENTS.md and requested a comp
 
 - Replace AGENTS.md content with the provided prod-v1.0 policy text.\n- Keep all formatting consistent with Prettier.
 
-## Risks
+## Plan
 
-- Full replacement may remove previously documented local conventions; ensure new policy is authoritative.\n- Any downstream tooling relying on removed sections may need updates.
 
 ## Verify Steps
 
 - N/A (documentation-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert AGENTS.md to the previous revision.
 
-## Notes
+## Findings
 
 No config changes applied; policy document only.
 
-## Plan
+## Risks
 
-
-## Verification
+- Full replacement may remove previously documented local conventions; ensure new policy is authoritative.\n- Any downstream tooling relying on removed sections may need updates.

@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: check-release-version enforces package versions and @agentplaneorg/core dependency parity; dedicated script tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T21:00:41.484Z"
 doc_updated_by: "CODER"
 description: "Extend release validation to fail when packages/agentplane depends on @agentplaneorg/core version that does not match release version."
@@ -62,15 +62,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) node scripts/check-release-version.mjs --tag v0.2.19
@@ -79,3 +70,16 @@ Expected: passes with current repo versions.
 Expected: fails with clear parity error.
 3) bun run test:critical
 Expected: pass.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

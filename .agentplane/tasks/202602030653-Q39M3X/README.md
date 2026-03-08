@@ -31,7 +31,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:48.297Z"
 doc_updated_by: "agentplane"
 description: "Unify usage errors for subcommands with compact usage + example where useful."
@@ -43,16 +43,21 @@ id_source: "generated"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

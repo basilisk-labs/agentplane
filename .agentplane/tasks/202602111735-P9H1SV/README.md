@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: all downstream hardening tasks are complete and validated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:54:21.267Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement remaining high-value pipeline improvements: local prepublish parity with CI/publish, doctor invariants for DONE tasks, file-level significant coverage gate, and machine-readable release apply report."
@@ -61,6 +61,10 @@ id_source: "generated"
 
 Coordinate release pipeline hardening across parity gates, doctor invariants, release observability, and significant file coverage checks.
 
+## Context
+
+Follow-up hardening after recent release incidents and manual verification overhead.
+
 ## Scope
 
 In scope: tasks PNX4VA, 45RQ16, T9AQY4, 85Z1NA and integrated verification outcomes.
@@ -69,26 +73,25 @@ In scope: tasks PNX4VA, 45RQ16, T9AQY4, 85Z1NA and integrated verification outco
 
 1) Complete release parity gate task. 2) Complete doctor invariant task. 3) Complete release report task. 4) Complete significant coverage gate task. 5) Close epic.
 
-## Risks
+## Verify Steps
 
-Low; all changes are incremental guardrails with dedicated tests.
+Confirm child tasks PNX4VA, 45RQ16, T9AQY4, 85Z1NA are DONE and corresponding verifications passed.
 
 ## Verification
 
 All child tasks completed and validated.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Reopen failed child task and revert its commits if regression is found.
 
-## Context
-
-Follow-up hardening after recent release incidents and manual verification overhead.
-
-## Verify Steps
-
-Confirm child tasks PNX4VA, 45RQ16, T9AQY4, 85Z1NA are DONE and corresponding verifications passed.
-
-## Notes
+## Findings
 
 ### Decisions\n- Prioritized deterministic gates over broad heuristic checks.\n### Implementation Notes\n- Epic closed after child task completion.
+
+## Risks
+
+Low; all changes are incremental guardrails with dedicated tests.

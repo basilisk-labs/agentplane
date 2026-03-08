@@ -25,7 +25,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: Local and Redmine backend sections separated; Redmine parity requirements include extra fields and mapping note."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T15:07:29.505Z"
 doc_updated_by: "DOCS"
 description: "Restructure backends doc into separate sections and document Redmine full-parity setup."
@@ -41,10 +41,8 @@ Split backend docs into local and Redmine sections with full-parity setup guidan
 - Add instructions for full-parity Redmine setup (custom fields + mapping).
 - Keep guidance concise and accurate to current code.
 
-## Risks
+## Plan
 
-- Doc may imply parity without code changes if wording is careless.
-- Redmine field IDs can drift from actual project settings.
 
 ## Verify Steps
 
@@ -59,9 +57,18 @@ Pending.
 - docs/user/backends.mdx now has separate Local and Redmine sections.
 - Redmine parity requirements list extra custom fields and note code mapping requirement.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert changes in docs/user/backends.mdx.
 - Update Verification with rollback note if needed.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Doc may imply parity without code changes if wording is careless.
+- Redmine field IDs can drift from actual project settings.

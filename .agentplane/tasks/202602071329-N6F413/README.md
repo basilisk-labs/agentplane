@@ -33,7 +33,7 @@ comments:
     author: "CODER"
     body: "Verified: guard now delegates allowlist/protected paths/commit subject/branch_pr base pin checks to the shared policy engine (evaluatePolicy). format:check, lint, and test:fast passed."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T15:31:05.159Z"
 doc_updated_by: "CODER"
 description: "Reduce guard to: parse args -> build ctx -> evaluatePolicy(ctx) -> exit. Remove business logic from guard; path protection, subject checks, base branch checks, and staging checks must live in git/policy domains."
@@ -52,14 +52,15 @@ id_source: "generated"
 3. Keep guard as an adapter: parse -> build ctx -> evaluate -> throw uniform CliError.
 4. Update tests to assert guard and hooks share identical behavior.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T15:31:05.083Z — VERIFY — ok
@@ -71,3 +72,9 @@ Note: Verified: guard is a thin adapter and delegates checks to evaluatePolicy; 
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -28,7 +28,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: lint and test:fast passed; typed task backend exports to silence no-unsafe warnings."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T17:06:04.271Z"
 doc_updated_by: "CODER"
 description: "Resolve IDE ESLint no-unsafe-* warnings by ensuring typed exports in task backend; verify lint/test."
@@ -42,9 +42,8 @@ Remove ESLint no-unsafe-* warnings in task backend/tests by ensuring typed expor
 
 - Ensure extractTaskDoc/mergeTaskDoc/atomicWriteFile/generateTaskId have explicit types in task backend.\n- Verify lint/test:fast.\n- Leave ignored-file ESLint warning for agentplane-recipes as non-issue.
 
-## Risks
+## Plan
 
-- Low risk; type-only changes could mask real type mismatches if mis-specified.
 
 ## Verify Steps
 
@@ -54,8 +53,16 @@ Remove ESLint no-unsafe-* warnings in task backend/tests by ensuring typed expor
 
 - ✅ bun run lint.\n- ✅ bun run test:fast.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert typed aliases if they cause mismatches.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Low risk; type-only changes could mask real type mismatches if mis-specified.

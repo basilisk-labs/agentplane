@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: docs restructured with new developer guide sections and navigation updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:32.953Z"
 doc_updated_by: "agentplane"
 description: "Audit current docs, design a more detailed structure, and rewrite docs in clear English for developers."
@@ -42,19 +42,25 @@ description: "Audit current docs, design a more detailed structure, and rewrite 
 
 - Review docs/*.mdx and docs/docs.json.\n- Propose and implement a new detailed docs structure.\n- Populate new pages with developer-focused guidance.
 
-## Risks
+## Plan
 
-- Large doc changes could introduce inconsistencies or outdated guidance.\n- Overly detailed docs might drift from actual CLI behavior.
 
 ## Verify Steps
 
 - Check docs/docs.json navigation matches new structure.\n- Spot-check key pages for clarity and accuracy.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert docs/ and docs/docs.json changes if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Large doc changes could introduce inconsistencies or outdated guidance.\n- Overly detailed docs might drift from actual CLI behavior.

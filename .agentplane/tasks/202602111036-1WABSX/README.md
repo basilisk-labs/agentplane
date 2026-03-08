@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release was applied, pushed, and published successfully with matching npm versions and a successful GitHub publish workflow run"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:42:22.962Z"
 doc_updated_by: "INTEGRATOR"
 description: "Apply release plan, publish packages to npm, push commit/tag to origin, and verify published versions."
@@ -71,9 +71,11 @@ In scope: agentplane release apply --push --yes; remote tag push; publish trigge
 
 1) Apply release plan. 2) Push commit+tag. 3) Validate versions and publish trigger.
 
-## Risks
+## Verify Steps
 
-Risk: auth/push failure or publish pipeline failure; mitigation is immediate verification of remote tag/workflow status.
+- agentplane release apply --push --yes
+- git ls-remote --tags origin v0.2.14
+- npm view agentplane version && npm view @agentplaneorg/core version
 
 ## Verification
 
@@ -98,8 +100,9 @@ Ran: agentplane release apply --push --yes; confirmed origin tag v0.2.14; GitHub
 
 If publish fails after tagging, ship forward with next patch and corrective release notes.
 
-## Verify Steps
+## Findings
 
-- agentplane release apply --push --yes
-- git ls-remote --tags origin v0.2.14
-- npm view agentplane version && npm view @agentplaneorg/core version
+
+## Risks
+
+Risk: auth/push failure or publish pipeline failure; mitigation is immediate verification of remote tag/workflow status.

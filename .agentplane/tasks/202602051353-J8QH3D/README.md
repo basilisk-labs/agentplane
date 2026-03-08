@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: index cache implemented, list/search optimized, tests and docs updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:09:16.373Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement task index cache for list/search performance and close Epic G."
@@ -41,9 +41,8 @@ Epic G: implement a task index cache to speed up list/search and hooks.
 
 Implement tasks index storage, integrate list/search, add tests and docs, and close Epic G.
 
-## Risks
+## Plan
 
-Index could go stale or diverge from README content; ensure mtime-based refresh and fallback rebuild.
 
 ## Verify Steps
 
@@ -92,8 +91,16 @@ Installed recipe viewer@1.2.3
 
 Verified on 2026-02-05: tasks index implemented, list/search uses cache, tests and docs updated; lint/test/pre-commit hooks passed.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Remove task index cache code and restore full README scans in list/search.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Index could go stale or diverge from README content; ensure mtime-based refresh and fallback rebuild.

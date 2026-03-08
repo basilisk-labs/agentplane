@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: README updates for agentplane and core packages reviewed. Hooks skipped for commit per user request; no tests run. Unrelated working tree changes remain outside scope."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T15:35:16.941Z"
 doc_updated_by: "agentplane"
 description: "Rewrite packages/agentplane and packages/core READMEs to be human-centered with a 5-minute start and explicit guardrails/agents auto-install notes."
@@ -43,10 +43,23 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

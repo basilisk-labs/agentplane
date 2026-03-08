@@ -25,7 +25,7 @@ comments:
   -
     author: "REDMINE"
     body: "verified: comment-only change in agentctl.py | details: task docs updated; no tests run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:49.369Z"
 doc_updated_by: "agentplane"
 description: "Add concise, human-readable inline comments in agentctl.py to clarify non-obvious logic and improve maintainability."
@@ -44,23 +44,26 @@ Requested to add human-readable comments in agentctl.py to make non-obvious logi
 
 Comment-only updates in .agent-plane/agentctl.py; no behavior changes.
 
-## Risks
+## Plan
 
-Low risk: comments only. Potential risk is comments drifting if logic changes later.
 
 ## Verify Steps
 
 Not run (comment-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 8058e33 to remove the comment additions.
 
-## Notes
+## Findings
 
 No tests run.
 
-## Plan
+## Risks
 
-
-## Verification
+Low risk: comments only. Potential risk is comments drifting if logic changes later.

@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: ran rg -n \"ROADMAP\" . and found no references; docs/ROADMAP.md is removed in commit d2c30973a02c; no other doc links required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:44.826Z"
 doc_updated_by: "agentplane"
 description: "Remove docs/ROADMAP.md and clean up any references so the repo doesn't point to a deleted file."
@@ -42,23 +42,26 @@ User requested removing the ROADMAP document from the repo.
 
 Delete docs/ROADMAP.md and scan the repo for lingering references.
 
-## Risks
+## Plan
 
-Low risk; only documentation removal. Residual risk is an unseen reference outside the repo search.
 
 ## Verify Steps
 
 rg -n "ROADMAP" .
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Restore docs/ROADMAP.md from git history if needed.
 
-## Notes
+## Findings
 
 ROADMAP.md was already deleted in the working tree; kept deletion and validated no references.
 
-## Plan
+## Risks
 
-
-## Verification
+Low risk; only documentation removal. Residual risk is an unseen reference outside the repo search.

@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: upgrade now emits review.json and snapshots in agent mode, persists last-review.json in auto mode, and prints a Prompt merge required marker; tests and lint passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T13:31:04.743Z"
 doc_updated_by: "CODER"
 description: "Extend agentplane upgrade to emit structured review.json + optional snapshots and stdout marker; persist last-review in auto mode."
@@ -63,6 +63,10 @@ id_source: "generated"
 
 Extend agentplane upgrade to emit a structured semantic-review report (review.json) describing merge strategy and baseline-relative change signals per managed file.
 
+## Context
+
+UPGRADER tasks should be triggered by machine-readable signals from upgrade. Current upgrade artifacts (files.json) do not explain why merges occurred or whether both sides changed relative to baseline.
+
 ## Scope
 
 In scope: packages/agentplane/src/commands/upgrade.ts (and any supporting modules); upgrade agent-mode runDir outputs; stdout marker text. Out of scope: changing upgrade safety allowlist semantics.
@@ -71,19 +75,11 @@ In scope: packages/agentplane/src/commands/upgrade.ts (and any supporting module
 
 1. Inspect upgrade implementation and current artifacts (files.json, agent runDir layout). 2. Define per-file review record schema (relPath, mergeStrategy, hasBaseline, changedCurrentVsBaseline, changedIncomingVsBaseline, needsSemanticReview, mergeApplied, mergePath). 3. Populate the schema during manifest processing and write review.json in agent mode; optionally write snapshots (current/incoming/baseline/proposed). 4. In --auto mode, persist the last review report for post-run consumption. 5. Add/adjust tests to assert review.json is written and signals are correct.
 
-## Risks
-
-Risk: large artifacts or leaking sensitive content into snapshots. Mitigation: keep snapshots optional/limited; redact or restrict to managed files only; ensure safety invariants remain.
-
 ## Verify Steps
 
 Commands:\n- bun run test:agentplane packages/agentplane/src/commands/upgrade.agent-mode.test.ts\n- bun run test:agentplane packages/agentplane/src/commands/upgrade.merge.test.ts\n- bun run test:agentplane packages/agentplane/src/commands/upgrade.safety.test.ts\n- bun run lint\nPass criteria:\n- agent mode writes review.json with expected fields and counters.\n- review.json accurately reports baseline-relative change signals.\n- stdout includes a clear marker when semantic review is required.\n- no safety tests regress.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T13:15:37.528Z — VERIFY — ok
@@ -100,6 +96,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T13:11:18.094Z, excerpt_
 
 Revert upgrade.ts changes and any new test snapshots; re-run the same upgrade test suite.
 
-## Context
+## Findings
 
-UPGRADER tasks should be triggered by machine-readable signals from upgrade. Current upgrade artifacts (files.json) do not explain why merges occurred or whether both sides changed relative to baseline.
+
+## Risks
+
+Risk: large artifacts or leaking sensitive content into snapshots. Mitigation: keep snapshots optional/limited; redact or restrict to managed files only; ensure safety invariants remain.

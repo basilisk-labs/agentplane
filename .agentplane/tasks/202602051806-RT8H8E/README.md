@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: package versions and core dependency aligned to 0.1.6 in both package.json files."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T18:18:19.723Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Update agentplane and core package versions to 0.1.6."
@@ -43,9 +43,8 @@ Bump agentplane and core packages to v0.1.6 for release.
 
 Update package.json versions and internal dependency versions to 0.1.6.
 
-## Risks
+## Plan
 
-Low: mismatched versions could break release checks or publish.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Command: rg "version" packages/agentplane/package.json packages/core/package.jso
 
 Checked package.json versions and @agentplaneorg/core dependency set to 0.1.6.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Restore previous version numbers in package.json files.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Low: mismatched versions could break release checks or publish.

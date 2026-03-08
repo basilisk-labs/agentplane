@@ -25,7 +25,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: docs-only update in agentctl.md and agent JSONs; no tests required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:32.261Z"
 doc_updated_by: "agentplane"
 description: "Move agent-specific command references into agentctl.md and add an agent cheat sheet for operations."
@@ -37,16 +37,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

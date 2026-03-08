@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: docs aligned with cli2 help/spec; generated CLI reference; bun test:cli:core passed"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T16:46:34.669Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Audit and fix documentation drift vs cli2 registry/spec; clarify verify semantics (record vs run), update examples/flags, and add generated CLI reference."
@@ -78,16 +78,22 @@ Out of scope:
 
 Sync docs with current cli2 help/spec; clarify verify semantics and update init/verify examples; add generated CLI reference and link it.
 
-## Risks
+## Verify Steps
 
-- Docs may conflate direct vs branch_pr behavior; ensure wording is explicit per mode.
-- Generated CLI reference can drift if not regenerated; keep it clearly labeled as generated and derived from cli2.
+Pass criteria:
+- `docs/user/*` and `docs/help/*` do not claim that `agentplane verify` runs checks.
+- Docs do not mention nonexistent flags (e.g. `verify --require`, `verify --skip-if-unchanged`).
+- Examples for `init` and `verify` match `agentplane help init` and `agentplane help verify`.
+- A CLI reference doc is generated from cli2 (`agentplane docs cli`).
+
+Checks to run:
+- `node packages/agentplane/bin/agentplane.js help init`
+- `node packages/agentplane/bin/agentplane.js help verify`
+- `node packages/agentplane/bin/agentplane.js help integrate`
+- `node packages/agentplane/bin/agentplane.js docs cli --out docs/user/cli-reference.generated.mdx`
+- `bun run test:cli:core`
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T16:43:29.171Z — VERIFY — ok
@@ -108,17 +114,10 @@ Updated docs/help + docs/user + packages/agentplane/README.md. Generated docs/us
 
 Revert commit created by this task (docs-only changes). Delete docs/user/cli-reference.generated.mdx if added and revert doc wording to previous state.
 
-## Verify Steps
+## Findings
 
-Pass criteria:
-- `docs/user/*` and `docs/help/*` do not claim that `agentplane verify` runs checks.
-- Docs do not mention nonexistent flags (e.g. `verify --require`, `verify --skip-if-unchanged`).
-- Examples for `init` and `verify` match `agentplane help init` and `agentplane help verify`.
-- A CLI reference doc is generated from cli2 (`agentplane docs cli`).
 
-Checks to run:
-- `node packages/agentplane/bin/agentplane.js help init`
-- `node packages/agentplane/bin/agentplane.js help verify`
-- `node packages/agentplane/bin/agentplane.js help integrate`
-- `node packages/agentplane/bin/agentplane.js docs cli --out docs/user/cli-reference.generated.mdx`
-- `bun run test:cli:core`
+## Risks
+
+- Docs may conflate direct vs branch_pr behavior; ensure wording is explicit per mode.
+- Generated CLI reference can drift if not regenerated; keep it clearly labeled as generated and derived from cli2.

@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: append-only task events recorded for status/comment/verify with tests passing."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T05:49:29.649Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Optional/advanced: move task status/comments to append-only events with README render. Requires policy and renderer changes; include tests and docs if implemented."
@@ -44,8 +44,13 @@ Implemented append-only task events for status, comments, and verification.
 2) Implement event storage + renderer updates with tests.
 3) Update docs and verify.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -62,3 +67,9 @@ Note: bun run test:core and bun run test:agentplane passed; CLI event recording 
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

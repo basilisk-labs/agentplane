@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: legacy upgrade recovery is now documented as a shortest-path runbook for mixed gateway and managed policy states."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T15:00:37.737Z"
 doc_updated_by: "DOCS"
 description: "Document the shortest recovery path for old projects that have mixed gateway and managed policy state after upgrade."
@@ -74,11 +74,6 @@ Document the shortest recovery path for old projects that have mixed gateway and
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -92,10 +87,6 @@ Document the shortest recovery path for old projects that have mixed gateway and
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T15:00:37.142Z — VERIFY — ok
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:57:55.700Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

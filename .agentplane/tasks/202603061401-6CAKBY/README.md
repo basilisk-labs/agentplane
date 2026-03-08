@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: workflow policy and CLI guidance now state that task documentation sections may be batched in one turn before approval, while the approve-to-start transition remains strictly sequential; routing, doctor, and targeted CLI help/task tests passed, and the next step is to publish the accumulated website changes via main."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T14:08:28.820Z"
 doc_updated_by: "CODER"
 description: "Adjust workflow/task tooling or docs so plan and task documentation sections can be applied together in one agent turn without violating lifecycle sequencing, then push the website changes and verify the site deploy."
@@ -70,11 +70,6 @@ Adjust workflow/task tooling or docs so plan and task documentation sections can
 ## Plan
 
 1) Update workflow/policy guidance so task documentation sections may be batched in one turn before approval, while preserving the strict sequential gate for plan approval followed by start-ready. 2) Update CLI command guidance/help so full-doc payload support is visible to users and agents. 3) Run routing and targeted CLI help/guide tests to verify the wording change. 4) Commit the policy/guide changes with task traceability. 5) Push main so the already-prepared website commits are published, then verify Docs CI and Pages Deploy.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -101,10 +96,6 @@ Validate the policy/guidance change for batched task-doc updates plus successful
 - main is pushed and the website deployment succeeds.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T14:07:58.732Z — VERIFY — ok
@@ -140,8 +131,13 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T14:05:39.240Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - This change documents an existing capability rather than adding a new lifecycle bypass: full-doc batched updates already work in task doc set.
 - The sequential constraint remains only for plan approval followed by start-ready.
 - Website publication in this task is a push/deploy step, not a release publish.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

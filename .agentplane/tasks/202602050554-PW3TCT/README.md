@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Epic B completed via AP-010a/010b/010c; update-check cache and integration done."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T06:07:29.623Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Top-level tracking for Epic B (AP-010)."
@@ -41,19 +41,25 @@ Track completion of Epic B (update-check cache and integration).
 
 Ensure AP-010a/AP-010b/AP-010c are complete and verified.
 
-## Risks
+## Plan
 
-Risk: missing linkage between subtasks and epic; mitigated by explicit finish note.
 
 ## Verify Steps
 
 Confirm AP-010a/AP-010b/AP-010c are DONE and hooks/tests passed.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the Epic B commits in order to restore previous update-check behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: missing linkage between subtasks and epic; mitigated by explicit finish note.

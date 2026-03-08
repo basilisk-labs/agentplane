@@ -23,7 +23,7 @@ commit:
   hash: "edce441b3d5c3f65c01265fa365b89ee2c94b06a"
   message: "⚡ 1KSBF8 2BER2W Z5WV9G BJRJ61 speed up tests: add fast/full/cli scripts; update hooks; document workflow"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-01T17:53:56+00:00"
 doc_updated_by: "agentctl"
 description: "Document fast vs full test workflow and (if appropriate) add lightweight hooks or CI guidance to require full tests only on commit/push."
@@ -36,19 +36,25 @@ Documented fast/full/CLI test commands and clarified hook behavior for local wor
 
 Updated docs/developer/testing-and-quality.mdx.
 
-## Risks
+## Plan
 
-Docs could drift from script behavior; keep testing docs aligned with package.json and hooks.
 
 ## Verify Steps
 
 Review docs/developer/testing-and-quality.mdx for updated commands.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert docs/developer/testing-and-quality.mdx to the previous test instructions.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Docs could drift from script behavior; keep testing docs aligned with package.json and hooks.

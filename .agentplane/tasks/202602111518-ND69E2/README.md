@@ -59,7 +59,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: all roadmap child tasks T1-T11 are completed with per-task commits; policy/approval model, Redmine env contract, and init UI hardening are integrated and validated by targeted tests/builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:14:07.375Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement roadmap tasks 1-11: unified approval requirements, execution escalation model, force/network enforcement unification, Redmine env contract, preset dedupe, and ANSI box fix."
@@ -69,6 +69,10 @@ id_source: "generated"
 
 Эпик объединяет исполнение roadmap 1-11: approvals escalation, Redmine env-first контракт и hardening init UX.
 
+## Context
+
+Цель: убрать policy drift, унифицировать approval-модель, и закрыть env/UI gaps для init и redmine backend.
+
 ## Scope
 
 In-scope: задачи 1-11 roadmap и их интеграция. Out-of-scope: дальнейший hardening pre-commit recursion и новые roadmap блоки.
@@ -77,25 +81,23 @@ In-scope: задачи 1-11 roadmap и их интеграция. Out-of-scope: 
 
 1) Закрыть T1-T6 (policy/approvals). 2) Закрыть T7-T9 (Redmine env contract). 3) Закрыть T10-T11 (init preset dedupe + ANSI UI fix).
 
-## Risks
+## Verify Steps
 
-Риск: скрытые регрессии в init/release hooks. Смягчение: таргетные verify steps по каждой дочерней задаче и сборка пакетов.
+См. verify steps дочерних задач; ключевые проходы: bun run test:agentplane (таргетные suites), bun run --filter=@agentplaneorg/core build, bun run --filter=agentplane build.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Откатить соответствующие task-коммиты по дочерним задачам в обратном порядке.
 
-## Context
-
-Цель: убрать policy drift, унифицировать approval-модель, и закрыть env/UI gaps для init и redmine backend.
-
-## Verify Steps
-
-См. verify steps дочерних задач; ключевые проходы: bun run test:agentplane (таргетные suites), bun run --filter=@agentplaneorg/core build, bun run --filter=agentplane build.
-
-## Notes
+## Findings
 
 ### Decisions\n- Execution profile escalates approvals, не capability.\n- Redmine config contract перенесён в env-first модель.\n- Init presets берутся из core единого источника.\n### Implementation Notes\n- Эпик закрывается после DONE по всем зависимым задачам.
+
+## Risks
+
+Риск: скрытые регрессии в init/release hooks. Смягчение: таргетные verify steps по каждой дочерней задаче и сборка пакетов.

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: safe inspection commands now warn and continue on a stale dirty checkout, while mutating commands still hard-fail until rebuild."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T21:02:08.241Z"
 doc_updated_by: "CODER"
 description: "Apply the improved stale-dist contract to other read-only inspection commands, add regressions, and document framework-dev expectations."
@@ -71,10 +71,6 @@ Apply the improved stale-dist contract to other read-only inspection commands, a
 ## Plan
 
 1. Expand stale-dist policy classification to cover safe inspection surfaces used during framework development: quickstart/help/version, role guidance, config show, and task inspection commands such as list/show/verify-show. 2. Keep every mutating or state-changing command strict, update warning text/docs to reflect the broader inspection contract, and add regressions proving inspection warns-and-runs while mutation still blocks. 3. Verify with targeted tests plus a manual dirty-checkout inspection run, then close the task.
-
-## Risks
-
-- Risk: broadening warning-only behavior too far can let state-changing commands run on stale dist and hide real runtime drift.\n- Mitigation: explicitly enumerate safe inspection commands and leave all other argv shapes in strict mode.\n\n- Risk: docs may over-promise if the policy surface and human guidance diverge again.\n- Mitigation: update command docs/troubleshooting in the same task and add regressions for representative inspection and strict commands.
 
 ## Verify Steps
 
@@ -97,10 +93,6 @@ Apply the improved stale-dist contract to other read-only inspection commands, a
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T21:01:38.958Z — VERIFY — ok
 
@@ -117,6 +109,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T21:00:24.599Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Keep this task intentionally narrow: extend the read-only inspection set, do not reopen the freshness algorithm itself.\n- Prefer command-shape helpers over ad-hoc string checks so future additions remain reviewable.
+
+## Risks
+
+- Risk: broadening warning-only behavior too far can let state-changing commands run on stale dist and hide real runtime drift.\n- Mitigation: explicitly enumerate safe inspection commands and leave all other argv shapes in strict mode.\n\n- Risk: docs may over-promise if the policy surface and human guidance diverge again.\n- Mitigation: update command docs/troubleshooting in the same task and add regressions for representative inspection and strict commands.

@@ -34,7 +34,7 @@ comments:
   -
     author: "TESTER"
     body: "verified: ran bun run ci on 2026-01-30 | details: all checks passed (format, typecheck, lint, coverage)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:21.595Z"
 doc_updated_by: "agentplane"
 description: "Add golden fixture tests for README/tasks.json/PR artifacts to detect format drift vs Python repo."
@@ -48,20 +48,26 @@ Add agentctl-derived golden fixtures for README/frontmatter and tasks.json, with
 - Generate agentctl-based fixtures for task README and tasks.json.
 - Add tests to roundtrip README and validate checksum parity.
 
-## Risks
+## Plan
 
-- Fixtures may drift if agentctl changes; tests will flag required updates.
-- Limited to README/tasks.json parity; PR artifacts remain Node-specific.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Remove the fixtures/tests and revert to previous task-readme/tasks-export tests.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Fixtures may drift if agentctl changes; tests will flag required updates.
+- Limited to README/tasks.json parity; PR artifacts remain Node-specific.

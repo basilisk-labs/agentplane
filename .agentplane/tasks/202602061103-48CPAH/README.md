@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Updated CLI smoke and recipes tests to satisfy require_plan and require_network enforcement. Pre-push full suite (bun run test:full) is green; lint and format checks pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T11:06:49.204Z"
 doc_updated_by: "CODER"
 description: "Update CLI smoke and recipes tests to account for require_plan and require_network enforcement (exit code 3 without approval/--yes)."
@@ -49,14 +49,15 @@ id_source: "generated"
 3) Закоммитить через agentplane commit с allowlist.
 4) verify(ok) + finish + close commit.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T11:06:27.258Z — VERIFY — ok
@@ -68,3 +69,9 @@ Note: Pre-push gate fixed: bun run test:full passes; smoke test now approves pla
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

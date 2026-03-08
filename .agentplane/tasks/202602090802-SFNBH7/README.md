@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Confirmed current codebase already contains the intended change; no additional implementation required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:08:55.064Z"
 doc_updated_by: "CODER"
 description: "Create a single source of truth for command specs/registrations and build both help and run registries from it to remove duplicated lists."
@@ -73,11 +73,6 @@ tests: packages/agentplane/src/cli/run-cli.core.help-contract.test.ts и др.
 1. Создать command-catalog.ts со списком команд (spec + registration).
 2. Переписать buildRegistry/buildHelpFastRegistry, чтобы они строились из каталога.
 3. Убедиться, что контракты help не изменились.
-
-## Risks
-
-Риск: изменение порядка регистрации и следом порядок help/матчинга.
-Митигация: сохранять существующий порядок в каталоге; прогон help снапшотов.
 
 ## Verify Steps
 
@@ -103,3 +98,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:08:54.546Z, excerpt_
 ## Rollback Plan
 
 git revert соответствующего коммита, затем bun run test:full.
+
+## Findings
+
+
+## Risks
+
+Риск: изменение порядка регистрации и следом порядок help/матчинга.
+Митигация: сохранять существующий порядок в каталоге; прогон help снапшотов.

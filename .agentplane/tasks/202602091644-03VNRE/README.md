@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Migrated local backend cache to tasks-index.v2.json (byId/byPath with v1 read fallback), added task rebuild-index command, and wired doctor --fix to best-effort rebuild the cache."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T17:12:20.226Z"
 doc_updated_by: "CODER"
 description: "Introduce tasks-index.v2 schema (byId/byPath) and a rebuild-index usecase/command; integrate with doctor --fix."
@@ -71,15 +71,11 @@ packages/agentplane/src/backends/task-backend/** and task-index module; add a re
 
 1) Design tasks-index.v2 schema: byId/byPath, schema_version=2.\n2) Implement load/save for v2 while keeping v1 read compat.\n3) Add rebuild-index usecase/command and unit tests.\n4) Wire doctor --fix to call rebuild-index when safe.\n5) Run bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-Risk: cache format change impacts performance or correctness; mitigate with backwards-compatible reader and tests.
+- bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T17:12:13.761Z — VERIFY — ok
@@ -96,6 +92,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T17:08:07.722Z, excerpt_
 
 Revert v2 index writer and rebuild command; keep v1 behavior.
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:full
+
+## Risks
+
+Risk: cache format change impacts performance or correctness; mitigate with backwards-compatible reader and tests.

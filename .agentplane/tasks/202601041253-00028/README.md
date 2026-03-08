@@ -23,7 +23,7 @@ commit:
   hash: "10b4ffcce3069a858b32580fe7247a1bb8a824a5"
   message: "Legacy completion (backfill)"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-11T08:06:07+00:00"
 doc_updated_by: "agentctl"
 description: "Make the pipeline rule enforceable: update python scripts/agentctl.py task add to always write an explicit depends_on list (empty by default) so new tasks never omit the field. Also adjust AGENTS.md wording to clarify this requirement applies on task creation (legacy tasks may omit depends_on until updated)."
@@ -39,10 +39,23 @@ dirty: false
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

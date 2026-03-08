@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Upgrade now preserves user customizations when upgrading AGENTS.md and agent prompt JSON. AGENTS.md keeps Local Overrides block (markers; section fallback); .agentplane/agents/*.json uses baseline-aware three-way merge to apply upstream updates while retaining user diffs; bundle config.json is skipped with a warning. Tests added; lint/test:full pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T09:16:06.470Z"
 doc_updated_by: "CODER"
 description: "Make agentplane upgrade replace AGENTS.md and .agentplane/agents from the bundle when unmodified, and perform a best-effort smart merge when the user customized AGENTS.md or agent prompt JSON. Preserve user additions and new agents; avoid overwriting local config."
@@ -75,9 +75,6 @@ id_source: "generated"
 3. Ensure upgrade output uses canonical agentplane naming and warnings are clear.
 4. Run bun run lint, bun run test:full, bun run coverage.
 
-## Risks
-
-
 ## Verify Steps
 
 1. bun run lint
@@ -85,10 +82,6 @@ id_source: "generated"
 3. bun run coverage
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T09:15:14.442Z — VERIFY — ok
@@ -102,3 +95,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T09:07:42.890Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

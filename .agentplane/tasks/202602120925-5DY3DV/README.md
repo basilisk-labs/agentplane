@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: init interactive tests cover prod compact and dev full questionnaire paths; lint/build pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:10:30.854Z"
 doc_updated_by: "CODER"
 description: "Init asks 1-2 questions and configures execution/output defaults for installed workflow."
@@ -68,14 +68,15 @@ id_source: "generated"
 
 1. Add setup-profile switch (prod/dev) to init.\n2. Keep prod interactive flow compact (essential prompts only).\n3. Preserve full questionnaire for dev mode.\n4. Update interactive init tests.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:09:55.233Z — VERIFY — ok
@@ -89,3 +90,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:09:49.943Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

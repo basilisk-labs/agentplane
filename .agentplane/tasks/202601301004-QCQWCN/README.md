@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: Implemented task subcommand parity, updated help, and added tests | details: no runtime tests run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:26.034Z"
 doc_updated_by: "agentplane"
 description: "Implement missing task operations in Node CLI to match agentctl (add/update/scrub/next/search/scaffold/normalize/migrate/comment/set-status + doc show)."
@@ -45,19 +45,25 @@ Added Node CLI parity for task subcommands (add/update/scrub/next/search/scaffol
 
 Updated task command handling and helpers in node CLI, extended help output, and added tests for new task operations.
 
-## Risks
+## Plan
 
-Parity behaviors may still diverge in edge cases (status transitions or backend-specific nuances).
 
 ## Verify Steps
 
 Not run (not requested).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit for this task.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Parity behaviors may still diverge in edge cases (status transitions or backend-specific nuances).

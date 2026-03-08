@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: added sync/check script for agent template drift, wired npm scripts, synchronized .agentplane/agents from assets source-of-truth, and added regression test asserting assets/repo agent parity."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:06:02.278Z"
 doc_updated_by: "CODER"
 description: "Add scripts/sync-agent-templates.mjs with check/sync modes, choose assets/agents as source of truth, add npm scripts agents:check and agents:sync, and add sync coverage test."
@@ -73,20 +73,6 @@ Out of scope:
 3. Add npm scripts and tests.
 4. Run build/lint/tests and commit.
 
-## Risks
-
-- Risk: accidental source-of-truth inversion.
-Mitigation: hardcode canonical path as `packages/agentplane/assets/agents`.
-- Risk: silent drift in extra/missing files.
-Mitigation: check mode validates both file lists and contents.
-
-## Verification
-
-
-## Rollback Plan
-
-Revert the task commit to restore previous behavior and remove the sync gate.
-
 ## Verify Steps
 
 - `bun run --filter=@agentplaneorg/core build`
@@ -97,3 +83,22 @@ Revert the task commit to restore previous behavior and remove the sync gate.
 Pass criteria:
 - `agents:check` exits 0 when synchronized
 - tests pass
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+Revert the task commit to restore previous behavior and remove the sync gate.
+
+## Findings
+
+
+## Risks
+
+- Risk: accidental source-of-truth inversion.
+Mitigation: hardcode canonical path as `packages/agentplane/assets/agents`.
+- Risk: silent drift in extra/missing files.
+Mitigation: check mode validates both file lists and contents.

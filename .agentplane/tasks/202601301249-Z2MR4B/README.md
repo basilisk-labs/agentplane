@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: produced python inventory, parity matrix, and report | details: audit files saved under docs/audits."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:29.553Z"
 doc_updated_by: "agentplane"
 description: "Audit Python agentctl + supporting scripts, compare against Node.js CLI, and report gaps + parity plan."
@@ -44,19 +44,25 @@ description: "Audit Python agentctl + supporting scripts, compare against Node.j
 
 - Audit Python agentctl CLI and supporting scripts; capture commands, flags, I/O, and side effects.\n- Audit Node.js CLI implementation and map each capability to the Python inventory.\n- Produce a parity report with gaps, risks, and a prioritized work plan.
 
-## Risks
+## Plan
 
-- Missing hidden behaviors or edge cases could understate parity gaps.\n- Output formatting differences might be overlooked without fixtures.
 
 ## Verify Steps
 
 - Inventory file exists and covers agentctl subcommands + scripts.\n- Parity matrix references every inventory item with status.\n- Parity report summarizes gaps and priorities.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reopen the task and expand the audit if gaps are found after review.\n- Revise the parity plan and re-issue the report.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Missing hidden behaviors or edge cases could understate parity gaps.\n- Output formatting differences might be overlooked without fixtures.

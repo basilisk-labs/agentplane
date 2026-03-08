@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: preflight now collects project/config/tasks/git state in one command and exposes deterministic next_actions for agents, reducing startup command fan-out."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:29:47.498Z"
 doc_updated_by: "CODER"
 description: "Single-command preflight returning machine-readable summary + next_actions for agents."
@@ -66,14 +66,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts --hookTimeout 60000 --testTimeout 60000
+2. bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --hookTimeout 60000 --testTimeout 60000
+3. bunx eslint packages/agentplane/src/cli/run-cli/commands/core.ts packages/agentplane/src/cli/run-cli/command-catalog.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:29:47.324Z — VERIFY — ok
@@ -89,8 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:26:55.897Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts --hookTimeout 60000 --testTimeout 60000
-2. bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --hookTimeout 60000 --testTimeout 60000
-3. bunx eslint packages/agentplane/src/cli/run-cli/commands/core.ts packages/agentplane/src/cli/run-cli/command-catalog.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts
+
+## Risks

@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: added execution profile fields to config schema and core defaults/types, synchronized spec/core schemas, and validated via focused tests and builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:03:27.833Z"
 doc_updated_by: "CODER"
 description: "Extend config schema and defaults with execution profile fields and validation."
@@ -74,16 +74,13 @@ Out of scope: init UI prompts, runtime policy behavior, docs refresh.
 3. Add/update config unit tests for defaults and validation.
 4. Run targeted tests for config module.
 
-## Risks
+## Verify Steps
 
-Risk: schema/type drift between packages/spec and packages/core.
-Mitigation: update both schema copies and run existing config tests.
+- bun run --filter=@agentplaneorg/core test packages/core/src/config/config.test.ts
+- bun run --filter=@agentplaneorg/core build
+- bun run --filter=agentplane build
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T10:03:23.244Z — VERIFY — ok
@@ -104,8 +101,10 @@ Commands: bun run test:core -- packages/core/src/config/config.test.ts; bun run 
 
 Revert schema and config type/default changes in one commit if validation or dependent tests fail.
 
-## Verify Steps
+## Findings
 
-- bun run --filter=@agentplaneorg/core test packages/core/src/config/config.test.ts
-- bun run --filter=@agentplaneorg/core build
-- bun run --filter=agentplane build
+
+## Risks
+
+Risk: schema/type drift between packages/spec and packages/core.
+Mitigation: update both schema copies and run existing config tests.

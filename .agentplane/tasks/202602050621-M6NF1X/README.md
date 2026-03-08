@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: shared CLI utilities extracted; pre-commit hooks passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T06:26:41.550Z"
 doc_updated_by: "CODER"
 description: "Move shared helpers (http, archive, update-check, exit codes, output) into cli/ modules; thin run-cli router."
@@ -44,19 +44,25 @@ Extract shared CLI utilities into cli/ modules and simplify run-cli.ts.
 
 Move shared helpers from run-cli.ts into cli/ modules; keep behavior unchanged; update imports and tests as needed.
 
-## Risks
+## Plan
 
-Risk: refactor breaks CLI wiring; mitigate with existing run-cli tests and pre-commit hooks.
 
 ## Verify Steps
 
 Run pre-commit hooks and run-cli test suites; confirm no behavior regressions.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the refactor commit(s) to restore the monolithic run-cli.ts implementation.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: refactor breaks CLI wiring; mitigate with existing run-cli tests and pre-commit hooks.

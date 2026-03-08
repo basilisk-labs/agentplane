@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Confirmed core refactor steps (catalog + lazy imports + split registry + json prescan) are already present; full test and coverage runs pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:09:46.639Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Tracking task for initial CLI refactor steps: fix json error-mode edge case; add registry consistency guards; introduce a single command catalog; split help/run registries to avoid heavy imports."
@@ -62,6 +62,10 @@ id_source: "generated"
 Цель: выполнить стартовый пакет рефакторинга CLI (шаги 1–5) с минимальными UX-изменениями: исправить edge-case JSON-ошибок, добавить предохранители на реестры команд, убрать дублирование списков и сделать «fast help» реально легким по импортам.
 
 Успех: все тесты проходят; состав команд не расходится между help/run; help-путь не тянет тяжелые импорты статически.
+
+## Context
+
+Основание: текущая архитектура CLI держит два вручную поддерживаемых списка команд и статически импортирует обработчики в registry.ts, из-за чего help-ветка не выигрывает по cold start. Также найден баг: глобальный флаг --json не применяется к ошибкам, возникающим до успешного parseGlobalArgs.
 
 ## Scope
 
@@ -81,14 +85,6 @@ Out-of-scope (на этом этапе):
 1. Выполнить зависимые задачи: TCX3SJ -> 94JEFQ -> CG1H6E -> SFNBH7 -> H3DVFH.
 2. После каждого шага прогонять lint + test:full.
 3. В конце прогнать coverage и проверить, что help-снапшоты/контракты не изменились неожиданно.
-
-## Risks
-
-Риск: изменение help-вывода (порядок/формат/набор команд).
-Митигация: существующие help снапшот/контракт тесты; добавить тест равенства наборов команд help/run.
-
-Риск: регрессия в роутинге/матчинге команд из-за правок реестра.
-Митигация: cli-smoke + test:full.
 
 ## Verify Steps
 
@@ -115,11 +111,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:09:46.120Z, excerpt_
 
 Откат: git revert коммитов задач в обратном порядке, затем bun run test:full.
 
-## Context
-
-Основание: текущая архитектура CLI держит два вручную поддерживаемых списка команд и статически импортирует обработчики в registry.ts, из-за чего help-ветка не выигрывает по cold start. Также найден баг: глобальный флаг --json не применяется к ошибкам, возникающим до успешного parseGlobalArgs.
-
-## Notes
+## Findings
 
 ### Tasks
 - 202602090801-TCX3SJ
@@ -130,3 +122,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:09:46.120Z, excerpt_
 
 ### Approvals / Overrides
 - require_plan=false, require_verify=false (см. config).
+
+## Risks
+
+Риск: изменение help-вывода (порядок/формат/набор команд).
+Митигация: существующие help снапшот/контракт тесты; добавить тест равенства наборов команд help/run.
+
+Риск: регрессия в роутинге/матчинге команд из-за правок реестра.
+Митигация: cli-smoke + test:full.

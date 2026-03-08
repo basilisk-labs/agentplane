@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: update docs for init execution profile flow and regenerated CLI reference"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:23:16.206Z"
 doc_updated_by: "DOCS"
 description: "Refresh quickstart/CLI docs to describe init prompts and execution profile behavior."
@@ -71,9 +71,10 @@ In scope: docs/user/commands.mdx, docs/user/setup.mdx, packages/agentplane/READM
 
 1) Обновить narrative в setup/commands под execution profile. 2) Регенерировать cli-reference из текущего исходника. 3) Проверить формат/ссылки и зафиксировать изменения.
 
-## Risks
+## Verify Steps
 
-Риск: расхождение с фактическим help выводом, если не регенерировать CLI reference. Смягчение: генерация файла через docs cli из локального кода и проверка по init --help.
+- node packages/agentplane/bin/agentplane.js docs cli --out docs/user/cli-reference.generated.mdx
+- bun run format:check docs/user/commands.mdx docs/user/setup.mdx docs/user/cli-reference.generated.mdx packages/agentplane/README.md
 
 ## Verification
 
@@ -98,7 +99,9 @@ Ran: node packages/agentplane/bin/agentplane.js docs cli --out docs/user/cli-ref
 
 Откатить doc-файлы до предыдущего коммита, затем перегенерировать CLI reference из стабильной версии.
 
-## Verify Steps
+## Findings
 
-- node packages/agentplane/bin/agentplane.js docs cli --out docs/user/cli-reference.generated.mdx
-- bun run format:check docs/user/commands.mdx docs/user/setup.mdx docs/user/cli-reference.generated.mdx packages/agentplane/README.md
+
+## Risks
+
+Риск: расхождение с фактическим help выводом, если не регенерировать CLI reference. Смягчение: генерация файла через docs cli из локального кода и проверка по init --help.

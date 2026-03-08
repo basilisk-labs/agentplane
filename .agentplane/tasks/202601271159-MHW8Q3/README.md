@@ -26,7 +26,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: bun run ci passed | details: docs header asset moved and README updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:09.659Z"
 doc_updated_by: "agentplane"
 description: "Apply updated documentation asset placement (move header image to docs/assets) and README references."
@@ -39,19 +39,25 @@ Move docs header image under docs/assets and update README reference.
 
 Update README asset path; relocate header image to docs/assets.
 
-## Risks
+## Plan
 
-Low risk; ensure README still renders header image.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 72a4f109728d.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; ensure README still renders header image.

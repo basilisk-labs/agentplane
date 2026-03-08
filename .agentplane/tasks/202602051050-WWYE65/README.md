@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit; bun run format:check; bun run lint; bun run test:fast. Commit: 7d1a2099737c."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T11:21:07.778Z"
 doc_updated_by: "CODER"
 description: "Refactor packages/* folder structure for clarity and navigation with minimal regressions."
@@ -43,9 +43,8 @@ Reorganized packages/agentplane and packages/core source trees into domain folde
 
 Moved files under packages/agentplane/src and packages/core/src, adjusted imports, test paths, and updated docs/ROADMAP references.
 
-## Risks
+## Plan
 
-Medium risk: large file moves may break paths if any import was missed; mitigated by lint and test runs.
 
 ## Verify Steps
 
@@ -54,11 +53,18 @@ bun run format:check
 bun run lint
 bun run test:fast
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 7d1a2099737c to restore original structure.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Medium risk: large file moves may break paths if any import was missed; mitigated by lint and test runs.

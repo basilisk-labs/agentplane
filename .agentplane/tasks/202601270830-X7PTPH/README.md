@@ -30,7 +30,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: updated README.md and docs/* to describe the Node.js agentplane v1 (offline-first, .agentplane layout, CLI contract, recipes spec, schemas)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:04.607Z"
 doc_updated_by: "agentplane"
 description: "Rewrite project documentation to match the Node.js agentplane CLI (commands, .agentplane layout, offline-first, recipes), using ROADMAP.md as source of truth."
@@ -46,21 +46,27 @@ Update all user-facing docs to describe the Node.js `agentplane` CLI and `.agent
 - Replace `python .agent-plane/agentctl.py ...` examples with `agentplane ...`.
 - Ensure docs match the offline-first/network-only-on-explicit-commands model.
 
-## Risks
+## Plan
 
-- Docs may get ahead of implementation; clearly mark prototype/"not implemented yet" areas.
-- Changing operational docs (current python workflow) can disrupt contributors if not scoped.
 
 ## Verify Steps
 
 - `rg -n "agentctl|\.agent-plane" docs README.md` shows no stale Python-first guidance (except explicitly marked legacy notes).
 - `docs/cli-contract.md` is referenced as the source of truth for commands.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the documentation update commit(s).
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Docs may get ahead of implementation; clearly mark prototype/"not implemented yet" areas.
+- Changing operational docs (current python workflow) can disrupt contributors if not scoped.

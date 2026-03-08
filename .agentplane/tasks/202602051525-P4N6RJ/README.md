@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Added scenario run audit report (report.json) with redacted args/env keys and git summary; bun run test:fast."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T15:49:18.637Z"
 doc_updated_by: "CODER"
 description: "Write report.json for recipe scenario runs with redacted args/env and git diff summary."
@@ -46,10 +46,8 @@ Add audit report for scenario runs with redaction and git diff summary.
 - Include timestamps, recipe/scenario ids, steps with redacted args, env keys, and git diff summary.
 - Update tests and docs.
 
-## Risks
+## Plan
 
-- Redaction rules might miss secrets.
-- Git diff summary may include unrelated changes.
 
 ## Verify Steps
 
@@ -62,8 +60,17 @@ Pending.
 
 - ✅ bun run test:fast (pass).\n- ✅ Scenario audit report assertions in recipes tests (redacted args/env keys, report.json on failure).
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert report.json generation and related test updates.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Redaction rules might miss secrets.
+- Git diff summary may include unrelated changes.

@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: redesigned interactive init with colored ASCII onboarding, clearer grouped prompts, and execution profile selection while preserving non-interactive behavior and passing core CLI tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:13:55.366Z"
 doc_updated_by: "CODER"
 description: "Add human-friendly interactive init UI: colors, ASCII logo, boxed sections, clearer prompts; keep non-interactive/plain outputs stable."
@@ -76,16 +76,13 @@ Out of scope: runtime policy enforcement.
 4. Wire selected execution profile into written config.
 5. Update and run init-related CLI tests.
 
-## Risks
+## Verify Steps
 
-Risk: interactive UX changes can break init tests and non-TTY flows.
-Mitigation: keep formatting behind TTY interactive branch and preserve --yes behavior.
+- bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
+- bun run --filter='@agentplaneorg/core' build
+- bun run --filter='agentplane' build
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T10:13:48.874Z — VERIFY — ok
@@ -106,8 +103,10 @@ Commands: bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.init
 
 Revert init UX helper and prompt flow changes if non-interactive compatibility or tests regress.
 
-## Verify Steps
+## Findings
 
-- bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
-- bun run --filter='@agentplaneorg/core' build
-- bun run --filter='agentplane' build
+
+## Risks
+
+Risk: interactive UX changes can break init tests and non-TTY flows.
+Mitigation: keep formatting behind TTY interactive branch and preserve --yes behavior.

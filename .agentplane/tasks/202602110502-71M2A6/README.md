@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: spec/run split applied for doctor and recipes install; lazy loading preserved in command catalog."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:17:04.464Z"
 doc_updated_by: "CODER"
 description: "Split selected heavy commands (doctor/commit/guard/recipes install) into spec/run to keep help path lean and avoid heavy top-level imports."
@@ -77,16 +77,15 @@ In scope:
 3. Switch command catalog to spec imports and run lazy imports.
 4. Run targeted and full tests, then commit.
 
-## Risks
+## Verify Steps
 
-- Risk: import path regressions in tests/registry.
-Mitigation: keep compatibility re-export files and run command-catalog/help tests.
+- `bun run --filter=@agentplaneorg/core build`
+- `bun run --filter=agentplane build`
+- `bun run lint`
+- `bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/recipes.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts`
+- `bun run test:fast`
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T05:16:56.059Z — VERIFY — ok
@@ -103,10 +102,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T05:14:45.482Z, excerpt_
 
 Revert the task commit to restore pre-split command module layout.
 
-## Verify Steps
+## Findings
 
-- `bun run --filter=@agentplaneorg/core build`
-- `bun run --filter=agentplane build`
-- `bun run lint`
-- `bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/recipes.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts`
-- `bun run test:fast`
+
+## Risks
+
+- Risk: import path regressions in tests/registry.
+Mitigation: keep compatibility re-export files and run command-catalog/help tests.

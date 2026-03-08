@@ -28,7 +28,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/T-086/pr."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:28.513Z"
 doc_updated_by: "agentplane"
 description: "Add a clear, unambiguous definition of workflow_mode values \\\"direct\\\" and \\\"branch_pr\\\" across agent instructions and documentation. Document the operational differences (where work happens, whether task branches/worktrees are required, who can write tasks.json, required PR artifacts under docs/workflow/T-###/pr, and which agent is allowed to integrate/finish). Update AGENTS.md and .agent-plane/agentctl.md accordingly."
@@ -40,16 +40,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

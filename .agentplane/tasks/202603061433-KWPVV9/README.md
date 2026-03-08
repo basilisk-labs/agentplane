@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: v0.3.1 released, published to npm, and mirrored on GitHub Releases."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T15:27:11.039Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Prepare, validate, tag, and publish release 0.3.1 for agentplane and @agentplaneorg/core, including release notes, parity checks, push, and post-publish verification."
@@ -69,11 +69,6 @@ Ship patch release 0.3.1 for agentplane and @agentplaneorg/core, replacing the b
 
 Release plan: version=0.3.1, tag=v0.3.1, scope=all commits in .agentplane/.release/plan/2026-03-06T14-33-49-606Z since v0.3.0; write docs/releases/v0.3.1.md covering the full range, bump @agentplaneorg/core and agentplane to 0.3.1 with exact dependency parity, run bun run release:prepublish, then run agentplane release apply --push --yes and verify npm/GitHub publication evidence.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -87,10 +82,6 @@ Release plan: version=0.3.1, tag=v0.3.1, scope=all commits in .agentplane/.relea
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T15:26:58.155Z — VERIFY — ok
@@ -107,3 +98,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T14:34:56.498Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

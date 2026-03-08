@@ -42,7 +42,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: task start-ready now performs deterministic readiness check then start transition, reducing multi-command orchestration in agent runs."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:42:53.946Z"
 doc_updated_by: "CODER"
 description: "Composite command to validate readiness and start with one deterministic action."
@@ -57,14 +57,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:42:53.786Z — VERIFY — ok
@@ -78,3 +79,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:25:10.946Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

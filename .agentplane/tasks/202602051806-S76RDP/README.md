@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: tag v0.1.6 points to HEAD and main+tag pushed after passing pre-push tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T18:25:16.882Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Create tag v0.1.6 and push main + tag to origin."
@@ -43,9 +43,8 @@ Tag v0.1.6 and push to origin to trigger release workflow.
 
 Create git tag v0.1.6 on the release commit and push main + tag.
 
-## Risks
+## Plan
 
-Medium: tagging the wrong commit could publish incorrect release.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Command: git tag --list v0.1.6; git log -1 --decorate; ensure tag points to rele
 
 Tagged v0.1.6 on HEAD and confirmed tag points to latest release commit.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Delete tag locally and on origin, then retag the correct commit.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Medium: tagging the wrong commit could publish incorrect release.

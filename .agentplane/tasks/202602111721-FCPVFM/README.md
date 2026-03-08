@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: added guard wrapper branch tests and confirmed focused guard coverage run passes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:28:47.119Z"
 doc_updated_by: "TESTER"
 description: "Add focused tests for guard command wrapper branches in commands.ts."
@@ -64,17 +64,22 @@ In scope: packages/agentplane/src/commands/guard/impl/commands.unit.test.ts only
 
 1) Add tests for cmdGuardClean/cmdGuardSuggestAllow/cmdGuardCommit mapCoreError branches. 2) Add no-staged branch for cmdGuardSuggestAllow. 3) Run focused guard coverage.
 
-## Risks
+## Verify Steps
 
-Low; tests-only changes with mocked dependencies.
+- bunx vitest run packages/agentplane/src/commands/guard/impl/commands.unit.test.ts\n- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert new unit tests in commands.unit.test.ts.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/guard/impl/commands.unit.test.ts\n- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'
+
+## Risks
+
+Low; tests-only changes with mocked dependencies.

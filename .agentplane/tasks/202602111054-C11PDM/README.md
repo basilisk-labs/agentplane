@@ -48,7 +48,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: init now writes backend artifacts only for the selected backend and no longer creates both local and redmine stubs"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:59:20.158Z"
 doc_updated_by: "CODER"
 description: "Fix init so it installs only chosen backend artifacts (local OR redmine), not both."
@@ -66,10 +66,6 @@ In scope: init backend path/stub generation и тесты init --backend. Out of
 
 1) Локализовать writeBackendStubs. 2) Создавать директории/файлы только под выбранный backend. 3) Обновить тесты.
 
-## Risks
-
-Риск: сломать ожидаемую структуру .agentplane/backends. Смягчение: сохранить корневую папку backends, но создавать только выбранный stub.
-
 ## Verify Steps
 
 - bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
@@ -79,6 +75,16 @@ In scope: init backend path/stub generation и тесты init --backend. Out of
 
 При init --backend local существует только local/backend.json; при redmine — только redmine/backend.json.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Откатить изменения init backend generation и тестов.
+
+## Findings
+
+
+## Risks
+
+Риск: сломать ожидаемую структуру .agentplane/backends. Смягчение: сохранить корневую папку backends, но создавать только выбранный stub.

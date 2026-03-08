@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the canonical direct-mode happy path is now a shorter route across bootstrap, quickstart, workflow, and lifecycle docs, while manual and recovery branches are isolated into fallback sections."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T19:25:41.203Z"
 doc_updated_by: "DOCS"
 description: "Reduce the canonical direct lifecycle to the shortest agent-first path and push manual flows into clearly separate fallback surfaces."
@@ -72,11 +72,6 @@ Reduce the canonical direct lifecycle to the shortest agent-first path and push 
 
 1. Audit the current bootstrap, quickstart, workflow, and task-lifecycle surfaces to identify where the direct-mode happy path is diluted by optional flags, manual recovery steps, or duplicate explanations. 2. Rewrite those surfaces so the default agent path is a single short sequence from preflight to finish, while all optional/manual branches move into clearly labeled fallback sections. 3. Re-sync generated/bootstrap docs and run the docs parity checks plus website build so the shorter lifecycle remains consistent across CLI and docs surfaces.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -90,10 +85,6 @@ Reduce the canonical direct lifecycle to the shortest agent-first path and push 
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T19:25:39.581Z — VERIFY — ok
@@ -110,3 +101,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T19:21:27.245Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

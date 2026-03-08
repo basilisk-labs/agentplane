@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: agent registry is already JSON under .agent-plane/agents | details: closing legacy backfill."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:14.649Z"
 doc_updated_by: "agentplane"
 description: "Split every reusable agent prompt into a dedicated JSON file under .AGENTS for easier maintenance."
@@ -40,19 +40,25 @@ dirty: false
 
 - Verify agent registry uses JSON files under .agent-plane/agents.\n- Close the legacy task with updated documentation.
 
-## Risks
+## Plan
 
-- If agent definitions are moved again, this task may need re-opening.\n- Closing a legacy task could mask future regressions if owners change.
 
 ## Verify Steps
 
 - ls .agent-plane/agents
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reopen the task if agent registry needs restructuring.\n- Audit agent files and update docs accordingly.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- If agent definitions are moved again, this task may need re-opening.\n- Closing a legacy task could mask future regressions if owners change.

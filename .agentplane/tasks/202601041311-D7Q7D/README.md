@@ -23,7 +23,7 @@ commit:
   hash: "ea9ed7a50d1789d452abb61c00987e0925c76ecb"
   message: "Legacy completion (backfill)"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Fix local backend frontmatter parsing to prevent over-escaped strings, normalize existing task files, and allow short commit id suffixes in commit subject checks/docs."
@@ -38,32 +38,38 @@ dirty: false
 - Normalize existing task READMEs after parsing changes.
 - Allow commit subjects to reference the short task id suffix.
 
-## Goal
-
-- Make task storage stable and human-readable while keeping commit checks aligned with shorter IDs.
-
 ## Scope
 
 - `.agent-plane/backends/local/backend.py`: parse JSON-quoted scalars to avoid re-escaping.
 - `.agent-plane/agentctl.py`: accept task-id suffix in commit subject checks.
 - Normalize existing task files in `.agent-plane/tasks/`.
 
-## Risks
+## Plan
 
-- Normalization rewrites task READMEs; ensure no content loss before commit.
 
 ## Verify Steps
 
 - `python3 .agent-plane/agentctl.py task list --quiet`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Restore `.agent-plane/backends/local/backend.py` and task READMEs from git history.
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Make task storage stable and human-readable while keeping commit checks aligned with shorter IDs.
+
+## Risks
+
+- Normalization rewrites task READMEs; ensure no content loss before commit.
 
 ## Changes Summary (auto)
 

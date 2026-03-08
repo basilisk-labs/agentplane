@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: init regression suite and manual checks passed for logo/spacing, selected backend install, and clean tree behavior"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T11:04:05.298Z"
 doc_updated_by: "TESTER"
 description: "Run targeted and critical tests for init UX/backend behavior and verify no regressions."
@@ -71,10 +71,6 @@ In scope: init-related core tests and manual temp-repo checks for selected backe
 ## Plan
 
 1) Прогнать init core tests. 2) Проверить local/redmine behavior вручную в temp repos. 3) Закрыть задачу с результатами.
-
-## Risks
-
-Риск: локальные проверки пропустят edge-case в существующем репо. Смягчение: сохранены автоматические init tests в suite.
 
 ## Verify Steps
 
@@ -103,3 +99,10 @@ Ran init core test suite and manual temp-repo checks for local/redmine backends;
 ## Rollback Plan
 
 При регрессии откатить последние три task-коммита (ZNST44, C11PDM, C91953).
+
+## Findings
+
+
+## Risks
+
+Риск: локальные проверки пропустят edge-case в существующем репо. Смягчение: сохранены автоматические init tests в suite.

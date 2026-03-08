@@ -33,7 +33,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: HRNHRH audit complete | details: parity tasks created and recorded for implementation."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:25.406Z"
 doc_updated_by: "agentplane"
 description: "Compare agentctl.py behavior to Node agentplane CLI, identify gaps, and propose concrete parity tasks with priorities."
@@ -46,19 +46,25 @@ Audited agentctl vs Node CLI command surface and created parity implementation t
 
 Compared agentctl help for core/task/workflow commands against Node CLI help; identified missing commands/flags; created follow-up tasks with priorities.
 
-## Risks
+## Plan
 
-Parity list based on CLI help; implementation details may reveal additional gaps during coding.
 
 ## Verify Steps
 
 N/A (audit only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 N/A (audit only).
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Parity list based on CLI help; implementation details may reveal additional gaps during coding.

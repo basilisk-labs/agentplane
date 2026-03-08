@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: not run (metadata-only change) | details: pre-commit hooks ran format/lint/test-fast as part of commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:42.584Z"
 doc_updated_by: "agentplane"
 description: "Set basilisk-labs ownership metadata, ensure publish fields are complete, and provide a Russian checklist + commands for npm publish."
@@ -41,19 +41,25 @@ Update npm package metadata to list basilisk-labs as author/maintainer/contribut
 
 Adjust packages/agentplane/package.json metadata and provide publish steps for npmjs.
 
-## Risks
+## Plan
 
-Incorrect ownership metadata could mislead npm readers; publish steps require user credentials and should be followed carefully.
 
 ## Verify Steps
 
 Not run (metadata-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit for 202602020726-3N2KNX.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Incorrect ownership metadata could mislead npm readers; publish steps require user credentials and should be followed carefully.

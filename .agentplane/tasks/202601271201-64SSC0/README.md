@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci passed via pre-commit (format, typecheck, lint, coverage)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:11.245Z"
 doc_updated_by: "agentplane"
 description: "Implement hooks install/uninstall with shim strategy and env flags; idempotent and safe."
@@ -44,19 +44,25 @@ Add hooks install/uninstall and hook runner with local shim.
 
 Hook scripts for commit-msg/pre-commit/pre-push; local .agentplane/bin shim; CLI commands and tests; help updates.
 
-## Risks
+## Plan
 
-Hooks can block commits if repository lacks bun or built CLI.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 git revert <commit>
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Hooks can block commits if repository lacks bun or built CLI.

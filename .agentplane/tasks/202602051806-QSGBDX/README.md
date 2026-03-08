@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: core schema shipped under packages/core/schemas and path updated in config loader."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T18:08:57.448Z"
 doc_updated_by: "CODER"
 description: "Ship config schema with @agentplaneorg/core so agentplane --version works in npm installs."
@@ -43,9 +43,8 @@ Package config schema with core and update runtime path.
 
 Add core schemas directory, update config schema path, include schemas in core package files.
 
-## Risks
+## Plan
 
-Wrong schema path could break config validation.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Run agentplane --version from a packed install or confirm schema file resolves u
 
 Added core schema file, updated schema path, and included schemas in package files list.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert schema path and packaging changes.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Wrong schema path could break config validation.

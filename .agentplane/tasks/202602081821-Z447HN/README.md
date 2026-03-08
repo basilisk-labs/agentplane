@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added a core contract test ensuring help-fast and run registries expose the same command id set; lint and cli core tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T18:33:01.851Z"
 doc_updated_by: "TESTER"
 description: "Add test that buildHelpFastRegistry().list() and buildRegistry(...).list() expose the same set of command ids."
@@ -71,9 +71,9 @@ Add regression test to ensure help-fast registry and run registry expose the sam
 
 1) Write a test that compares sets of command ids from buildHelpFastRegistry().list() and buildRegistry(getCtx).list().\n2) Use a minimal getCtx stub that should never be called.\n3) Run bun run test:cli:core and bun run typecheck.
 
-## Risks
+## Verify Steps
 
-- Risk: test becomes brittle if registry intentionally diverges. Mitigation: treat divergence as a deliberate refactor (update test alongside registry changes).
+- bun run test:cli:core\n- bun run typecheck\nPass criteria: test fails if a command is present in only one of the registries.
 
 ## Verification
 
@@ -94,10 +94,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T18:27:57.986Z, excerpt_
 
 Revert the commit for this test if it blocks planned registry refactors; update once registry becomes catalog-driven.
 
-## Verify Steps
-
-- bun run test:cli:core\n- bun run typecheck\nPass criteria: test fails if a command is present in only one of the registries.
-
-## Notes
+## Findings
 
 ### Approvals / Overrides\n- 2026-02-08: no overrides.
+
+## Risks
+
+- Risk: test becomes brittle if registry intentionally diverges. Mitigation: treat divergence as a deliberate refactor (update test alongside registry changes).

@@ -23,7 +23,7 @@ commit:
   hash: "36dea396b5c5d9e3c99d19c2782c6941c987cb6d"
   message: "✅ FQRW89 orchestrator: refresh global recipes bundle"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-20T09:18:12+00:00"
 doc_updated_by: "agentctl"
 description: "Update ORCHESTRATOR workflow to refresh the global recipes bundle on startup."
@@ -40,19 +40,25 @@ Global bundle should stay current and be refreshed explicitly at run start.
 
 - Update ORCHESTRATOR.json to run recipes.py bundle build with confirmation.
 
-## Risks
+## Plan
 
-Wording could imply implicit tool execution; must keep explicit confirmation.
 
 ## Verify Steps
 
 Review ORCHESTRATOR.json for updated instructions.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert ORCHESTRATOR.json changes.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Wording could imply implicit tool execution; must keep explicit confirmation.

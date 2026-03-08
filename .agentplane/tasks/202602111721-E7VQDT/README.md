@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: all sub-tasks are done and threshold checks passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:29:24.474Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Raise remaining significant guard files to at least 72% branch coverage with atomic test tasks."
@@ -68,17 +68,22 @@ In scope: sub-tasks FCPVFM, W1T7XE, Q0YW6A and their verification outcome.
 
 1) Complete T1 for commands.ts. 2) Complete T2 for comment-commit.ts. 3) Complete T3 verification task and close epic.
 
-## Risks
+## Verify Steps
 
-Low; test-focused work and verification bookkeeping.
+Confirm tasks FCPVFM/W1T7XE/Q0YW6A are DONE and focused coverage report shows >=72% branch for commands.ts and comment-commit.ts.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Reopen affected sub-task and revert corresponding commit if coverage regresses.
 
-## Verify Steps
+## Findings
 
-Confirm tasks FCPVFM/W1T7XE/Q0YW6A are DONE and focused coverage report shows >=72% branch for commands.ts and comment-commit.ts.
+
+## Risks
+
+Low; test-focused work and verification bookkeeping.

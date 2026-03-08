@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: src/cli2 moved to src/cli/spec; imports updated; typecheck + test:cli:core + help/docs generation OK"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T16:59:42.232Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Remove top-level src/cli2 by moving spec-driven CLI (spec/parse/help/registry) under src/cli/spec; update imports; keep behavior unchanged; keep docs generation working."
@@ -79,16 +79,21 @@ Out of scope:
 
 Move src/cli2 under src/cli/spec and update imports; keep CLI behavior unchanged; verify with typecheck + cli core tests.
 
-## Risks
+## Verify Steps
 
-- Relative import paths may be subtly wrong in nested modules under `src/cli/run-cli/**`; mitigate with focused `rg` audit + typecheck + CLI test suite.
-- Generated docs/tests may still refer to the old `cli2` wording; treat `cli2` as a conceptual label unless a path reference breaks.
+Pass criteria:
+- `bun run typecheck` succeeds.
+- `bun run test:cli:core` succeeds.
+- `node packages/agentplane/bin/agentplane.js help --json` still emits the same shape (array of HelpJson objects).
+- `node packages/agentplane/bin/agentplane.js docs cli --out /tmp/cli.mdx` succeeds.
+
+Checks to run:
+- `bun run typecheck`
+- `bun run test:cli:core`
+- `node packages/agentplane/bin/agentplane.js help --json >/tmp/help.json`
+- `node packages/agentplane/bin/agentplane.js docs cli --out /tmp/cli.mdx`
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T16:58:11.098Z — VERIFY — ok
@@ -109,16 +114,10 @@ Changes: moved packages/agentplane/src/cli2 -> packages/agentplane/src/cli/spec;
 
 Revert the refactor commits to restore the previous folder layout and import paths (src/cli2 + original relative imports).
 
-## Verify Steps
+## Findings
 
-Pass criteria:
-- `bun run typecheck` succeeds.
-- `bun run test:cli:core` succeeds.
-- `node packages/agentplane/bin/agentplane.js help --json` still emits the same shape (array of HelpJson objects).
-- `node packages/agentplane/bin/agentplane.js docs cli --out /tmp/cli.mdx` succeeds.
 
-Checks to run:
-- `bun run typecheck`
-- `bun run test:cli:core`
-- `node packages/agentplane/bin/agentplane.js help --json >/tmp/help.json`
-- `node packages/agentplane/bin/agentplane.js docs cli --out /tmp/cli.mdx`
+## Risks
+
+- Relative import paths may be subtly wrong in nested modules under `src/cli/run-cli/**`; mitigate with focused `rg` audit + typecheck + CLI test suite.
+- Generated docs/tests may still refer to the old `cli2` wording; treat `cli2` as a conceptual label unless a path reference breaks.

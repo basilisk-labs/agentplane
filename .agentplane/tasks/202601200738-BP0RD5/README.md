@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: close: mini-cli contract and backend strategy documented."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:59.980Z"
 doc_updated_by: "agentplane"
 description: "Document the core vs recipes backend strategy (local backend stays in core; remote backends via recipes) and define the mini-CLI contract for recipe tools, aligned with agentctl-style outputs and errors."
@@ -44,23 +44,26 @@ Needed to codify the minimal core (local backend) and require recipe tools to ex
 
 Updated AGENTS.md with the local-backend core rule; added a recipe mini-CLI contract and structured output format in RECIPES.md; noted backend strategy in docs/07-tasks-and-backends.md.
 
-## Risks
+## Plan
 
-Documentation changes may need alignment as recipe tooling evolves; enforce the mini-CLI contract in future recipe implementations.
 
 ## Verify Steps
 
 Reviewed the updated documentation sections for consistency with core and recipe guardrails.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit c9a7cc449afd to remove the documentation updates.
 
-## Notes
+## Findings
 
 Mini-CLI JSON output format is now documented in RECIPES.md and should be used for new recipe tools.
 
-## Plan
+## Risks
 
-
-## Verification
+Documentation changes may need alignment as recipe tooling evolves; enforce the mini-CLI contract in future recipe implementations.

@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added command-catalog.ts as single source of truth for registry wiring; help-fast and run registries now iterate catalog; lint, cli core tests, and typecheck pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T18:44:50.485Z"
 doc_updated_by: "CODER"
 description: "Add command-catalog.ts and refactor buildRegistry/buildHelpFastRegistry to derive registrations from it."
@@ -71,9 +71,9 @@ Introduce a single command catalog as the source of truth and derive both help-f
 
 1) Create command-catalog.ts exporting COMMANDS entries (spec + handler factory).\n2) Refactor buildHelpFastRegistry/buildRegistry to iterate COMMANDS and register specs/handlers.\n3) Keep behavior identical; ensure help handler registration remains last and uses the registry instance.\n4) Run bun run lint; bun run test:cli:core; bun run typecheck.
 
-## Risks
+## Verify Steps
 
-- Risk: missing a command in the catalog would drop it from help/run. Mitigation: existing contract tests (help JSON contract, registry equality) will catch.
+- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: all pass; registry equality test remains green.
 
 ## Verification
 
@@ -94,10 +94,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T18:37:20.849Z, excerpt_
 
 Revert the commit to restore manual lists if catalog refactor causes regressions.
 
-## Verify Steps
-
-- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: all pass; registry equality test remains green.
-
-## Notes
+## Findings
 
 ### Approvals / Overrides\n- 2026-02-08: no overrides.
+
+## Risks
+
+- Risk: missing a command in the catalog would drop it from help/run. Mitigation: existing contract tests (help JSON contract, registry equality) will catch.

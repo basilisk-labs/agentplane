@@ -23,7 +23,7 @@ commit:
   hash: "97ee8149d897bc6544a629c9623b3b7cb0e19cd2"
   message: "✅ RDDNMZ docs: document bundle refresh"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-20T08:29:59+00:00"
 doc_updated_by: "agentctl"
 description: "Update RECIPES.md to describe the refresh command and how it updates bundle.json and bundle.md."
@@ -41,23 +41,26 @@ Users need a stable, documented way to refresh bundle.json without manual compil
 - Add a Bundle refresh section to RECIPES.md.
 - Explain refresh behavior and bundle.md update rules.
 
-## Risks
+## Plan
 
-Docs could drift from CLI behavior if examples are inaccurate.
 
 ## Verify Steps
 
 Review RECIPES.md for accuracy and English-only wording.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert RECIPES.md changes.
 
-## Notes
+## Findings
 
 Keep examples minimal and consistent with recipes.py flags.
 
-## Plan
+## Risks
 
-
-## Verification
+Docs could drift from CLI behavior if examples are inaccurate.

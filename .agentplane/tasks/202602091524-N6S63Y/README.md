@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. LocalBackend.listTasks now processes task directories in sorted order and reads/parses readmes with bounded concurrency, while preserving duplicate/invalid id guards and task-index cache writes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:31:19.256Z"
 doc_updated_by: "CODER"
 description: "Speed up task listing for large workspaces by parallelizing per-task README stat/read/parse with a bounded concurrency (mapLimit)."
@@ -70,19 +70,11 @@ packages/agentplane/src/backends/task-backend/local-backend.ts and associated te
 
 1) Inspect current local backend listTasks implementation and identify sequential I/O hotspots.\n2) Introduce concurrency-limited parallel read/parse of task readmes (mapLimit style).\n3) Preserve stable ordering in returned list and deterministic index updates.\n4) Add/update unit tests for listTasks behavior (ordering, correctness) and ensure performance logic is covered.\n5) Run bun run lint and bun run test:full.
 
-## Risks
-
-Risk: nondeterministic ordering if not handled. Mitigation: sort task IDs after collection; keep stable ordering.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:31:19.102Z — VERIFY — ok
@@ -98,3 +90,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:28:31.715Z, excerpt_
 ## Rollback Plan
 
 Revert the commit.
+
+## Findings
+
+
+## Risks
+
+Risk: nondeterministic ordering if not handled. Mitigation: sort task IDs after collection; keep stable ordering.

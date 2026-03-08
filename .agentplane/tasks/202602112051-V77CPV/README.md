@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: dependency is aligned to @agentplaneorg/core@0.2.19 and targeted build/test checks pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T20:54:24.128Z"
 doc_updated_by: "CODER"
 description: "Fix version drift where packages/agentplane pins @agentplaneorg/core older than current release; enforce parity for published installs."
@@ -61,15 +61,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) bun run --filter=agentplane build
@@ -78,3 +69,16 @@ Expected: build succeeds.
 Expected: all tests pass.
 3) cat packages/agentplane/package.json | rg "@agentplaneorg/core"
 Expected: pinned to current release version.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

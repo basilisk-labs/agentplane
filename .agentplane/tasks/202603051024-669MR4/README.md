@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added explicit scan warnings + strict-read mode for task list/next/search and removed silent task drops."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T10:31:54.656Z"
 doc_updated_by: "CODER"
 description: "Detect and report skipped task READMEs during local backend scans; add strict mode to fail fast when malformed task records are encountered."
@@ -65,9 +65,6 @@ id_source: "generated"
 ## Plan
 
 1) Instrument local backend scan to collect parse/read/validation skip reasons. 2) Return structured diagnostics from listTasks and keep backward compatibility for current callers. 3) Surface skipped-count warning in task list/next/search output. 4) Add strict-read mode path that fails fast for malformed task files and wire to command options. 5) Add unit tests for skip reporting and strict mode behavior.
-
-## Risks
-
 
 ## Verify Steps
 
@@ -1059,10 +1056,6 @@ Total: 984 (BLOCKED=1, DOING=1, DONE=978, TODO=4) against fixture with malformed
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T10:31:40.116Z — VERIFY — ok
 
@@ -1075,3 +1068,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T10:25:20.181Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

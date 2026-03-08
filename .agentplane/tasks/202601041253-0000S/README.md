@@ -26,7 +26,7 @@ comments:
   -
     author: "reviewer"
     body: "Updated AGENTS.md and README.md so commit messages start with meaningful emojis referencing the finished plan item."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:15.267Z"
 doc_updated_by: "agentplane"
 description: "Clarify how commits should start with emojis and summarize completed plan items."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

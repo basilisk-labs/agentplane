@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: dual-read compatibility now accepts doc_version=2 and doc_version=3, preserves task doc versions on lifecycle writes, and treats Notes/Findings as version-aware observation sections."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T10:38:47.195Z"
 doc_updated_by: "CODER"
 description: "Teach task readers and lifecycle commands to understand both legacy v2 and new v3 task README formats without breaking old projects."
@@ -74,11 +74,6 @@ Teach task readers and lifecycle commands to understand both legacy v2 and new v
 2. Make lifecycle readers and gates treat Notes/Findings as version-aware task-local observation sections where needed.
 3. Add regression tests proving legacy v2 tasks and v3 tasks both remain operable before template defaults switch.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Run targeted task/lint/schema tests that cover task README metadata and lifecycle gates. Expected: v2 and v3 task records both pass.
@@ -86,10 +81,6 @@ Teach task readers and lifecycle commands to understand both legacy v2 and new v
 3. Run agentplane doctor after the code changes. Expected: no new errors or warnings in this repository.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T10:38:20.940Z — VERIFY — ok
@@ -106,3 +97,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T10:23:58.961Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

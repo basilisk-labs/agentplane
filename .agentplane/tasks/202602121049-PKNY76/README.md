@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: allow prefix normalization/compaction is implemented and covered by updated unit tests plus guard suite/lint."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:53:24.644Z"
 doc_updated_by: "CODER"
 description: "Refactor guard allowlist implementation for clearer behavior and reduced branching, then add focused tests for edge cases and regressions."
@@ -67,14 +67,13 @@ id_source: "generated"
 
 1. Inspect guard allow implementation and current tests for duplication/complexity hotspots.\n2. Refactor allow matching logic to reduce branching and clarify precedence semantics.\n3. Add or update focused unit tests for prefix rules, edge paths, and backward compatibility.\n4. Run targeted test suite and lint/build checks.
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts
+2. bunx vitest run packages/agentplane/src/commands/guard/**/*.test.ts
+3. bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:52:54.888Z — VERIFY — ok
@@ -90,8 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:50:53.121Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts
-2. bunx vitest run packages/agentplane/src/commands/guard/**/*.test.ts
-3. bun run lint
+
+## Risks

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: docs and command guide now point to finish --close-commit as the default closure path; generated CLI reference updated and checks passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:41:28.258Z"
 doc_updated_by: "DOCS"
 description: "Update user-facing docs and quickstart examples to use the single-command finish+close flow, reducing agent command churn and token burn."
@@ -67,14 +67,15 @@ id_source: "generated"
 
 1. Update quickstart examples to prefer finish --close-commit for single-task completion.\n2. Update docs where close workflow is described so status/close commits are presented as one command path.\n3. Validate docs/help references and run focused tests.\n4. Commit docs updates and finish the task.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:40:10.557Z — VERIFY — ok
@@ -88,3 +89,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:38:36.697Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

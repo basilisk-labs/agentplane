@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: cached update-check integrated; tests updated; pre-commit hooks passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T06:06:24.848Z"
 doc_updated_by: "CODER"
 description: "Wire cached update-check into CLI with offline-first behavior and tests."
@@ -45,19 +45,25 @@ Wire cached update-check into CLI with offline-first behavior and tests.
 
 Integrate update-check cache into CLI startup; respect --json and AGENTPLANE_NO_UPDATE_CHECK; add integration tests.
 
-## Risks
+## Plan
 
-Risk: update-check runs network too often or skips warnings; mitigate with integration tests covering TTL and skip flags.
 
 ## Verify Steps
 
 Run update-check integration tests; ensure no network for fresh cache and proper skip behavior.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the CLI integration commit to restore previous update-check behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: update-check runs network too often or skips warnings; mitigate with integration tests covering TTL and skip flags.

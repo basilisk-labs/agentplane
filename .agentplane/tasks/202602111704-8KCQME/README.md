@@ -37,9 +37,35 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts; bunx vitest run packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:10:38.843Z"
 doc_updated_by: "TESTER"
 description: "Add targeted tests for remaining branch conditions in guard commit wrapper and policy checks."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

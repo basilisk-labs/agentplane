@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: run-cli orchestration was split into globals, catalog, error-guidance, and update-warning helpers; targeted run-cli tests, lint, TypeScript no-emit, and package builds all passed without CLI contract drift."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T06:41:57.906Z"
 doc_updated_by: "CODER"
 description: "Split run-cli bootstrap, dispatch, runtime diagnostics, and render/error glue into narrower modules without changing command contracts."
@@ -73,11 +73,6 @@ Split run-cli bootstrap, dispatch, runtime diagnostics, and render/error glue in
 2. Keep run-cli.ts as the orchestration layer that wires project/config resolution and dispatch without changing command contracts or help behavior.
 3. Verify with targeted run-cli test suites, lint, TypeScript no-emit, and a package build before finish.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -96,10 +91,6 @@ Split run-cli bootstrap, dispatch, runtime diagnostics, and render/error glue in
 - run-cli command contracts, help surfaces, and boot path remain unchanged while orchestration code is split into narrower modules.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T06:41:20.991Z — VERIFY — ok
@@ -134,3 +125,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T06:35:16.259Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: routing and agent template sync checks pass; pushing main will publish the current website state."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T14:13:15.093Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Sync mirrored policy templates required by pre-push after batched task-doc policy update, then push main and verify Docs CI / Pages Deploy for the website publication."
@@ -71,11 +71,6 @@ Sync mirrored policy templates required by pre-push after batched task-doc polic
 
 1. Sync mirrored policy templates so pre-push policy/template enforcement passes after the batched task-doc policy wording change.\n2. Run the required repository checks for the touched policy/documentation surface.\n3. Push main and confirm Docs CI plus Pages Deploy succeeded for the current website state.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -89,10 +84,6 @@ Sync mirrored policy templates required by pre-push after batched task-doc polic
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T14:13:03.489Z — VERIFY — ok
@@ -109,3 +100,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T14:10:55.806Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

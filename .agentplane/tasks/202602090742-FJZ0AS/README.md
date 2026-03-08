@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: finish.unit tests added; bun run lint/test:full/coverage pass (branches 72.78%)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T07:56:58.777Z"
 doc_updated_by: "TESTER"
 description: "Add focused unit tests for packages/agentplane/src/commands/task/finish.ts to reduce missed branches and lock down edge-case semantics."
@@ -71,19 +71,11 @@ Add unit tests for task finish command implementation to cover key branches (com
 
 1. Проанализировать missed branches в packages/agentplane/src/commands/task/finish.ts.\n2. Добавить unit-тесты на ветки: валидация args/флагов, обработка commit/close metadata, enforce verify gates и ошибки.\n3. Прогнать bun run lint, bun run test:full, bun run coverage.
 
-## Risks
-
-- Риск: тесты будут слишком тесно зависеть от формата сообщений. Митигация: проверять коды/инварианты, а не целиком строки.\n- Риск: мок git/TaskBackend. Митигация: изолировать через CommandContext + TaskBackend doubles.
-
 ## Verify Steps
 
 ### Scope\n- finish unit tests\n\n### Checks\n- bun run lint\n- bun run test:full\n- bun run coverage\n\n### Evidence / Commands\n- bun run coverage (record branch % and ensure exit 0)\n\n### Pass criteria\n- lint passes\n- all tests pass\n- coverage passes global thresholds
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T07:55:59.496Z — VERIFY — ok
@@ -99,3 +91,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T07:51:13.621Z, excerpt_
 ## Rollback Plan
 
 git revert <commit> для коммита задачи; удалить добавленные тесты при необходимости.
+
+## Findings
+
+
+## Risks
+
+- Риск: тесты будут слишком тесно зависеть от формата сообщений. Митигация: проверять коды/инварианты, а не целиком строки.\n- Риск: мок git/TaskBackend. Митигация: изолировать через CommandContext + TaskBackend doubles.

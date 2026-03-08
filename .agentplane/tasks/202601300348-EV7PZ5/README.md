@@ -25,7 +25,7 @@ commit:
   hash: "a4cc96465b18d02bbf6182c8d18d4962ddbf6ddd"
   message: "✨ 202601300348-EV7PZ5 update recipes release index"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-30T04:06:05+00:00"
 doc_updated_by: "agentctl"
 description: "Run the agentplane-recipes release pipeline and push updates in both repos."
@@ -44,23 +44,26 @@ Release metadata in agentplane-recipes is generated from recipe manifests and mu
 - Committed updated index.json in agentplane-recipes
 - Updated the submodule pointer in the main repo
 
-## Risks
+## Plan
 
-- dist artifacts are untracked locally and must be uploaded as release assets separately.
 
 ## Verify Steps
 
 - bun agentplane-recipes/scripts/build-release.ts --tag v0.1.0
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reset the agentplane-recipes submodule pointer and revert index.json updates.
 
-## Notes
+## Findings
 
 Release artifacts are in agentplane-recipes/dist for upload.
 
-## Plan
+## Risks
 
-
-## Verification
+- dist artifacts are untracked locally and must be uploaded as release assets separately.

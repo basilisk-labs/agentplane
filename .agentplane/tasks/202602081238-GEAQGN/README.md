@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: pr integrate command is now split into commands/pr/integrate/* with integrate.ts as a facade; bun run typecheck, bun run lint, and bun run test:full all pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T13:42:23.752Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split packages/agentplane/src/commands/pr/integrate.ts into smaller modules (merge strategies, verify gate, PR artifacts update, diffstat) and keep tests green."
@@ -47,29 +47,6 @@ id_source: "generated"
 ## Plan
 
 Scope: split packages/agentplane/src/commands/pr/integrate.ts into a facade plus modules under packages/agentplane/src/commands/pr/integrate/ (or pr/internal/). Steps: (1) Identify cohesive parts: merge strategy handling (squash/rebase/merge), verify invocation and gating, PR artifact updates (diffstat/summary), and post-merge cleanup. (2) Extract helpers into internal modules; keep cmdIntegrateParsed signature unchanged. (3) Replace integrate.ts with a thin re-export facade. (4) Run bun run typecheck, bun run lint, bun run test:full.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T13:39:39.640Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: bun run typecheck, bun run lint, bun run test:full (704 tests) all pass; integrate.ts is now a facade and implementation lives under commands/pr/integrate/*.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T13:26:34.736Z, excerpt_hash=sha256:558b33661e6933a54665702b43bd73de00a4fa924cff1d395ad1fccc7110f0c0
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -219,3 +196,24 @@ Installed recipe viewer@1.2.3
       Tests  704 passed (704)
    Start at  20:26:04
    Duration  21.97s (transform 9.74s, setup 0ms, import 34.92s, tests 80.67s, environment 18ms)\n\n### Pass criteria\n- pr/integrate.ts is reduced to a facade; implementation moved under commands/pr/integrate/* (or pr/internal/*).\n- integrate flow behavior is unchanged (pr-flow tests pass).\n- Full suite passes.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T13:39:39.640Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: bun run typecheck, bun run lint, bun run test:full (704 tests) all pass; integrate.ts is now a facade and implementation lives under commands/pr/integrate/*.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T13:26:34.736Z, excerpt_hash=sha256:558b33661e6933a54665702b43bd73de00a4fa924cff1d395ad1fccc7110f0c0
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

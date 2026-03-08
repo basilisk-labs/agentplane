@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: workflow contract is now anchored at .agentplane/WORKFLOW.md, runtime supports legacy root fallback for reads plus migration cleanup on publish/restore/fix, and affected tests/docs were updated to the new canonical location."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T11:46:10.892Z"
 doc_updated_by: "CODER"
 description: "Move active workflow contract path from repository root to .agentplane/WORKFLOW.md and update runtime/docs/tests accordingly."
@@ -66,18 +66,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 ### Scope\n- Primary tag: code\n\n### Checks\n- bun run test:fast -- packages/agentplane/src/workflow-runtime/file-ops.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts\n- bun run lint:core\n- bun run typecheck\n\n### Evidence / Commands\n- Record command outputs in task verification details.\n\n### Pass criteria\n- Active workflow path is .agentplane/WORKFLOW.md and legacy root WORKFLOW.md is migrated/handled safely.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T11:46:03.840Z — VERIFY — ok
@@ -95,3 +88,9 @@ Updated workflow runtime path resolution to .agentplane/WORKFLOW.md with legacy 
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -30,7 +30,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: Added unit tests for CommandContext loading and CLI assertions for structured commit bodies; ran bun run lint, bun run test:core, bun run test:agentplane, and bun run test:cli."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T20:34:41.178Z"
 doc_updated_by: "TESTER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-FY8TYM,202602061915-DZBAW0,202602061915-DH1CKG,202602061915-FXTNQ0,202602061915-KNHP1Y) Добавить/обновить unit/cli тесты для нового контекста, allowlist matching, commit-msg/guard policy, commit message generation."
@@ -48,14 +48,15 @@ id_source: "generated"
 2) Add coverage for comment-driven commit body generation (Task/Agent/Status/Comment) and subject validation edge cases.
 3) Run bun run lint, bun run test:core, bun run test:agentplane, bun run test:cli.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T20:34:00.707Z — VERIFY — ok
@@ -67,3 +68,9 @@ Note: Verified locally on 2026-02-06: added CommandContext tests and commit-from
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

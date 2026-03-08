@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: upgrade orchestration was split into dedicated source/report/apply/type modules, targeted and broad upgrade tests passed, and the command contract stayed stable."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T06:03:40.656Z"
 doc_updated_by: "CODER"
 description: "Refactor commands/upgrade.ts into narrower units for source resolution, plan construction, apply execution, and reporting while preserving behavior and tests."
@@ -71,11 +71,6 @@ Refactor commands/upgrade.ts into narrower units for source resolution, plan con
 
 1. Inventory the current responsibilities inside commands/upgrade.ts and carve out the lowest-risk module boundaries: source resolution, plan creation, apply execution, and reporting. 2. Extract those helpers into dedicated modules while keeping command contracts, merge semantics, and tests stable. 3. Run targeted upgrade tests, lint, build, and a representative CLI upgrade flow to confirm no behavioral drift.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -92,10 +87,6 @@ Refactor commands/upgrade.ts into narrower units for source resolution, plan con
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T06:02:35.675Z — VERIFY — ok
 
@@ -111,3 +102,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T05:50:38.815Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: rg scan for v1/first-version phrasing returned no matches in docs/ROADMAP.md/README.md | details: doc changes already on HEAD and task doc commit created. Hooks skipped for status commit due to unrelated lint errors in other files."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:41.053Z"
 doc_updated_by: "agentplane"
 description: "Audit docs for references to the first version, treat Node.js as v1.0, remove v1 language, and restructure documentation sections for clarity."
@@ -41,19 +41,25 @@ Removed first-version wording across docs by aligning references to Node.js 1.0 
 
 Docs only: updated user/developer docs and docs index structure; no code changes.
 
-## Risks
+## Plan
 
-Risk of missed phrasing in docs outside current set or unintended meaning change; mitigated by keyword scan.
 
 ## Verify Steps
 
 - rg -n "(?i)\b(v1|version\s+1|version\s+1\.0|first\s+version|первая\s+версия)\b" docs ROADMAP.md README.md
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert docs changes via git checkout or reset to prior commit; restore previous wording and index order if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk of missed phrasing in docs outside current set or unintended meaning change; mitigated by keyword scan.

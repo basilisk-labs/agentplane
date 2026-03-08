@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/commands/pr/integrate/internal/worktree.test.ts packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts; bunx vitest run packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/commands/pr/integrate/internal/worktree.test.ts packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/pr/internal/**' --coverage.include='packages/agentplane/src/commands/pr/integrate/internal/**'; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:59:35.940Z"
 doc_updated_by: "TESTER"
 description: "Add targeted tests for pr/internal modules (pr-paths, prepare/merge/finalize/worktree) to cover uncovered branch conditions."
@@ -65,17 +65,22 @@ In scope: tests touching pr/internal modules (pr-paths, prepare, merge, finalize
 
 1) Identify uncovered branches in pr/internal modules. 2) Add focused tests that hit branch/fallback paths. 3) Run target suites and focused coverage.
 
-## Risks
+## Verify Steps
 
-Risk: brittle tests around git setup details. Mitigation: use existing helpers and assert stable outcomes, not incidental formatting.
+- bunx vitest run packages/agentplane/src/commands/pr/internal/*.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts\n- bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/pr/internal/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Remove added tests for pr/internal and rerun suites to confirm baseline behavior.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/pr/internal/*.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts\n- bunx vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/pr/internal/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Risk: brittle tests around git setup details. Mitigation: use existing helpers and assert stable outcomes, not incidental formatting.

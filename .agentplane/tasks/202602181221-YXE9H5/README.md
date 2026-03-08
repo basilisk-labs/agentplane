@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Docusaurus bootstrap in website/ is complete with canonical docs from repository root, base routing, and working docs build pipeline."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:00:06.922Z"
 doc_updated_by: "CODER"
 description: "Initialize Docusaurus under website/, wire monorepo scripts, and configure base routing for marketing root and docs section."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -79,11 +76,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: bun run test:fast | details: bun run test:cli:unit; bun run test:cli:slow; pre-commit hooks (format/lint/test-fast) passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:38.853Z"
 doc_updated_by: "agentplane"
 description: "Speed up slow/flaky tests, split heavy suites, and refine fast/full test entrypoints."
@@ -41,19 +41,25 @@ Speed up Node.js CLI tests by reusing a cached git repo template and add modular
 
 Update test helpers to reuse git repo templates, add CLI test scripts for unit/slow suites, and refresh testing docs accordingly.
 
-## Risks
+## Plan
 
-Cached git templates could mask issues if tests rely on a freshly initialized repo; ensure template stays minimal and empty.
 
 ## Verify Steps
 
 bun run test:fast\nbun run test:cli:unit\nbun run test:cli:slow
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert helper/script/doc changes to restore per-test git init and prior CLI test commands.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Cached git templates could mask issues if tests rely on a freshly initialized repo; ensure template stays minimal and empty.

@@ -58,7 +58,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: historical archive anomalies are now bucketed by count and repairability, with representative examples and a concrete strategy for the follow-up repair task."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T21:46:02.130Z"
 doc_updated_by: "PLANNER"
 description: "Classify DONE-task commit-hash anomalies in the archive, separate repairable metadata from irrecoverable legacy backfills, and capture the repair strategy."
@@ -77,11 +77,6 @@ In scope: analyze existing task READMEs, doctor warning classes, and current git
 1. Implement the change for "Audit historical task commit anomalies".
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -117,6 +112,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T21:45:39.928Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 Audit summary: 1) 98/218 unknown hashes are explicit legacy backfills and are not safely repairable from local repo data alone. 2) Only 3 unknown hashes have an exact current-history subject remap. 3) 16/21 close-commit warnings are ORCHESTRATOR/meta cross-task closures; these likely need semantics-aware doctor handling rather than blind hash rewriting. 4) The next repair task should implement deterministic remaps where exact, introduce a reviewed repair report for the rest, and refine doctor to distinguish invalid implementation hashes from legitimate meta closures.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

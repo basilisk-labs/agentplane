@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Implemented  to add missing Plan/Verification sections and pending plan_approval/verification frontmatter without losing content, with idempotence tests; updated CLI wiring/help and ran format:check, lint, test:fast, test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T10:43:13.577Z"
 doc_updated_by: "CODER"
 description: "Add migrate-doc command to backfill Plan/Verification sections and plan_approval/verification objects without losing content; idempotent."
@@ -50,14 +50,15 @@ id_source: "generated"
 
 1) Add agentplane task migrate-doc command to migrate existing task READMEs\n2) Migration: add missing ## Plan/## Verification sections without deleting content\n3) Initialize missing frontmatter plan_approval + verification with pending state\n4) Ensure YAML formatting uses current diff-friendly renderer\n5) Tests: migration preserves content; second run is idempotent (0 diff)
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T10:43:04.867Z — VERIFY — ok
@@ -69,3 +70,9 @@ Note: F1: added task migrate-doc command and tests; bun run format:check, lint, 
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

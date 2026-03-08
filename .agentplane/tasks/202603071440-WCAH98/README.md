@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the canonical bootstrap page is now generated from shared CLI bootstrap source and linked from startup-facing docs surfaces."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T14:55:17.745Z"
 doc_updated_by: "DOCS"
 description: "Add one canonical bootstrap document that every startup surface references instead of duplicating lifecycle instructions."
@@ -69,10 +69,6 @@ Add a concise user-facing bootstrap page covering start, task execution, verify,
 
 1. Generate or author the canonical bootstrap doc from shared startup guidance. 2. Link it from gateway/docs. 3. Keep it short and task-oriented.
 
-## Risks
-
-If the document is not derived from shared guidance, drift will return quickly.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -86,10 +82,6 @@ If the document is not derived from shared guidance, drift will return quickly.
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T14:55:05.893Z — VERIFY — ok
@@ -105,3 +97,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:54:58.733Z, excerpt_
 ## Rollback Plan
 
 Remove the new page and references if it cannot be kept in sync with CLI surfaces.
+
+## Findings
+
+
+## Risks
+
+If the document is not derived from shared guidance, drift will return quickly.

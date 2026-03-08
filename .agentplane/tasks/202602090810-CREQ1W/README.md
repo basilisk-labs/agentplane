@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added --json-errors as an explicit (scoped-global) flag for JSON error output; kept existing --json behavior for backwards compatibility and help --json. Updated run-cli.core.test coverage; lint/test:full/coverage pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:14:41.793Z"
 doc_updated_by: "CODER"
 description: "Implement a dedicated global flag --json-errors for machine-readable error output, keep help --json semantics for JSON help output, and update tests/docs accordingly."
@@ -64,6 +64,10 @@ id_source: "generated"
 Добавить глобальный флаг --json-errors для машинно-читабельного вывода ошибок и убрать двусмысленность --json (который должен оставаться для JSON-успешного вывода команд вроде help).
 
 Успех: agentplane --json-errors ... печатает JSON ошибки, agentplane help --json продолжает печатать JSON help; тесты обновлены.
+
+## Context
+
+Сейчас --json имеет разные значения в зависимости от позиции (глобально: JSON ошибок; в help: JSON успешной справки). Это трудно предсказать и плохо для UX/автоматизации.
 
 ## Scope
 
@@ -82,11 +86,6 @@ Out-of-scope:
 3. Определить поведение alias: --json до id команды продолжает включать jsonErrors (без warning, чтобы не ломать machine output).
 4. Обновить/добавить тесты на --json-errors и на alias.
 5. Прогнать bun run lint и bun run test:full.
-
-## Risks
-
-Риск: изменение поведения существующих скриптов, которые полагаются на --json как на JSON ошибок.
-Митигация: оставить --json как alias для jsonErrors в scoped global зоне; добавить тест на обратную совместимость.
 
 ## Verify Steps
 
@@ -113,12 +112,13 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:11:08.119Z, excerpt_
 
 git revert коммита с вводом --json-errors; bun run test:full.
 
-## Context
-
-Сейчас --json имеет разные значения в зависимости от позиции (глобально: JSON ошибок; в help: JSON успешной справки). Это трудно предсказать и плохо для UX/автоматизации.
-
-## Notes
+## Findings
 
 ### Decision
 --json-errors вводится как недвусмысленный глобальный флаг для ошибок.
 --json остается поддержанным alias для jsonErrors только в scoped global зоне, без предупреждений, чтобы не добавлять шум в stderr при JSON-ошибках.
+
+## Risks
+
+Риск: изменение поведения существующих скриптов, которые полагаются на --json как на JSON ошибок.
+Митигация: оставить --json как alias для jsonErrors в scoped global зоне; добавить тест на обратную совместимость.

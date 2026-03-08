@@ -27,7 +27,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: ran rg checks for config show/set and branch/worktree keys in docs; changes update agentctl.md, docs/07-09, and README."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:46.322Z"
 doc_updated_by: "agentplane"
 description: "Update agentctl docs and project docs to explain new config.json keys and config CLI commands."
@@ -44,23 +44,26 @@ Agentctl gained config-driven behavior, so docs needed to explain keys, defaults
 
 Updated .agent-plane/agentctl.md, docs/07-tasks-and-backends.md, docs/08-branching-and-pr-artifacts.md, docs/09-commands.md, and README.md.
 
-## Risks
+## Plan
 
-Docs may drift if the config schema changes; no runtime impact.
 
 ## Verify Steps
 
 rg -n "config show|config set" .agent-plane/agentctl.md docs/09-commands.md; rg -n "branch\.task_prefix|paths\.worktrees_dir" docs/07-tasks-and-backends.md docs/08-branching-and-pr-artifacts.md
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert doc changes in the listed files.
 
-## Notes
+## Findings
 
 Config coverage includes base_branch, branch.task_prefix, paths.worktrees_dir, tasks.doc sections, tasks.verify.required_tags, tasks.comments rules, and commit.generic_tokens.
 
-## Plan
+## Risks
 
-
-## Verification
+Docs may drift if the config schema changes; no runtime impact.

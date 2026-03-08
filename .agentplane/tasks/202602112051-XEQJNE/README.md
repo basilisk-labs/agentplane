@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release:prepublish and ci pass end-to-end with new dependency parity and workflow checks."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T21:02:35.752Z"
 doc_updated_by: "TESTER"
 description: "Run required test/lint/build/release checks to validate parity and CI gate changes end-to-end."
@@ -62,15 +62,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) bun run release:prepublish
@@ -79,3 +70,16 @@ Expected: full release gate passes (checks, build, lint, tests, pack).
 Expected: CI aggregate checks pass.
 3) git status --short --untracked-files=no
 Expected: no tracked pending changes after close commit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

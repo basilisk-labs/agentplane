@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Fixed agentplane upgrade to normalize deprecated basilisk-labs/agent-plane framework source to basilisk-labs/agentplane (avoids GitHub API 404), warn about migration, and persist corrected source when applying an upgrade. Updated default config schema + spec examples and removed agent-plane keyword mentions; added unit test; lint/test:full pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T09:01:36.172Z"
 doc_updated_by: "CODER"
 description: "Fix agentplane upgrade failing with 404 when config.framework.source uses the outdated basilisk-labs/agent-plane repo. Canonicalize to basilisk-labs/agentplane, migrate config on upgrade, and update default config + tests."
@@ -66,9 +66,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -85,10 +82,6 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T09:00:37.383Z — VERIFY — ok
 
@@ -101,3 +94,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:54:40.758Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

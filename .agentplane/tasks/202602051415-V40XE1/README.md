@@ -32,7 +32,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: bun run lint/test:fast; docs and init tests updated for backend selection."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:21:24.946Z"
 doc_updated_by: "TESTER"
 description: "Update docs to clarify backends are first-class (not recipes) and add init tests for backend selection."
@@ -46,9 +46,8 @@ Update backend docs and add init tests for backend selection.
 
 Update docs to state backends are first-class; add init tests for --backend flag and config paths.
 
-## Risks
+## Plan
 
-Docs/tests may drift if init defaults change; keep assertions minimal and resilient.
 
 ## Verify Steps
 
@@ -58,8 +57,16 @@ Docs/tests may drift if init defaults change; keep assertions minimal and resili
 
 Verified on 2026-02-05: bun run lint, bun run test:fast; init tests and backend docs updated.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert docs and tests for backend selection changes.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Docs/tests may drift if init defaults change; keep assertions minimal and resilient.

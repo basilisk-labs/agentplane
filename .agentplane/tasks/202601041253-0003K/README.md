@@ -23,7 +23,7 @@ commit:
   hash: "3d8cd6dd2137ee90f303f6ca13d2f0f13cd412a6"
   message: "Legacy completion (backfill)"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Add a migration/export command to seed .agent-plane/tasks from tasks.json and set tasks_backend.config_path to the local backend."
@@ -37,19 +37,13 @@ dirty: false
 - Add a migration command to seed `.agent-plane/tasks/` from `.agent-plane/tasks.json`.
 - Point `tasks_backend.config_path` to the local backend plugin.
 
-## Goal
-
-- Make local backend the default canonical store while keeping a one-time migration path from tasks.json.
-
 ## Scope
 
 - Add `agentctl task migrate` (reads tasks.json, writes via configured backend).
 - Update `.agent-plane/config.json` to use `.agent-plane/backends/local/backend.json`.
 
-## Risks
+## Plan
 
-- Migration may overwrite tasks if run repeatedly without checks.
-- Tasks with unexpected schemas may fail to serialize into frontmatter.
 
 ## Verify Steps
 
@@ -57,14 +51,26 @@ dirty: false
 - `python3 .agent-plane/agentctl.py task list`
 - `python3 .agent-plane/agentctl.py task export --out .agent-plane/tasks.json`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert `.agent-plane/config.json` and remove the migrate command.
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Make local backend the default canonical store while keeping a one-time migration path from tasks.json.
+
+## Risks
+
+- Migration may overwrite tasks if run repeatedly without checks.
+- Tasks with unexpected schemas may fail to serialize into frontmatter.
 
 ## Changes Summary (auto)
 

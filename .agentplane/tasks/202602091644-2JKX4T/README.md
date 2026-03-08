@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Added resolveContext entrypoint and introduced thin usecases for task list/new, wiring CLI handlers through usecases."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:59:57.601Z"
 doc_updated_by: "CODER"
 description: "Add usecases/context/resolveContext and migrate 1-2 commands to the cli->spec->resolveContext->usecase pipeline."
@@ -71,15 +71,11 @@ packages/agentplane/src/usecases/context/** and 2-3 pilot commands (task list, t
 
 1) Implement resolveContext returning a typed CommandContext-like object for usecases (ports/adapters + config + project roots).\n2) Create usecases for task list and task new (thin wrappers around existing logic initially).\n3) Rewire CLI command handlers to call resolveContext + usecase.\n4) Add unit tests for resolveContext and usecases; rely on existing CLI tests for regressions.\n5) Run bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-Risk: context duplication with existing getCtx(); mitigate by reusing existing loadCommandContext under the hood and migrating incrementally.
+- bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:59:52.458Z — VERIFY — ok
@@ -96,6 +92,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:55:00.739Z, excerpt_
 
 Revert pilot command rewires; keep resolveContext unused until migration is complete.
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:full
+
+## Risks
+
+Risk: context duplication with existing getCtx(); mitigate by reusing existing loadCommandContext under the hood and migrating incrementally.

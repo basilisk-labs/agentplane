@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Index entries now keep lean task payloads for listing paths while preserving task metadata needed by commands."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T10:39:33.800Z"
 doc_updated_by: "CODER"
 description: "Store lightweight index entries for list/next/search and hydrate full task content only for commands that require full README/doc bodies."
@@ -63,9 +63,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -84,10 +81,6 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T10:39:27.121Z — VERIFY — ok
 
@@ -100,3 +93,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T10:38:05.510Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

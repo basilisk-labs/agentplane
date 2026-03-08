@@ -59,7 +59,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint; bun run test:agentplane (core.unit, upgrade.merge); bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T15:20:56.312Z"
 doc_updated_by: "TESTER"
 description: "Update docs and add regression tests for role output and upgrade review.json; run help snapshot tests as needed."
@@ -72,9 +72,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -96,11 +93,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bunx vitest run packages/agentplane/src/cli/shared/ansi.test.ts packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:50:05.834Z"
 doc_updated_by: "CODER"
 description: "Move stripAnsi/visible-length logic to shared CLI util module and reuse across init UI/tests to reduce duplication and drift."
@@ -64,17 +64,22 @@ In scope: packages/agentplane/src/cli/shared/ansi.ts and init UI/test imports. O
 
 1) Add shared ansi utilities (stripAnsi, visibleLen). 2) Replace duplicated local implementations in init ui and ui tests. 3) Add focused ansi util tests.
 
-## Risks
+## Verify Steps
 
-Risk: changed ANSI stripping semantics can affect box width calculations. Mitigation: keep parser behavior equivalent and assert alignment test still passes.
+- bunx vitest run packages/agentplane/src/cli/shared/ansi.test.ts packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert shared ansi module and restore previous local helper implementations in init UI files.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/cli/shared/ansi.test.ts packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Risk: changed ANSI stripping semantics can affect box width calculations. Mitigation: keep parser behavior equivalent and assert alignment test still passes.

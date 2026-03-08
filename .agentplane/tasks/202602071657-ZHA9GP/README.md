@@ -31,7 +31,7 @@ comments:
     author: "ORCHESTRATOR"
     body: "Verified: docs updated to define Verify Steps as ex-ante and Verification as append-only ex-post; bun run test:fast."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:05:52.686Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Define canonical README semantics: Verify Steps = ex-ante contract; Verification = append-only ex-post log."
@@ -48,14 +48,15 @@ description: "Define canonical README semantics: Verify Steps = ex-ante contract
 2) Update user docs where verification is described (task lifecycle + tasks storage) with this semantics.
 3) Verify docs build is not required; run repo fast tests for safety.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T17:00:48.250Z — VERIFY — ok
@@ -67,3 +68,9 @@ Note: Documented Verify Steps (ex-ante) vs Verification (ex-post) semantics; bun
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

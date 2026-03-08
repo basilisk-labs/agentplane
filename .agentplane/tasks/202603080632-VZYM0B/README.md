@@ -70,7 +70,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the fast local gate now routes docs-only and narrow task changes through cheaper deterministic buckets while keeping a broad full-fast fallback for infra-sensitive scopes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T08:47:09.789Z"
 doc_updated_by: "CODER"
 description: "Reduce the cost of ci:local/test:fast so the default pre-push path stays materially cheaper than the full local CI track without weakening required coverage."
@@ -93,11 +93,6 @@ Reduce the cost of ci:local/test:fast so the default pre-push path stays materia
 2. Route fast local CI by path buckets: skip heavy tests for docs-only changes, run narrow targeted suites for bounded code areas, and fall back to the existing blanket fast suite for broad or infra-sensitive changes.
 3. Verify selector behavior, preserved coverage paths, and the measured fast-path runtime on this repository.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -109,10 +104,6 @@ Reduce the cost of ci:local/test:fast so the default pre-push path stays materia
 - `sh -c '/usr/bin/time -p env AGENTPLANE_FAST_CHANGED_FILES="docs/README.md" node scripts/run-local-ci.mjs --mode fast >/tmp/ci-fast-docs.out 2>/tmp/ci-fast-docs.err'`\n- `sh -c '/usr/bin/time -p env AGENTPLANE_FAST_CHANGED_FILES="packages/agentplane/src/commands/task/shared.ts" node scripts/run-local-ci.mjs --mode fast >/tmp/ci-fast-task.out 2>/tmp/ci-fast-task.err'`\n- `sh -c '/usr/bin/time -p env AGENTPLANE_FAST_CHANGED_FILES="scripts/run-local-ci.mjs" node scripts/run-local-ci.mjs --mode fast >/tmp/ci-fast-broad.out 2>/tmp/ci-fast-broad.err'`\n\n### Evidence / Commands\n- Record selector choice and wall-clock runtime for docs-only, targeted task, and broad fallback scopes.\n\n### Pass criteria\n- Docs-only and narrow task changes take the cheaper path, broad/infra-sensitive changes still force the blanket fast sweep, and the selector remains deterministic under pre-push.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T08:46:45.860Z — VERIFY — ok
@@ -130,9 +121,14 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T08:46:37.165Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - First hypothesis failed: moving release tests out of the default fast sweep did not materially improve runtime.
 - Implemented approach: diff-aware pre-push scope + path buckets in local fast CI.
 - Measured on this repository after implementation: docs-only path ~16.66s, targeted task path ~18.48s, broad fallback path ~153.11s.
 - Residual tradeoff: the doctor-specific bucket is still expensive because doctor.command.test.ts is itself heavy; that path may need separate test-bucket work later.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: doctor now explains hybrid gateway/policy states and points stale-upgrade users to a concrete recovery command."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T10:17:43.740Z"
 doc_updated_by: "CODER"
 description: "Improve doctor and upgrade diagnostics so workspaces with a new AGENTS gateway but missing managed policy modules get an explicit, actionable explanation and next steps instead of a vague missing-path failure."
@@ -71,20 +71,11 @@ Improve doctor and upgrade diagnostics so workspaces with a new AGENTS gateway b
 
 1. Inspect doctor/workspace checks and upgrade messaging to find where a new policy gateway can coexist with missing managed policy modules after a partial/manual update.\n2. Add explicit diagnostics that identify missing managed policy files, explain the likely stale-CLI/partial-upgrade cause, and point to the correct recovery command.\n3. Add test coverage for the new diagnostics and update docs/help where the new recovery guidance should appear.\n4. Run targeted doctor/upgrade tests and confirm the resulting messages are specific enough to explain the failure mode described by users.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Run doctor/upgrade diagnostics coverage: bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/upgrade.agent-mode.test.ts packages/agentplane/src/commands/upgrade.merge.test.ts --hookTimeout 60000 --testTimeout 60000\n2. Confirm doctor explains the missing policy-tree scenario with concrete recovery steps instead of a generic missing-path error.\n3. Confirm upgrade output shows source/version details before applying managed files.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T10:17:43.226Z — VERIFY — ok
@@ -101,3 +92,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T10:00:04.599Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

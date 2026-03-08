@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: documentation now reflects duplicate no-op closure command and close-commit ergonomics, including preflight and auto-unstage options."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:18:13.962Z"
 doc_updated_by: "DOCS"
 description: "Document recommended minimal flows and de-emphasize redundant guard+commit and unnecessary close commits."
@@ -68,14 +68,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:18:13.804Z — VERIFY — ok
@@ -89,3 +90,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:15:27.485Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

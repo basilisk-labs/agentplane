@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Redmine backend read-only cache discipline and inferred status mapping are validated by full backend regression suite with passing evidence and no tracked workspace mutations."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T08:06:52.319Z"
 doc_updated_by: "CODER"
 description: "Finalize local changes in Redmine backend: avoid cache rewrites on read-only operations and infer status_id on write when status_map is absent."
@@ -59,6 +59,10 @@ id_source: "generated"
 ## Summary
 
 Finalize Redmine backend hardening to keep read-only operations side-effect free for cache files and to infer Redmine `status_id` mappings when explicit `status_map` is missing or partial.
+
+## Context
+
+The backend already supported local cache fallback, but read-only flows could rewrite cache state and status mapping could degrade when custom status maps were absent. This task closes the behavioral gap and locks it with regression tests.
 
 ## Scope
 
@@ -76,11 +80,6 @@ Out of scope:
 2. Run Redmine backend regression tests for cache write discipline and status inference behavior.
 3. Capture evidence and close the task against implementation commit.
 
-## Risks
-
-- Inferred status mapping may not match custom Redmine workflows with non-standard status semantics.
-- Overly strict cache-write avoidance could hide needed cache refreshes in non-read-only paths if regression appears.
-
 ## Verify Steps
 
 ### Scope
@@ -97,10 +96,6 @@ Out of scope:
 - Assertions for read-only cache behavior and inferred status mapping remain green.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T08:06:52.042Z — VERIFY — ok
@@ -122,11 +117,7 @@ Command: bunx vitest run packages/agentplane/src/backends/task-backend.test.ts. 
 1. Revert implementation commit `9c56fabe` if regression is detected.
 2. Re-run backend test suite to confirm previous behavior is restored.
 
-## Context
-
-The backend already supported local cache fallback, but read-only flows could rewrite cache state and status mapping could degrade when custom status maps were absent. This task closes the behavioral gap and locks it with regression tests.
-
-## Notes
+## Findings
 
 ### Decisions
 - Treat `listTasks/getTask` as strictly read-only: no cache rewrite side effects when remote is reachable.
@@ -139,3 +130,8 @@ The backend already supported local cache fallback, but read-only flows could re
 
 ### Evidence / Links
 - Evidence will be attached in `## Verification` after test execution.
+
+## Risks
+
+- Inferred status mapping may not match custom Redmine workflows with non-standard status semantics.
+- Overly strict cache-write avoidance could hide needed cache refreshes in non-read-only paths if regression appears.

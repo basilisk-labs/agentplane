@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: finish now supports --close-commit and --close-unstage-others, covered by unit and lifecycle tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:36:51.498Z"
 doc_updated_by: "CODER"
 description: "Add an atomic finish flag that performs finish and deterministic close commit in one command to reduce operator/agent command churn."
@@ -67,14 +67,11 @@ id_source: "generated"
 
 1. Extend finish CLI spec with --close-commit and optional close preflight flags.\n2. Reuse commit close path from guard layer after finish state update.\n3. Add regression tests for one-command finish+close workflow and failure cases.\n4. Update help/docs snippets where needed.
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts\n2. bun run lint\n3. bun run --filter=agentplane build
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:34:54.592Z — VERIFY — ok
@@ -90,6 +87,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:31:26.537Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts\n2. bun run lint\n3. bun run --filter=agentplane build
+
+## Risks

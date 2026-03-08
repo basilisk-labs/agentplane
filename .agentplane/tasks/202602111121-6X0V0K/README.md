@@ -47,9 +47,35 @@ events:
     author: "ORCHESTRATOR"
     from: "DONE"
     to: "DONE"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T11:38:17.228Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement env-first Redmine init flow: no secrets in backend file, generate .env template, ensure gitignore safety, backend reads env, add tests/docs."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

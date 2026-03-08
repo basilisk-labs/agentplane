@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated help docs to replace legacy sync examples with the current backend sync command."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:36:34.715Z"
 doc_updated_by: "DOCS"
 description: "Update troubleshooting pages and glossary for current error modes, approvals, and common footguns."
@@ -65,9 +65,6 @@ In-scope: docs/help/troubleshooting-by-symptom.mdx (and related help pages if th
 2. Update examples to use the current command surface (backend sync).
 3. Run formatting checks.
 
-## Risks
-
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -82,13 +79,14 @@ In-scope: docs/help/troubleshooting-by-symptom.mdx (and related help pages if th
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert the commits for this task to restore prior help wording.
+
+## Findings
+
+
+## Risks

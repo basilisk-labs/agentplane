@@ -39,7 +39,7 @@ comments:
     author: "ORCHESTRATOR"
     body: "Verified: full CLI2 spec-only migration and monolith decomposition completed; all CLI help/usage derives from specs; legacy parse*Flags and exported *_USAGE constants are eliminated; regression guard test is in place; full typecheck/lint/test suites pass."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T12:24:05.005Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Remove all legacy argv parsing, delete usage constants, and decompose remaining monolithic CLI/command modules so spec is the only CLI source of truth."
@@ -57,45 +57,6 @@ id_source: "generated"
 ## Plan
 
 Execute the dependent tasks in order (CLI2-FULL-010..040). Each task removes remaining legacy argv parsing and/or decomposes monolithic modules, updates tests to use cli2 specs or parsed-only APIs, and adds enforcement checks to prevent regression.
-
-## Steps
-
-1. Eliminate legacy parsing + usage constants for `upgrade`.
-2. Eliminate legacy parsing + usage constants for `task new`.
-3. Refactor verification recording to parsed-only APIs and delete legacy usage/flag parsing.
-4. Decompose `commands/recipes.ts` into per-command impl modules; remove legacy CLI routing/parsers.
-5. Decompose `commands/pr/index.ts` into small focused modules.
-6. Decompose `commands/branch/index.ts` and `commands/scenario.ts` into small focused modules.
-7. Decompose `cli/run-cli.ts` into cohesive submodules without behavior changes.
-8. Add enforcement tests that fail on any reintroduced `parse*Flags`, `*_USAGE`, or legacy argv entrypoints.
-
-## Trade-offs
-
-- This breaks internal APIs and requires test rewrites toward `runCli([...])` and parsed-only command APIs.
-- We prefer fewer brittle snapshot assertions; tests should assert invariants and structured outputs.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T12:23:31.517Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: CLI2 spec-driven routing is the single command source of truth; run-cli.ts is decomposed via cli/run-cli/commands/*; repo has regression test packages/agentplane/src/cli/legacy-cli-regressions.test.ts to prevent legacy patterns; typecheck+lint+test:fast+test:cli:core green; rg assertions for parse*Flags and exported *_USAGE are clean.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:22:54.442Z, excerpt_hash=sha256:fe12a2450d9ddd4492b9aa24b8d3fcd7236c44d214e44b094fab74809f8c3450
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -118,3 +79,40 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:22:54.442Z, excerpt_
 ### Pass criteria
 - All commands succeed.
 - The assertions are satisfied.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T12:23:31.517Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: CLI2 spec-driven routing is the single command source of truth; run-cli.ts is decomposed via cli/run-cli/commands/*; repo has regression test packages/agentplane/src/cli/legacy-cli-regressions.test.ts to prevent legacy patterns; typecheck+lint+test:fast+test:cli:core green; rg assertions for parse*Flags and exported *_USAGE are clean.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:22:54.442Z, excerpt_hash=sha256:fe12a2450d9ddd4492b9aa24b8d3fcd7236c44d214e44b094fab74809f8c3450
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Steps
+
+1. Eliminate legacy parsing + usage constants for `upgrade`.
+2. Eliminate legacy parsing + usage constants for `task new`.
+3. Refactor verification recording to parsed-only APIs and delete legacy usage/flag parsing.
+4. Decompose `commands/recipes.ts` into per-command impl modules; remove legacy CLI routing/parsers.
+5. Decompose `commands/pr/index.ts` into small focused modules.
+6. Decompose `commands/branch/index.ts` and `commands/scenario.ts` into small focused modules.
+7. Decompose `cli/run-cli.ts` into cohesive submodules without behavior changes.
+8. Add enforcement tests that fail on any reintroduced `parse*Flags`, `*_USAGE`, or legacy argv entrypoints.
+
+## Trade-offs
+
+- This breaks internal APIs and requires test rewrites toward `runCli([...])` and parsed-only command APIs.
+- We prefer fewer brittle snapshot assertions; tests should assert invariants and structured outputs.
+
+## Risks

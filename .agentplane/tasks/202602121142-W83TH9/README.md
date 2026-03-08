@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: generated prose escapes angle brackets so MDX parser no longer interprets placeholders as unclosed tags."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T11:44:35.690Z"
 doc_updated_by: "CODER"
 description: "Escape angle-bracket placeholders in generated prose (not code spans) so Mintlify parser does not treat them as unclosed tags in cli-reference.generated.mdx."
@@ -66,14 +66,14 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. node packages/agentplane/bin/agentplane.js docs cli --out docs/user/cli-reference.generated.mdx
+2. Verify problematic option text uses escaped placeholders in prose (branch base set --current description)
+3. bunx prettier --write docs/user/cli-reference.generated.mdx
+4. bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T11:43:52.661Z — VERIFY — ok
@@ -89,9 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T11:42:44.403Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. node packages/agentplane/bin/agentplane.js docs cli --out docs/user/cli-reference.generated.mdx
-2. Verify problematic option text uses escaped placeholders in prose (branch base set --current description)
-3. bunx prettier --write docs/user/cli-reference.generated.mdx
-4. bun run lint
+
+## Risks

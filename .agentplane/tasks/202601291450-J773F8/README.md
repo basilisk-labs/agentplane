@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "verified: submodule added at agentplane-recipes/ and lint ignores updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:24.057Z"
 doc_updated_by: "agentplane"
 description: "Track the recipes repository as a git submodule in the main repo root."
@@ -42,19 +42,25 @@ Add agentplane-recipes as a git submodule in the repo root.
 
 - Add submodule at agentplane-recipes/ pointing to basilisk-labs/agentplane-recipes\n- Remove ignore rule that blocks submodule tracking
 
-## Risks
+## Plan
 
-- Submodule requires network access for clones and updates
 
 ## Verify Steps
 
 - git submodule status
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Remove submodule and restore ignore rule
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Submodule requires network access for clones and updates

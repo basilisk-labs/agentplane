@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Commit update: 7a1d5d3d1ada80c2c1c1b136238e17e2d0bf60ea (main changes), 938f94545ae17e44868559cd779fa1a18d5a9b31 (task finish/export snapshots)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T04:23:17.197Z"
 doc_updated_by: "CODER"
 description: "Remove base_branch from config schema/examples/types; ignore if present with warning for compatibility; ensure base comes only from git config/--base. Include tests and docs updates."
@@ -45,9 +45,8 @@ Removed base_branch from config schema/examples/types and ignore legacy values w
 
 Config schema/examples, config validation/sanitization, init config writing, and related tests.
 
-## Risks
+## Plan
 
-Legacy configs relying on base_branch may be surprised; warning added to surface ignored field.
 
 ## Verify Steps
 
@@ -57,8 +56,16 @@ bun run test:core; bun run test:cli:core.
 
 bun run test:core; bun run test:cli:core.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert config schema/type changes and init/config handling updates; restore prior tests.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Legacy configs relying on base_branch may be surprised; warning added to surface ignored field.

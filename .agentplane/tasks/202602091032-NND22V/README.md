@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: node scripts/check-release-notes.mjs --tag v0.2.3; node scripts/check-release-version.mjs --tag v0.2.3; bun run test:full; version bumps and release notes committed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T10:36:28.235Z"
 doc_updated_by: "INTEGRATOR"
 description: "Cut patch release v0.2.3: upgrade downloads use longer timeouts so tarball_url fallback works reliably."
@@ -69,15 +69,11 @@ Publish v0.2.3 to npm (and tag the repo) with the upgrade download timeout fix.
 
 1. Add release notes for v0.2.3.\n2. Bump package versions to 0.2.3.\n3. Run release note/version check scripts.\n4. Run bun run test:full.\n5. Commit and tag v0.2.3; push main + tag.
 
-## Risks
+## Verify Steps
 
-- Version skew between packages: mitigated by check-release-version script.\n- Missing/invalid release notes: mitigated by check-release-notes script.
+Commands:\n- node scripts/check-release-notes.mjs --tag v0.2.3\n- node scripts/check-release-version.mjs --tag v0.2.3\n- bun run test:full\n\nPass criteria:\n- All commands succeed.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T10:34:40.281Z — VERIFY — ok
@@ -93,6 +89,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T10:33:05.025Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-Commands:\n- node scripts/check-release-notes.mjs --tag v0.2.3\n- node scripts/check-release-version.mjs --tag v0.2.3\n- bun run test:full\n\nPass criteria:\n- All commands succeed.
+
+## Risks
+
+- Version skew between packages: mitigated by check-release-version script.\n- Missing/invalid release notes: mitigated by check-release-notes script.

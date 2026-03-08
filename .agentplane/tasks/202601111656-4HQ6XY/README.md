@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ran .venv/bin/ruff format ., .venv/bin/ruff check ., and .venv/bin/mypy; all passed. Added strict ruff/mypy configs, cleaned lint cache artifacts, and updated Python code for compliance."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:40.515Z"
 doc_updated_by: "agentplane"
 description: "Introduce strict Python lint/format/type-check tooling, update cleanup scripts for new artifacts, and ensure the repo passes the checks."
@@ -51,9 +51,8 @@ User requested максимально жесткие линтеры/фиксер
 
 Add lint/format/type-check configs (ruff + type checker), update Python code to comply, add ignore/clean rules for caches, and document/run verify commands.
 
-## Risks
+## Plan
 
-Strict rules may require code refactors or per-file ignores; type-checker strictness can surface missing annotations or third-party stubs.
 
 ## Verify Steps
 
@@ -61,15 +60,19 @@ Strict rules may require code refactors or per-file ignores; type-checker strict
 - .venv/bin/ruff check .
 - .venv/bin/mypy
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert lint config files, clean script changes, and any code edits; remove lint dependencies; rerun previous checks.
 
-## Notes
+## Findings
 
 Aim for strict linting while scoping unavoidable exceptions (e.g., CLI subprocess usage).
 
-## Plan
+## Risks
 
-
-## Verification
+Strict rules may require code refactors or per-file ignores; type-checker strictness can surface missing annotations or third-party stubs.

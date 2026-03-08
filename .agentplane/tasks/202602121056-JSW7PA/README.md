@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: publish workflow runs release:smoke:published and smoke checker validates both package versions with retries."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T11:07:10.322Z"
 doc_updated_by: "CODER"
 description: "After GitHub publish completes, verify published versions for both packages on npm registry and fail workflow on mismatch."
@@ -66,14 +66,12 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. node scripts/check-published-packages.mjs
+2. bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T11:06:35.388Z — VERIFY — ok
@@ -89,7 +87,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T11:04:29.247Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. node scripts/check-published-packages.mjs
-2. bun run lint
+
+## Risks

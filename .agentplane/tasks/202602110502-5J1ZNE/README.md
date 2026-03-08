@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: removed global --json alias for error mode, kept help --json behavior, and updated command guide plus CLI tests to reflect --json-errors as the only global JSON error flag."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:12:12.199Z"
 doc_updated_by: "CODER"
 description: "Keep help --json behavior, introduce --json-errors as canonical error flag, deprecate/remove ambiguous --json global error semantics, update guide/tests."
@@ -71,18 +71,6 @@ In scope:
 3. Update quickstart/guide text and failing tests.
 4. Run build/lint/test gates and commit.
 
-## Risks
-
-- Risk: compatibility break for scripts using global `--json`.
-Mitigation: explicit tests/documentation clarify new contract (`--json-errors`).
-
-## Verification
-
-
-## Rollback Plan
-
-Revert the task commit to restore legacy `--json` alias for JSON errors.
-
 ## Verify Steps
 
 - `bun run --filter=@agentplaneorg/core build`
@@ -90,3 +78,20 @@ Revert the task commit to restore legacy `--json` alias for JSON errors.
 - `bun run lint`
 - `bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/command-guide.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts`
 - `bun run test:fast`
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+Revert the task commit to restore legacy `--json` alias for JSON errors.
+
+## Findings
+
+
+## Risks
+
+- Risk: compatibility break for scripts using global `--json`.
+Mitigation: explicit tests/documentation clarify new contract (`--json-errors`).

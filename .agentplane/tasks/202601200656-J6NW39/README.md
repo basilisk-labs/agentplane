@@ -26,7 +26,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: close: core minimum defined | details: tools allowed by default; recipe agentctl usage permitted under guardrails."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:58.348Z"
 doc_updated_by: "agentplane"
 description: "Update AGENTS.md and RECIPES.md to codify the minimal task workflow, allow tools by default, and allow recipe-driven agentctl usage under guardrails."
@@ -43,23 +43,26 @@ Needed to formalize the minimal core behavior while shifting extensions into rec
 
 Updated AGENTS.md to add a core-minimum section and recipe-driven agentctl allowance; updated RECIPES.md to allow tools by default and to permit agentctl usage with confirmation.
 
-## Risks
+## Plan
 
-Allowing recipe-driven agentctl use increases risk of misuse; strict confirmation and guardrails must be enforced in scenarios.
 
 ## Verify Steps
 
 Reviewed AGENTS.md and RECIPES.md updates for consistency with guardrails and recipe policies.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 6a935ba8cde9 to restore the previous core minimum and recipe permission rules.
 
-## Notes
+## Findings
 
 Tools are still explicit; only the default allowance changed, not the confirmation requirement.
 
-## Plan
+## Risks
 
-
-## Verification
+Allowing recipe-driven agentctl use increases risk of misuse; strict confirmation and guardrails must be enforced in scenarios.

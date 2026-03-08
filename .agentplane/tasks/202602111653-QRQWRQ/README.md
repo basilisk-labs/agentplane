@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts; bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:02:17.456Z"
 doc_updated_by: "TESTER"
 description: "Add tests for ensureGitClean and stageAllowlist failure/success branches to improve branch coverage in guard allow helpers."
@@ -65,17 +65,22 @@ In scope: tests for packages/agentplane/src/commands/guard/impl/allow.ts. Out of
 
 1) Add unit tests for suggestAllowPrefixes and stageAllowlist branches. 2) Cover ensureGitClean staged/unstaged/error paths and gitStatusChangedPaths integration branch. 3) Run tests and focused coverage.
 
-## Risks
+## Verify Steps
 
-Risk: tests overfit internal error text. Mitigation: assert key code/message fragments and deterministic side effects (stage calls).
+- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts\n- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Remove allow.ts tests and re-run guard suites to restore baseline.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts\n- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Risk: tests overfit internal error text. Mitigation: assert key code/message fragments and deterministic side effects (stage calls).

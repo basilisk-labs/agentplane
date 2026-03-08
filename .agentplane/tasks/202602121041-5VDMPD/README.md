@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: ROADMAP badge reference removed and canonical changelog path documented in README; no additional code changes required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:48:19.972Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Remove broken ROADMAP badge and declare canonical changelog location in README per GitHub quality audit."
@@ -60,14 +60,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:48:14.183Z — VERIFY — ok
@@ -81,3 +82,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:41:37.556Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

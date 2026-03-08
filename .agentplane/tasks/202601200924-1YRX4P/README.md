@@ -23,7 +23,7 @@ commit:
   hash: "fd7b8cd355edd6c825de15c80511ceabeb28b3e7"
   message: "✅ 1YRX4P orchestrator: read global bundle"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-20T09:25:15+00:00"
 doc_updated_by: "agentctl"
 description: "Update ORCHESTRATOR workflow to read global bundle summary and per-recipe docs via recipes.py bundle show."
@@ -40,19 +40,25 @@ The orchestrator should explicitly load bundle summary and per-recipe docs befor
 
 - Update ORCHESTRATOR.json to call recipes.py bundle show --summary and --recipe when needed.
 
-## Risks
+## Plan
 
-Wording could imply implicit tool execution; maintain explicit confirmation requirement.
 
 ## Verify Steps
 
 Review ORCHESTRATOR.json for updated instructions.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert ORCHESTRATOR.json changes.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Wording could imply implicit tool execution; maintain explicit confirmation requirement.

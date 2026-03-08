@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "verified: GGRDKD close: bun run ci | details: document recipe manager implementation and tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:17.785Z"
 doc_updated_by: "agentplane"
 description: "Implement local recipe manager: install from archive, remove, list, and info, with recipes.lock.json tracking."
@@ -45,19 +45,25 @@ Implemented local recipe manager commands (install/remove/list/info), recipes lo
 
 Add recipe CLI namespace with local archive install (tar/zip), list/info/remove, maintain recipes.lock.json and RECIPES.md, and add tests for recipe flows plus coverage-critical branches.
 
-## Risks
+## Plan
 
-Relies on system tar/zip commands; failures surface as CLI errors. Recipe manifests must be well-formed JSON.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 git revert <commit>
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Relies on system tar/zip commands; failures surface as CLI errors. Recipe manifests must be well-formed JSON.

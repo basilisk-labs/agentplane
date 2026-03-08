@@ -35,7 +35,7 @@ comments:
     author: "CODER"
     body: "Verified: evaluatePolicy(ctx) is implemented as a deterministic pipeline with rules for commit subject validation, protected paths enforcement, allowlist checks, and branch_pr base constraints; coverage added via unit tests."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T15:07:55.078Z"
 doc_updated_by: "CODER"
 description: "Implement a policy domain with protectedPathsRule(ctx), commitSubjectRule(ctx), and evaluatePolicy(ctx) as an explicit pipeline. Entry points (guard/hooks/cli) must not orchestrate checks or call individual rules; they call only evaluatePolicy."
@@ -54,14 +54,15 @@ id_source: "generated"
 3. Add unit tests for rules and for error formatting consistency.
 4. Verify via vitest CLI/core suites.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T15:07:46.276Z — VERIFY — ok
@@ -73,3 +74,9 @@ Note: Implemented evaluatePolicy pipeline and core policy rules (subject, protec
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

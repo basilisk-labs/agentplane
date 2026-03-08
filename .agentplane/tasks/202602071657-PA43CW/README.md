@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: task scaffold now writes a structured Verify Steps section before Verification; bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:11:54.866Z"
 doc_updated_by: "CODER"
 description: "Update task scaffold README template to include a structured, initially-empty ## Verify Steps block."
@@ -50,14 +50,15 @@ description: "Update task scaffold README template to include a structured, init
 3) Add/adjust tests as needed.
 4) Run bun run test:agentplane.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T17:11:09.510Z — VERIFY — ok
@@ -69,3 +70,9 @@ Note: Scaffold now includes structured Verify Steps section before Verification;
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

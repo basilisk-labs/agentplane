@@ -25,7 +25,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: proofread updated Getting Started section (ORCHESTRATOR approvals, direct/branch_pr note, clean.sh reset guidance) and ensured quickstart commands unchanged."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:36.512Z"
 doc_updated_by: "agentplane"
 description: "Make Getting Started more newcomer-friendly; explain the ORCHESTRATOR prompt and mention clean.sh."
@@ -44,24 +44,27 @@ New users struggle to understand how to start with the ORCHESTRATOR prompt and w
 - Add newcomer-friendly steps to Getting Started.
 - Mention clean.sh as an optional reset tool and when to use it.
 
-## Risks
+## Plan
 
-- Over-explaining could clutter the README and bury key steps.
-- Guidance must stay aligned with both direct and branch_pr workflows.
 
 ## Verify Steps
 
 - (Docs) Proofread updated README copy.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the README onboarding edits.
 
-## Notes
+## Findings
 
 - Keep examples consistent with the active workflow_mode guidance.
 
-## Plan
+## Risks
 
-
-## Verification
+- Over-explaining could clutter the README and bury key steps.
+- Guidance must stay aligned with both direct and branch_pr workflows.

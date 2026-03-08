@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: added deterministic release guards for dirty tracked tree, pre-existing tag, and npm version availability; added regression tests and workflow check step."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T12:36:23.269Z"
 doc_updated_by: "CODER"
 description: "Identify root causes of previous release failures and add deterministic guards (duplicate version publish, dirty tree, CI gate parity) in release workflow."
@@ -71,15 +71,11 @@ In scope: release apply command, publish workflow/scripts, release docs. Out of 
 
 1) Reconstruct past release failures from code/history. 2) Add deterministic pre-publish guards in CLI/workflow. 3) Add tests for new guards. 4) Run targeted + critical checks. 5) Commit.
 
-## Risks
+## Verify Steps
 
-Risk: over-constraining release path may block legitimate hotfix releases. Mitigation: scope checks to clear deterministic failures and keep explicit bypass options where needed.
+- bun run test:agentplane -- packages/agentplane/src/commands/release/apply.test.ts\n- bun run test:fast\n- bun run release:check\nExpected: tests pass; release apply guards trigger with clear errors for dirty tree or existing npm version.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T12:35:23.429Z — VERIFY — ok
@@ -96,6 +92,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T12:30:45.186Z, excerpt_
 
 Revert the release-guard commit and rerun release tests. If needed, temporarily use existing release flow without new checks.
 
-## Verify Steps
+## Findings
 
-- bun run test:agentplane -- packages/agentplane/src/commands/release/apply.test.ts\n- bun run test:fast\n- bun run release:check\nExpected: tests pass; release apply guards trigger with clear errors for dirty tree or existing npm version.
+
+## Risks
+
+Risk: over-constraining release path may block legitimate hotfix releases. Mitigation: scope checks to clear deterministic failures and keep explicit bypass options where needed.

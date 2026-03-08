@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: agentplane verify passed (2026-02-06); commit 94cedb4c3e5e. Split commands/task/index.ts into per-command modules; ran typecheck, lint, and test:cli:unit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T06:04:47.956Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Goal: reduce churn and review scope by splitting packages/agentplane/src/commands/task/index.ts into multiple command-specific modules.\\n\\nDeliverables:\\n- Move cmdTask* and lifecycle handlers into files under packages/agentplane/src/commands/task/*.ts (one command per file).\\n- Keep packages/agentplane/src/commands/task/index.ts as stable explicit re-export surface.\\n- No intended behavior changes; preserve public exports and CLI behavior.\\n\\nConstraints:\\n- direct mode; commits via agentplane; run agentplane verify before finish."
@@ -42,7 +42,7 @@ description: "Goal: reduce churn and review scope by splitting packages/agentpla
 
 - Move cmdTaskNew/Add/Update/Scrub/List/Next/Ready/Search/Scaffold/Normalize/Migrate/Comment/SetStatus/Show/List/Export/Lint and lifecycle cmdStart/cmdBlock/cmdFinish/cmdVerify + doc cmdTaskDocSet/Show into separate files.\n- Preserve public exports by re-exporting the same identifiers from packages/agentplane/src/commands/task/index.ts.\n- No intended behavior changes.
 
-## Risks
+## Plan
 
 
 ## Verify Steps
@@ -61,8 +61,14 @@ Verified: 2026-02-06 13:03:01 +0700
   - bun run lint
   - bun run test:cli:unit
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the task commit(s) created via agentplane.\n- Re-run: bun run typecheck && bun run lint && bun run test:cli:unit (and agentplane verify).\n- If needed, temporarily restore the monolithic task/index.ts from mainline.
 
-## Plan
+## Findings
+
+
+## Risks

@@ -46,9 +46,35 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: CLI contract docs now match global flag parsing, help/json behavior, and command catalog loading model."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T08:01:07.260Z"
 doc_updated_by: "DOCS"
 description: "Refresh docs/developer/cli-contract.mdx and cli-help-json.mdx with current parser rules, global flags, error contracts, and command-catalog loading behavior."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci passed | details: added task lint core+CLI coverage and validation tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:08.303Z"
 doc_updated_by: "agentplane"
 description: "Implement task lint checks beyond schema: DONE must have commit hash+message, verify required for certain tags, owner exists, deps cycles, checksum matches export."
@@ -43,19 +43,25 @@ Add tasks.json linting (checksum/deps/verify-required/DONE commit) with CLI supp
 
 Core: add tasks-lint module + tests; CLI: add task lint command, help entry, and CLI tests.
 
-## Risks
+## Plan
 
-Lint may flag manually edited tasks.json or missing verify commands; resolve by re-exporting or adding required verify steps.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit d78c21e6561c.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Lint may flag manually edited tasks.json or missing verify commands; resolve by re-exporting or adding required verify steps.

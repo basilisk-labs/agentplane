@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release apply now runs through explicit preflight, mutation, reporting, and push helpers, and the release tests remained green after the refactor."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T06:09:28.794Z"
 doc_updated_by: "CODER"
 description: "Decompose release apply into preflight, version mutation, artifact sync, commit/tag, and push/publish helpers to reduce orchestration risk and improve recovery clarity."
@@ -71,11 +71,6 @@ Decompose release apply into preflight, version mutation, artifact sync, commit/
 
 1. Inventory the current release apply flow and identify stable state boundaries: preflight, version/artifact mutation, commit/tag creation, push/publish, and recovery reporting. 2. Extract those boundaries into dedicated helpers while preserving current release semantics and existing safeguards. 3. Run targeted release apply tests, lint, build, and release-grade validation to confirm no behavioral drift.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -92,10 +87,6 @@ Decompose release apply into preflight, version mutation, artifact sync, commit/
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T06:08:39.807Z — VERIFY — ok
 
@@ -111,3 +102,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T06:04:07.918Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

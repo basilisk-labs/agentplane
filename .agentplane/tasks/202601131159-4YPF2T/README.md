@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: spec-only change; finish auto status commit enabled and no runtime behavior beyond agentctl finish flag."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:44.482Z"
 doc_updated_by: "agentplane"
 description: "Add a config option to auto-run finish status commits, update agentctl behavior and docs, and enable the setting in config.json."
@@ -47,19 +47,25 @@ User wants finish to commit task updates automatically when configured.
 
 Add a config flag, wire it into agentctl finish, update docs, and enable it in .agent-plane/config.json.
 
-## Risks
+## Plan
 
-Low risk; incorrect config parsing could block finish or trigger unexpected commits.
 
 ## Verify Steps
 
 No tests (behavior verified by inspection).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit and remove the config flag from config.json.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; incorrect config parsing could block finish or trigger unexpected commits.

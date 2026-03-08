@@ -30,7 +30,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: ROADMAP.md translated to English; structure preserved."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T05:52:10.023Z"
 doc_updated_by: "DOCS"
 description: "Translate ROADMAP.md content to English and commit as a standalone docs task."
@@ -44,19 +44,25 @@ Translate ROADMAP.md into English and commit as a standalone docs task.
 
 Translate all sections and bullets in ROADMAP.md without changing structure or intent.
 
-## Risks
+## Plan
 
-Risk: meaning drift in translation; mitigate by keeping technical terms and structure intact.
 
 ## Verify Steps
 
 Review ROADMAP.md for completeness and consistent terminology; no code tests required.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the translation commit to restore prior language.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: meaning drift in translation; mitigate by keeping technical terms and structure intact.

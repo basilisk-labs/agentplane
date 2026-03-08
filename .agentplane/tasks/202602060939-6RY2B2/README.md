@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Switched config/meta/cache writes to atomicWriteFile; updated init/recipes/pr/index; added atomic-write regression test and ran format:check, lint, test:fast, test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T10:08:34.887Z"
 doc_updated_by: "CODER"
 description: "Replace non-atomic writes (config save, task index/meta) with atomicWriteFile; add tests."
@@ -48,14 +48,15 @@ id_source: "generated"
 
 1) Audit non-atomic writes (config, index/meta, caches)\n2) Replace with atomicWriteFile where safe\n3) Add targeted unit tests for critical writers\n4) Verify: format:check, lint, test:fast
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T10:08:26.807Z — VERIFY — ok
@@ -67,3 +68,9 @@ Note: B3: atomic writes; bun run format:check, lint, test:fast, test:cli:core
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

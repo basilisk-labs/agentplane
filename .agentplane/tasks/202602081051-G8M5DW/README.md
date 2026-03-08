@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: task new no longer has a legacy argv parser or usage constants; only cli2 specs drive parsing/help, workflow tests use parsed-only APIs, and typecheck + cli core + fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T11:03:15.627Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Delete parseTaskNewFlags/usage constants and legacy argv entrypoints; ensure only cli2 spec drives parsing/help."
@@ -46,29 +46,6 @@ id_source: "generated"
 ## Plan
 
 Remove legacy task new argv parsing: delete parse/usage constants in task/new.ts; ensure only cli2 spec drives parsing/help; update tests accordingly.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T11:02:37.385Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: removed legacy task new argv parsing/usage exports (TASK_NEW_USAGE/parseTaskNewFlags/cmdTaskNew), updated workflow tests to parsed-only APIs, and confirmed typecheck + cli core + fast tests pass.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:02:25.308Z, excerpt_hash=sha256:d0caa34cf018e162431481c1374de658634588734a0fcc43c3c938ee3f438abb
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -85,3 +62,24 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:02:25.308Z, excerpt_
 ### Pass criteria
 - All commands succeed.
 - The assertions are satisfied.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T11:02:37.385Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: removed legacy task new argv parsing/usage exports (TASK_NEW_USAGE/parseTaskNewFlags/cmdTaskNew), updated workflow tests to parsed-only APIs, and confirmed typecheck + cli core + fast tests pass.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:02:25.308Z, excerpt_hash=sha256:d0caa34cf018e162431481c1374de658634588734a0fcc43c3c938ee3f438abb
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

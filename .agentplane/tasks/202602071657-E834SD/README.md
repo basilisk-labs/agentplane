@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: dependency summary already reports wait:<dep-id> for incomplete deps, which supports derive flow; bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:58:08.621Z"
 doc_updated_by: "CODER"
 description: "Confirm derived tasks show wait:<spike-id> until spike DONE; improve deps UX if needed."
@@ -48,27 +48,6 @@ description: "Confirm derived tasks show wait:<spike-id> until spike DONE; impro
 1) Validate that derived tasks with depends_on show wait:<spike-id> until the spike is DONE.
 2) Confirm no UX changes are needed in formatTaskLine/buildDependencyState.
 3) Run bun run test:agentplane.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T17:57:20.216Z — VERIFY — ok
-
-By: CODER
-
-Note: Deps UX already shows wait:<dep-id> for incomplete depends_on, which supports spike->implementation derive flow; bun run test:agentplane.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -87,3 +66,22 @@ Ensure dependency UX correctly reflects spike->implementation derive flow.
 ### Pass criteria
 
 - No code changes required: current deps summary is sufficient.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:57:20.216Z — VERIFY — ok
+
+By: CODER
+
+Note: Deps UX already shows wait:<dep-id> for incomplete depends_on, which supports spike->implementation derive flow; bun run test:agentplane.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

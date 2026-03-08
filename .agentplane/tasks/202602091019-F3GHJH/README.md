@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bunx vitest run packages/agentplane/src/cli/run-cli.core.boot.test.ts; increased per-test timeouts to avoid pre-push failures."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T10:21:11.648Z"
 doc_updated_by: "TESTER"
 description: "Pre-push hook intermittently fails due to 5s timeout in run-cli.core.boot.test.ts; increase per-test timeout to avoid release/push failures."
@@ -68,15 +68,11 @@ Raise the timeout for runCli bootstrapping unit tests to avoid flaky failures du
 
 1. Increase per-test timeout for the boot tests (quickstart/role).\n2. Run targeted vitest for the file.\n3. Commit and close the task.
 
-## Risks
+## Verify Steps
 
-- Masking legitimate hangs: mitigated by keeping timeout bounded (20s) and retaining strict mocks that fail if project/config resolution occurs.
+Commands:\n- bunx vitest run packages/agentplane/src/cli/run-cli.core.boot.test.ts\n\nPass criteria:\n- Tests pass consistently.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T10:20:04.703Z — VERIFY — ok
@@ -92,6 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T10:19:46.140Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-Commands:\n- bunx vitest run packages/agentplane/src/cli/run-cli.core.boot.test.ts\n\nPass criteria:\n- Tests pass consistently.
+
+## Risks
+
+- Masking legitimate hangs: mitigated by keeping timeout bounded (20s) and retaining strict mocks that fail if project/config resolution occurs.

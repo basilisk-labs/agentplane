@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run build + bun run test:cli:core + bun run test:core; require-clean now ignores untracked files per AGENTS.md clean definition."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T10:47:39.272Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Fix mismatch between policy definition of clean (ignores untracked) and guard/ensureGitClean behavior; rebuild TypeScript dist so repo-local CLI output matches src changes (help/quickstart/work start)."
@@ -69,14 +69,15 @@ id_source: "generated"
 4) Прогнать тесты: bun run test:cli:core (минимум) + при необходимости test:core.
 5) Обновить Verification и закрыть задачу; экспортировать snapshot (task export) если требуется.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T10:45:48.804Z — VERIFY — ok
@@ -92,3 +93,9 @@ Details:
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

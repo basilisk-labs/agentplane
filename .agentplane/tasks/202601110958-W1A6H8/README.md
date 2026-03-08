@@ -26,7 +26,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ran python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py; migrated a 3-task subset to Redmine (full 150-task migration timed out); task list + sync pull show remote tasks; created and exercised test task 202601111002-FZ099X (doc + comment) via Redmine backend."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:38.702Z"
 doc_updated_by: "agentplane"
 description: "Switch backend to Redmine using env config, migrate local tasks as source of truth, and validate CRUD/sync flows."
@@ -50,11 +50,8 @@ Switch backend to Redmine using env config and prove end-to-end sync from local 
 - Exercise CRUD: list tasks, create a new task, update doc sections, append comments, and confirm they persist via pull.
 - Validate sync push/pull behavior with the cache and ensure CLI outputs remain usable for agents.
 
-## Risks
+## Plan
 
-- Redmine project may contain legacy issues; mass migration could create clutter or conflicts.
-- Network/API failures could leave cache and remote out of sync.
-- Credentials are stored in .env; accidental logging of secrets must be avoided.
 
 ## Verify Steps
 
@@ -62,17 +59,23 @@ Switch backend to Redmine using env config and prove end-to-end sync from local 
 - python .agent-plane/agentctl.py task migrate --source .agent-plane/tasks.json --quiet
 - python .agent-plane/agentctl.py task list --quiet
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert .agent-plane/config.json to the local backend config.
 - Clear any test issues in Redmine (or reset the project) if the migration polluted the sandbox.
 - Re-run python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py to ensure clean state.
 
-## Notes
+## Findings
 
 - Full migration of 150 tasks to Redmine hit HTTP timeouts; migrated a 3-task subset for smoke testing instead.\n- Created test task 202601111002-FZ099X via Redmine backend, updated docs, and added a comment to verify custom fields/journals.\n-  succeeds; owners/priorities reflect Redmine assignee/priority names (e.g., Via Mentis Assistant / "normal").
 
-## Plan
+## Risks
 
-
-## Verification
+- Redmine project may contain legacy issues; mass migration could create clutter or conflicts.
+- Network/API failures could leave cache and remote out of sync.
+- Credentials are stored in .env; accidental logging of secrets must be avoided.

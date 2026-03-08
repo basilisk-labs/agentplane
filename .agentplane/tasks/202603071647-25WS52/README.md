@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: added end-to-end repo-local handoff regressions and synchronized setup, troubleshooting, and testing docs with the new framework-checkout behavior."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T16:56:21.917Z"
 doc_updated_by: "DOCS"
 description: "Add regression coverage for nested cwd, opt-out, and hook/stale-build behavior, then sync developer-facing docs with the new framework-checkout routing model."
@@ -72,11 +72,6 @@ Add regression coverage for nested cwd, opt-out, and hook/stale-build behavior, 
 
 1. Add regression tests for nested cwd handoff, opt-out, and no-recursion behavior. 2. Update setup/developer docs to state that framework-checkout invocations automatically use the repo-local binary. 3. Run targeted wrapper/docs checks and close the task graph cleanly.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -93,10 +88,6 @@ Add regression coverage for nested cwd, opt-out, and hook/stale-build behavior, 
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T16:56:21.691Z — VERIFY — ok
 
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:52:47.284Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

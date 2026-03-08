@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: role now renders .agentplane/agents/ROLE.json profiles when built-in guide is missing, and unknown role messages include discovered profile roles; lint and tests passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T13:44:56.802Z"
 doc_updated_by: "CODER"
 description: "Enhance agentplane role command to render roles from .agentplane/agents when not built-in; show combined output when both exist; improve Unknown role message."
@@ -64,6 +64,10 @@ id_source: "generated"
 
 Improve agentplane role so it can render role info from .agentplane/agents/ROLE.json when no built-in guide exists, and show both built-in guide and agent profile when both exist.
 
+## Context
+
+agentplane role currently only uses packages/agentplane/src/cli/command-guide.ts. JSON-defined roles shipped in .agentplane/agents (for example UPGRADER) appear as Unknown, reducing CLI transparency.
+
 ## Scope
 
 In scope: packages/agentplane/src/cli/run-cli/commands/core.ts cmdRole; reading .agentplane/agents/*.json when a project is detected; unit tests under packages/agentplane/src/cli/run-cli/commands. Out of scope: changing agent profile schema or command-guide content.
@@ -71,10 +75,6 @@ In scope: packages/agentplane/src/cli/run-cli/commands/core.ts cmdRole; reading 
 ## Plan
 
 1. Inspect current cmdRole implementation. 2. Add best-effort project resolution and agent-profile loading when built-in role guide is missing (or in addition). 3. Render profile fields (id/role/description plus selected sections) in a stable format and print explicit source note. 4. Improve Unknown role error to list built-in roles plus discovered .agentplane/agents roles when available. 5. Add unit tests for JSON-only roles (UPGRADER) and combined output.
-
-## Risks
-
-Risk: changing role output can break snapshot/contract tests. Mitigation: update unit tests explicitly and keep formatting deterministic.
 
 ## Verify Steps
 
@@ -87,10 +87,6 @@ Pass criteria:
 - Unknown role output includes both built-in and JSON profile role lists when a project is detected.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T13:40:54.442Z — VERIFY — ok
@@ -107,6 +103,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T13:37:31.638Z, excerpt_
 
 Revert the cmdRole changes and updated tests; re-run the same test commands.
 
-## Context
+## Findings
 
-agentplane role currently only uses packages/agentplane/src/cli/command-guide.ts. JSON-defined roles shipped in .agentplane/agents (for example UPGRADER) appear as Unknown, reducing CLI transparency.
+
+## Risks
+
+Risk: changing role output can break snapshot/contract tests. Mitigation: update unit tests explicitly and keep formatting deterministic.

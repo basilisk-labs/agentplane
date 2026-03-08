@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run typecheck; bun run test:cli:core. Migrated task verify commands to cli2 leaf commands."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T07:32:43.506Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task verify ...` and `task verify-show`."
@@ -60,11 +60,6 @@ Plan:
 5. Run verification: bun run typecheck; bun run test:cli:core.
 6. Record verification, commit, finish, closure commit.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -85,10 +80,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T07:29:41.666Z — VERIFY — ok
 
@@ -105,3 +96,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T07:23:08.578Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

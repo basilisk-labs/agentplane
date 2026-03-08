@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: agents now canonicalize IDs from filenames and fail on raw id drift."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:25:17.795Z"
 doc_updated_by: "CODER"
 description: "In agents command, compute canonical ID from filename, detect filename-vs-json.id mismatch, surface strict failure/warning, and show raw.id only when drift exists."
@@ -71,15 +71,15 @@ In scope: packages/agentplane/src/cli/run-cli/commands/core.ts (agents and profi
 
 1) Canonicalize id from filename in agents list output. 2) Validate optional raw json id against canonical filename id and fail with E_USAGE on mismatch. 3) Keep role/profile behavior intact and add/update tests.
 
-## Risks
+## Verify Steps
 
-Risk: stricter validation may fail existing mismatched local profiles. Mitigation: clear error messages naming filename/canonical/raw ids.
+- bun run --filter=@agentplaneorg/core build
+- bun run --filter=agentplane build
+- bun run lint
+- bunx vitest run packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts packages/agentplane/src/cli/run-cli.core.test.ts
+- bun run test:fast
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T05:25:17.647Z — VERIFY — ok
@@ -96,10 +96,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T05:23:18.554Z, excerpt_
 
 Revert the task commit to restore previous agent id listing behavior.
 
-## Verify Steps
+## Findings
 
-- bun run --filter=@agentplaneorg/core build
-- bun run --filter=agentplane build
-- bun run lint
-- bunx vitest run packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts packages/agentplane/src/cli/run-cli.core.test.ts
-- bun run test:fast
+
+## Risks
+
+Risk: stricter validation may fail existing mismatched local profiles. Mitigation: clear error messages naming filename/canonical/raw ids.

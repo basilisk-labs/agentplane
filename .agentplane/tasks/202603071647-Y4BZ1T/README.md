@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: wired repo-local binary handoff into the global wrapper with opt-out and recursion protection."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T16:52:35.569Z"
 doc_updated_by: "CODER"
 description: "When PATH-launched agentplane runs inside the framework checkout, exec into the repo-local binary by default while preserving recursion guards and explicit opt-out."
@@ -72,11 +72,6 @@ When PATH-launched agentplane runs inside the framework checkout, exec into the 
 
 1. Use the new checkout helper in the global wrapper to exec into the repo-local binary by default inside the framework checkout. 2. Preserve stale-build checks, commit-msg fast-path, recursion guard, and add an explicit opt-out env. 3. Keep non-framework and already-local invocations unchanged.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -93,10 +88,6 @@ When PATH-launched agentplane runs inside the framework checkout, exec into the 
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T16:52:35.346Z — VERIFY — ok
 
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:50:44.343Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

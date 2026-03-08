@@ -56,7 +56,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-commit file selection now leaves declaration files in the formatter path but excludes them from ESLint targets, removing non-actionable ignored-file warnings from local hooks."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T08:59:46.396Z"
 doc_updated_by: "CODER"
 description: "Stop local hook and targeted lint paths from printing ignored .d.ts warnings while preserving lint coverage for relevant runtime files."
@@ -79,11 +79,6 @@ Stop local hook and targeted lint paths from printing ignored .d.ts warnings whi
 2. Exclude ignored declaration files such as .d.ts from ESLint targets while preserving Prettier coverage and normal source-file linting.
 3. Verify the selector with a regression test and lint the touched hook files.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -100,10 +95,6 @@ Stop local hook and targeted lint paths from printing ignored .d.ts warnings whi
 - Local pre-commit selection no longer emits ignored .d.ts ESLint warnings while preserving coverage for regular lintable source files.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T08:59:11.933Z — VERIFY — ok
@@ -129,7 +120,12 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T08:59:11.934Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Motivation: recent commits still printed non-actionable ESLint warnings because .d.ts files were forwarded into targeted lint invocations even though ESLint ignores them.
 - Non-goal: changing the repository-wide ESLint config or weakening source-file lint coverage.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

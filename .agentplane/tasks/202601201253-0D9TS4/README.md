@@ -23,7 +23,7 @@ commit:
   hash: "50d8ca97ab3fbd10d3a49bc149523701321904b9"
   message: "✨ 0D9TS4 normalize task doc headings"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-20T12:55:13+00:00"
 doc_updated_by: "agentctl"
 description: "Update agent instructions so new/untracked repo files are ignored and only task-owned changes are committed."
@@ -42,23 +42,26 @@ Current guidance can treat unexpected files as blockers, causing agents to stop 
 - Clarify that clean status requirements exclude unrelated untracked files.
 - Reinforce commit discipline to stage/commit only task-owned files.
 
-## Risks
+## Plan
 
-- Agents might overlook a relevant new file if it is actually part of their task.
 
 ## Verify Steps
 
 - Review updated AGENTS.md guidance for the new rule.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the AGENTS.md edits.
 
-## Notes
+## Findings
 
 - No code behavior changes; documentation-only.
 
-## Plan
+## Risks
 
-
-## Verification
+- Agents might overlook a relevant new file if it is actually part of their task.

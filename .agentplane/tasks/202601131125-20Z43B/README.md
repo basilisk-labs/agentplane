@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: closed as obsolete per user request; no execution performed; no verify steps run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:43.568Z"
 doc_updated_by: "agentplane"
 description: "Scan the repo for hard-coded workflow settings and propose which ones should move into config.json for agent awareness and agentctl toggles."
@@ -44,26 +44,29 @@ description: "Scan the repo for hard-coded workflow settings and propose which o
 
 - No code or config changes beyond task doc and roadmap housekeeping.
 
-## Risks
+## Plan
 
-- None; no product changes were made.
 
 ## Verify Steps
 
 - Not run (task closed as obsolete).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - None (no changes shipped).
 
-## Notes
+## Findings
 
 - Reopen with a new task if analysis becomes necessary.
 
-## Plan
+## Risks
 
-
-## Verification
+- None; no product changes were made.
 
 ## Changes Summary (auto)
 

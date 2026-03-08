@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Epic J tracking closed after confirming AP-090/091/092 are complete with commits."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T05:43:53.869Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Track AP-090/091/092 execution for Epic J."
@@ -46,14 +46,15 @@ Verify completion status and evidence for AP-090/091/092; no new code changes.
 2) Update Epic J documentation to reflect completion.
 3) Verify and finish epic tracking.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T05:43:48.747Z — VERIFY — ok
@@ -67,3 +68,8 @@ Note: AP-090/091/092 are DONE with commits and verification notes.
 ## Rollback Plan
 
 No code changes; no rollback required.
+
+## Findings
+
+
+## Risks

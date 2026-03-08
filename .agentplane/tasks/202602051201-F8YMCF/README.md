@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run lint; bun run test:fast; agentplane verify 202602051201-F8YMCF."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T12:22:57.337Z"
 doc_updated_by: "CODER"
 description: "Parse Verify Steps from task README (cmd vs human), execute commands, and collect results for verification."
@@ -47,19 +47,25 @@ Added Verify Steps parsing (cmd vs human) and wired verify to execute README com
 
 Parse Verify Steps section, extract cmd: lines, display manual steps, and prefer README commands over task.verify; added workflow verify test coverage.
 
-## Risks
+## Plan
 
-Verify behavior now depends on README content; missing cmd: lines yields no commands unless task.verify is populated.
 
 ## Verify Steps
 
 bun run lint\nbun run test:fast
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the verify parsing commit to restore task.verify-only behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Verify behavior now depends on README content; missing cmd: lines yields no commands unless task.verify is populated.

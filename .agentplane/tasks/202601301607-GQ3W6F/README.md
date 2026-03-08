@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: metadata added for npm packages | details: ready for publish without changing private flags."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:31.853Z"
 doc_updated_by: "agentplane"
 description: "Populate package metadata (description/keywords/etc.) for npm display and global install readiness."
@@ -43,19 +43,25 @@ description: "Populate package metadata (description/keywords/etc.) for npm disp
 
 - Update package.json metadata for packages/agentplane and packages/core.\n- Add descriptive fields to internal packages for consistency.
 
-## Risks
+## Plan
 
-- Incorrect metadata could misrepresent the package on npm.\n- Publishing private packages unintentionally if private flags are changed.
 
 ## Verify Steps
 
 - Review package.json metadata fields for correctness.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert package.json metadata changes if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Incorrect metadata could misrepresent the package on npm.\n- Publishing private packages unintentionally if private flags are changed.

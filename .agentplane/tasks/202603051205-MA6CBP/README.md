@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: reason-code taxonomy and CLI decode integrated with tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T12:18:37.180Z"
 doc_updated_by: "CODER"
 description: "Introduce centralized reason-code metadata and show human-readable decode in CLI errors."
@@ -69,19 +69,11 @@ In scope: packages/agentplane/src/cli/run-cli.ts, new reason-code map module, JS
 
 1. Add canonical reason-code map module.\n2. Use map in run-cli error writer to print decode details.\n3. Extend JSON error shape with reason_decode.\n4. Update tests and docs.\n5. Run targeted tests and typecheck.
 
-## Risks
-
-Risk: changing JSON error shape can affect external parsers. Mitigation: add optional field only; keep existing fields unchanged.
-
 ## Verify Steps
 
 1. bun test packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/cli/run-cli.core.test.ts\n2. bun run --filter=agentplane typecheck\nPass criteria: all commands exit 0.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T12:07:38.954Z — VERIFY — ok
@@ -101,3 +93,10 @@ bun test packages/agentplane/src/shared/errors.test.ts packages/agentplane/src/c
 ## Rollback Plan
 
 Revert commit for task 202603051205-MA6CBP. If needed, remove reason_decode from JSON output and keep prior guidance-only behavior.
+
+## Findings
+
+
+## Risks
+
+Risk: changing JSON error shape can affect external parsers. Mitigation: add optional field only; keep existing fields unchanged.

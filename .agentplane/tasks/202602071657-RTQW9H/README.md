@@ -31,7 +31,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: Updated CLI help/command guide/AGENTS for Verify Steps vs Verification + spike derive/verify-show; bun run test:fast and bun run lint passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T18:23:42.440Z"
 doc_updated_by: "DOCS"
 description: "Document Verify Steps vs Verification, new gates, and spike->implementation derive workflow."
@@ -53,11 +53,6 @@ Update CLI help/command guide/AGENTS for two-stage verification (Verify Steps ->
 3) Document spike tag convention + derive and verify-show commands.
 4) Run bun run test:fast.
 
-## Risks
-
-- Docs drift from implemented CLI behavior.
-- Help/guide omissions could mislead workflow.
-
 ## Verify Steps
 
 ### Scope
@@ -78,10 +73,6 @@ Update only help/guide/policy docs for two-stage verification and spike workflow
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T18:23:30.053Z — VERIFY — ok
 
@@ -100,3 +91,11 @@ bun run test:fast (pass); bun run lint (pass)
 ## Rollback Plan
 
 Revert the docs commit for this task.
+
+## Findings
+
+
+## Risks
+
+- Docs drift from implemented CLI behavior.
+- Help/guide omissions could mislead workflow.

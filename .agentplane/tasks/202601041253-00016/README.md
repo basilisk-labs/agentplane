@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: "Extended README with code breakdown and local dev steps (download zip, run clean.sh)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:17.135Z"
 doc_updated_by: "agentplane"
 description: "Ensure README describes the codebase and includes local development steps (download Zip, run clean.sh)."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

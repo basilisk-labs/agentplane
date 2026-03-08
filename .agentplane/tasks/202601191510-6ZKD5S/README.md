@@ -27,7 +27,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: updated RECIPES.md outputs guidance and reviewed recipes doc references for consistency."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:54.902Z"
 doc_updated_by: "agentplane"
 description: "Add .agent-plane/RECIPES.md with global prompt guidance, reference it from AGENTS.md, and update docs/README/PRD as needed to reflect recipes CLI."
@@ -44,23 +44,26 @@ Updated .agent-plane/RECIPES.md and referenced it from AGENTS.md, README.md, doc
 
 Added global recipe prompt guidance and refreshed documentation pointers to recipes.py and inventory/bundle usage.
 
-## Risks
+## Plan
 
-Docs can drift if recipe CLI behavior changes; keep RECIPES.md aligned with recipes.py updates.
 
 ## Verify Steps
 
 Manual review of recipe docs for correct recipes.py references.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the documentation commit for this task if the recipes guidance needs to be rolled back.
 
-## Notes
+## Findings
 
 RECIPES.md now includes outputs/artifacts guidance plus explicit bundle usage rules.
 
-## Plan
+## Risks
 
-
-## Verification
+Docs can drift if recipe CLI behavior changes; keep RECIPES.md aligned with recipes.py updates.

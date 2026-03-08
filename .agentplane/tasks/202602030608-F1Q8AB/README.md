@@ -28,7 +28,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts packages/agentplane/src/run-cli.recipes.test.ts; bun run lint"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:46.527Z"
 doc_updated_by: "agentplane"
 description: "Audit and tighten CLI info/error messages so agent-facing output preserves context, reduces noise, and guides next steps."
@@ -40,16 +40,21 @@ id_source: "generated"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

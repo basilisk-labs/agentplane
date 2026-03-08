@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run typecheck; bun run test:cli:core. start/block are spec-driven via cli2, legacy routing removed, and lifecycle CLI tests updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T07:43:31.621Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `start` and `block`."
@@ -60,20 +60,11 @@ Out of scope:
 - spec-derived help includes all options
 - parse errors produce E_USAGE with compact usage
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 Run:\n- bun run typecheck\n- bun run test:cli:core\n\nPass criteria:\n- start/block are routed via cli2 and legacy routing is removed\n- tests cover at least one success and one usage error path for each command\n- typecheck and test suite above pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T07:41:28.305Z — VERIFY — ok
@@ -91,3 +82,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T07:33:41.718Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

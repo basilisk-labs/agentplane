@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release notes generation now enforces richer human-language detail and stronger bullet coverage checks across plan, apply, and hook validation."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T15:08:05.175Z"
 doc_updated_by: "CODER"
 description: "Make release notes generation enforce richer bullet coverage and detailed human-language summaries of all release differences."
@@ -68,19 +68,11 @@ In scope: release plan instructions, release notes template, release notes valid
 
 1) Strengthen release-plan instructions to require complete detailed bullet coverage of changes. 2) Expand template structure for richer human-facing notes. 3) Enforce minimum bullet count policy in release apply and release notes checker. 4) Update release tests and verify with targeted test run.
 
-## Risks
-
-Risk 1: stricter validation may fail existing lightweight notes. Mitigation: baseline minimum is predictable and documented in template/instructions. Risk 2: mismatch between plan and apply checks. Mitigation: use same bullet-count rule (max(5, changes count)).
-
 ## Verify Steps
 
 Run: bun test packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/apply.test.ts. Expected: all tests pass and include guard for insufficient release-note bullets.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T15:06:23.190Z — VERIFY — ok
@@ -96,7 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T15:06:10.038Z, excerpt_
 ## Rollback Plan
 
 
-## Notes
+## Findings
 
 ### Approvals / Overrides
 - None.
@@ -112,3 +104,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T15:06:10.038Z, excerpt_
 
 ### Evidence / Links
 - bun test packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/apply.test.ts
+
+## Risks
+
+Risk 1: stricter validation may fail existing lightweight notes. Mitigation: baseline minimum is predictable and documented in template/instructions. Risk 2: mismatch between plan and apply checks. Mitigation: use same bullet-count rule (max(5, changes count)).

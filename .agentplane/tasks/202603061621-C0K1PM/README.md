@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the release/apply regression test is now branch-agnostic, local test:fast is green, and the failing GitHub Core CI root cause was eliminated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T16:26:16.878Z"
 doc_updated_by: "CODER"
 description: "Repair the new release/apply regression test so it does not assume refs/heads/main exists in temporary repositories on GitHub Actions runners."
@@ -71,11 +71,6 @@ Repair the new release/apply regression test so it does not assume refs/heads/ma
 
 1. Inspect packages/agentplane/src/commands/release/apply.test.ts and identify the exact branch-name assumption that fails on GitHub Actions runners.\n2. Replace refs/heads/main assertions with branch-agnostic checks derived from the current local HEAD/reference state of the temp repository.\n3. Re-run targeted release/apply tests and release-adjacent fast checks locally.\n4. Record verification evidence, close the task against the implementation commit, push main, and confirm Docs CI/Core CI are green for the new SHA.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -91,10 +86,6 @@ Repair the new release/apply regression test so it does not assume refs/heads/ma
 - Steps are reproducible and produce expected results.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T16:26:05.481Z — VERIFY — ok
@@ -124,3 +115,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T16:22:19.240Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: verify recording is fully spec-driven (no legacy argv parser/usage constants); verify APIs are structured, workflow tests no longer pass argv arrays, and typecheck + cli core + fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T11:08:53.434Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Refactor verify recording to parsed-only API; delete parseVerifyRecordFlags and usage constants; strengthen E_USAGE tests."
@@ -46,29 +46,6 @@ id_source: "generated"
 ## Plan
 
 Remove legacy verify-record argv parsing: refactor verify-record to parsed-only API; delete parse/usage constants; ensure cli2 specs handle validation and usage consistently.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T11:08:22.211Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: removed legacy verify argv parsing/usage constants (parseVerifyRecordFlags/VERIFY_USAGE/TASK_VERIFY_USAGE/cmdVerify wrapper), updated workflow tests to structured verify APIs, and confirmed typecheck + cli core + fast tests pass.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:08:08.239Z, excerpt_hash=sha256:19244d0ce184d77fc49f21e5e9d5ecba96942ea3bd73755ca84be409c998d784
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -86,3 +63,24 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:08:08.239Z, excerpt_
 ### Pass criteria
 - All commands succeed.
 - The assertions are satisfied.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T11:08:22.211Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: removed legacy verify argv parsing/usage constants (parseVerifyRecordFlags/VERIFY_USAGE/TASK_VERIFY_USAGE/cmdVerify wrapper), updated workflow tests to structured verify APIs, and confirmed typecheck + cli core + fast tests pass.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:08:08.239Z, excerpt_hash=sha256:19244d0ce184d77fc49f21e5e9d5ecba96942ea3bd73755ca84be409c998d784
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

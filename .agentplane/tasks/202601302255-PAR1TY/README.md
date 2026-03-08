@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:36.762Z"
 doc_updated_by: "agentplane"
 description: "Review parity audits and summarize remaining gaps for Node CLI vs Python agentctl."
@@ -41,19 +41,25 @@ Updated parity audit docs to reflect quickstart and recipes explain, and clarifi
 
 docs/audits/parity-report.md; docs/audits/nodejs-parity-matrix.md.
 
-## Risks
+## Plan
 
-Audit notes can drift as CLI behavior changes; keep docs aligned with releases.
 
 ## Verify Steps
 
 Manual review of parity-report.md and nodejs-parity-matrix.md for accuracy.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the audit doc updates if parity status needs to be restored.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Audit notes can drift as CLI behavior changes; keep docs aligned with releases.

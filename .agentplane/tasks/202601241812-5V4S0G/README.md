@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: rg -n --hidden --glob '!.git/*' --glob '!**/.agent-plane/tasks/**' old-name patterns returned no matches | details: python .agent-plane/agentctl.py config show OK."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:01.650Z"
 doc_updated_by: "agentplane"
 description: "Rename all project references and paths to Agent Plane, including folder names and docs/scripts to keep workflows functional."
@@ -48,26 +48,29 @@ description: "Rename all project references and paths to Agent Plane, including 
 - Rename the framework directory to .agent-plane and update dependent scripts/configs.
 - Update task records and auto summaries to reflect new paths.
 
-## Risks
+## Plan
 
-- External tooling or cached paths pointing to the old directory name may break until updated.
-- Untracked or ignored artifacts may still reference the old name.
 
 ## Verify Steps
 
 - rg -n --hidden --glob '!.git/*' --glob '!**/.agent-plane/tasks/**' "Codex Swarm|CodexSwarm|codex-swarm|codex_swarm|codexswarm|CODEX_SWARM|CODEX-SWARM"
 - python .agent-plane/agentctl.py config show
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - git revert <commit>
 - Restore the previous directory name and paths from the prior commit if needed.
 
-## Notes
+## Findings
 
 - Repo root already uses the agentplane name; no on-disk rename was required.
 
-## Plan
+## Risks
 
-
-## Verification
+- External tooling or cached paths pointing to the old directory name may break until updated.
+- Untracked or ignored artifacts may still reference the old name.

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: policy-facing user docs now reflect current orchestration rules and migration impacts without legacy role/policy drift."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T07:54:15.470Z"
 doc_updated_by: "DOCS"
 description: "Update docs/user/agents.mdx and docs/user/breaking-changes.mdx for current role boundaries, approvals, execution profile semantics, and migration notes."
@@ -66,14 +66,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T07:54:15.308Z — VERIFY — ok
@@ -87,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T07:52:58.660Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

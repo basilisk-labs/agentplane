@@ -33,7 +33,7 @@ comments:
     author: "CODER"
     body: "Verified: Policy domain now has an explicit PolicyContext type and lint-enforced purity boundaries; git commit hook output buffer is increased to avoid hook log truncation failures."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T15:07:54.862Z"
 doc_updated_by: "CODER"
 description: "Introduce PolicyContext next to existing GitContext/CommandContext and enforce a strict boundary: policy/git domains must not read process/env/fs directly. Add lint restrictions for the policy directory to prevent hidden fallbacks and IO."
@@ -52,14 +52,15 @@ id_source: "generated"
 3. Add ESLint restrictions for the policy directory to prevent IO and hidden fallbacks.
 4. Verify by running lint and core CLI tests.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T15:07:46.287Z — VERIFY — ok
@@ -71,3 +72,9 @@ Note: Introduced PolicyContext scaffolding and pure-policy lint boundaries; comm
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

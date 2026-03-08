@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: role guidance now extends the shared bootstrap contract with role-specific deltas instead of reintroducing a competing startup narrative."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T14:55:36.723Z"
 doc_updated_by: "CODER"
 description: "Reduce role guidance drift by making role output reference the canonical bootstrap model instead of restating conflicting lifecycle instructions."
@@ -69,19 +69,11 @@ Reduce duplicated lifecycle prose in role guidance and make role output point ba
 
 1. Tighten role output to role-specific deltas. 2. Remove duplicate lifecycle narrative. 3. Keep direct and branch_pr specifics accurate.
 
-## Risks
-
-Over-trimming can make role help too sparse; under-trimming leaves drift intact.
-
 ## Verify Steps
 
 1. Run role/command guide tests. 2. Inspect CODER and INTEGRATOR role output for drift against quickstart.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T14:55:36.239Z — VERIFY — ok
@@ -97,3 +89,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:55:26.261Z, excerpt_
 ## Rollback Plan
 
 Restore the prior role text if the new output stops being actionable or breaks CLI help expectations.
+
+## Findings
+
+
+## Risks
+
+Over-trimming can make role help too sparse; under-trimming leaves drift intact.

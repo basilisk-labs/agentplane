@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: chain-of-thought guidance is strict (no raw reasoning); both AGENTS.md and packages/agentplane/assets/AGENTS.md are aligned, and old wording is removed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T08:45:34.810Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Replace the \"Do not reveal internal chain-of-thought\" sentence with stricter guidance (no raw chain-of-thought; structured artifacts only) in root AGENTS.md and the install template."
@@ -46,14 +46,15 @@ id_source: "generated"
 
 1) Locate all occurrences of the current chain-of-thought rule in repo (root + template).\n2) Replace with stricter guidance: no raw internal chain-of-thought; express reasoning via structured artifacts list.\n3) Verify via ripgrep: old phrase removed; new text present in both files.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T17:54:51.902Z — VERIFY — ok
@@ -65,3 +66,9 @@ Note: Replaced old chain-of-thought bullet in root AGENTS.md and install templat
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

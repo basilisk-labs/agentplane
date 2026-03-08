@@ -23,7 +23,7 @@ commit:
   hash: "944d0b90f177d0515866112cfb2b2a037ff6dccd"
   message: "🧹 P7AMW3 neutralize task owners"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Replace Via Mentis owner values with a neutral owner label across tasks and export the updated snapshot."
@@ -38,19 +38,25 @@ description: "Replace Via Mentis owner values with a neutral owner label across 
 - `.agent-plane/tasks/*/README.md`: update owner fields.
 - `.agent-plane/tasks.json`: re-export snapshot.
 
-## Risks
+## Plan
 
-- Bulk edit touches many task records; ensure no other fields change.
 
 ## Verify Steps
 
 - `python3 .agent-plane/agentctl.py task export --out .agent-plane/tasks.json`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the commit and re-export tasks.json from the previous state.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Bulk edit touches many task records; ensure no other fields change.

@@ -34,7 +34,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: completed optimization batch and documentation updates for this task chain."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-13T11:38:10.786Z"
 doc_updated_by: "CODER"
 description: "Remove runtime-dead legacy lifecycle parser layer and migrate remaining relevant cases to current spec/parser tests."
@@ -47,9 +47,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -66,11 +63,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

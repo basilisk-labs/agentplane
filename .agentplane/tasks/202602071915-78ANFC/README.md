@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: cli2 core (spec/parse/registry/help-render), cli2 help command + JSON contract docs, and run-cli integration migrating task new/work start/recipes install with full test coverage and updated error hints."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T19:59:57.013Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement cli2 microframework: CommandSpec types, argv parser w/ validation, command registry (longest prefix), did-you-mean suggestions, and help renderer (text/compact/json) with tests."
@@ -60,11 +60,6 @@ Implement the spec-driven CLI core (`cli2`): command specs, argv parser with val
 4. Implement help rendering: text/compact/json (strictly per the JSON contract).
 5. Add unit tests for parse failures and rendering invariants.
 
-## Risks
-
-- Parser complexity (edge cases): keep v1 syntax intentionally small and cover the supported subset with tests.
-- Non-deterministic output: enforce stable ordering in spec + JSON serialization.
-
 ## Verify Steps
 
 ### Scope
@@ -88,10 +83,6 @@ Unit tests must cover:
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T19:45:13.185Z — VERIFY — ok
 
@@ -110,3 +101,11 @@ Commands: bun run typecheck; bun run test:agentplane packages/agentplane/src/cli
 ## Rollback Plan
 
 Delete `packages/agentplane/src/cli2/**` and the associated tests.
+
+## Findings
+
+
+## Risks
+
+- Parser complexity (edge cases): keep v1 syntax intentionally small and cover the supported subset with tests.
+- Non-deterministic output: enforce stable ordering in spec + JSON serialization.

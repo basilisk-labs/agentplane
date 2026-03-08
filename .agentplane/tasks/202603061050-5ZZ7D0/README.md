@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T13:22:32.539Z"
 doc_updated_by: "CODER"
 description: "Create website/CONTENT.md with a structured content map for the homepage based on README, website IA, overview docs, and harness engeneering narrative."
@@ -71,11 +71,6 @@ Create a homepage content map in website/CONTENT.md that translates repository s
 2. Synthesize them into a single content map with sections, goals, claims, proof links, and writing guidance for the homepage.
 3. Save the result as website/CONTENT.md in English so it can drive later design and implementation work.
 4. Run docs-only verification and record evidence in task notes.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -99,10 +94,8 @@ Validate the new homepage content map as a docs-only artifact and ensure referen
 
 ## Verification
 
-### Plan
 Validate the new homepage content map as a docs-only artifact and check the required docs/policy commands.
 
-### Results
 - Command: node .agentplane/policy/check-routing.mjs
 - Result: pass
 - Evidence: command returned 'policy routing OK'.
@@ -141,3 +134,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T10:52:56.777Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

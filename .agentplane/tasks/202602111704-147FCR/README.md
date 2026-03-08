@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: downstream tasks FR7GCJ and 8KCQME are DONE with passing targeted tests and builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:11:20.765Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add targeted tests for remaining branch gaps in pr integrate internals and guard flow modules, with atomic per-task commits."
@@ -67,17 +67,22 @@ In scope: downstream tasks FR7GCJ and 8KCQME and their test additions. Out of sc
 
 1) Finish FR7GCJ and 8KCQME. 2) Validate targeted tests/builds and focused coverage reports. 3) Close epic.
 
-## Risks
+## Verify Steps
 
-Residual risk: full guard-scope branch coverage remains below global threshold due untouched modules (for example close-message).
+- bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/pr/integrate/internal/**'\n- bunx vitest run packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert commits from FR7GCJ/8KCQME if regressions appear in PR integrate or guard suites.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/pr/integrate/internal/**'\n- bunx vitest run packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Residual risk: full guard-scope branch coverage remains below global threshold due untouched modules (for example close-message).

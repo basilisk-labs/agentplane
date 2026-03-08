@@ -32,7 +32,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: agentctl.md now documents flags, JSON errors, normalize, lint behavior, and batch writes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:33.048Z"
 doc_updated_by: "agentplane"
 description: "Add backend batch writes, fast in-memory indexes, structured error output with --json, lazy linting, and unified logging flags."
@@ -48,33 +48,39 @@ dirty: false
 - Make linting lazy and opt-in for read-only commands.
 - Add global logging flags for consistent verbosity.
 
-## Goal
-
-- Improve agentctl performance and automation ergonomics without changing core behavior.
-
 ## Scope
 
 - `.agent-plane/agentctl.py`: batch writes, caching, JSON error mode, lazy lint, global logging flags.
 - `.agent-plane/backends/local/backend.py`: `write_tasks()` implementation.
 - `.agent-plane/agentctl.md`: document new flags and behaviors.
 
-## Risks
+## Plan
 
-- Logging and linting behavior changes may surprise existing automation.
 
 ## Verify Steps
 
 - `python3 .agent-plane/agentctl.py task normalize`
 - `python3 .agent-plane/agentctl.py task export --out .agent-plane/tasks.json`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Restore `.agent-plane/agentctl.py` and backend files from git history.
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Improve agentctl performance and automation ergonomics without changing core behavior.
+
+## Risks
+
+- Logging and linting behavior changes may surprise existing automation.
 
 ## Changes Summary (auto)
 

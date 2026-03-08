@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: navbar now uses a constrained liquid-glass chrome treatment, headings are looser, and the custom 0.3.x blog landing order is 0.3.0 -> 0.3.1 -> 0.3.2."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T21:09:54.463Z"
 doc_updated_by: "CODER"
 description: "Update DESIGN.md to allow tightly constrained liquid-glass elements, increase heading leading, add a subtle liquid-glass navbar treatment, and reorder the 0.3.x blog landing entries."
@@ -71,10 +71,6 @@ Update DESIGN.md to allow tightly constrained liquid-glass elements, increase he
 
 1. Update DESIGN.md to allow tightly constrained liquid-glass chrome elements and raise the target heading leading so the contract matches the intended website direction. 2. Apply the contract in website CSS by giving the navbar a subtle rectangular liquid-glass treatment with translucent white fill and by increasing heading leading in docs/blog surfaces. 3. Reorder the 0.3.x entries in the custom blog landing to place 0.3.1 between 0.3.0 and 0.3.2, then run site/design checks and close the task.
 
-## Risks
-
-- Risk: adding glass styling too broadly would violate the existing typography-first direction and turn the site into generic chrome-heavy UI.\n- Mitigation: constrain liquid-glass to navbar chrome only, keep it rectangular, low-contrast, and white-tinted with no decorative glow.\n\n- Risk: blog entry reordering could drift from the intended release sequence or confuse the landing section label.\n- Mitigation: keep the change local to the custom blog landing entries and preserve the rest of the page structure.
-
 ## Verify Steps
 
 ### Scope
@@ -94,10 +90,6 @@ Update DESIGN.md to allow tightly constrained liquid-glass elements, increase he
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T21:09:32.080Z — VERIFY — ok
 
@@ -114,6 +106,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T21:06:24.422Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Assume the custom blog landing should present the 0.3.x line in the requested top-down order: 0.3.0, 0.3.1, 0.3.2.\n- Keep the liquid-glass effect compatible with the current design checker by avoiding radius and box-shadow changes unless the checker itself is intentionally revised.
+
+## Risks
+
+- Risk: adding glass styling too broadly would violate the existing typography-first direction and turn the site into generic chrome-heavy UI.\n- Mitigation: constrain liquid-glass to navbar chrome only, keep it rectangular, low-contrast, and white-tinted with no decorative glow.\n\n- Risk: blog entry reordering could drift from the intended release sequence or confuse the landing section label.\n- Mitigation: keep the change local to the custom blog landing entries and preserve the rest of the page structure.

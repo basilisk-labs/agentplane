@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: protected paths policy enforced in guard commit and hooks pre-commit with explicit override flags/env. Verified via bun run build, bun run test:cli:core, bun run lint. Commit=a6b1850439ea."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T19:10:13.075Z"
 doc_updated_by: "CODER"
 description: "Introduce protected paths deny policy for critical guardrail/config files, with explicit override flags to allow intentional edits."
@@ -52,14 +52,15 @@ Implements FIX.md item for: 202602061732-NG820E
 5. Add unit/CLI tests for guard commit + commit wrapper + hooks pre-commit.
 6. Run bun run test:cli:core and bun run lint; record agentplane verify ok; commit and finish.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T19:09:23.464Z — VERIFY — ok
@@ -71,3 +72,9 @@ Note: Implemented protected paths policy for guard commit and hooks pre-commit w
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

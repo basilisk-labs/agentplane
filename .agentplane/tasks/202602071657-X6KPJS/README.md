@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: start fails fast for verify-required tasks when require_plan=false and Verify Steps is unfilled; bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:22:28.227Z"
 doc_updated_by: "CODER"
 description: "Add fail-fast check in start for verify-required tasks when plan approval is disabled."
@@ -48,27 +48,6 @@ description: "Add fail-fast check in start for verify-required tasks when plan a
 1) In start command, enforce filled ## Verify Steps for verify-required tags when agents.approvals.require_plan=false.
 2) Keep behavior unchanged when require_plan=true (plan approve gate already covers it).
 3) Run bun run test:agentplane.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T17:21:45.846Z — VERIFY — ok
-
-By: CODER
-
-Note: start now enforces filled Verify Steps when require_plan=false for verify-required tags; bun run test:agentplane.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -88,3 +67,22 @@ Start gating behavior when plan approval is disabled.
 ### Pass criteria
 
 - Start fails fast with E_VALIDATION (or E_USAGE if existing convention) when Verify Steps is unfilled and plan approval is disabled.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:21:45.846Z — VERIFY — ok
+
+By: CODER
+
+Note: start now enforces filled Verify Steps when require_plan=false for verify-required tags; bun run test:agentplane.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

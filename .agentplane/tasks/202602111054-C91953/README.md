@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: init now stages .gitignore in install commit, so fresh repositories remain clean after init"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T11:02:33.943Z"
 doc_updated_by: "CODER"
 description: "Ensure post-init tracked tree is clean except intended install commit artifacts and remove unintended diffs."
@@ -71,10 +71,6 @@ In scope: init commit path selection and generated artifacts that remain staged/
 ## Plan
 
 1) Воспроизвести в temp repo. 2) Локализовать источник diff. 3) Исправить и покрыть тестом.
-
-## Risks
-
-Риск: изменить поведение install commit. Смягчение: валидировать init tests и git status в temp repo.
 
 ## Verify Steps
 
@@ -103,3 +99,10 @@ Reproduced clean-repo init and fixed .gitignore staging; added regression test e
 ## Rollback Plan
 
 Откатить изменения commit/staging в init и вернуть предыдущее поведение.
+
+## Findings
+
+
+## Risks
+
+Риск: изменить поведение install commit. Смягчение: валидировать init tests и git status в temp repo.

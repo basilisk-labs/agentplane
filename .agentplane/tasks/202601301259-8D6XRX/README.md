@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran bun run test -- packages/agentplane/src/run-cli.test.ts | details: quickstart output and help updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:29.888Z"
 doc_updated_by: "agentplane"
 description: "Add agentplane quickstart to mirror agentctl quickstart output and update help/tests."
@@ -43,19 +43,25 @@ description: "Add agentplane quickstart to mirror agentctl quickstart output and
 
 - Implement quickstart command in run-cli.\n- Add help entry and a unit test.\n- Keep output compatible with agentctl quickstart.
 
-## Risks
+## Plan
 
-- Output differences could confuse users comparing Python vs Node quickstart.\n- Help text must stay in sync with command behavior.
 
 ## Verify Steps
 
 - bun run test -- packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert quickstart changes in run-cli and help/test updates.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Output differences could confuse users comparing Python vs Node quickstart.\n- Help text must stay in sync with command behavior.

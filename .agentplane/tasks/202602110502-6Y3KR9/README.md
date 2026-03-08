@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: run-cli now seeds projectPromise from the initial resolved project, avoiding a second resolveProject call while preserving fallback/error mapping behavior."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:09:44.736Z"
 doc_updated_by: "CODER"
 description: "Reuse already resolved project in run-cli by seeding projectPromise from resolved result to avoid second resolveProject call."
@@ -70,18 +70,6 @@ Out of scope:
 2. Keep error mapping behavior unchanged.
 3. Validate with run-cli tests and full gates.
 
-## Risks
-
-- Risk: altered error path for commands requiring project.
-Mitigation: keep fallback `resolveProject` path when pre-resolve is absent.
-
-## Verification
-
-
-## Rollback Plan
-
-Revert the task commit to restore previous run-cli project resolution behavior.
-
 ## Verify Steps
 
 - `bun run --filter=@agentplaneorg/core build`
@@ -89,3 +77,20 @@ Revert the task commit to restore previous run-cli project resolution behavior.
 - `bun run lint`
 - `bunx vitest run packages/agentplane/src/cli/run-cli.core.boot.test.ts packages/agentplane/src/cli/run-cli.core.help-contract.test.ts`
 - `bun run test:fast`
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+Revert the task commit to restore previous run-cli project resolution behavior.
+
+## Findings
+
+
+## Risks
+
+- Risk: altered error path for commands requiring project.
+Mitigation: keep fallback `resolveProject` path when pre-resolve is absent.

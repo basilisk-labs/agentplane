@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run --filter=@agentplaneorg/core build and bun run --filter=agentplane build."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:45.534Z"
 doc_updated_by: "agentplane"
 description: "Update @agentplane/core imports to @agentplaneorg/core and fix TS7006 in run-cli.ts so GitHub publish workflow passes."
@@ -41,16 +41,21 @@ id_source: "generated"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

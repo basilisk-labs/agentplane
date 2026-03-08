@@ -59,7 +59,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: docs formatted; targeted CLI and context tests pass; lint/build pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:20:18.919Z"
 doc_updated_by: "CODER"
 description: "Document new prod commands/contracts and add regression coverage for deterministic next-actions."
@@ -75,14 +75,15 @@ id_source: "generated"
 
 1. Update setup docs for compact prod init and explicit dev full mode.\n2. Update release docs with parity checks and dependency-version contract.\n3. Add troubleshooting entry for parity-related publish failures.\n4. Verify formatting and targeted CLI tests.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:19:41.008Z — VERIFY — ok
@@ -96,3 +97,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:19:31.286Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

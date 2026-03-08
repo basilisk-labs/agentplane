@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: documentation-only update | details: no tests required; pre-commit hooks ran prettier/eslint during commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:27.109Z"
 doc_updated_by: "agentplane"
 description: "Apply minimal wording fixes in AGENTS.md to clarify sources of truth, model wording, clean status, commit subject/body, startup rule, and README updates via agentctl."
@@ -45,23 +45,26 @@ User requested precise, minimal replacements to remove contradictions in AGENTS.
 - Update AGENTS.md per the requested patch proposals.
 - Keep changes documentation-only.
 
-## Risks
+## Plan
 
-Low; documentation-only edits may slightly change interpretation.
 
 ## Verify Steps
 
 - Not required (docs-only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the AGENTS.md commit for this task.
 
-## Notes
+## Findings
 
 Task created from the 2026-01-30 request.
 
-## Plan
+## Risks
 
-
-## Verification
+Low; documentation-only edits may slightly change interpretation.

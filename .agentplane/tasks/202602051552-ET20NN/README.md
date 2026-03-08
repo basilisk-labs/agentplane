@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: CLI version sourced from package.json; bun run test:fast."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T16:19:12.687Z"
 doc_updated_by: "CODER"
 description: "Use package.json as source for CLI version; remove manual constant; update tests/docs."
@@ -48,9 +48,8 @@ Use package.json as the single source for CLI version and remove hardcoded versi
 - Read version from package.json.
 - Update tests/docs.
 
-## Risks
+## Plan
 
-- Version resolution could break when running outside repo (packaged CLI).
 
 ## Verify Steps
 
@@ -61,8 +60,16 @@ Use package.json as the single source for CLI version and remove hardcoded versi
 
 - ✅ bun run test:fast (pass).\n- ✅ --version matches packages/agentplane/package.json (via test).
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert to prior version constant behavior.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Version resolution could break when running outside repo (packaged CLI).

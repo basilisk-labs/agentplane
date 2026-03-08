@@ -29,7 +29,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: ./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit; bun run format:check; bun run lint; bun run test:fast. Commit: 7c983814dca0."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T11:03:09.601Z"
 doc_updated_by: "TESTER"
 description: "Identify and resolve 46 warnings (TypeScript/ESLint/test) across packages."
@@ -43,19 +43,25 @@ Resolved TypeScript diagnostics in tests (command-guide, workflow, run-cli, task
 
 Test-only updates to align typings and mocks with TS/ESLint rules.
 
-## Risks
+## Plan
 
-Low risk; test-only change.
 
 ## Verify Steps
 
 ./node_modules/.bin/tsc -p tsconfig.eslint.json --noEmit\nbun run format:check\nbun run lint\nbun run test:fast
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 7c983814dca0 if test typing adjustments are unwanted.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; test-only change.

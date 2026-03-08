@@ -42,7 +42,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: Completed downstream architecture tasks (ports/adapters, PolicyEngine, resolveContext pilot migrations, layering guardrails, doctor, tasks-index v2, upgrade agent/auto modes). bun run lint and bun run test:full pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T17:22:38.457Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Introduce usecase boundaries, central policy evaluation, ports/adapters layering, and a doctor command to enforce structural invariants. Migrate a small set of commands to the new pipeline."
@@ -60,15 +60,15 @@ In scope: packages/agentplane/src/** (new usecases/, ports/, adapters/, doctor c
 
 Sequence:\n1) 202602091644-5RH64E Ports/adapters\n2) 202602091644-JS84Q6 PolicyEngine\n3) 202602091644-2JKX4T resolveContext + pilot usecases\n4) 202602091644-TXYQAY Import-layer guardrails\n5) 202602091644-PNW35M Doctor\n6) 202602091644-03VNRE Tasks index v2 + rebuild-index\n7) 202602091644-60R2T4 Upgrade --agent/--auto + anchors\n\nVerification for each task: bun run lint + bun run test:full.
 
-## Risks
+## Verify Steps
 
-Risk: architectural churn and import cycles; mitigate by incremental migration and strict import guardrails with tests. Risk: behavior drift in migrated commands; mitigate with existing CLI tests + new usecase unit tests.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T17:22:32.771Z — VERIFY — ok
@@ -84,3 +84,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:46:46.531Z, excerpt_
 ## Rollback Plan
 
 Revert per-task commits; migration is incremental so rollback can target only the pilot commands and keep the new modules unused.
+
+## Findings
+
+
+## Risks
+
+Risk: architectural churn and import cycles; mitigate by incremental migration and strict import guardrails with tests. Risk: behavior drift in migrated commands; mitigate with existing CLI tests + new usecase unit tests.

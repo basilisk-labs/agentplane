@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: task new emits a warning for verify-required tags about filling Verify Steps before approving plan; tests: bun run test:agentplane, bun run test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:30:09.915Z"
 doc_updated_by: "CODER"
 description: "Emit stderr warning in task new when tags imply Verify Steps must be filled before plan approve."
@@ -48,27 +48,6 @@ description: "Emit stderr warning in task new when tags imply Verify Steps must 
 1) In task new, emit a warning (stderr) when tags imply Verify Steps gating is required.
 2) Keep exit code 0; do not require frontmatter verify commands.
 3) Run bun run test:agentplane and bun run test:cli:core.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T17:29:17.514Z — VERIFY — ok
-
-By: CODER
-
-Note: task new now warns (stderr) for verify-required tags about filling Verify Steps before plan approval; tests: bun run test:agentplane, bun run test:cli:core.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -89,3 +68,22 @@ Warn users at creation time that Verify Steps must be filled before plan approva
 ### Pass criteria
 
 - Warning is emitted only as a warning; no hard failure.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:29:17.514Z — VERIFY — ok
+
+By: CODER
+
+Note: task new now warns (stderr) for verify-required tags about filling Verify Steps before plan approval; tests: bun run test:agentplane, bun run test:cli:core.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

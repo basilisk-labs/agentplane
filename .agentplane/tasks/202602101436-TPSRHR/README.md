@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: restored AGENTS.md timestamp-in-notes invariant and Framework Upgrade / Prompt Merge protocol while preserving the commit requirement rule."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:38:35.862Z"
 doc_updated_by: "DOCS"
 description: "Restore the timestamp-in-notes invariant and the Framework Upgrade / Prompt Merge protocol that were accidentally removed while adding the commit requirement rule."
@@ -69,14 +69,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+### Scope\n- packages/agentplane/assets/AGENTS.md only.\n\n### Checks\n- Ensure the timestamp-in-notes rule and Framework Upgrade / Prompt Merge section are present.\n- Ensure the new commit requirement rule remains present.\n\n### Evidence / Commands\n- rg -n "Timestamps are recorded" packages/agentplane/assets/AGENTS.md\n- rg -n "Framework Upgrade / Prompt Merge" packages/agentplane/assets/AGENTS.md\n- rg -n "Any tracked code changes" packages/agentplane/assets/AGENTS.md\n\n### Pass criteria\n- All three rules/sections are present and English-only.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:37:31.748Z — VERIFY — ok
@@ -92,6 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:37:07.829Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-### Scope\n- packages/agentplane/assets/AGENTS.md only.\n\n### Checks\n- Ensure the timestamp-in-notes rule and Framework Upgrade / Prompt Merge section are present.\n- Ensure the new commit requirement rule remains present.\n\n### Evidence / Commands\n- rg -n "Timestamps are recorded" packages/agentplane/assets/AGENTS.md\n- rg -n "Framework Upgrade / Prompt Merge" packages/agentplane/assets/AGENTS.md\n- rg -n "Any tracked code changes" packages/agentplane/assets/AGENTS.md\n\n### Pass criteria\n- All three rules/sections are present and English-only.
+
+## Risks

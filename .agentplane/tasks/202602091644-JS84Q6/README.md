@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Introduced PolicyEngine wrapper with safe delegation to existing evaluatePolicy."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:54:20.272Z"
 doc_updated_by: "CODER"
 description: "Implement PolicyEngine evaluate(action, ctx) and require usecases to call it before side effects; remove duplicated checks from CLI."
@@ -71,15 +71,11 @@ packages/agentplane/src/policy/** (new engine wrapper), packages/agentplane/src/
 
 1) Add PolicyEngine with evaluate(actionId, ctx)->Decision.\n2) Define a minimal actionId set for the pilot commands.\n3) Wire engine into usecases (no CLI-side checks).\n4) Add unit tests for PolicyEngine decisions and formatting.\n5) Run bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-Risk: policy drift between old checks and engine; mitigate by initially delegating to existing policy evaluation functions and adding regression tests.
+- bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:54:13.074Z — VERIFY — ok
@@ -96,6 +92,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:51:28.474Z, excerpt_
 
 Revert PolicyEngine commit(s); keep existing policy checks unchanged in non-migrated commands.
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:full
+
+## Risks
+
+Risk: policy drift between old checks and engine; mitigate by initially delegating to existing policy evaluation functions and adding regression tests.

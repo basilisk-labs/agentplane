@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: local history rewritten to remove FIX.md/FIX2.md; remote force-push still required to purge origin."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T07:35:01.913Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Delete FIX.md and FIX2.md from working tree and rewrite history to remove them"
@@ -67,18 +67,24 @@ Delete FIX.md and FIX2.md from the repo and remove them from all historical comm
 
 1. Remove FIX.md and FIX2.md. 2. Commit removal via agentplane. 3. Rewrite history to drop both paths. 4. Force-push updated history and tags.
 
-## Risks
+## Verify Steps
 
-History rewrite requires force-push; collaborators must rebase or reclone. Remote tags are rewritten.
+1. Ensure FIX.md and FIX2.md do not exist in the working tree. 2. Ensure main history has no entries for those paths.
 
 ## Verification
 
 OK. Checked that FIX.md and FIX2.md are absent and main history has no entries for those paths.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 If needed, restore from a pre-rewrite backup clone or from the remote before force-push, then reintroduce files.
 
-## Verify Steps
+## Findings
 
-1. Ensure FIX.md and FIX2.md do not exist in the working tree. 2. Ensure main history has no entries for those paths.
+
+## Risks
+
+History rewrite requires force-push; collaborators must rebase or reclone. Remote tags are rewritten.

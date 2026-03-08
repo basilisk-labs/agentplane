@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass at HEAD. Completed: exit code alignment + contract test; upgrade manifest strict allow/deny; gated tarball fallback w/ codeload; streamed downloads + tuned timeouts; JSON merge canonicalization + regression test; init backend stubs cleaned; upgrade state ignored by git; local backend listTasks parallelized."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:39:01.277Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Tracking task for fixing exit code consistency, tightening upgrade allowlist/manifest + tarball safety, removing legacy backend stub fields, and improving performance (upgrade I/O and task listing concurrency)."
@@ -70,19 +70,11 @@ In scope: packages/agentplane/src/cli/*, packages/agentplane/src/commands/upgrad
 
 Decompose into dependent atomic tasks: (1) exit code factory + enforcement; (2) init backend stub cleanup; (3) upgrade baseline isolation; (4) upgrade manifest/allowlist tightening; (5) tarball fallback hardening/removal; (6) upgrade perf + timeouts; (7) JSON merge stabilization; (8) local backend listTasks concurrency; run lint+test:full per task.
 
-## Risks
-
-Main risk is behavior changes in upgrade (which files are updated). Mitigation: strict allowlist + explicit tests for deny paths; keep default upgrade source local (npm assets).
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:39:01.131Z — VERIFY — ok
@@ -98,3 +90,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T15:24:48.770Z, excerpt_
 ## Rollback Plan
 
 Revert the per-task commits; upgrade behavior changes are covered by tests to avoid silent regressions.
+
+## Findings
+
+
+## Risks
+
+Main risk is behavior changes in upgrade (which files are updated). Mitigation: strict allowlist + explicit tests for deny paths; keep default upgrade source local (npm assets).

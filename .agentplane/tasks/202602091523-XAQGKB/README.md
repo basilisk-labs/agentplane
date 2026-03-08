@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Network: upgrade now fetches GitHub release metadata with a longer timeout (15s) and downloads stream to disk (no full buffering). FS: upgrade apply reads existing files once and only decodes text when needed for merges."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:10:08.039Z"
 doc_updated_by: "CODER"
 description: "Avoid repeated readFile passes during upgrade; cap concurrency; and use appropriate timeouts (short for update-check, longer for bundle downloads)."
@@ -71,19 +71,11 @@ packages/agentplane/src/commands/upgrade.ts, packages/agentplane/src/cli/http.ts
 
 1) Inspect current upgrade I/O patterns and network timeouts.\n2) Implement streaming downloadToFile to avoid buffering entire archives in memory.\n3) Use longer timeout for upgrade release metadata fetch (separate from update-check).\n4) Reduce redundant readFile calls in upgrade apply path (read-once buffers, only decode to utf8 when needed).\n5) Add/adjust tests for http download streaming and upgrade release fetch timeout wiring.\n6) Run bun run lint and bun run test:full.
 
-## Risks
-
-Risk: timeouts changes can affect perceived responsiveness. Mitigation: keep update-check fast; only extend download paths.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:10:07.888Z — VERIFY — ok
@@ -99,3 +91,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:07:47.930Z, excerpt_
 ## Rollback Plan
 
 Revert the commit.
+
+## Findings
+
+
+## Risks
+
+Risk: timeouts changes can affect perceived responsiveness. Mitigation: keep update-check fast; only extend download paths.

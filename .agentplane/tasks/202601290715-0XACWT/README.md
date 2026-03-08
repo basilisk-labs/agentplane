@@ -33,7 +33,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: ran bun run ci on 2026-01-30 | details: all checks passed (format, typecheck, lint, coverage)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:19.863Z"
 doc_updated_by: "agentplane"
 description: "Write Node-first docs for install/init/modes/recipes/upgrade/redmine + breaking changes page."
@@ -48,20 +48,26 @@ Document v1 Node-first usage, add breaking changes page, and update setup/comman
 - Update docs index, setup, and commands for v1 install/upgrade/recipes/backend sync.
 - Keep references aligned with ROADMAP v1.
 
-## Risks
+## Plan
 
-- Breaking changes might conflict with existing internal workflows; keep migration steps explicit.
-- Docs should remain consistent with CLI contract and ROADMAP.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert documentation updates and remove breaking-changes page if guidance is incorrect.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Breaking changes might conflict with existing internal workflows; keep migration steps explicit.
+- Docs should remain consistent with CLI contract and ROADMAP.

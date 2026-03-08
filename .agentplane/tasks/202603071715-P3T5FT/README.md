@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Released v0.3.2 from 8ffbebd27d5fa6dcf906b1781f8fe2d0030c6c98 with green GitHub workflows, published npm packages, and a GitHub Release for v0.3.2."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T17:35:44.807Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Cut a patch release for the framework-checkout repo-local handoff, recent agent-first docs alignment, and related runtime ergonomics already landed on main."
@@ -71,11 +71,6 @@ Cut a patch release for the framework-checkout repo-local handoff, recent agent-
 
 1. Generate the patch release plan from v0.3.1 and draft docs/releases/v0.3.2.md from the actual landed changes. 2. Run release gates, apply the release, and push commit plus tag so GitHub publish can ship 0.3.2. 3. Verify npm/GitHub publication, then return to the next-release roadmap and start the first post-0.3.2 preparation task.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -89,10 +84,6 @@ Cut a patch release for the framework-checkout repo-local handoff, recent agent-
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T17:35:44.726Z — VERIFY — ok
@@ -109,3 +100,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T17:15:37.988Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

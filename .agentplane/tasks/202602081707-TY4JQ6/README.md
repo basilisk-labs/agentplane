@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: developer docs no longer refer to cli2; spec-driven CLI documented as cli/spec"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T17:09:51.234Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Update docs/developer to stop referring to 'cli2' as a separate folder; describe the spec-driven CLI layer as cli/spec and keep the help JSON contract accurate."
@@ -78,15 +78,17 @@ Out of scope:
 
 Update docs/developer to replace 'cli2' wording with 'spec-driven CLI' and current path packages/agentplane/src/cli/spec; keep help JSON contract accurate.
 
-## Risks
+## Verify Steps
 
-- Some uses of "cli2" may be conceptual (not path-based); avoid breaking meaning by keeping the "spec-driven" distinction explicit.
+Pass criteria:
+- `docs/developer/*` no longer implies that `src/cli2` exists.
+- The help JSON contract still matches `agentplane help --json` output shape.
+
+Checks to run:
+- `rg -n "cli2" docs/developer -S` (should be 0 or only historical notes if explicitly intended)
+- `bunx prettier docs/developer/*.mdx --check`
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T17:08:48.508Z — VERIFY — ok
@@ -107,12 +109,9 @@ Updated docs/developer/{cli-contract,cli-help-json}.mdx to remove 'cli2' wording
 
 Revert the docs-only commits from this task.
 
-## Verify Steps
+## Findings
 
-Pass criteria:
-- `docs/developer/*` no longer implies that `src/cli2` exists.
-- The help JSON contract still matches `agentplane help --json` output shape.
 
-Checks to run:
-- `rg -n "cli2" docs/developer -S` (should be 0 or only historical notes if explicitly intended)
-- `bunx prettier docs/developer/*.mdx --check`
+## Risks
+
+- Some uses of "cli2" may be conceptual (not path-based); avoid breaking meaning by keeping the "spec-driven" distinction explicit.

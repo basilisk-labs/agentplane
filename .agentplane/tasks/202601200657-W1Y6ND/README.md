@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: close: spec-to-tasks recipe added | details: inventory refreshed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:59.293Z"
 doc_updated_by: "agentplane"
 description: "Move planning/analysis helpers (roadmaps, spec drafting, decomposition) into recipes and remove any redundant core logic."
@@ -44,23 +44,26 @@ Phase 1 migration aims to move planning/decomposition helpers into recipes rathe
 
 Created the spec-to-tasks recipe (manifest, scenario, inputs, runner) and updated docs/recipes-inventory.json via recipes.py scan.
 
-## Risks
+## Plan
 
-Runner uses heuristic parsing of spec sections; complex specs may require manual refinement of the task draft.
 
 ## Verify Steps
 
 Ran python .agent-plane/recipes.py scan --recipes-dir .agent-plane/recipes --output docs/recipes-inventory.json to refresh the catalog.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit ce9a0aff3c97 to remove the spec-to-tasks recipe and inventory update.
 
-## Notes
+## Findings
 
 Phase 1 now includes roadmap and spec decomposition recipes; further planning recipes can be added as needed.
 
-## Plan
+## Risks
 
-
-## Verification
+Runner uses heuristic parsing of spec sections; complex specs may require manual refinement of the task draft.

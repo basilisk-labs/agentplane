@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify --yes --quiet."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T13:14:35.589Z"
 doc_updated_by: "CODER"
 description: "Fix schema defaults for tasks.doc to include Verification and add runtime test for spec example config."
@@ -45,9 +45,8 @@ Align schema defaults for tasks.doc and add runtime test for spec example config
 
 Update schema defaults in tasks.doc and add config.test.ts coverage for spec example validation.
 
-## Risks
+## Plan
 
-Schema default alignment could affect defaultConfig output; ensure tests cover expected sections.
 
 ## Verify Steps
 
@@ -68,8 +67,16 @@ Commands:
 - bun run test:fast
 - node packages/agentplane/bin/agentplane.js hooks run pre-commit
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert schema default and config test changes.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Schema default alignment could affect defaultConfig output; ensure tests cover expected sections.

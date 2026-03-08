@@ -26,7 +26,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: task lint reports many legacy DONE tasks missing commit metadata (pre-existing); updated C7W2GE status/doc and scaffolded GH5YSV sections via agentctl."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:37.170Z"
 doc_updated_by: "agentplane"
 description: "Fix corrupted task README metadata and populate missing sections to keep PR checks healthy."
@@ -45,24 +45,27 @@ Task 202601071438-C7W2GE frontmatter is malformed (`Яstatus`) and contains esca
 - Replace escaped `\n` bullets in C7W2GE with proper Markdown list items.
 - Populate GH5YSV task README sections (Summary/Context/Scope/Risks/Verify Steps/Rollback Plan/Notes).
 
-## Risks
+## Plan
 
-- Manual doc updates could misrepresent task status if fields are missed.
-- PR checks may still fail if required sections remain empty.
 
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task lint
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the README changes for C7W2GE and GH5YSV.
 
-## Notes
+## Findings
 
 - Do not change task ownership/status beyond correcting the corrupted frontmatter.
 
-## Plan
+## Risks
 
-
-## Verification
+- Manual doc updates could misrepresent task status if fields are missed.
+- PR checks may still fail if required sections remain empty.

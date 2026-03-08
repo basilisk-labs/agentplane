@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: branch_pr base resolution now requires pinning; unpinned resolves to main/master if they exist else null. Verified via bun run test:core, bun run build, bun run test:cli:core. Commit=29604e30fbcd."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T18:57:54.595Z"
 doc_updated_by: "CODER"
 description: "In branch_pr mode, require pinned base branch (or explicit default) and avoid silent fallback to current branch."
@@ -48,15 +48,11 @@ packages/core/src/git/base-branch.ts + tests; adjust agentplane hook behavior if
 
 1) Update resolveBaseBranch: when mode=branch_pr and unpinned, prefer main/master if present, else return null.\n2) Update core base-branch tests.\n3) Run bun run test:core and bun run test:cli:core.
 
-## Risks
+## Verify Steps
 
-Risk: Some flows relied on implicit current-branch base; this change will surface E_USAGE and require explicit pinning.
+- bun run test:core\n- bun run test:cli:core
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T18:54:13.138Z — VERIFY — ok
@@ -71,6 +67,9 @@ Note: P1.3: branch_pr base resolution no longer falls back to current branch whe
 
 Revert the commit(s) for this task.
 
-## Verify Steps
+## Findings
 
-- bun run test:core\n- bun run test:cli:core
+
+## Risks
+
+Risk: Some flows relied on implicit current-branch base; this change will surface E_USAGE and require explicit pinning.

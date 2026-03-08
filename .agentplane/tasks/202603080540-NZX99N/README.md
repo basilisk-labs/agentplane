@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: local CI now has explicit fast and full tracks, pre-push uses the fast gate by default, the full gate remains available for heavier validation, and the docs reflect the new contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T06:31:18.857Z"
 doc_updated_by: "CODER"
 description: "Reduce developer push cost by separating mandatory fast local checks from full local CI while preserving release-grade verification paths."
@@ -71,11 +71,6 @@ Reduce developer push cost by separating mandatory fast local checks from full l
 
 1. Inventory the current pre-push/local CI pipeline and separate checks that must remain blocking on every push from slower full-suite and release-grade checks. 2. Introduce explicit fast/full entrypoints and wire hooks/scripts so the default local path uses the fast gate without losing access to the full validation path. 3. Run the relevant scripts and document the new split so the local quality contract stays deterministic.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -92,10 +87,6 @@ Reduce developer push cost by separating mandatory fast local checks from full l
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T06:30:42.114Z — VERIFY — ok
 
@@ -111,3 +102,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T06:10:20.955Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -44,7 +44,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated docs TOC and Mintlify navigation; validated docs.json parses and generated CLI reference is linked."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:07:33.676Z"
 doc_updated_by: "DOCS"
 description: "Produce a code-informed documentation outline (TOC) and update docs navigation (docs/index.mdx, docs/docs.json) to match."
@@ -61,19 +61,11 @@ Update the documentation information architecture (TOC) and Mintlify navigation 
 
 1. Update docs/index.mdx reading order and links (add CLI reference, move Breaking changes to Start here).\n2. Update docs/docs.json navigation to expose generated CLI reference and match reading order.\n3. Validate JSON and ensure referenced pages exist.
 
-## Risks
-
-Risk: nav and index drift causes users to miss required docs or hit dead links. Mitigation: keep both files updated together and validate referenced pages exist.
-
 ## Verify Steps
 
 - Confirm docs/docs.json parses as valid JSON.\n- Confirm docs/user/cli-reference.generated.mdx exists and is linked from docs/index.mdx and docs/docs.json.\n- Confirm docs/index.mdx links match existing pages.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
@@ -81,6 +73,10 @@ Risk: nav and index drift causes users to miss required docs or hit dead links. 
 ## Rollback Plan
 
 
-## Notes
+## Findings
 
 ### Implementation Notes\n- Updated docs index reading order and links: docs/index.mdx\n- Exposed generated CLI reference in Mintlify nav: docs/docs.json\n\n### Verification\n- docs/docs.json parses as JSON.\n- docs/user/cli-reference.generated.mdx exists.
+
+## Risks
+
+Risk: nav and index drift causes users to miss required docs or hit dead links. Mitigation: keep both files updated together and validate referenced pages exist.

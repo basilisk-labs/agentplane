@@ -27,7 +27,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: ran rg checks for config references in AGENTS.md and agent JSONs; changes align guidance to config-driven branch/worktree rules."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:46.966Z"
 doc_updated_by: "agentplane"
 description: "Run UPDATER audit and apply the recommended optimizations to AGENTS.md and relevant .agent-plane/agents/*.json."
@@ -44,23 +44,26 @@ New config keys required agent guidance to point to config management and parame
 
 Updated AGENTS.md, .agent-plane/agents/ORCHESTRATOR.json, .agent-plane/agents/DOCS.json, and .agent-plane/agents/INTEGRATOR.json.
 
-## Risks
+## Plan
 
-Instruction-only changes; risk is outdated guidance if config keys change.
 
 ## Verify Steps
 
 rg -n "config show|config set|branch\.task_prefix|paths\.worktrees_dir" AGENTS.md .agent-plane/agents/ORCHESTRATOR.json .agent-plane/agents/DOCS.json .agent-plane/agents/INTEGRATOR.json
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert changes in AGENTS.md and the updated agent JSON files.
 
-## Notes
+## Findings
 
 UPDATER audit focus: replace hardcoded branch/worktree strings with placeholders and add config CLI guidance.
 
-## Plan
+## Risks
 
-
-## Verification
+Instruction-only changes; risk is outdated guidance if config keys change.

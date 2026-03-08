@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: format:check, lint, test:fast passed; atomic writes cover tasks export and task docs; documentation updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T16:38:20.461Z"
 doc_updated_by: "CODER"
 description: "Add atomic write helper for critical files and use it across task/docs/cache writes; update tests/docs."
@@ -47,9 +47,8 @@ Ensure critical files are written atomically to avoid partial writes.
 - Replace direct writes.
 - Update tests/docs.
 
-## Risks
+## Plan
 
-- Atomic rename semantics differ across filesystems.\n- Permissions/ownership could change if not preserved.
 
 ## Verify Steps
 
@@ -60,8 +59,16 @@ Ensure critical files are written atomically to avoid partial writes.
 
 - ✅ bun run format:check.\n- ✅ bun run lint.\n- ✅ bun run test:fast.\n- ✅ Manual spot-check: task/docs writes use atomic helper.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert atomic write helper and restore direct writes.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Atomic rename semantics differ across filesystems.\n- Permissions/ownership could change if not preserved.

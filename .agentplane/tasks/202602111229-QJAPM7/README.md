@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: executed release prepublish gate, generated notes for v0.2.17, applied release with push, observed successful Publish to npm workflow run 21905470910, and confirmed npm versions at 0.2.17."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T12:44:36.776Z"
 doc_updated_by: "INTEGRATOR"
 description: "Run local CI-equivalent gate and publish the next patch release after hardening changes land."
@@ -69,14 +69,15 @@ id_source: "generated"
 
 1) Run release prepublish gate. 2) Generate release plan for next patch. 3) Write release notes from plan changes. 4) Apply release with push. 5) Verify published versions.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T12:43:48.049Z — VERIFY — ok
@@ -90,3 +91,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T12:37:37.116Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

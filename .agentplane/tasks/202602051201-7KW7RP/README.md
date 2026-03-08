@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run lint; bun run test:fast; hooks pre-commit; agentplane verify (Verification section updated)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T12:51:30.876Z"
 doc_updated_by: "CODER"
 description: "Write Verification results to task README and return task to DOING with comments on failure."
@@ -47,9 +47,8 @@ Make verify write a Verification section and fail back to DOING with a comment o
 
 Update cmdVerify to write Verification content, track failure details, update task status/comments, and add unit tests for pass/fail behavior.
 
-## Risks
+## Plan
 
-Verification now requires task docs support; failure handling updates task state and could be noisy if commands are flaky.
 
 ## Verify Steps
 
@@ -61,8 +60,16 @@ cmd: node packages/agentplane/bin/agentplane.js hooks run pre-commit
 
 Pending: execute verify after implementation.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert verify workflow changes and restore previous cmdVerify behavior; remove added tests.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Verification now requires task docs support; failure handling updates task state and could be noisy if commands are flaky.

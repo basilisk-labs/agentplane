@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Replaced hardcoded/mismatched CliError exit codes (especially E_IO/E_GIT) with exitCodeForError-derived values across CLI/commands, added cliError helper, and updated tests to reflect the consistent mapping. Ran bun run lint and bun run test:full."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T15:43:24.126Z"
 doc_updated_by: "CODER"
 description: "Eliminate hardcoded exitCode mismatches vs ErrorCode by introducing a CLI error factory and migrating throw sites to compute exitCode strictly via exitCodeForError."
@@ -64,19 +64,11 @@ packages/agentplane/src/cli/exit-codes.ts, packages/agentplane/src/shared/errors
 
 1. Add helper (e.g. cliError(code, message, opts?)) that computes exitCode via exitCodeForError.\n2. Replace mismatched hardcoded exitCode sites (init/conflicts.ts, recipes/apply.ts, upgrade.ts, etc.).\n3. Add/adjust unit tests around exit code mapping where needed.\n4. bun run lint + bun run test:full.
 
-## Risks
-
-Risk: Some commands may have relied on non-standard exit codes. Mitigation: keep mapping as the single source of truth and update tests accordingly.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
@@ -84,3 +76,10 @@ Risk: Some commands may have relied on non-standard exit codes. Mitigation: keep
 ## Rollback Plan
 
 Revert the commit; mapping remains unchanged.
+
+## Findings
+
+
+## Risks
+
+Risk: Some commands may have relied on non-standard exit codes. Mitigation: keep mapping as the single source of truth and update tests accordingly.

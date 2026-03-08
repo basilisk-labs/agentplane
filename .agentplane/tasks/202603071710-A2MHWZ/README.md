@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: runtime diagnostics now report the active binary, runtime mode, handoff source when present, resolved agentplane/core package roots, and doctor surfaces the same facts inside the framework checkout."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T18:48:44.678Z"
 doc_updated_by: "CODER"
 description: "Add a runtime explain surface and doctor diagnostics that show the active binary path, source mode, package versions, and framework source roots."
@@ -72,11 +72,6 @@ Add a runtime explain surface and doctor diagnostics that show the active binary
 
 1. Define a small runtime-context model that can report the active binary path, whether execution is global or repo-local, the current framework checkout context, and the effective agentplane/core package sources. 2. Expose that model through a new runtime explain CLI surface and add doctor output that points to the same runtime facts when framework-checkout or global-install ambiguity is relevant. 3. Add regression tests for the resolver and CLI output, update docs, and verify with targeted tests plus local docs checks.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -93,10 +88,6 @@ Add a runtime explain surface and doctor diagnostics that show the active binary
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T18:48:44.524Z — VERIFY — ok
 
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T18:20:25.140Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

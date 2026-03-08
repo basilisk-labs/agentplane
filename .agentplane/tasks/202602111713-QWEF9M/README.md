@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: downstream tasks YZSM8N, 7ZTFHZ, and GEWSV6 are DONE; focused guard coverage reports branch=75.00%."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:20:23.838Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Close remaining branch gaps in guard modules (close-message, commands, comment-commit) and reach focused guard branch threshold."
@@ -68,17 +68,22 @@ In scope: downstream tasks YZSM8N, 7ZTFHZ, GEWSV6 and focused guard coverage ver
 
 1) Complete downstream guard coverage tasks. 2) Validate focused guard branch threshold. 3) Close epic.
 
-## Risks
+## Verify Steps
 
-Residual risk: some individual guard files remain below 72 branch, but focused package threshold is satisfied.
+- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert downstream commits from YZSM8N/7ZTFHZ if regressions appear in guard suites.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Residual risk: some individual guard files remain below 72 branch, but focused package threshold is satisfied.

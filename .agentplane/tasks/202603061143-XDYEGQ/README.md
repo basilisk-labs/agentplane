@@ -67,7 +67,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T13:22:32.545Z"
 doc_updated_by: "CODER"
 description: "Align setup/init docs with actual CLI behavior, assess stale-dist preflight behavior, and classify the blocked 0.3.x release path after the burned npm 0.3.0 version."
@@ -87,11 +87,6 @@ Align setup/init docs with actual CLI behavior, assess stale-dist preflight beha
 ## Plan
 
 1) Assess whether historical doctor warnings can be eliminated by normalizing task metadata without rewriting git history. 2) Scan codebase for additional hardcoded values that should be derived from config/runtime/state and for likely placeholder text or TODO-grade scaffolding that leaks into shipped behavior/docs. 3) Classify findings into v0.3.0 blockers vs later cleanup.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -121,10 +116,6 @@ Validate release-readiness changes for docs, stale-dist behavior, workflow gener
 - Generated package reference must not expose private packages as `0.0.0`.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T11:46:55.717Z — VERIFY — needs_rework
@@ -165,3 +156,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T12:09:05.700Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

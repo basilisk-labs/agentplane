@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: source quickstart flag text was inspected and already uses --json-errors for error output; no repository file changes were required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T07:42:04.265Z"
 doc_updated_by: "DOCS"
 description: "Align built-in quickstart global flags text with current CLI behavior: --json-errors for errors, --json for help output."
@@ -69,15 +69,12 @@ In scope: verification of packages/agentplane/src/cli/command-guide.ts quickstar
 
 1) Inspect command-guide quickstart global flags. 2) Confirm wording for --json-errors/--json. 3) Close task if no change needed.
 
-## Risks
+## Verify Steps
 
-Risk: none; validation-only task.
+- rg -n "--json-errors|--json" packages/agentplane/src/cli/command-guide.ts
+- agentplane quickstart
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T07:41:56.559Z — VERIFY — ok
@@ -94,7 +91,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T07:41:56.290Z, excerpt_
 
 No code changes; nothing to rollback.
 
-## Verify Steps
+## Findings
 
-- rg -n "--json-errors|--json" packages/agentplane/src/cli/command-guide.ts
-- agentplane quickstart
+
+## Risks
+
+Risk: none; validation-only task.

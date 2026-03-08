@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: not run; pre-commit hooks fail on unrelated lint in packages/agentplane/src/run-cli.ts. Changes reviewed manually and scoped to workflow/docs/scripts/lefthook."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T15:31:08.747Z"
 doc_updated_by: "agentplane"
 description: "Make release workflow auto-trigger regardless of tag type and require human English release notes before publish; add pre-push check for release tags."
@@ -42,19 +42,25 @@ Require English release notes for publishes, add pre-push guard, and make publis
 
 Update publish workflow triggers and checks, add release notes validator script, add pre-push hook, and document release notes requirements and templates.
 
-## Risks
+## Plan
 
-Workflow will block publishing if notes are missing or not in the tagged commit; teams must commit notes before tagging.
 
 ## Verify Steps
 
 1) Create a test tag and confirm pre-push rejects missing notes.\n2) Run publish workflow on a tag and confirm it fails without notes and passes with notes.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the workflow, hook, and script commits to restore prior release behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Workflow will block publishing if notes are missing or not in the tagged commit; teams must commit notes before tagging.

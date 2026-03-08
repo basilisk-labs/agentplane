@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Added deterministic import-layer guardrail tests for cli/ vs adapters and for usecases/ports IO/git imports."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T17:02:31.479Z"
 doc_updated_by: "TESTER"
 description: "Add tests/lint rules enforcing cli/ cannot import adapters/ and that fs/path/simple-git are only used in adapters."
@@ -71,15 +71,11 @@ New tests and/or lint checks under packages/agentplane/src/ enforcing import bou
 
 1) Implement a test scanning TS sources for forbidden imports (cli->adapters, non-adapters importing node:fs/path, etc.).\n2) Add an allowlist for known exceptions (tests, generated fixtures).\n3) Ensure failures are actionable (file:line, rule name).\n4) Run bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-False positives (dynamic imports, type-only imports); mitigate with targeted regexes and allowlists.
+- bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T17:02:25.384Z — VERIFY — ok
@@ -96,6 +92,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T17:00:47.063Z, excerpt_
 
 Revert the guardrail tests if they block development; keep the architecture docs and revisit the rule set.
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:full
+
+## Risks
+
+False positives (dynamic imports, type-only imports); mitigate with targeted regexes and allowlists.

@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: GitHub Actions publish workflow will use npm --provenance with OIDC trusted publisher."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:45.889Z"
 doc_updated_by: "agentplane"
 description: "Update publish workflow to use OIDC provenance so npm publish succeeds without tokens."
@@ -41,16 +41,21 @@ id_source: "generated"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

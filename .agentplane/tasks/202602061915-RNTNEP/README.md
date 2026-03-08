@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Added CommandContext helpers in commands/shared/task-backend.ts to reuse backend/config/resolved per command; bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T19:24:03.231Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92) Ввести единый Execution/CommandContext (resolved+config+backend) на вызов команды; дать API для загрузки задач из контекста; убрать повторные resolveProject/loadConfig/loadTaskBackend."
@@ -46,14 +46,15 @@ id_source: "generated"
 
 1) Add CommandContext builder that loads resolved+config+backend once per command.\n2) Add ctx-aware helpers to load tasks without reloading backend.\n3) Migrate a small initial call site to validate wiring.\n4) Add/adjust tests for context builder.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T19:19:26.497Z — VERIFY — ok
@@ -65,3 +66,9 @@ Note: bun run test:agentplane (vitest) passed.
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

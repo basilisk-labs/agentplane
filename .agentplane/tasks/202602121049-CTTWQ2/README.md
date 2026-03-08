@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: local and remote refs contain no pr/internal/* branches, so no integration or cleanup actions were required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:50:13.227Z"
 doc_updated_by: "CODER"
 description: "Inspect local and remote pr/internal/* branches, reconcile merge status, and apply deterministic cleanup/integration so only actionable branches remain."
@@ -67,14 +67,11 @@ id_source: "generated"
 
 1. Enumerate local/remote pr/internal/* branches and compute merge/divergence status relative to main.\n2. Identify branches needing integration, archival, or deletion and apply safe cleanup actions.\n3. Record outcomes in task notes and verify no stale pr/internal branches remain unresolved.
 
-## Risks
+## Verify Steps
 
+1. git branch --list 'pr/internal/*' && git branch -r --list 'origin/pr/internal/*'\n2. For each branch: git rev-list --left-right --count main...<branch>\n3. Apply cleanup/integration actions and re-run branch listing to confirm resolved state\n4. git status --short --untracked-files=no must be clean before final commit
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:50:02.694Z — VERIFY — ok
@@ -90,6 +87,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:49:44.212Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. git branch --list 'pr/internal/*' && git branch -r --list 'origin/pr/internal/*'\n2. For each branch: git rev-list --left-right --count main...<branch>\n3. Apply cleanup/integration actions and re-run branch listing to confirm resolved state\n4. git status --short --untracked-files=no must be clean before final commit
+
+## Risks

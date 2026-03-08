@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: documentation IA now has a canonical ownership map, explicit section boundaries, and synchronized navigation metadata across docs entrypoints."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T07:43:10.609Z"
 doc_updated_by: "DOCS"
 description: "Audit docs tree, map each page to source code ownership, eliminate drift/duplication, and define final information architecture, navigation, and section responsibilities."
@@ -65,14 +65,14 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. Validate docs navigation consistency across docs/index.mdx, docs/docs.json, and docs/README.md.
+2. Ensure IA mapping references existing paths and current CLI/code modules.
+3. Run markdown/docs sanity check by rendering link targets mentally and with ripgrep path checks.
+Expected: one canonical IA page exists, nav references it, and no stale/duplicate section ownership remains.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T07:43:10.449Z — VERIFY — ok
@@ -88,9 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T07:40:20.231Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. Validate docs navigation consistency across docs/index.mdx, docs/docs.json, and docs/README.md.
-2. Ensure IA mapping references existing paths and current CLI/code modules.
-3. Run markdown/docs sanity check by rendering link targets mentally and with ripgrep path checks.
-Expected: one canonical IA page exists, nav references it, and no stale/duplicate section ownership remains.
+
+## Risks

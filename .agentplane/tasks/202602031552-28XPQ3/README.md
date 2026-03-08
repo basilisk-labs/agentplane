@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run test:full passed; publish workflow ran for v0.1.4 and completed successfully; npm shows agentplane@0.1.4 and @agentplaneorg/core@0.1.4."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T16:08:27.469Z"
 doc_updated_by: "agentplane"
 description: "Bump versions to 0.1.4, add English release notes, tag release, and publish via GitHub Actions."
@@ -42,23 +42,26 @@ Release 0.1.4 by adding English release notes and bumping package versions.
 
 Add docs/releases/v0.1.4.md, update core/agentplane versions to 0.1.4, and tag/publish via GitHub Actions.
 
-## Risks
+## Plan
 
-If any version references are missed, published packages may report the wrong version or tests may fail.
 
 ## Verify Steps
 
 rg "0.1.3" packages/core packages/agentplane
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the release commit and delete tag v0.1.4 if publish fails.
 
-## Notes
+## Findings
 
 Publish workflow now installs dependencies with --ignore-scripts to avoid prepack build failures during bun install.
 
-## Plan
+## Risks
 
-
-## Verification
+If any version references are missed, published packages may report the wrong version or tests may fail.

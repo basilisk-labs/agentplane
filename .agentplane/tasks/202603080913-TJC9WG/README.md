@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: concurrent task README updates are now serialized, the low-level and task-store regressions pass, and the task Verify Steps contract remains editable after repeated updates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T09:19:09.399Z"
 doc_updated_by: "CODER"
 description: "Ensure agentplane task doc set updates the Verify Steps section content instead of leaving the seeded template in place."
@@ -71,11 +71,6 @@ Fix task doc set for Verify Steps section replacement.
 2. Fix task doc helpers so Verify Steps replacement behaves like other sections.
 3. Run targeted verification and push immediately after finish.
 
-## Risks
-
-- Risk: breaking full-doc updates or other section replacements.
-- Mitigation: cover both Verify Steps and ordinary section paths in tests.
-
 ## Verify Steps
 
 1. bunx vitest run packages/core/src/tasks/task-readme-io.test.ts packages/core/src/tasks/task-store.test.ts --pool=threads --testTimeout 60000 --hookTimeout 60000
@@ -85,11 +80,7 @@ Fix task doc set for Verify Steps section replacement.
 
 ## Verification
 
-### Plan
-
 Run the targeted task-doc and lifecycle suites after the fix.
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T09:18:49.918Z — VERIFY — ok
@@ -107,6 +98,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T09:18:37.926Z, excerpt_
 - Revert the task commit(s).
 - Re-run the targeted task-doc verification suite.
 
-## Notes
+## Findings
 
 Observed on task 202603080903-A16E7Z: `task doc set` updated Plan and Notes, but left the seeded Verify Steps template unchanged.
+
+## Risks
+
+- Risk: breaking full-doc updates or other section replacements.
+- Mitigation: cover both Verify Steps and ordinary section paths in tests.

@@ -32,7 +32,7 @@ comments:
     author: "CODER"
     body: "Verified: CLI lifecycle parsing is now modular (cli/parse) and explicit; start/block/finish/verify require task ids (no env fallback). Deprecated allow-dirty no-op removed from guard commit parsing. format:check, lint, and test:cli:core passed."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T15:46:11.705Z"
 doc_updated_by: "CODER"
 description: "Split CLI parsing from execution: parsing in dedicated functions/modules, the runner only wires commands and contexts. Remove deprecated/implicit flags and modes; all behavior must be explicit."
@@ -55,9 +55,13 @@ In scope: start/block/finish/verify argument parsing extraction into cli/parse h
 5. Add/adjust tests to lock behavior (usage errors, flag removal, and command wiring).
 6. Run format:check, lint, and test:fast.
 
-## Risks
+## Verify Steps
 
-Behavior break: scripts relying on implicit AGENTPLANE_TASK_ID fallback for start/block/finish/verify will now fail with a usage error. Tests cover the new behavior and core workflows.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -77,3 +81,10 @@ Note: Verified: lifecycle command parsing moved into cli/parse helpers; removed 
 ## Rollback Plan
 
 Revert the implementation commit for this task (and the task README close commit) to restore the previous CLI behavior.
+
+## Findings
+
+
+## Risks
+
+Behavior break: scripts relying on implicit AGENTPLANE_TASK_ID fallback for start/block/finish/verify will now fail with a usage error. Tests cover the new behavior and core workflows.

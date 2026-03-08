@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: not run; doc/instruction edits only, no runtime impact."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:34.346Z"
 doc_updated_by: "agentplane"
 description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guard/commit and standardize handoff via pr note; simplify INTEGRATOR to a short checklist; add ORCHESTRATOR reminder to invoke UPDATER for agent-optimization requests."
@@ -37,10 +37,6 @@ description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guar
 - Simplified INTEGRATOR workflow to a short checklist.
 - Added ORCHESTRATOR trigger to invoke UPDATER on explicit optimization requests.
 
-## Goal
-
-- Tighten role-specific guardrails around commits and handoffs.
-
 ## Scope
 
 - @.agent-plane/agents/CODER.json
@@ -49,19 +45,29 @@ description: "Tighten CODER/TESTER/DOCS rules to always commit via agentctl guar
 - @.agent-plane/agents/INTEGRATOR.json
 - @.agent-plane/agents/ORCHESTRATOR.json
 
-## Risks
+## Plan
 
-- Low: checklist wording may need adjustment if agentctl commands change.
 
 ## Verify Steps
 
 - None (doc/instruction changes only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert commit `e55fa3aa761e`.
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Tighten role-specific guardrails around commits and handoffs.
+
+## Risks
+
+- Low: checklist wording may need adjustment if agentctl commands change.

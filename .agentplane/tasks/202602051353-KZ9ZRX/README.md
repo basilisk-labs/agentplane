@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ran bun run lint, bun run test:fast, and pre-commit hooks; task index helpers added."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:08:23.360Z"
 doc_updated_by: "CODER"
 description: "Implement .agentplane/cache/tasks-index.v1.json with load/save and incremental update helpers."
@@ -45,9 +45,8 @@ Implement task index cache model and incremental update helpers for local backen
 
 Add task index module, load/save logic, and integrate incremental cache update in local backend listTasks.
 
-## Risks
+## Plan
 
-Cache could drift from README content if mtime comparisons fail; ensure fallback to parse on changes.
 
 ## Verify Steps
 
@@ -57,8 +56,16 @@ Cache could drift from README content if mtime comparisons fail; ensure fallback
 
 Verified on 2026-02-05: bun run lint; bun run test:fast; node packages/agentplane/bin/agentplane.js hooks run pre-commit; index file created in cache.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Remove task index module and revert local backend listTasks to always parse README files.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Cache could drift from README content if mtime comparisons fail; ensure fallback to parse on changes.

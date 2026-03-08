@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Verify Steps and verification gates now resolve against primary tags with legacy field fallback, eliminating policy drift from secondary tags."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T04:36:05.495Z"
 doc_updated_by: "CODER"
 description: "Move Verify Steps gating to primary-tag policy with compatibility fallback; keep secondary tags for filtering only."
@@ -68,14 +68,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts
+2. bun run --filter=@agentplaneorg/core build
+3. bun run --filter=agentplane build
+4. bun run lint
+Expected: verify-step gates depend on primary tags (with fallback), and verification-required gates apply only to configured primary tags.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T04:36:05.341Z — VERIFY — ok
@@ -91,10 +92,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T04:35:33.732Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts
-2. bun run --filter=@agentplaneorg/core build
-3. bun run --filter=agentplane build
-4. bun run lint
-Expected: verify-step gates depend on primary tags (with fallback), and verification-required gates apply only to configured primary tags.
+
+## Risks

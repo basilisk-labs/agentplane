@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: checker formats temporary generated docs before comparison, eliminating formatting-only false positives in release gates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T11:26:34.047Z"
 doc_updated_by: "CODER"
 description: "Normalize generated temporary CLI docs with Prettier before comparing to committed docs/user/cli-reference.generated.mdx to avoid false stale failures."
@@ -66,14 +66,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. node scripts/check-cli-reference-fresh.mjs
+2. bun run format:check
+3. bun run release:prepublish
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T11:25:49.021Z — VERIFY — ok
@@ -89,8 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T11:23:34.084Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. node scripts/check-cli-reference-fresh.mjs
-2. bun run format:check
-3. bun run release:prepublish
+
+## Risks

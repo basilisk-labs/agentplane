@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release pipeline now has an explicit local preflight equal to GitHub CI checks."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T07:58:41.619Z"
 doc_updated_by: "CODER"
 description: "Add an explicit pre-release check that runs the same checks as .github/workflows/ci.yml (build, lint, test:fast, test:critical with CI git env) before publishing."
@@ -70,15 +70,13 @@ In scope: root scripts and docs references used for release process. Out of scop
 
 1) Add a script that mirrors ci.yml job steps relevant to pass/fail. 2) Include CI git identity env for tests creating commits. 3) Document/use this script in release flow and verify it passes.
 
-## Risks
+## Verify Steps
 
-Risk: local script drifts from ci.yml in future. Mitigation: keep command composition explicit and minimal; mention source workflow path.
+- bun run release:ci-check
+- bun run lint
+- bun run test:critical
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T07:58:41.335Z — VERIFY — ok
@@ -95,8 +93,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T07:55:44.551Z, excerpt_
 
 Revert script/docs changes and return to previous manual pre-release checks.
 
-## Verify Steps
+## Findings
 
-- bun run release:ci-check
-- bun run lint
-- bun run test:critical
+
+## Risks
+
+Risk: local script drifts from ci.yml in future. Mitigation: keep command composition explicit and minimal; mention source workflow path.

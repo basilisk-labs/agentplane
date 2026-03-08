@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: added branch tests and validated focused guard coverage with comment-commit.ts above threshold."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:28:51.501Z"
 doc_updated_by: "TESTER"
 description: "Add focused tests for remaining derive/auto-allow branches in comment-commit.ts."
@@ -64,18 +64,23 @@ In scope: packages/agentplane/src/commands/guard/impl/comment-commit.ts and pack
 
 1) Add tests for blank and status-only formatted comments. 2) Validate behavior when autoAllow is true with explicit allow list. 3) Adjust summary-prefix parsing to handle zero-space suffix safely. 4) Run focused guard coverage.
 
-## Risks
+## Verify Steps
 
-Low risk; behavior change is limited to comment-derived summary parsing in guard commit flow.
+bunx vitest run packages/agentplane/src/commands/guard/impl/comment-commit.test.ts
+bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert changes in comment-commit.ts and comment-commit.test.ts.
 
-## Verify Steps
+## Findings
 
-bunx vitest run packages/agentplane/src/commands/guard/impl/comment-commit.test.ts
-bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'
+
+## Risks
+
+Low risk; behavior change is limited to comment-derived summary parsing in guard commit flow.

@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: added Node.js workspaces + TS configs and a minimal agentplane CLI stub | details: build/run requires npm install (not executed in this run)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:03.052Z"
 doc_updated_by: "agentplane"
 description: "Bootstrap a Node.js 20+ ESM TypeScript monorepo with packages (agentplane CLI, core engine, recipes, spec, testkit) and a buildable agentplane binary."
@@ -51,10 +51,8 @@ Bootstrap the Node.js 20+ ESM TypeScript monorepo and ship a runnable `agentplan
   - `packages/testkit` (fixtures/e2e helpers)
 - Ensure ESM output and Node 20 compatibility.
 
-## Risks
+## Plan
 
-- Dependency choices (commander/tsx/tsup/vitest) affect future portability; keep initial stack minimal.
-- Packaging details (bin entrypoint, ESM/CJS interop) can be tricky; validate locally.
 
 ## Verify Steps
 
@@ -63,12 +61,20 @@ Bootstrap the Node.js 20+ ESM TypeScript monorepo and ship a runnable `agentplan
 - `npm -w @agentplane/agentplane run build` succeeds.
 - `node packages/agentplane/dist/cli.mjs --help` prints help.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert monorepo bootstrap commits.
 - Keep the existing Python tooling as the supported workflow until later milestones.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Dependency choices (commander/tsx/tsup/vitest) affect future portability; keep initial stack minimal.
+- Packaging details (bin entrypoint, ESM/CJS interop) can be tricky; validate locally.

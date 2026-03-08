@@ -29,7 +29,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: bun run format:check; bun run lint; bun run test:fast. Commit: 66fc897910ee. Completed test coverage commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T09:59:41.970Z"
 doc_updated_by: "TESTER"
 description: "Commit existing test changes that raise coverage and reduce warnings (from prior work). Parent: 202602050954-3JC3CW."
@@ -43,19 +43,25 @@ Committed expanded test coverage for workflow/recipes/run-cli/task-backend and r
 
 Updated test files under packages/agentplane/src and packages/core/src to raise coverage and fix linting issues.
 
-## Risks
+## Plan
 
-Low risk; changes are test-only. Risk of brittle test assumptions if CLI behavior changes.
 
 ## Verify Steps
 
 bun run format:check\nbun run lint\nbun run test:fast
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 66fc897910ee if test updates need to be removed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; changes are test-only. Risk of brittle test assumptions if CLI behavior changes.

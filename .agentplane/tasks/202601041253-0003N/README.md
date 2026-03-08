@@ -23,7 +23,7 @@ commit:
   hash: "25a6c054b1b513003186c6b337437547c6fb4a79"
   message: "Legacy completion (backfill)"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Delete .agent-plane/workspace after migration to .agent-plane/tasks and update references."
@@ -36,33 +36,39 @@ dirty: false
 - Remove the legacy `.agent-plane/workspace/` directory after migration.
 - Update references that still point to `workspace`.
 
-## Goal
-
-- Fully retire the old workspace layout and prevent future use.
-
 ## Scope
 
 - Delete `.agent-plane/workspace/`.
 - Update any remaining references in docs and prompts.
 
-## Risks
+## Plan
 
-- Legacy artifacts might be lost; ensure migration is complete first.
 
 ## Verify Steps
 
 - `rg -n \"workspace\" .agent-plane docs README.md`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Restore `.agent-plane/workspace/` from git history if needed.
+
+## Findings
+
+
+## Goal
+
+- Fully retire the old workspace layout and prevent future use.
+
+## Risks
+
+- Legacy artifacts might be lost; ensure migration is complete first.
 
 ## Changes Summary
 
 - Removed `.agent-plane/workspace/` from the repo.
 - Updated references to `.agent-plane/tasks/` in agent prompts, docs, and scripts.
-
-## Plan
-
-
-## Verification

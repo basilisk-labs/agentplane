@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the doctor-specific fast bucket now uses a narrow deterministic suite and no longer drags the full historical doctor regression file through narrow local CI paths."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T08:52:25.633Z"
 doc_updated_by: "CODER"
 description: "Replace the expensive doctor bucket verification in path-aware fast local CI with a narrower deterministic suite that still covers selector and doctor regressions."
@@ -73,11 +73,6 @@ Replace the expensive doctor bucket verification in path-aware fast local CI wit
 2. Switch the doctor fast bucket in local CI to that narrower suite while keeping the full doctor.command regression file in the broader test lanes.
 3. Verify lint, targeted tests, and the measured doctor-bucket runtime after the split.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -89,10 +84,6 @@ Replace the expensive doctor bucket verification in path-aware fast local CI wit
 - `sh -c '/usr/bin/time -p env AGENTPLANE_FAST_CHANGED_FILES="packages/agentplane/src/commands/doctor.run.ts" node scripts/run-local-ci.mjs --mode fast >/tmp/ci-fast-doctor.out 2>/tmp/ci-fast-doctor.err'`\n\n### Evidence / Commands\n- Record the targeted doctor bucket runtime and confirm the fast path now runs the narrow suite rather than the full historical regression file.\n\n### Pass criteria\n- Doctor-path fast CI remains deterministic, preserves core doctor regression coverage, and materially reduces the narrow doctor bucket runtime.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T08:52:02.924Z — VERIFY — ok
@@ -110,9 +101,14 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T08:52:02.363Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Motivation: the path-aware selector is correct, but the doctor-specific bucket was still too expensive because it ran the full doctor.command regression suite.
 - Implemented approach: introduced doctor.fast.test.ts for the doctor fast bucket and kept doctor.command.test.ts in broader lanes.
 - Measured on this repository after implementation: doctor fast bucket ~33.71s instead of ~135.28s.
 - Residual tradeoff: build + typecheck still dominate much of the remaining time, so further wins need broader fast-gate decomposition rather than more doctor-only test trimming.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

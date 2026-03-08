@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: split commands/scenario.ts into scenario/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T13:17:55.787Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Replace packages/agentplane/src/commands/scenario.ts monolith with modular scenario implementation or delete if fully superseded by commands/scenario/*.command.ts; keep behavior and tests."
@@ -47,29 +47,6 @@ id_source: "generated"
 ## Plan
 
 Scope: split packages/agentplane/src/commands/scenario.ts into a small facade plus modules under packages/agentplane/src/commands/scenario/impl/. Steps: (1) Identify public exports used by scenario/*.command.ts and tests. (2) Extract report writing + git summary helpers into scenario/impl/report.ts. (3) Extract list/info/run handlers into scenario/impl/commands.ts. (4) Keep scenario.ts as facade re-exporting cmdScenarioListParsed/cmdScenarioInfoParsed/cmdScenarioRunParsed and any helper types used externally. (5) Run bun run typecheck, bun run lint, bun run test:full and ensure no behavioral drift.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T13:17:14.088Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: decomposed commands/scenario.ts into scenario/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T13:14:01.605Z, excerpt_hash=sha256:d1bf0c2a3f29637a8e128d788520c18724170a0a303510100a60bf6fbf529dd3
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -194,3 +171,24 @@ Installed recipe viewer@1.2.3
       Tests  704 passed (704)
    Start at  20:13:30
    Duration  15.96s (transform 7.58s, setup 0ms, import 22.69s, tests 54.99s, environment 10ms)\n\n### Pass criteria\n- packages/agentplane/src/commands/scenario.ts is reduced to a facade.\n- Implementation lives under packages/agentplane/src/commands/scenario/impl/.\n- CLI2 scenario commands and scenario tests continue to pass.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T13:17:14.088Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: decomposed commands/scenario.ts into scenario/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T13:14:01.605Z, excerpt_hash=sha256:d1bf0c2a3f29637a8e128d788520c18724170a0a303510100a60bf6fbf529dd3
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

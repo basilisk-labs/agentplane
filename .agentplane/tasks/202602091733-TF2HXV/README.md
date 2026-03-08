@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run test:full and bun run release:check pass; v0.2.4 tag pushed; GitHub release contains agentplane-upgrade.tar.gz + .sha256; npm shows agentplane@0.2.4 and @agentplaneorg/core@0.2.4."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T17:50:51.361Z"
 doc_updated_by: "INTEGRATOR"
 description: "Publish npm packages (@agentplaneorg/core and agentplane) and create GitHub release v0.2.4 with upgrade bundle assets."
@@ -61,6 +61,10 @@ id_source: "generated"
 ## Summary
 
 Cut v0.2.4: bump versions, publish @agentplaneorg/core and agentplane to npm, and create a GitHub release with upgrade bundle assets.
+
+## Context
+
+Users rely on GitHub release assets (agentplane-upgrade.tar.gz + sha256) for remote upgrades; npm publishes deliver the CLI and local assets.
 
 ## Scope
 
@@ -77,15 +81,13 @@ In scope: version bumps in packages/core and packages/agentplane, changelog/rele
 7) Build upgrade bundle asset from packages/agentplane/assets and upload to GitHub release as agentplane-upgrade.tar.gz + sha256.
 8) Smoke: npm view versions and gh release assets list.
 
-## Risks
+## Verify Steps
 
-Risk: missing npm/gh credentials or 2FA. Risk: publishing wrong artifact contents. Mitigation: run release:check, use clean working tree, and verify GitHub assets names match upgrade defaults.
+- bun run lint
+- bun run test:full
+- bun run release:check
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T17:50:39.769Z — VERIFY — ok
@@ -102,12 +104,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T17:34:03.817Z, excerpt_
 
 If publish fails before any remote push: revert commit locally. If tag pushed but publish fails: delete tag remotely and locally, bump version again. If npm publish partially succeeded: publish the remaining package with matching version or cut v0.2.5.
 
-## Context
+## Findings
 
-Users rely on GitHub release assets (agentplane-upgrade.tar.gz + sha256) for remote upgrades; npm publishes deliver the CLI and local assets.
 
-## Verify Steps
+## Risks
 
-- bun run lint
-- bun run test:full
-- bun run release:check
+Risk: missing npm/gh credentials or 2FA. Risk: publishing wrong artifact contents. Mitigation: run release:check, use clean working tree, and verify GitHub assets names match upgrade defaults.

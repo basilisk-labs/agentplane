@@ -27,7 +27,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run lint; bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T07:40:22.831Z"
 doc_updated_by: "CODER"
 description: "Top-level tracking for Epic D (AP-030)."
@@ -41,19 +41,25 @@ Epic D completed: run-cli decomposition finished across AP-030a/b/c with command
 
 AP-030a/b/c: utilities extraction, recipes/upgrade extraction, task/work/pr/branch/guard/hooks extraction; run-cli now routes to commands modules.
 
-## Risks
+## Plan
 
-Risk: routing regressions across task/recipe/upgrade namespaces. Mitigated by lint, run-cli core/scenario tests, and pre-commit hooks.
 
 ## Verify Steps
 
 bun run lint\nbun run test:cli:unit\nbun run test:cli:scenario
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert AP-030a/b/c commits to restore monolithic run-cli.ts.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: routing regressions across task/recipe/upgrade namespaces. Mitigated by lint, run-cli core/scenario tests, and pre-commit hooks.

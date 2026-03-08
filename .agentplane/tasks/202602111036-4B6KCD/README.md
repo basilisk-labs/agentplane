@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: patch release orchestration completed end-to-end with preflight, apply, push, and successful publish validation"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:42:31.901Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Top-level tracking for CI-equivalent validation and publication of the next patch release."
@@ -72,9 +72,10 @@ In scope: tasks 202602111036-WTAN7Z and 202602111036-1WABSX; release artifacts a
 
 1) Complete preflight/notes task. 2) Complete apply/publish task. 3) Close tracking task with evidence.
 
-## Risks
+## Verify Steps
 
-Primary risk is publish/auth failure or CI mismatch; mitigated by running release:ci-check first and validating npm versions after publish.
+- Ensure 202602111036-WTAN7Z and 202602111036-1WABSX are DONE
+- Validate npm package versions after publish
 
 ## Verification
 
@@ -99,7 +100,9 @@ Downstream tasks WTAN7Z and 1WABSX are DONE; release v0.2.14 is tagged, pushed, 
 
 If publish fails before tag push, fix and republish next patch; if tag pushed, follow forward-fix policy with next patch release.
 
-## Verify Steps
+## Findings
 
-- Ensure 202602111036-WTAN7Z and 202602111036-1WABSX are DONE
-- Validate npm package versions after publish
+
+## Risks
+
+Primary risk is publish/auth failure or CI mismatch; mitigated by running release:ci-check first and validating npm versions after publish.

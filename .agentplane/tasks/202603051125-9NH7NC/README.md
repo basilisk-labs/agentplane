@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: reconcile-before-mutation checks now run on key mutation paths, strict task-scan drift is surfaced with standardized reason_code values, and guard/finish/verify flows provide deterministic operator guidance for remediation."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T11:32:01.728Z"
 doc_updated_by: "CODER"
 description: "Introduce standardized reason_code for reconcile guard failures and enforce reconcile-before-mutation checks in key mutating command paths."
@@ -64,9 +64,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -85,10 +82,6 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T11:32:01.705Z — VERIFY — ok
 
@@ -105,3 +98,9 @@ Implemented ensureReconciledBeforeMutation and wired it into finish, verify, com
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

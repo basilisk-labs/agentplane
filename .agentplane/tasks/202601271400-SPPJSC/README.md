@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci (format/typecheck/lint/coverage) passed on 2026-01-27."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:12.577Z"
 doc_updated_by: "agentplane"
 description: "Implement pr open/update/check/note for branch_pr workflow artifacts."
@@ -47,19 +47,25 @@ Implemented PR artifact CLI commands (open/update/check/note) with diffstat + au
 
 Updated agentplane CLI to generate/validate PR artifacts, added git env sanitization, and expanded CLI test coverage for PR and workflow error paths.
 
-## Risks
+## Plan
 
-PR artifact logic depends on git state; misconfigured repos may surface E_GIT errors. Coverage thresholds remain sensitive to branch coverage.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the AP-021 commit; no data migrations.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+PR artifact logic depends on git state; misconfigured repos may surface E_GIT errors. Coverage thresholds remain sensitive to branch coverage.

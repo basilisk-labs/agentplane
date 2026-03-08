@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran bun run test:cli:core, bun run test:cli:recipes, and bun run test:cli:scenario."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:40.394Z"
 doc_updated_by: "agentplane"
 description: "Audit Node.js CLI codebase and refactor into clearer modules with stable public CLI behavior for npm global install. Ensure init/AGENTS generation remains correct."
@@ -44,10 +44,8 @@ Refactor the Node.js CLI code into clearer modules while preserving CLI behavior
 - Keep CLI public surface stable for npm global install.
 - Re-verify init AGENTS/agents generation stays aligned.
 
-## Risks
+## Plan
 
-- Large refactor could introduce behavior drift in CLI edge cases.
-- Potential increase in test runtime during transition.
 
 ## Verify Steps
 
@@ -55,12 +53,20 @@ Refactor the Node.js CLI code into clearer modules while preserving CLI behavior
 - bun run test:cli:recipes
 - bun run test:cli:scenario
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert refactor commits and restore prior module layout if tests fail.
 - Re-run CLI tests to confirm baseline behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Large refactor could introduce behavior drift in CLI edge cases.
+- Potential increase in test runtime during transition.

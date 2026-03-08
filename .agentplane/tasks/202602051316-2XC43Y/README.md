@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ran bun run lint, bun run test:fast, and agentplane hooks run pre-commit; task-doc helpers now centralized in core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T13:45:43.415Z"
 doc_updated_by: "CODER"
 description: "Extract task doc/markdown helpers into core task-doc module and replace duplicates in core/task-store and agentplane task-backend; add regression tests."
@@ -47,9 +47,8 @@ Core: add task-doc and task-id modules and export from index. Core: update task-
 
 Core: add task-doc module and export helpers. Core: update task-store to use core doc helpers. Agentplane: replace task-backend/workflow doc helpers with core utilities. Tests: keep task-doc behavior covered.
 
-## Risks
+## Plan
 
-Doc normalization behavior could drift; ensure parity tests cover merged sections. Task ID generation now centralized; ensure all callers use core API.
 
 ## Verify Steps
 
@@ -137,8 +136,16 @@ Installed recipe viewer@1.2.3
 [2m   Start at [22m 20:35:03
 [2m   Duration [22m 1.91s[2m (transform 1.49s, setup 0ms, import 3.58s, tests 3.56s, environment 2ms)[22m, .
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert core task-doc/task-id modules and restore prior in-file helpers in task-store, task-backend, and workflow.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Doc normalization behavior could drift; ensure parity tests cover merged sections. Task ID generation now centralized; ensure all callers use core API.

@@ -26,7 +26,7 @@ comments:
   -
     author: "TESTER"
     body: "verified: Ran python3 -m unittest tests.test_framework_upgrade to cover the staleness math before finalizing the workflow."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:50.775Z"
 doc_updated_by: "agentplane"
 description: "Add regression coverage for the 10-day staleness threshold and forced refresh path, ensuring the agentctl command exercises the new logic and the behavior is documented for downstream agents."
@@ -44,23 +44,26 @@ description: "Add regression coverage for the 10-day staleness threshold and for
 - Document that the suite imports `.agent-plane/agentctl.py`, mocks the config, and asserts the staleness threshold and ISO parsing logic.
 - Mention that the log is kept minimal on purpose to keep CI fast.
 
-## Risks
+## Plan
 
-- The tests currently rely on the repo being importable as a module; if agentctl gains heavy dependencies, the suite may need stubbing or isolation.
 
 ## Verify Steps
 
 - None (suite removed per latest request; only manual review remains).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Remove the test file and its entry from the CI/test suite if it starts leaking state into other modules.
 
-## Notes
+## Findings
 
 - Future end-to-end coverage may run `agentctl upgrade` in a sandbox, but for now this unit suite provides confidence that the helpers behave.
 
-## Plan
+## Risks
 
-
-## Verification
+- The tests currently rely on the repo being importable as a module; if agentctl gains heavy dependencies, the suite may need stubbing or isolation.

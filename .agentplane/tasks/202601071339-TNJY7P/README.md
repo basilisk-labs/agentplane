@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: not run; doc/instruction edits only, no runtime impact."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:35.187Z"
 doc_updated_by: "agentplane"
 description: "Align README diagrams and badges with 'task export' wording, ensuring tasks.json references are consistent and minimal."
@@ -34,27 +34,33 @@ description: "Align README diagrams and badges with 'task export' wording, ensur
 
 - Normalized diagram wording in README to refer to the task export/view consistently.
 
-## Goal
-
-- Keep diagrams and badges aligned with export terminology without overusing tasks.json.
-
 ## Scope
 
 - @README.md
 
-## Risks
+## Plan
 
-- Low: diagram text change only.
 
 ## Verify Steps
 
 - None (doc-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert commit `918e384d381c`.
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Keep diagrams and badges aligned with export terminology without overusing tasks.json.
+
+## Risks
+
+- Low: diagram text change only.

@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: bun run test:cli:core | details: pre-commit hooks ran format/lint/test-fast; all passing."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:42.316Z"
 doc_updated_by: "agentplane"
 description: "Fix agentplane init prompt/options so default is Node (Codex CLI) and only the selected IDE entrypoints are installed."
@@ -41,19 +41,25 @@ Limit init IDE selection to Codex default and install only the selected IDE’s 
 
 Update init/IDE handling in run-cli.ts, refresh help usage, adjust CLI core tests, and add setup documentation note.
 
-## Risks
+## Plan
 
-Init no longer prompts for IDE selection; anyone relying on both Cursor/Windsurf rules on init must run agentplane ide sync explicitly.
 
 ## Verify Steps
 
 bun run test:cli:core
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit for 202602020659-C4VGPZ.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Init no longer prompts for IDE selection; anyone relying on both Cursor/Windsurf rules on init must run agentplane ide sync explicitly.

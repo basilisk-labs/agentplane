@@ -29,7 +29,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: ROADMAP.md updated with Epic H/AP-070 DONE status lines."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:23:34.514Z"
 doc_updated_by: "DOCS"
 description: "Mark Epic H/AP-070 as DONE in ROADMAP.md."
@@ -43,9 +43,8 @@ Update ROADMAP.md to mark Epic H and AP-070 as DONE with task IDs.
 
 Edit ROADMAP.md status lines for Epic H/AP-070.
 
-## Risks
+## Plan
 
-Low risk; ensure dates and task IDs match completed work.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Low risk; ensure dates and task IDs match completed work.
 
 Verified on 2026-02-05: ROADMAP.md updated with Epic H/AP-070 DONE status lines.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert ROADMAP.md status lines for Epic H/AP-070.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Low risk; ensure dates and task IDs match completed work.

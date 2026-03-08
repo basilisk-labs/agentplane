@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: "Added CONTRIBUTING.md with the requested contribution guidance."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:16.740Z"
 doc_updated_by: "agentplane"
 description: "Document the recommended contribution workflow and behavioral expectations for Agent Plane."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

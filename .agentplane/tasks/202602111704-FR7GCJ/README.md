@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts; bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/pr/integrate/internal/**'; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:07:24.955Z"
 doc_updated_by: "TESTER"
 description: "Add focused tests for prepareIntegrate/finalizeIntegrate branch paths and error guards."
@@ -65,17 +65,22 @@ In scope: tests for packages/agentplane/src/commands/pr/integrate/internal/{prep
 
 1) Add prepare tests for invalid base, wrong branch context, missing branch resolution, and tasks-path violation. 2) Add finalize tests for missing pr dir and verify metadata update branches. 3) Run targeted tests/coverage and builds.
 
-## Risks
+## Verify Steps
 
-Risk: high mock complexity. Mitigation: keep tests branch-focused and assert stable outcomes/errors.
+- bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts\n- bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/pr/integrate/internal/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Remove newly added prepare/finalize tests and rerun suites.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts\n- bunx vitest run packages/agentplane/src/commands/pr/integrate/internal/prepare.test.ts packages/agentplane/src/commands/pr/integrate/internal/finalize.test.ts packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/pr/integrate/internal/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Risk: high mock complexity. Mitigation: keep tests branch-focused and assert stable outcomes/errors.

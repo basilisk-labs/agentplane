@@ -27,7 +27,7 @@ comments:
   -
     author: "reviewer"
     body: "Updated the TRANSLATOR workflow and converted GLOSSARY.json so languages own their preferred terms and descriptions."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:14.993Z"
 doc_updated_by: "agentplane"
 description: "Restructure the glossary so English remains canonical while localized entries store metadata per language."
@@ -39,16 +39,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

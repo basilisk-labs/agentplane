@@ -33,7 +33,7 @@ comments:
     author: "CODER"
     body: "Verified: hooks now delegate protected paths and commit subject validation to the shared policy engine (evaluatePolicy). format:check, lint, and test:fast passed."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T15:26:28.090Z"
 doc_updated_by: "CODER"
 description: "Move hooks (commit-msg, pre-commit, etc.) onto the same policy engine as guard. Remove hook-specific unique logic so local/CI/hooks behavior is identical."
@@ -52,14 +52,15 @@ id_source: "generated"
 3. Remove duplicated path/subject/base logic from hooks.
 4. Update tests to cover parity with guard.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T15:26:22.655Z — VERIFY — ok
@@ -71,3 +72,9 @@ Note: Verified: hooks are thin adapters and delegate policy checks to evaluatePo
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

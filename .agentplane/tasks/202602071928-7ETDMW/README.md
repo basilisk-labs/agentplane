@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run typecheck; bun run test:cli:core; bun run test:fast. Added stable help snapshots and JSON-registry contract tests to prevent CLI help drift."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T08:22:10.606Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add help snapshots and spec/registry invariant tests."
@@ -54,20 +54,11 @@ Out of scope:
 
 Scope: add tests that lock cli2 help output and validate spec/registry invariants to prevent drift.\n\nPlan:\n1) Add snapshot tests for agentplane help (text), and for selected commands in --compact and --json modes.\n2) Add registry/spec invariant tests: unique command ids; unique option names/shorts within a command; no longest-prefix ambiguities.\n3) Ensure tests are deterministic (stable ordering).\n\nVerification: bun run typecheck; bun run test:cli:core; bun run test:fast.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 Run:\n- bun run typecheck\n- bun run test:cli:core\n- bun run test:fast\n\nPass criteria:\n- new snapshots are stable\n- invariants tests fail on duplicate ids/options\n- all tests above pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T08:21:25.457Z — VERIFY — ok
@@ -85,3 +76,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T08:19:27.200Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

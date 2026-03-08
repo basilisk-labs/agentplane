@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: README v3 Verify Steps now seed concise acceptance-oriented steps across task creation paths, and the legacy Scope/Checks/Evidence scaffolding is gone from the checked task flows."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T11:02:36.731Z"
 doc_updated_by: "CODER"
 description: "Replace abstract Verify Steps scaffolding with concise acceptance-step templates that work for code and non-code tasks."
@@ -74,11 +74,6 @@ Replace abstract Verify Steps scaffolding with concise acceptance-step templates
 2. Update primary-tag seeded Verify Steps content and the related unit/CLI task creation tests to match the new acceptance-step contract.
 3. Verify the new seed via targeted task-template tests, builds, and doctor, then finish and push main.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Create a new README v3 task through the current template path. Expected: the seeded Verify Steps section is acceptance-oriented and no longer uses Scope/Checks/Evidence/Pass criteria placeholders.
@@ -86,10 +81,6 @@ Replace abstract Verify Steps scaffolding with concise acceptance-step templates
 3. Run targeted task-template tests plus build/doctor checks. Expected: the new seed passes without widening unrelated diffs.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T11:02:00.485Z — VERIFY — ok
@@ -106,3 +97,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T10:57:10.158Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: lifecycle and branching docs now reflect actual operational constraints instead of legacy assumptions."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T07:48:24.868Z"
 doc_updated_by: "DOCS"
 description: "Update docs/user/workflow.mdx, task-lifecycle.mdx, branching-and-pr-artifacts.mdx to reflect current state transitions, status-commit rules, direct vs branch_pr behavior, and finish/verify gates."
@@ -66,14 +66,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T07:48:24.712Z — VERIFY — ok
@@ -87,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T07:47:01.630Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

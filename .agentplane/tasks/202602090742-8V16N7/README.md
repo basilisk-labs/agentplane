@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: verify-record.unit tests added; bun run lint/test:full/coverage pass (branches 72.43%)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T07:50:32.693Z"
 doc_updated_by: "TESTER"
 description: "Add focused unit tests for packages/agentplane/src/commands/task/verify-record.ts to reduce missed branches and lock down semantics."
@@ -70,19 +70,11 @@ Add unit tests for task verification recording (cmdTaskVerifyRecord*) to cover k
 
 1. Проанализировать missed branches в packages/agentplane/src/commands/task/verify-record.ts.\n2. Добавить unit-тесты, закрывающие: валидацию флагов, сбор note/author, ветки ok/rework, записи в backend/store, и маппинг ошибок.\n3. Прогнать bun run lint, bun run test:full, bun run coverage.
 
-## Risks
-
-- Риск: хрупкие тесты из-за времени/форматирования. Митигация: стабить Date/выходы и проверять инварианты вместо полного текста.\n- Риск: тяжёлые интеграции с backend. Митигация: юнит-тесты через мок TaskBackend/CommandContext.
-
 ## Verify Steps
 
 ### Scope\n- verify-record unit tests\n\n### Checks\n- bun run lint\n- bun run test:full\n- bun run coverage\n\n### Evidence / Commands\n- bun run coverage (record branch % and ensure exit 0)\n\n### Pass criteria\n- lint passes\n- all tests pass\n- coverage passes global thresholds
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T07:49:24.448Z — VERIFY — ok
@@ -98,3 +90,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T07:44:23.016Z, excerpt_
 ## Rollback Plan
 
 git revert <commit> для коммита задачи; удалить добавленные тесты при необходимости.
+
+## Findings
+
+
+## Risks
+
+- Риск: хрупкие тесты из-за времени/форматирования. Митигация: стабить Date/выходы и проверять инварианты вместо полного текста.\n- Риск: тяжёлые интеграции с backend. Митигация: юнит-тесты через мок TaskBackend/CommandContext.

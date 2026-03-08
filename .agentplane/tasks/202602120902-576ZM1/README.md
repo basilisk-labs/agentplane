@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: implemented task close-duplicate to collapse duplicate/no-op closure into one command, with validation and CLI wiring; regression tests pass for success and same-id rejection."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:10:15.486Z"
 doc_updated_by: "CODER"
 description: "Add an atomic command to close duplicate/no-op tasks with minimal required metadata and optional single close commit path."
@@ -67,14 +67,11 @@ id_source: "generated"
 
 1) Add new command . 2) Implement no-op duplicate closure flow (status/comment/optional metadata commit). 3) Register command in catalog/help. 4) Add CLI tests for minimal happy path and validation errors.
 
-## Risks
+## Verify Steps
 
+1) bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts -t "task close-duplicate" 2) bun run test:cli:core 3) bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:10:15.344Z — VERIFY — ok
@@ -90,6 +87,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:03:32.330Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1) bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts -t "task close-duplicate" 2) bun run test:cli:core 3) bun run lint
+
+## Risks

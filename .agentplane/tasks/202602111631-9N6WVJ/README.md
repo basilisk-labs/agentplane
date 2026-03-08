@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/upgrade.cleanup.test.ts packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/apply.test.ts; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:43:38.365Z"
 doc_updated_by: "TESTER"
 description: "Add reliable setup/teardown cleanup for release/upgrade transient artifacts in test harness to avoid cross-test contamination."
@@ -65,17 +65,22 @@ In scope: packages/agentplane/src/cli/run-cli.test-helpers.ts root lifecycle and
 
 1) Register temp test roots in helpers. 2) Add afterEach cleanup for .agentplane/.upgrade and .agentplane/.release under tracked test roots. 3) Validate with targeted release/upgrade tests.
 
-## Risks
+## Verify Steps
 
-Risk: cleanup might remove directories while a test still needs them. Mitigation: clean only after each test and only under helper-created temp roots.
+- bunx vitest run packages/agentplane/src/commands/upgrade.cleanup.test.ts packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/apply.test.ts\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert helper changes in run-cli.test-helpers.ts and re-run targeted tests to confirm previous behavior.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/upgrade.cleanup.test.ts packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/apply.test.ts\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Risk: cleanup might remove directories while a test still needs them. Mitigation: clean only after each test and only under helper-created temp roots.

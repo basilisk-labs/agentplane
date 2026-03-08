@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: closed PR #1 with explanatory comment and posted rebase/split request on PR #2; re-checked PR states and latest comments."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T16:07:34.438Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Close PR #1 with an explanatory comment; comment on PR #2 requesting rebase/splitting and avoiding config regressions."
@@ -69,14 +69,11 @@ In scope: GitHub PR state changes (close PR #1), posting comments on PRs #1/#2. 
 
 Scope: close PR #1 with rationale; comment on PR #2 requesting rebase/split; no code changes. Steps: verify PR states -> perform close/comment -> verify states/comments -> record outcome. Approvals: network required (gh). Verification: PR #1 closed + comment, PR #2 comment posted.
 
-## Risks
+## Verify Steps
 
+Pass criteria: PR #1 is closed and has an explanatory maintainer comment; PR #2 remains open and has a maintainer comment requesting rebase/splitting and no config regressions.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T16:07:16.803Z — VERIFY — ok
@@ -92,10 +89,8 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T16:07:07.465Z, excerpt_
 ## Rollback Plan
 
 
-## Notes
+## Findings
 
 Findings:\n- 2026-02-08: PR #1 was OPEN; closed with maintainer comment explaining it is superseded (defaults already in main) and too-large/conflicting diff.\n- 2026-02-08: PR #2 remains OPEN; posted maintainer comment requesting rebase onto current main, splitting into focused PR(s), and avoiding .agentplane/config.json regressions. Comment URL: https://github.com/basilisk-labs/agentplane/pull/2#issuecomment-3867467789\n\nDecision:\n- PR #1: closed.\n- PR #2: keep open; request rebase/split.\n\nNext Steps:\n- Wait for contributor response; if they rebase/split, re-review the smaller PR(s).
 
-## Verify Steps
-
-Pass criteria: PR #1 is closed and has an explanatory maintainer comment; PR #2 remains open and has a maintainer comment requesting rebase/splitting and no config regressions.
+## Risks

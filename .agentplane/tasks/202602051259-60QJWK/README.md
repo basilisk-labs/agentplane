@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run lint; bun run test:fast; bun run build; hooks pre-commit; agentplane verify --yes --quiet."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T13:05:30.023Z"
 doc_updated_by: "CODER"
 description: "Allow non-interactive verify approval when agents.approvals.require_verify=true by adding --yes flag; update usage/help/tests."
@@ -44,9 +44,8 @@ Add --yes flag for verify approval and document non-interactive usage.
 
 Update verify flag parsing/usage, enforce approval in non-interactive mode unless --yes, and extend tests/docs.
 
-## Risks
+## Plan
 
-Non-interactive verify now fails without --yes; docs/tools must be updated to avoid CI failures.
 
 ## Verify Steps
 
@@ -67,8 +66,16 @@ Commands:
 - bun run test:fast
 - node packages/agentplane/bin/agentplane.js hooks run pre-commit
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert verify flag changes, restore previous approval flow, and drop docs updates.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Non-interactive verify now fails without --yes; docs/tools must be updated to avoid CI failures.

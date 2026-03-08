@@ -30,7 +30,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: documented spike tag convention (research-only tasks) and expected outputs; bun run test:fast passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:41:34.370Z"
 doc_updated_by: "DOCS"
 description: "Adopt tag=spike as task kind convention without schema changes."
@@ -47,14 +47,15 @@ description: "Adopt tag=spike as task kind convention without schema changes."
 2) Clarify that implementation tasks should depend on the spike where appropriate.
 3) Run bun run test:fast.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T17:40:46.543Z — VERIFY — ok
@@ -66,3 +67,9 @@ Note: Documented tag=spike convention and expected outputs; bun run test:fast.
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

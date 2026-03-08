@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run test:cli:core; update-check tests added and passing."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:51.914Z"
 doc_updated_by: "agentplane"
 description: "Add version check on CLI startup; compare installed version vs npm latest and suggest upgrade with opt-out flag."
@@ -47,19 +47,25 @@ Normalized task doc sections (dedupe).
 
 Update CLI global flags, help text, and command guide; add npm version check and tests.
 
-## Risks
+## Plan
 
-Startup warning could appear in stderr; npm registry fetch is best-effort but should not block CLI.
 
 ## Verify Steps
 
 bun run test:cli:core
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the update-check changes in run-cli.ts, help.ts, command-guide.ts, and related tests.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Startup warning could appear in stderr; npm registry fetch is best-effort but should not block CLI.

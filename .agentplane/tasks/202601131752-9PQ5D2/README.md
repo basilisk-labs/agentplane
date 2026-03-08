@@ -25,7 +25,7 @@ comments:
   -
     author: "CODER"
     body: "verified: formatting-only change in .agent-plane/config.json | details: task docs updated; no tests run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:50.446Z"
 doc_updated_by: "agentplane"
 description: "Format .agent-plane/config.json for consistent multi-line JSON styling without changing values."
@@ -42,23 +42,26 @@ User requested a separate task/commit for the existing config.json formatting ch
 
 Formatting-only change in .agent-plane/config.json; no behavioral changes.
 
-## Risks
+## Plan
 
-Low risk: formatting only. Possible merge conflicts if config.json is edited concurrently.
 
 ## Verify Steps
 
 Not run (formatting-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit b9ae966 to restore previous formatting.
 
-## Notes
+## Findings
 
 No tests run.
 
-## Plan
+## Risks
 
-
-## Verification
+Low risk: formatting only. Possible merge conflicts if config.json is edited concurrently.

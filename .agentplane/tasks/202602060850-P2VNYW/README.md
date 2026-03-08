@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: require_plan now blocks start/work start/integrate until plan_approval.state=approved; updated tests, lint and fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T08:53:35.490Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement ensurePlanApprovedIfRequired guard and apply it to start, work start, and integrate when agents.approvals.require_plan=true."
@@ -46,10 +46,23 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

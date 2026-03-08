@@ -27,7 +27,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: status wording aligned and priorities standardized in docs."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:53.047Z"
 doc_updated_by: "agentplane"
 description: "Choose a single status indicator scheme and update all relevant docs/templates to match."
@@ -45,23 +45,26 @@ The repo had mixed priority labels (med/Нормальный) that needed normal
 - Normalize task priorities to low/normal/high across task docs and export.
 - Update docs wording to reference the standard status labels.
 
-## Risks
+## Plan
 
-- Mislabeling priorities could affect reporting expectations if consumers assumed legacy labels.
 
 ## Verify Steps
 
 - N/A (doc-only normalization).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the commits linked in task metadata to restore prior labels.
 
-## Notes
+## Findings
 
 - Status wording in README/agentctl docs now references TODO instead of Backlog.
 
-## Plan
+## Risks
 
-
-## Verification
+- Mislabeling priorities could affect reporting expectations if consumers assumed legacy labels.

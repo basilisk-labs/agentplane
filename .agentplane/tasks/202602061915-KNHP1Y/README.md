@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Split scenario command implementation into its own module, extracted colon-safe git log hash/subject parsing, and reduced duplicated helper usage in task-backend; ran bun run lint, bun run test:agentplane, and bun run test:cli."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T20:28:45.820Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP,202602061915-DH1CKG) Разнести монолиты по доменным модулям, убрать локальные утилиты, упростить тестирование; без сохранения старых внутренних API, если не требуется."
@@ -48,14 +48,15 @@ id_source: "generated"
 3) Remove a few duplicated micro-utils from backends/task-backend.ts by importing shared helpers (start with isRecord).
 4) Run bun run lint + bun run test:cli + bun run test:agentplane.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T20:27:58.516Z — VERIFY — ok
@@ -67,3 +68,9 @@ Note: Verified locally on 2026-02-06: scenario command extracted to its own modu
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

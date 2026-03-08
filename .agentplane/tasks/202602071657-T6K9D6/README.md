@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: task derive creates an implementation task with depends_on spike id and copies a Notes excerpt; tests: bun run test:agentplane, bun run test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:54:51.372Z"
 doc_updated_by: "CODER"
 description: "Add task derive command to create implementation tasks depending on a spike and copying Decision context."
@@ -49,27 +49,6 @@ description: "Add task derive command to create implementation tasks depending o
 2) Require spike tag on the source task (tag=spike).
 3) Copy a small excerpt from spike Notes into the new task description for context.
 4) Run bun run test:agentplane and bun run test:cli:core.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T17:53:01.638Z — VERIFY — ok
-
-By: CODER
-
-Note: Implemented task derive command to create an implementation task depending on a spike and copying Notes excerpt; tests: bun run test:agentplane, bun run test:cli:core.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -90,3 +69,22 @@ Add a helper command to derive implementation tasks from a spike with an explici
 ### Pass criteria
 
 - Command works end-to-end and is non-breaking to existing CLI.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:53:01.638Z — VERIFY — ok
+
+By: CODER
+
+Note: Implemented task derive command to create an implementation task depending on a spike and copying Notes excerpt; tests: bun run test:agentplane, bun run test:cli:core.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

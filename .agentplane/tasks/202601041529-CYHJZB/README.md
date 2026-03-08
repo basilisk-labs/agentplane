@@ -23,7 +23,7 @@ commit:
   hash: "4d57b45688484f8e5db8ee6ba9eed44a541fe4d0"
   message: "Legacy completion (backfill)"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Extend Redmine sync to include additional local metadata (done ratio, start date, assignee) when pushing tasks."
@@ -41,21 +41,27 @@ Improve Redmine sync to include more local metadata when pushing tasks, such as 
 - Allow optional assignee via env var to map local owner to Redmine user id.
 - Update `.env.example` with any new env vars.
 
-## Risks
+## Plan
 
-- Incorrect mapping could overwrite existing issue fields in Redmine.
-- Assignee id mismatch may cause API errors or assign to the wrong user.
 
 ## Verify Steps
 
 - `bash check_redmine.sh`
 - `set -a; source .env; set +a; python3 .agent-plane/agentctl.py sync redmine --direction push`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the commit for this task and re-sync from local cache if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Incorrect mapping could overwrite existing issue fields in Redmine.
+- Assignee id mismatch may cause API errors or assign to the wrong user.

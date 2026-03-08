@@ -27,7 +27,7 @@ comments:
   -
     author: "PLANNER"
     body: "verified: task priorities normalized to low/normal/high across metadata."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:53.656Z"
 doc_updated_by: "agentplane"
 description: "Identify retrospective tasks and set their priority consistently via agentctl."
@@ -45,23 +45,26 @@ Priorities were mixed between med/Нормальный and needed a single schem
 - Update all task frontmatter priority values to normal where med/Нормальный appeared.
 - Fix any priority mentions in task notes to match the standard labels.
 
-## Risks
+## Plan
 
-- External systems expecting legacy labels may need a refresh.
 
 ## Verify Steps
 
 - N/A (data normalization).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the linked commits to restore legacy priority labels.
 
-## Notes
+## Findings
 
 - Priorities now appear only as low/normal/high in task metadata.
 
-## Plan
+## Risks
 
-
-## Verification
+- External systems expecting legacy labels may need a refresh.

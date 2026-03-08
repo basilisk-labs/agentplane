@@ -76,7 +76,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release apply internal push now bypasses recursive local hooks; targeted release tests and release:check passed after stabilizing the regression sandbox path."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T15:45:30.443Z"
 doc_updated_by: "CODER"
 description: "Diagnose and fix the bug where agentplane release apply --push --yes can hang after creating the local release commit and tag, leaving push/publication incomplete."
@@ -96,19 +96,11 @@ In scope: release/apply command flow, subprocess lifecycle and exit handling, re
 
 1. Reproduce and trace the exact point where release apply stops after local commit/tag creation.\n2. Patch the release apply implementation so subprocesses and push stages terminate deterministically and surface actionable errors.\n3. Add regression coverage for the previously hanging path.\n4. Verify with targeted release tests and command-level checks, then record evidence and close the task.
 
-## Risks
-
-Release code is high-impact: a wrong fix can create duplicate tags, partial publishes, or hide real publish failures behind false success. Tests that exercise release commands may also leave temp git/tag artifacts if cleanup regresses.
-
 ## Verify Steps
 
 ### Scope\nRelease/apply command lifecycle, push handoff, and failure/exit behavior after local commit and tag creation.\n\n### Checks\n- Run 'bunx vitest run packages/agentplane/src/commands/release/apply.test.ts packages/agentplane/src/commands/release/plan.test.ts'.\n- Run 'bun run release:check'.\n- Reproduce the fixed path with 'agentplane release apply --push --yes' or an equivalent regression harness that exercises the same control flow without performing an unsafe publish.\n\n### Evidence / Commands\nRecord the exact commands, whether the command exits, whether push is attempted/completed, and whether any residual tag/commit side effects remain.\n\n### Pass criteria\nThe release apply path must not leave an idle parent process after local commit/tag creation; it must either complete the push path or exit with a deterministic error. Targeted release tests and release:check must pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T15:39:55.738Z — VERIFY — ok
@@ -169,6 +161,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T15:42:10.153Z, excerpt_
 
 Revert the release-flow fix commit, rebuild dist if required, and rerun the targeted release tests to confirm the repository returns to the prior baseline. Do not run a real publish while the fix is in doubt.
 
-## Notes
+## Findings
 
 Observed failure mode from the v0.3.1 release: local release commit and local tag were created, but the parent 'agentplane release apply --push --yes' process stayed alive with an idle event loop and never completed the push/publication path.
+
+## Risks
+
+Release code is high-impact: a wrong fix can create duplicate tags, partial publishes, or hide real publish failures behind false success. Tests that exercise release commands may also leave temp git/tag artifacts if cleanup regresses.

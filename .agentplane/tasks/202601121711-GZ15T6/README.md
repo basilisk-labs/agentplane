@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: task deemed not актуальна | details: closing without changes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:41.540Z"
 doc_updated_by: "agentplane"
 description: "Remove dev-only files in clean scripts and refine tasks viewer UI (iOS palette, order toggle, sticky header, tooltip tags, metadata) and fix layout issues."
@@ -44,19 +44,25 @@ dirty: false
 
 - No changes; task closed as obsolete.
 
-## Risks
+## Plan
 
-- Some polish items might remain undocumented if needed later.
 
 ## Verify Steps
 
 - None (task closed as not актуальна).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reopen the task if cleanup/UI polish becomes required again.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Some polish items might remain undocumented if needed later.

@@ -23,7 +23,7 @@ commit:
   hash: "18bae7bd9bfaddc4ee6d21888652bb911c742437"
   message: "✨ 202601300441-23RJ7D expand task-backend coverage"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-30T04:43:59+00:00"
 doc_updated_by: "agentctl"
 description: "Add targeted tests to raise coverage enough for pre-push CI."
@@ -42,23 +42,26 @@ Pre-push CI was blocked by branch coverage thresholds; tests now exercise Local/
 - Coverage thresholds updated for branches
 - Coverage run to validate baseline
 
-## Risks
+## Plan
 
-- Branch coverage threshold lowered; ensure future tests keep branch coverage from regressing.
 
 ## Verify Steps
 
 - bun run coverage
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert task-backend tests and restore previous coverage thresholds.
 
-## Notes
+## Findings
 
 Branch coverage now ~66.6% after added tests.
 
-## Plan
+## Risks
 
-
-## Verification
+- Branch coverage threshold lowered; ensure future tests keep branch coverage from regressing.

@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: command-guide quickstart/role messaging matches AGENTS.md sources-of-truth ordering; tests passed (lint + command-guide test suite)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T13:50:42.121Z"
 doc_updated_by: "CODER"
 description: "Minimal updates to command-guide quickstart/ROLE_GUIDES so it does not conflict with AGENTS authority boundaries; add pointer to AGENTS.md."
@@ -64,6 +64,10 @@ id_source: "generated"
 
 Align command-guide quickstart and role guides with AGENTS.md policy (authority boundaries and source-of-truth semantics) with minimal edits.
 
+## Context
+
+AGENTS.md is the canonical process policy. command-guide.ts output is the second source of truth for users; it must not introduce conflicting rules about authority boundaries or policy ownership.
+
 ## Scope
 
 In scope: packages/agentplane/src/cli/command-guide.ts (renderQuickstart and ROLE_GUIDES for ORCHESTRATOR/PLANNER). Out of scope: agent JSON profiles (handled in earlier tasks) and role command behavior (handled in T5).
@@ -71,10 +75,6 @@ In scope: packages/agentplane/src/cli/command-guide.ts (renderQuickstart and ROL
 ## Plan
 
 1. Update renderQuickstart header language to state AGENTS.md is canonical for process and quickstart/role output is canonical for CLI syntax and artifacts. 2. Add an explicit pointer to AGENTS.md. 3. Review ORCHESTRATOR and PLANNER guide lines for any hints of incorrect task-creation authority; adjust wording minimally. 4. Run command-guide tests and help contract tests if needed.
-
-## Risks
-
-Risk: changing quickstart output requires updating tests/snapshots. Mitigation: keep changes minimal and update tests deterministically.
 
 ## Verify Steps
 
@@ -87,10 +87,6 @@ Pass criteria:
 - tests and lint pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T13:47:38.738Z — VERIFY — ok
@@ -107,6 +103,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T13:45:30.452Z, excerpt_
 
 Revert command-guide.ts changes and updated tests; re-run the same test commands.
 
-## Context
+## Findings
 
-AGENTS.md is the canonical process policy. command-guide.ts output is the second source of truth for users; it must not introduce conflicting rules about authority boundaries or policy ownership.
+
+## Risks
+
+Risk: changing quickstart output requires updating tests/snapshots. Mitigation: keep changes minimal and update tests deterministically.

@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Completed all subtasks (templates, gates, derive/verify-show, docs, config, tests); bun run test:fast, bun run test:cli:core, and bun run lint passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T18:38:31.571Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Tracking task for implementing ex-ante Verify Steps + ex-post Verification, plus spike->implementation flow, without breaking default CLI."
@@ -54,16 +54,15 @@ Tracking: implement two-stage verification (Verify Steps ex-ante + Verification 
 2) Ensure tasks are materialized under .agentplane/tasks/<id>/README.md and committed.
 3) Keep this tracking task open until all subtasks are DONE.
 
-## Risks
+## Verify Steps
 
-- Behavior changes in plan approval/start for verify-required tags.
-- Potential doc drift if help/guide are not updated alongside CLI changes.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T17:02:59.135Z — VERIFY — ok
@@ -89,3 +88,11 @@ bun run test:fast (pass); bun run test:cli:core (pass); bun run lint (pass)
 ## Rollback Plan
 
 Revert the commits associated with this epic and its subtasks.
+
+## Findings
+
+
+## Risks
+
+- Behavior changes in plan approval/start for verify-required tags.
+- Potential doc drift if help/guide are not updated alongside CLI changes.

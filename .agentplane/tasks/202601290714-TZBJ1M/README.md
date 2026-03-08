@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "verified: manual review only | details: tests not run (known failing run-cli.test.ts expectation for invalid meta.json)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:18.738Z"
 doc_updated_by: "agentplane"
 description: "Implement minimal tools runner for node and bash runtimes with declared permissions and run artifacts."
@@ -47,19 +47,25 @@ Add minimal scenario runner to execute recipe tools and store run artifacts.
 
 - Implement scenario run command with node/bash tool execution\n- Emit permission warnings from manifest\n- Store stdout/stderr and meta under .agentplane/recipes/<id>/runs
 
-## Risks
+## Plan
 
-- Tool execution is unsandboxed in v1; warnings must be clear
 
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the AP-037 commits to remove scenario runner
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Tool execution is unsandboxed in v1; warnings must be clear

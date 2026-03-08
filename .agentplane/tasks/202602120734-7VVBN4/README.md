@@ -46,9 +46,35 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: quality/testing standards docs match current hooks, CI gates, coverage checks, and TypeScript ESM import rules."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T08:03:24.570Z"
 doc_updated_by: "DOCS"
 description: "Update docs/developer/code-quality.mdx, testing-and-quality.mdx, typescript-esm-imports.mdx, design-principles.mdx to match enforced checks, coverage gates, and coding policies."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

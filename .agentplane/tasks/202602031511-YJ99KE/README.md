@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: duplicate task README sections are not present; doc_updated_by attribution remains consistent."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T05:42:24.579Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Investigate and fix duplicate section headings in task README and ensure doc_updated_by reflects last agent (not 'agentplane')."
@@ -47,8 +47,13 @@ Validated that duplicate README sections are not present and doc_updated_by attr
 2) If gaps remain, implement fixes and add/adjust tests.
 3) Verify behavior and record results.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -66,3 +71,8 @@ Note: No duplicate standard README sections detected; doc_updated_by attribution
 ## Rollback Plan
 
 No code changes required; no rollback needed.
+
+## Findings
+
+
+## Risks

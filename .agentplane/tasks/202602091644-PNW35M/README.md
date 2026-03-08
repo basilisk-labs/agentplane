@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Added doctor command for deterministic layering checks and a safe --fix mode for .gitignore hygiene."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T17:06:47.077Z"
 doc_updated_by: "CODER"
 description: "Add agentplane doctor and doctor --fix for safe invariant checks: layering, manifest/spec consistency, AGENTS anchors, tasks index schema."
@@ -71,15 +71,11 @@ packages/agentplane/src/commands/doctor* and supporting checks; integrate with e
 
 1) Add doctor command spec + handler.\n2) Implement checks: forbidden imports (reuse guardrail logic), AGENTS anchor presence, tasks index schema presence, framework manifest sanity.\n3) Implement --fix for safe-only operations (anchors insertion, index rebuild hook if available).\n4) Add tests for doctor output and exit codes.\n5) Run bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-Doctor becoming a grab-bag; mitigate by keeping checks small, deterministic, and stable.
+- bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T17:06:42.105Z — VERIFY — ok
@@ -96,6 +92,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T17:03:55.266Z, excerpt_
 
 Revert doctor command and checks; no runtime behavior changes outside doctor invocation.
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:full
+
+## Risks
+
+Doctor becoming a grab-bag; mitigate by keeping checks small, deterministic, and stable.

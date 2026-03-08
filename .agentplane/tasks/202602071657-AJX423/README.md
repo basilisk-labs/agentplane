@@ -32,7 +32,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: Added task derive tests for depends_on and deps=wait:<spike-id> in task list; bun run test:cli:core and bun run lint passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T18:36:44.825Z"
 doc_updated_by: "TESTER"
 description: "Add tests for task derive: depends_on includes spike id and list shows deps state."
@@ -48,10 +48,6 @@ Add tests for `agentplane task derive`: new task depends_on includes spike id, a
 
 1) Add CLI test: task derive creates depends_on=[spikeId].\n2) Assert task list prints deps=wait:<spikeId> until spike is DONE.\n3) Run bun run test:cli:core.
 
-## Risks
-
-- Assertions may be brittle if task list formatting changes.
-
 ## Verify Steps
 
 ### Evidence / Commands
@@ -61,10 +57,6 @@ Add tests for `agentplane task derive`: new task depends_on includes spike id, a
 - Derive test passes and asserts depends_on and deps summary.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T18:36:39.275Z — VERIFY — ok
@@ -84,3 +76,10 @@ bun run test:cli:core (pass); bun run lint (pass)
 ## Rollback Plan
 
 Revert the test commit for this task.
+
+## Findings
+
+
+## Risks
+
+- Assertions may be brittle if task list formatting changes.

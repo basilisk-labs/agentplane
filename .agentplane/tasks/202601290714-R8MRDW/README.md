@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "verified: manual review only | details: tests not run (suggest bun test packages/agentplane/src/run-cli.test.ts)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:18.460Z"
 doc_updated_by: "agentplane"
 description: "Implement scenario schema parsing and CLI: scenario list and scenario info <recipe:scenario> (descriptive, no execution yet)."
@@ -45,19 +45,25 @@ Add scenario schema parsing and scenario list/info CLI commands for installed re
 
 - Parse scenario definitions from recipes/scenarios/*.json\n- Generate and read scenarios index for list/info\n- Add scenario list/info commands and update docs/tests
 
-## Risks
+## Plan
 
-- Strict scenario validation may break older recipes without required fields
 
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the AP-036 commits to restore prior recipe-only behavior
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Strict scenario validation may break older recipes without required fields

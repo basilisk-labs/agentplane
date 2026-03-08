@@ -25,7 +25,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Added agentctl role <ROLE> command; updated role headings and docs. Manual check: python .agent-plane/agentctl.py role CODER"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:45.740Z"
 doc_updated_by: "agentplane"
 description: "Add a CLI command (agentctl role <ROLE>) that prints the role-specific command block from .agent-plane/agentctl.md so agents can see only their guidance."
@@ -42,23 +42,26 @@ Agents need a quick way to see only their command guidance without scanning the 
 
 Update agentctl.py to add the role command and update agentctl.md headings/usage.
 
-## Risks
+## Plan
 
-Low; parsing errors could hide guidance or print the wrong section.
 
 ## Verify Steps
 
 Run: python .agent-plane/agentctl.py role CODER
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the command and doc heading changes.
 
-## Notes
+## Findings
 
 Verified locally with: python .agent-plane/agentctl.py role CODER
 
-## Plan
+## Risks
 
-
-## Verification
+Low; parsing errors could hide guidance or print the wrong section.

@@ -32,7 +32,7 @@ comments:
     author: "ORCHESTRATOR"
     body: "Verified: extracted Redmine backend helpers into backends/task-backend/redmine/* (client, fields, parse, mapping, remote, comments); bun run typecheck, bun run lint, and bun run test:full all pass."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T14:01:07.746Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split backends/task-backend/redmine-backend.ts into smaller modules (API client, mapping, CRUD operations) while preserving behavior and keeping tests green."
@@ -58,12 +58,6 @@ Out of scope:
 4. Add/adjust tests only if needed to preserve coverage.
 5. Run bun run typecheck, bun run lint, bun run test:full.
 
-## Risks
-
-1. Subtle behavior changes in Redmine field mapping (custom fields, status transitions).
-2. Network error handling differences (timeouts/retries) if code paths move incorrectly.
-3. Import cycles between backend modules.
-
 ## Verify Steps
 
 Commands:
@@ -76,10 +70,6 @@ Pass criteria:
 - Full suite passes.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T14:00:12.074Z — VERIFY — ok
@@ -97,3 +87,12 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T13:48:52.049Z, excerpt_
 1. Revert the implementation commit for 202602081344-5XQEDA.
 2. Re-run bun run test:full.
 3. If necessary, revert the close metadata commit for the task.
+
+## Findings
+
+
+## Risks
+
+1. Subtle behavior changes in Redmine field mapping (custom fields, status transitions).
+2. Network error handling differences (timeouts/retries) if code paths move incorrectly.
+3. Import cycles between backend modules.

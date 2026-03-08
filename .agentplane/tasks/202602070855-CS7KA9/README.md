@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added shared write-if-changed helpers (text + stable JSON) and migrated export/index/pr meta/recipes cache/ide sync writes; ran typecheck, cli:core tests, and lint; commit=f5bb1c9755bc."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T09:21:32.272Z"
 doc_updated_by: "CODER"
 description: "Add writeTextIfChanged (atomic write + compare) and writeJsonStableIfChanged (canonicalize + stable key order + atomic) and switch config/cache/export writes to these helpers."
@@ -65,14 +65,15 @@ id_source: "explicit"
 3. Add unit tests for stable JSON ordering + no-write when unchanged.
 4. Run: bun run typecheck; bun run test:cli:core; bun run lint.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T09:21:21.681Z — VERIFY — ok
@@ -84,3 +85,9 @@ Note: Ran bun run typecheck; bun run test:cli:core; bun run lint. All passed; co
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

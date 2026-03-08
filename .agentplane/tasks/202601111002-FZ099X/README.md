@@ -28,7 +28,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: created task via Redmine backend, set docs, added comment; task show confirms doc metadata and stored comment after sync pull."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:38.970Z"
 doc_updated_by: "agentplane"
 description: "Create/update/comment tasks directly against Redmine backend to verify CLI flows."
@@ -50,10 +50,8 @@ Validate that Redmine backend supports create/update/comment flows via agentctl 
 - Update doc sections and add a comment to verify custom fields and journals.
 - Pull the task again to confirm fields persist.
 
-## Risks
+## Plan
 
-- API latency could cause commands to time out; retries may be needed.
-- If sandbox contains old data, lists may mix test and legacy issues.
 
 ## Verify Steps
 
@@ -61,12 +59,20 @@ Validate that Redmine backend supports create/update/comment flows via agentctl 
 - python .agent-plane/agentctl.py task comment 202601111002-FZ099X --author CODER --body "Test comment via Redmine backend"
 - python .agent-plane/agentctl.py task doc show 202601111002-FZ099X --quiet
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Delete the test issue from Redmine if it pollutes the sandbox.
 - Re-run task list to confirm it is gone.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- API latency could cause commands to time out; retries may be needed.
+- If sandbox contains old data, lists may mix test and legacy issues.

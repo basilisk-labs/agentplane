@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run ci (format:check, typecheck, lint, coverage); bun run release:check"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T15:43:18.669Z"
 doc_updated_by: "CODER"
 description: "bun run ci fails under coverage due to 5s vitest timeout in upgrade.agent-mode and exit-code.contract; raise per-test timeout to be robust."
@@ -60,15 +60,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
 
 
 ## Verify Steps
@@ -85,3 +76,16 @@ id_source: "generated"
 ### Pass criteria
 - `bun run ci` exits 0 (including coverage).
 - No change in test semantics beyond higher timeout tolerance.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: enforce conservative execution profile guard for forced status transitions"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:20:00.616Z"
 doc_updated_by: "CODER"
 description: "Apply execution profile to at least one runtime decision path with tests."
@@ -75,16 +75,12 @@ Out of scope: broader orchestration budgets.
 2. Add CLI test covering conservative profile behavior.
 3. Run targeted tasks/lifecycle tests and builds.
 
-## Risks
+## Verify Steps
 
-Risk: unexpected regression for existing --force flows.
-Mitigation: guard only conservative profile and provide explicit env override.
+- bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.tasks.test.ts
+- bun run --filter='agentplane' build
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T10:19:52.094Z — VERIFY — ok
@@ -105,7 +101,10 @@ Ran: bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.tasks.tes
 
 Revert conservative force guard and corresponding tests if regressions appear.
 
-## Verify Steps
+## Findings
 
-- bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.tasks.test.ts
-- bun run --filter='agentplane' build
+
+## Risks
+
+Risk: unexpected regression for existing --force flows.
+Mitigation: guard only conservative profile and provide explicit env override.

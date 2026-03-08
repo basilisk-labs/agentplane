@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Docusaurus blog is enabled with taxonomy/authors metadata and initial posts linked to canonical docs and release narratives."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:02:49.374Z"
 doc_updated_by: "DOCS"
 description: "Enable Docusaurus blog, create taxonomy/authors/tags/templates, and publish initial posts aligned with product narrative."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -77,11 +74,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

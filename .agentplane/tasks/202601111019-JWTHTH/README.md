@@ -26,7 +26,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: python -m py_compile .agent-plane/agentctl.py .agent-plane/backends/redmine/backend.py; redmine backend now batches writes with pauses (write_tasks, sync push, migrate); config returned to local backend."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:39.290Z"
 doc_updated_by: "agentplane"
 description: "Add batch-friendly sync/migration with pauses to avoid Redmine timeouts; restore local backend after tests."
@@ -50,10 +50,8 @@ Add batch-friendly Redmine sync/migration with pauses to avoid API timeouts, the
 - Keep defaults conservative so existing users aren’t surprised.
 - Restore .agent-plane/config.json to the local backend after testing.
 
-## Risks
+## Plan
 
-- Overly aggressive pauses slow sync; overly small batches may still time out on slow Redmine deployments.
-- Using backend.write_tasks could mask per-task failures if Redmine responds inconsistently.
 
 ## Verify Steps
 
@@ -61,12 +59,20 @@ Add batch-friendly Redmine sync/migration with pauses to avoid API timeouts, the
 - python .agent-plane/agentctl.py task migrate --source .agent-plane/tasks-export-small.json --quiet (optional smoke)
 - python .agent-plane/agentctl.py sync redmine --direction push --yes --quiet (optional when Redmine reachable)
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert redmine/backend.py and .agent-plane/config.json to previous versions.
 - Remove any partially migrated issues from the Redmine sandbox if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Overly aggressive pauses slow sync; overly small batches may still time out on slow Redmine deployments.
+- Using backend.write_tasks could mask per-task failures if Redmine responds inconsistently.

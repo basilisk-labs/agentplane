@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Migrated task export/lint/normalize to cli2 specs, removed legacy run-cli dispatch, moved normalize flag parsing into spec-driven parser, and verified via typecheck + run-cli core tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T06:54:46.386Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task export/lint/normalize`."
@@ -60,11 +60,6 @@ Plan:
 5. Run verification: bun run typecheck; bun run test:cli:core.
 6. Record verification, commit changes, finish task, and create closure commit.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -85,10 +80,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T06:53:53.711Z — VERIFY — ok
 
@@ -105,3 +96,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T06:50:01.745Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

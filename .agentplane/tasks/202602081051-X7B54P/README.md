@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: removed recipes legacy argv parsing/dispatch; deleted stale usage constants; recipes tests now parse via cli2 specs and call parsed impls; typecheck, lint, test:fast, and cli core tests all pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T11:23:20.007Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split commands/recipes.ts into per-command impl modules; remove remaining legacy CLI dispatch/parsers; keep behavior stable."
@@ -46,29 +46,6 @@ id_source: "generated"
 ## Plan
 
 Decompose recipes monolith: split commands/recipes.ts into focused impl modules; remove any remaining legacy CLI routing/parsers; keep behavior stable via tests.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T11:17:35.962Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: removed recipes legacy CLI dispatch/parsers (cmdRecipes and parseRecipe* helpers), updated recipes tests to use cli2 specs + parsed command functions, and confirmed typecheck + cli core + fast tests pass.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:17:23.603Z, excerpt_hash=sha256:5a58934f46a6cc7c0b829b0df130bb79cadaef7c50fb3d94ea23c7b7de3f0b57
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -85,3 +62,24 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:17:23.603Z, excerpt_
 ### Pass criteria
 - All commands succeed.
 - The assertions are satisfied.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T11:17:35.962Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: removed recipes legacy CLI dispatch/parsers (cmdRecipes and parseRecipe* helpers), updated recipes tests to use cli2 specs + parsed command functions, and confirmed typecheck + cli core + fast tests pass.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:17:23.603Z, excerpt_hash=sha256:5a58934f46a6cc7c0b829b0df130bb79cadaef7c50fb3d94ea23c7b7de3f0b57
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

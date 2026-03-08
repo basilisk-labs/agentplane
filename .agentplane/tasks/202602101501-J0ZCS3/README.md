@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint; bun run test:agentplane (init-upgrade backend, upgrade.merge, upgrade.safety); bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T15:10:35.880Z"
 doc_updated_by: "CODER"
 description: "Change agentplane init to write AGENTS.md as a regular file at the repo root (not a symlink, and not managed under .agentplane/). Update upgrade behavior to stop enforcing a root symlink and stop using .agentplane/AGENTS.md as a managed copy; symlink usage should be treated as agentplane-repo-only."
@@ -64,15 +64,19 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+### Scope\n- init: packages/agentplane/src/cli/run-cli/commands/init/write-agents.ts\n- upgrade: packages/agentplane/src/commands/upgrade.ts\n- tests covering init/upgrade behavior and symlink handling\n\n### Checks\n- Lint\n- Init/upgrade CLI contract tests\n\n### Evidence / Commands\n- bun run lint\n- bun run test:agentplane packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts\n- bun run test:agentplane packages/agentplane/src/commands/upgrade.merge.test.ts\n\n### Pass criteria\n- agentplane init writes a regular AGENTS.md file in repo root when missing (no symlink, no .agentplane/AGENTS.md).\n- upgrade no longer enforces AGENTS.md root symlink and does not require .agentplane/AGENTS.md.\n- Existing symlinked AGENTS.md is tolerated (agentplane repo) and not overwritten.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-### Scope\n- init: packages/agentplane/src/cli/run-cli/commands/init/write-agents.ts\n- upgrade: packages/agentplane/src/commands/upgrade.ts\n- tests covering init/upgrade behavior and symlink handling\n\n### Checks\n- Lint\n- Init/upgrade CLI contract tests\n\n### Evidence / Commands\n- bun run lint\n- bun run test:agentplane packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts\n- bun run test:agentplane packages/agentplane/src/commands/upgrade.merge.test.ts\n\n### Pass criteria\n- agentplane init writes a regular AGENTS.md file in repo root when missing (no symlink, no .agentplane/AGENTS.md).\n- upgrade no longer enforces AGENTS.md root symlink and does not require .agentplane/AGENTS.md.\n- Existing symlinked AGENTS.md is tolerated (agentplane repo) and not overwritten.
+
+## Risks

@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run lint; bun run test:fast; agentplane verify 202602051439-H7JERJ. Summary: standardized backend config shape and docs; legacy module/class ignored."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:43:18.238Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement standardized backend config shape and document format; treat module/class as legacy."
@@ -45,9 +45,8 @@ Standardize backend config shape (id/version/settings), treat module/class as le
 
 Add backend config validation in loadTaskBackend, ignore module/class legacy fields, update docs/user/backends.mdx with standardized format, add tests.
 
-## Risks
+## Plan
 
-Potentially stricter config validation could reject existing configs; keep validation minimal and backward-tolerant.
 
 ## Verify Steps
 
@@ -70,8 +69,16 @@ Commands:
 Manual steps:
 - Run bun run lint.\n- Run bun run test:fast.\n- Confirm loadTaskBackend accepts standardized config and ignores legacy module/class fields.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert backend config validation and docs changes if compatibility issues appear.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Potentially stricter config validation could reject existing configs; keep validation minimal and backward-tolerant.

@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Updated docs/assets images (favicon/logo/header); verified files exist and are non-empty."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T07:20:59.367Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Update docs site assets (favicon/logo/header) to the new versions."
@@ -47,14 +47,15 @@ Plan:
 2. Run a minimal verification step (manual check that files exist and are non-empty).
 3. Record verification, commit, finish, closure commit.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T07:20:26.702Z — VERIFY — ok
@@ -68,3 +69,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T07:20:15.229Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

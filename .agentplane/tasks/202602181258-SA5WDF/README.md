@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: GTM and GA instrumentation hooks are integrated via environment-driven configuration with safe defaults and no hardcoded tracking IDs."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:06:33.927Z"
 doc_updated_by: "CODER"
 description: "Add GTM/GA hooks with privacy-conscious defaults and track key conversion events for docs and CTA flows."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -79,11 +76,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

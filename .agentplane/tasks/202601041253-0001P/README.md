@@ -31,7 +31,7 @@ comments:
   -
     author: "REVIEWER"
     body: "Verified: clean.sh now removes docs/ and other framework-development artifacts (tasks.html, .DS_Store) during cleanup; script syntax checks pass and tasks.json lints clean."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:21.951Z"
 doc_updated_by: "agentplane"
 description: "Update @clean.sh so cleanup removes framework-development artifacts (including @docs/) when preparing a reusable snapshot.\\\\n\\\\nAcceptance criteria:\\\\n- Running clean.sh removes @docs/ and other framework-specific files/directories it currently leaves behind.\\\\n- Script remains idempotent and safe (no unscoped rm outside repo root)."
@@ -43,16 +43,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

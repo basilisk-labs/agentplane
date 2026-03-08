@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. GitHub remote upgrade now refuses missing upgrade assets unless --allow-tarball is set; tarball fallback prefers codeload URL using tag_name/--tag to avoid brittle api.github.com tarball_url behavior."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:06:12.630Z"
 doc_updated_by: "CODER"
 description: "Make remote upgrade require proper release assets + checksum. If a tarball fallback is kept, require an embedded upgrade manifest proving it is an upgrade bundle."
@@ -71,19 +71,11 @@ packages/agentplane/src/commands/upgrade.ts and unit tests around release downlo
 
 1) Inspect current upgrade source selection and GitHub release download logic.\n2) Make local (npm-installed) framework assets the default source; require explicit flags to use GitHub.\n3) If GitHub is used and release assets are missing, either (a) fail with actionable message, or (b) fallback to codeload tar.gz URL (not api.github.com tarball_url) but only if the archive contains framework.manifest.json under assets root.\n4) Add unit tests covering: missing assets behavior; fallback URL builder; redirect handling; manifest-required guard.\n5) Run bun run lint and bun run test:full.
 
-## Risks
-
-Users relying on tarball fallback will need to update their release process to publish upgrade assets.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full\n- (manual) node packages/agentplane/bin/agentplane.js upgrade --dry-run in a temp repo should not touch tasks/backends/config and should not require network by default
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:06:12.470Z — VERIFY — ok
@@ -99,3 +91,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T15:59:32.666Z, excerpt_
 ## Rollback Plan
 
 Revert the commit to restore fallback.
+
+## Findings
+
+
+## Risks
+
+Users relying on tarball fallback will need to update their release process to publish upgrade assets.

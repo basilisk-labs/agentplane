@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: node scripts/check-release-notes.mjs --tag v0.2.2; node scripts/check-release-version.mjs --tag v0.2.2; bun run test:full; version bumps and release notes committed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T10:15:43.929Z"
 doc_updated_by: "INTEGRATOR"
 description: "Cut patch release v0.2.2 containing upgrade tarball_url fallback when release assets are missing."
@@ -69,15 +69,11 @@ In scope:\n- docs/releases/v0.2.2.md\n- packages/core/package.json\n- packages/a
 ## Plan
 
 
-## Risks
+## Verify Steps
 
-- Version skew between packages: mitigated by check-release-version script.\n- Missing/invalid release notes: mitigated by check-release-notes script.
+Commands:\n- node scripts/check-release-notes.mjs --tag v0.2.2\n- node scripts/check-release-version.mjs --tag v0.2.2\n- bun run test:full\n\nPass criteria:\n- All commands succeed.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T10:12:59.089Z — VERIFY — ok
@@ -94,6 +90,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T10:11:47.569Z, excerpt_
 
 - Delete the local tag v0.2.2 (and remote tag if pushed), revert the release commit(s), and re-cut the patch release.
 
-## Verify Steps
+## Findings
 
-Commands:\n- node scripts/check-release-notes.mjs --tag v0.2.2\n- node scripts/check-release-version.mjs --tag v0.2.2\n- bun run test:full\n\nPass criteria:\n- All commands succeed.
+
+## Risks
+
+- Version skew between packages: mitigated by check-release-version script.\n- Missing/invalid release notes: mitigated by check-release-notes script.

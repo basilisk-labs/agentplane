@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: runtime ignore lines are centralized and reused by init/doctor; upgrade cleanup and init/doctor tests pass, lint/build pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:06:43.242Z"
 doc_updated_by: "CODER"
 description: "Ensure upgrade/release/cache transient artifacts are cleaned or ignored to avoid noisy statuses."
@@ -68,14 +68,15 @@ In-scope: runtime artifact ignore constants, init gitignore writer, doctor --fix
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:05:53.017Z — VERIFY — ok
@@ -91,3 +92,8 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:05:23.452Z, excerpt_
 ## Rollback Plan
 
 Revert runtime-artifact constant wiring and gitignore behavior changes.
+
+## Findings
+
+
+## Risks

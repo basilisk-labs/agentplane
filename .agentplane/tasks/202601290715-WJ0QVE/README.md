@@ -34,7 +34,7 @@ comments:
   -
     author: "REDMINE"
     body: "verified: ran bun run ci on 2026-01-30 | details: all checks passed (format, typecheck, lint, coverage)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:21.134Z"
 doc_updated_by: "agentplane"
 description: "Implement backend sync redmine with push/pull directions, conflict strategies, and --yes flag; add mock-based contract tests."
@@ -48,19 +48,25 @@ Ensure backend sync redmine command routes direction/conflict/confirm flags into
 - Add a CLI test that backend sync forwards direction/conflict/confirm flags.
 - Keep existing Redmine sync implementation intact.
 
-## Risks
+## Plan
 
-- Minimal behavior change; risk limited to test coverage and CLI flag parsing assumptions.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the backend sync CLI test addition and keep existing sync behavior unchanged.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Minimal behavior change; risk limited to test coverage and CLI flag parsing assumptions.

@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated AGENTS.md to distinguish authority roles vs execution agents registry and require downstream tasks to be owned by an existing agent (or schedule CREATOR). Implemented warn-only owner validation in task new/update with unit tests; lint/test:full/coverage pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:33:42.606Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Review AGENTS.md for internal consistency and update it to require downstream tasks to be assigned to an existing agent ID (or schedule CREATOR). Add CLI warnings when task owner is not found under .agentplane/agents."
@@ -64,6 +64,10 @@ id_source: "generated"
 Update AGENTS.md to clearly separate authority roles from execution agents (IDs under .agentplane/agents/*.json), require every downstream task to be assigned to an existing agent (or schedule a CREATOR task when missing), and make the document more immediately actionable.
 
 Add warn-only enforcement in the CLI: task new/update should emit a warning if the specified owner id is not present under .agentplane/agents.
+
+## Context
+
+Currently task owner is only validated as non-empty. This allows arbitrary owner values that do not correspond to any agent definition. The policy also describes authority roles, but does not hard-require assignment to an existing execution agent or the CREATOR fallback when no suitable agent exists.
 
 ## Scope
 
@@ -84,14 +88,6 @@ Out-of-scope:
 2. Implement warnIfUnknownOwner(ctx, owner) and call it from task new/update when setting owner.
 3. Add unit tests that assert warnings are emitted for unknown owners and not emitted for known owners.
 4. Run bun run lint, bun run test:full, bun run coverage.
-
-## Risks
-
-Risk: extra stderr noise for repos that used free-form owner values.
-Mitigation: warning-only + clear remediation (create agent JSON or pick an existing id).
-
-Risk: false positives when agents directory does not exist (repo not initialized).
-Mitigation: skip the warning when agents_dir is missing or contains no *.json.
 
 ## Verify Steps
 
@@ -118,14 +114,18 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:28:04.042Z, excerpt_
 
 git revert коммита; bun run test:full.
 
-## Context
-
-Currently task owner is only validated as non-empty. This allows arbitrary owner values that do not correspond to any agent definition. The policy also describes authority roles, but does not hard-require assignment to an existing execution agent or the CREATOR fallback when no suitable agent exists.
-
-## Notes
+## Findings
 
 ### Decision
 Owner validation is introduced as a warning (not an error) to avoid breaking existing workflows.
 
 ### Follow-up
 Once warning adoption is stable, we can consider upgrading this to a lint error / CI gate.
+
+## Risks
+
+Risk: extra stderr noise for repos that used free-form owner values.
+Mitigation: warning-only + clear remediation (create agent JSON or pick an existing id).
+
+Risk: false positives when agents directory does not exist (repo not initialized).
+Mitigation: skip the warning when agents_dir is missing or contains no *.json.

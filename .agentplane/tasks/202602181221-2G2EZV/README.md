@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: split CI contour is active with deterministic check names and required-check compatibility."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:07:44.388Z"
 doc_updated_by: "CODER"
 description: "Update or deprecate monolithic ci.yml while preserving required checks and branch protection compatibility."
@@ -59,9 +59,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -80,11 +77,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Upgrade now applies only manifest-listed files and rejects denied/unknown paths (including tasks, backends, config exports)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T15:58:18.967Z"
 doc_updated_by: "CODER"
 description: "Restrict upgrade application to AGENTS.md and .agentplane/agents/** only; deny tasks, config, backends, worktrees, caches even if present in the bundle/manifest. Update framework.manifest.json and add safety tests."
@@ -71,19 +71,11 @@ packages/agentplane/assets/framework.manifest.json, packages/agentplane/src/comm
 
 1. Update manifest to include only AGENTS.md and .agentplane/agents/**.\n2. Update upgrade allow/deny checks to enforce the same (deny by default).\n3. Add tests: does not touch tasks.json/tasks/**; does not touch backends/**; rejects unknown manifest paths.\n4. bun run lint + bun run test:full.
 
-## Risks
-
-Behavior change: upgrade will stop updating config/backend stubs by default. Mitigation: document that upgrade is policy/prompt-only; require explicit future command for config migrations.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T15:58:09.298Z — VERIFY — ok
@@ -99,3 +91,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T15:45:33.025Z, excerpt_
 ## Rollback Plan
 
 Revert the commit; restore broader manifest/allowlist.
+
+## Findings
+
+
+## Risks
+
+Behavior change: upgrade will stop updating config/backend stubs by default. Mitigation: document that upgrade is policy/prompt-only; require explicit future command for config migrations.

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: test:guard now provides a stable explicit suite invocation and passes with lint."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T11:00:00.029Z"
 doc_updated_by: "CODER"
 description: "Add a deterministic root script for guard test suite to avoid glob ambiguity and reduce operator retries."
@@ -66,14 +66,12 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bun run test:guard
+2. bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:59:25.928Z — VERIFY — ok
@@ -89,7 +87,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:58:57.406Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bun run test:guard
-2. bun run lint
+
+## Risks

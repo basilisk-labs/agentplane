@@ -30,7 +30,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: project layout docs updated with task index cache entry."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:08:47.796Z"
 doc_updated_by: "DOCS"
 description: "Document task index cache behavior and file format in developer docs/README as needed."
@@ -44,9 +44,8 @@ Document task index cache location and purpose in developer docs.
 
 Update docs/developer/project-layout.mdx with task index cache details.
 
-## Risks
+## Plan
 
-Docs drift if cache location changes; keep entry concise.
 
 ## Verify Steps
 
@@ -56,8 +55,16 @@ Docs drift if cache location changes; keep entry concise.
 
 Verified on 2026-02-05: docs/developer/project-layout.mdx updated with cache entry.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Remove cache entry from docs if index is reverted.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Docs drift if cache location changes; keep entry concise.

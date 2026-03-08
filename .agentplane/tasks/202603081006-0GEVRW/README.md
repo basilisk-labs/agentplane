@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: task creation paths now emit doc_version=3 with the README v3 section order, and the default doc config no longer requires legacy Risks for freshly created tasks."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T10:48:55.405Z"
 doc_updated_by: "CODER"
 description: "Make new tasks and scaffolds render the v3 README structure with the new section layout and doc_version marker."
@@ -74,11 +74,6 @@ Make new tasks and scaffolds render the v3 README structure with the new section
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Run targeted task creation/scaffold tests. Expected: new tasks and scaffolded docs render doc_version=3 with the v3 section order.
@@ -86,10 +81,6 @@ Make new tasks and scaffolds render the v3 README structure with the new section
 3. Run agentplane doctor after the template changes. Expected: no new errors or warnings in this repository.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T10:48:39.207Z — VERIFY — ok
@@ -106,3 +97,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T10:41:18.803Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

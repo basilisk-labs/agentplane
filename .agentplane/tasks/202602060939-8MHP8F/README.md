@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: added require_verify guard to finish/integrate, updated CLI tests to record verification ok before closure, and ran format:check + lint + test:fast + test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T09:50:34.129Z"
 doc_updated_by: "CODER"
 description: "Add ensureVerificationSatisfiedIfRequired guard and wire into finish/integrate; update tests."
@@ -49,14 +49,15 @@ id_source: "generated"
 
 1) Add ensureVerificationSatisfiedIfRequired guard (pending/needs_rework blocks)\n2) Wire guard into finish (direct) + integrate (branch_pr)\n3) Update workflow/run-cli tests to set verification ok before finish/integrate\n4) Verify: format:check, lint, test:fast, test:cli:core
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T09:50:28.179Z — VERIFY — ok
@@ -68,3 +69,9 @@ Note: format:check + lint + test:fast + test:cli:core
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

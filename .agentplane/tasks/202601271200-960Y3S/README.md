@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci passed | details: commit subject policy helpers and tests added."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:10.301Z"
 doc_updated_by: "agentplane"
 description: "Enforce commit subject matching task suffix/id and block generic commit tokens from config."
@@ -44,19 +44,25 @@ Add commit subject policy validation (suffix/id match + generic-token guard) wit
 
 Core commit policy helpers + tests; no CLI wiring yet.
 
-## Risks
+## Plan
 
-May reject legitimate short subjects if they match generic tokens; tune config.commit.generic_tokens if needed.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit after AP-014 implementation.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+May reject legitimate short subjects if they match generic tokens; tune config.commit.generic_tokens if needed.

@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci (format, typecheck, lint, coverage). | details: Added commit wrapper tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:11.983Z"
 doc_updated_by: "agentplane"
 description: "Implement agentplane commit wrapper (guard + policy + confirm flags)."
@@ -43,19 +43,25 @@ Add agentplane commit wrapper with guard checks and git commit execution.
 
 CLI commit command, allowlist/auto-allow handling, hook env propagation, tests, and help updates.
 
-## Risks
+## Plan
 
-Commit wrapper may fail if git user identity is missing or hooks block commits.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 git revert <commit>
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Commit wrapper may fail if git user identity is missing or hooks block commits.

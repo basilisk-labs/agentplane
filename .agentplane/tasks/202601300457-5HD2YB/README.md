@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran bun run coverage on 2026-01-30 | details: all 347 tests passed and branch coverage reached 72.02%."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:24.337Z"
 doc_updated_by: "agentplane"
 description: "Add tests to lift branch coverage back to 72% without lowering thresholds."
@@ -47,23 +47,26 @@ Branch coverage was temporarily lowered to 66 to pass CI; goal is to raise real 
 
 Add tests in task-backend.test.ts (or related files) to exercise remaining branches; update vitest coverage thresholds back to 72.
 
-## Risks
+## Plan
 
-Extra tests could be brittle if they depend on internal error messages; keep assertions resilient. Risk of masking coverage gaps by changing thresholds; avoid lowering thresholds.
 
 ## Verify Steps
 
 bun run coverage
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit to restore previous tests/thresholds if coverage regressions or unstable tests appear.
 
-## Notes
+## Findings
 
 Focus on untested branches in task-backend helpers and error paths.
 
-## Plan
+## Risks
 
-
-## Verification
+Extra tests could be brittle if they depend on internal error messages; keep assertions resilient. Risk of masking coverage gaps by changing thresholds; avoid lowering thresholds.

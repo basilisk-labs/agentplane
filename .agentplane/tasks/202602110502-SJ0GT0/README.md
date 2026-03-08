@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: root CI now includes schemas:check and agents:check before typecheck/lint/coverage, so drift is enforced in PR CI."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:07:46.159Z"
 doc_updated_by: "CODER"
 description: "Wire bun run schemas:check and bun run agents:check into root CI command path so PRs fail on drift."
@@ -71,18 +71,6 @@ Out of scope:
 2. Run the checks and validate command ordering still works.
 3. Run build/lint/test gates and commit.
 
-## Risks
-
-- Risk: CI runtime increase.
-Mitigation: checks are small local file comparisons.
-
-## Verification
-
-
-## Rollback Plan
-
-Revert the task commit to restore previous CI command sequence.
-
 ## Verify Steps
 
 - `bun run schemas:check`
@@ -93,3 +81,20 @@ Revert the task commit to restore previous CI command sequence.
 - `bun run test:fast`
 Pass criteria:
 - drift checks pass and are part of `bun run ci` script
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+Revert the task commit to restore previous CI command sequence.
+
+## Findings
+
+
+## Risks
+
+- Risk: CI runtime increase.
+Mitigation: checks are small local file comparisons.

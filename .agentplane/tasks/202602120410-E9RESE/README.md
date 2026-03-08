@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: epic scope is complete; config/schema, command behavior, docs, and regression tests are aligned with the new primary/secondary tag and transition-gated status-commit model."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T04:41:01.135Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement primary-tag model, transition-based status-commit policy, primary-based verification gates, and docs/tests updates per new policy."
@@ -67,14 +67,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T04:41:00.988Z — VERIFY — ok
@@ -88,3 +89,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T04:41:00.852Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

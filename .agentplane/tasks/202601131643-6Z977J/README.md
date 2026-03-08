@@ -25,7 +25,7 @@ comments:
   -
     author: "REDMINE"
     body: "Verified: documentation-only updates; no tests run; confirmed auto-task creation guidance."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:48.224Z"
 doc_updated_by: "agentplane"
 description: "Update orchestrator guidance so it auto-creates the top-level tracking task after plan approval unless the user explicitly opts out; remove the post-approval prompt asking whether to create tasks. Align AGENTS.md, .agent-plane/agents/ORCHESTRATOR.json, and .agent-plane/agentctl.md with the new flow."
@@ -40,23 +40,26 @@ Auto-create the top-level task after plan approval and remove the post-approval 
 
 AGENTS.md; .agent-plane/agents/ORCHESTRATOR.json; .agent-plane/agentctl.md.
 
-## Risks
+## Plan
 
-Low: documentation/instruction changes only; risk is confusing guidance if misread.
 
 ## Verify Steps
 
 None (doc-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit e701172accef.
 
-## Notes
+## Findings
 
 Task creation is automatic after plan approval unless the user opts out.
 
-## Plan
+## Risks
 
-
-## Verification
+Low: documentation/instruction changes only; risk is confusing guidance if misread.

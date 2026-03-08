@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Confirmed current codebase already contains the intended change; no additional implementation required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:08:34.341Z"
 doc_updated_by: "CODER"
 description: "Add a safety check in CommandRegistry.register to throw on duplicate id registration so behavior is deterministic and fails fast."
@@ -73,11 +73,6 @@ packages/agentplane/src/cli/spec/registry.test.ts
 1. В register() проверять, что id.join(" ") не встречался ранее.
 2. Бросать CliError(E_INTERNAL) с указанием id и конфликтующих команд.
 3. Добавить тест на дубликат.
-
-## Risks
-
-Риск: сломать существующие тесты/код, если где-то есть реальные дубликаты.
-Митигация: сначала прогон test:full, при обнаружении дубликата устранить на месте.
 
 ## Verify Steps
 
@@ -102,3 +97,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:08:33.832Z, excerpt_
 ## Rollback Plan
 
 git revert соответствующего коммита, затем bun run test:full.
+
+## Findings
+
+
+## Risks
+
+Риск: сломать существующие тесты/код, если где-то есть реальные дубликаты.
+Митигация: сначала прогон test:full, при обнаружении дубликата устранить на месте.

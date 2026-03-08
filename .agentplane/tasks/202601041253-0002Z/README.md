@@ -26,7 +26,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: docs-only changes; manual review only (no automated checks)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:31.044Z"
 doc_updated_by: "agentplane"
 description: "Update README.md and related references so the documentation structure matches the new docs/ files."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

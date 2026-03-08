@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated cli-contract to include the release namespace and release plan/apply commands."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:34:44.861Z"
 doc_updated_by: "DOCS"
 description: "Audit developer docs (architecture, cli-contract, testing/quality) for drift vs current code and POLICY.md; update where needed."
@@ -65,9 +65,6 @@ In-scope: docs/developer/cli-contract.mdx.
 2. Update cli-contract reserved namespaces and command surface to include release plan/apply.
 3. Run formatting checks.
 
-## Risks
-
-
 ## Verify Steps
 
 - Confirm `release` appears in the reserved namespaces list.
@@ -75,13 +72,14 @@ In-scope: docs/developer/cli-contract.mdx.
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert the commits for this task to restore prior developer contract wording.
+
+## Findings
+
+
+## Risks

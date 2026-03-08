@@ -22,7 +22,7 @@ verification:
 commit: null
 comments: []
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T10:06:47.524Z"
 doc_updated_by: "TESTER"
 description: "Exercise upgrade, doctor, and migrate-doc against a legacy-style project to confirm the v2 to v3 rollout path is stable."
@@ -45,11 +45,6 @@ Exercise upgrade, doctor, and migrate-doc against a legacy-style project to conf
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -66,10 +61,6 @@ Exercise upgrade, doctor, and migrate-doc against a legacy-style project to conf
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
@@ -77,3 +68,11 @@ Exercise upgrade, doctor, and migrate-doc against a legacy-style project to conf
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

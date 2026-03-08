@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: critical tests pass and both workflows include concurrency, ubuntu-24.04, and actions/cache for Bun artifacts."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T21:06:05.468Z"
 doc_updated_by: "CODER"
 description: "Add deterministic runtime defaults and speedups: runner pinning, concurrency cancellation, and Bun cache for CI and publish workflows."
@@ -61,15 +61,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) bun run format:check
@@ -78,3 +69,16 @@ Expected: workflow YAML formatted/valid.
 Expected: CLI critical tests pass after workflow edits.
 3) rg -n "concurrency|runs-on: ubuntu-24.04|actions/cache@v4" .github/workflows/{ci,publish}.yml
 Expected: markers present in both workflows.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

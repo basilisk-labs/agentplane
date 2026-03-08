@@ -28,7 +28,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: format:check, lint, test:fast passed; .env.example updated with recommended Redmine env defaults."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T16:58:07.453Z"
 doc_updated_by: "DOCS"
 description: "Document recommended Redmine env values in .env.example and sync local .env owner alias."
@@ -42,9 +42,8 @@ Document recommended Redmine env values in .env.example and align local .env own
 
 - Update .env.example with recommended Redmine env defaults and custom field placeholders.\n- Set AGENTPLANE_REDMINE_OWNER_AGENT in .env to match owner (local only).
 
-## Risks
+## Plan
 
-- Minimal risk; only docs/example updates.\n- Local .env edit should not be committed.
 
 ## Verify Steps
 
@@ -54,8 +53,16 @@ Document recommended Redmine env values in .env.example and align local .env own
 
 - ✅ bun run format:check.\n- ✅ bun run lint.\n- ✅ bun run test:fast.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert .env.example changes if undesired.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Minimal risk; only docs/example updates.\n- Local .env edit should not be committed.

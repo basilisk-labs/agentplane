@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: config/core/ide now use shared wrapCommand with unchanged error mapping semantics."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:22:34.084Z"
 doc_updated_by: "CODER"
 description: "Introduce shared command wrapper for consistent mapCoreError handling and migrate config/core/ide command handlers as pilot."
@@ -71,15 +71,15 @@ In scope: run-cli command modules config/core/ide and new wrapper utility in run
 
 1) Add wrapCommand helper that preserves CliError and maps others through mapCoreError. 2) Apply helper to config/core/ide modules. 3) Keep behavior and outputs unchanged via tests.
 
-## Risks
+## Verify Steps
 
-Risk: changed command error text/exit mapping. Mitigation: preserve existing mapCoreError contexts and run CLI core tests.
+- bun run --filter=@agentplaneorg/core build
+- bun run --filter=agentplane build
+- bun run lint
+- bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts
+- bun run test:fast
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T05:22:33.936Z — VERIFY — ok
@@ -96,10 +96,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T05:20:20.149Z, excerpt_
 
 Revert the task commit to restore per-command local try/catch behavior.
 
-## Verify Steps
+## Findings
 
-- bun run --filter=@agentplaneorg/core build
-- bun run --filter=agentplane build
-- bun run lint
-- bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts
-- bun run test:fast
+
+## Risks
+
+Risk: changed command error text/exit mapping. Mitigation: preserve existing mapCoreError contexts and run CLI core tests.

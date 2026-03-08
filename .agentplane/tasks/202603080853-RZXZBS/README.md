@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the generated CLI reference now matches the current CLI help output and broad-fallback docs:cli:check passes again."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T08:55:11.461Z"
 doc_updated_by: "CODER"
 description: "Refresh docs/user/cli-reference.generated.mdx so broad fallback pre-push passes after the recent CI and doctor fast-bucket changes."
@@ -73,11 +73,6 @@ Refresh docs/user/cli-reference.generated.mdx so broad fallback pre-push passes 
 2. Verify that docs:cli:check passes and that no unrelated generated artifacts drift.
 3. Commit the refreshed generated reference, finish the task, and retry pushing main.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -96,10 +91,6 @@ Refresh docs/user/cli-reference.generated.mdx so broad fallback pre-push passes 
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T08:54:58.064Z — VERIFY — ok
 
@@ -115,3 +106,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T08:53:35.235Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

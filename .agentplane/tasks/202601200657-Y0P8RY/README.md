@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: Phase 2 migration complete | details: no additional core cleanup changes required at this stage."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:59.636Z"
 doc_updated_by: "agentplane"
 description: "Trim the core framework to the minimum runtime after recipe migration; remove or demote remaining extension hooks."
@@ -40,19 +40,25 @@ description: "Trim the core framework to the minimum runtime after recipe migrat
 
 - Review remaining extension hooks after Phase 2 migration.\n- Only make core changes if redundant features remain.
 
-## Risks
+## Plan
 
-- Future recipe additions might reintroduce core coupling if not reviewed.\n- Cleanup deferrals could leave unused hooks if new extensions land.
 
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task show 202601200657-VNFXH3
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reopen the task if core cleanup items are identified.\n- Apply targeted removals with a follow-up commit.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Future recipe additions might reintroduce core coupling if not reviewed.\n- Cleanup deferrals could leave unused hooks if new extensions land.

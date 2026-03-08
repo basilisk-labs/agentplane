@@ -55,7 +55,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: AGENTS.md now defines an explicit trigger based on upgrade review.json needsSemanticReview and a deterministic procedure to create an UPGRADER task."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:53:18.248Z"
 doc_updated_by: "DOCS"
 description: "Add canonical AGENTS.md protocol tying upgrade review.json needsSemanticReview to creating an UPGRADER downstream task and done criteria."
@@ -70,18 +70,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 ### Scope\n- packages/agentplane/assets/AGENTS.md only.\n\n### Checks\n- Ensure the protocol references upgrade review.json artifacts and defines an explicit trigger + task creation procedure.\n- English-only.\n\n### Evidence / Commands\n- rg -n "review.json" packages/agentplane/assets/AGENTS.md\n- rg -n "UPGRADER" packages/agentplane/assets/AGENTS.md\n\n### Pass criteria\n- AGENTS.md defines a deterministic trigger based on needsSemanticReview in review.json.\n- Procedure clearly assigns responsibilities (ORCHESTRATOR instructs; PLANNER creates downstream; UPGRADER resolves).
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:52:11.316Z — VERIFY — ok
@@ -95,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:51:37.483Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

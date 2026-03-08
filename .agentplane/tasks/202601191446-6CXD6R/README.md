@@ -23,7 +23,7 @@ commit:
   hash: "9be13a57b69bfa60ade046c26dadea809c971aba"
   message: "🎨 6CXD6R remove rounded corners"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Update the viewer UI to avoid rounded corners across controls and cards."
@@ -41,23 +41,26 @@ The current cyberpunk UI uses rounded corners across panels, cards, and controls
 - Set border-radius values to 0 for viewer UI elements.
 - Keep layout, spacing, and colors unchanged.
 
-## Risks
+## Plan
 
-Risk: Some elements may look harsh on small screens; keep spacing intact.
 
 ## Verify Steps
 
 - Open the viewer and confirm panels, buttons, cards, and tables have square corners.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the border-radius changes in `.agent-plane/viewer/tasks.html`.
 
-## Notes
+## Findings
 
 Apply consistently across dashboard and task views.
 
-## Plan
+## Risks
 
-
-## Verification
+Risk: Some elements may look harsh on small screens; keep spacing intact.

@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint; targeted vitest upgrade suites. Added framework.manifest.json and rewired upgrade to apply only manifest entries (no directory scans), with denylist guards for .git/.agentplane/tasks/.agentplane/.upgrade."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T12:29:18.219Z"
 doc_updated_by: "CODER"
 description: "Add a framework.manifest.json defining the exact set of framework-managed files and merge strategies; upgrade applies only manifest paths."
@@ -67,14 +67,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T12:27:27.144Z — VERIFY — ok
@@ -88,3 +89,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T12:19:57.181Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

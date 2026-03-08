@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: stale-dist freshness now follows watched-runtime snapshot equality, so rebuilt dirty runtime trees no longer block strict commands while real runtime drift still does."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T20:59:09.934Z"
 doc_updated_by: "CODER"
 description: "Use build-manifest snapshots to treat rebuilt dirty runtime trees as fresh and keep strict blocking only when dist is actually behind the current source state."
@@ -71,10 +71,6 @@ Use build-manifest snapshots to treat rebuilt dirty runtime trees as fresh and k
 ## Plan
 
 1. Teach dist-guard to prefer watched-runtime snapshot comparison from the build manifest and to fall back to the legacy git/mtime heuristic only when snapshot fields are absent. 2. Report changed watched files from snapshot diffing so strict commands block only when dist is truly behind the current runtime source state, including rebuilt-but-dirty trees becoming fresh. 3. Add regressions for rebuilt dirty trees, legacy manifest fallback, and changed-path reporting, then sync the minimal framework-dev docs needed for the new contract.
-
-## Risks
-
-- Risk: snapshot diffing can silently drift from the build writer if producer and consumer do not reuse the same watch contract.\n- Mitigation: import the shared runtime-watch helper from dist-guard and avoid hardcoded duplicate watch lists.\n\n- Risk: dropping legacy logic too early would break older global installs whose manifests do not yet contain snapshot fields.\n- Mitigation: keep a compatibility fallback to the existing git/mtime heuristic when snapshot data is missing or malformed.
 
 ## Verify Steps
 
@@ -98,10 +94,6 @@ Use build-manifest snapshots to treat rebuilt dirty runtime trees as fresh and k
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T20:58:43.161Z — VERIFY — ok
 
@@ -118,6 +110,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T20:55:25.066Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - This is the consumer-side half of the snapshot redesign introduced in 202603072032-1BC7VQ.\n- Prefer additive reasons and changedPaths so existing stale-dist warning/output surfaces stay readable while becoming more accurate.
+
+## Risks
+
+- Risk: snapshot diffing can silently drift from the build writer if producer and consumer do not reuse the same watch contract.\n- Mitigation: import the shared runtime-watch helper from dist-guard and avoid hardcoded duplicate watch lists.\n\n- Risk: dropping legacy logic too early would break older global installs whose manifests do not yet contain snapshot fields.\n- Mitigation: keep a compatibility fallback to the existing git/mtime heuristic when snapshot data is missing or malformed.

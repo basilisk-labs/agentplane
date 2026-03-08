@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: documented canonical execution profile policy and precedence in AGENTS without changing role authority boundaries."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:16:01.629Z"
 doc_updated_by: "DOCS"
 description: "Add canonical Execution Profile section in AGENTS.md and align policy boundaries."
@@ -73,16 +73,12 @@ Out of scope: runtime implementation details.
 2. Clarify that execution profile tunes operational behavior only and cannot override role authority boundaries.
 3. Mirror changes into packaged assets AGENTS.md.
 
-## Risks
+## Verify Steps
 
-Risk: policy ambiguity between AGENTS and config.
-Mitigation: explicitly preserve AGENTS role/pipeline precedence and scope of execution profile.
+- rg -n "Execution Profile" AGENTS.md packages/agentplane/assets/AGENTS.md
+- bun run test:agentplane -- packages/agentplane/src/agents/agents-template.test.ts
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T10:16:01.344Z — VERIFY — ok
@@ -103,7 +99,10 @@ Checks: rg -n Execution Profile in AGENTS/assets; bun run test:agentplane -- pac
 
 Revert AGENTS policy text updates in one commit if contradictions with role boundaries are found.
 
-## Verify Steps
+## Findings
 
-- rg -n "Execution Profile" AGENTS.md packages/agentplane/assets/AGENTS.md
-- bun run test:agentplane -- packages/agentplane/src/agents/agents-template.test.ts
+
+## Risks
+
+Risk: policy ambiguity between AGENTS and config.
+Mitigation: explicitly preserve AGENTS role/pipeline precedence and scope of execution profile.

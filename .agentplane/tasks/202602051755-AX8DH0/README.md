@@ -29,7 +29,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: release docs describe tag-based publish checks and GitHub Release creation."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T18:01:52.017Z"
 doc_updated_by: "DOCS"
 description: "Update release docs to describe tag-based publish + GitHub Release generation."
@@ -43,9 +43,8 @@ Document the tag-triggered release flow and GitHub Release automation.
 
 Update developer release documentation to describe tagging, checks, npm publish, and GitHub Release creation.
 
-## Risks
+## Plan
 
-Docs may diverge from actual workflow behavior if not updated.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Review docs/developer/release-and-publishing.mdx to ensure it matches the tag-ba
 
 Updated release-and-publishing docs to reflect tag-based publish checks and GitHub Release creation.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert documentation edits if inaccurate.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Docs may diverge from actual workflow behavior if not updated.

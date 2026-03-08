@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: full validation matrix passed after lint-safety fixes"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:25:18.880Z"
 doc_updated_by: "TESTER"
 description: "Run build/lint/fast/critical tests and close tracking task after successful validation."
@@ -71,9 +71,12 @@ In scope: root validation commands (build, lint, test:fast, test:critical) и ф
 
 1) Прогнать build/lint. 2) Прогнать test:fast. 3) Прогнать test:critical. 4) Зафиксировать результат и закрыть задачу.
 
-## Risks
+## Verify Steps
 
-Риск: флейки критических тестов (workflow hooks). Смягчение: повторный прогон при флейке и явная фиксация остаточного риска.
+- bun run build
+- bun run lint
+- bun run test:fast
+- bun run test:critical
 
 ## Verification
 
@@ -98,9 +101,9 @@ Ran: bun run build; bun run lint; bun run test:fast; bun run test:critical. Also
 
 Если проверки падают, не закрывать задачу; вернуть статус в DOING/BLOCKED с причиной и открыть follow-up fix task.
 
-## Verify Steps
+## Findings
 
-- bun run build
-- bun run lint
-- bun run test:fast
-- bun run test:critical
+
+## Risks
+
+Риск: флейки критических тестов (workflow hooks). Смягчение: повторный прогон при флейке и явная фиксация остаточного риска.

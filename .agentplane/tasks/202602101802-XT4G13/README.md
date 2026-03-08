@@ -57,7 +57,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Full `bun run ci` suite passed locally (format:check, typecheck, lint, coverage)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:42:11.479Z"
 doc_updated_by: "TESTER"
 description: "Run full repo verification (lint + unit/integration tests) after docs changes; record results in task verification."
@@ -74,10 +74,6 @@ In-scope: repository-wide verification (format:check, typecheck, lint, tests/cov
 ## Plan
 
 
-## Risks
-
-Risk: full suite takes time; failures may require follow-up code changes outside docs scope. Mitigation: stop and schedule targeted remediation tasks if any check fails.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -91,10 +87,6 @@ Risk: full suite takes time; failures may require follow-up code changes outside
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T18:40:56.744Z — VERIFY — ok
@@ -119,10 +111,14 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T18:41:20.048Z, excerpt_
 
 If verification fails due to doc changes, revert the offending commits and re-run the failing checks.
 
-## Notes
+## Findings
 
 ### Implementation Notes
 - Ran `bun run ci` (format:check, typecheck, lint, coverage).
 
 ### Results
 - All checks passed locally.
+
+## Risks
+
+Risk: full suite takes time; failures may require follow-up code changes outside docs scope. Mitigation: stop and schedule targeted remediation tasks if any check fails.

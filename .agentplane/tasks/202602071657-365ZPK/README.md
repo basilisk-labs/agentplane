@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: added task verify-show shortcut to print Verify Steps for verifiers; bun run test:cli:core passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:38:35.857Z"
 doc_updated_by: "CODER"
 description: "Add a read-only command/flag to print the Verify Steps section in stdout."
@@ -49,27 +49,6 @@ description: "Add a read-only command/flag to print the Verify Steps section in 
 2) Implement as an alias to `task doc show --section "Verify Steps"`.
 3) Add a CLI test for the new command.
 4) Run bun run test:cli:core.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T17:37:44.753Z — VERIFY — ok
-
-By: CODER
-
-Note: Added task verify-show command to print Verify Steps; covered by bun run test:cli:core.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -88,3 +67,22 @@ Expose Verify Steps for verifiers via a single, obvious CLI command.
 ### Pass criteria
 
 - Command works and is covered by a unit/integration test.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:37:44.753Z — VERIFY — ok
+
+By: CODER
+
+Note: Added task verify-show command to print Verify Steps; covered by bun run test:cli:core.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

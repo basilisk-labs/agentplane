@@ -33,7 +33,7 @@ comments:
   -
     author: "CODEX"
     body: "Verified: bun run typecheck; bun run lint; bun run test:agentplane. Summary: add TaskBackend.normalizeTasks; implement LocalBackend single-pass normalize with writeTextIfChanged; task normalize prefers backend.normalizeTasks. Implementation: f43b15eb15f6."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T12:21:44.540Z"
 doc_updated_by: "CODEX"
 description: "Add backend.normalizeTasks() contract and wire local backend to single-pass read/parse/renderStable/writeIfChanged without touching updated_at when content unchanged; migrate task normalize to backend.normalizeTasks."
@@ -50,14 +50,15 @@ In scope: add TaskBackend.normalizeTasks(); implement LocalBackend.normalizeTask
 
 1) Add TaskBackend.normalizeTasks() optional API + return stats.\n2) Implement LocalBackend.normalizeTasks(): single-pass over task READMEs; parse + render stable; writeTextIfChanged; count changed/scanned; never update timestamps unless file content changes.\n3) Implement RedmineBackend.normalizeTasks(): normalize cache if present, otherwise no-op.\n4) Update task normalize command to call backend.normalizeTasks() when available; keep old fallback for backends without it.\n5) Add/adjust tests if needed; run typecheck, lint, test:agentplane.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T12:21:39.104Z — VERIFY — ok
@@ -71,3 +72,8 @@ Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
 ## Rollback Plan
 
 Revert commits for normalizeTasks and task normalize dispatch; fallback behavior remains listTasks + writeTask(s).
+
+## Findings
+
+
+## Risks

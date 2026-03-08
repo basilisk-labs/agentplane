@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Replaced porcelain parsing with -z/NUL-based git path listing (core getStagedFiles/getUnstagedFiles, guard gitStatusChangedPaths) to handle spaces/quotes/renames safely; added CLI regression test for a spaced path; bun run test:core and bun run test:cli:core passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T18:26:08.245Z"
 doc_updated_by: "CODER"
 description: "Replace porcelain v1 parsing with -z based path enumeration (diff --name-only -z / --cached) to handle spaces/quotes/renames safely."
@@ -49,15 +49,11 @@ packages/core/src/git/git-utils.ts; packages/agentplane/src/commands/guard/index
 
 1) Update core getStagedFiles/getUnstagedFiles to use -z outputs.\n2) Replace guard gitStatusChangedPaths with -z based enumeration (diff + ls-files).\n3) Add CLI regression test ensuring commit-from-comment stages a path with spaces.\n4) Run bun run test:cli:core and bun run test:core.
 
-## Risks
+## Verify Steps
 
-Risk: -z parsing changes edge cases (renames, submodules); keep semantics close to previous behavior (report new path for renames).
+- bun run test:core\n- bun run test:cli:core
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T18:19:21.507Z — VERIFY — ok
@@ -72,6 +68,9 @@ Note: Updated core/agentplane git path listing to -z based parsing; added CLI re
 
 Revert the commit(s) for this task.
 
-## Verify Steps
+## Findings
 
-- bun run test:core\n- bun run test:cli:core
+
+## Risks
+
+Risk: -z parsing changes edge cases (renames, submodules); keep semantics close to previous behavior (report new path for renames).

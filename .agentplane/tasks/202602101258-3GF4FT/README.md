@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: warnIfUnknownOwner now memoizes agent id listing in CommandContext.memo to avoid repeated agents-dir reads; lint and unit tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:50:48.185Z"
 doc_updated_by: "CODER"
 description: "Memoize agent ids for warnIfUnknownOwner and similar; update/add unit tests."
@@ -69,18 +69,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 ### Scope\n- Cache agent id listing in CommandContext.memo to avoid repeated directory reads during a single CLI run.\n\n### Checks\n- Lint\n- warn-owner unit tests\n\n### Evidence / Commands\n- bun run lint\n- bun run test:agentplane packages/agentplane/src/commands/task/warn-owner.unit.test.ts\n\n### Pass criteria\n- Lint passes.\n- Tests pass.\n- warnIfUnknownOwner performs only one agents-dir read per process run (memoized).
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:49:37.551Z — VERIFY — ok
@@ -94,3 +87,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:47:46.427Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

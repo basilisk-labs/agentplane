@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: split commands/guard/index.ts into guard/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T13:24:32.143Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split packages/agentplane/src/commands/guard/index.ts into internal modules (policy eval, allowlist, git env, status commit helpers) without changing CLI2 specs."
@@ -47,29 +47,6 @@ id_source: "generated"
 ## Plan
 
 Scope: split packages/agentplane/src/commands/guard/index.ts into a facade plus modules under packages/agentplane/src/commands/guard/impl/. Steps: (1) Extract allowlist + staging helpers. (2) Extract policy evaluation wrapper (guardCommitCheck). (3) Extract comment-driven commit helpers (commitFromComment). (4) Extract cmdGuard* and cmdCommit handlers. (5) Replace guard/index.ts with a re-export facade. (6) Run bun run typecheck, bun run lint, bun run test:full.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T13:23:42.306Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: decomposed commands/guard/index.ts into guard/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T13:23:28.641Z, excerpt_hash=sha256:c512362341e2289292b1a94b33ff9361599fbc3155fd4990dcc14e8c069e5fe0
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -218,3 +195,24 @@ Installed recipe viewer@1.2.3
       Tests  704 passed (704)
    Start at  20:22:59
    Duration  20.90s (transform 8.31s, setup 0ms, import 30.75s, tests 79.56s, environment 20ms)\n\n### Pass criteria\n- commands/guard/index.ts becomes a facade.\n- Logic moves to commands/guard/impl/*.ts with clear boundaries.\n- guard commit, commit, and lifecycle flows remain unchanged (full suite passes).
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T13:23:42.306Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: decomposed commands/guard/index.ts into guard/impl modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T13:23:28.641Z, excerpt_hash=sha256:c512362341e2289292b1a94b33ff9361599fbc3155fd4990dcc14e8c069e5fe0
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

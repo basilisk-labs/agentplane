@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint; targeted vitest upgrade suites. Added .agentplane/.upgrade lock.json + state.json and moved baseline storage to .agentplane/.upgrade/baseline (with legacy fallback)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T14:20:33.188Z"
 doc_updated_by: "CODER"
 description: "Add .agentplane/.upgrade (state.json, baseline snapshots, backups, lock) and migrate from legacy baseline path; implement 3-way merges based on baseline."
@@ -66,14 +66,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T14:18:59.780Z — VERIFY — ok
@@ -87,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T14:16:57.267Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

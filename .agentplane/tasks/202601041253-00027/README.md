@@ -29,7 +29,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/prs/T-071."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:25.771Z"
 doc_updated_by: "agentplane"
 description: "Update the agent pipeline instructions so every task added to tasks.json includes an explicit depends_on list (use [] when there are no dependencies). Update AGENTS.md schema/docs and PLANNER workflow to require setting dependencies (and to ask for clarification when dependencies are unknown)."
@@ -41,16 +41,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: switched verify to record-only (ok/rework) + task verify, updated CLI help/guide, and ran format:check + lint + test:fast + run-cli.core.lifecycle."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T09:37:49.689Z"
 doc_updated_by: "CODER"
 description: "Replace agentplane verify with a record-only command and add task verify ok/rework to append results + update frontmatter.verification.state."
@@ -46,14 +46,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T09:37:29.308Z — VERIFY — ok
@@ -65,3 +66,9 @@ Note: format:check + lint + test:fast; run-cli.core.lifecycle
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

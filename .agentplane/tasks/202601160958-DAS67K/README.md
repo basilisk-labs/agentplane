@@ -26,7 +26,7 @@ comments:
   -
     author: "CREATOR"
     body: "verified: Documented the UPGRADER agent lifecycle, triggers, and config expectations for automation readiness."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:51.092Z"
 doc_updated_by: "agentplane"
 description: "Review agentctl layout and specify UPGRADER responsibilities for automatic framework refresh, covering trigger conditions, config timestamp handling, and interactions with other agents."
@@ -47,10 +47,8 @@ description: "Review agentctl layout and specify UPGRADER responsibilities for a
 - Spell out the required clean-tree/base-branch preconditions and the metadata (`framework.last_update`, `framework.source`) the agent reads/writes.
 - Explain the expected outputs (updated config, run report, PR notes) so REVIEWER/INTEGRATOR know what to look for.
 
-## Risks
+## Plan
 
-- Forced pulls assume `git pull --ff-only` will succeed; if upstream diverges the command fails and the agent must surface that error.
-- Network or GitHub availability affects automation; the agent must log retries/failures so humans can intervene.
 
 ## Verify Steps
 
@@ -58,16 +56,21 @@ description: "Review agentctl layout and specify UPGRADER responsibilities for a
 - Run `python3 -m unittest tests.test_framework_upgrade` to prove helper math that enters the spec works.
 - Optionally execute `python .agent-plane/agentctl.py upgrade --force` from a clean base branch to validate the end-to-end flow.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the agent spec (`.agent-plane/agents/UPGRADER.json`) and the section additions in `.agent-plane/config.json` to drop the new metadata if problems surface.
 - Revert any upgrade command invocations by resetting the branch to the prior commit, then re-run tests.
 
-## Notes
+## Findings
 
 - Downstream tasks cover the actual CLI implementation (`202601160958-NV8M5V`) and regression tests (`202601160958-AM3G42`), so keep this spec in sync with those artifacts.
 
-## Plan
+## Risks
 
-
-## Verification
+- Forced pulls assume `git pull --ff-only` will succeed; if upstream diverges the command fails and the agent must surface that error.
+- Network or GitHub availability affects automation; the agent must log retries/failures so humans can intervene.

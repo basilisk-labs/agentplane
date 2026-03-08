@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T17:09:11.308Z"
 doc_updated_by: "CODER"
 description: "Fix validateArchive for tar.gz so GNU tar warning exit codes do not surface as E_IO; parse stdout even if tar exits non-zero to keep unsafe-entry errors E_VALIDATION (exit code 3)."
@@ -64,18 +64,24 @@ Make tar-based archive validation robust to GNU tar warning exit codes by parsin
 
 1. Replace tar list helpers to capture stdout/stderr even when tar exits non-zero.\n2. If stdout contains entries, proceed with validation; if stdout empty, surface E_IO with stderr.\n3. Run the affected CLI recipe archive tests locally (run-cli.recipes.test.ts) and ensure exit codes match expectations.
 
-## Risks
+## Verify Steps
 
-- Risk: swallowing real tar failures. Mitigation: only ignore non-zero when stdout is present; otherwise fail with E_IO and include stderr.\n- Risk: behavior differences between tar implementations. Mitigation: rely on tar stdout as the source of member names for validation.
+- bun run format:check\n- bun run lint\n- bun run test:cli:recipes (or bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts)
 
 ## Verification
 
 - bun run format:check: OK\n- bun run lint: OK\n- bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts: OK
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the change commit; tar listing errors will again surface as E_IO in some environments.
 
-## Verify Steps
+## Findings
 
-- bun run format:check\n- bun run lint\n- bun run test:cli:recipes (or bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts)
+
+## Risks
+
+- Risk: swallowing real tar failures. Mitigation: only ignore non-zero when stdout is present; otherwise fail with E_IO and include stderr.\n- Risk: behavior differences between tar implementations. Mitigation: rely on tar stdout as the source of member names for validation.

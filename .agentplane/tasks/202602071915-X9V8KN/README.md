@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: cli2 core (spec/parse/registry/help-render), cli2 help command + JSON contract docs, and run-cli integration migrating task new/work start/recipes install with full test coverage and updated error hints."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T19:59:57.015Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Wire cli2 into cli/run-cli.ts (help routing + spec-driven parsing for selected commands) and migrate 3 commands to spec-driven entrypoints to remove current help/usage drift."
@@ -65,11 +65,6 @@ Integrate cli2 into `cli/run-cli.ts` (add `agentplane help` + per-command help) 
 - integration tests for `agentplane help ...` (compact/json)
 - tests proving `recipes install --on-conflict` is accepted and reflected in help/usage
 
-## Risks
-
-- `run-cli.ts` is heavily covered by tests; keep text changes minimal and prefer invariant assertions.
-- Potential conflicts between cli2 and legacy parsing around `--help`/`--json`; avoid ambiguity via strict scoping.
-
 ## Verify Steps
 
 ### Scope
@@ -89,10 +84,6 @@ Validate cli2 integration and the 3 migrated commands.
 - `run-cli.core.*` and `run-cli.recipes.test.ts` pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T19:45:20.346Z — VERIFY — ok
@@ -126,3 +117,11 @@ Commands: bun run typecheck; bun run test:cli:unit; node packages/agentplane/bin
 1. Revert changes in `packages/agentplane/src/cli/run-cli.ts`.
 2. Delete the new spec modules and restore previous exports in migrated commands.
 3. Re-run `bun run test:cli:unit`.
+
+## Findings
+
+
+## Risks
+
+- `run-cli.ts` is heavily covered by tests; keep text changes minimal and prefer invariant assertions.
+- Potential conflicts between cli2 and legacy parsing around `--help`/`--json`; avoid ambiguity via strict scoping.

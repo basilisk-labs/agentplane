@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run typecheck; bun run test:cli:core; bun run test:fast. run-cli now uses cli2 registry as the sole router; ready and task derive are spec-driven; unknown commands provide did-you-mean suggestions."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T08:18:29.102Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Replace manual dispatch in `run-cli.ts` with a thin adapter delegating to cli2 router."
@@ -54,11 +54,6 @@ Out of scope:
 
 Scope: delete the legacy manual run-cli dispatcher and route all commands through the cli2 CommandRegistry, making cli2 the only command router.\n\nPlan:\n1) Build a single registry for all commands and route runCli through registry.match + parseCommandArgv.\n2) Remove the legacy dispatcher branches and any now-unused legacy parsers/imports.\n3) Ensure unknown command and unknown option errors are consistent (E_USAGE with cli2 help hints).\n4) Update tests if behavior/output changed.\n\nVerification: bun run typecheck; bun run test:cli:core; bun run test:fast.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -79,10 +74,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T08:16:35.821Z — VERIFY — ok
 
@@ -99,3 +90,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T08:05:07.569Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

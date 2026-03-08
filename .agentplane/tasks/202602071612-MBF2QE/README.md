@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Updated .agentplane/config.json and confirmed behavior via bun run test:cli:core (all tests passed)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T16:19:54.539Z"
 doc_updated_by: "CODER"
 description: "Align .agentplane/config.json with the current schema and recommended settings; remove deprecated keys; ensure config show has no warnings."
@@ -52,9 +52,13 @@ Out of scope: changing policy semantics or git base-branch pinning.
 4. Commit config changes with allowlist overrides.
 5. Record verification and finish the task.
 
-## Risks
+## Verify Steps
 
-Risk: stricter defaults may block comment-driven/status commits unless explicitly acknowledged. Mitigation: status_commit_policy=confirm is intentional; tests cover expected behavior.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -73,3 +77,10 @@ Note: Verified: Updated .agentplane/config.json (status_commit_policy=confirm, f
 ## Rollback Plan
 
 Revert the config commit and restore the previous config values.
+
+## Findings
+
+
+## Risks
+
+Risk: stricter defaults may block comment-driven/status commits unless explicitly acknowledged. Mitigation: status_commit_policy=confirm is intentional; tests cover expected behavior.

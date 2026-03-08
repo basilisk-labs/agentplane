@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: docs cli now regenerates the CLI reference in the formatted state accepted by freshness checks, with a regression test covering the no-op Prettier path."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T09:10:21.343Z"
 doc_updated_by: "CODER"
 description: "Make agentplane docs cli write the generated CLI reference in the same formatted state expected by docs freshness checks, and sync the related guidance."
@@ -74,11 +74,6 @@ Make agentplane docs cli write the generated CLI reference in the same formatted
 3. Sync freshness-check guidance so the user-facing recovery path is a single command.
 4. Rebuild dist, rerun docs generation, run freshness and targeted test/lint checks, then finish and push.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -94,10 +89,6 @@ Make agentplane docs cli write the generated CLI reference in the same formatted
 - Steps are reproducible and produce expected results.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T09:09:37.629Z — VERIFY — ok
@@ -115,6 +106,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T09:09:19.238Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 Reason: the current freshness check formats a temp file with Prettier, but the user-facing regeneration command does not. That leaves a hidden second step and makes the recommended recovery command incomplete.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

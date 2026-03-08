@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release commit/tag pushed, GitHub publish workflow passed, and npm package visibility confirmed for both packages."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T11:40:32.190Z"
 doc_updated_by: "CODER"
 description: "Prepare release notes, run prepublish gate, apply patch release and push commit+tag to trigger GitHub publish workflow."
@@ -67,14 +67,13 @@ id_source: "generated"
 
 1. Generate release plan and write docs/releases/v0.2.21.md from plan inputs.\n2. Run bun run release:prepublish and resolve failures if any.\n3. Apply release via agentplane release apply --push --yes.\n4. Verify pushed tag and provide workflow follow-up checks.
 
-## Risks
+## Verify Steps
 
+1. bun run release:prepublish
+2. node packages/agentplane/bin/agentplane.js release apply --push --yes
+3. git tag --list 'v0.2.21' and git ls-remote --tags origin v0.2.21
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T11:40:32.007Z — VERIFY — ok
@@ -90,8 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T11:22:10.053Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bun run release:prepublish
-2. node packages/agentplane/bin/agentplane.js release apply --push --yes
-3. git tag --list 'v0.2.21' and git ls-remote --tags origin v0.2.21
+
+## Risks

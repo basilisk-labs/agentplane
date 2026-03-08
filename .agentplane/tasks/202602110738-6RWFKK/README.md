@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: CLI contract documentation now matches current json-errors behavior."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T07:40:48.249Z"
 doc_updated_by: "DOCS"
 description: "Update documentation to reflect current behavior: --json-errors controls JSON error output, while --json remains help-output only; remove contradictory wording."
@@ -69,15 +69,13 @@ In scope: docs/developer/cli-contract.mdx and any other current docs that state 
 
 1) Find all contradictory docs references for global JSON error flag. 2) Rewrite contract text/examples to use --json-errors. 3) Keep help JSON docs unchanged where --json is correct for help output.
 
-## Risks
+## Verify Steps
 
-Risk: missing one stale reference. Mitigation: grep scan across docs and README after edits.
+- rg -n "--json-errors|--json" docs README.md packages/agentplane/README.md
+- bun run lint
+- bun run test:fast
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T07:40:47.962Z — VERIFY — ok
@@ -94,8 +92,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T07:39:03.566Z, excerpt_
 
 Revert the docs commit for this task.
 
-## Verify Steps
+## Findings
 
-- rg -n "--json-errors|--json" docs README.md packages/agentplane/README.md
-- bun run lint
-- bun run test:fast
+
+## Risks
+
+Risk: missing one stale reference. Mitigation: grep scan across docs and README after edits.

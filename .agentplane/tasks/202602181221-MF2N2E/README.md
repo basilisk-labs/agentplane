@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: design compliance checker is active and integrated into docs site check pipeline."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:07:41.908Z"
 doc_updated_by: "TESTER"
 description: "Create automated checks that fail when forbidden style patterns violate DESIGN.md hard rules."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -79,11 +76,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

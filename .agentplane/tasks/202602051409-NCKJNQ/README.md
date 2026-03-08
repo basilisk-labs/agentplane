@@ -29,7 +29,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: ROADMAP.md updated with Epic G/AP-060 DONE lines and task IDs for 2026-02-05."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:10:56.334Z"
 doc_updated_by: "DOCS"
 description: "Mark Epic G and AP-060 as DONE in ROADMAP.md."
@@ -43,9 +43,8 @@ Update ROADMAP.md to mark Epic G and AP-060 as DONE with dates and task IDs.
 
 Edit ROADMAP.md status lines for Epic G/AP-060.
 
-## Risks
+## Plan
 
-Low risk; ensure dates and task IDs match completed work.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Low risk; ensure dates and task IDs match completed work.
 
 Verified on 2026-02-05: ROADMAP.md updated with Epic G/AP-060 DONE status lines.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert ROADMAP.md status lines for Epic G/AP-060.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Low risk; ensure dates and task IDs match completed work.

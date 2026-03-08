@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: task Y1YVDB is DONE, metadata committed, and README sections are complete."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-04T06:09:23.749Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Inspect task 202602031824-Y1YVDB artifacts, update required sections, finish the task, and commit task metadata."
@@ -42,20 +42,26 @@ Reviewed task 202602031824-Y1YVDB, filled required README sections, finished the
 
 Updated task documentation, executed `agentplane finish`, and committed updated task metadata.
 
-## Risks
+## Plan
 
-If commit references were wrong, task metadata could be inconsistent; no product code changes were made.
 
 ## Verify Steps
 
 1. Run `node packages/agentplane/bin/agentplane.js task show 202602031824-Y1YVDB` and confirm status DONE with commit set.
 2. Run `git log -1 --oneline` and confirm recent task metadata commit.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commits that update `.agentplane/tasks.json` and task README files.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+If commit references were wrong, task metadata could be inconsistent; no product code changes were made.

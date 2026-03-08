@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: manual review | details: tests not run (suggest bun test packages/agentplane/src/run-cli.test.ts)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:18.123Z"
 doc_updated_by: "agentplane"
 description: "Apply installed recipes to project: copy agents, register scenarios, store assets, and handle name conflicts deterministically."
@@ -44,19 +44,25 @@ Apply recipe agents/scenarios during install, with deterministic conflict handli
 
 - Apply recipe agents into .agentplane/agents with namespacing\n- Add --on-conflict handling for install (fail/rename/overwrite)\n- Register recipe scenarios metadata\n- Update CLI help/docs and tests
 
-## Risks
+## Plan
 
-- Existing recipes without valid agent files will now fail install\n- Scenario registry format may need adjustments in AP-036
 
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the AP-035 commits to restore prior recipe install behavior
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Existing recipes without valid agent files will now fail install\n- Scenario registry format may need adjustments in AP-036

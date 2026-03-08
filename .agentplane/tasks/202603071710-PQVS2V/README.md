@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release apply now fails in an immutable preflight stage when the version is burned in npm, the remote tag already exists, the remote is missing, or package versions drift away from the planned baseline."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T19:20:28.768Z"
 doc_updated_by: "CODER"
 description: "Fail release preflight early on burned npm versions, tag/version drift, and missing publish preconditions before release apply mutates local state."
@@ -72,11 +72,6 @@ Fail release preflight early on burned npm versions, tag/version drift, and miss
 
 1. Audit the current release preflight order around dirty tree, local tags, npm version availability, and publish gate failures to isolate which cases can still slip past before local mutations begin. 2. Refactor release apply so burned npm versions, tag/version drift, and other publish preconditions fail in an immutable preflight stage before any version bump, generated-file refresh, commit, or tag creation. 3. Add regression tests for burned-version and partial-release edge cases, then rerun targeted release, lint, and build checks.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -90,10 +85,6 @@ Fail release preflight early on burned npm versions, tag/version drift, and miss
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T19:20:27.231Z — VERIFY — ok
@@ -110,3 +101,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T19:10:48.522Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

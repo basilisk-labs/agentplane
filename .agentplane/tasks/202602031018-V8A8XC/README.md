@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run format:check, bun run lint, bun run test:fast (all passed)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:52.216Z"
 doc_updated_by: "agentplane"
 description: "State that git hooks are required quality gates and ensure repo passes hook checks; run quality commands and fix any failures."
@@ -44,19 +44,25 @@ Normalized task doc sections (dedupe).
 
 Update developer docs to require hooks; run hook checks (format, lint, test-fast) and fix failures.
 
-## Risks
+## Plan
 
-Formatting/lint fixes may touch additional files if hooks surface unrelated issues.
 
 ## Verify Steps
 
 bun run format:check\nbun run lint\nbun run test:fast
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert docs/developer/testing-and-quality.mdx and docs/developer/code-quality.mdx, then rerun hook checks.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Formatting/lint fixes may touch additional files if hooks surface unrelated issues.

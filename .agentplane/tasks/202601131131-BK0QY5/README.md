@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: not run (spec-only updates); no executable changes or tests required in this task."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:44.208Z"
 doc_updated_by: "agentplane"
 description: "Revise ORCHESTRATOR/PLANNER specs and AGENTS.md to treat each request as a top-level plan, then prompt the user to create one or more tasks instead of maintaining docs/ROADMAP.md."
@@ -45,19 +45,25 @@ User prefers a top-level plan per request and a prompt to create one or more tas
 
 Update AGENTS.md and ORCHESTRATOR/PLANNER JSON workflows to remove roadmap steps and require a post-plan task-creation prompt.
 
-## Risks
+## Plan
 
-Low risk; aligns agent expectations but must stay consistent across AGENTS.md and agent JSON.
 
 ## Verify Steps
 
 No tests (spec changes only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit to restore the prior roadmap workflow.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; aligns agent expectations but must stay consistent across AGENTS.md and agent JSON.

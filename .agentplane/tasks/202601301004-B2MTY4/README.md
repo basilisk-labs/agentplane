@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: bun run test | details: packages/agentplane/src/run-cli.test.ts"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:25.684Z"
 doc_updated_by: "agentplane"
 description: "Align agentplane commit/guard flags with agentctl (allow-tasks, require-clean, quiet; guard commit parity)."
@@ -45,19 +45,25 @@ Align guard/commit flags with agentctl (auto-allow, allow-dirty, quiet), add gua
 
 Add guard clean --quiet, guard commit --auto-allow/--allow-dirty, guard suggest-allow empty check, update help text and run-cli tests.
 
-## Risks
+## Plan
 
-Guard flags now accept extra options; output changes for guard clean could affect scripts relying on empty stdout.
 
 ## Verify Steps
 
 bun run test -- packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 git revert <commit>
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Guard flags now accept extra options; output changes for guard clean could affect scripts relying on empty stdout.

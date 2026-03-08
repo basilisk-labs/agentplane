@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ran bun run lint, bun run test:fast, and agentplane hooks run pre-commit; task ids now generated via core crypto helper."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T13:45:49.396Z"
 doc_updated_by: "CODER"
 description: "Add crypto-based generateTaskId in core and replace Math.random/crypto.randomInt variants across codebase; add tests."
@@ -44,9 +44,8 @@ Unified task id generation in core using crypto-based generator and reused in ta
 
 Core: add task-id module, export generateTaskId and alphabet. Core: update task-store to use generateTaskId. Agentplane: update task-backend and workflow to use core functions. Tests: adjust task-store collision tests.
 
-## Risks
+## Plan
 
-ID generator behavior changes (crypto-based). Ensure collision handling and deterministic test coverage.
 
 ## Verify Steps
 
@@ -134,8 +133,16 @@ Installed recipe viewer@1.2.3
 [2m   Start at [22m 20:35:50
 [2m   Duration [22m 2.07s[2m (transform 1.62s, setup 0ms, import 4.00s, tests 4.05s, environment 2ms)[22m, .
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert core task-id module and restore prior per-backend/task-store ID generation.
 
-## Plan
+## Findings
+
+
+## Risks
+
+ID generator behavior changes (crypto-based). Ensure collision handling and deterministic test coverage.

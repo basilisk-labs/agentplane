@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: state/cause/action diagnostics now render consistently across doctor, upgrade, release apply, and deterministic close-commit failures."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T19:09:26.774Z"
 doc_updated_by: "CODER"
 description: "Refactor key doctor, upgrade, finish, and release diagnostics to report detected state, likely cause, and exact recovery action."
@@ -72,11 +72,6 @@ Refactor key doctor, upgrade, finish, and release diagnostics to report detected
 
 1. Define a shared diagnostic shape that reports detected state, likely cause, and exact next action, then apply it to the most user-facing failure paths. 2. Refactor doctor, upgrade, finish, and release diagnostics so each high-friction message explains the state first and points to one concrete recovery command. 3. Add focused regression tests plus docs/help updates to keep the new diagnostic shape stable across CLI surfaces.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -93,10 +88,6 @@ Refactor key doctor, upgrade, finish, and release diagnostics to report detected
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T19:09:25.223Z — VERIFY — ok
 
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T18:55:22.856Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

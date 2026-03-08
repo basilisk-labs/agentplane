@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: startup-surface drift is now enforced by a dedicated check that compares AGENTS command blocks, the generated bootstrap doc, and CLI startup help surfaces."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T14:55:47.765Z"
 doc_updated_by: "TESTER"
 description: "Add an automated consistency check so AGENTS.md, quickstart, role output, and bootstrap docs cannot silently diverge."
@@ -70,19 +70,11 @@ Create a check that fails when canonical startup commands or references diverge 
 
 1. Add a check script. 2. Add tests or CI wiring. 3. Make the failure actionable and low-noise.
 
-## Risks
-
-A weak drift check adds maintenance cost without catching real divergence; an over-strict one may become flaky.
-
 ## Verify Steps
 
 1. Run the new drift check. 2. Run relevant CLI/doc tests. 3. Confirm failure text names the mismatching surface.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T14:55:47.545Z — VERIFY — ok
@@ -98,3 +90,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:55:47.325Z, excerpt_
 ## Rollback Plan
 
 Remove or loosen the new check if it produces false positives or cannot run in standard repo verification.
+
+## Findings
+
+
+## Risks
+
+A weak drift check adds maintenance cost without catching real divergence; an over-strict one may become flaky.

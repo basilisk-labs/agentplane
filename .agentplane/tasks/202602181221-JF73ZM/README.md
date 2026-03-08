@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Docusaurus docs now source from root docs directory and canonical documentation map is preserved."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:07:41.237Z"
 doc_updated_by: "DOCS"
 description: "Move and adapt current docs content into Docusaurus docs/, define sidebar and navigation IA for /docs."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -77,11 +74,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

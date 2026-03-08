@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: persisted the post-v0.3.2 roadmap task docs, committed the dependency chain for the next release, and opened CJMQZT as the first active P0 task."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T17:39:06.804Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Persist the README artifacts for the existing post-v0.3.2 roadmap tasks, wire their dependencies in the intended P0/P1/P2 order, and leave the repository ready to start the first next-release implementation task."
@@ -71,11 +71,6 @@ Persist the README artifacts for the existing post-v0.3.2 roadmap tasks, wire th
 
 1. Persist the README artifacts for the eleven existing post-v0.3.2 roadmap tasks so the next cycle has committed task docs. 2. Wire dependencies into a single execution chain: CJMQZT -> A2MHWZ -> 13WJ52 -> PQVS2V -> ZCVMEZ -> W5BWB6 -> EKJZW1 -> Y4YT4P -> WPX3DP -> 31BQ6E -> HRBXMA. 3. Start the first P0 task after the roadmap commit so the next release preparation is actively underway.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -89,10 +84,6 @@ Persist the README artifacts for the existing post-v0.3.2 roadmap tasks, wire th
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T17:39:02.209Z — VERIFY — ok
@@ -109,3 +100,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T17:37:13.836Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

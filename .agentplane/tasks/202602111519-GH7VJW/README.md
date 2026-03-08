@@ -55,7 +55,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: All network policy gates now honor execution escalation, including update-check behavior under conservative profile, with explicit --allow-network override preserved."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T15:48:35.938Z"
 doc_updated_by: "CODER"
 description: "Route network checks through unified approval helper so conservative requires approval even when require_network=false."
@@ -65,6 +65,10 @@ id_source: "generated"
 
 Ensure network approval checks honor execution escalation consistently, including optional update-check gating.
 
+## Context
+
+ensureNetworkApproved now evaluates effective approvals, but update-check gating in run-cli still reads raw require_network and ignores conservative escalation.
+
 ## Scope
 
 In scope: run-cli update-check policy gating and regression tests for conservative profile behavior. Out of scope: non-network force approvals (handled in T4).
@@ -73,19 +77,11 @@ In scope: run-cli update-check policy gating and regression tests for conservati
 
 1) Switch update-check gating to effective approvals (execution + approvals). 2) Add/adjust tests to prove conservative profile blocks update-check without explicit allow. 3) Run CLI/core tests and builds.
 
-## Risks
-
-Risk: changing update-check behavior for users with custom execution profile. Mitigation: preserve opt-in semantics through --allow-network and add targeted tests.
-
 ## Verify Steps
 
 Run: bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.test.ts ; bun run test:agentplane -- packages/agentplane/src/commands/shared/network-approval.test.ts ; bun run lint ; bun run --filter=@agentplaneorg/core build ; bun run --filter=agentplane build
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T15:48:00.209Z — VERIFY — ok
@@ -102,11 +98,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T15:46:42.765Z, excerpt_
 
 Revert this task commit to restore prior update-check gating logic and rerun CLI tests.
 
-## Context
-
-ensureNetworkApproved now evaluates effective approvals, but update-check gating in run-cli still reads raw require_network and ignores conservative escalation.
-
-## Notes
+## Findings
 
 ### Decisions
 Use effective approvals computed from execution profile for all network gating decisions.
+
+## Risks
+
+Risk: changing update-check behavior for users with custom execution profile. Mitigation: preserve opt-in semantics through --allow-network and add targeted tests.

@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run format:check, bun run lint, bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T17:15:46.745Z"
 doc_updated_by: "CODER"
 description: "Replace tar-based archive validation that shells out to system tar with a small JS tar.gz parser (gunzip + tar header scan) to make unsafe-entry validation deterministic in CI."
@@ -62,18 +62,24 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
-- Risk: tar parser bugs (false negatives/positives). Mitigation: strict ustar parsing, stop on zero blocks, unit coverage via existing unsafe-archive tests.\n- Risk: large archives (memory). Mitigation: current use-case is small recipe bundles; can stream later if needed.
+- bun run format:check\n- bun run lint\n- bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts --hookTimeout 60000 --testTimeout 60000
 
 ## Verification
 
 - bun run format:check: OK\n- bun run lint: OK\n- bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts: OK
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the change commit to restore system tar-based validation.
 
-## Verify Steps
+## Findings
 
-- bun run format:check\n- bun run lint\n- bun x vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts --hookTimeout 60000 --testTimeout 60000
+
+## Risks
+
+- Risk: tar parser bugs (false negatives/positives). Mitigation: strict ustar parsing, stop on zero blocks, unit coverage via existing unsafe-archive tests.\n- Risk: large archives (memory). Mitigation: current use-case is small recipe bundles; can stream later if needed.

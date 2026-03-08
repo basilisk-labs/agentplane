@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: added repo-level vitest regression guards to prevent legacy CLI parsing/usage drift (parse*Flags, exported *_USAGE, usageMessage, process.argv) under packages/agentplane/src/commands; lint+typecheck+tests are green and rg assertions are clean."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T12:21:31.762Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add tests that fail on parse*Flags, *_USAGE constants, or legacy argv entrypoints under commands; prevent regressions."
@@ -46,29 +46,6 @@ id_source: "generated"
 ## Plan
 
 Add enforcement tests: fail on any reintroduced parse*Flags, *_USAGE constants, or legacy argv entrypoints; ensure tests are deterministic and low-noise.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T12:20:31.297Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: added vitest regression guard packages/agentplane/src/cli/legacy-cli-regressions.test.ts to prevent legacy parse*Flags/usageMessage/process.argv or exported *_USAGE constants under commands/; ran typecheck, lint, and test:fast; rg assertions are clean.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:19:00.612Z, excerpt_hash=sha256:00816f2ff834f5fd94be9ce9f0959f73bb38061fd373d803f7b7823bd6f5f743
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -85,3 +62,24 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:19:00.612Z, excerpt_
 ### Pass criteria
 - All commands succeed.
 - The assertions are satisfied.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T12:20:31.297Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: added vitest regression guard packages/agentplane/src/cli/legacy-cli-regressions.test.ts to prevent legacy parse*Flags/usageMessage/process.argv or exported *_USAGE constants under commands/; ran typecheck, lint, and test:fast; rg assertions are clean.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:19:00.612Z, excerpt_hash=sha256:00816f2ff834f5fd94be9ce9f0959f73bb38061fd373d803f7b7823bd6f5f743
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

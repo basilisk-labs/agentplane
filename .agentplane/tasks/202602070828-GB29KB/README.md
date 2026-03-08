@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: packages/agentplane/assets/AGENTS.md required task doc sections now match config tasks.doc.required_sections; agentplane task lint OK."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T08:32:07.710Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "packages/agentplane/assets/AGENTS.md is used as the framework install/init template and currently diverges from tasks.doc.required_sections. Update the required task doc sections list to match config 1:1."
@@ -67,15 +67,15 @@ Align the install/init AGENTS.md asset required task doc sections list with conf
 
 1) Update packages/agentplane/assets/AGENTS.md required task doc sections list to match tasks.doc.required_sections.\n2) Run agentplane task lint.\n3) Record verification OK.\n4) Commit via agentplane and finish the task.
 
-## Risks
+## Verify Steps
 
-Low risk; main risk is leaving the asset inconsistent with root AGENTS.md or config again.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T08:29:16.351Z — VERIFY — ok
@@ -87,3 +87,11 @@ Note: Updated packages/agentplane/assets/AGENTS.md required sections list to mat
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks
+
+Low risk; main risk is leaving the asset inconsistent with root AGENTS.md or config again.

@@ -56,7 +56,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: all requested init improvements are implemented and validated end-to-end"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T11:04:20.384Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Track requested init improvements: new logo/colors, spacing, clean tree, and single selected backend installation."
@@ -73,10 +73,6 @@ In scope: ZNST44, C11PDM, C91953, AMKJAS. Out of scope: non-init commands.
 ## Plan
 
 1) Deliver requested UI/logo/spacing. 2) Fix backend-only installation. 3) Fix post-init clean tree. 4) Validate with tests/manual checks.
-
-## Risks
-
-Residual risk is visual rendering differences across terminals; functional behavior is covered by tests.
 
 ## Verify Steps
 
@@ -105,3 +101,10 @@ Downstream tasks completed and validated; no tracked changes remain except task 
 ## Rollback Plan
 
 Revert task commits 35e00dc, 16e1fcc, 4469662, 0bd4b86 in reverse order if rollback is needed.
+
+## Findings
+
+
+## Risks
+
+Residual risk is visual rendering differences across terminals; functional behavior is covered by tests.

@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run test:agentplane; JSON error schema now matches cli-contract exactly (no extra keys)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T05:39:12.383Z"
 doc_updated_by: "CODER"
 description: "Define stable --json error format; update docs and tests; no backward compatibility."
@@ -45,19 +45,25 @@ Define the canonical --json error format, update docs and code, and enforce via 
 
 Update JSON error formatting to match contract, revise cli-contract docs, and add strict tests for required fields.
 
-## Risks
+## Plan
 
-Risk: downstream tooling relying on extra JSON keys may break; mitigated by explicit contract update and tests.
 
 ## Verify Steps
 
 Run errors JSON tests; confirm exact keys and types; ensure docs and runtime output match.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit for this task; restore previous JSON error format if integrations require it.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: downstream tooling relying on extra JSON keys may break; mitigated by explicit contract update and tests.

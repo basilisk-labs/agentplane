@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: conflict-safe init with --force/--backup and tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:14.786Z"
 doc_updated_by: "agentplane"
 description: "Add init conflict handling: default no-overwrite, --force overwrite, --backup with timestamp, and explicit conflict listing."
@@ -44,19 +44,25 @@ Add conflict-safe init handling: detect conflicts, list them, and support --forc
 
 - Extend init flags with --force and --backup and update usage/help text.\n- Detect init file/dir conflicts and list them before writing.\n- Implement overwrite (force) and timestamped backups (backup) with tests.
 
-## Risks
+## Plan
 
-- Force mode can overwrite user files if invoked in a dirty workspace.\n- Backup naming collisions could hide earlier backups; suffixing with a random token mitigates this.
 
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the task commit(s) and restore previous init behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Force mode can overwrite user files if invoked in a dirty workspace.\n- Backup naming collisions could hide earlier backups; suffixing with a random token mitigates this.

@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: doctor checks now live in dedicated modules and doctor.run is reduced to command orchestration while preserving existing diagnostics behavior."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T05:47:37.023Z"
 doc_updated_by: "CODER"
 description: "Split doctor.run into isolated workspace, runtime, workflow, and historical-archive check modules without changing current diagnostics semantics."
@@ -71,11 +71,6 @@ Split doctor.run into isolated workspace, runtime, workflow, and historical-arch
 
 1. Extract doctor historical archive checks into a dedicated helper module with typed findings and severity-aware summaries. 2. Extract runtime/workspace/workflow aggregation boundaries from doctor.run so the command becomes an orchestrator instead of a monolith. 3. Preserve current CLI behavior and diagnostics text where practical, then run targeted doctor tests, lint, build, and doctor itself.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -92,10 +87,6 @@ Split doctor.run into isolated workspace, runtime, workflow, and historical-arch
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T05:46:12.154Z — VERIFY — ok
 
@@ -111,3 +102,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T05:40:41.825Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

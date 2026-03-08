@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Added a contract test ensuring every registered command renders compact help successfully and required string options appear in usage."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T17:27:42.023Z"
 doc_updated_by: "TESTER"
 description: "Add a contract test that runs 'agentplane help <command...> --compact' for every registered command spec and asserts output basics (Usage line, no placeholders). Fix any spec/help issues found."
@@ -61,6 +61,10 @@ id_source: "generated"
 ## Summary
 
 Add a per-command help contract test to prevent silent help regressions across the command catalog.
+
+## Context
+
+Help output is spec-generated and can regress when commands/options change. We want an automated, non-snapshot guard that ensures every command's help renders successfully and includes essential fields.
 
 ## Scope
 
@@ -74,15 +78,12 @@ In scope: CLI help rendering and registry wiring tests under packages/agentplane
 4) Fix any failing specs/tests.
 5) Verify with bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-Risk: Tight assertions may become noisy if help format legitimately changes. Mitigation: keep the contract minimal (no snapshots).
+- bun run lint
+- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T17:27:36.361Z — VERIFY — ok
@@ -99,11 +100,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T17:26:16.424Z, excerpt_
 
 Revert the added contract test and any spec/help adjustments in this task.
 
-## Context
+## Findings
 
-Help output is spec-generated and can regress when commands/options change. We want an automated, non-snapshot guard that ensures every command's help renders successfully and includes essential fields.
 
-## Verify Steps
+## Risks
 
-- bun run lint
-- bun run test:full
+Risk: Tight assertions may become noisy if help format legitimately changes. Mitigation: keep the contract minimal (no snapshots).

@@ -30,7 +30,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: ROADMAP.md restored to the canonical Node.js migration roadmap (v1 constraints, milestones, AP-001..AP-044)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:04.277Z"
 doc_updated_by: "agentplane"
 description: "Commit the corrected ROADMAP.md version and keep it as the canonical Node.js migration plan."
@@ -44,19 +44,25 @@ Commit the corrected ROADMAP.md and keep it as the canonical Node.js migration p
 - Stage and commit ROADMAP.md corrections.
 - Ensure the roadmap remains consistent with the Node.js v1 constraints (offline-first, .agentplane, explicit network commands).
 
-## Risks
+## Plan
 
-- ROADMAP churn: frequent rewrites can desync docs and implementation tasks.
 
 ## Verify Steps
 
 - Review ROADMAP.md for alignment with v1 constraints and milestone ordering.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the ROADMAP.md commit.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- ROADMAP churn: frequent rewrites can desync docs and implementation tasks.

@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: doc-only analysis | details: no tests required for this task."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:45.392Z"
 doc_updated_by: "agentplane"
 description: "Review repo configs and agent guidance to propose settings that belong in config.json and how agentctl should toggle them."
@@ -48,20 +48,23 @@ AGENTS.md currently embeds default_agent/shared_state and runtime expectations (
 - Recommend which belong in config.json vs remain in AGENTS.md.
 - Suggest agentctl config keys and example set commands for the approved candidates.
 
-## Risks
+## Plan
 
-- Moving behavioral rules from AGENTS.md into config risks inconsistency between docs and runtime.
-- Settings that the CLI/agentctl cannot enforce may give a false sense of safety if exposed as config.
 
 ## Verify Steps
 
 Doc-only change: review task README for completeness and accuracy (no tests run).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the task README updates; no code or runtime changes.
 
-## Notes
+## Findings
 
 Candidates to promote into config.json (agent-facing):
 - agents.default_agent (string): mirrors AGENTS.md default_agent; used by agentctl/CLI when an agent id is omitted.
@@ -87,7 +90,7 @@ Optional non-agent config candidates (CLI/runtime constants to reduce hardcoding
 
 Recommendation: only promote settings that agentctl or wrapper tooling can honor without violating the “core minimum” principle.
 
-## Plan
+## Risks
 
-
-## Verification
+- Moving behavioral rules from AGENTS.md into config risks inconsistency between docs and runtime.
+- Settings that the CLI/agentctl cannot enforce may give a false sense of safety if exposed as config.

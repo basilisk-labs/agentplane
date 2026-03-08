@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: 202603071639-4MWWFW is a bookkeeping duplicate of 202603071647-M0Q79C (Detect framework checkout and prefer repo-local agentplane); no code/config changes are expected in this task and closure is recorded as no-op.\n\nReason: Superseded by the decomposed repo-local handoff task graph after the exploratory wrapper analysis was interrupted before implementation."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T16:47:27.089Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "When agentplane from PATH is launched inside the framework repository checkout, route execution through the repo-local binary instead of continuing with the global install warning path."
@@ -67,11 +67,6 @@ When agentplane from PATH is launched inside the framework repository checkout, 
 
 1. Inspect the global bin wrapper and decide the exact repo-checkout detection plus handoff conditions for switching to the repo-local binary. 2. Implement a safe handoff so PATH-launched agentplane inside this framework checkout executes the local binary while preserving stale-build protection and recursion guards. 3. Add regression tests for repo-local handoff behavior, update docs/help text if startup guidance changes, then run targeted CLI and bin checks.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -88,10 +83,6 @@ When agentplane from PATH is launched inside the framework repository checkout, 
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
@@ -99,3 +90,11 @@ When agentplane from PATH is launched inside the framework repository checkout, 
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: tasks/workflow artifact added; clean.sh already includes interactive mode selection + prompt scrubbing."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:29.684Z"
 doc_updated_by: "agentplane"
 description: "Record the clean.sh interactive workflow_mode selection + prompt scrubbing feature in tasks.json and add the per-task workflow README artifact."
@@ -39,16 +39,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

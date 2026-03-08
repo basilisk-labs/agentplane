@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated tasks/backends docs to use current  and  commands and removed legacy examples."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:25:52.311Z"
 doc_updated_by: "DOCS"
 description: "Update tasks/backends docs (local/redmine, exports, canonical source) to match current backend model and commands."
@@ -55,6 +55,10 @@ id_source: "generated"
 
 Update tasks/backends documentation to match current backend commands (backend sync) and export semantics.
 
+## Context
+
+Docs currently reference legacy sync/export commands that no longer match the CLI (, ). The user guide must reflect  and .agentplane/tasks.json.
+
 ## Scope
 
 In-scope: docs/user/tasks-and-backends.mdx, docs/user/backends.mdx, docs/user/backends/local.mdx, docs/user/backends/redmine.mdx. Out-of-scope: redmine top-level guide page (handled later).
@@ -63,19 +67,11 @@ In-scope: docs/user/tasks-and-backends.mdx, docs/user/backends.mdx, docs/user/ba
 
 1. Replace legacy sync commands with  in user docs.\n2. Replace legacy export wording with .agentplane/tasks.json.\n3. Ensure conflict policy terms and network gating notes remain accurate.
 
-## Risks
-
-Risk: docs suggest non-existent commands, causing immediate onboarding failures. Mitigation: validate against `agentplane help backend sync --compact` and `agentplane help task export --compact`.
-
 ## Verify Steps
 
 - Confirm no occurrences of  or  remain in these pages.\n- Confirm examples match CLI help for  and .
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
@@ -84,6 +80,9 @@ Risk: docs suggest non-existent commands, causing immediate onboarding failures.
 
 Revert the commits for this task to restore prior backend docs.
 
-## Context
+## Findings
 
-Docs currently reference legacy sync/export commands that no longer match the CLI (, ). The user guide must reflect  and .agentplane/tasks.json.
+
+## Risks
+
+Risk: docs suggest non-existent commands, causing immediate onboarding failures. Mitigation: validate against `agentplane help backend sync --compact` and `agentplane help task export --compact`.

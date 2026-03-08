@@ -32,7 +32,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: py_compile agentctl/redmine; task lint clean after verify backfill; added verify/doc gates and safer sync."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:38.093Z"
 doc_updated_by: "agentplane"
 description: "Change owner=AUTOMATION tasks to a real agent (CODER) and adjust README/docs to guide first-time users vs full docs."
@@ -52,21 +52,27 @@ Lint warnings came from owner=AUTOMATION; docs needed clearer split between newc
 - Refresh root README for first-time quickstart emphasis and point to docs/README.md for the full guide.
 - Update docs/README.md to clarify it is the full reference.
 
-## Risks
+## Plan
 
-- Bulk owner changes touch many files; must avoid altering other metadata.
-- README simplification should not hide links to full docs.
 
 ## Verify Steps
 
 - python -m py_compile .agent-plane/backends/redmine/backend.py
 - python .agent-plane/agentctl.py task lint
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the owner changes and README/docs edits.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Bulk owner changes touch many files; must avoid altering other metadata.
+- README simplification should not hide links to full docs.

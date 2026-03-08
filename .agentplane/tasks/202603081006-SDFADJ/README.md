@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: task migrate-doc now upgrades legacy README v2 tasks into README v3, promotes Notes into Findings, preserves extra sections, and keeps existing v3 files compatible while normalizing required metadata."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T11:21:57.863Z"
 doc_updated_by: "CODER"
 description: "Add explicit migration from legacy task README v2 to the new v3 format, including dry-run and stable normalization rules."
@@ -74,20 +74,11 @@ Add explicit migration from legacy task README v2 to the new v3 format, includin
 
 1. Extend task migrate-doc so legacy README v2 tasks are upgraded to doc_version=3 with Findings, v3 section ordering, and normalized Verification while preserving existing content. 2. Add migration coverage for single-task, --all, and dry-run/idempotent paths so old projects can be normalized without manual README surgery. 3. Run targeted migrate-doc/lifecycle checks plus build and doctor, then verify, finish, and push main.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Migrate a README v2 task with Notes and legacy Verification. Expected: output is doc_version=3 with Findings, preserved content, and a results-only Verification block. 2. Run task migrate-doc on repeated or bulk inputs. Expected: migration is idempotent, supports --all, and does not rewrite already-normalized tasks unexpectedly. 3. Run targeted migrate-doc tests, builds, and doctor. Expected: legacy-to-v3 migration passes without breaking current task lifecycle behavior.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T11:21:37.600Z — VERIFY — ok
@@ -104,3 +95,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T11:17:07.896Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

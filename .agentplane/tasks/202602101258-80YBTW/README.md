@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Agent profiles no longer require timestamps in notes; AGENTS.md clarifies timestamps live in updated_at fields."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T13:06:55.446Z"
 doc_updated_by: "CODER"
 description: "Remove timestamp-in-note rules from agent JSON profiles (assets + installed) and add canonical rule to AGENTS.md about updated_at."
@@ -63,6 +63,10 @@ id_source: "generated"
 
 Remove agent-profile instructions that require humans to include timestamps in notes; document canonical timestamp location in AGENTS.md.
 
+## Context
+
+Task notes already capture timestamps via updated_at fields and verify records. Requiring manual timestamps increases noise and inconsistency.
+
 ## Scope
 
 In scope: packages/agentplane/assets/agents/*.json; .agentplane/agents/*.json; packages/agentplane/assets/AGENTS.md. Out of scope: CLI behavior changes.
@@ -71,19 +75,11 @@ In scope: packages/agentplane/assets/agents/*.json; .agentplane/agents/*.json; p
 
 1. Find and remove workflow lines requiring ISO timestamps in plan approval/verification notes from all agent profiles (assets + installed). 2. Add one canonical rule to AGENTS.md explaining that timestamps live in updated_at and should not be duplicated in note unless explicitly required. 3. Run agents-template tests and lint.
 
-## Risks
-
-Risk: removing timestamp guidance could reduce traceability if no alternative exists. Mitigation: add canonical rule in AGENTS.md and keep structured verification records.
-
 ## Verify Steps
 
 Commands:\n- bun run test:agentplane -- agents template tests must pass\n- bun run lint\nPass criteria:\n- No agent profile JSON contains timestamp-in-note requirements.\n- AGENTS.md documents canonical timestamp storage (updated_at).
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T13:06:21.315Z — VERIFY — ok
@@ -100,6 +96,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T13:03:01.764Z, excerpt_
 
 Revert edits to the modified agent JSON and AGENTS.md and re-run the same tests.
 
-## Context
+## Findings
 
-Task notes already capture timestamps via updated_at fields and verify records. Requiring manual timestamps increases noise and inconsistency.
+
+## Risks
+
+Risk: removing timestamp guidance could reduce traceability if no alternative exists. Mitigation: add canonical rule in AGENTS.md and keep structured verification records.

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: ORCHESTRATOR/PLANNER profiles now match AGENTS.md authority boundaries; agents-template tests passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T13:02:38.658Z"
 doc_updated_by: "CODER"
 description: "Align ORCHESTRATOR/PLANNER agent profiles with AGENTS.md authority boundaries; update both assets and installed .agentplane copies; run template/tests."
@@ -61,6 +61,10 @@ id_source: "generated"
 
 Normalize ORCHESTRATOR vs PLANNER authority boundaries in agent profiles (assets + installed .agentplane copies) so they do not conflict with AGENTS.md.
 
+## Context
+
+AGENTS.md is the canonical policy. Current ORCHESTRATOR.json and PLANNER.json profiles have drift that can mislead automation/humans and cause workflow violations.
+
 ## Scope
 
 In scope: packages/agentplane/assets/agents/ORCHESTRATOR.json; packages/agentplane/assets/agents/PLANNER.json; .agentplane/agents/ORCHESTRATOR.json; .agentplane/agents/PLANNER.json; any related tests under packages/agentplane/src. Out of scope: behavior changes to CLI commands.
@@ -69,19 +73,11 @@ In scope: packages/agentplane/assets/agents/ORCHESTRATOR.json; packages/agentpla
 
 1. Inspect current ORCHESTRATOR/PLANNER profiles in assets and installed copies. 2. Edit workflow text to match AGENTS.md: ORCHESTRATOR creates exactly one tracking task after overall plan approval; PLANNER creates downstream tasks; neither claims the other's authority. 3. Run focused tests: agents-template test and quick CLI help/regression if relevant.
 
-## Risks
-
-Risk: accidental semantic change to profile fields consumed by tooling. Mitigation: keep changes limited to workflow guidance text; run agents template tests.
-
 ## Verify Steps
 
 Commands:\n- bun run test:agentplane -- agents template tests must pass\n- bun run lint\nPass criteria:\n- ORCHESTRATOR/PLANNER profiles contain no statements contradicting AGENTS.md authority boundaries.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T13:01:34.968Z — VERIFY — ok
@@ -98,6 +94,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T12:59:37.034Z, excerpt_
 
 Revert the profile JSON edits (git checkout of the modified files) and re-run the same tests.
 
-## Context
+## Findings
 
-AGENTS.md is the canonical policy. Current ORCHESTRATOR.json and PLANNER.json profiles have drift that can mislead automation/humans and cause workflow violations.
+
+## Risks
+
+Risk: accidental semantic change to profile fields consumed by tooling. Mitigation: keep changes limited to workflow guidance text; run agents template tests.

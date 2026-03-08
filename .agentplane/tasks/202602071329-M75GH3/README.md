@@ -34,7 +34,7 @@ comments:
     author: "TESTER"
     body: "Verified: regression coverage added for integrate commit subject compliance and PR meta base field (legacy base_branch removed). Full checks passed: format:check, lint, test:fast, test:cli:core. Source code text under packages/ and .agentplane/agents is English-only."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T16:07:48.215Z"
 doc_updated_by: "TESTER"
 description: "Smoke/regression: agents can write arbitrary code within the repo; guardrails (protected paths, commit subject, base branch, approvals) remain strict; traceability (task docs, start/verify/finish, commit allowlist) remains intact. Run vitest suites and add any missing coverage."
@@ -55,9 +55,13 @@ In scope: add/adjust tests for guard/hooks/policy parity and integrate commit/me
 3. Audit the codebase for non-English strings/comments in source files and convert them to English.
 4. Run format:check, lint, test:fast, and test:cli:core.
 
-## Risks
+## Verify Steps
 
-Risk: English-only sweeps may touch many files. Mitigation: restrict to source/test files and keep changes mechanical; rely on full lint/test runs.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -78,3 +82,10 @@ Note: Verified: format:check, lint, test:fast, and test:cli:core passed. Added r
 ## Rollback Plan
 
 Revert the regression/test commits from this task to restore the previous test suite and source text.
+
+## Findings
+
+
+## Risks
+
+Risk: English-only sweeps may touch many files. Mitigation: restrict to source/test files and keep changes mechanical; rely on full lint/test runs.

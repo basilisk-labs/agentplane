@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: contributor documentation now covers canonical docs/runtime boundaries, split CI contours, DESIGN.md guardrails, blog rules, and discovery artifacts."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:09:02.193Z"
 doc_updated_by: "DOCS"
 description: "Update CONTRIBUTING with docs/core CI trigger rules, local commands, and DESIGN.md compliance policy."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -77,11 +74,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

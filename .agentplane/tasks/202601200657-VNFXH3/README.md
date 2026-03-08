@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: added QA plan, release checklist, and docs scaffold recipes | details: inventory refreshed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:58.948Z"
 doc_updated_by: "agentplane"
 description: "Move QA/test planning, release checklists, and docs scaffolding into recipes; keep core limited to agent/task runtime."
@@ -40,19 +40,25 @@ description: "Move QA/test planning, release checklists, and docs scaffolding in
 
 - Create recipes for QA/test planning, release checklists, and docs scaffolding.\n- Update the recipes inventory for discovery.
 
-## Risks
+## Plan
 
-- Recipes may need iteration if workflows change or require automation.\n- Docs scaffolding could conflict with existing files if users ignore prompts.
 
 ## Verify Steps
 
 - python .agent-plane/recipes.py scan --recipes-dir .agent-plane/recipes --output docs/recipes-inventory.json
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the new recipe folders and inventory update.\n- Remove the recipes from docs/recipes-inventory.json.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Recipes may need iteration if workflows change or require automation.\n- Docs scaffolding could conflict with existing files if users ignore prompts.

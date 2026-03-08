@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Confirmed current codebase already contains the intended change; no additional implementation required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:09:15.832Z"
 doc_updated_by: "CODER"
 description: "Move buildHelpFastRegistry and buildRegistry into separate modules and adjust runCli imports to avoid statically importing all handlers in the help path."
@@ -73,11 +73,6 @@ packages/agentplane/src/cli/run-cli.ts
 1. Вынести help и run registry в отдельные модули без общего файла с импортами хендлеров.
 2. В run-cli.ts импортировать help registry только в help-ветке (предпочтительно через import()).
 3. Прогнать cli-smoke и help снапшоты.
-
-## Risks
-
-Риск: изменение времени/порядка импортов может вскрыть циклы.
-Митигация: incremental changes + test:full.
 
 ## Verify Steps
 
@@ -103,3 +98,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:09:15.313Z, excerpt_
 ## Rollback Plan
 
 git revert соответствующего коммита, затем bun run test:full.
+
+## Findings
+
+
+## Risks
+
+Риск: изменение времени/порядка импортов может вскрыть циклы.
+Митигация: incremental changes + test:full.

@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: remove umbrella mentions in AGENTS.md; update ORCHESTRATOR/PLANNER specs; doc-only change; no tests run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:47.601Z"
 doc_updated_by: "agentplane"
 description: "Remove umbrella task mentions and rephrase instructions so the orchestrator forms a top-level plan."
@@ -47,26 +47,29 @@ description: "Remove umbrella task mentions and rephrase instructions so the orc
 - Update @.agent-plane/agents/ORCHESTRATOR.json outputs and workflow text.
 - Update @.agent-plane/agents/PLANNER.json outputs and workflow text.
 
-## Risks
+## Plan
 
-- Low risk: documentation-only changes.
 
 ## Verify Steps
 
 - No tests required (doc-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the commit that updates the agent specs and AGENTS.md.
 
-## Notes
+## Findings
 
 - None.
 
-## Plan
+## Risks
 
-
-## Verification
+- Low risk: documentation-only changes.
 
 ## Changes Summary (auto)
 

@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Added npm >= 11.5.1 requirement to trusted publishing docs in release-and-publishing.mdx."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:51.616Z"
 doc_updated_by: "agentplane"
 description: "Add documentation note that npm trusted publishing in GitHub Actions requires npm >= 11.5.1, and reference publish workflow expectations."
@@ -44,19 +44,25 @@ Normalized task doc sections (dedupe).
 
 Update release/publishing docs to include the npm version requirement for trusted publishing.
 
-## Risks
+## Plan
 
-Low risk; documentation-only change.
 
 ## Verify Steps
 
 Open docs/developer/release-and-publishing.mdx and confirm the trusted publishing section mentions npm >= 11.5.1.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the documentation line if it causes confusion or becomes outdated.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; documentation-only change.

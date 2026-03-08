@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: refactored the docs IA so index pages, Mintlify metadata, navbar, and sidebar all mirror the same workflow-oriented model."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T16:35:30.606Z"
 doc_updated_by: "DOCS"
 description: "Restructure site navigation around start, task work, upgrade, recovery, and release so the website mirrors the same agent-first model as CLI and gateway."
@@ -74,11 +74,6 @@ Restructure site navigation around start, task work, upgrade, recovery, and rele
 
 1. Audit current docs navigation and identify where start, task work, upgrade, recovery, and release live today. 2. Reorder docs IA and navbar/sidebar entry points to mirror the agent-first workflow. 3. Verify the website build and generated docs remain consistent after the IA rewrite.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -92,10 +87,6 @@ Restructure site navigation around start, task work, upgrade, recovery, and rele
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T16:35:30.356Z — VERIFY — ok
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:31:30.471Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

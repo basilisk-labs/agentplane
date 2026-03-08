@@ -28,7 +28,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ESLint now uses flat config in IDE; lint and test:fast passed to confirm no-unsafe warnings are resolved."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T17:18:07.448Z"
 doc_updated_by: "CODER"
 description: "Resolve remaining @typescript-eslint/no-unsafe-* warnings in workflow/config/recipes/run-cli/archive/task-backend paths; document ignored file warning."
@@ -42,9 +42,8 @@ Resolve remaining ESLint no-unsafe warnings in key modules and note ignored-file
 
 - Address no-unsafe-* ESLint warnings in workflow.ts, config.ts, archive.ts, recipes tests, run-cli recipes tests, task-backend/test.\n- Keep behavior unchanged; add explicit typing/casts where needed.\n- Note ignored-file ESLint warning for agentplane-recipes/scripts/sign-index.ts.
 
-## Risks
+## Plan
 
-- Type-only changes might hide real issues if misapplied.\n- Avoid behavior changes.
 
 ## Verify Steps
 
@@ -52,9 +51,16 @@ Resolve remaining ESLint no-unsafe warnings in key modules and note ignored-file
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 - Revert type annotations if they cause mismatches.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Type-only changes might hide real issues if misapplied.\n- Avoid behavior changes.

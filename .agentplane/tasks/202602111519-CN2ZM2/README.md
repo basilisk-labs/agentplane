@@ -55,7 +55,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Removed command-local conservative force blocking and now enforce --force approvals through shared approval requirements with explicit --yes support in task set-status."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T15:35:00.587Z"
 doc_updated_by: "CODER"
 description: "Remove conservative force forbid path and enforce approval requirement for --force via unified helper."
@@ -65,6 +65,10 @@ id_source: "generated"
 
 Replace the conservative hard block for task set-status --force with unified approval enforcement.
 
+## Context
+
+T1 introduced centralized approval checks and T2 added execution-driven escalation. task set-status still has bespoke AGENTPLANE_EXECUTION_FORCE_OK blocking logic and must be migrated.
+
 ## Scope
 
 In scope: packages/agentplane/src/commands/task/set-status.ts and related unit tests. Out of scope: other force-capable commands (handled in T4).
@@ -73,19 +77,11 @@ In scope: packages/agentplane/src/commands/task/set-status.ts and related unit t
 
 1) Remove conservative force env gate from set-status implementation. 2) Call ensureActionApproved(action=force_action) when --force is used. 3) Keep existing transition/dependency checks unchanged. 4) Update tests to cover approval behavior.
 
-## Risks
-
-Risk: behavior change for conservative profile users. Mitigation: preserve explicit error path and test denial/approval semantics via helper coverage.
-
 ## Verify Steps
 
 Run: bun run test:agentplane -- packages/agentplane/src/commands/task/set-status*.test.ts packages/agentplane/src/commands/shared/approval-requirements.test.ts ; bun run lint ; bun run --filter=@agentplaneorg/core build ; bun run --filter=agentplane build
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T15:34:30.698Z — VERIFY — ok
@@ -102,11 +98,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T15:31:48.013Z, excerpt_
 
 Revert this task commit and rerun set-status tests to restore previous behavior.
 
-## Context
-
-T1 introduced centralized approval checks and T2 added execution-driven escalation. task set-status still has bespoke AGENTPLANE_EXECUTION_FORCE_OK blocking logic and must be migrated.
-
-## Notes
+## Findings
 
 ### Decisions
 Use centralized approval helper instead of command-local env toggles.
+
+## Risks
+
+Risk: behavior change for conservative profile users. Mitigation: preserve explicit error path and test denial/approval semantics via helper coverage.

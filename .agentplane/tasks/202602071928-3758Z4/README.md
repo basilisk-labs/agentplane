@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run typecheck; bun run test:cli:core. verify now routes via cli2 spec with validation + suggestions, legacy routing removed, tests updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T07:49:39.757Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `verify` (record-only)."
@@ -60,20 +60,11 @@ Out of scope:
 - spec-derived help includes all options
 - parse errors produce E_USAGE with compact usage
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 Run:\n- bun run typecheck\n- bun run test:cli:core\n\nPass criteria:\n- agentplane verify <task-id> --ok|--rework routes via cli2\n- legacy verify routing is removed\n- tests cover at least one ok and one usage-error case.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T07:49:05.134Z — VERIFY — ok
@@ -91,3 +82,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T07:44:36.407Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

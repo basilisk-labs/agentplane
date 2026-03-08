@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. init no longer writes legacy backend.json fields (module/class); generated backend configs contain only id/version/settings."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:26:20.449Z"
 doc_updated_by: "CODER"
 description: "Update init backend.json stub templates to include only id/version/settings (remove legacy module/class fields that are ignored)."
@@ -71,19 +71,11 @@ packages/agentplane/src/cli/run-cli/commands/init/* backend stub writer and rela
 
 1) Locate init backend stub templates (writeBackendStubs).\n2) Remove legacy module/class fields from generated backend.json templates; keep only id/version/settings.\n3) Update docs/comments if they mention legacy fields.\n4) Update/add tests to assert generated backend.json does not include legacy keys.\n5) Run bun run lint and bun run test:full.
 
-## Risks
-
-Low risk; only affects generated defaults. Existing user configs with legacy fields remain accepted/ignored.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:26:20.293Z — VERIFY — ok
@@ -99,3 +91,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:24:25.134Z, excerpt_
 ## Rollback Plan
 
 Revert the commit; stubs return to previous shape.
+
+## Findings
+
+
+## Risks
+
+Low risk; only affects generated defaults. Existing user configs with legacy fields remain accepted/ignored.

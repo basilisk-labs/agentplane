@@ -58,9 +58,35 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: final docs pass completed for terminology, titles, links, and formatting consistency across updated sections."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T08:10:21.818Z"
 doc_updated_by: "REVIEWER"
 description: "Final pass across all updated docs: consistency, terminology normalization, cross-links, examples validation, style/format cleanup, and release-ready docs QA checklist."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

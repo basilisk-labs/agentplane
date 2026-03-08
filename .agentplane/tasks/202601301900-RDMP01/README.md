@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:34.557Z"
 doc_updated_by: "agentplane"
 description: "Read ROADMAP.md, verify implemented items against current code/docs, and remove completed entries from roadmap."
@@ -40,19 +40,25 @@ Added a minimal ROADMAP.md that points to current audits/docs and clarifies that
 
 ROADMAP.md (new minimal roadmap overview and references).
 
-## Risks
+## Plan
 
-Roadmap is now high-level; future milestones must be added explicitly to keep the file useful.
 
 ## Verify Steps
 
 Review ROADMAP.md for accuracy and references.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Remove ROADMAP.md or revert the commit to restore prior state.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Roadmap is now high-level; future milestones must be added explicitly to keep the file useful.

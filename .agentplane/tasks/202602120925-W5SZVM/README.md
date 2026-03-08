@@ -56,7 +56,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: all dependent implementation and documentation tasks in this stream are completed and committed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:21:20.122Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Reduce token/latency in installed agentplane while preserving guardrails: preflight aggregation, actionable errors, task defaults, compact outputs, and runtime cleanup."
@@ -72,10 +72,23 @@ id_source: "generated"
 
 1. Consolidate prod UX improvements from child tasks (next_action, compact init, context cache, runtime cleanup, release parity).\n2. Verify dependent tasks are DONE with implementation commits.\n3. Close umbrella task as orchestrator bookkeeping.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

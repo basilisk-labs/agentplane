@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: implemented centralized execution profile preset resolver with deterministic conservative/balanced/aggressive mappings and added unit tests for defaults and immutability."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:06:57.927Z"
 doc_updated_by: "CODER"
 description: "Add centralized conservative/balanced/aggressive preset mapping with tests."
@@ -75,16 +75,13 @@ Out of scope: init prompt UX and runtime policy wiring.
 3. Add unit tests for profile mapping and immutable return semantics.
 4. Run focused core tests and builds.
 
-## Risks
+## Verify Steps
 
-Risk: mismatch between schema defaults and balanced preset.
-Mitigation: derive balanced values to match schema defaults and assert in tests.
+- bun run test:core -- packages/core/src/config/config.test.ts packages/core/src/config/execution-profile.test.ts
+- bun run --filter='@agentplaneorg/core' build
+- bun run --filter='agentplane' build
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T10:06:51.813Z — VERIFY — ok
@@ -105,8 +102,10 @@ Commands: bun run test:core -- packages/core/src/config/config.test.ts packages/
 
 Revert execution profile resolver module and export/test changes in one commit.
 
-## Verify Steps
+## Findings
 
-- bun run test:core -- packages/core/src/config/config.test.ts packages/core/src/config/execution-profile.test.ts
-- bun run --filter='@agentplaneorg/core' build
-- bun run --filter='agentplane' build
+
+## Risks
+
+Risk: mismatch between schema defaults and balanced preset.
+Mitigation: derive balanced values to match schema defaults and assert in tests.

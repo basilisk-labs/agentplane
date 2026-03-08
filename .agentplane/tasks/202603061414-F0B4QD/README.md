@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: generated CLI reference is refreshed and the freshness gate passes; main push can now proceed to site publication."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T14:15:28.601Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Commit the regenerated CLI reference required by pre-push after recent CLI help/policy changes, then push main and verify Docs CI / Pages Deploy."
@@ -71,11 +71,6 @@ Commit the regenerated CLI reference required by pre-push after recent CLI help/
 
 1. Regenerate and commit docs/user/cli-reference.generated.mdx so the CLI docs freshness gate passes.\n2. Re-run the local gate relevant to the publish path.\n3. Push main and confirm Docs CI plus Pages Deploy succeeded for the current site.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -89,10 +84,6 @@ Commit the regenerated CLI reference required by pre-push after recent CLI help/
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T14:15:15.916Z — VERIFY — ok
@@ -109,3 +100,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T14:14:37.232Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

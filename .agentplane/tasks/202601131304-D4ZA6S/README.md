@@ -26,7 +26,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: ran python .agent-plane/agentctl.py --help to confirm config show/set is registered; changes add config-driven defaults in agentctl and config.json."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:46.677Z"
 doc_updated_by: "agentplane"
 description: "Extend .agent-plane/config.json with new settings and update agentctl to read them plus provide config show/set commands."
@@ -43,23 +43,26 @@ User requested configurable settings in config.json plus CLI support for togglin
 
 Updated .agent-plane/config.json with new keys and adjusted .agent-plane/agentctl.py to read them, enforce branch/worktree prefix config, and add config show/set commands.
 
-## Risks
+## Plan
 
-Misconfigured config.json values could cause agentctl validation errors; new defaults should be verified in the repo.
 
 ## Verify Steps
 
 python .agent-plane/agentctl.py --help
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert .agent-plane/config.json and .agent-plane/agentctl.py to the previous commit.
 
-## Notes
+## Findings
 
 Added config keys: base_branch, paths.worktrees_dir, branch.task_prefix, tasks.id_suffix_length_default, tasks.verify.required_tags, tasks.doc sections, tasks.comments rules, commit.generic_tokens; added agentctl config show/set.
 
-## Plan
+## Risks
 
-
-## Verification
+Misconfigured config.json values could cause agentctl validation errors; new defaults should be verified in the repo.

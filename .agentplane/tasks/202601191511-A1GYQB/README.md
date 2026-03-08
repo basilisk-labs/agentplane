@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: all recipe PRD tasks completed and documented | details: CLI and docs changes integrated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:55.507Z"
 doc_updated_by: "agentplane"
 description: "Top-level tracking for recipes PRD implementation. Subtasks: 202601191510-QN0W0P (analysis), 202601191510-0AWCPY (CLI), 202601191510-6ZKD5S (docs), 202601191511-BZPKM2 (integration)."
@@ -44,23 +44,26 @@ Top-level tracking task covering analysis, CLI implementation, docs updates, and
 
 Subtasks completed: QN0W0P analysis, 0AWCPY CLI implementation, 6ZKD5S docs wiring, BZPKM2 integration.
 
-## Risks
+## Plan
 
-Residual risk: recipe manifest validation is minimal and may need stricter schema checks later.
 
 ## Verify Steps
 
 CLI help command executed; documentation reviewed for recipe references.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the recipes CLI and documentation commits if the feature set needs to be removed.
 
-## Notes
+## Findings
 
 Recipes CLI lives at .agent-plane/recipes.py; prompt rules in .agent-plane/RECIPES.md.
 
-## Plan
+## Risks
 
-
-## Verification
+Residual risk: recipe manifest validation is minimal and may need stricter schema checks later.

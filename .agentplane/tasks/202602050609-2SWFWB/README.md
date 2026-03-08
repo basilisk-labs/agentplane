@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: archive validation module added with tests; pre-commit hooks passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T06:16:25.292Z"
 doc_updated_by: "CODER"
 description: "Validate tar/zip entries to prevent path traversal and symlink abuse."
@@ -45,19 +45,25 @@ Add archive entry validation to prevent zip-slip/path traversal and symlink abus
 
 Implement path validation for tar/zip entries, reject absolute paths, traversal, and symlinks with E_VALIDATION.
 
-## Risks
+## Plan
 
-Risk: false positives for edge-case archives; mitigate by clear error messages and tests.
 
 ## Verify Steps
 
 Run archive validation tests for traversal and symlink cases; ensure E_VALIDATION exit code.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the archive validation commit to restore previous extraction behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: false positives for edge-case archives; mitigate by clear error messages and tests.

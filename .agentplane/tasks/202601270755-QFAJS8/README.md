@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: M0 tasks AP-001..AP-006 completed (CLI contract, specs, recipes spec, Node workspace scaffold, project resolver, config show | details: set). Builds/tests require npm install."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:02.378Z"
 doc_updated_by: "agentplane"
 description: "Implement M0 of the AgentPlane Node.js migration roadmap: CLI contract, file format specs, recipe spec, monorepo scaffold, project root resolver, and config+validation commands."
@@ -45,11 +45,8 @@ Ship M0 of the Node.js migration: define contracts/specs and bootstrap the Node.
 - AP-005: Implement project discovery + `.agentplane` path resolver.
 - AP-006: Implement `.agentplane/config.json` read/write + validation and `agentplane config show|set`.
 
-## Risks
+## Plan
 
-- Toolchain drift: TypeScript/ESM build setup may diverge from the eventual packaging strategy.
-- Spec drift: schemas and CLI contract might need iteration once M1/M2 flows are implemented.
-- Migration clarity: `.agentplane` is a breaking change vs `.agent-plane` and needs consistent docs.
 
 ## Verify Steps
 
@@ -57,12 +54,21 @@ Ship M0 of the Node.js migration: define contracts/specs and bootstrap the Node.
 - `npm -w @agentplane/agentplane run build` succeeds.
 - `node packages/agentplane/dist/cli.mjs --help` prints help.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert commits created for AP-001..AP-006.
 - Keep existing Python framework unchanged; do not switch any projects to `.agentplane` until M7.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Toolchain drift: TypeScript/ESM build setup may diverge from the eventual packaging strategy.
+- Spec drift: schemas and CLI contract might need iteration once M1/M2 flows are implemented.
+- Migration clarity: `.agentplane` is a breaking change vs `.agent-plane` and needs consistent docs.

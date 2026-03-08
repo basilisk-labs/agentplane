@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran bun run ci:agentplane on 2026-01-30 | details: format, lint, typecheck, and tests passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:24.714Z"
 doc_updated_by: "agentplane"
 description: "Move minor agent behavior toggles (e.g., approvals for plan/network) into config.json, wire them into agentplane init interactive prompts, and document defaults (default agent remains ORCHESTRATOR; paths remain backend-defined)."
@@ -54,20 +54,26 @@ User decision: core agent behavior stays in AGENTS.md + agent JSONs; only minor 
 - Keep default_agent fixed to ORCHESTRATOR; do not add user-facing override in init.
 - Do not change backend path resolution; paths remain derived from backend choice.
 
-## Risks
+## Plan
 
-- Adding new config keys requires schema updates and could break older tooling if not backward-compatible.
-- init prompt changes must preserve non-interactive flags behavior.
 
 ## Verify Steps
 
 bun run ci:agentplane
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commits for this task; config.json and init prompts return to previous defaults.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Adding new config keys requires schema updates and could break older tooling if not backward-compatible.
+- init prompt changes must preserve non-interactive flags behavior.

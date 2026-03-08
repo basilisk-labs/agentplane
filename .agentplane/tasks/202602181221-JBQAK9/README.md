@@ -34,7 +34,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: architecture for single-site Docusaurus in website/ with docs at /docs and split core/docs CI contours was defined and accepted for execution."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T12:33:28.017Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Define target architecture: single Docusaurus app in website/ with marketing at root and docs at /docs, plus split docs/core CI contours and Pages deploy strategy."
@@ -47,9 +47,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -66,11 +63,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

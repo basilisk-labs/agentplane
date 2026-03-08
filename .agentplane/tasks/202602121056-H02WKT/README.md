@@ -41,7 +41,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: added global-binary-in-repo warning path in bin bootstrap without changing regular local execution."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:58:20.007Z"
 doc_updated_by: "CODER"
 description: "Add a lightweight warning in dev repository context when command is executed via global installed binary instead of local repo binary, to prevent stale-version confusion."
@@ -56,14 +56,14 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. node packages/agentplane/bin/agentplane.js --version
+2. npm i -g context validation is not required; emulate global path by direct node run and assert warning appears only in repo context
+3. bunx vitest run packages/agentplane/src/cli/cli-smoke.test.ts --testTimeout 60000 --hookTimeout 60000
+4. bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:57:49.597Z — VERIFY — ok
@@ -79,9 +79,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:57:06.130Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. node packages/agentplane/bin/agentplane.js --version
-2. npm i -g context validation is not required; emulate global path by direct node run and assert warning appears only in repo context
-3. bunx vitest run packages/agentplane/src/cli/cli-smoke.test.ts --testTimeout 60000 --hookTimeout 60000
-4. bun run lint
+
+## Risks

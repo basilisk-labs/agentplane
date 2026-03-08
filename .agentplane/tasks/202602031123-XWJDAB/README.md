@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: branch_pr init now prompts for base branch in existing repos, defaults to main in empty dirs; tests run (bun run test:cli:core)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:54.022Z"
 doc_updated_by: "agentplane"
 description: "When init runs in branch_pr mode: if repository is empty, default base branch to main; if repo exists, prompt user to select existing branch or enter a new branch name to create. Add validation and tests for both cases."
@@ -45,19 +45,25 @@ Add interactive base-branch selection for branch_pr init in existing repos; keep
 
 Update init flow to prompt for base branch in branch_pr when repo already exists; create branch when requested; keep empty-repo default main. Add CLI core tests for empty repo and existing repo defaults.
 
-## Risks
+## Plan
 
-Prompt path only triggers in interactive branch_pr init; non-interactive behavior must remain unchanged. Branch creation could fail if git rejects the name.
 
 ## Verify Steps
 
 bun run test:cli:core -- -t "init branch_pr"
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the promptInitBaseBranch changes and the new init tests; restore prior resolveInitBaseBranch-only behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Prompt path only triggers in interactive branch_pr init; non-interactive behavior must remain unchanged. Branch creation could fail if git rejects the name.

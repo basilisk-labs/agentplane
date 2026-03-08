@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: analysis notes captured | details: no runtime checks required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:55.249Z"
 doc_updated_by: "agentplane"
 description: "Review the recipes PRD, map requirements to CLI/doc updates, and record implementation notes needed for execution."
@@ -43,23 +43,26 @@ Sources reviewed: .agent-plane/recipes/prd.md; repository currently has no recip
 
 Define requirements for recipes CLI commands (scan/show/compile/explain), manifest normalization (v1 + legacy), bundle/context assembly, and documentation additions (RECIPES.md + AGENTS.md + README/prd updates).
 
-## Risks
+## Plan
 
-Context scanning could exceed size limits without strict enforcement; minimal schema validation may drift from full JSON Schema; path template sanitization must block unsafe values.
 
 ## Verify Steps
 
 None (analysis-only task).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the analysis notes commit for this task if the PRD mapping needs to be removed or replaced.
 
-## Notes
+## Findings
 
 Key requirements: inventory generation from .agent-plane/recipes/*/manifest.json; compile bundles with context policy + tool plan; support legacy manifest mapping; add RECIPES.md and wire into AGENTS.md; create new .agent-plane/recipes.py CLI without network or task writes.
 
-## Plan
+## Risks
 
-
-## Verification
+Context scanning could exceed size limits without strict enforcement; minimal schema validation may drift from full JSON Schema; path template sanitization must block unsafe values.

@@ -51,7 +51,7 @@ events:
     author: "DOCS"
     from: "DONE"
     to: "DONE"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:20:10.163Z"
 doc_updated_by: "DOCS"
 description: "Refresh getting-started pages to match current init/upgrade behavior, approvals, and repo-scoped workflow."
@@ -61,6 +61,10 @@ id_source: "generated"
 
 Refresh getting-started docs to match current init/upgrade behavior, approvals, and workspace layout.
 
+## Context
+
+Getting-started pages must reflect the current behavior of agentplane init/upgrade and current workspace invariants (AGENTS.md in repo root, .agentplane layout, upgrade artifacts and network gating).
+
 ## Scope
 
 In-scope: docs/user/overview.mdx, docs/user/prerequisites.mdx, docs/user/setup.mdx, docs/user/breaking-changes.mdx. Out-of-scope: deeper workflow/commands pages (handled by later docs tasks).
@@ -68,10 +72,6 @@ In-scope: docs/user/overview.mdx, docs/user/prerequisites.mdx, docs/user/setup.m
 ## Plan
 
 1. Audit getting-started pages for drift vs current CLI behavior and policies.\n2. Update init/setup description to mention AGENTS.md + .agentplane layout + init flags (including --gitignore-agents).\n3. Update upgrade section to reflect default agent-mode planning and --auto apply mode; mention upgrade artifacts location and network gating.\n4. Update overview/prerequisites/breaking changes notes where they reference outdated assumptions.
-
-## Risks
-
-Risk: onboarding docs describe flags or behaviors that no longer exist, leading to failed first runs. Mitigation: cross-check against `agentplane help init --compact` and `agentplane help upgrade --compact`.
 
 ## Verify Steps
 
@@ -120,10 +120,6 @@ docs/user/breaking-changes.mdx:27:- `AGENTS.md` is the canonical policy file for
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
@@ -131,6 +127,9 @@ docs/user/breaking-changes.mdx:27:- `AGENTS.md` is the canonical policy file for
 
 Revert the commit for this task to restore the previous getting-started wording.
 
-## Context
+## Findings
 
-Getting-started pages must reflect the current behavior of agentplane init/upgrade and current workspace invariants (AGENTS.md in repo root, .agentplane layout, upgrade artifacts and network gating).
+
+## Risks
+
+Risk: onboarding docs describe flags or behaviors that no longer exist, leading to failed first runs. Mitigation: cross-check against `agentplane help init --compact` and `agentplane help upgrade --compact`.

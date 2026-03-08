@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: update-check no longer runs before config load; when require_network=true it is skipped unless --yes is present. Tests: bun run test:cli:core; lint/format/test-fast via pre-commit hook."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T09:19:12.460Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Move update-check after config load and skip when require_network=true unless explicitly allowed"
@@ -67,9 +67,13 @@ Touch only CLI update-check gating and its tests.
 
 1. Locate update-check invocation and config load in run-cli. 2. Move update-check after config load. 3. If require_network=true, force update-check skip unless explicit allow flag exists. 4. Adjust tests or add minimal test coverage. 5. Verify behavior and document.
 
-## Risks
+## Verify Steps
 
-Low risk. Update-check behavior changes only when approvals are enabled; for require_network=true, update-check requires an explicit --yes token somewhere in argv.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -87,3 +91,10 @@ Note: bun run test:cli:core (vitest)
 ## Rollback Plan
 
 Revert the commit for this task; update-check will run unconditionally again (pre-fix behavior).
+
+## Findings
+
+
+## Risks
+
+Low risk. Update-check behavior changes only when approvals are enabled; for require_network=true, update-check requires an explicit --yes token somewhere in argv.

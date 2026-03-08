@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: availability probe checks npm publishability for target version while local parity validation remains version-agnostic pre-bump."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T11:36:27.652Z"
 doc_updated_by: "CODER"
 description: "Decouple npm version availability probe from requiredVersion parity so release apply --push can run before version bump while still enforcing local parity consistency."
@@ -66,14 +66,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. node scripts/check-npm-version-availability.mjs --version 0.2.21
+2. bunx vitest run packages/agentplane/src/commands/release/check-release-version-script.test.ts
+3. bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T11:35:51.150Z — VERIFY — ok
@@ -89,8 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T11:35:06.012Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. node scripts/check-npm-version-availability.mjs --version 0.2.21
-2. bunx vitest run packages/agentplane/src/commands/release/check-release-version-script.test.ts
-3. bun run lint
+
+## Risks

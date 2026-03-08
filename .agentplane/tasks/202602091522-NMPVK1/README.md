@@ -59,7 +59,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Added a contract test scanning TS sources for CliError literals with code/exitCode and failing if the exit code does not match the canonical mapping."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:38:24.982Z"
 doc_updated_by: "TESTER"
 description: "Add a guard (test or eslint rule) to prevent hardcoded exitCode values in CliError constructors outside the centralized mapping/helper."
@@ -77,19 +77,11 @@ Test/lint layer only (e.g. vitest grep test or eslint rule config + fixtures).
 
 1) Scan codebase for new CliError({... exitCode: <number> ...}).\n2) Define allowlist for the small set of modules where numeric exit codes are permitted (e.g., exit-codes mapping itself / test fixtures).\n3) Add a test that fails if any disallowed hardcoded exitCode literals appear.\n4) Update any remaining offenders to use exitCodeForError(...) or throwCliError helpers.\n5) Run bun run lint and bun run test:full.
 
-## Risks
-
-Risk: false positives on objects that include exitCode in other contexts. Mitigation: narrow patterns and allowlist known safe modules.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:38:08.263Z — VERIFY — ok
@@ -113,3 +105,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:38:08.264Z, excerpt_
 ## Rollback Plan
 
 Remove the enforcement test/rule.
+
+## Findings
+
+
+## Risks
+
+Risk: false positives on objects that include exitCode in other contexts. Mitigation: narrow patterns and allowlist known safe modules.

@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: task README YAML renderer now uses block string arrays + multi-line maps with deterministic key ordering; core+agentplane fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T08:30:50.306Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Update core task README YAML renderer for deterministic key ordering and merge-friendly formatting (block string arrays, multi-line maps). Add idempotency tests."
@@ -46,10 +46,23 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

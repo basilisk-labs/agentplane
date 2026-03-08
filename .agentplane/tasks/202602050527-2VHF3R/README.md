@@ -34,7 +34,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run test:agentplane; bun run test:cli:core; updated exit codes per contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T05:37:53.404Z"
 doc_updated_by: "CODER"
 description: "Unify exit codes for E_NETWORK/E_BACKEND per cli-contract; add tests."
@@ -48,19 +48,25 @@ Align CLI exit codes with documented contract for network/backend errors and loc
 
 Add a single exit-code mapping module, update network/backend call sites, and add contract tests.
 
-## Risks
+## Plan
 
-Risk: hidden call sites still set legacy exit codes; mitigate via targeted tests covering E_NETWORK/E_BACKEND and contract table.
 
 ## Verify Steps
 
 Run CLI unit tests covering exit codes; confirm E_NETWORK -> 7 and E_BACKEND -> 6; ensure other codes match doc.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit for this task; restore previous exit-code assignments and tests if regressions appear.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: hidden call sites still set legacy exit codes; mitigate via targeted tests covering E_NETWORK/E_BACKEND and contract table.

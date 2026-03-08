@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release apply writes structured report artifacts under .agentplane/.release/apply and tests assert report content."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:46:10.884Z"
 doc_updated_by: "CODER"
 description: "Write a structured JSON report for release apply outcomes (versions, tag, checks, commit, push status) for reproducibility and diagnostics."
@@ -57,6 +57,10 @@ id_source: "generated"
 
 Emit machine-readable release apply report artifacts for diagnostics and reproducibility.
 
+## Context
+
+Release state is currently spread across stdout/git state; a JSON artifact improves traceability.
+
 ## Scope
 
 In scope: release apply command report writer and regression test asserting report content.
@@ -65,26 +69,25 @@ In scope: release apply command report writer and regression test asserting repo
 
 1) Add release apply report schema and writer under .agentplane/.release/apply. 2) Emit latest.json and run-specific report on successful apply. 3) Extend release apply test to validate report.
 
-## Risks
+## Verify Steps
 
-Low risk; additive artifact writing under ignored runtime directory.
+bunx vitest run packages/agentplane/src/commands/release/apply.test.ts
 
 ## Verification
 
 Pending execution.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert release apply report writer and test updates.
 
-## Context
-
-Release state is currently spread across stdout/git state; a JSON artifact improves traceability.
-
-## Verify Steps
-
-bunx vitest run packages/agentplane/src/commands/release/apply.test.ts
-
-## Notes
+## Findings
 
 ### Decisions\n- Write both timestamped report and latest.json pointer for easy consumption.\n### Implementation Notes\n- Pending.
+
+## Risks
+
+Low risk; additive artifact writing under ignored runtime directory.

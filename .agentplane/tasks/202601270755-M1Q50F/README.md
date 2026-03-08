@@ -30,7 +30,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: added docs/cli-contract.md covering v1 namespaces, exit codes, and --json error output contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:02.029Z"
 doc_updated_by: "agentplane"
 description: "Define and document the public agentplane CLI contract v1: commands, flags, aliases, exit codes, and --json error format."
@@ -45,21 +45,27 @@ Define the stable public CLI contract for `agentplane` v1 (commands, flags, alia
 - Specify `--json` output contract for errors.
 - Reserve namespaces (e.g. `recipe`, `mode`, `ide`, `backend`) and resolve any ambiguous command names.
 
-## Risks
+## Plan
 
-- Premature stability: freezing the contract too early can cause churn in later milestones.
-- Collisions: command naming (e.g. `sync`) must stay unambiguous across namespaces.
 
 ## Verify Steps
 
 - Open `docs/cli-contract.md` and confirm it covers all planned v1 namespaces.
 - Spot-check examples for consistent flag naming and exit codes.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the commit that introduces/changes `docs/cli-contract.md`.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Premature stability: freezing the contract too early can cause churn in later milestones.
+- Collisions: command naming (e.g. `sync`) must stay unambiguous across namespaces.

@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: format:check, schemas:check, agents:check, and test:critical all pass after workflow update."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T20:56:14.327Z"
 doc_updated_by: "CODER"
 description: "Ensure pull requests fail early when packages/spec schemas or assets/agents drift from repo runtime copies."
@@ -62,15 +62,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) bun run format:check
@@ -81,3 +72,16 @@ Expected: pass.
 Expected: pass.
 4) bun run test:critical
 Expected: pass.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

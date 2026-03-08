@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: CLI errors now provide a single deterministic next_action with reason/reasonCode in both stderr and --json-errors outputs, reducing agent command guessing."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:32:31.593Z"
 doc_updated_by: "CODER"
 description: "Add structured next_action metadata for E_USAGE/E_POLICY/E_VALIDATION and render guidance in text/json-errors."
@@ -67,14 +67,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/cli/run-cli.core.errors.test.ts --hookTimeout 60000 --testTimeout 60000
+2. bunx vitest run packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts --hookTimeout 60000 --testTimeout 60000
+3. bunx eslint packages/agentplane/src/shared/errors.ts packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/cli/run-cli.core.errors.test.ts
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:32:31.383Z — VERIFY — ok
@@ -90,8 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:30:03.271Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/cli/run-cli.core.errors.test.ts --hookTimeout 60000 --testTimeout 60000
-2. bunx vitest run packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts --hookTimeout 60000 --testTimeout 60000
-3. bunx eslint packages/agentplane/src/shared/errors.ts packages/agentplane/src/cli/run-cli.ts packages/agentplane/src/cli/run-cli.core.errors.test.ts
+
+## Risks

@@ -55,7 +55,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: duplicate/no-op closures and close commit preflight/index cleanup are implemented, tested, and documented; downstream tasks are complete."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:18:30.032Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Eliminate unnecessary command churn and redundant close commits in everyday agent workflows while preserving auditability."
@@ -70,14 +70,12 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. Confirm downstream tasks 576ZM1, K20GM7, DKHF2X, H6B9WC are DONE.
+2. Run targeted CLI tests for close/duplicate flows.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:18:29.885Z — VERIFY — ok
@@ -93,7 +91,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:18:29.745Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. Confirm downstream tasks 576ZM1, K20GM7, DKHF2X, H6B9WC are DONE.
-2. Run targeted CLI tests for close/duplicate flows.
+
+## Risks

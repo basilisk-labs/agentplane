@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Upgrade JSON merge now uses canonicalized comparisons (key-order agnostic) for user-change detection and array dedup. Added regression test covering key-order-only differences during 3-way merge."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:23:58.598Z"
 doc_updated_by: "CODER"
 description: "Make agent JSON merge deterministic (stable key order / canonicalization) and define authoritative vs user fields to reduce noise and false diffs."
@@ -71,19 +71,11 @@ packages/agentplane/src/commands/upgrade.ts and upgrade merge tests.
 
 1) Implement canonical JSON equality helpers (key-order agnostic) for agent merge routines.\n2) Replace JSON.stringify-based comparisons/dedup in mergeAgentJson + mergeAgentJson3Way with canonical equality and Set-based dedup.\n3) Add a regression test ensuring 3-way merge does not treat key-order-only changes as user edits.\n4) Run bun run lint and bun run test:full.
 
-## Risks
-
-Risk: users may expect certain fields to be preserved; mitigate by preserving unknown/user fields and only overwriting a small upstream-authoritative set.
-
 ## Verify Steps
 
 - bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:23:58.438Z — VERIFY — ok
@@ -99,3 +91,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:10:57.065Z, excerpt_
 ## Rollback Plan
 
 Revert the commit.
+
+## Findings
+
+
+## Risks
+
+Risk: users may expect certain fields to be preserved; mitigate by preserving unknown/user fields and only overwriting a small upstream-authoritative set.

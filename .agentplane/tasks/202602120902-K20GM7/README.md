@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: commit --close now supports preflight-only checks and optional auto-unstage of index noise, reducing duplicate guard/commit cycles while preserving deterministic close commit behavior."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:14:38.404Z"
 doc_updated_by: "CODER"
 description: "Add commit --close --unstage-others and commit --check-only to remove guard/commit duplication and staging churn."
@@ -67,14 +67,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000
+2. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000
+3. bunx eslint packages/agentplane/src/commands/commit.spec.ts packages/agentplane/src/commands/commit.command.ts packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:14:38.256Z — VERIFY — ok
@@ -90,8 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:14:02.377Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000
-2. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000
-3. bunx eslint packages/agentplane/src/commands/commit.spec.ts packages/agentplane/src/commands/commit.command.ts packages/agentplane/src/commands/guard/impl/commands.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts
+
+## Risks

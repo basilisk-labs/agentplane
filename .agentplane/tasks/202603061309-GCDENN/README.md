@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T13:22:32.548Z"
 doc_updated_by: "CODER"
 description: "Use the existing DESIGN.md contract to make the public website cleaner and more modern, while preserving strong typography, a disciplined navbar shell, and proof-first hierarchy on homepage and blog surfaces."
@@ -70,11 +70,6 @@ Use the existing DESIGN.md contract to make the public website cleaner and more 
 ## Plan
 
 1) Audit the current homepage, blog landing, navbar, and global theme against DESIGN.md and current product needs. 2) Refine shared website styles to remove glow/card-noise patterns and improve typography, spacing, and surface discipline. 3) Tighten homepage and blog layout hierarchy using proof-first product-marketing best practice without copying external styles. 4) Run docs/site generation, typecheck, build, and the design-language check, then record evidence.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -102,10 +97,6 @@ Validate the updated visual contract execution on the public website after the h
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T13:20:37.382Z — VERIFY — ok
 
@@ -121,3 +112,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T13:10:22.194Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: default flow docs now isolate exceptional flags into separate non-happy-path sections."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T16:25:14.676Z"
 doc_updated_by: "DOCS"
 description: "Move rare manual flags and exceptional recovery paths out of the main task flow into clearly separated sections."
@@ -74,11 +74,6 @@ Move rare manual flags and exceptional recovery paths out of the main task flow 
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -92,10 +87,6 @@ Move rare manual flags and exceptional recovery paths out of the main task flow 
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T16:25:06.635Z — VERIFY — ok
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:20:55.466Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

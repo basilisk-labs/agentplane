@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass; direct mode work start no longer creates task branches and records an active-task lock."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T18:07:13.450Z"
 doc_updated_by: "CODER"
 description: "Change work start behavior in workflow_mode=direct to avoid creating task branches; record an active-task lock and update help/docs/tests."
@@ -61,6 +61,10 @@ id_source: "generated"
 
 In workflow_mode=direct, make work start single-stream on the current branch (no task branches) by recording an active-task lock; update docs/help/tests accordingly.
 
+## Context
+
+Direct mode is intended to be a simple one-checkout workflow. Creating per-task branches adds cognitive overhead and leaves branch cleanup to the user.
+
 ## Scope
 
 In scope: work start behavior in direct mode, direct-mode lock file, clearing lock on finish, help/command guide/AGENTS.md updates, tests and snapshots. Out of scope: branch_pr worktree workflow, remote branch cleanup.
@@ -69,15 +73,11 @@ In scope: work start behavior in direct mode, direct-mode lock file, clearing lo
 
 1) Update work start: in direct mode, do not create/check out task branches; enforce single-stream via a lock under .agentplane/cache; require clean tree except task artifacts.\n2) Clear the lock on finish in direct mode.\n3) Update CLI help/command guide + shipped AGENTS.md to match behavior.\n4) Update and add tests; update snapshots.\n5) Verify: bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-Risk: breaking change for users relying on task branches in direct mode. Mitigation: keep branch_pr unchanged; keep work start output explicit; add tests and help text.
+- bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T18:06:19.321Z — VERIFY — ok
@@ -94,10 +94,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T18:05:50.205Z, excerpt_
 
 Revert the implementation and snapshot updates; restore the previous direct-mode branch creation behavior.
 
-## Context
+## Findings
 
-Direct mode is intended to be a simple one-checkout workflow. Creating per-task branches adds cognitive overhead and leaves branch cleanup to the user.
 
-## Verify Steps
+## Risks
 
-- bun run lint\n- bun run test:full
+Risk: breaking change for users relying on task branches in direct mode. Mitigation: keep branch_pr unchanged; keep work start output explicit; add tests and help text.

@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the framework development reinstall flow now rebuilds both local packages, reinstalls both globally from the checkout, and verifies that global agentplane resolves the local checkout builds instead of a published core fallback."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T18:09:58.355Z"
 doc_updated_by: "CODER"
 description: "Make the framework development install flow guarantee that both agentplane and @agentplaneorg/core come from the current checkout, not from published registry resolution."
@@ -71,11 +71,6 @@ Make the framework development install flow guarantee that both agentplane and @
 
 1. Audit the current framework development install path, especially scripts/reinstall-global-agentplane.sh and workspace dependency resolution for @agentplaneorg/core. 2. Design a deterministic developer install flow that guarantees the global CLI resolves both agentplane and core from the local checkout. 3. Implement the chosen install path, add diagnostics or tests that prove the active runtime stack is local, and document the development workflow.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -92,10 +87,6 @@ Make the framework development install flow guarantee that both agentplane and @
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T18:09:49.874Z — VERIFY — ok
 
@@ -111,3 +102,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T17:38:29.454Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

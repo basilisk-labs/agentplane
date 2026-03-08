@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Updated package READMEs for agentplane and core with npm-friendly structure, install/usage, and links. Manual review only."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:52.880Z"
 doc_updated_by: "agentplane"
 description: "Make packages/agentplane and packages/core README.md files complete and npm-friendly with clear overview, install, usage, and links."
@@ -42,19 +42,25 @@ Refreshed package READMEs to be npm-friendly with clear overview, install, quick
 
 Update packages/agentplane/README.md and packages/core/README.md only.
 
-## Risks
+## Plan
 
-Docs could drift from CLI behavior; mitigated by linking to canonical docs and keeping commands generic.
 
 ## Verify Steps
 
 Open both READMEs and confirm formatting, links, and referenced commands are valid for the CLI.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert packages/agentplane/README.md and packages/core/README.md to the previous versions.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Docs could drift from CLI behavior; mitigated by linking to canonical docs and keeping commands generic.

@@ -35,7 +35,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci (2026-01-29). Notes: integrate tests + rebase worktree fix validated | details: branch_pr integrate parity complete."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:13.581Z"
 doc_updated_by: "agentplane"
 description: "Implement integrate flow for branch_pr with merge + closure commit safeguards."
@@ -50,21 +50,27 @@ Implement branch_pr integrate flow with merge strategies, PR artifact validation
 - Validate PR artifacts and verify metadata
 - Enforce branch_pr guardrails (tasks.json single-writer, base-branch commit protection)
 
-## Risks
+## Plan
 
-- Git merge/reset operations can discard local changes; ensure clean status before integrate
-- Incorrect base branch detection could block or mis-merge; verify base branch config
 
 ## Verify Steps
 
 bun run ci
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 - Revert the integrate-related commit(s)
 - Restore base branch to pre-merge SHA if needed
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Git merge/reset operations can discard local changes; ensure clean status before integrate
+- Incorrect base branch detection could block or mis-merge; verify base branch config

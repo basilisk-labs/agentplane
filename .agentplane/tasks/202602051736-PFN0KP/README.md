@@ -29,7 +29,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: run-cli core and recipes tests pass for updated expectations."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T17:42:16.480Z"
 doc_updated_by: "TESTER"
 description: "Update tests to reflect 0.1.5 version and verify/zip exit codes so pre-push passes."
@@ -43,9 +43,8 @@ Update tests for new version and current verify/zip error behavior.
 
 Adjust failing run-cli tests for verify approvals, zip traversal exit codes, and version expectations.
 
-## Risks
+## Plan
 
-Incorrect expectations could mask regressions in verify or archive safety.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Run vitest run (full) or relevant run-cli tests; confirm pre-push passes.
 
 Ran: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts; bunx vitest run packages/agentplane/src/cli/run-cli.recipes.test.ts.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert test expectation changes if they hide real regressions.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Incorrect expectations could mask regressions in verify or archive safety.

@@ -28,7 +28,7 @@ comments:
   -
     author: "CODER"
     body: "Commit update: 7a1d5d3d1ada80c2c1c1b136238e17e2d0bf60ea (main changes), 938f94545ae17e44868559cd779fa1a18d5a9b31 (task finish/export snapshots)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T04:23:17.080Z"
 doc_updated_by: "CODER"
 description: "Tracking task for BRANCH.md implementation: effective base resolver, branch UX, tasks.json export-only policy, direct work start behavior, and related docs/tests."
@@ -42,9 +42,8 @@ Tracking task for BRANCH.md improvements across base resolution, branch UX, work
 
 Coordinate AP-BR-01 through AP-BR-05 implementation, tests, and documentation updates.
 
-## Risks
+## Plan
 
-Scope spans multiple commands and docs; coordination mistakes could leave inconsistent guidance or behavior.
 
 ## Verify Steps
 
@@ -54,8 +53,16 @@ bun run test:core; bun run test:cli:core.
 
 bun run test:core; bun run test:cli:core.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert all AP-BR changes in core/agentplane/docs and restore previous behavior.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Scope spans multiple commands and docs; coordination mistakes could leave inconsistent guidance or behavior.

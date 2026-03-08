@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "verified: viewer recipe added in external repo agentplane-recipes (commit db18c1b) | details: tests not run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:17.144Z"
 doc_updated_by: "agentplane"
 description: "Package tasks viewer as a recipe with assets, a viewer-server tool, and a scenario for viewing tasks."
@@ -46,23 +46,26 @@ Add viewer recipe with tasks.html asset, viewer-server tool, and scenario.
 
 - Add viewer recipe files (manifest, assets, tools, scenarios)\n- Ensure recipe install can run viewer tool via scenario run\n- Add minimal documentation/tests if needed
 
-## Risks
+## Plan
 
-- Viewer tool may require node dependencies or ports; keep minimal and self-contained
 
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Remove viewer recipe files and revert commit
 
-## Notes
+## Findings
 
 Work committed in external repo: agentplane-recipes (commit db18c1b).
 
-## Plan
+## Risks
 
-
-## Verification
+- Viewer tool may require node dependencies or ports; keep minimal and self-contained

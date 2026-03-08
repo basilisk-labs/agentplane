@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Confirmed --json error-mode is honored even when global arg parsing fails early; existing regression test covers missing --root value."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:06:46.080Z"
 doc_updated_by: "CODER"
 description: "When parseGlobalArgs throws before globals are returned, --json should still force JSON error output. Implement an argv prescan and add regression test."
@@ -73,11 +73,6 @@ packages/agentplane/src/cli/run-cli.core.test.ts (или новый unit test р
 1. Добавить легкий прескан argv на --json до parseGlobalArgs.
 2. Прокинуть результат в обработчик ошибок (jsonErrors).
 3. Добавить тест: agentplane --json --root (без значения) возвращает JSON error.
-
-## Risks
-
-Риск: прескан ошибочно интерпретирует --json после id команды.
-Митигация: сканировать только «глобальную зону» до --/команды или следовать текущей семантике parseGlobalArgs.
 
 ## Verify Steps
 
@@ -103,3 +98,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:05:21.751Z, excerpt_
 ## Rollback Plan
 
 git revert соответствующего коммита, затем bun run test:full.
+
+## Findings
+
+
+## Risks
+
+Риск: прескан ошибочно интерпретирует --json после id команды.
+Митигация: сканировать только «глобальную зону» до --/команды или следовать текущей семантике parseGlobalArgs.

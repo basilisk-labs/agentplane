@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Tracking task closed after implementing B3 (atomic writes), E1 (require_network enforcement), and F1 (README migrate-doc), with plan+verification guards and full test runs."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T10:46:20.488Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Tracking task: implement ROADMAP A-F for plan approval + verification contract, diff-friendly README format, guards, and migration."
@@ -46,14 +46,15 @@ id_source: "generated"
 
 Tracking closeout: all ROADMAP items A1,B1,B2,B3,C1-C4,D1-D4,E1,F1 are implemented and verified; see task commits for details.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T10:46:11.073Z — VERIFY — ok
@@ -65,3 +66,9 @@ Note: Tracking closure: B3/E1/F1 integrated; approvals/plan/verification contrac
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

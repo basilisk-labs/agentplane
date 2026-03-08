@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: re-scanned task READMEs for duplicate headings; none remain."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:54.358Z"
 doc_updated_by: "agentplane"
 description: "Scan task READMEs for duplicated section headings and normalize them to a single set of sections."
@@ -42,19 +42,25 @@ Scan task READMEs for duplicated section headings and normalize to a single set 
 
 Normalize duplicated headings in task README docs and update metadata.
 
-## Risks
+## Plan
 
-Doc normalization might drop unusual formatting; mitigated by preserving section content order.
 
 ## Verify Steps
 
 - Re-scan task READMEs for duplicate headings.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the task README updates.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Doc normalization might drop unusual formatting; mitigated by preserving section content order.

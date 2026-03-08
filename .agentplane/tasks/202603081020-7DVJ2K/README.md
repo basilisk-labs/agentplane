@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the README v3 rollout graph now gates template-default changes behind compatibility work and leaves no unsafe mixed-state on main."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T10:22:37.648Z"
 doc_updated_by: "PLANNER"
 description: "Adjust the README v3 migration task graph so dual-read compatibility lands before new templates become the default, avoiding a broken mixed-state on main."
@@ -73,11 +73,6 @@ Adjust the README v3 migration task graph so dual-read compatibility lands befor
 2. Update task dependencies to reflect that safe rollout order.
 3. Verify the resulting graph has no cycles and clearly gates template changes behind compatibility work.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Review the README v3 rollout graph. Expected: compatibility tasks precede template-default changes.
@@ -85,10 +80,6 @@ Adjust the README v3 migration task graph so dual-read compatibility lands befor
 3. Confirm no runtime/template task is left ahead of the compatibility boundary. Expected: new-task defaults no longer land before dual-read support.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T10:22:13.251Z — VERIFY — ok
@@ -105,3 +96,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T10:21:29.175Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

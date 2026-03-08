@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run typecheck; bun run test:cli:core. GitContext now uses single git status --porcelain -z -uall and invalidates memo after stage/commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T11:51:42.188Z"
 doc_updated_by: "CODEX"
 description: "Implement GitContext(statusChangedPaths via one git status --porcelain -z, headCommit memoized, stage batched, commit). Migrate guard/commit pipeline and disallow direct git exec outside GitContext."
@@ -81,14 +81,15 @@ Risks:
 Rollback:
 - revert GitContext wiring and keep old guard implementation (git diff/ls-files).
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T11:51:30.329Z — VERIFY — ok
@@ -100,3 +101,9 @@ Note: bun run typecheck; bun run test:cli:core
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

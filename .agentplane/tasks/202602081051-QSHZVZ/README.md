@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: decomposed pr/index.ts into focused modules (open/update/check/note/integrate) with shared internals; removed legacy *_USAGE constants and usageMessage-based errors; updated workflow reexports; typecheck, format, lint, test:fast, and cli core PR flow tests all pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T11:34:12.191Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split commands/pr/index.ts into focused modules with clean boundaries and targeted tests."
@@ -47,14 +47,22 @@ id_source: "generated"
 
 Decompose PR monolith: split commands/pr/index.ts into focused modules; keep cli2 command handlers thin; keep behavior stable via tests.
 
-## Risks
+## Verify Steps
 
+### Commands
+- `bun run typecheck`
+- `bun run test:cli:core`
+- `bun run test:fast`
+
+### Assertions
+- `rg -n \"parse[A-Za-z0-9]*Flags\\(\" packages/agentplane/src/commands` returns empty.
+- `rg -n \"_USAGE(_EXAMPLE)?\b\" packages/agentplane/src/commands` returns empty.
+
+### Pass criteria
+- All commands succeed.
+- The assertions are satisfied.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T11:32:31.354Z — VERIFY — ok
@@ -70,17 +78,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:24:03.333Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-### Commands
-- `bun run typecheck`
-- `bun run test:cli:core`
-- `bun run test:fast`
 
-### Assertions
-- `rg -n \"parse[A-Za-z0-9]*Flags\\(\" packages/agentplane/src/commands` returns empty.
-- `rg -n \"_USAGE(_EXAMPLE)?\b\" packages/agentplane/src/commands` returns empty.
-
-### Pass criteria
-- All commands succeed.
-- The assertions are satisfied.
+## Risks

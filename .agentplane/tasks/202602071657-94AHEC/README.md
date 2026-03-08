@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: task new/add/update no longer require verify commands for code/backend/frontend tags; tests: bun run test:agentplane, bun run test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:27:24.421Z"
 doc_updated_by: "CODER"
 description: "Relax task new validation: --verify remains optional; do not hard-require it by tags."
@@ -49,27 +49,6 @@ description: "Relax task new validation: --verify remains optional; do not hard-
 2) Keep frontmatter.verify supported (string[]), but optional.
 3) Update affected tests to match the new behavior.
 4) Run bun run test:agentplane.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T17:26:37.449Z — VERIFY — ok
-
-By: CODER
-
-Note: task new/add/update no longer require verify commands for code/backend/frontend tags; bun run test:agentplane + bun run test:cli:core.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -90,3 +69,22 @@ Make frontmatter verify commands optional; keep Verify Steps/Verification as the
 ### Pass criteria
 
 - All updated commands accept missing verify commands and tests are updated accordingly.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:26:37.449Z — VERIFY — ok
+
+By: CODER
+
+Note: task new/add/update no longer require verify commands for code/backend/frontend tags; bun run test:agentplane + bun run test:cli:core.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

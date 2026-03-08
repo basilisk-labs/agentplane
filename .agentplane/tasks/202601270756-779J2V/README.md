@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: added docs/recipes-spec.md plus schemas/recipe-manifest.schema.json defining v1 recipe archive + manifest contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:02.775Z"
 doc_updated_by: "agentplane"
 description: "Define v1 recipe archive structure, manifest.json schema, optional lockfile, and public CLI commands for recipe management."
@@ -46,21 +46,27 @@ Define the v1 recipes spec (package format, manifest schema, and CLI surface) so
 - Ship `manifest.json` JSON Schema v1.
 - Specify CLI commands and required outputs (`recipe list|info|install|remove|list-remote`, etc.).
 
-## Risks
+## Plan
 
-- Security model is v1-warning-only; make sure spec surfaces permissions explicitly.
-- Manifest schema must stay small enough for "context minimization" goals.
 
 ## Verify Steps
 
 - Validate a sample `manifest.json` against the schema.
 - Confirm the CLI spec is compatible with offline-first constraints.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the recipe spec docs/schemas and keep recipes as an internal-only concept until M5.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Security model is v1-warning-only; make sure spec surfaces permissions explicitly.
+- Manifest schema must stay small enough for "context minimization" goals.

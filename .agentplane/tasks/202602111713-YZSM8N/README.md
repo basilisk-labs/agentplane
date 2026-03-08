@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bunx vitest run packages/agentplane/src/commands/guard/impl/close-message.test.ts; bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:16:10.138Z"
 doc_updated_by: "TESTER"
 description: "Add tests for branch paths in close-message commit body/summary generation and key-files fallback logic."
@@ -65,17 +65,22 @@ In scope: packages/agentplane/src/commands/guard/impl/close-message.ts tests onl
 
 1) Inspect uncovered branches in close-message.ts. 2) Add focused tests for missing summary/verify/key-files branches. 3) Run targeted tests and focused coverage for guard/**.
 
-## Risks
+## Verify Steps
 
-Risk: snapshot-style assertions may become brittle. Mitigation: assert specific invariant fragments only.
+- bunx vitest run packages/agentplane/src/commands/guard/impl/close-message.test.ts\n- bunx vitest run packages/agentplane/src/commands/guard/impl/close-message.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Remove added close-message tests and rerun guard tests.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/guard/impl/close-message.test.ts\n- bunx vitest run packages/agentplane/src/commands/guard/impl/close-message.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Risk: snapshot-style assertions may become brittle. Mitigation: assert specific invariant fragments only.

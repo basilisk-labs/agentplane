@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: practical commands and generated CLI reference are synchronized with the current command registry and runtime behavior."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T07:52:31.115Z"
 doc_updated_by: "DOCS"
 description: "Align docs/user/commands.mdx and docs/user/cli-reference.generated.mdx with actual command specs, flags, status-commit format, json-errors behavior, and examples verified against current CLI output."
@@ -66,14 +66,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T07:52:30.964Z — VERIFY — ok
@@ -87,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T07:51:19.543Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

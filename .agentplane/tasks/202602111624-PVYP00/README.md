@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pre-commit now runs hook-safe tests (test:fast:hook), hook-integration suites moved to test:hooks, and lint/test/build checks pass in direct runs."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:28:03.618Z"
 doc_updated_by: "CODER"
 description: "Split pre-commit test profile to avoid running hook-integration tests that can invoke nested git hooks during agentplane commit."
@@ -57,6 +57,10 @@ id_source: "generated"
 
 Устранить рекурсию pre-commit при agentplane commit через разделение test профилей.
 
+## Context
+
+Сейчас pre-commit запускает test:fast, где есть hook-интеграционные тесты, способные вызвать повторный вход в hook pipeline.
+
 ## Scope
 
 In-scope: package.json scripts и lefthook pre-commit command. Out-of-scope: полная переработка hook тестов.
@@ -65,25 +69,23 @@ In-scope: package.json scripts и lefthook pre-commit command. Out-of-scope: п�
 
 1) Ввести script test:fast:hook без hook-integration suites. 2) Переключить lefthook pre-commit на test:fast:hook. 3) Проверить lint и оба тестовых профиля.
 
-## Risks
+## Verify Steps
 
-Риск: ослабить pre-commit coverage. Смягчение: добавить явный test:hooks для CI/manual запуска.
+1) bun run lint\n2) bun run test:fast:hook\n3) bun run test:hooks\n4) bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Откатить коммит задачи и вернуть прежние scripts/lefthook конфигурации.
 
-## Context
-
-Сейчас pre-commit запускает test:fast, где есть hook-интеграционные тесты, способные вызвать повторный вход в hook pipeline.
-
-## Verify Steps
-
-1) bun run lint\n2) bun run test:fast:hook\n3) bun run test:hooks\n4) bun run --filter=agentplane build
-
-## Notes
+## Findings
 
 ### Decisions\n- Pre-commit должен быть быстрым и без self-recursive hook сценариев.\n### Implementation Notes\n- Заполняется после реализации.
+
+## Risks
+
+Риск: ослабить pre-commit coverage. Смягчение: добавить явный test:hooks для CI/manual запуска.

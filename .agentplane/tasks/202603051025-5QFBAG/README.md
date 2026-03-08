@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Regression suite and CLI smoke checks passed; measured startup/list timings captured in task verification notes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T10:46:17.670Z"
 doc_updated_by: "TESTER"
 description: "Run targeted and full regression checks, add measured budgets for startup/task-list perf, and confirm no behavior regressions after P0/P1 changes."
@@ -68,18 +68,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 1) bunx vitest run packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/task/shared.unit.test.ts 2) node packages/agentplane/bin/agentplane.js quickstart 3) node packages/agentplane/bin/agentplane.js task list 4) /usr/bin/time -lp node packages/agentplane/bin/agentplane.js quickstart and task list
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T10:46:11.641Z — VERIFY — ok
@@ -93,3 +86,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T10:45:11.689Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

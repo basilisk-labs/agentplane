@@ -33,7 +33,7 @@ comments:
     author: "ORCHESTRATOR"
     body: "Verified: bun run test:full PASS (vitest run, 704 tests). Refactor: split recipes impl commands monolith into per-command modules; no behavior changes; lint/typecheck clean."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T14:22:01.776Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split commands/recipes/impl/commands.ts into per-command modules (list/install/remove/cache/explain) with stable shared helpers and keep all tests green."
@@ -52,12 +52,6 @@ Decompose commands/recipes/impl/commands.ts into smaller per-command modules whi
 3. Update imports/exports so existing command entrypoints keep working.
 4. Run bun run typecheck, bun run lint, bun run test:full.
 
-## Risks
-
-1. Behavior regressions in recipes install branching and on-conflict handling.
-2. Changes in help/error outputs due to handler moves.
-3. Import cycles between recipes impl modules.
-
 ## Verify Steps
 
 Commands:
@@ -70,10 +64,6 @@ Pass criteria:
 - Full suite passes.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T14:21:07.211Z — VERIFY — ok
@@ -91,3 +81,12 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T14:12:45.727Z, excerpt_
 1. Revert the implementation commit for 202602081344-GF5VSS.
 2. Re-run bun run test:full.
 3. Revert close metadata commit if needed.
+
+## Findings
+
+
+## Risks
+
+1. Behavior regressions in recipes install branching and on-conflict handling.
+2. Changes in help/error outputs due to handler moves.
+3. Import cycles between recipes impl modules.

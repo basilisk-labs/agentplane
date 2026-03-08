@@ -48,7 +48,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: focused guard coverage run passed; commands.ts branch=77.9% and comment-commit.ts branch=76.19%."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:29:11.101Z"
 doc_updated_by: "TESTER"
 description: "Run focused guard coverage and confirm commands.ts/comment-commit.ts are each >=72% branch."
@@ -66,17 +66,22 @@ In scope: focused guard coverage run and threshold verification for commands.ts/
 
 1) Run focused guard test suite with branch coverage include on guard/**. 2) Record branch percentages for commands.ts and comment-commit.ts. 3) Close verification task if both are >=72%.
 
-## Risks
+## Verify Steps
 
-Low risk; verification-only task.
+bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 No rollback required; verification metadata only.
 
-## Verify Steps
+## Findings
 
-bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --coverage --coverage.reporter=text --coverage.include='packages/agentplane/src/commands/guard/**'
+
+## Risks
+
+Low risk; verification-only task.

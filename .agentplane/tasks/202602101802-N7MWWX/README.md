@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated developer release docs to make release plan/apply the default workflow and document patch/minor/major safety gates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:31:59.346Z"
 doc_updated_by: "DOCS"
 description: "Rewrite developer release/publishing docs to match agentplane release plan/apply workflow, patch-only auto bump, and approval rules."
@@ -63,10 +63,6 @@ In-scope: docs/developer/release-and-publishing.mdx.
 
 1. Replace manual publish-first instructions with the standard flow: release plan -> notes -> release apply -> tag push -> GitHub Actions publish.\n2. Document bump rules: patch default; minor/major requires --yes; pushing requires --yes.\n3. Keep an emergency manual publish section as discouraged fallback.
 
-## Risks
-
-Risk: release docs drift and contributors publish manually, bypassing safety gates. Mitigation: make plan/apply the primary workflow and keep manual publish as explicitly discouraged.
-
 ## Verify Steps
 
 - Confirm docs mention Release plan written: .agentplane/.release/plan/2026-02-10T18-31-05-307Z
@@ -75,13 +71,16 @@ Hint: Create a DOCS task to write docs/releases/v0.2.13.md based on this plan. a
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert the commits for this task to restore prior release docs.
+
+## Findings
+
+
+## Risks
+
+Risk: release docs drift and contributors publish manually, bypassing safety gates. Mitigation: make plan/apply the primary workflow and keep manual publish as explicitly discouraged.

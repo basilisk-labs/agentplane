@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: pre-push full test suite now passes after adding CLI2 namespace routing for recipes/scenario (and recipes cache) and aligning tests/snapshots with spec-driven usage; git push succeeds again."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T12:36:34.765Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Pre-push hook runs bun test:full; update CLI2 namespace routing (recipes/scenario) and tests to match spec-driven usage so full suite passes and push succeeds."
@@ -50,14 +50,18 @@ id_source: "generated"
 4) Update run-cli.recipes/scenario tests to assert the new spec-derived usage formatting.
 5) Run bun typecheck/lint/test:full and re-attempt git push.
 
-## Risks
+## Verify Steps
 
+### Commands
+- `bun run typecheck`
+- `bun run lint`
+- `bun run test:full`
+
+### Pass criteria
+- Pre-push `lefthook` passes (no failing vitest files).
+- `git push origin main` succeeds.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T12:36:29.564Z — VERIFY — ok
@@ -73,13 +77,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:31:46.686Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-### Commands
-- `bun run typecheck`
-- `bun run lint`
-- `bun run test:full`
 
-### Pass criteria
-- Pre-push `lefthook` passes (no failing vitest files).
-- `git push origin main` succeeds.
+## Risks

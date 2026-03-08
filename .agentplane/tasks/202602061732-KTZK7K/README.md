@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Fixed commitFromComment to never set AGENTPLANE_ALLOW_BASE implicitly; introduced buildGitCommitEnv helper and a unit test asserting allow-base stays disabled unless explicitly requested."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T17:47:50.076Z"
 doc_updated_by: "CODER"
 description: "Fix guard/commitFromComment env wiring: AGENTPLANE_ALLOW_BASE must not mirror allowTasks; default to 0 unless explicitly allowed."
@@ -49,15 +49,11 @@ packages/agentplane/src/commands/guard/index.ts: commitFromComment env for git c
 
 1) Update commitFromComment to set AGENTPLANE_ALLOW_BASE=0 by default.\n2) Add/adjust CLI test to ensure commit-from-comment cannot bypass branch_pr base restriction.\n3) Run relevant vitest suite.
 
-## Risks
+## Verify Steps
 
-Risk: Changing env behavior could break expected workflows that relied on the bug; test will codify intended restriction.
+- bun run test:cli:core\n- bun run test:agentplane
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T17:37:21.293Z — VERIFY — ok
@@ -72,6 +68,9 @@ Note: bun run test:agentplane passed; added unit test ensuring buildGitCommitEnv
 
 Revert the commit for this task; re-run bun run test:cli:core.
 
-## Verify Steps
+## Findings
 
-- bun run test:cli:core\n- bun run test:agentplane
+
+## Risks
+
+Risk: Changing env behavior could break expected workflows that relied on the bug; test will codify intended restriction.

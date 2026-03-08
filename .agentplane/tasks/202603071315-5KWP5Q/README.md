@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the generated CLI reference now matches the built dist output, so pre-push docs freshness can pass without bypasses."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T13:16:40.728Z"
 doc_updated_by: "CODER"
 description: "Regenerate docs/user/cli-reference.generated.mdx after the local pre-push build reveals stale CLI reference output, then push main."
@@ -71,20 +71,11 @@ Regenerate docs/user/cli-reference.generated.mdx after the local pre-push build 
 
 1. Regenerate docs/user/cli-reference.generated.mdx from the built CLI.\n2. Verify the working tree contains only the generated reference update and that docs:cli freshness passes.\n3. Commit the generated reference refresh, record verification, and retry git push origin main.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 - Run node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx and confirm only the generated reference changed.\n- Run node scripts/check-cli-reference-fresh.mjs.\n- Retry git push origin main and require the full pre-push gate to pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T13:16:40.311Z — VERIFY — ok
@@ -101,3 +92,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T13:15:36.981Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

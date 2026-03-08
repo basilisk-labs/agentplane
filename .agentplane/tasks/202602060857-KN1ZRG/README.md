@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: tasks now carry frontmatter.verification (pending|ok|needs_rework) and it is defaulted/preserved on write; lint + fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T09:00:20.944Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Extend task model to include verification object in frontmatter and ensure it is initialized/normalized on write."
@@ -46,10 +46,23 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

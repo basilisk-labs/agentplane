@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release apply now refreshes generated package-reference docs before creating the release commit, so post-release pre-push no longer discovers a stale docs/reference/generated-reference.mdx artifact."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T17:52:58.673Z"
 doc_updated_by: "CODER"
 description: "Ensure release apply or an earlier release gate keeps generated docs/reference/generated-reference.mdx in sync with bumped package versions so post-release pushes do not fail on regenerated docs drift."
@@ -71,11 +71,6 @@ Ensure release apply or an earlier release gate keeps generated docs/reference/g
 
 1. Inspect why release pre-push regenerated docs/reference/generated-reference.mdx after the 0.3.2 bump. 2. Fix the release flow so generated package reference data is refreshed deterministically before or during release apply, instead of surfacing only on the post-release push. 3. Add regression coverage and verify the release gates no longer leave this docs drift behind.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -89,10 +84,6 @@ Ensure release apply or an earlier release gate keeps generated docs/reference/g
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T17:52:50.780Z — VERIFY — ok
@@ -109,3 +100,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T17:46:19.019Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

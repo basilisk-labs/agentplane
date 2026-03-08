@@ -35,7 +35,7 @@ comments:
   -
     author: "CODER"
     body: "verified: 51T41E close: bun run ci | details: update doc sections and mark DONE."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:15.511Z"
 doc_updated_by: "agentplane"
 description: "Implement agentplane init with interactive prompts (IDE/workflow/hooks/recipes) plus non-TTY flags: --ide, --workflow, --hooks, --recipes, --yes."
@@ -48,19 +48,25 @@ Implemented agentplane init with flags and non-TTY defaults, plus tests covering
 
 Add init command (flags + non-TTY requirements), ensure ide sync/hook install options, and extend CLI tests to cover new parse branches.
 
-## Risks
+## Plan
 
-Low risk. Main risk is incorrect init flag validation or non-TTY enforcement; covered by CLI tests.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 git revert <commit>
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk. Main risk is incorrect init flag validation or non-TTY enforcement; covered by CLI tests.

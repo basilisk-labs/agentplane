@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran bun run test:fast | details: split CLI smoke into its own suite; added package-scoped test scripts; updated testing docs for new commands."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:40.730Z"
 doc_updated_by: "agentplane"
 description: "Speed up test runs, split suites for faster feedback, reduce timeouts/flakes, and update docs/CI as needed."
@@ -41,19 +41,25 @@ Optimize test runtime and modularity across CLI suites while keeping coverage an
 
 Audit current test scripts/suites, split into fast/targeted sets, optimize slow/flaky areas, and update docs/CI guidance.
 
-## Risks
+## Plan
 
-Suite reorganization could miss coverage or change execution order; tighter timeouts may surface new failures.
 
 ## Verify Steps
 
 Run fast suite and targeted suites; run full suite if time allows; ensure docs updated.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert test script/suite changes to prior config and remove new docs if instability persists.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Suite reorganization could miss coverage or change execution order; tighter timeouts may surface new failures.

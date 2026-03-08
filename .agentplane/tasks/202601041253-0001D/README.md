@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: "Workflow file exists and ensures tasks.json is kept in sync via GitHub Actions."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:18.745Z"
 doc_updated_by: "agentplane"
 description: "Document the new `.github/workflows/sync-tasks.yml` workflow that keeps tasks.json and GitHub Issues synchronized."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

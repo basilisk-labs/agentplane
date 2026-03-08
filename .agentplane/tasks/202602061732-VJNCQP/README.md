@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: stageAllowlist now uses git add -A -- <paths...> for deterministic staging of deletes/renames; added CLI lifecycle regression test for deletion staging; bun run test:cli:core passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T17:53:21.320Z"
 doc_updated_by: "CODER"
 description: "Update stageAllowlist to use git add -A -- <paths...> so deletes/renames are staged correctly under allowlist."
@@ -49,15 +49,11 @@ packages/agentplane/src/commands/guard/index.ts: stageAllowlist.
 
 1) Switch stageAllowlist to git add -A.\n2) Add CLI lifecycle regression test covering deleted file staging under allowlist.\n3) Run bun run test:cli:core.
 
-## Risks
+## Verify Steps
 
-Risk: -A stages all changes under each allowed pathspec; expected and desired for prefix allowlists.
+- bun run test:cli:core\n- bun run test:agentplane
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T17:51:37.099Z — VERIFY — ok
@@ -72,6 +68,9 @@ Note: bun run test:cli:core passed; added lifecycle regression test covering del
 
 Revert the commit for this task.
 
-## Verify Steps
+## Findings
 
-- bun run test:cli:core\n- bun run test:agentplane
+
+## Risks
+
+Risk: -A stages all changes under each allowed pathspec; expected and desired for prefix allowlists.

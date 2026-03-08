@@ -25,7 +25,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: Redmine setup section added with required custom fields, .env keys, and backend config example."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T15:00:28.732Z"
 doc_updated_by: "DOCS"
 description: "Add a Redmine setup section describing required custom fields and configuration for parity."
@@ -41,10 +41,8 @@ Document Redmine setup requirements and custom fields for backend parity.
 - Describe required custom fields and config keys.
 - Keep instructions concise and actionable.
 
-## Risks
+## Plan
 
-- Mismatch with actual Redmine field IDs if not updated in .env.
-- Docs may diverge from backend behavior.
 
 ## Verify Steps
 
@@ -58,9 +56,18 @@ Pending.
 - Reviewed docs/user/backends.mdx for Redmine setup section and custom fields list.
 - Confirmed .env keys and backend config example are included.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert docs/user/backends.mdx changes.
 - Update task doc Verification with rollback note if needed.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Mismatch with actual Redmine field IDs if not updated in .env.
+- Docs may diverge from backend behavior.

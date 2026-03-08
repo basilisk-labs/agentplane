@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: covered by dependent tasks' verification records. Summary: epic completed via CS7KA9, ZXJ9M4, JBHZSB, B7WC12, 5Z7C2Y, JRBN0P, G8K609, 96MNE3."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T12:38:49.364Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement write-if-changed + stable serialization, unify per-command CommandContext/GitContext/TaskStore, and minimize diff-noise + IO storms."
@@ -47,9 +47,13 @@ In scope: per-command context bootstrap (CommandContext), memoized Git facade (G
 
 1) Complete dependent tasks: CS7KA9 (write-if-changed), ZXJ9M4 (CommandContext), JBHZSB (GitContext), B7WC12 (TaskStore), 5Z7C2Y (normalizeTasks), JRBN0P (batch APIs), G8K609 (stable writes), 96MNE3 (tests).\n2) Confirm CI-equivalent verify commands pass (typecheck, lint, test:agentplane).\n3) Mark epic done once all deps are DONE.
 
-## Risks
+## Verify Steps
 
-Risk: behavior regressions in CLI guard/commit flows; Risk: accidental timestamp churn causing noisy diffs; Risk: filesystem concurrency issues (mtime guards) and git porcelain parsing edge cases.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -67,3 +71,10 @@ Note: Verified: covered by dependent tasks' verification records (typecheck, lin
 ## Rollback Plan
 
 If needed, revert the per-task commits for the dependent tasks; each change-set was kept localized and tested.
+
+## Findings
+
+
+## Risks
+
+Risk: behavior regressions in CLI guard/commit flows; Risk: accidental timestamp churn causing noisy diffs; Risk: filesystem concurrency issues (mtime guards) and git porcelain parsing edge cases.

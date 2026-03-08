@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Updated workflow docs to reflect direct-mode single-stream behavior and made export an explicit optional action."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T18:23:18.245Z"
 doc_updated_by: "DOCS"
 description: "Update workflow/task lifecycle/agents/branch_pr artifacts docs to match current direct and branch_pr behavior and command semantics."
@@ -54,6 +54,10 @@ id_source: "generated"
 ## Summary
 
 
+## Context
+
+Recent CLI changes clarified direct-mode single-stream behavior ( as a lock) and made export an explicit action. The workflow docs must reflect the current semantics and avoid implying implicit exports or per-task branches in direct mode.
+
 ## Scope
 
 In-scope: docs/user/workflow.mdx, docs/user/task-lifecycle.mdx, docs/user/agents.mdx, docs/user/branching-and-pr-artifacts.mdx. Out-of-scope: commands reference regeneration (handled by later docs tasks).
@@ -61,6 +65,24 @@ In-scope: docs/user/workflow.mdx, docs/user/task-lifecycle.mdx, docs/user/agents
 ## Plan
 
 1. Update direct-mode wording to reflect single-stream lock behavior (no per-task branches by default).\n2. Make export step explicit/optional via .agentplane/tasks.json.\n3. Add a concise sources-of-truth note to Agents docs.
+
+## Verify Steps
+
+- Confirm docs match `agentplane --help` summaries for `work start`, `integrate`, and lifecycle commands.
+- Confirm direct-mode sections do not claim that work start creates branches by default.
+- Confirm task lifecycle diagrams treat export as optional/explicit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+Revert the commits for this task to restore prior workflow doc wording.
+
+## Findings
+
 
 ## Risks
 
@@ -175,26 +197,3 @@ Commands:
     task verify-show  Print the task Verify Steps section (alias for task doc show --section "Verify Steps").
   Work:
     work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree). and per-command help for , , and lifecycle commands.
-
-## Verify Steps
-
-- Confirm docs match `agentplane --help` summaries for `work start`, `integrate`, and lifecycle commands.
-- Confirm direct-mode sections do not claim that work start creates branches by default.
-- Confirm task lifecycle diagrams treat export as optional/explicit.
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
-Revert the commits for this task to restore prior workflow doc wording.
-
-## Context
-
-Recent CLI changes clarified direct-mode single-stream behavior ( as a lock) and made export an explicit action. The workflow docs must reflect the current semantics and avoid implying implicit exports or per-task branches in direct mode.

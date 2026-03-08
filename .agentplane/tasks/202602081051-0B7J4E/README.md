@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: split branch/index.ts into focused modules and internal helpers; removed legacy *_USAGE constants and usageMessage coupling; removed legacy scenario dispatcher cmdScenario and usage constants; updated scenario-related tests to route through cli2 specs + parsed command functions; format, lint, typecheck, test:fast, and cli core suites pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T11:47:52.327Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split commands/branch/index.ts and commands/scenario.ts into focused modules; preserve behavior."
@@ -47,14 +47,22 @@ id_source: "generated"
 
 Decompose branch/scenario monoliths: split commands/branch/index.ts and commands/scenario.ts into focused modules; keep cli2 command handlers thin; keep behavior stable via tests.
 
-## Risks
+## Verify Steps
 
+### Commands
+- `bun run typecheck`
+- `bun run test:cli:core`
+- `bun run test:fast`
+
+### Assertions
+- `rg -n \"parse[A-Za-z0-9]*Flags\\(\" packages/agentplane/src/commands` returns empty.
+- `rg -n \"_USAGE(_EXAMPLE)?\b\" packages/agentplane/src/commands` returns empty.
+
+### Pass criteria
+- All commands succeed.
+- The assertions are satisfied.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T11:47:16.600Z — VERIFY — ok
@@ -70,17 +78,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T11:34:36.239Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-### Commands
-- `bun run typecheck`
-- `bun run test:cli:core`
-- `bun run test:fast`
 
-### Assertions
-- `rg -n \"parse[A-Za-z0-9]*Flags\\(\" packages/agentplane/src/commands` returns empty.
-- `rg -n \"_USAGE(_EXAMPLE)?\b\" packages/agentplane/src/commands` returns empty.
-
-### Pass criteria
-- All commands succeed.
-- The assertions are satisfied.
+## Risks

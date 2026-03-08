@@ -34,7 +34,7 @@ comments:
     author: "CODER"
     body: "Verified: Base branch resolution no longer guesses defaults; commands require an explicit pinned base branch or an explicit --base."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T13:53:01.886Z"
 doc_updated_by: "CODER"
 description: "Centralize base branch resolution in the git domain: a single resolveBaseBranch(gitCtx) function. Remove heuristics (origin/HEAD, silent env fallbacks). Base branch must be explicitly pinned/set or the command fails fast."
@@ -53,14 +53,15 @@ id_source: "generated"
 3. Update core and agentplane tests that relied on fallback behavior.
 4. Verify: vitest core + agentplane CLI suites.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T13:53:01.875Z — VERIFY — ok
@@ -72,3 +73,9 @@ Note: resolveBaseBranch is now fail-fast when unpinned; core + CLI tests updated
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

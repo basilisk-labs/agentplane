@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: "Recorded completion of sync_tasks.py so tasks.json stays aligned with GitHub Issues."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:18.403Z"
 doc_updated_by: "agentplane"
 description: "Ensure the local tasks.json reflects the completed synchronization script and the GitHub Issues mirror."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

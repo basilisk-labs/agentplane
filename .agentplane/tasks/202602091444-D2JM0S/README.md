@@ -57,7 +57,7 @@ events:
     from: "BLOCKED"
     to: "DONE"
     note: "Verified: not applicable (task superseded by 202602101501-J0ZCS3); symlink-based AGENTS.md install was intentionally removed"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T15:23:51.298Z"
 doc_updated_by: "CODER"
 description: "Update the packaged AGENTS.md policy to be installable with the framework (no repo-dev assumptions, no repo-local CLI paths, agentplane binary only). Ensure workspace root AGENTS.md is created as a symlink to the installed framework copy."
@@ -73,15 +73,19 @@ In scope:\n- packages/agentplane/assets/AGENTS.md\n- workspace install/upgrade b
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+Commands:\n- bun run lint\n- bun run test:full\n\nPass criteria:\n- All checks pass.\n- init creates .agentplane/AGENTS.md and root AGENTS.md symlink.\n- upgrade maintains the symlink and updates the managed copy.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-Commands:\n- bun run lint\n- bun run test:full\n\nPass criteria:\n- All checks pass.\n- init creates .agentplane/AGENTS.md and root AGENTS.md symlink.\n- upgrade maintains the symlink and updates the managed copy.
+
+## Risks

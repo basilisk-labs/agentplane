@@ -27,7 +27,7 @@ comments:
   -
     author: "docs"
     body: "Removed the markdown task board and updated docs/scripts; verified the repo contains no remaining references to it."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:20.279Z"
 doc_updated_by: "agentplane"
 description: "Remove references to the markdown task board and stop generating it; tasks.json remains the single source of truth."
@@ -39,16 +39,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

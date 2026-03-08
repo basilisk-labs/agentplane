@@ -29,7 +29,7 @@ comments:
   -
     author: "TESTER"
     body: "verified: Manual UI smoke-check not run here | details: please open the viewer to confirm dashboard cards, presets, and filters respond correctly."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:52.711Z"
 doc_updated_by: "agentplane"
 description: "Smoke-test new dashboards and document verify steps."
@@ -47,24 +47,27 @@ Dashboards add new filters and UI affordances; a quick manual check ensures coun
 - Verify dashboard rendering and preset interactions.
 - Record quick sanity checks for counts and filters.
 
-## Risks
+## Plan
 
-Risk: missing data could appear as blank cards; validate empty states.
 
 ## Verify Steps
 
 - Launch the viewer and click KPI cards/presets to confirm filter behavior.
 - Confirm owner/priority/tag bars update filters as expected.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert dashboard changes if critical failures are observed.
 
-## Notes
+## Findings
 
 No automated tests expected for this UI pass.
 
-## Plan
+## Risks
 
-
-## Verification
+Risk: missing data could appear as blank cards; validate empty states.

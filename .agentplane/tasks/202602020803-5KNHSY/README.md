@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: not run (workflow/doc/metadata changes only) | details: pre-commit hooks ran format/lint/test-fast as part of commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:42.869Z"
 doc_updated_by: "agentplane"
 description: "Add npm trusted publisher workflow for GitHub Actions, update release docs, and clean package repository URLs for publish."
@@ -44,19 +44,25 @@ Add GitHub Actions trusted publishing workflow, normalize npm repository URLs, a
 
 Add .github/workflows/publish.yml, update release-and-publishing doc, and normalize repository URLs in package metadata.
 
-## Risks
+## Plan
 
-Trusted publishing requires correct npm org permissions and matching workflow filename; incorrect setup can block publishing.
 
 ## Verify Steps
 
 Not run (workflow/doc changes only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit for 202602020803-5KNHSY.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Trusted publishing requires correct npm org permissions and matching workflow filename; incorrect setup can block publishing.

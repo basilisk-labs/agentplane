@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Prepared v0.2.0 (release notes + version bumps + validation scripts); fixed version-coupled init tests; created annotated git tag v0.2.0 at the release commit; full lint/test:full/coverage pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:45:24.028Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and push release v0.2.0: bump package versions (core + agentplane), add release notes docs/releases/v0.2.0.md, run validation scripts, create git tag v0.2.0, and push tag to trigger publish workflow."
@@ -74,9 +74,6 @@ id_source: "generated"
 6. Create git tag v0.2.0 at the release commit.
 7. Push commit(s) and tag to origin.
 
-## Risks
-
-
 ## Verify Steps
 
 1. bun run lint
@@ -88,10 +85,6 @@ id_source: "generated"
 7. git push origin main && git push origin v0.2.0
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T08:45:14.009Z — VERIFY — ok
@@ -107,7 +100,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:40:35.956Z, excerpt_
 ## Rollback Plan
 
 
-## Notes
+## Findings
 
 ### Overrides
 - Direct git operations will be used for tagging/pushing because there is no agentplane command for git tag/push.
+
+## Risks

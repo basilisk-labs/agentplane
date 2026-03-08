@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Added ensureNetworkApproved guard (prompt in TTY; require --yes otherwise) and applied it to recipes list-remote/install, upgrade remote fetch, and backend sync; updated tests and ran format:check, lint, test:fast, test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T10:29:09.585Z"
 doc_updated_by: "CODER"
 description: "Add guard ensureNetworkApproved and apply to recipe install/update/refresh, upgrade, redmine sync, remote fetch."
@@ -49,14 +49,15 @@ id_source: "generated"
 
 1) Add ensureNetworkApproved guard (interactive prompt; non-interactive requires --yes)\n2) Apply to recipes list-remote/install, upgrade, backend sync\n3) Add/adjust tests for --yes enforcement and preserve existing error mapping coverage\n4) Verify: bun run format:check, lint, test:fast, test:cli:core
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T10:28:42.818Z — VERIFY — ok
@@ -68,3 +69,9 @@ Note: E1: ensureNetworkApproved; wired to recipes/upgrade/sync; tests updated; b
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

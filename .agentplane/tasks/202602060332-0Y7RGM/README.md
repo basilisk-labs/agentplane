@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: README formatting stabilized with deterministic event rendering and export behavior; tests are green."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T05:49:29.661Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Optional: centralize task README formatting (frontmatter order, newlines, section normalization) in core to reduce diff noise. Include tests and docs if implemented."
@@ -45,15 +45,15 @@ Core task README rendering and export formatting; docs mention append-only event
 2) Implement stable formatting in core (frontmatter order/newlines/sections) with tests.
 3) Update docs if needed and verify.
 
-## Risks
+## Verify Steps
 
-Low; events remain optional to avoid breaking older tasks.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T05:47:43.319Z — VERIFY — ok
@@ -65,3 +65,11 @@ Note: bun run test:core and bun run test:agentplane passed; event rendering/expo
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks
+
+Low; events remain optional to avoid breaking older tasks.

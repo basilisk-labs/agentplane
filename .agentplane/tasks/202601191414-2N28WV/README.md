@@ -23,7 +23,7 @@ commit:
   hash: "3fb91cf7aaed42142d8e706dbda629c54a13b089"
   message: "✨ 2N28WV J99M5D add dashboard UI and aggregation"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Implement dashboard tab/cards, KPI widgets, and filter presets in the cyberpunk UI."
@@ -42,24 +42,27 @@ Dashboards should surface KPIs and breakdowns using fields already present in ta
 - Render KPI cards, breakdown bars, and health lists.
 - Add preset buttons and drill-down interactions.
 
-## Risks
+## Plan
 
-Risk: the UI may become dense on small screens; ensure responsive layout scales for mobile widths.
 
 ## Verify Steps
 
 - Open the viewer and confirm dashboard cards render and respond to clicks.
 - Check presets update task filters.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert dashboard UI changes in `.agent-plane/viewer/tasks.html`.
 
-## Notes
+## Findings
 
 Keep CSS aligned with existing cyberpunk palette and typography.
 
-## Plan
+## Risks
 
-
-## Verification
+Risk: the UI may become dense on small screens; ensure responsive layout scales for mobile widths.

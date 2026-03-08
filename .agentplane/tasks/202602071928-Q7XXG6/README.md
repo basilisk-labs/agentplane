@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run typecheck; bun run test:cli:core. Removed legacy cli/help.ts and routed --help through cli2 help (including per-command help), keeping output deterministic."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T08:00:15.193Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Delete legacy `cli/help.ts` and stop using `*_USAGE/*_USAGE_EXAMPLE` for E_USAGE."
@@ -54,20 +54,11 @@ Out of scope:
 
 Scope: remove legacy static help implementation and eliminate manual *_USAGE/*_USAGE_EXAMPLE constants from CLI error paths, consolidating usage/help rendering via cli2 specs.\n\nPlan:\n1) Replace legacy top-level help rendering with cli2 registry help output.\n2) Remove packages/agentplane/src/cli/help.ts and any remaining imports.\n3) Remove or stop exporting manual usage constants that are no longer used by CLI routing.\n4) Update tests/snapshots as needed to reflect new help output.\n\nVerification: bun run typecheck; bun run test:cli:core.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 Run:\n- bun run typecheck\n- bun run test:cli:core\n\nPass criteria:\n- agentplane --help and agentplane help are consistent\n- no remaining imports of packages/agentplane/src/cli/help.ts\n- usage errors come from cli2 usageError (or equivalent) instead of manual *_USAGE constants.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T07:59:02.111Z — VERIFY — ok
@@ -85,3 +76,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T07:55:52.860Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

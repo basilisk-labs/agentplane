@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: scaffolded Verify Steps now includes a strict placeholder marker for filled/unfilled gating; bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:14:02.936Z"
 doc_updated_by: "CODER"
 description: "Ensure new scaffold includes a strict placeholder marker to detect unfilled Verify Steps."
@@ -49,14 +49,15 @@ description: "Ensure new scaffold includes a strict placeholder marker to detect
 2) Ensure placeholder is present in all new scaffolds.
 3) Run bun run test:agentplane.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T17:13:19.654Z — VERIFY — ok
@@ -68,3 +69,9 @@ Note: Scaffold Verify Steps now includes a strict placeholder marker; bun run te
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

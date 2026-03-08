@@ -41,7 +41,7 @@ events:
     from: "TODO"
     to: "DOING"
     note: "start: add TaskStore cache layer and migrate status commands to update()"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T12:16:15.482Z"
 doc_updated_by: "CODEX"
 description: "Add TaskStore layer per command to avoid read/parse/write duplication; implement update(taskId, updater) with mtime guard + writeIfChanged; migrate start/block/finish/verify/doc ops to TaskStore.update."
@@ -70,14 +70,15 @@ Risks:
 Rollback:
 - revert TaskStore wiring and keep direct backend.getTask/writeTask flows.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T12:15:44.581Z — VERIFY — ok
@@ -89,3 +90,9 @@ Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

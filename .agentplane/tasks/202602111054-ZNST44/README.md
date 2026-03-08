@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: init now uses the requested ASCII logo and adds clearer vertical spacing between interactive sections and questions"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T10:57:06.941Z"
 doc_updated_by: "CODER"
 description: "Use requested ASCII logo in init, keep colorized output, and add blank lines around prompts/sections for readability."
@@ -70,10 +70,6 @@ In scope: packages/agentplane/src/cli/run-cli/commands/init/ui.ts и точки 
 ## Plan
 
 1) Обновить logo-паттерн. 2) Подправить цвет/блоки. 3) Добавить пустые строки после вопросов/секций. 4) Обновить/добавить тесты при необходимости.
-
-## Risks
-
-Риск: сломать тесты снапшотов или не-TTY вывод. Смягчение: сохранить graceful fallback без цветов и прогнать init-related тесты.
 
 ## Verify Steps
 
@@ -102,3 +98,10 @@ Ran: bun run test:cli:core -- packages/agentplane/src/cli/run-cli.core.init-upgr
 ## Rollback Plan
 
 Откатить изменения в ui.ts и init.ts до предыдущего коммита.
+
+## Findings
+
+
+## Risks
+
+Риск: сломать тесты снапшотов или не-TTY вывод. Смягчение: сохранить graceful fallback без цветов и прогнать init-related тесты.

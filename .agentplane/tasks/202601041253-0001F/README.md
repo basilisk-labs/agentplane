@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: "Added CODE_OF_CONDUCT.md covering standards, unacceptable behaviors, and reporting guidance."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:20.011Z"
 doc_updated_by: "agentplane"
 description: "Write a Code of Conduct that outlines expected community behavior, reporting channels, and enforcement principles."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

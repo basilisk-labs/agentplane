@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: not run (doc/guidance updates only) | details: manual review only, no code execution."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:56.079Z"
 doc_updated_by: "agentplane"
 description: "Ensure task creation enforces non-empty tags and update agent guidance to always pass tags when creating tasks."
@@ -40,19 +40,25 @@ Enforce non-empty tags when creating tasks and document the requirement for agen
 
 Update agentctl task creation validation and adjust agentctl/AGENTS/agent guidance to mention required tags.
 
-## Risks
+## Plan
 
-Task creation without tags will now error, which may break existing automation. Document the requirement and keep the error message clear.
 
 ## Verify Steps
 
 1) python .agent-plane/agentctl.py task new --title 'Tmp' --description 'Tmp' --priority low --owner ORCHESTRATOR --depends-on '[]' --tag smoke. 2) python .agent-plane/agentctl.py task new --title 'Tmp2' --description 'Tmp2' --priority low --owner ORCHESTRATOR --depends-on '[]' (expect error for missing tags).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit and rerun agentctl task lint if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Task creation without tags will now error, which may break existing automation. Document the requirement and keep the error message clear.

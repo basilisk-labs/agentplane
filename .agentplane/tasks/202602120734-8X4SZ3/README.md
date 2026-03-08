@@ -46,9 +46,35 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: contributing and release docs now describe github-only provenance publish and release prepublish parity gates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T08:07:07.855Z"
 doc_updated_by: "DOCS"
 description: "Refresh docs/developer/contributing.mdx and release-and-publishing.mdx with current GitHub-only publish policy, provenance requirements, release gates, and local preflight parity."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

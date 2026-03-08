@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Confirmed current codebase already contains the intended change; no additional implementation required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T08:08:13.250Z"
 doc_updated_by: "CODER"
 description: "Add a unit test that asserts buildHelpFastRegistry and buildRegistry expose the same command id set, to prevent drift."
@@ -72,11 +72,6 @@ packages/agentplane/src/cli/run-cli.core.help-contract.test.ts (или новы�
 1. В тесте собрать множества id (spec.id.join(" ")).
 2. Сравнить множества buildHelpFastRegistry().list() и buildRegistry(() => ctx).list().
 3. Убедиться, что тест падает при расхождении.
-
-## Risks
-
-Риск: buildRegistry требует контекст/проект и тест станет flaky.
-Митигация: использовать минимальный getCtx mock, который не трогает fs/git.
 
 ## Verify Steps
 
@@ -101,3 +96,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T08:08:12.724Z, excerpt_
 ## Rollback Plan
 
 git revert соответствующего коммита, затем bun run test:full.
+
+## Findings
+
+
+## Risks
+
+Риск: buildRegistry требует контекст/проект и тест станет flaky.
+Митигация: использовать минимальный getCtx mock, который не трогает fs/git.

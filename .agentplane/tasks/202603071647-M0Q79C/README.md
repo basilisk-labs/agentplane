@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: extracted framework-checkout detection and repo-local binary resolution with focused nested-cwd tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T16:50:36.488Z"
 doc_updated_by: "CODER"
 description: "Add framework-checkout detection that can resolve the nearest agentplane repo root from any nested cwd and identify the matching repo-local binary for handoff."
@@ -71,11 +71,6 @@ Add framework-checkout detection that can resolve the nearest agentplane repo ro
 
 1. Extract a helper that can detect the nearest framework checkout from any cwd by walking ancestors. 2. Resolve the matching repo-local agentplane binary and expose whether the current process is already that binary. 3. Add focused tests for repo-root and nested-cwd detection without changing runtime handoff yet.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -92,10 +87,6 @@ Add framework-checkout detection that can resolve the nearest agentplane repo ro
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T16:50:36.279Z — VERIFY — ok
 
@@ -111,3 +102,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:47:51.853Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

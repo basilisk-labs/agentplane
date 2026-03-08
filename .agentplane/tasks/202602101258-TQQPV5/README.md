@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: packages/spec is canonical for config.schema.json and divergence is enforced via scripts/sync-schemas.mjs; lint and schemas:check pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:58:10.080Z"
 doc_updated_by: "CODER"
 description: "Choose canonical schema source and add sync script + CI check/test to prevent drift."
@@ -69,18 +69,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 ### Scope\n- Config schema source of truth and sync/check between packages/spec and packages/core.\n\n### Checks\n- Lint\n- Schema sync check script passes\n\n### Evidence / Commands\n- bun run lint\n- bun run schemas:check\n\n### Pass criteria\n- Only one canonical config schema source is edited directly.\n- Check fails if packages/core schema diverges from packages/spec schema.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:57:05.816Z — VERIFY — ok
@@ -94,3 +87,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:54:19.018Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

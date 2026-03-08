@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: update-check cache utilities and TTL tests added; pre-commit hooks passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T06:00:41.246Z"
 doc_updated_by: "CODER"
 description: "Implement update-check cache read/write, TTL, and atomic writes."
@@ -45,19 +45,25 @@ Add update-check cache format, TTL handling, and atomic persistence.
 
 Introduce update-check cache read/write utilities, TTL logic, and atomic write for cache file.
 
-## Risks
+## Plan
 
-Risk: cache path or schema mismatch; mitigate with tests and explicit schema versioning.
 
 ## Verify Steps
 
 Run unit tests for update-check cache utilities; ensure TTL logic and atomic writes behave.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the cache utility commit to restore prior update-check behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: cache path or schema mismatch; mitigate with tests and explicit schema versioning.

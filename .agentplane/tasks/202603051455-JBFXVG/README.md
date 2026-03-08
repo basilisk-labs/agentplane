@@ -56,7 +56,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: AGENTS.md is now a compact gateway; modular policy docs and routing enforcement checks were added and validated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T15:04:49.187Z"
 doc_updated_by: "CODER"
 description: "Convert AGENTS.md into a compact policy gateway, move situational/repo workflow into modular .agentplane/policy docs, add reference examples, and enforce routing checks."
@@ -65,6 +65,10 @@ id_source: "generated"
 ## Summary
 
 Refactor AGENTS.md into a compact policy gateway and move situational repository workflow rules into modular policy documents under .agentplane/policy.
+
+## Context
+
+Current AGENTS.md is long and mixes policy, workflow and reference material. Goal is to reduce ambiguity and token overhead by routing to small policy modules loaded only when needed.
 
 ## Scope
 
@@ -75,19 +79,11 @@ Out of scope: changing runtime behavior of workflow commands, backends, or relea
 
 1) Draft compact AGENTS gateway with strict load rules. 2) Create canonical policy modules for workflow, DoD, security, governance, and examples. 3) Add routing enforcement script and regression test. 4) Wire check into CI scripts. 5) Run targeted checks and tests; record evidence.
 
-## Risks
-
-Risk 1: dropping a critical guardrail during split. Mitigation: keep hard gates in AGENTS.md and verify mapping. Risk 2: ambiguous load triggers. Mitigation: explicit IF->LOAD rules plus automated routing checks.
-
 ## Verify Steps
 
 Run: bun run policy:routing:check; bun run agents:check; bun test packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/agents/policy-routing-check.test.ts. Expected: all commands pass with no policy-routing or template-sync errors.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T15:00:56.029Z — VERIFY — ok
@@ -113,11 +109,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T15:01:32.573Z, excerpt_
 Revert commits that introduce gateway/policy split and restore previous AGENTS.md content.
 Remove added .agentplane/policy modules and policy routing checks if they cause regressions.
 
-## Context
-
-Current AGENTS.md is long and mixes policy, workflow and reference material. Goal is to reduce ambiguity and token overhead by routing to small policy modules loaded only when needed.
-
-## Notes
+## Findings
 
 ### Approvals / Overrides
 - None.
@@ -135,3 +127,7 @@ Current AGENTS.md is long and mixes policy, workflow and reference material. Goa
 - bun run policy:routing:check
 - bun run agents:check
 - bun test packages/agentplane/src/agents/agents-template.test.ts packages/agentplane/src/agents/policy-routing-check.test.ts
+
+## Risks
+
+Risk 1: dropping a critical guardrail during split. Mitigation: keep hard gates in AGENTS.md and verify mapping. Risk 2: ambiguous load triggers. Mitigation: explicit IF->LOAD rules plus automated routing checks.

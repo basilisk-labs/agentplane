@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:30.182Z"
 doc_updated_by: "agentplane"
 description: "Move help/quickstart source into CLI manifest, remove agentctl.md dependency, and harden npm publish with prepack/prepare."
@@ -44,19 +44,25 @@ Quickstart/role now use the built-in command guide, quickstart includes core CLI
 
 packages/agentplane/src/command-guide.ts; packages/agentplane/src/run-cli.ts; packages/agentplane/src/help.ts; packages/agentplane/src/run-cli.test.ts; docs/commands.mdx; docs/cli-contract.mdx; docs/audits/nodejs-parity-matrix.md; docs/audits/parity-report.md.
 
-## Risks
+## Plan
 
-Command guide text can drift from actual CLI behavior; quickstart/role output changes may surprise existing users.
 
 ## Verify Steps
 
 bun test packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the command-guide and CLI quickstart/role changes; restore prior help text if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Command guide text can drift from actual CLI behavior; quickstart/role output changes may surprise existing users.

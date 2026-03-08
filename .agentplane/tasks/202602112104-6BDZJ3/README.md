@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run ci and bun run release:prepublish both pass after workflow and commit policy updates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T21:09:56.897Z"
 doc_updated_by: "TESTER"
 description: "Run CI-equivalent and release-prepublish checks after workflow and commit policy updates."
@@ -62,15 +62,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) bun run ci
@@ -79,3 +70,16 @@ Expected: all checks pass (format/schemas/agents/typecheck/lint/coverage).
 Expected: release prepublish gate passes end-to-end.
 3) git status --short --untracked-files=no
 Expected: clean tracked tree after close commit.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

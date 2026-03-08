@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bookkeeping/no-op tasks can now be closed in one deterministic command without manual verify/finish chaining."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:47:27.137Z"
 doc_updated_by: "CODER"
 description: "Composite no-op close flow for docs/meta/research tasks without manual multi-command choreography."
@@ -67,14 +67,12 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000
+2. bunx eslint packages/agentplane/src/commands/task/close-noop.ts packages/agentplane/src/commands/task/close-noop.command.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:47:26.981Z — VERIFY — ok
@@ -90,7 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:43:05.115Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000
-2. bunx eslint packages/agentplane/src/commands/task/close-noop.ts packages/agentplane/src/commands/task/close-noop.command.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts
+
+## Risks

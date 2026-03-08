@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: frontmatter verify remains supported as optional string[] for back-compat; bun run test:fast passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:08:48.915Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Confirm frontmatter.verify: string[] semantics remain unchanged; new system must not require it."
@@ -47,14 +47,15 @@ description: "Confirm frontmatter.verify: string[] semantics remain unchanged; n
 2) Clarify that the two-stage model relies on Verify Steps + Verification sections, not frontmatter.verify.
 3) Run bun run test:fast.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T17:07:57.504Z — VERIFY — ok
@@ -66,3 +67,9 @@ Note: Back-compat documented: frontmatter verify remains optional string[]; bun 
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

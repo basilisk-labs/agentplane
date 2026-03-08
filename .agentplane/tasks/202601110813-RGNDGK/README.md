@@ -28,7 +28,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: py_compile redmine backend; lint clean (owner warnings only). Added retries/cache/targeted lookup, skip invalid IDs, avoid reassignment, and created REDMINE agent."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:37.813Z"
 doc_updated_by: "agentplane"
 description: "Improve Redmine connector (no legacy mutations, retries, targeted lookup, safe assignee) and introduce REDMINE agent with backend-aware policies."
@@ -51,25 +51,28 @@ Redmine connector still does full scans per lookup, mutates missing task_id fiel
 - Add simple retry/backoff for API calls with 429/5xx handling.
 - Introduce REDMINE agent JSON with policies (no reassignment if assigned, use agentctl/sync, respect config fields).
 
-## Risks
+## Plan
 
-- API search by custom field may behave differently across Redmine deployments; fallback must still succeed.
-- Retry/backoff could mask persistent failures if not surfaced.
-- Skipping invalid task IDs may hide data inconsistencies.
 
 ## Verify Steps
 
 - python -m py_compile .agent-plane/backends/redmine/backend.py .agent-plane/agentctl.py
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert Redmine backend and REDMINE agent changes.
 
-## Notes
+## Findings
 
 - Keep behavior backend-agnostic for other agents; REDMINE agent documents backend expectations.
 
-## Plan
+## Risks
 
-
-## Verification
+- API search by custom field may behave differently across Redmine deployments; fallback must still succeed.
+- Retry/backoff could mask persistent failures if not surfaced.
+- Skipping invalid task IDs may hide data inconsistencies.

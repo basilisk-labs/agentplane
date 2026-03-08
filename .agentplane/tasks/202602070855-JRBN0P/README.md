@@ -33,7 +33,7 @@ comments:
   -
     author: "CODEX"
     body: "Verified: bun run typecheck; bun run lint; bun run test:agentplane. Summary: add TaskBackend.getTasks and internal mapLimit; use bounded parallelism in LocalBackend getTasks/writeTasks/normalizeTasks and RedmineBackend.getTasks. Implementation: f20179238117."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T12:27:20.914Z"
 doc_updated_by: "CODEX"
 description: "Add backend batch methods (getTasks/updateTasks or writeTasks) with concurrency limits; use controlled parallelism for list/normalize/finish style operations to avoid IO storms."
@@ -51,9 +51,13 @@ In scope: add TaskBackend.getTasks(); implement LocalBackend.getTasks and Redmin
 
 1) Add TaskBackend.getTasks(taskIds) optional API.\n2) Implement bounded-parallel mapLimit helper (internal) and use it for LocalBackend.getTasks/writeTasks/normalizeTasks and RedmineBackend.getTasks.\n3) Keep behavior compatible: ordering stable; errors still surface.\n4) Run typecheck, lint, test:agentplane.
 
-## Risks
+## Verify Steps
 
-Risk: too much concurrency causing filesystem or API load; Risk: nondeterminism in error reporting; Risk: changed ordering of effects vs prior sequential loops.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -69,3 +73,11 @@ Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks
+
+Risk: too much concurrency causing filesystem or API load; Risk: nondeterminism in error reporting; Risk: changed ordering of effects vs prior sequential loops.

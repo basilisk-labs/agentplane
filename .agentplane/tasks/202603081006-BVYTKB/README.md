@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: canonical README v3 contract is documented in tasks-and-backends and aligned with current frontmatter boundaries."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T10:12:52.896Z"
 doc_updated_by: "PLANNER"
 description: "Document the new v3 task README structure, including Findings as the task-local observation layer and the boundary to policy incidents."
@@ -73,11 +73,6 @@ Document the new v3 task README structure, including Findings as the task-local 
 2. Record the contract in one canonical task/docs surface before broader wording sync.
 3. Verify the contract is internally consistent with current lifecycle commands and existing frontmatter behavior.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -91,10 +86,6 @@ Document the new v3 task README structure, including Findings as the task-local 
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T10:12:00.701Z — VERIFY — ok
@@ -111,3 +102,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T10:09:37.365Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

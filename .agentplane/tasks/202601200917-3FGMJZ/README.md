@@ -23,7 +23,7 @@ commit:
   hash: "eb7726cde89b054b7a86c61486e1f2bf161fc263"
   message: "✅ 3FGMJZ docs: document global recipes bundle"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-20T09:18:05+00:00"
 doc_updated_by: "agentctl"
 description: "Document the global recipes bundle format and CLI usage in RECIPES.md."
@@ -41,19 +41,25 @@ Users need to know how to build the bundle and how to read summary vs recipe det
 - Add global bundle section to RECIPES.md.
 - Document bundle build and bundle show commands.
 
-## Risks
+## Plan
 
-Docs could drift from CLI behavior if examples are inaccurate.
 
 ## Verify Steps
 
 Review RECIPES.md for accuracy and English-only wording.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert RECIPES.md changes.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Docs could drift from CLI behavior if examples are inaccurate.

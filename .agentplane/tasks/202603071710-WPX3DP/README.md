@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: runtime explain is now the explicit framework-dev workflow surface for rebuild, reinstall, verify, and optional global override."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T19:53:45.733Z"
 doc_updated_by: "CODER"
 description: "Unify repo-local runtime, rebuild, reinstall, and framework debugging into an explicit framework development mode or workflow."
@@ -71,11 +71,6 @@ Unify repo-local runtime, rebuild, reinstall, and framework debugging into an ex
 ## Plan
 
 1. Extend runtime explain into an explicit framework-development workflow surface: keep runtime facts, but add canonical rebuild, reinstall, verify, and optional force-global steps when running inside the framework checkout. 2. Cover the new workflow surface in runtime.command tests and sync the framework-development docs that currently describe these steps in scattered form. 3. Run targeted runtime tests, lint touched runtime/docs files, rebuild agentplane, and validate the rendered runtime explain output from dist.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -99,10 +94,6 @@ Unify repo-local runtime, rebuild, reinstall, and framework debugging into an ex
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T19:53:17.382Z — VERIFY — ok
 
@@ -119,8 +110,13 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T19:50:17.186Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Keep the change inside the existing runtime diagnostics surface; do not create a broad new subsystem.
 - The workflow must be explicit enough for framework contributors but should not leak unreleased beta-version semantics into public output.
 - Prefer one canonical path over scattered prose: rebuild, reinstall helper, runtime verify, optional force-global.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

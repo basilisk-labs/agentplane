@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Commit 769b13d6c21a captured AGENTS.md update; no additional verify commands configured."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T16:38:47.252Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Update AGENTS.md to instruct agents to run local packages/agentplane/bin/agentplane.js instead of system agentplane."
@@ -45,19 +45,25 @@ Updated AGENTS.md to require repo-local agentplane.js invocation and clarified s
 
 AGENTS.md only.
 
-## Risks
+## Plan
 
-Low risk. Documentation-only change; potential confusion if other docs still reference a system-installed agentplane.
 
 ## Verify Steps
 
 Not run (documentation-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert AGENTS.md to the previous guidance.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk. Documentation-only change; potential confusion if other docs still reference a system-installed agentplane.

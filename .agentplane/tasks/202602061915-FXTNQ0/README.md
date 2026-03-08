@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Removed duplicate helpers from recipes.ts by reusing shared utility modules (isRecord/dedupeStrings/resolvePathFallback) and kept behavior stable; ran bun run lint and bun run test:cli."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T20:13:38.747Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Убрать локальные dedupeStrings/resolvePathFallback/isRecord из recipes.ts, вынести/использовать shared/core утилиты."
@@ -48,14 +48,15 @@ id_source: "generated"
 3) Ensure behavior and error messages remain consistent.
 4) Run bun run lint + bun run test:cli.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T20:12:47.220Z — VERIFY — ok
@@ -67,3 +68,9 @@ Note: Verified locally on 2026-02-06: dedupe refactor in recipes.ts; bun run lin
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

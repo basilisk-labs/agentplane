@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Fixed depends_on parsing (ignore []), normalized frontmatter via task normalize, bun run test:fast."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T16:16:31.654Z"
 doc_updated_by: "CODER"
 description: "Treat depends_on: ['[]'] as empty and ignore literal [] input flags; normalize task README frontmatter."
@@ -47,9 +47,8 @@ Normalize depends_on handling so literal [] inputs do not create invalid referen
 - Normalize existing task READMEs via task normalize.
 - Update tests.
 
-## Risks
+## Plan
 
-- Behavior change could mask user typos if they intended a literal task id of [].
 
 ## Verify Steps
 
@@ -60,8 +59,16 @@ Normalize depends_on handling so literal [] inputs do not create invalid referen
 
 - ✅ bun run test:fast (pass).\n- ✅ task normalize rewrote depends_on to [] in affected READMEs.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert parsing/normalization changes.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Behavior change could mask user typos if they intended a literal task id of [].

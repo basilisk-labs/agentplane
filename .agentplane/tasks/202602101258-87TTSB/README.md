@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: global flag parsing now uses a single GLOBAL_FLAGS table for both prescanJsonErrors and parseGlobalArgs; lint and CLI core test suites pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:11:07.017Z"
 doc_updated_by: "CODER"
 description: "Remove duplication between prescanJsonErrors/parseGlobalArgs by introducing a single global flags table; update tests."
@@ -69,18 +69,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 ### Scope\n- Global flag parsing and jsonErrors prescan in packages/agentplane/src/cli/run-cli.ts.\n\n### Checks\n- Lint\n- CLI boot and misc parsing tests\n\n### Evidence / Commands\n- bun run lint\n- bun run test:agentplane packages/agentplane/src/cli/run-cli.core.boot.test.ts\n- bun run test:agentplane packages/agentplane/src/cli/run-cli.core.misc.test.ts\n\n### Pass criteria\n- Lint passes.\n- Tests pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:10:07.085Z — VERIFY — ok
@@ -94,3 +87,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:08:12.147Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

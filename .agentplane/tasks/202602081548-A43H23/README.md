@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run test:full; TaskStore/frontmatter mapping now includes result_summary/risk_level/breaking and TaskRecord parsing round-trips them; added lifecycle regression coverage."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T15:55:54.324Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Fix TaskStore and TaskRecord mapping so finish metadata fields are persisted in frontmatter and available to commit --close builder."
@@ -63,16 +63,21 @@ id_source: "generated"
 
 Update TaskStore frontmatter mapping and TaskRecord parsing to include result_summary/risk_level/breaking; add regression tests; run full suite.
 
-## Risks
+## Verify Steps
 
-- Risk of breaking backwards compatibility with existing task README frontmatter.
-- Risk of inconsistent ordering or missing defaults across backends.
+### Scope
+- Ensure finish metadata is persisted and round-trips through parsing.
+
+### Checks
+- bun run typecheck
+- bun run lint
+- bun run test:full
+
+### Pass criteria
+- All checks pass.
+- New regression tests prove persistence of result_summary/risk_level/breaking.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T15:55:47.889Z — VERIFY — ok
@@ -88,16 +93,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T15:48:50.543Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-### Scope
-- Ensure finish metadata is persisted and round-trips through parsing.
 
-### Checks
-- bun run typecheck
-- bun run lint
-- bun run test:full
+## Risks
 
-### Pass criteria
-- All checks pass.
-- New regression tests prove persistence of result_summary/risk_level/breaking.
+- Risk of breaking backwards compatibility with existing task README frontmatter.
+- Risk of inconsistent ordering or missing defaults across backends.

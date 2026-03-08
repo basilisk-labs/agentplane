@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "verified: 8V7XF4 bun run ci passed (format:check, lint, typecheck, coverage thresholds)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:05.289Z"
 doc_updated_by: "agentplane"
 description: "Document and enforce code quality criteria (lint/format/typecheck/tests/coverage) and standardize on bun for installs and scripts."
@@ -45,10 +45,8 @@ Define and enforce code quality gates (lint/format/typecheck/tests/coverage) and
 - Standardize commands/docs on bun.
 - Add a test runner + coverage enforcement suitable for a TS monorepo.
 
-## Risks
+## Plan
 
-- Coverage thresholds can block early iteration if set too high; choose a pragmatic baseline and raise later.
-- Switching package managers may break contributors' local flows; document migration clearly.
 
 ## Verify Steps
 
@@ -58,11 +56,19 @@ Define and enforce code quality gates (lint/format/typecheck/tests/coverage) and
 - `bun run test` passes.
 - `bun run coverage` meets thresholds.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert commits; restore npm-based scripts and lockfile if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Coverage thresholds can block early iteration if set too high; choose a pragmatic baseline and raise later.
+- Switching package managers may break contributors' local flows; document migration clearly.

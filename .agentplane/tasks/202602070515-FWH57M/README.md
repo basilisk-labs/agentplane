@@ -39,7 +39,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: backlog cleanup done, full CI passed, and release 0.1.9 prepared (notes + versions)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T05:53:29.843Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Resolve all non-DONE tasks by completing required work and finishing via agentplane. Then run full verification pipeline and prepare/push release 0.1.9."
@@ -58,9 +58,13 @@ id_source: "generated"
 3) Run full verification for the repo.
 4) Prepare and push release 0.1.9.
 
-## Risks
+## Verify Steps
 
-Release tagging/push requires manual confirmation due to policy; ensure tags and notes match.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -76,3 +80,11 @@ Note: bun run ci passed; release notes and version bumps for v0.1.9 are in place
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks
+
+Release tagging/push requires manual confirmation due to policy; ensure tags and notes match.

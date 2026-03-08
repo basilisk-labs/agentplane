@@ -30,7 +30,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/T-082/pr."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:27.640Z"
 doc_updated_by: "agentplane"
 description: "Update root README.md to reflect latest branch_pr workflow and agentctl behavior (integrate auto-refresh artifacts; integrate may skip verify when SHA already verified). Fix Mermaid diagram so it renders correctly on GitHub."
@@ -42,16 +42,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

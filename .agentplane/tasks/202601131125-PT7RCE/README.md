@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: closing as unnecessary; roadmap flow was superseded by BK0QY5 top-level plan + task prompt."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:43.857Z"
 doc_updated_by: "agentplane"
 description: "Update ORCHESTRATOR and PLANNER agent specs to enforce top-level task handling, decomposition/CREATOR fallback, explicit plan approval, roadmap creation with epics, offer to convert epics to tasks, and roadmap completion notes."
@@ -45,19 +45,25 @@ User requested that ORCHESTRATOR always treats the first message as a top-level 
 
 Update AGENTS.md orchestration rules and sync ORCHESTRATOR/PLANNER JSON workflows; no runtime code changes.
 
-## Risks
+## Plan
 
-Low risk; spec changes could misalign expectations if not mirrored in agent JSON.
 
 ## Verify Steps
 
 No tests (spec changes only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit to restore the previous agent specs.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; spec changes could misalign expectations if not mirrored in agent JSON.

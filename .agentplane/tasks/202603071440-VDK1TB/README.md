@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: finish guidance now treats direct-mode auto-close as the default story across user docs and the direct workflow policy module."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T15:00:37.980Z"
 doc_updated_by: "DOCS"
 description: "Update docs and CLI guidance so the normal direct-mode finish path reflects auto-close semantics without legacy mental models."
@@ -74,11 +74,6 @@ Update docs and CLI guidance so the normal direct-mode finish path reflects auto
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -92,10 +87,6 @@ Update docs and CLI guidance so the normal direct-mode finish path reflects auto
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T15:00:37.336Z — VERIFY — ok
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:57:55.819Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

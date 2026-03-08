@@ -35,7 +35,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: remaining AP roadmap tasks are DONE | details: closing the roadmap execution tracker."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:14.474Z"
 doc_updated_by: "agentplane"
 description: "Track and sequence closure of remaining AP-* roadmap tasks; execute sequentially with verification and docs updates."
@@ -48,19 +48,25 @@ description: "Track and sequence closure of remaining AP-* roadmap tasks; execut
 
 - Review remaining AP-* roadmap tasks and confirm DONE state.\n- Close this tracking task once dependencies are satisfied.
 
-## Risks
+## Plan
 
-- If new roadmap tasks are added later, this tracker may need reopening.\n- Status drift if a dependent task is re-opened without updating this task.
 
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task list --status TODO\n- python .agent-plane/agentctl.py task show 202601290715-K6G7A0
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reopen the task if any AP roadmap item is not DONE.\n- Re-run the verification steps after updates.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- If new roadmap tasks are added later, this tracker may need reopening.\n- Status drift if a dependent task is re-opened without updating this task.

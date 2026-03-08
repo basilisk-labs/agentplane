@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: task update migrated to cli2 spec-driven parsing/help; bun run typecheck; bun run test:cli:core; bun run test:fast."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T06:00:14.280Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task update` (replace-* flags, depends-on, verify)."
@@ -54,11 +54,6 @@ Out of scope:
 
 Plan:\n1. Define cli2 spec for task update (args/options/choices/repeatable/minCount) matching current semantics.\n2. Refactor cmdTaskUpdate implementation to accept parsed structured opts (no argv parsing).\n3. Wire spec into cli2 registry and remove legacy dispatcher branch for task update.\n4. Update/extend unit tests (workflow and run-cli core) to cover key flags: replace-tags/verify/depends-on, status, comment metadata, and E_USAGE cases.\n5. Run bun run typecheck and bun run test:cli:core (plus bun run test:fast if needed).\n6. Record verification, commit implementation, finish task, and commit closure README.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -79,10 +74,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T05:59:01.177Z — VERIFY — ok
 
@@ -99,3 +90,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T05:53:37.195Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

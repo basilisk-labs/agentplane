@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: persisted the generated package reference drift after the 0.3.2 release so the repository can be pushed cleanly with versions reflected in the docs reference."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T17:41:36.970Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Pre-push regenerated docs/reference/generated-reference.mdx after the 0.3.2 version bump. Persist that generated docs drift so main can be pushed cleanly after the 0.3.2 release and next-cycle roadmap commits."
@@ -71,11 +71,6 @@ Pre-push regenerated docs/reference/generated-reference.mdx after the 0.3.2 vers
 
 1. Persist the generated docs/reference/generated-reference.mdx update so package versions reflect 0.3.2. 2. Commit only that generated docs drift plus the new task README. 3. Push main cleanly after the post-release and next-cycle preparation commits.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -89,10 +84,6 @@ Pre-push regenerated docs/reference/generated-reference.mdx after the 0.3.2 vers
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T17:41:32.031Z — VERIFY — ok
@@ -109,3 +100,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T17:41:16.676Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: DESIGN.md tokens and constraints are applied in global styles and homepage modules, with matching guard checks in docs site validation."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:00:18.779Z"
 doc_updated_by: "CODER"
 description: "Implement typography, color tokens, spacing rhythm, no-radius/no-shadow constraints, and approved ornaments from DESIGN.md."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -77,11 +74,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -26,7 +26,7 @@ commit:
   hash: "36dea396b5c5d9e3c99d19c2782c6941c987cb6d"
   message: "✅ FQRW89 orchestrator: refresh global recipes bundle"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-20T09:18:20+00:00"
 doc_updated_by: "agentctl"
 description: "Ship a global recipes bundle, its CLI views, and orchestrator refresh guidance."
@@ -45,23 +45,26 @@ Agents should load a single bundle that describes all recipes, allowed commands,
 - Document bundle format and CLI usage.
 - Update ORCHESTRATOR workflow to refresh the bundle.
 
-## Risks
+## Plan
 
-Bundle could be large; enforce context limits and avoid network access.
 
 ## Verify Steps
 
 Review recipes.py, RECIPES.md, and ORCHESTRATOR.json for consistency.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert code and docs changes.
 
-## Notes
+## Findings
 
 Subtasks: 202601200917-MMT18V, 202601200917-3FGMJZ, 202601200917-FQRW89.
 
-## Plan
+## Risks
 
-
-## Verification
+Bundle could be large; enforce context limits and avoid network access.

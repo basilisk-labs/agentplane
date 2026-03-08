@@ -26,7 +26,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: task lint passes after commit backfill; legacy branch parsing removed per request."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:37.536Z"
 doc_updated_by: "agentplane"
 description: "Drop old T-### compatibility from agentctl/clean.sh and backfill commit metadata on DONE tasks to keep lint clean."
@@ -47,24 +47,27 @@ We no longer need legacy T-### branches or task reid; branch_pr mode should only
 - Simplify clean.sh scrubbing to stop rewriting examples to T-###.
 - Backfill commit metadata for all DONE tasks and regenerate tasks.json so lint passes.
 
-## Risks
+## Plan
 
-- Removing legacy parsing could block users still on old T-### branches (not expected per request).
-- Bulk backfill touches many README files; git history noise.
 
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task lint
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert agentctl/clean.sh and tasks README backfill commits.
 
-## Notes
+## Findings
 
 - Owner warnings for 'AUTOMATION' remain; acceptable as lint warnings.
 
-## Plan
+## Risks
 
-
-## Verification
+- Removing legacy parsing could block users still on old T-### branches (not expected per request).
+- Bulk backfill touches many README files; git history noise.

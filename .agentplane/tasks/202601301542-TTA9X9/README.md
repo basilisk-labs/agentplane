@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran bun run test -- packages/agentplane/src/run-cli.test.ts | details: quickstart/role now use CLI help output."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:30.711Z"
 doc_updated_by: "agentplane"
 description: "Remove dependency on .agentplane/agentctl.md and generate quickstart/role guidance from current CLI help."
@@ -43,19 +43,25 @@ description: "Remove dependency on .agentplane/agentctl.md and generate quicksta
 
 - Update quickstart and role commands to use renderHelp output.\n- Remove role guide parsing from agentctl.md.\n- Adjust tests and help text as needed.
 
-## Risks
+## Plan
 
-- Behavior change could break workflows relying on agentctl.md role guide.\n- Help output must stay accurate to avoid confusing guidance.
 
 ## Verify Steps
 
 - bun run test -- packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert quickstart/role changes and restore agentctl.md parsing if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Behavior change could break workflows relying on agentctl.md role guide.\n- Help output must stay accurate to avoid confusing guidance.

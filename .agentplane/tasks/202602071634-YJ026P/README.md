@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Agent instructions now require ISO 8601 UTC timestamps with time for plan approval and verification notes, and the CLI core test suite passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T16:48:44.340Z"
 doc_updated_by: "CODER"
 description: "Update agent instruction templates and local agent definitions to require ISO 8601 UTC timestamps (with time) in plan approval and verification notes."
@@ -58,9 +58,13 @@ Task metadata notes sometimes used date-only strings (YYYY-MM-DD). We now normal
    - Avoid date-only values like `2026-02-07`.
 3. Run `bun run test:cli:core`.
 
-## Risks
+## Verify Steps
 
-- Overly strict wording could confuse agents that do not directly set plan approvals; keep the instruction scoped to when they do.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -79,3 +83,10 @@ Note: Verified: Updated local and asset agent instructions to require ISO 8601 U
 ## Rollback Plan
 
 Revert the commit for this task.
+
+## Findings
+
+
+## Risks
+
+- Overly strict wording could confuse agents that do not directly set plan approvals; keep the instruction scoped to when they do.

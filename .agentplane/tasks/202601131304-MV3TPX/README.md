@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: downstream tasks D4ZA6S, 7JXJF7, and E1625C are closed; umbrella tracks config, docs, and agent guidance updates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:47.266Z"
 doc_updated_by: "agentplane"
 description: "Umbrella for adding configurable agentctl settings, updating config.json/CLI/docs, and optimizing AGENTS/agents per UPDATER. Downstream: 202601131304-D4ZA6S (config+CLI), 202601131304-7JXJF7 (docs), 202601131304-E1625C (AGENTS optimization)."
@@ -43,23 +43,26 @@ Coordinates downstream tasks for config changes, documentation updates, and agen
 
 Tracks 202601131304-D4ZA6S (config+CLI), 202601131304-7JXJF7 (docs), and 202601131304-E1625C (agent guidance).
 
-## Risks
+## Plan
 
-No direct changes; risks are covered by downstream tasks.
 
 ## Verify Steps
 
 See downstream task verify steps; no separate verification for umbrella.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert downstream commits for the config, docs, and agent guidance tasks.
 
-## Notes
+## Findings
 
 Umbrella task only; completion depends on downstream tasks being closed.
 
-## Plan
+## Risks
 
-
-## Verification
+No direct changes; risks are covered by downstream tasks.

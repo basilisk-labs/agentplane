@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Guard and hooks share consistent commit policy behavior (tasks_path from config, robust allowlist matching, branch_pr base restrictions); commit-msg hook requires AGENTPLANE_TASK_ID; bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T19:39:09.220Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-RNTNEP) Унифицировать policy: protected paths из config, allowlist matching через path.relative, commit-msg и guard используют core validateCommitSubject; hooks не должны дергать backend/network."
@@ -47,14 +47,15 @@ id_source: "generated"
 
 1) Extract shared commit/allowlist path policy helpers.\n2) Use config.paths.tasks_path in guard, and switch allowlist matching to path.relative-based logic.\n3) Add branch_pr base-branch restrictions to guard commit (align with pre-commit hook).\n4) Make commit-msg hook avoid backend/network (require AGENTPLANE_TASK_ID if needed).\n5) Update tests and run bun run test:agentplane.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T19:37:41.003Z — VERIFY — ok
@@ -66,3 +67,9 @@ Note: bun run test:agentplane passed.
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

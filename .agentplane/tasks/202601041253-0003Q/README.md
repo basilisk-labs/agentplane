@@ -23,7 +23,7 @@ commit:
   hash: "1939744c7df301f0a9b1533a7ff7025624d45a3c"
   message: "Legacy completion (backfill)"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-24T18:16:17+00:00"
 doc_updated_by: "agentctl"
 description: "Update .github sync scripts to treat tasks.json as a snapshot and export before syncing."
@@ -38,31 +38,37 @@ dirty: false
 - Update sync script text to clarify tasks.json is an exported snapshot.
 - Expand workflow triggers to include backend/task changes.
 
-## Goal
-
-- Keep GitHub issues in sync with the backend by exporting `.agent-plane/tasks.json` on each sync.
-
 ## Scope
 
 - `.github/workflows/sync-tasks.yml`: add export step and additional trigger paths.
 - `.github/scripts/sync_tasks.py`: update source-of-truth messaging and snapshot guard.
 
-## Risks
+## Plan
 
-- Sync will fail if the backend export command errors in CI.
 
 ## Verify Steps
 
 - `python3 -m py_compile .github/scripts/sync_tasks.py`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - `git checkout -- .github/workflows/sync-tasks.yml .github/scripts/sync_tasks.py`
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Keep GitHub issues in sync with the backend by exporting `.agent-plane/tasks.json` on each sync.
+
+## Risks
+
+- Sync will fail if the backend export command errors in CI.
 
 ## Changes Summary (auto)
 

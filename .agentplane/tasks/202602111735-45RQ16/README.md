@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: doctor now flags DONE tasks with missing commit hashes, unknown hashes, and misuse of close commits as implementation commits; regression tests added."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:43:56.073Z"
 doc_updated_by: "CODER"
 description: "Extend doctor to flag DONE tasks that violate commit metadata expectations and provide deterministic remediation guidance."
@@ -57,6 +57,10 @@ id_source: "generated"
 
 Extend doctor with commit invariants for DONE tasks based on .agentplane/tasks.json snapshot.
 
+## Context
+
+DONE tasks should retain implementation commit metadata; accidental close-commit hashes should be detected.
+
 ## Scope
 
 In scope: doctor runtime checks and doctor.command tests for missing/invalid DONE commit metadata.
@@ -65,26 +69,25 @@ In scope: doctor runtime checks and doctor.command tests for missing/invalid DON
 
 1) Add snapshot-based DONE task commit checks in doctor. 2) Detect missing hash and close-commit misuse. 3) Add regression tests.
 
-## Risks
+## Verify Steps
 
-Potential false positives on legacy repos with malformed task snapshots; keep checks explicit and actionable.
+bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts
 
 ## Verification
 
 Pending execution.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert doctor.run.ts and doctor.command.test.ts changes.
 
-## Context
-
-DONE tasks should retain implementation commit metadata; accidental close-commit hashes should be detected.
-
-## Verify Steps
-
-bunx vitest run packages/agentplane/src/commands/doctor.command.test.ts
-
-## Notes
+## Findings
 
 ### Decisions\n- Use tasks snapshot to avoid backend/env coupling in doctor.\n### Implementation Notes\n- Pending.
+
+## Risks
+
+Potential false positives on legacy repos with malformed task snapshots; keep checks explicit and actionable.

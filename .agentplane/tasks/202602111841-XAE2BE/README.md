@@ -48,7 +48,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: ran full local release prepublish gate, applied v0.2.19, GitHub publish workflow 21918489642 succeeded, and both packages were published with signed provenance."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T18:51:02.976Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and apply patch release v0.2.19, push tag, verify GitHub publish workflow succeeds with provenance and marks release as latest."
@@ -64,10 +64,23 @@ id_source: "generated"
 
 1. Generate release plan for next patch. 2. Write docs/releases/v0.2.19.md. 3. Run full local release prepublish gate. 4. Apply release with --push and confirm tag. 5. Verify GitHub Publish workflow success and npm versions.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

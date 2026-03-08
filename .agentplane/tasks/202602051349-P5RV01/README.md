@@ -29,7 +29,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: ROADMAP.md updated with Epic F/AP-050/AP-051 DONE status lines."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T13:51:56.277Z"
 doc_updated_by: "DOCS"
 description: "Mark Epic F (AP-050/AP-051) as DONE in ROADMAP.md."
@@ -43,9 +43,8 @@ Mark Epic F and its tasks as done in ROADMAP.md with dates and task IDs.
 
 Update Epic F and AP-050/AP-051 status lines in ROADMAP.md.
 
-## Risks
+## Plan
 
-Low risk; ensure statuses match actual completed tasks and dates.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Low risk; ensure statuses match actual completed tasks and dates.
 
 Verified on 2026-02-05: ROADMAP.md shows Epic F/AP-050/AP-051 marked DONE with correct dates and task IDs.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert ROADMAP.md status lines for Epic F/AP-050/AP-051.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Low risk; ensure statuses match actual completed tasks and dates.

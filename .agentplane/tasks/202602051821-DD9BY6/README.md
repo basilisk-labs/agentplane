@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: run-cli core tests pass with updated 0.1.6 install subject expectations."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T18:23:53.111Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Adjust run-cli core tests to expect the current package version (0.1.6) after the version bump."
@@ -42,9 +42,8 @@ Update init tests to expect agentplane 0.1.6 after version bump.
 
 Update run-cli core test assertions for init install commit subject.
 
-## Risks
+## Plan
 
-Low: mismatched expectations could still break CI/push hooks.
 
 ## Verify Steps
 
@@ -54,8 +53,16 @@ Command: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts
 
 Ran: bunx vitest run packages/agentplane/src/cli/run-cli.core.test.ts
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Restore previous version strings in test expectations.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Low: mismatched expectations could still break CI/push hooks.

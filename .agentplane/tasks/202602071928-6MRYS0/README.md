@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: task doc set/show migrated to cli2 with spec-driven parsing/help; bun run typecheck; bun run test:cli:core; bun run test:fast; bun run lint."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T06:17:42.651Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `task doc set/show`."
@@ -54,11 +54,6 @@ Out of scope:
 
 Plan:\n1. Define cli2 specs for task doc show and task doc set (subcommands under task doc).\n2. Preserve current behavior for section selection, quiet mode, --file vs inline text, and --updated-by validation.\n3. Wire specs into cli2 registry and remove legacy dispatcher for task doc.\n4. Update run-cli core tests to match cli2 error wording (missing value/unknown option) while preserving semantics.\n5. Run bun run typecheck, bun run test:cli:core, bun run test:fast.\n6. Record verification, commit, finish, and closure commit.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -79,10 +74,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T06:15:40.153Z — VERIFY — ok
 
@@ -99,3 +90,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T06:08:38.754Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

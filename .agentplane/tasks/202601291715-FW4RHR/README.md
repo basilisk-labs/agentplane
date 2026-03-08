@@ -25,7 +25,7 @@ commit:
   hash: "acdc0e8f58aee85f03189caee3b228c2b082dbbd"
   message: "✨ 202601291715-FW4RHR 202601291715-KJ12XA add github-sync and dokploy recipes"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-30T03:08:45+00:00"
 doc_updated_by: "agentctl"
 description: "Create a recipe that installs the GitHub Issues/Projects sync workflow and script for tasks.json."
@@ -45,24 +45,27 @@ This recipe packages the existing GitHub Issues/Projects sync workflow and scrip
 - install-github-sync tool for copying assets and filling placeholders from .env
 - Recipes index entry
 
-## Risks
+## Plan
 
-- Missing or incorrect .env values can leave placeholders in the workflow.
-- GitHub repo settings or permissions can block the workflow from running.
 
 ## Verify Steps
 
 - Not run (recipe metadata and assets only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Remove the github-sync recipe files and delete its index entry.
 
-## Notes
+## Findings
 
 The install tool reads owner/repo/project values from .env and substitutes placeholders in the workflow.
 
-## Plan
+## Risks
 
-
-## Verification
+- Missing or incorrect .env values can leave placeholders in the workflow.
+- GitHub repo settings or permissions can block the workflow from running.

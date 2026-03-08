@@ -55,7 +55,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: start/block/verify/finish specs are now spec-only and their runtime handlers are lazy-loaded; lint and CLI lifecycle test suite pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:46:50.360Z"
 doc_updated_by: "CODER"
 description: "Split start/block/verify/finish/commit into spec+run; update command catalog; run critical lifecycle tests."
@@ -70,18 +70,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 ### Scope\n- Split spec vs runtime handler for lifecycle commands: start, block, verify, finish (commit already uses commit.spec.ts).\n- Ensure command catalog imports specs only and lazy-loads runtime handlers via entry.load().\n\n### Checks\n- Lint\n- Lifecycle contract tests\n\n### Evidence / Commands\n- bun run lint\n- bun run test:agentplane packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts\n\n### Pass criteria\n- Lint passes.\n- Lifecycle tests pass.\n- command-catalog imports start/block/verify/finish specs from spec-only modules.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:45:41.870Z — VERIFY — ok
@@ -95,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:40:09.475Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

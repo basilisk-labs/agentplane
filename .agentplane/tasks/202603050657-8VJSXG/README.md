@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Core workflow operations now cover debug/sync/land with evidence capture, extension recipes are narrowed to non-core domains, and docs/CLI snapshots were regenerated and validated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T08:01:40.659Z"
 doc_updated_by: "CODER"
 description: "Implement a recipe/playbook layer for debug, sync, and land operations and enforce evidence capture in scenario run artifacts."
@@ -63,9 +63,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -84,10 +81,6 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T08:01:32.345Z — VERIFY — ok
 
@@ -104,3 +97,9 @@ Checks run:\n- bunx eslint (changed workflow/recipes/docs files)\n- bunx vitest 
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

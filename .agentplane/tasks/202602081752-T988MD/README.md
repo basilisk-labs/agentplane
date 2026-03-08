@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: applied prod-v1.1 policy patch to root + template; Prettier check passed"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T17:59:09.668Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Apply Agentplane Policy v1.1 patch to root AGENTS.md and packages/agentplane/assets/AGENTS.md: add definitions/override protocol/drift policy, clarify approvals, and update CLI invocation guidance."
@@ -76,16 +76,20 @@ Out of scope:
 
 Apply Agentplane Policy v1.1 patch to AGENTS.md and packages/agentplane/assets/AGENTS.md; run Prettier; commit and export.
 
-## Risks
+## Verify Steps
 
-- Large policy diffs can create merge conflicts if other policy edits land concurrently.
-- Pre-commit hooks enforce Prettier; ensure formatting passes before commit.
+Pass criteria:
+- Both policy files declare `AGENTS_POLICY: prod-v1.1`.
+- Both policy files include: Definitions, Approval gates, Override Protocol, Drift Policy.
+- `bunx prettier AGENTS.md packages/agentplane/assets/AGENTS.md --check` passes.
+
+Checks to run:
+- `rg -n "AGENTS_POLICY: prod-v1.1" AGENTS.md packages/agentplane/assets/AGENTS.md`
+- `rg -n "OVERRIDE PROTOCOL" AGENTS.md packages/agentplane/assets/AGENTS.md`
+- `rg -n "DRIFT POLICY" AGENTS.md packages/agentplane/assets/AGENTS.md`
+- `bunx prettier AGENTS.md packages/agentplane/assets/AGENTS.md --check`
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T17:58:12.190Z — VERIFY — ok
@@ -106,15 +110,10 @@ Updated AGENTS.md and packages/agentplane/assets/AGENTS.md to prod-v1.1: definit
 
 Revert the commits from this task to restore the previous policy files.
 
-## Verify Steps
+## Findings
 
-Pass criteria:
-- Both policy files declare `AGENTS_POLICY: prod-v1.1`.
-- Both policy files include: Definitions, Approval gates, Override Protocol, Drift Policy.
-- `bunx prettier AGENTS.md packages/agentplane/assets/AGENTS.md --check` passes.
 
-Checks to run:
-- `rg -n "AGENTS_POLICY: prod-v1.1" AGENTS.md packages/agentplane/assets/AGENTS.md`
-- `rg -n "OVERRIDE PROTOCOL" AGENTS.md packages/agentplane/assets/AGENTS.md`
-- `rg -n "DRIFT POLICY" AGENTS.md packages/agentplane/assets/AGENTS.md`
-- `bunx prettier AGENTS.md packages/agentplane/assets/AGENTS.md --check`
+## Risks
+
+- Large policy diffs can create merge conflicts if other policy edits land concurrently.
+- Pre-commit hooks enforce Prettier; ensure formatting passes before commit.

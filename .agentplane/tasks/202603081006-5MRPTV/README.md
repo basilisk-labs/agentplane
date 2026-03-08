@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: policy, docs, and agent prompt surfaces now describe the version-aware README v3 contract and Findings boundary consistently."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T10:17:41.508Z"
 doc_updated_by: "DOCS"
 description: "Update policy modules, user docs, and agent prompt assets to speak the new README v3 language, replacing Notes with Findings and clarifying Verify Steps semantics."
@@ -74,11 +74,6 @@ Update policy modules, user docs, and agent prompt assets to speak the new READM
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Review the touched policy, docs, and agent prompt surfaces. Expected: they consistently use Findings as the task-local section and keep incidents as curated policy memory.
@@ -86,10 +81,6 @@ Update policy modules, user docs, and agent prompt assets to speak the new READM
 3. Build the docs site. Expected: documentation changes compile without errors.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T10:16:47.926Z — VERIFY — ok
@@ -106,3 +97,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T10:14:32.272Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

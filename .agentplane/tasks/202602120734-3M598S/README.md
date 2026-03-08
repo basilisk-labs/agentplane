@@ -46,9 +46,35 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: refreshed help glossary and troubleshooting symptoms to match current CLI behavior, flags, and remediation paths."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T07:57:35.442Z"
 doc_updated_by: "DOCS"
 description: "Rewrite docs/help/glossary.mdx, troubleshooting.mdx, troubleshooting-by-symptom.mdx to match current command names, failure modes, diagnostics, and remediation steps."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

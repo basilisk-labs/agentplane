@@ -32,7 +32,7 @@ comments:
   -
     author: "CODEX"
     body: "Verified: bun run typecheck; bun run lint; bun run test:agentplane. Summary: add GitContext porcelain -z parsing tests and TaskStore.update mtime guard retry/fail tests. Implementation: 59afd1b41654."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T12:37:22.937Z"
 doc_updated_by: "CODEX"
 description: "Add focused tests for GitContext.statusChangedPaths handling spaces/renames/deletes (-z), TaskStore.update conflict guard, and stable JSON write-if-changed no-diff behavior."
@@ -50,15 +50,15 @@ In scope: new tests under packages/agentplane/src for GitContext.statusChangedPa
 
 1) Add GitContext.statusChangedPaths tests for porcelain -z parsing (spaces, renames, deletes, untracked).\n2) Add TaskStore.update test that simulates concurrent modification (mtime change) and asserts retry/guard behavior.\n3) Add write-if-changed tests: identical content yields changed=false and does not modify file.\n4) Run typecheck, lint, test:agentplane.
 
-## Risks
+## Verify Steps
 
-Risk: brittle tests depending on git porcelain formatting; Risk: tests that touch real filesystem without isolation.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T12:37:16.533Z — VERIFY — ok
@@ -72,3 +72,10 @@ Note: Verified: bun run typecheck; bun run lint; bun run test:agentplane
 ## Rollback Plan
 
 Revert the added tests; no production behavior changes.
+
+## Findings
+
+
+## Risks
+
+Risk: brittle tests depending on git porcelain formatting; Risk: tests that touch real filesystem without isolation.

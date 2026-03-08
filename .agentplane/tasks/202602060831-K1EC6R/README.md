@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: config/doc templates now include ## Plan and tasks carry frontmatter.plan_approval; schemas updated and fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T08:38:39.612Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Introduce free-form ## Plan section and machine-checkable frontmatter.plan_approval (pending/approved/rejected) for require_plan enforcement."
@@ -46,10 +46,23 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint; bunx vitest run packages/agentplane/src/commands/upgrade.safety.test.ts; ensures .agentplane/tasks/** is never modified by upgrade even if present in upstream bundle."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T14:25:12.234Z"
 doc_updated_by: "TESTER"
 description: "Add denylist enforcement for .agentplane/tasks/** and .git/**; add tests that prove upgrade never writes user-owned data, even when upstream contains it."
@@ -67,14 +67,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T14:22:38.894Z — VERIFY — ok
@@ -88,3 +89,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T14:21:37.043Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

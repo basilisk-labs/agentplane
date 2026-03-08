@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: scoped CI scripts and docs updates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:22.773Z"
 doc_updated_by: "agentplane"
 description: "Add scoped dev checks (lint/typecheck/tests) to run only for targeted packages/files while keeping full ci intact."
@@ -44,19 +44,25 @@ Added scoped CI scripts for per-package checks (format/lint/typecheck/tests) plu
 
 - Add @scripts/ci-scope.mjs to run scoped format/lint/typecheck/tests per package scope.\n- Add scoped scripts in @package.json (ci:agentplane, ci:core, ci:recipes, ci:spec, ci:testkit).\n- Document scoped checks in @docs/code-quality.mdx.
 
-## Risks
+## Plan
 
-- Scoped runs could miss cross-package integration issues; full CI remains required before release.\n- If a scope has no tests, vitest run may fail without matching files; script guards and scope selection mitigate this.
 
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the task commit and remove scoped scripts/doc updates if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Scoped runs could miss cross-package integration issues; full CI remains required before release.\n- If a scope has no tests, vitest run may fail without matching files; script guards and scope selection mitigate this.

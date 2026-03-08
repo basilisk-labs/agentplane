@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: close-commit regression suite now covers parser-level option guards plus operational behavior for preflight and auto-unstage flows."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:17:37.987Z"
 doc_updated_by: "TESTER"
 description: "Cover duplicate close command, unstage-others behavior, and check-only semantics in CLI tests."
@@ -68,14 +68,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000
+2. bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000
+3. bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:17:37.838Z — VERIFY — ok
@@ -91,8 +90,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:15:57.328Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000
-2. bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000
-3. bunx eslint packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts
+
+## Risks

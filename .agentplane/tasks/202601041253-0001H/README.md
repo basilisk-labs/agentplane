@@ -27,7 +27,7 @@ comments:
   -
     author: "docs"
     body: "Added tasks.html as a local-first viewer for tasks.json (auto-load over HTTP, plus file picker/drag-drop when opened via file://)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:20.614Z"
 doc_updated_by: "agentplane"
 description: "Add a standalone HTML interface to view and filter tasks.json (search, status/owner/priority/tag filters, sorting, and file:// fallback via file picker)."
@@ -39,16 +39,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

@@ -55,7 +55,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Implemented approval escalation matrix with conservative overrides for network/force, added require_force schema support, and validated via focused core/agentplane tests plus package builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T15:30:16.582Z"
 doc_updated_by: "CODER"
 description: "Implement applyExecutionToApprovals matrix and new agents.approvals.require_force schema/default wiring."
@@ -73,19 +73,11 @@ In scope: config schema/types/defaults and approval-transform utility. Out of sc
 
 1) Extend config schema/types with require_force default false. 2) Add applyExecutionToApprovals helper with conservative/balanced/aggressive matrix. 3) Integrate helper into shared approval requirements resolution. 4) Add tests.
 
-## Risks
-
-Risk: regression in config validation/defaulting. Mitigation: add focused core config tests and approval transform tests.
-
 ## Verify Steps
 
 - bun run test:core -- packages/core/src/config\n- bun run test:agentplane -- packages/agentplane/src/commands/shared\n- bun run lint\nExpected: schema/defaults and escalation logic are validated.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T15:29:15.534Z — VERIFY — ok
@@ -101,3 +93,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T15:24:06.093Z, excerpt_
 ## Rollback Plan
 
 Revert config schema/type and escalation helper commits together.
+
+## Findings
+
+
+## Risks
+
+Risk: regression in config validation/defaulting. Mitigation: add focused core config tests and approval transform tests.

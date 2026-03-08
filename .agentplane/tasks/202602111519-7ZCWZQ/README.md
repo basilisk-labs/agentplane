@@ -43,7 +43,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: Execution profile policy now explicitly describes approval escalation for network and force actions while preserving CLI capability boundaries and AGENTS precedence."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T15:50:28.136Z"
 doc_updated_by: "CODER"
 description: "Rewrite Execution Profile section to document approval escalation semantics and profile table."
@@ -56,9 +56,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -75,10 +72,6 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T15:49:50.030Z — VERIFY — ok
 
@@ -91,3 +84,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T15:19:14.948Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

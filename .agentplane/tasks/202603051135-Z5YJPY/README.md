@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: pending .agentplane/tasks artifacts are now committed and task-state history is consistent in git for the recently completed items."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T11:35:49.623Z"
 doc_updated_by: "CODER"
 description: "Commit tracked/untracked .agentplane/tasks README updates produced by recent verify/finish operations to keep repository task state consistent."
@@ -64,9 +64,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -82,10 +79,6 @@ id_source: "generated"
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T11:35:49.603Z — VERIFY — ok
@@ -103,3 +96,9 @@ Committed pending task workflow artifacts under .agentplane/tasks for NHXMQ6, HC
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

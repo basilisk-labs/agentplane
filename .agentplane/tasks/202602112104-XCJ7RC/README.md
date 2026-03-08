@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: commit-policy tests, lint, and critical CLI tests pass with scope forms like core/guard and cli/run-cli."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T21:08:03.514Z"
 doc_updated_by: "CODER"
 description: "Support scopes like core/guard and cli/run-cli in commit subject validation and cover with tests."
@@ -62,15 +62,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) bunx vitest run packages/core/src/commit/commit-policy.test.ts
@@ -79,3 +70,16 @@ Expected: all tests pass including hierarchical scope cases.
 Expected: no lint errors.
 3) bun run test:critical
 Expected: critical CLI tests still pass.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

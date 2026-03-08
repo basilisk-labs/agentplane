@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: Reduced redundant confirmations by treating plan approval as the main gate and emphasizing autonomous execution."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:52.425Z"
 doc_updated_by: "agentplane"
 description: "Review AGENTS.md and agent JSON instruction files to remove redundant confirmation requests and encourage autonomous judgment aligned with the user request."
@@ -38,19 +38,25 @@ Eliminated repetitive gating so plan approval becomes the main consent point and
 
 Adjusted AGENTS.md and ORCHESTRATOR.json wording so plan approval acts as the default authorization, and agents only re-check when scope or risk changes.
 
-## Risks
+## Plan
 
-Risk: agents may skip necessary confirmations if an unexpected scope/risk shift occurs, so we explicitly note when to re-check.
 
 ## Verify Steps
 
 None (documentation-only change).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert AGENTS.md and ORCHESTRATOR.json to their prior versions if the new guidance causes confusion or skips critical approvals.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: agents may skip necessary confirmations if an unexpected scope/risk shift occurs, so we explicitly note when to re-check.

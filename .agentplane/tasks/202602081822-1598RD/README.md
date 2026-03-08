@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Removed dedicated help-fast registry module; help path now routes through main registry with stub getCtx; updated contract test to assert registry covers command catalog; lint, cli core tests, and typecheck pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T19:07:01.911Z"
 doc_updated_by: "CODER"
 description: "After lazy loading is in place, remove or simplify buildHelpFastRegistry (or keep it auto-generated) so there is no second manual registry list."
@@ -69,14 +69,11 @@ id_source: "generated"
 
 1) Remove registry.help.ts and route help path through buildRegistry with a stub getCtx (must not be called).\n2) Update help-contract test to assert registry ids match COMMANDS ids (plus help).\n3) Run lint + cli core tests + typecheck.
 
-## Risks
+## Verify Steps
 
+- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: help path still works; no separate help registry module needed; tests pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T19:06:25.169Z — VERIFY — ok
@@ -92,6 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T19:05:17.862Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: help path still works; no separate help registry module needed; tests pass.
+
+## Risks

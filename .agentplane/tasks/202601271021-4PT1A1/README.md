@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: Mintlify docs migration is complete | details: docs.json navigation and frontmatter already align with Mintlify."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:07.290Z"
 doc_updated_by: "agentplane"
 description: "Convert docs/ markdown to Mintlify-ready pages: add required YAML frontmatter, ensure heading hierarchy (start at H2), create Mintlify navigation config (docs/docs.json), and update internal links so the docs render correctly in Mintlify."
@@ -42,19 +42,25 @@ description: "Convert docs/ markdown to Mintlify-ready pages: add required YAML 
 
 - Validate Mintlify frontmatter and headings.\n- Ensure docs.json navigation and links are in place.
 
-## Risks
+## Plan
 
-- Future doc additions might need Mintlify frontmatter updates.\n- Navigation may drift if docs.json is not maintained.
 
 ## Verify Steps
 
 - Review docs/ frontmatter and docs/docs.json
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reopen if Mintlify docs format needs rework.\n- Re-apply frontmatter and navigation changes.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Future doc additions might need Mintlify frontmatter updates.\n- Navigation may drift if docs.json is not maintained.

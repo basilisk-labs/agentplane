@@ -36,7 +36,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/prs/T-069."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:25.482Z"
 doc_updated_by: "agentplane"
 description: "Add a convenience command to append correctly formatted bullets under the '## Handoff Notes' section in docs/workflow/prs/T-###/review.md. Acceptance: (1) python scripts/agentctl.py pr note T-### --author ROLE --body TEXT adds a '- ROLE: TEXT' entry under Handoff Notes; (2) preserves existing content and keeps formatting stable; (3) emits clear errors/fixes when the PR artifact is missing; (4) update .agent-plane/agentctl.md with the new command."
@@ -48,16 +48,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

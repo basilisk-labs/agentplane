@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: publish workflow validates versions/notes and creates GitHub Release on tag."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T17:59:06.953Z"
 doc_updated_by: "CODER"
 description: "Add version/tag validation and auto-create GitHub Release on tag publish."
@@ -43,9 +43,8 @@ Add release version checks and GitHub Release creation to tag-based publish work
 
 Update publish.yml to tag-only trigger with contents:write, add version/tag validation script, and create GitHub Release from docs/releases/vX.Y.Z.md.
 
-## Risks
+## Plan
 
-Wrong version/tag detection could block releases or publish wrong versions.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Inspect workflow and script changes; ensure publish.yml validates release notes 
 
 Reviewed publish.yml changes, added version check script, and configured GitHub Release creation with body from docs/releases/vX.Y.Z.md.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert publish workflow/script changes to restore prior behavior.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Wrong version/tag detection could block releases or publish wrong versions.

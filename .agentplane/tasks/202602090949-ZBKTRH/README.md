@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Prepared v0.2.1 (release notes + version bumps + validation scripts); full lint/test:full/coverage pass; created annotated git tag v0.2.1 at the release commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T09:52:13.089Z"
 doc_updated_by: "INTEGRATOR"
 description: "Prepare and push release v0.2.1: bump package versions (core + agentplane), add release notes docs/releases/v0.2.1.md, run validation scripts, create git tag v0.2.1, and push tag to trigger publish workflow."
@@ -74,9 +74,6 @@ id_source: "generated"
 6. Create git tag v0.2.1 at the release commit.
 7. Push main and v0.2.1 tag to origin.
 
-## Risks
-
-
 ## Verify Steps
 
 1. ./node_modules/.bin/prettier docs/releases/v0.2.1.md --check
@@ -90,10 +87,6 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T09:51:21.384Z — VERIFY — ok
 
@@ -106,3 +99,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T09:49:30.141Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

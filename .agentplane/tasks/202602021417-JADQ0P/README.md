@@ -25,7 +25,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: bun run test:full; rg -n \"\\.agent-plane\" -S; rg -n \"agentctl\" docs README.md packages"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:44.368Z"
 doc_updated_by: "agentplane"
 description: "Move legacy task data from .agent-plane into .agentplane using Node CLI paths, remove python-era artifacts and references, and update configs/docs/tests accordingly."
@@ -37,16 +37,21 @@ id_source: "explicit"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

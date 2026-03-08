@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the shared bootstrap contract now drives startup guidance across quickstart, role output, AGENTS command blocks, and the generated bootstrap doc with an enforced drift check."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T14:54:22.785Z"
 doc_updated_by: "CODER"
 description: "Choose the single canonical startup flow for agents and document it so every other entrypoint can point to one path."
@@ -68,10 +68,6 @@ Select one startup path and encode it as the source for gateway and startup help
 
 1. Define canonical bootstrap stages. 2. Encode the contract in shared source. 3. Update gateway references to point to the same path.
 
-## Risks
-
-If the bootstrap path is too abstract, quickstart and AGENTS may still drift or become harder to scan.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -85,10 +81,6 @@ If the bootstrap path is too abstract, quickstart and AGENTS may still drift or 
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T14:54:22.576Z — VERIFY — ok
@@ -104,3 +96,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:43:10.809Z, excerpt_
 ## Rollback Plan
 
 Revert the gateway/bootstrap source files and generated startup docs if the new path adds ambiguity or breaks checks.
+
+## Findings
+
+
+## Risks
+
+If the bootstrap path is too abstract, quickstart and AGENTS may still drift or become harder to scan.

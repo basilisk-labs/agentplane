@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: sub-tasks completed (8C5SHH, F8YMCF, 7KW7RP, 695YXF); lint/test/hooks executed; verify sections updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T12:52:16.338Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement verify workflow from Verify Steps, add Verification section, and switch zip validation to yauzl with config/init support."
@@ -44,9 +44,8 @@ Epic: add README-driven verify execution, write Verification sections on verify,
 
 Deliver AP-020c zip validation (yauzl), README-driven verify execution, Verification section updates, and require_verify config/init/docs changes.
 
-## Risks
+## Plan
 
-Verify now depends on task docs support and may prompt in interactive mode; zip symlink detection relies on externalFileAttributes.
 
 ## Verify Steps
 
@@ -62,8 +61,16 @@ Status: pass
 Verified at: 2026-02-05
 Details: bun run lint; bun run test:fast; hooks pre-commit; verify tasks 695YXF and 7KW7RP.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert task commits for verify workflow and yauzl integration; restore previous config sections and remove require_verify.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Verify now depends on task docs support and may prompt in interactive mode; zip symlink detection relies on externalFileAttributes.

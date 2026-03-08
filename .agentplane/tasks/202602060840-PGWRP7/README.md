@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: added task plan set/approve/reject commands with validation and tests; lint + fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T08:48:28.268Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add agentplane task plan set/approve/reject commands to update ## Plan section and frontmatter.plan_approval atomically via backend writes."
@@ -46,10 +46,23 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

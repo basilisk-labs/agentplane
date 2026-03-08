@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci (2026-01-29) | details: ide sync generates Cursor/Windsurf rules from AGENTS.md."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:15.859Z"
 doc_updated_by: "agentplane"
 description: "Implement  to generate Cursor and Windsurf rules from AGENTS.md with idempotent, auto-generated headers."
@@ -44,19 +44,25 @@ Add agentplane ide sync to generate Cursor/Windsurf rules from AGENTS.md.
 
 - Implement ide sync command and file generation in CLI.\n- Update help output.\n- Add run-cli tests for ide sync.
 
-## Risks
+## Plan
 
-- Generated rules overwrite existing files; users must edit AGENTS.md instead.\n- If AGENTS.md is missing, ide sync fails (expected).
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit 8be23728d342.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Generated rules overwrite existing files; users must edit AGENTS.md instead.\n- If AGENTS.md is missing, ide sync fails (expected).

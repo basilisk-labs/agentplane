@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: build manifests now record deterministic watched-runtime snapshots while existing stale-dist consumers remain compatible."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T20:54:00.998Z"
 doc_updated_by: "CODER"
 description: "Record watched runtime file state during build so stale-dist freshness can be compared against built source instead of git dirtiness alone."
@@ -71,10 +71,6 @@ Record watched runtime file state during build so stale-dist freshness can be co
 ## Plan
 
 1. Add a reusable watched-runtime snapshot helper that expands configured watched paths into a deterministic file list and records content hashes in the build manifest. 2. Extend write-build-manifest to persist the snapshot for agentplane and core without breaking existing consumers of schema_version 1 manifests. 3. Add regressions around manifest snapshot contents and keep existing build/verify tooling compatible, then record evidence and close the task.
-
-## Risks
-
-- Risk: a snapshot format that is not deterministic will create false stale/build drift across machines.\n- Mitigation: sort all recorded paths, hash file contents instead of relying on mtimes, and snapshot only explicit watched runtime paths.\n\n- Risk: changing the manifest contract too aggressively will break current stale-dist consumers before the next task switches them to snapshot comparison.\n- Mitigation: keep schema_version 1 readable and additive in this task; delay any consumer-side freshness logic change to 202603072032-V9VGT2.
 
 ## Verify Steps
 
@@ -97,10 +93,6 @@ Record watched runtime file state during build so stale-dist freshness can be co
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T20:53:22.147Z — VERIFY — ok
 
@@ -117,6 +109,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T20:48:05.978Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Keep this task producer-only: write the richer snapshot into manifests now, then switch stale-dist freshness consumption in 202603072032-V9VGT2.\n- Reuse one helper for manifest generation so the next task can import the exact same snapshot logic instead of reimplementing directory walking and hashing.
+
+## Risks
+
+- Risk: a snapshot format that is not deterministic will create false stale/build drift across machines.\n- Mitigation: sort all recorded paths, hash file contents instead of relying on mtimes, and snapshot only explicit watched runtime paths.\n\n- Risk: changing the manifest contract too aggressively will break current stale-dist consumers before the next task switches them to snapshot comparison.\n- Mitigation: keep schema_version 1 readable and additive in this task; delay any consumer-side freshness logic change to 202603072032-V9VGT2.

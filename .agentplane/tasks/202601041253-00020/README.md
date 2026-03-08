@@ -30,7 +30,7 @@ comments:
   -
     author: "REVIEWER"
     body: "Verified: Ran python scripts/agentctl.py verify T-064 (task lint, agents, quickstart, bash -n clean.sh); framework paths now live under .agent-plane."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:23.919Z"
 doc_updated_by: "agentplane"
 description: "Move all framework-specific artifacts under .agent-plane (agents + agentctl docs + config), update references/docs, and update clean.sh accordingly."
@@ -42,16 +42,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

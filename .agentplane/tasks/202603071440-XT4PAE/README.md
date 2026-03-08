@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: quickstart now acts as the shortest useful startup path for agents and no longer bundles the old cheat-sheet catalog as the primary surface."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T14:55:36.466Z"
 doc_updated_by: "CODER"
 description: "Refocus agentplane quickstart on the minimum command path agents need to start, verify, recover, and finish work."
@@ -69,19 +69,11 @@ Update quickstart to foreground preflight, the canonical bootstrap path, and the
 
 1. Refactor quickstart renderer around bootstrap stages. 2. De-emphasize secondary command catalogs. 3. Ensure the output still fits terminal-first use.
 
-## Risks
-
-If too much detail is removed, quickstart may become less useful for humans; if too much remains, it stays noisy for agents.
-
 ## Verify Steps
 
 1. Run CLI help/quickstart tests. 2. Regenerate startup docs if needed. 3. Confirm quickstart highlights the bootstrap path and direct finish semantics.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T14:55:36.024Z — VERIFY — ok
@@ -97,3 +89,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:55:26.131Z, excerpt_
 ## Rollback Plan
 
 Restore the previous quickstart renderer and regenerate derived docs if the new output fails tests or usability checks.
+
+## Findings
+
+
+## Risks
+
+If too much detail is removed, quickstart may become less useful for humans; if too much remains, it stays noisy for agents.

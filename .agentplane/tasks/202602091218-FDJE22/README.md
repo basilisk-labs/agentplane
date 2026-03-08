@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint; targeted vitest upgrade suites. Added --remote flag; without it, upgrade reads framework templates from locally installed agentplane assets (no network). Remote hint flags now require --remote."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T12:36:45.905Z"
 doc_updated_by: "CODER"
 description: "Change upgrade to use locally installed package assets as the default upstream source (no network). Keep remote upgrade as an explicit opt-in."
@@ -66,14 +66,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T12:35:14.920Z — VERIFY — ok
@@ -87,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T12:30:27.284Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

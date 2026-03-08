@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Added canonical Redmine env parser, wired backend to env-only contract including custom fields and batch settings, and validated with focused backend tests plus package builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T15:59:23.791Z"
 doc_updated_by: "CODER"
 description: "Implement redmine/env.ts parser and make backend consume all .env.example keys with strict parsing and correct units."
@@ -64,6 +64,10 @@ id_source: "generated"
 
 Introduce canonical Redmine env parser and wire backend to consume all supported .env keys.
 
+## Context
+
+Current Redmine backend reads a small subset of env keys directly and leaves many .env.example keys unused. We need a strict parser contract and real wiring.
+
 ## Scope
 
 In scope: new redmine env parser module, redmine backend constructor wiring, mapping for tags/priority/owner custom fields, and tests. Out of scope: error wording split (T8).
@@ -72,19 +76,11 @@ In scope: new redmine env parser module, redmine backend constructor wiring, map
 
 1) Add readRedmineEnv parser with integer validation. 2) Wire backend constructor to env parser (custom fields, batch tuning, owner/assignee). 3) Align batch pause to milliseconds in runtime. 4) Add env + backend tests for overrides and field usage.
 
-## Risks
-
-Risk: behavior changes for legacy batch_pause semantics. Mitigation: backward-compatible conversion for fractional settings and regression tests.
-
 ## Verify Steps
 
 Run: bun run test:agentplane -- packages/agentplane/src/backends/task-backend/redmine/env.test.ts packages/agentplane/src/backends/task-backend.test.ts ; bun run lint ; bun run --filter=@agentplaneorg/core build ; bun run --filter=agentplane build
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T15:55:27.608Z — VERIFY — ok
@@ -101,11 +97,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T15:54:33.482Z, excerpt_
 
 Revert this task commit; restore direct process.env reads in redmine backend and previous batch pause behavior.
 
-## Context
-
-Current Redmine backend reads a small subset of env keys directly and leaves many .env.example keys unused. We need a strict parser contract and real wiring.
-
-## Notes
+## Findings
 
 ### Decisions
 Env parser is the single source for redmine env coercion and validation.
+
+## Risks
+
+Risk: behavior changes for legacy batch_pause semantics. Mitigation: backward-compatible conversion for fractional settings and regression tests.

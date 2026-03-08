@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the homepage is back to the placeholder holding surface, the blog index is text-only, and the required website checks passed before deployment."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T14:26:20.634Z"
 doc_updated_by: "CODER"
 description: "Revert the homepage to the previous placeholder-style typographic landing, keep the blog itself, and hide post illustrations from the blog index page before republishing the website."
@@ -70,20 +70,11 @@ In scope: website/src/pages/index.tsx, website/src/pages/index.module.css, websi
 
 1. Restore the homepage to the earlier placeholder-style typographic landing using the prior website version as the source.\n2. Remove visual illustrations from the blog index while keeping linked post entries and the blog content intact.\n3. Run website generation/typecheck/build/design checks, then push main and confirm Docs CI plus Pages Deploy.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. bun run docs:site:generate\n2. bun run --cwd website typecheck\n3. bun run --cwd website build\n4. node scripts/check-design-language.mjs\n5. git push origin main and confirm Docs CI plus Pages Deploy succeed
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-06T14:26:10.406Z — VERIFY — ok
@@ -100,6 +91,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T14:24:36.039Z, excerpt_
 
 Revert the homepage/blog index files to the previous commit if the placeholder regression is rejected or if the deploy introduces layout breakage.
 
-## Notes
+## Findings
 
 User wants the earlier placeholder homepage back, explicitly prefers a typographic-first surface, and wants blog illustrations hidden only on the blog landing page.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

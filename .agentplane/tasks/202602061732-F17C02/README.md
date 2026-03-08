@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Commit subject policy now matches task refs case-insensitively and rejects generic subjects after stripping task ref; updated unit tests; bun run test:core passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T18:37:19.989Z"
 doc_updated_by: "CODER"
 description: "Improve validateCommitSubject: task ref match should be case-insensitive; anti-generic should ignore emoji and task ref before evaluating remaining words."
@@ -48,15 +48,11 @@ packages/core/src/commit/commit-policy.ts + tests.
 
 1) Make task id/suffix detection case-insensitive.\n2) Update validateCommitSubject to evaluate genericness after stripping task ref (and emoji/punctuation).\n3) Update unit tests.\n4) Run bun run test:core.
 
-## Risks
+## Verify Steps
 
-Risk: Tightening policy may reject previously-accepted short subjects; adjust tests to reflect intended quality gate.
+- bun run test:core
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T18:31:33.580Z — VERIFY — ok
@@ -71,6 +67,9 @@ Note: Updated validateCommitSubject: case-insensitive task ref matching and anti
 
 Revert the commit(s) for this task.
 
-## Verify Steps
+## Findings
 
-- bun run test:core
+
+## Risks
+
+Risk: Tightening policy may reject previously-accepted short subjects; adjust tests to reflect intended quality gate.

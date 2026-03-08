@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: init now ensures runtime .agentplane paths are ignored, with optional agent prompt ignores under --gitignore-agents."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T07:50:43.672Z"
 doc_updated_by: "CODER"
 description: "Ensure  writes gitignore entries for runtime/transient .agentplane directories (.upgrade/.release/cache/recipes-cache/worktrees/legacy upgrade) so clean repos do not track operation artifacts."
@@ -70,15 +70,15 @@ In scope: init gitignore writer and init tests. Out of scope: changing upgrade c
 
 1) Extend init gitignore ensured lines with runtime paths. 2) Keep --gitignore-agents behavior for AGENTS.md and .agentplane/agents. 3) Update init tests to assert runtime entries.
 
-## Risks
+## Verify Steps
 
-Risk: over-ignoring files users may want tracked. Mitigation: only add known transient/runtime paths already recommended in framework repo .gitignore.
+- bun run --filter=@agentplaneorg/core build
+- bun run --filter=agentplane build
+- bun run lint
+- bunx vitest run packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
+- bun run test:fast
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T07:50:43.369Z — VERIFY — ok
@@ -95,10 +95,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T07:48:11.454Z, excerpt_
 
 Revert task commit to restore previous init gitignore behavior.
 
-## Verify Steps
+## Findings
 
-- bun run --filter=@agentplaneorg/core build
-- bun run --filter=agentplane build
-- bun run lint
-- bunx vitest run packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts
-- bun run test:fast
+
+## Risks
+
+Risk: over-ignoring files users may want tracked. Mitigation: only add known transient/runtime paths already recommended in framework repo .gitignore.

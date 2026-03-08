@@ -30,7 +30,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: bun run test:fast passes; task index cache test added."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:08:40.401Z"
 doc_updated_by: "TESTER"
 description: "Add unit tests for index load/update, mtime refresh, and list/search behavior."
@@ -44,9 +44,8 @@ Add tests covering task index cache creation and behavior.
 
 Add unit tests in task-backend for index cache file and metadata.
 
-## Risks
+## Plan
 
-Tests may be brittle if cache path or schema changes; keep expectations minimal.
 
 ## Verify Steps
 
@@ -56,8 +55,16 @@ Tests may be brittle if cache path or schema changes; keep expectations minimal.
 
 Verified on 2026-02-05: bun run test:fast passes; task index cache test green.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert task index tests to prior state.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Tests may be brittle if cache path or schema changes; keep expectations minimal.

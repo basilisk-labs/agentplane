@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: redmine pull/push ok; created task 202602051450-6Z591S. Title/description stored; tags empty; priority coerced to med; owner REDMINE. Local task shows full fields."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:53:54.662Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Test Redmine backend connection in both directions and compare stored fields vs local backend."
@@ -43,10 +43,8 @@ Smoke-test Redmine backend connectivity (pull/push) and compare stored fields vs
 - Create and inspect a Redmine task to confirm field parity with local backend outputs.
 - Leave repo files unchanged after test.
 
-## Risks
+## Plan
 
-- Redmine sandbox data may be mutated (expected).
-- Local config may be temporarily changed and must be restored.
 
 ## Verify Steps
 
@@ -65,9 +63,18 @@ Pending.
 - Local task 202602051439-H7JERJ shows tags/priority/owner/verify/commit/comments preserved.
 - Restored tasks_backend.config_path to local.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reset tasks_backend.config_path to .agentplane/backends/local/backend.json.
 - Discard any local changes if accidentally created.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Redmine sandbox data may be mutated (expected).
+- Local config may be temporarily changed and must be restored.

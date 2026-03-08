@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Split commit and task new CommandSpec definitions into *.spec.ts modules and kept handlers in *.command.ts; updated command catalog imports; lint, cli core tests, and typecheck pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T18:56:00.193Z"
 doc_updated_by: "CODER"
 description: "Migrate 1–2 commands (commit, task new) to split spec-only modules and handler modules; ensure catalog imports only specs."
@@ -71,9 +71,9 @@ Pilot spec/handler split for heavy commands (commit and task new): move CommandS
 
 1) Split commit: move commitSpec + types into commit.spec.ts; keep makeRunCommitHandler in commit.command.ts.\n2) Split task new similarly.\n3) Update command-catalog.ts to import specs from *.spec.ts and handlers from *.command.ts.\n4) Run bun run lint; bun run test:cli:core; bun run typecheck.
 
-## Risks
+## Verify Steps
 
-- Risk: circular imports / ESM specifier mistakes (.js) during split. Mitigation: keep exports stable and rely on cli core test suite.
+- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: no behavior changes; CLI core tests remain green.
 
 ## Verification
 
@@ -94,10 +94,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T18:52:39.209Z, excerpt_
 
 Revert split and restore single-module exports if import graph breaks.
 
-## Verify Steps
-
-- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: no behavior changes; CLI core tests remain green.
-
-## Notes
+## Findings
 
 ### Approvals / Overrides\n- 2026-02-08: no overrides.
+
+## Risks
+
+- Risk: circular imports / ESM specifier mistakes (.js) during split. Mitigation: keep exports stable and rely on cli core test suite.

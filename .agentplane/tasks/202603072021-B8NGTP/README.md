@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the onboarding smoke-check now follows the current bootstrap structure, so pre-push no longer fails on stale direct-lifecycle headings."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T20:25:37.533Z"
 doc_updated_by: "TESTER"
 description: "Update onboarding smoke check to match the current generated bootstrap structure so pre-push can pass after HRBXMA."
@@ -70,11 +70,6 @@ Repair the onboarding smoke-check after the bootstrap parity work so pre-push va
 1. Update `scripts/check-agent-onboarding-scenario.mjs` to assert the current generated bootstrap structure and current recovery/runtime anchors instead of removed headings.
 2. Run targeted onboarding/parity/build/routing checks plus `agentplane doctor` so the repaired smoke-check matches real repo surfaces.
 3. Commit only the repair-task scope, record verification, close the task, then repeat `git push origin main`.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -97,10 +92,6 @@ Repair the onboarding smoke-check after the bootstrap parity work so pre-push va
 - The onboarding smoke-check matches the current bootstrap/runtime/recovery surfaces and `git push origin main` no longer fails at `docs:onboarding:check`.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T20:25:30.050Z — VERIFY — ok
@@ -149,3 +140,11 @@ Scope: policy routing integrity.
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: git push origin main completed; pre-push ran release-notes and test-full without hanging."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T19:08:42.817Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Push current branch to origin. If push hangs, inspect git push implementation and hooks, fix root cause, and retry."
@@ -42,20 +42,26 @@ Fixed the pre-push release-notes hook hang by ensuring it receives git push stdi
 
 Updated pre-push release-notes command in lefthook config to pass stdin.
 
-## Risks
+## Plan
 
-If lefthook ignores use_stdin, the hook could still block on TTY; otherwise behavior is unchanged for non-tag pushes.
 
 ## Verify Steps
 
 1. Run `git push origin main` and confirm pre-push completes without hanging.
 2. Confirm `release-notes` and `test-full` pass in lefthook output.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert `lefthook.yml` to remove `use_stdin` from the pre-push release-notes command.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+If lefthook ignores use_stdin, the hook could still block on TTY; otherwise behavior is unchanged for non-tag pushes.

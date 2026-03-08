@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: onboarding smoke-check now covers the four canonical agent scenarios and all required checks passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T19:33:43.604Z"
 doc_updated_by: "TESTER"
 description: "Add scenario checks for legacy upgrade recovery, framework-checkout handoff, direct lifecycle, and branch_pr flow."
@@ -71,11 +71,6 @@ Add scenario checks for legacy upgrade recovery, framework-checkout handoff, dir
 ## Plan
 
 1. Expand scripts/check-agent-onboarding-scenario.mjs to validate four canonical onboarding scenarios: legacy upgrade recovery, framework-checkout handoff/runtime diagnostics, direct lifecycle, and branch_pr flow. 2. Sync only the affected docs surfaces if the smoke-check exposes missing anchors or scenario drift; keep the change limited to onboarding-facing docs and checks. 3. Run docs:onboarding:check, website build, lint:core for touched scripts, and policy routing; then record verification and finish with traceable metadata.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -98,10 +93,6 @@ Add scenario checks for legacy upgrade recovery, framework-checkout handoff, dir
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T19:33:34.158Z — VERIFY — ok
 
@@ -118,8 +109,13 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T19:32:37.850Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Keep this task at the smoke-check level; do not add a new heavy integration harness.
 - Prefer grouped scenario assertions over one-off string checks so future onboarding drift is easier to diagnose.
 - If docs drift exceeds the onboarding surfaces named in the plan, stop and re-check scope before broad edits.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

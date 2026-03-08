@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: schemas:check and agents:check pass; release apply tests continue to pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T20:57:29.323Z"
 doc_updated_by: "CODER"
 description: "Add defense-in-depth checks in publish workflow so tag builds fail before npm publish when schema/agent templates drift."
@@ -62,15 +62,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 1) bun run schemas:check
@@ -79,3 +70,16 @@ Expected: pass.
 Expected: pass.
 3) bunx vitest run packages/agentplane/src/commands/release/apply.test.ts
 Expected: pass.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

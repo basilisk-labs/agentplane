@@ -25,7 +25,7 @@ comments:
   -
     author: "CODER"
     body: "verified: Removed the unused upgrade regression tests and documented their removal."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:52.078Z"
 doc_updated_by: "agentplane"
 description: "Delete tests/test_framework_upgrade.py and update documentation now that the regression suite is gone."
@@ -43,23 +43,26 @@ description: "Delete tests/test_framework_upgrade.py and update documentation no
 - Delete `tests/test_framework_upgrade.py` (along with the empty `tests/` directory).
 - Update the related task doc to explain that verification now occurs manually.
 
-## Risks
+## Plan
 
-- Removing the only regression test leaves the helper logic unverified; future regression coverage should reintroduce a similar suite if needed.
 
 ## Verify Steps
 
 - None (tests deleted by design).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Restore `tests/test_framework_upgrade.py` from Git history and revert this change if the regression coverage is required again.
 
-## Notes
+## Findings
 
 - There are no other references to `tests/test_framework_upgrade.py` once the file and doc updates are committed.
 
-## Plan
+## Risks
 
-
-## Verification
+- Removing the only regression test leaves the helper logic unverified; future regression coverage should reintroduce a similar suite if needed.

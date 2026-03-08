@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: website IA was documented in canonical docs and linked from docs index, defining home/docs/blog section contracts and discovery requirements."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T12:59:58.581Z"
 doc_updated_by: "CODER"
 description: "Define final site map and section hierarchy for home/docs/blog/release pages with links grounded in canonical docs."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -79,11 +76,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

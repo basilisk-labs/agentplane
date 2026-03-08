@@ -25,7 +25,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: bun run test:full; rg -n \"\\.agent-plane\" -S; rg -n \"agentctl\" docs README.md packages"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:38.158Z"
 doc_updated_by: "agentplane"
 description: "Restructure Mintlify docs into modular user/developer sections; align navigation/frontmatter; add task lifecycle documentation with Mermaid diagrams for direct and branch_pr modes."
@@ -38,19 +38,25 @@ Refactored Mintlify docs into user/developer/help modules, updated navigation, a
 
 Move existing docs into modular folders, align docs.json navigation and index, add task lifecycle page with flowchart and sequence diagrams, and update cross-links.
 
-## Risks
+## Plan
 
-Navigation paths could break if any links are missed; Mintlify page paths must match the new folder structure.
 
 ## Verify Steps
 
 Review docs.json navigation for correct paths; check index.mdx links; open task lifecycle page to confirm Mermaid renders in Mintlify.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert doc moves and restore original docs.json navigation and index.mdx ordering.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Navigation paths could break if any links are missed; Mintlify page paths must match the new folder structure.

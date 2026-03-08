@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "verified: manual review only | details: test assertion updated to stable JSON parse error prefix."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:23.737Z"
 doc_updated_by: "agentplane"
 description: "Align test with current JSON parse error message format."
@@ -42,19 +42,25 @@ Update the failing pr check test to accept the current JSON parse error message.
 
 - Relax the test assertion to match the stable JSON parse error prefix
 
-## Risks
+## Plan
 
-- Overly broad match could hide real regressions
 
 ## Verify Steps
 
 - bun test packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the commit if the assertion becomes too loose
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Overly broad match could hide real regressions

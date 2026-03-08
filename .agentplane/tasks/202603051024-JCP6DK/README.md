@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Replaced recursive stale-dist tree scans with build-manifest plus git-based quick checks and fallback diagnostics."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T10:37:36.371Z"
 doc_updated_by: "CODER"
 description: "Remove per-run full source/dist tree walks from CLI bootstrap; use a lightweight build manifest/sentinel for stale-dist detection with equivalent safety."
@@ -65,9 +65,6 @@ id_source: "generated"
 ## Plan
 
 1) Add build-manifest generator script for package builds (agentplane/core). 2) Wire package build scripts to emit dist/.build-manifest.json with git HEAD and build timestamp. 3) Replace recursive stale-dist scan in bin bootstrap with manifest+git-based quick check. 4) Keep safe fallback path when manifest missing. 5) Verify by running build and timing startup before/after.
-
-## Risks
-
 
 ## Verify Steps
 
@@ -85,10 +82,6 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T10:37:30.613Z — VERIFY — ok
 
@@ -101,3 +94,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-05T10:32:54.790Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

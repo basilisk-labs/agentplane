@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: lifecycle help, task command surfaces, and generated reference now describe README v3 and migrate-doc recovery consistently."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T11:40:15.771Z"
 doc_updated_by: "TESTER"
 description: "Refresh tests, help surfaces, and generated references so the new README v3 contract is enforced consistently."
@@ -73,20 +73,11 @@ Refresh tests, help surfaces, and generated references so the new README v3 cont
 
 1. Audit lifecycle tests, task command specs, and user-facing lifecycle docs for stale README contract wording or missing README v3 migration guidance. 2. Update the relevant CLI/help/docs surfaces so Verify Steps, Verification, Findings, and task migrate-doc guidance describe the README v3 contract consistently while preserving legacy v2 compatibility notes. 3. Refresh generated CLI reference/help snapshots, run focused lifecycle/help/docs checks, and close with a pushed implementation commit.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Read the lifecycle and task-contract docs. Expected: README v3 is described as the target contract, legacy v2 behavior remains clearly marked as compatibility-only, and migrate-doc guidance is consistent. 2. Inspect task command help and generated CLI reference. Expected: task new, task migrate-doc, and task verify-show describe the README v3 contract without stale wording or hidden legacy assumptions. 3. Run focused lifecycle/help/docs checks. Expected: updated snapshots, generated reference, and lifecycle tests all pass without drift.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T11:39:40.080Z — VERIFY — ok
@@ -103,3 +94,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T11:36:03.736Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

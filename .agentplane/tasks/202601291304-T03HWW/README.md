@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: removed the agentplane-recipes gitlink from the main repo and added an ignore rule | details: git status --short is clean."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:23.038Z"
 doc_updated_by: "agentplane"
 description: "Untrack the unintended gitlink entry for the nested recipes repo and keep it ignored in the main repo."
@@ -42,19 +42,25 @@ Remove the accidental submodule tracking of agentplane-recipes in the main repo 
 
 - Remove gitlink entry for agentplane-recipes from the main repo index\n- Add ignore rule to keep the nested repo out of version control
 
-## Risks
+## Plan
 
-- If other workflows expect agentplane-recipes to be tracked in the main repo, they may need updates
 
 ## Verify Steps
 
 - git status --short
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Re-add the gitlink entry for agentplane-recipes if tracking is desired
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- If other workflows expect agentplane-recipes to be tracked in the main repo, they may need updates

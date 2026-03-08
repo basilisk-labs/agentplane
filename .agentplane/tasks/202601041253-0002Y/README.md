@@ -25,7 +25,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: docs-only changes; manual review only (no automated checks)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:30.629Z"
 doc_updated_by: "agentplane"
 description: "Update docs/index.md with a document map, reading order, and links to the new docs set."
@@ -37,16 +37,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Introduced ports interfaces and adapter implementations (Node FS, GitContext, task backend wrapper, system clock) to enable incremental migration to usecase-only command implementations."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T16:49:57.539Z"
 doc_updated_by: "CODER"
 description: "Introduce minimal ports (FileSystemPort, GitPort, TaskBackendPort, ClockPort) and adapters. Enforce no fs/path/git imports outside adapters."
@@ -69,15 +69,11 @@ packages/agentplane/src/ports/**, packages/agentplane/src/adapters/**, minimal w
 
 1) Add ports interfaces: FileSystemPort, GitPort, TaskBackendPort, ClockPort.\n2) Add local adapters for Node fs and existing GitContext/task backend.\n3) Add a tiny adapter composition helper (buildAdapters) for tests and commands.\n4) Add minimal unit tests for adapters where practical.\n5) Run bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-Risk: type/ownership confusion between existing CommandContext and new ports; mitigate by using ports only in new usecases and leaving existing commands untouched.
+- bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T16:49:57.390Z — VERIFY — ok
@@ -94,6 +90,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T16:46:57.492Z, excerpt_
 
 Revert the commit(s) adding ports/adapters; no existing command behavior should change in this task.
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:full
+
+## Risks
+
+Risk: type/ownership confusion between existing CommandContext and new ports; mitigate by using ports only in new usecases and leaving existing commands untouched.

@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: split backends/task-backend.ts into task-backend/* modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T13:12:15.017Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Split packages/agentplane/src/backends/task-backend.ts into smaller modules (interfaces, local backend, redmine backend, shared validation/IO) with tests."
@@ -47,29 +47,6 @@ id_source: "generated"
 ## Plan
 
 Scope: split packages/agentplane/src/backends/task-backend.ts into a small facade plus modules under packages/agentplane/src/backends/task-backend/. Steps: (1) Extract shared types/helpers/errors/doc metadata into task-backend/shared.ts. (2) Extract LocalBackend into task-backend/local.ts. (3) Extract RedmineBackend into task-backend/redmine.ts. (4) Extract backend config parsing + loadTaskBackend into task-backend/load.ts. (5) Replace task-backend.ts with a facade re-exporting the existing public API. (6) Run bun run typecheck, bun run lint, bun run test:full; fix any behavioral drift or import cycles.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T13:10:15.528Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: decomposed backends/task-backend.ts into task-backend/* modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:57:58.359Z, excerpt_hash=sha256:a71b64cbe1d5396f6e7c0063ba0d1992d1fe602b68ef1e5b3ebb0c6400ab92f2
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -161,3 +138,24 @@ Installed recipe viewer@1.2.3
       Tests  704 passed (704)
    Start at  19:57:04
    Duration  8.49s (transform 3.80s, setup 0ms, import 11.00s, tests 29.75s, environment 4ms)\n\n### Pass criteria\n- packages/agentplane/src/backends/task-backend.ts becomes a facade; implementation moved to packages/agentplane/src/backends/task-backend/*.ts.\n- All existing imports of ../backends/task-backend.js continue to work (same exported names).\n- Full test suite passes and no legacy patterns are introduced.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T13:10:15.528Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: decomposed backends/task-backend.ts into task-backend/* modules; bun run typecheck, bun run lint, bun run test:full (704 tests) all pass.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:57:58.359Z, excerpt_hash=sha256:a71b64cbe1d5396f6e7c0063ba0d1992d1fe602b68ef1e5b3ebb0c6400ab92f2
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

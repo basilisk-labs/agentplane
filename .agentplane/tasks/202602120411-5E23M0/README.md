@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: docs now describe primary-tag verification and status-commit major transitions, and regression coverage enforces these contracts in CLI tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T04:40:26.776Z"
 doc_updated_by: "TESTER"
 description: "Update AGENTS/quickstart/help docs and add regression tests for primary tagging, status transition commit policy, and verification gates."
@@ -68,14 +68,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts
+2. bunx vitest run packages/core/src/commit/commit-policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts
+3. bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
+4. bun run lint
+Expected: docs reflect primary-tag policy and regression suite covers status-commit transition gating + primary-based verification requirements.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T04:40:26.628Z — VERIFY — ok
@@ -91,10 +92,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T04:38:18.480Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts
-2. bunx vitest run packages/core/src/commit/commit-policy.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts
-3. bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
-4. bun run lint
-Expected: docs reflect primary-tag policy and regression suite covers status-commit transition gating + primary-based verification requirements.
+
+## Risks

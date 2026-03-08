@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run typecheck; bun run test:cli:core; bun run lint."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T11:37:50.628Z"
 doc_updated_by: "CODEX"
 description: "Refactor CLI dispatch to create CommandContext once per command; remove repeated resolveProject/loadConfig/loadTaskBackend calls; add ctx.memo for taskList/changedPaths/headCommit and route all repeats through it."
@@ -74,14 +74,15 @@ id_source: "generated"
 4. Add ctx.memo.taskList (Promise<TaskData[]>) and route repeated listTasks calls through it.
 5. Run: bun run typecheck; bun run test:cli:core; bun run lint.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T11:37:45.092Z — VERIFY — ok
@@ -93,3 +94,9 @@ Note: bun run typecheck; bun run test:cli:core; bun run lint
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

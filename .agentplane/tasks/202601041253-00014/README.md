@@ -27,7 +27,7 @@ comments:
   -
     author: "reviewer"
     body: "Confirmed the summary section is now a table with playful emoji notes and the `_Status` italic text stays intact."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:16.436Z"
 doc_updated_by: "agentplane"
 description: "Turn the summary list into an emoji-rich table and add extra decorative flair, keeping the `_Status` italic values as-is."
@@ -39,16 +39,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: README v3 now uses a results-only Verification block, while verify and migrate paths keep doc_version=2 compatibility and normalize legacy v3 layouts."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T11:14:37.557Z"
 doc_updated_by: "CODER"
 description: "Remove plan-like scaffolding from Verification and keep it as an append-only result log compatible with verify commands."
@@ -74,11 +74,6 @@ Remove plan-like scaffolding from Verification and keep it as an append-only res
 2. Update verify-record and migrate-doc normalization so existing Verification sections without markers are upgraded into the minimal results-only layout.
 3. Adjust targeted task/verification tests, rerun focused checks plus build/doctor, then finish and push main.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 1. Create or scaffold a README v3 task. Expected: the Verification section contains only the append-only marker block, without embedded Plan/Results subheadings.
@@ -86,10 +81,6 @@ Remove plan-like scaffolding from Verification and keep it as an append-only res
 3. Run targeted verification/template tests, builds, and doctor. Expected: the new Verification layout passes without widening unrelated task-doc regressions.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T11:14:15.759Z — VERIFY — ok
@@ -106,3 +97,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T11:06:42.982Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

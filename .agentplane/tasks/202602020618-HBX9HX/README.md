@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: bun run --filter=agentplane build | details: node packages/agentplane/bin/agentplane.js --version (0.1.0); pre-commit hooks (format/lint/test-fast) passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:41.978Z"
 doc_updated_by: "agentplane"
 description: "Ensure agentplane --version reports 0.1.0 and align publish metadata for npm release (package.json fields, version source)."
@@ -41,19 +41,25 @@ Update agentplane --version to 0.1.0 and align npm publish metadata for the CLI 
 
 Set CLI version to 0.1.0, update version-dependent tests, and ensure publishConfig metadata for packages/agentplane.
 
-## Risks
+## Plan
 
-If version is hardcoded, future bumps require manual update; tests cover CLI output to catch mismatches.
 
 ## Verify Steps
 
 bun run --filter=agentplane build\nnode packages/agentplane/bin/agentplane.js --version
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert version and package metadata changes, then restore tests to the previous expected version.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+If version is hardcoded, future bumps require manual update; tests cover CLI output to catch mismatches.

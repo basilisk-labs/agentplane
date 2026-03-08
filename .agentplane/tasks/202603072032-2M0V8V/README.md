@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: read-only diagnostics now warn and continue under stale dist while stricter commands remain blocked until rebuild."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T20:46:20.273Z"
 doc_updated_by: "CODER"
 description: "Let doctor and runtime explain run inside the framework checkout with an explicit warning when watched runtime paths are dirty, while keeping mutating commands blocked."
@@ -70,11 +70,6 @@ Allow read-only diagnostics to bypass the repo-checkout stale-dist hard-fail wit
 1. Add an explicit stale-dist command policy that treats `doctor` and `runtime explain` as read-only diagnostics allowed to proceed with a warning inside the framework checkout.
 2. Keep strict blocking for mutating commands and preserve the existing override path for forced stale execution.
 3. Add regressions for the new classification behavior, sync docs/troubleshooting text, run targeted checks, and close the task.
-
-## Risks
-
-- Risk: allowing too many stale-build commands weakens the safety contract and hides real dist drift.
-- Mitigation: restrict the warning-only path to `doctor` and `runtime explain` in this task; leave all mutating commands strict.
 
 ## Verify Steps
 
@@ -98,10 +93,6 @@ Allow read-only diagnostics to bypass the repo-checkout stale-dist hard-fail wit
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T20:43:03.244Z — VERIFY — ok
 
@@ -118,7 +109,12 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T20:34:19.779Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Keep this task intentionally narrow: change command policy only for `doctor` and `runtime explain`.
 - The snapshot-based freshness redesign is tracked separately in `202603072032-1BC7VQ` and `202603072032-V9VGT2`.
+
+## Risks
+
+- Risk: allowing too many stale-build commands weakens the safety contract and hides real dist drift.
+- Mitigation: restrict the warning-only path to `doctor` and `runtime explain` in this task; leave all mutating commands strict.

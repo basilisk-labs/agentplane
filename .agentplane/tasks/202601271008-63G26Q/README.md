@@ -35,7 +35,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci passed | details: task new/show/list implemented with file-based store."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:06.992Z"
 doc_updated_by: "agentplane"
 description: "Implement local tasks backend using .agentplane/tasks/<id>/README.md frontmatter and expose minimal task commands: task new, task show, task list."
@@ -51,21 +51,27 @@ Implement AP-009 (minimal): a local tasks backend stored as task README frontmat
 - Implement `agentplane task show <id>` and `agentplane task list`
 - Add tests covering CLI behavior
 
-## Risks
+## Plan
 
-- ID generation must be stable and collision-safe.
-- File format must remain deterministic to avoid noisy diffs.
 
 ## Verify Steps
 
 - `bun run ci`
 - E2E-style test: create a temp git root, run task new, then show/list
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert commits; remove task command handling and core task storage module
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- ID generation must be stable and collision-safe.
+- File format must remain deterministic to avoid noisy diffs.

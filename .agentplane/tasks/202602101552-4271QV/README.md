@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run ci (format:check, typecheck, lint, coverage) and bun run release:check (build + npm pack --dry-run) succeeded."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T16:37:10.113Z"
 doc_updated_by: "CODER"
 description: "Add agentplane release apply to bump versions, validate docs/releases/vX.Y.Z.md, commit, and create git tag for publish workflow."
@@ -64,18 +64,6 @@ Add `agentplane release apply` to apply a prepared release plan: validate agent-
 
 1. Implement `release apply` command to read `version.json` from a release plan directory and require `docs/releases/<tag>.md`.\n2. Validate release notes minimally (Release Notes heading, >=3 bullets, English-only) to match repo checks.\n3. Bump versions in `packages/core/package.json` and `packages/agentplane/package.json` (idempotent if already bumped).\n4. Stage + commit changes (if any) and create a git tag `vX.Y.Z` (refuse to overwrite).\n5. Register in command catalog and update help snapshots + add unit test.
 
-## Risks
-
-- Risk: tagging the wrong version or tagging twice. Mitigation: validate `nextTag` format, refuse overwriting existing tags, ensure package versions match the plan.\n- Risk: release notes format mismatch vs CI rules. Mitigation: local validation (heading, bullet count, no Cyrillic).\n- Risk: accidental remote push. Mitigation: require `--yes` for `--push`.
-
-## Verification
-
-- bun run ci (format:check, typecheck, lint, vitest --coverage): OK\n- bun run release:check (core/agentplane build + npm pack --dry-run): OK
-
-## Rollback Plan
-
-1. If a release commit was created: `git revert <commit>` (or `git reset --hard` only with explicit user intent).\n2. Delete the tag locally: `git tag -d vX.Y.Z`.\n3. If already pushed: delete remote tag: `git push <remote> :refs/tags/vX.Y.Z`, then push the revert commit.
-
 ## Verify Steps
 
 ### Scope
@@ -90,3 +78,21 @@ Add `agentplane release apply` to apply a prepared release plan: validate agent-
 ### Pass criteria
 - `agentplane release apply` updates versions and creates a tag without breaking CI/publish workflow checks.
 - `bun run ci` exits 0.
+
+## Verification
+
+- bun run ci (format:check, typecheck, lint, vitest --coverage): OK\n- bun run release:check (core/agentplane build + npm pack --dry-run): OK
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+1. If a release commit was created: `git revert <commit>` (or `git reset --hard` only with explicit user intent).\n2. Delete the tag locally: `git tag -d vX.Y.Z`.\n3. If already pushed: delete remote tag: `git push <remote> :refs/tags/vX.Y.Z`, then push the revert commit.
+
+## Findings
+
+
+## Risks
+
+- Risk: tagging the wrong version or tagging twice. Mitigation: validate `nextTag` format, refuse overwriting existing tags, ensure package versions match the plan.\n- Risk: release notes format mismatch vs CI rules. Mitigation: local validation (heading, bullet count, no Cyrillic).\n- Risk: accidental remote push. Mitigation: require `--yes` for `--push`.

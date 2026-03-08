@@ -32,7 +32,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: merged commit 91b3760 on main; pr check and verify T-067 passed; handoff notes captured from PR review."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:24.908Z"
 doc_updated_by: "agentplane"
 description: "Implement the stricter branch_pr workflow spec: worktrees under .agent-plane/worktrees, branch naming task/T-###/<slug>, new branch status, stricter pr open/update/check, integrate dry-run + verify in branch worktree, workflow_mode config in .agent-plane/swarm.config.json, and stronger finish/guard/verify guardrails + standardized outputs."
@@ -44,16 +44,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

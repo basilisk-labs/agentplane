@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: added an onboarding smoke-check that guards bootstrap, recovery, lifecycle, and nav drift together."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T16:35:16.755Z"
 doc_updated_by: "TESTER"
 description: "Create a scenario-based docs validation that exercises bootstrap, upgrade recovery, task execution, verification, and finish."
@@ -73,11 +73,6 @@ Create a scenario-based docs validation that exercises bootstrap, upgrade recove
 
 1. Add a scenario-based docs validation that exercises bootstrap, upgrade recovery, task work, verify, and finish. 2. Wire it into scripts/tests so agent onboarding drift is caught automatically. 3. Document the scenario briefly where bootstrap/recovery docs are referenced.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -94,10 +89,6 @@ Create a scenario-based docs validation that exercises bootstrap, upgrade recove
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T16:35:16.543Z — VERIFY — ok
 
@@ -113,3 +104,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T16:31:30.228Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

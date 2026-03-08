@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Split registry into registry.help.ts and registry.run.ts and switched run-cli.ts to dynamic imports so help path avoids importing run registry; lint, cli core tests, and typecheck pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T18:51:13.388Z"
 doc_updated_by: "CODER"
 description: "Split registry.ts into registry.help.ts and registry.run.ts (or equivalent) so help fast does not statically import heavy handlers."
@@ -71,9 +71,9 @@ Split registry implementation so help path can import a lightweight module (help
 
 1) Split registry.ts into registry.help.ts and registry.run.ts (or equivalent).\n2) Ensure run-cli.ts imports help registry only on help branch (prefer dynamic import).\n3) Keep current behavior and tests passing.\n4) Run bun run lint; bun run test:cli:core; bun run typecheck.
 
-## Risks
+## Verify Steps
 
-- Risk: import cycles or ESM path issues (.js specifiers) when splitting. Mitigation: keep paths explicit and rely on existing test suite.
+- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: identical CLI behavior; help remains fast path.
 
 ## Verification
 
@@ -94,10 +94,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T18:48:02.044Z, excerpt_
 
 Revert to single registry.ts module if split causes ESM resolution regressions.
 
-## Verify Steps
-
-- bun run lint\n- bun run test:cli:core\n- bun run typecheck\nPass criteria: identical CLI behavior; help remains fast path.
-
-## Notes
+## Findings
 
 ### Approvals / Overrides\n- 2026-02-08: no overrides.
+
+## Risks
+
+- Risk: import cycles or ESM path issues (.js specifiers) when splitting. Mitigation: keep paths explicit and rely on existing test suite.

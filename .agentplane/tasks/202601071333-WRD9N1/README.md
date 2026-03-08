@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: not run; doc/instruction edits only, no runtime impact."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:34.908Z"
 doc_updated_by: "agentplane"
 description: "Update README, docs, and CONTRIBUTING to minimize repeated 'snapshot/tasks.json' phrasing, while preserving rules: do not edit exports by hand and use agentctl for task export."
@@ -35,10 +35,6 @@ description: "Update README, docs, and CONTRIBUTING to minimize repeated 'snapsh
 
 - Reduced snapshot wording in README, docs, CONTRIBUTING, and cleanup notes.
 - Kept tasks.json references only where needed for export/viewer guidance.
-
-## Goal
-
-- Minimize repeated snapshot phrasing while preserving export rules and commands.
 
 ## Scope
 
@@ -52,19 +48,29 @@ description: "Update README, docs, and CONTRIBUTING to minimize repeated 'snapsh
 - @docs/09-commands.md
 - @docs/10-troubleshooting.md
 
-## Risks
+## Plan
 
-- Low: wording changes could hide explicit snapshot terminology some users expect.
 
 ## Verify Steps
 
 - None (doc/instruction changes only).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert commit `c8cc07f9a242`.
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Minimize repeated snapshot phrasing while preserving export rules and commands.
+
+## Risks
+
+- Low: wording changes could hide explicit snapshot terminology some users expect.

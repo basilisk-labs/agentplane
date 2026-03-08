@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: needsSemanticReview now requires actual current-vs-incoming divergence with dual baseline deltas."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:19:45.974Z"
 doc_updated_by: "CODER"
 description: "Refine baselineConflict criteria to require current!=incoming and both changed vs baseline; add tests; optionally expose currentDiffersFromIncoming in review.json."
@@ -70,15 +70,15 @@ In scope: needsSemanticReview/baselineConflict logic in upgrade command and rela
 
 1) Update baseline conflict predicate to require current differs from incoming and both differ from baseline. 2) Surface currentDiffersFromIncoming in review output for diagnostics. 3) Add regression test where current==incoming!=baseline and assert needsSemanticReview=false.
 
-## Risks
+## Verify Steps
 
-Risk: under-reporting semantic conflicts if predicate is too narrow. Mitigation: keep dual-change checks and add targeted regression tests for both conflict and non-conflict baselines.
+- bun run --filter=@agentplaneorg/core build
+- bun run --filter=agentplane build
+- bun run lint
+- bunx vitest run packages/agentplane/src/commands/upgrade.agent-mode.test.ts packages/agentplane/src/commands/upgrade.cleanup.test.ts packages/agentplane/src/commands/upgrade.merge.test.ts
+- bun run test:fast
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T05:19:45.826Z — VERIFY — ok
@@ -95,10 +95,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T05:18:14.676Z, excerpt_
 
 Revert the task commit to restore previous semantic-review behavior and test expectations.
 
-## Verify Steps
+## Findings
 
-- bun run --filter=@agentplaneorg/core build
-- bun run --filter=agentplane build
-- bun run lint
-- bunx vitest run packages/agentplane/src/commands/upgrade.agent-mode.test.ts packages/agentplane/src/commands/upgrade.cleanup.test.ts packages/agentplane/src/commands/upgrade.merge.test.ts
-- bun run test:fast
+
+## Risks
+
+Risk: under-reporting semantic conflicts if predicate is too narrow. Mitigation: keep dual-change checks and add targeted regression tests for both conflict and non-conflict baselines.

@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran agentctl task export after tagging completed tasks."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:54.259Z"
 doc_updated_by: "agentplane"
 description: "Review completed tasks lacking tags and assign a minimal, navigable tag set without inflating tag counts."
@@ -46,23 +46,26 @@ Completed tasks had empty tags, which made filtering and browsing less useful.
 
 - Export tasks snapshot from local backend.\n- Identify DONE tasks with empty/missing tags.\n- Add 1-2 minimal tags per task via agentctl task update.\n- Export tasks and document changes.
 
-## Risks
+## Plan
 
-- Over-tagging could dilute signal; keep tags minimal and consistent.\n- Touching many tasks increases churn in tasks.json; batch updates carefully.
 
 ## Verify Steps
 
 python .agent-plane/agentctl.py task export
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the commit to restore previous tag state in tasks.json.
 
-## Notes
+## Findings
 
 Mapping was keyword-based with a workflow fallback for uncategorized titles.
 
-## Plan
+## Risks
 
-
-## Verification
+- Over-tagging could dilute signal; keep tags minimal and consistent.\n- Touching many tasks increases churn in tasks.json; batch updates carefully.

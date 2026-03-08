@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint and bun run test:full pass. Added upgrade modes: default agent-assisted plan generation (no writes) and explicit --auto for applying managed files. Updated CLI/tests and added agent-mode coverage."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-09T17:21:27.248Z"
 doc_updated_by: "CODER"
 description: "Add upgrade modes: --agent generates plan/diff/constraints/report scaffold; --auto applies only safe transforms (add missing, anchors, canonical sections)."
@@ -72,15 +72,11 @@ packages/agentplane/src/commands/upgrade.* and assets/AGENTS anchors. No semanti
 
 1) Extend upgrade spec with --agent/--auto modes (default to --agent).\n2) Implement --agent mode: compute manifest diff and write artifacts under .agentplane/.upgrade/agent/ (plan.md, constraints.md, report.md skeleton, optional diff.patch).\n3) Implement --auto mode: only add missing managed files, update anchors, and apply canonical section updates; never merge arbitrary user text.\n4) Ensure upgrade still respects allow/deny manifest and never touches tasks/backends/config.\n5) Add tests for both modes.\n6) Run bun run lint and bun run test:full.
 
-## Risks
+## Verify Steps
 
-Risk: behavior change for existing users; mitigate by keeping current auto-apply as --auto and making --agent an additive mode with clear messaging.
+- bun run lint\n- bun run test:full
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-09T17:21:20.264Z — VERIFY — ok
@@ -97,6 +93,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-09T17:20:23.655Z, excerpt_
 
 Revert upgrade mode changes; keep manifest-based safe upgrade as the baseline behavior.
 
-## Verify Steps
+## Findings
 
-- bun run lint\n- bun run test:full
+
+## Risks
+
+Risk: behavior change for existing users; mitigate by keeping current auto-apply as --auto and making --agent an additive mode with clear messaging.

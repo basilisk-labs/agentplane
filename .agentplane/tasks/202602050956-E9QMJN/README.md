@@ -29,7 +29,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: bun run format:check; bun run lint; bun run test:fast. Commit: a21b8aeb9bcd."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T10:02:13.688Z"
 doc_updated_by: "DOCS"
 description: "Mark completed items in ROADMAP, verify Epic D status, and finalize documentation/verify. Parent: 202602050954-3JC3CW."
@@ -43,19 +43,25 @@ Marked Epic A-D items in ROADMAP as completed with task IDs and dates.
 
 Updated ROADMAP.md only.
 
-## Risks
+## Plan
 
-Low risk; documentation-only change.
 
 ## Verify Steps
 
 bun run format:check\nbun run lint\nbun run test:fast
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit a21b8aeb9bcd to remove ROADMAP status markers.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; documentation-only change.

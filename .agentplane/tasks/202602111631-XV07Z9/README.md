@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release/upgrade side-effect suites now skip under AGENTPLANE_HOOK_MODE=1; normal fast suite still passes and hook-mode run is deterministic."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:35:11.721Z"
 doc_updated_by: "TESTER"
 description: "When AGENTPLANE_HOOK_MODE=1, skip or stub tests that create commit/release/upgrade side effects to keep hook path deterministic."
@@ -57,6 +57,10 @@ id_source: "generated"
 
 Добавить режим AGENTPLANE_HOOK_MODE=1 для пропуска side-effect тестов в hook-контуре.
 
+## Context
+
+Даже при allowlist важно защититься от случайного запуска тестов с git/release/upgrade side-effects.
+
 ## Scope
 
 In-scope: side-effect suites в командах release/upgrade/recipes. Out-of-scope: изменение производственного кода CLI.
@@ -65,25 +69,23 @@ In-scope: side-effect suites в командах release/upgrade/recipes. Out-of
 
 1) Добавить env guard на уровне describe в side-effect test files. 2) Проверить нормальный запуск без guard и skip-поведение с guard.
 
-## Risks
+## Verify Steps
 
-Риск: случайно скрыть полезные тесты в CI. Смягчение: guard активируется только при AGENTPLANE_HOOK_MODE=1.
+1) bun run test:fast\n2) AGENTPLANE_HOOK_MODE=1 bun run test:fast:hook\n3) bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Откатить изменения в test files и убрать guard.
 
-## Context
-
-Даже при allowlist важно защититься от случайного запуска тестов с git/release/upgrade side-effects.
-
-## Verify Steps
-
-1) bun run test:fast\n2) AGENTPLANE_HOOK_MODE=1 bun run test:fast:hook\n3) bun run --filter=agentplane build
-
-## Notes
+## Findings
 
 ### Decisions\n- Guard только для тестов с побочными эффектами.\n### Implementation Notes\n- Заполняется после реализации.
+
+## Risks
+
+Риск: случайно скрыть полезные тесты в CI. Смягчение: guard активируется только при AGENTPLANE_HOOK_MODE=1.

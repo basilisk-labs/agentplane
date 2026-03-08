@@ -48,7 +48,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: init no longer carries duplicated execution presets; it uses @agentplaneorg/core buildExecutionProfile and passes init regression tests plus both package builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:11:33.653Z"
 doc_updated_by: "CODER"
 description: "Remove init-local execution preset builder and reuse @agentplaneorg/core buildExecutionProfile."
@@ -58,6 +58,10 @@ id_source: "generated"
 
 Убрать дублирование execution preset-ов в init и использовать единый builder из core.
 
+## Context
+
+Сейчас init хранит локальную копию profile preset-ов, что создаёт риск дрифта.
+
 ## Scope
 
 In-scope: init.ts wiring на core buildExecutionProfile и связанные тесты. Out-of-scope: изменение самих preset-значений.
@@ -66,25 +70,23 @@ In-scope: init.ts wiring на core buildExecutionProfile и связанные �
 
 1) Удалить локальный builder в init.ts. 2) Импортировать buildExecutionProfile из core. 3) Прогнать init regression tests и сборку.
 
-## Risks
+## Verify Steps
 
-Риск: незаметное расхождение типов execution в write-config. Смягчение: компиляция и init-тесты.
+1) bun run test:agentplane -- packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts\n2) bun run --filter=@agentplaneorg/core build\n3) bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Откатить коммит задачи и вернуть локальный builder в init.ts.
 
-## Context
-
-Сейчас init хранит локальную копию profile preset-ов, что создаёт риск дрифта.
-
-## Verify Steps
-
-1) bun run test:agentplane -- packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts\n2) bun run --filter=@agentplaneorg/core build\n3) bun run --filter=agentplane build
-
-## Notes
+## Findings
 
 ### Decisions\n- Источник истины для execution preset-ов: @agentplaneorg/core.\n### Implementation Notes\n- Заполнить после реализации.
+
+## Risks
+
+Риск: незаметное расхождение типов execution в write-config. Смягчение: компиляция и init-тесты.

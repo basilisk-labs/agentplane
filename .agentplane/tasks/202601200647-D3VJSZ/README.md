@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: close: framework vs recipe audit completed | details: core/recipe split and migration candidates identified."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:57.716Z"
 doc_updated_by: "agentplane"
 description: "Review current framework functionality and identify which capabilities can move into recipes to keep the core minimal."
@@ -43,23 +43,26 @@ Goal was to validate recipe documentation/behavior and map which framework capab
 
 Reviewed AGENTS.md, RECIPES.md, recipes.py, docs/05-workflow.md, docs/06-agents.md, docs/07-tasks-and-backends.md, docs/09-commands.md, docs/recipes-inventory.json, and the roadmap recipe manifest/scenarios; mapped core vs recipe candidates.
 
-## Risks
+## Plan
 
-Audit is advisory; moving features to recipes must preserve agentctl guardrails and no-task-writes constraints.
 
 ## Verify Steps
 
 Reviewed the recipe docs and CLI sources plus workflow/task docs to build the core-vs-recipes map.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 No code changes; revert the task doc/finish commits if the audit record must be removed.
 
-## Notes
+## Findings
 
 Recommendations delivered in response; no implementation changes executed.
 
-## Plan
+## Risks
 
-
-## Verification
+Audit is advisory; moving features to recipes must preserve agentctl guardrails and no-task-writes constraints.

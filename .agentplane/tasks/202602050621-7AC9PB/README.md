@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: bun run lint; bun run test:cli:unit; bun run test:cli:scenario; pre-commit hooks (format, lint, test-fast) via agentplane commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T07:36:52.301Z"
 doc_updated_by: "CODER"
 description: "Move task/work/pr/backend/branch/etc commands into commands/ modules and reduce run-cli.ts size."
@@ -48,11 +48,8 @@ Move task/work/pr/backend/branch/guard/commit/hooks namespaces into commands/ mo
 
 Added commands modules: packages/agentplane/src/commands/workflow.ts and packages/agentplane/src/commands/backend.ts; updated packages/agentplane/src/run-cli.ts and packages/agentplane/src/cli/error-map.ts; added tests under packages/agentplane/src/commands and packages/agentplane/src/cli.
 
-## Risks
+## Plan
 
-Risk: command routing regressions; mitigate with run-cli core tests and pre-commit hooks.
-
-Risk: CLI routing regressions after extraction. Mitigated by lint + run-cli core/scenario tests.
 
 ## Verify Steps
 
@@ -60,13 +57,22 @@ Run run-cli.core.test.ts and full pre-commit hooks; confirm CLI behavior unchang
 
 bun run lint\nbun run test:cli:unit\nbun run test:cli:scenario
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the namespace extraction commits to restore monolithic run-cli.ts.
 
 Revert the AP-030c commit(s) to restore the monolithic run-cli implementation.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: command routing regressions; mitigate with run-cli core tests and pre-commit hooks.
+
+Risk: CLI routing regressions after extraction. Mitigated by lint + run-cli core/scenario tests.

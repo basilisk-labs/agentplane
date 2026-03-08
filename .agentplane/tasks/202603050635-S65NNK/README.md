@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: workflow harness rollout is validated across runtime, doctor/preflight integration, and workflow command behavior with passing regression evidence and deterministic contract enforcement."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-05T08:07:05.368Z"
 doc_updated_by: "CODER"
 description: "Complete workflow contract + doctor/preflight integration, profile UX, CI gates, docs migration/runbook, and tests/coverage hardening informed by Symphony."
@@ -59,6 +59,10 @@ id_source: "generated"
 ## Summary
 
 Finalize the workflow harness hardening rollout that introduced deterministic WORKFLOW.md generation/validation, doctor/preflight workflow health checks, execution profile UX simplification, and supporting docs/test coverage updates.
+
+## Context
+
+This task consolidated the harness-engineering rollout so workflow contracts become machine-checkable and operationally recoverable. The implementation was delivered across runtime, CLI, schema, CI, and docs layers and needed closure with explicit verification evidence.
 
 ## Scope
 
@@ -81,12 +85,6 @@ Out of scope:
 2. Run targeted workflow-harness regression suites (runtime, harness, doctor, preflight/workflow command integration).
 3. Record evidence in verification and close the task against implementation commits.
 
-## Risks
-
-- Workflow contract validation can block existing repositories if local workflow files drift.
-- Preflight/doctor behavior changes can surface new warnings in previously "silent" setups.
-- Generated docs can drift from CLI command catalog without regeneration.
-
 ## Verify Steps
 
 ### Scope
@@ -103,10 +101,6 @@ Out of scope:
 - No tracked file mutations are introduced by verification commands.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-05T08:07:05.093Z — VERIFY — ok
@@ -129,11 +123,7 @@ Command: bunx vitest run packages/agentplane/src/harness packages/agentplane/src
 2. Re-run the same harness suites to confirm restored baseline.
 3. Regenerate CLI reference only if rollback changes command surfaces.
 
-## Context
-
-This task consolidated the harness-engineering rollout so workflow contracts become machine-checkable and operationally recoverable. The implementation was delivered across runtime, CLI, schema, CI, and docs layers and needed closure with explicit verification evidence.
-
-## Notes
+## Findings
 
 ### Decisions
 - Keep workflow hardening in core runtime/commands, not extension recipes.
@@ -145,3 +135,9 @@ This task consolidated the harness-engineering rollout so workflow contracts bec
 
 ### Evidence / Links
 - Evidence will be attached in `## Verification` after test execution.
+
+## Risks
+
+- Workflow contract validation can block existing repositories if local workflow files drift.
+- Preflight/doctor behavior changes can surface new warnings in previously "silent" setups.
+- Generated docs can drift from CLI command catalog without regeneration.

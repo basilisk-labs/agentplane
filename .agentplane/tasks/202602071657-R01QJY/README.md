@@ -33,7 +33,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: Added lifecycle tests for plan approve/start Verify Steps gates; bun run test:cli:core and bun run lint passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T18:30:08.761Z"
 doc_updated_by: "TESTER"
 description: "Add CLI lifecycle tests for approve/start blocking when Verify Steps is empty for verify-required tasks."
@@ -50,9 +50,6 @@ Add CLI lifecycle tests to enforce Verify Steps gates on plan approval and start
 
 1) Add CLI tests for plan approve Verify Steps gate.\n2) Add CLI tests for start Verify Steps gate when require_plan=false.\n3) Run bun run test:cli:core.
 
-## Risks
-
-
 ## Verify Steps
 
 ### Checks
@@ -64,10 +61,6 @@ Add CLI lifecycle tests to enforce Verify Steps gates on plan approval and start
 - bun run test:cli:core
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T18:30:04.476Z — VERIFY — ok
@@ -87,3 +80,8 @@ bun run test:cli:core (pass); bun run lint (pass)
 ## Rollback Plan
 
 Revert the test commit for this task.
+
+## Findings
+
+
+## Risks

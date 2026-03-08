@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: commit-msg hook now loads config and uses validateCommitSubject (incl. anti-generic); when task env is missing it selects a matching task by suffix before validating; updated hook tests and workflow test fixture; bun run build, bun run test:cli:core, and bun run test:fast passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T18:47:34.536Z"
 doc_updated_by: "CODER"
 description: "Update hooks commit-msg to load config and call the same commit subject validator used by CLI (incl. anti-generic)."
@@ -49,15 +49,11 @@ packages/agentplane/src/commands/hooks/index.ts + hook CLI tests.
 
 1) In hooks run commit-msg, load config and call validateCommitSubject.\n2) When AGENTPLANE_TASK_ID is unset, select a matching task based on suffix occurrence before validating.\n3) Update hook tests to cover anti-generic rejection (e.g., '✨ ABCDEF update').\n4) Run bun run test:cli:core.
 
-## Risks
+## Verify Steps
 
-Risk: Hook becomes stricter and may reject previously accepted messages; tests will codify the intended gate.
+- bun run test:cli:core
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T18:45:06.404Z — VERIFY — ok
@@ -72,6 +68,9 @@ Note: commit-msg hook now uses core validateCommitSubject (including anti-generi
 
 Revert the commit(s) for this task.
 
-## Verify Steps
+## Findings
 
-- bun run test:cli:core
+
+## Risks
+
+Risk: Hook becomes stricter and may reject previously accepted messages; tests will codify the intended gate.

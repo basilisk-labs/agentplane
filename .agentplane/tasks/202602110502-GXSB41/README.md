@@ -60,7 +60,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: all phase-2 dependencies are complete and validated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T05:26:05.738Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Tracking task for agent templates sync, CI drift gates, CLI parse/refactor hardening, upgrade semantic trigger tuning, and command error-wrapper unification."
@@ -78,15 +78,12 @@ Scope covered downstream tasks PCFAWM, SJ0GT0, 6Y3KR9, 5J1ZNE, 71M2A6, 0FRESX, E
 
 1) Complete all dependent CLI/upgrade/agents drift-hardening tasks. 2) Ensure each task is verified and committed atomically. 3) Close the epic after dependency set reaches DONE.
 
-## Risks
+## Verify Steps
 
-Residual risk: broader spec/run split is still incremental and may leave other heavy commands for next phase.
+- Confirm all depends_on tasks are DONE via agentplane task list
+- Confirm build/lint/test:fast were run in each downstream task before completion
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T05:26:05.571Z — VERIFY — ok
@@ -103,7 +100,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T05:26:05.417Z, excerpt_
 
 If any downstream issue is found, reopen epic and affected subtask(s), then revert corresponding task commit(s).
 
-## Verify Steps
+## Findings
 
-- Confirm all depends_on tasks are DONE via agentplane task list
-- Confirm build/lint/test:fast were run in each downstream task before completion
+
+## Risks
+
+Residual risk: broader spec/run split is still incremental and may leave other heavy commands for next phase.

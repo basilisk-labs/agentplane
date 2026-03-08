@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: all public posts were rewritten using HUMANIZER.md guidance, the facts stayed intact, and the public blog surface now reads more like a person wrote it."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T18:28:47.116Z"
 doc_updated_by: "DOCS"
 description: "Rewrite the public blog posts in a less AI-sounding voice using the local HUMANIZER.md guidance, preserve meaning, and keep the published blog structure intact before moving on to runtime diagnostics."
@@ -71,11 +71,6 @@ Rewrite the public blog posts in a less AI-sounding voice using the local HUMANI
 
 1. Audit all current public blog posts against HUMANIZER.md and list the strongest AI-writing tells that remain. 2. Rewrite each post to keep the same factual meaning while removing promotional filler, vague significance framing, repetitive sentence rhythm, and other patterns called out in HUMANIZER.md. 3. Verify the blog index and site build still work, then commit, publish, and record the verification evidence.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -89,10 +84,6 @@ Rewrite the public blog posts in a less AI-sounding voice using the local HUMANI
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T18:28:46.839Z — VERIFY — ok
@@ -109,3 +100,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T18:16:34.588Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

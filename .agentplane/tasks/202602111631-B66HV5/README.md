@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: downstream tasks 2S7HGD, XV07Z9, DPQ92K, 9N6WVJ, V8XQ1F, and Y53PKW are DONE with passing targeted tests/builds and close commits."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:50:51.479Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Improve pre-commit reliability by introducing a deterministic precommit test profile, isolating side-effect tests, improving commit failure diagnostics, tightening artifact cleanup, and raising coverage in risky CLI surfaces."
@@ -71,17 +71,22 @@ In scope: tasks 2S7HGD, XV07Z9, DPQ92K, 9N6WVJ, V8XQ1F, Y53PKW and their committ
 
 1) Complete downstream hardening tasks. 2) Verify targeted tests/builds per task. 3) Close epic with consolidated outcome summary.
 
-## Risks
+## Verify Steps
 
-Residual risk: focused coverage report for PR/guard still has uncovered branches in non-critical modules, but key failure and validation paths are now tested.
+- bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts\n- bunx vitest run packages/agentplane/src/commands/upgrade.cleanup.test.ts packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/apply.test.ts\n- bunx vitest run packages/agentplane/src/commands/pr/input-validation.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts\n- bunx vitest run packages/agentplane/src/cli/shared/ansi.test.ts packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert individual downstream commits for the affected tasks if regressions appear in hooks, release/upgrade tests, PR flows, or init UI rendering.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts\n- bunx vitest run packages/agentplane/src/commands/upgrade.cleanup.test.ts packages/agentplane/src/commands/release/plan.test.ts packages/agentplane/src/commands/release/apply.test.ts\n- bunx vitest run packages/agentplane/src/commands/pr/input-validation.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts\n- bunx vitest run packages/agentplane/src/cli/shared/ansi.test.ts packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Residual risk: focused coverage report for PR/guard still has uncovered branches in non-critical modules, but key failure and validation paths are now tested.

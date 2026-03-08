@@ -57,7 +57,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: task list/next/search/show specs are now spec-only and their runtime handlers are lazy-loaded; lint and CLI help/tasks test suites pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:30:41.788Z"
 doc_updated_by: "CODER"
 description: "Split spec from run for task list/next/search/show; update command catalog entry.load to import run modules."
@@ -72,18 +72,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 ### Scope\n- Split spec vs runtime handler for hot task commands: task list/next/search/show.\n- Ensure command catalog imports specs only; runtime handlers are lazy-loaded via entry.load().\n\n### Checks\n- Lint\n- CLI help snap and task routing smoke\n\n### Evidence / Commands\n- bun run lint\n- bun run test:agentplane packages/agentplane/src/cli/run-cli.core.help-snap.test.ts\n- bun run test:agentplane packages/agentplane/src/cli/run-cli.core.tasks.test.ts\n\n### Pass criteria\n- Lint passes.\n- Tests pass.\n- command-catalog imports only spec modules for these commands (no usecase imports on help path).
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:29:32.568Z — VERIFY — ok
@@ -97,3 +90,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:24:44.219Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

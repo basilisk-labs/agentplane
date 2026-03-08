@@ -46,9 +46,35 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: recipes subsystem docs now match install/list/run/cache behavior and current safety model."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T08:05:44.877Z"
 doc_updated_by: "DOCS"
 description: "Update docs/developer/recipes-spec.mdx, recipes-how-it-works.mdx, recipes-development.mdx, recipes-safety.mdx and docs/recipes-inventory.json description references for current behavior."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

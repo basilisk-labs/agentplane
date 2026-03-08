@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: checker script compares generated output to docs/user/cli-reference.generated.mdx and is wired into CI, publish, and release:ci-check."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T11:03:58.579Z"
 doc_updated_by: "CODER"
 description: "Introduce a check that fails CI when docs/user/cli-reference.generated.mdx is stale relative to current CLI command specs/guide."
@@ -66,14 +66,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
+2. node scripts/check-cli-reference-fresh.mjs
+3. bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T11:02:33.915Z — VERIFY — ok
@@ -89,8 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T11:00:52.602Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build
-2. node scripts/check-cli-reference-fresh.mjs
-3. bun run lint
+
+## Risks

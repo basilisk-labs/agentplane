@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: CommandRegistry.register now throws on duplicate command ids and a unit test covers it; lint, test:agentplane, and typecheck pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T18:36:36.780Z"
 doc_updated_by: "CODER"
 description: "Add runtime guard in CommandRegistry.register() to reject duplicate spec.id; add unit test."
@@ -71,9 +71,9 @@ Add runtime guard in CommandRegistry.register() to reject duplicate command ids 
 
 1) Update CommandRegistry to track registered id strings and throw CliError(E_INTERNAL) on duplicates.\n2) Add unit test ensuring duplicate registration throws.\n3) Run bun run lint; bun run test:agentplane; bun run typecheck.
 
-## Risks
+## Verify Steps
 
-- Risk: some tests/tools may intentionally register duplicates today. Mitigation: if discovered, fix callers to ensure unique ids.
+- bun run lint\n- bun run test:agentplane\n- bun run typecheck\nPass criteria: all pass; duplicate register throws deterministically.
 
 ## Verification
 
@@ -94,10 +94,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T18:33:47.478Z, excerpt_
 
 Revert the commit if a caller relies on duplicate ids; update those call sites instead of keeping duplicates.
 
-## Verify Steps
-
-- bun run lint\n- bun run test:agentplane\n- bun run typecheck\nPass criteria: all pass; duplicate register throws deterministically.
-
-## Notes
+## Findings
 
 ### Approvals / Overrides\n- 2026-02-08: no overrides.
+
+## Risks
+
+- Risk: some tests/tools may intentionally register duplicates today. Mitigation: if discovered, fix callers to ensure unique ids.

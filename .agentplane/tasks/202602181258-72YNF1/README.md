@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: machine discovery endpoints (llms.txt, llms-full.txt) and canonical agent-discovery docs page are published and linked to core routes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:05:16.899Z"
 doc_updated_by: "DOCS"
 description: "Publish llms.txt/llms-full.txt and indexable capability pages for agent-oriented discovery and machine-readable crawling."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -77,11 +74,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

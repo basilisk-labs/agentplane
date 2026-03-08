@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run test:cli:core passed; direct mode policy/docs aligned with work start branch checkout; direct now rejects --worktree."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T10:25:10.635Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Align AGENTS.md and CLI guidance with actual direct-mode work start behavior (branch checkout without worktree). Remove policy/code contradiction; keep semantics explicit to reduce accidental branch switching."
@@ -72,17 +72,12 @@ id_source: "generated"
 4) Добавить/обновить тесты на direct-mode behavior (work start + docs).
 5) Прогнать локальный verify (unit tests) и зафиксировать результаты в Verification.
 
-## Risks
+## Verify Steps
 
-- Риск 1: breaking change для пользователей, которые ожидают имплицитный checkout ветки в direct mode.
-- Риск 2: появится третья “правда” (help/quickstart/AGENTS.md), если обновить не все места.
-- Риск 3: скрытые сетевые запросы (update-check) во время команд agentplane; снижать через --no-update-check в verify/командах.
+1) pnpm test (или npm test, если pnpm не используется).
+2) Дополнительно: node packages/agentplane/bin/agentplane.js --no-update-check task plan approve <id> должен проходить; work start в direct mode должен соответствовать описанию в AGENTS.md/quickstart.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T10:23:56.047Z — VERIFY — ok
@@ -102,7 +97,11 @@ Details:
 - Revert commit, созданный для этой задачи, через обычный git revert (или отменить локально до коммита).
 - Проверить, что AGENTS.md/quickstart вернулись к предыдущей версии, и что work start поведение/тесты соответствуют.
 
-## Verify Steps
+## Findings
 
-1) pnpm test (или npm test, если pnpm не используется).
-2) Дополнительно: node packages/agentplane/bin/agentplane.js --no-update-check task plan approve <id> должен проходить; work start в direct mode должен соответствовать описанию в AGENTS.md/quickstart.
+
+## Risks
+
+- Риск 1: breaking change для пользователей, которые ожидают имплицитный checkout ветки в direct mode.
+- Риск 2: появится третья “правда” (help/quickstart/AGENTS.md), если обновить не все места.
+- Риск 3: скрытые сетевые запросы (update-check) во время команд agentplane; снижать через --no-update-check в verify/командах.

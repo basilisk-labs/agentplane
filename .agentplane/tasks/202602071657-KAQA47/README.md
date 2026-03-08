@@ -32,7 +32,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: verification entries now include VerifyStepsRef with doc_version/doc_updated_at and sha256 hash; tests: bun run test:agentplane, bun run test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:34:14.453Z"
 doc_updated_by: "CODER"
 description: "verify-record should reference the current Verify Steps (doc_version/doc_updated_at + sha256 excerpt hash)."
@@ -48,27 +48,6 @@ description: "verify-record should reference the current Verify Steps (doc_versi
 1) In verify-record, compute a reference to current Verify Steps (doc_version/doc_updated_at + sha256 hash).
 2) Append the reference into each Verification entry without copying full Verify Steps text.
 3) Run bun run test:agentplane and bun run test:cli:core.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T17:33:32.465Z — VERIFY — ok
-
-By: CODER
-
-Note: verify-record now appends VerifyStepsRef (doc_version/doc_updated_at + sha256) to each Verification entry; tests: bun run test:agentplane, bun run test:cli:core.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -87,3 +66,22 @@ Enrich Verification entries with a stable reference to the Verify Steps criteria
 ### Pass criteria
 
 - verify-record appends the ref on every entry; no full Verify Steps text duplication.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:33:32.465Z — VERIFY — ok
+
+By: CODER
+
+Note: verify-record now appends VerifyStepsRef (doc_version/doc_updated_at + sha256) to each Verification entry; tests: bun run test:agentplane, bun run test:cli:core.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

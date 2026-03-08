@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: "README now mentions the UPDATER optimization agent and lifecycle so the doc mirrors the current codebase."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:15.537Z"
 doc_updated_by: "agentplane"
 description: "Refresh README.md so it describes the existing agents (including UPDATER), workflow rules, and repository layout that reflect the latest codebase."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

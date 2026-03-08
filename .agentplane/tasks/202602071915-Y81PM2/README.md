@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: cli2 core (spec/parse/registry/help-render), cli2 help command + JSON contract docs, and run-cli integration migrating task new/work start/recipes install with full test coverage and updated error hints."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T19:59:57.017Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Introduce spec-driven CLI framework (cli2) to eliminate help/usage drift and reduce per-command manual parsing."
@@ -60,12 +60,6 @@ Out of scope:
 2. Implement cli2 core: spec types, argv parser, registry, suggestions, help renderer + unit tests (task 202602071915-78ANFC).
 3. Integrate cli2 into `cli/run-cli.ts` and migrate 3 commands (`task new`, `work start`, `recipes install`) to spec-driven parsing (task 202602071915-X9V8KN).
 
-## Risks
-
-- Regression risk in global flag behavior (especially `--json` and `--help`) when changing scoping rules.
-- Snapshot/string-expectation brittleness in tests due to help/error text changes.
-- Partial migration state (cli2 + legacy coexistence) can create ambiguous behavior unless routing is explicit.
-
 ## Verify Steps
 
 ### Scope
@@ -87,10 +81,6 @@ Validate cli2 correctness (unit) and integration correctness (run-cli tests) for
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T19:46:26.633Z — VERIFY — ok
 
@@ -111,3 +101,12 @@ Commands: bun run typecheck; bun run test:cli:unit; bun run test:agentplane pack
 1. Revert commits touching `packages/agentplane/src/cli2/**` and `packages/agentplane/src/cli/run-cli.ts` integration.
 2. Restore legacy exports/visibility in `packages/agentplane/src/commands/recipes.ts` and `packages/agentplane/src/commands/task/new.ts`.
 3. Re-run `bun run test:cli:unit` to confirm baseline behavior.
+
+## Findings
+
+
+## Risks
+
+- Regression risk in global flag behavior (especially `--json` and `--help`) when changing scoping rules.
+- Snapshot/string-expectation brittleness in tests due to help/error text changes.
+- Partial migration state (cli2 + legacy coexistence) can create ambiguous behavior unless routing is explicit.

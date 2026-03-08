@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run format:check; bun run lint; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T16:16:18.619Z"
 doc_updated_by: "CODER"
 description: "Add .agentplane/.release to .gitignore so release plan/apply artifacts do not pollute git status."
@@ -61,15 +61,6 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
-
-
 ## Verify Steps
 
 ### Checks
@@ -79,3 +70,16 @@ id_source: "generated"
 ### Pass criteria
 - .gitignore includes `.agentplane/.release`.
 - Checks exit 0.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

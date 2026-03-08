@@ -28,7 +28,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: removed external file references from docs | details: replaced with self-contained wording and internal links; no functional changes."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:39.295Z"
 doc_updated_by: "agentplane"
 description: "Make documentation self-contained by removing references to repo files like ROADMAP.md and AGENTS.md; replace with inline guidance or internal docs links; keep only external product/project links."
@@ -41,19 +41,25 @@ Removed references to external repo files so docs are self-contained and only li
 
 Remove references to external repo files (e.g., ROADMAP.md, AGENTS.md, packages/spec paths) and replace them with self-contained wording across user/developer docs.
 
-## Risks
+## Plan
 
-May remove helpful navigation hints; ensure remaining links still point to internal docs and keep meaning intact.
 
 ## Verify Steps
 
 Search docs for ROADMAP.md/AGENTS.md/packages/spec references; review key pages for clarity after removal.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the doc edits to restore external file references.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+May remove helpful navigation hints; ensure remaining links still point to internal docs and keep meaning intact.

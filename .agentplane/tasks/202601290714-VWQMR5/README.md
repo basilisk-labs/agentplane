@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: bundled recipes catalog used for init selection."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:19.064Z"
 doc_updated_by: "agentplane"
 description: "Bundle snapshot of official recipes into npm package and use it in init for offline recipe selection."
@@ -46,19 +46,25 @@ Bundle an offline recipes catalog for init and validate selected recipes against
 
 - Add bundled recipes catalog data in @packages/agentplane/src/bundled-recipes.ts.\n- Use catalog for init prompts/validation without network.\n- Add tests for init recipe validation.
 
-## Risks
+## Plan
 
-- Bundled catalog can become stale if recipes evolve; requires periodic refresh.\n- Empty catalog means init cannot validate recipe ids.
 
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the task commit(s) and remove bundled catalog usage in init.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Bundled catalog can become stale if recipes evolve; requires periodic refresh.\n- Empty catalog means init cannot validate recipe ids.

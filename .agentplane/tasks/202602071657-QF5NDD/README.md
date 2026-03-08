@@ -32,7 +32,7 @@ comments:
   -
     author: "TESTER"
     body: "Verified: task scaffold test now asserts Verify Steps placeholder and Verification markers; bun run test:cli:core and bun run lint passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T18:33:26.022Z"
 doc_updated_by: "TESTER"
 description: "Add tests verifying scaffold output contains both sections and placeholder marker."
@@ -48,10 +48,6 @@ Add tests to ensure `agentplane task scaffold` includes `## Verify Steps` (with 
 
 1) Extend existing scaffold test to assert Verify Steps section + placeholder marker.\n2) Assert Verification section exists and includes BEGIN/END markers.\n3) Run bun run test:cli:core.
 
-## Risks
-
-- Scaffold template changes could require updating snapshots/assertions.
-
 ## Verify Steps
 
 ### Evidence / Commands
@@ -61,10 +57,6 @@ Add tests to ensure `agentplane task scaffold` includes `## Verify Steps` (with 
 - run-cli.core.tasks.test.ts assertions pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T18:33:21.469Z — VERIFY — ok
@@ -84,3 +76,10 @@ bun run test:cli:core (pass); bun run lint (pass)
 ## Rollback Plan
 
 Revert the test commit for this task.
+
+## Findings
+
+
+## Risks
+
+- Scaffold template changes could require updating snapshots/assertions.

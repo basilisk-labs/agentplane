@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: "Refreshed README intro, added a concrete Getting Started path with clean.sh guidance, an example session, and a Limitations/Non-goals section."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:17.818Z"
 doc_updated_by: "agentplane"
 description: "Add a focused Getting Started path, example session log, and limitations/non-goals to README with a simpler intro."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

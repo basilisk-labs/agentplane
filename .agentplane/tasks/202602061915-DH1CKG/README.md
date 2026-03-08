@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Enforced <emoji> <suffix> <scope>: <summary> subject standard (no backward-compat), generated structured bodies for comment-driven commits, updated hooks/docs/tests; ran bun run test:core and bun run test:cli."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T20:03:11.697Z"
 doc_updated_by: "CODER"
 description: "(Tracking=202602061915-XCPF92; depends_on=202602061915-DZBAW0) Реализовать action/status emoji map, subject template, автогенерацию body для comment-driven коммитов; обновить commit-msg hook под новый формат без обратной совместимости; обновить docs (AGENTS.md)."
@@ -56,11 +56,13 @@ Enforced a new commit subject standard (<emoji> <suffix> <scope>: <summary>) wit
 4. Update docs and examples (AGENTS.md, assets) to reflect the new standard and emoji map.
 5. Update/repair affected tests and run `bun run test:core` + `bun run test:cli`.
 
-## Risks
+## Verify Steps
 
-- Breaking change: commits not created via agentplane may fail commit-msg due to missing `AGENTPLANE_TASK_ID`.
-- Any downstream tooling that assumed the old `<emoji> <suffix> <summary>` template will need updates.
-- Strict subject validation may reject “generic” summaries more often; keep the rules aligned with docs/examples.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -81,3 +83,12 @@ Note: Verified locally on 2026-02-06: bun run test:core and bun run test:cli bot
 2. Restore the previous commit subject validator in core (accepting `<emoji> <suffix> <summary>`).
 3. Relax commit-msg hook to not require `AGENTPLANE_TASK_ID` (or accept a fallback path).
 4. Re-run `bun run test:core` + `bun run test:cli`.
+
+## Findings
+
+
+## Risks
+
+- Breaking change: commits not created via agentplane may fail commit-msg due to missing `AGENTPLANE_TASK_ID`.
+- Any downstream tooling that assumed the old `<emoji> <suffix> <summary>` template will need updates.
+- Strict subject validation may reject “generic” summaries more often; keep the rules aligned with docs/examples.

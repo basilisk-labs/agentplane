@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: completed FIX.md P0/P1 guardrails and hooks alignment via atomic tasks; core/CLI tests and lint pass; protected paths + base pinning now enforced. See Notes/Verification for commands and key commits."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T19:11:22.958Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Implement P0/P1 fixes from FIX.md: guard commit env bug, allowlist staging correctness, allow prefix normalization, robust git path parsing, commit subject policy hardening, hook/CLI drift fixes, branch_pr base pin enforcement, protected paths policy."
@@ -47,15 +47,11 @@ Implement P0/P1 items from FIX.md in code and hooks; add/adjust tests as needed;
 
 1) Create atomic tasks for each P0/P1 fix.\n2) For each task: set plan, approve, start, implement, run tests, record verify ok, commit via guard with tight allowlist, finish.\n3) Ensure hooks and CLI share the same commit subject validation.
 
-## Risks
+## Verify Steps
 
-Risk: hooks/CLI drift causes confusing failures; robust git path parsing must preserve semantics for renames/deletes; protected paths policy can block legit changes unless override flags are explicit.
+- pnpm test (or project test runner)\n- Targeted unit tests for guard/hook logic\n- Manual smoke: allowlist with ./src, delete, rename, commit-from-comment
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T19:11:17.543Z — VERIFY — ok
@@ -70,10 +66,10 @@ Note: All FIX.md P0/P1 atomic tasks completed (P0.1..P0.4, P1.1..P1.4). Verified
 
 Revert the per-task commits created for P0/P1 tasks; validate hooks still run and commits still gated; if protected-paths blocks workflow, disable via config flag introduced by the task (if any) or revert that specific task.
 
-## Verify Steps
-
-- pnpm test (or project test runner)\n- Targeted unit tests for guard/hook logic\n- Manual smoke: allowlist with ./src, delete, rename, commit-from-comment
-
-## Notes
+## Findings
 
 Completed: P0.1 KTZK7K, P0.2 VJNCQP, P0.3 MTEEWA, P0.4 9Y4CR4, P1.1 F17C02, P1.2 RA99FE, P1.3 QQVMHA, P1.4 NG820E. Key commits: QQVMHA=29604e30fbcd, NG820E=a6b1850439ea.
+
+## Risks
+
+Risk: hooks/CLI drift causes confusing failures; robust git path parsing must preserve semantics for renames/deletes; protected paths policy can block legit changes unless override flags are explicit.

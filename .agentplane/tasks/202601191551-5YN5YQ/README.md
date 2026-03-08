@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: task deferred per request | details: no tests required and no code changes made."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:56.423Z"
 doc_updated_by: "agentplane"
 description: "Summarize how the feature-spec-to-tasks recipe works, including inputs, steps, outputs, and usage guidance."
@@ -46,19 +46,25 @@ User requested to pause new recipe work and prioritize agentctl parity work.
 
 - No implementation; task closed as deferred per request.
 
-## Risks
+## Plan
 
-- Documentation for feature-spec-to-tasks remains missing until rescheduled.
 
 ## Verify Steps
 
 No tests required (task deferred).
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Reopen task if recipe documentation becomes a priority.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Documentation for feature-spec-to-tasks remains missing until rescheduled.

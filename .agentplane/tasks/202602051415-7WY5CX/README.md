@@ -26,7 +26,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: backend selection at init and first-class backend docs/tests complete."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T14:21:38.479Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Make backends first-class (local + redmine), decouple from recipes, and support selection at init."
@@ -40,9 +40,8 @@ Epic H: make backends first-class (local/redmine), decouple from recipes, and al
 
 Add init backend selection, write backend configs, update docs and tests, and close Epic H.
 
-## Risks
+## Plan
 
-Init flow changes may break non-interactive usage; add tests for --backend selection and defaults.
 
 ## Verify Steps
 
@@ -52,8 +51,16 @@ Init flow changes may break non-interactive usage; add tests for --backend selec
 
 Verified on 2026-02-05: init backend selection implemented, docs/tests updated, lint/test/pre-commit hooks passed.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert init/backend changes and restore previous backend config defaults.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Init flow changes may break non-interactive usage; add tests for --backend selection and defaults.

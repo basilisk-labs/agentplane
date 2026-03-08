@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: spike-tagged tasks require filled Verify Steps and non-empty Notes before plan approval; bun run test:agentplane passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T17:45:02.472Z"
 doc_updated_by: "CODER"
 description: "Define/enforce spike-specific doc expectations; Verify Steps acts as exit criteria."
@@ -48,27 +48,6 @@ description: "Define/enforce spike-specific doc expectations; Verify Steps acts 
 2) Also require non-empty Notes for spike tasks (Findings/Decision/Next Steps) if feasible without breaking existing flows.
 3) Add/update tests later in the dedicated test tasks.
 4) Run bun run test:agentplane.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-07T17:43:45.803Z — VERIFY — ok
-
-By: CODER
-
-Note: Plan approval now enforces spike tasks have filled Verify Steps and non-empty Notes; bun run test:agentplane.
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -87,3 +66,22 @@ Enforce spike-specific readiness at plan approval time.
 ### Pass criteria
 
 - Plan approval fails with E_VALIDATION when spike Verify Steps is unfilled.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-07T17:43:45.803Z — VERIFY — ok
+
+By: CODER
+
+Note: Plan approval now enforces spike tasks have filled Verify Steps and non-empty Notes; bun run test:agentplane.
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

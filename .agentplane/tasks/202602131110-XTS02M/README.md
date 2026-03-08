@@ -34,7 +34,7 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: completed optimization batch and documentation updates for this task chain."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-13T11:38:09.608Z"
 doc_updated_by: "CODER"
 description: "Remove unnecessary early dotenv/config/context work from generic CLI startup path and keep loading lazy per command requirements while preserving policy behavior."
@@ -47,9 +47,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -66,11 +63,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

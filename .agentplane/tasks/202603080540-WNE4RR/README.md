@@ -50,7 +50,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: task/shared.ts was reduced to a stable barrel over docs, tags, dependencies, transitions, and listing helpers; TypeScript, task helper unit suites, lint, and package builds all passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-08T07:10:20.385Z"
 doc_updated_by: "CODER"
 description: "Refactor commands/task/shared.ts into focused helpers for transitions, verify-step docs, filters, and close/commit utilities while preserving lifecycle behavior."
@@ -73,11 +73,6 @@ Refactor commands/task/shared.ts into focused helpers for transitions, verify-st
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 ### Scope
@@ -95,10 +90,6 @@ Refactor commands/task/shared.ts into focused helpers for transitions, verify-st
 - task/shared.ts becomes a barrel, semantic helpers move into narrower modules, and unit/lifecycle behavior stays unchanged.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-08T07:09:58.162Z — VERIFY — ok
@@ -134,7 +125,12 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-08T07:09:39.928Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Preserve ./shared.js as the public import surface for task commands in this refactor.
 - Scope is structural only; do not change lifecycle semantics or user-facing task command behavior.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

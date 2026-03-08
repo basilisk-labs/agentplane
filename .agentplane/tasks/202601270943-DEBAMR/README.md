@@ -35,7 +35,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci passed | details: mode get/set implemented and tested."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:06.100Z"
 doc_updated_by: "agentplane"
 description: "Implement workflow_mode as part of config and expose it via agentplane mode get|set <direct|branch_pr>, with tests and docs."
@@ -51,10 +51,8 @@ Implement AP-007: expose workflow_mode via agentplane mode get|set <direct|branc
 - Update help/docs to reflect the new namespace
 - Add unit/e2e-style tests for CLI behavior
 
-## Risks
+## Plan
 
-- Incorrect mode values must be rejected with stable exit codes and json error format.
-- Mode switching later must not lose tasks/workflow state; this task only persists the config value.
 
 ## Verify Steps
 
@@ -62,12 +60,20 @@ Implement AP-007: expose workflow_mode via agentplane mode get|set <direct|branc
 - `agentplane mode get` prints `direct` by default
 - `agentplane mode set branch_pr` persists config and prints the new mode
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert commits; remove `mode` command handling and docs references
 - Existing config remains valid (workflow_mode field already supported)
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Incorrect mode values must be rejected with stable exit codes and json error format.
+- Mode switching later must not lose tasks/workflow state; this task only persists the config value.

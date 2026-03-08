@@ -46,7 +46,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: homepage now follows section architecture mapped to canonical docs domains, with updated repository links and DESIGN.md-compliant structure."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:01:07.078Z"
 doc_updated_by: "CODER"
 description: "Build structured homepage sections mapped to docs topics and enforce DESIGN.md composition constraints."
@@ -59,9 +59,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -78,11 +75,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

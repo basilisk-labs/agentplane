@@ -25,7 +25,7 @@ comments:
   -
     author: "CODER"
     body: "verified: Confirmed agentctl upgrade helpers, CLI documentation, and config metadata align with the new framework refresh flow."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:51.429Z"
 doc_updated_by: "agentplane"
 description: "Extend agentctl to track last framework update date in config, compare against today, refresh from https://github.com/basilisk-labs/agent-plane when stale or forced, and add CLI flags that trigger UPGRADER logic."
@@ -46,26 +46,29 @@ description: "Extend agentctl to track last framework update date in config, com
 - Introduce the `upgrade` command that enforces clean trees, branch checks, and `git pull --ff-only` from the configured source.
 - Document the command in `.agent-plane/agentctl.md` so agents know how to invoke it.
 
-## Risks
+## Plan
 
-- Pulling via `git pull --ff-only` will fail if the repo has diverged or the remote is unreachable; the command must surface errors cleanly so a human can fix the divergence.
-- Running the upgrade on a dirty tree could accidentally stage unrelated changes; branch checks and `ensure_git_clean` protect us, but operators must heed those warnings.
 
 ## Verify Steps
 
 - `python3 -m unittest tests.test_framework_upgrade` (covers the helper math that drives the decision to upgrade).
 - `python .agent-plane/agentctl.py upgrade --force` from a clean base branch to validate the end-to-end git pull plus timestamp update.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the helper additions and the CLI definition in `.agent-plane/agentctl.py` plus the `.agent-plane/agentctl.md` reference if we detect unexpected behavior.
 - Restore `.agent-plane/config.json` to drop the `framework` section if persistence proves problematic.
 
-## Notes
+## Findings
 
 - This task feeds directly into the regression tests covered by `202601160958-AM3G42` so keep any future changes synchronized with that suite.
 
-## Plan
+## Risks
 
-
-## Verification
+- Pulling via `git pull --ff-only` will fail if the repo has diverged or the remote is unreachable; the command must surface errors cleanly so a human can fix the divergence.
+- Running the upgrade on a dirty tree could accidentally stage unrelated changes; branch checks and `ensure_git_clean` protect us, but operators must heed those warnings.

@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci passed via pre-commit (format, typecheck, lint, coverage)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:09.956Z"
 doc_updated_by: "agentplane"
 description: "Implement guard for staged paths with allow/deny rules and suggest-allow output."
@@ -44,19 +44,25 @@ Add guard commands and git-status helpers for allowlisted staged commits.
 
 CLI guard subcommands for clean/suggest/commit; core git status helpers; tests and help updates.
 
-## Risks
+## Plan
 
-Guard may block commits if allowlist parsing mismatches git status output.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 git revert <commit>
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Guard may block commits if allowlist parsing mismatches git status output.

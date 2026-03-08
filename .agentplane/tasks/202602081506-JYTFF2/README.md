@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run test:full; close-message unit tests assert deterministic subject/body and key files filtering, and CLI tests assert commit --close stages only the task README."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T15:44:55.187Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add unit and CLI-level tests that enforce the close message contract (subject/body shape, deterministic ordering, key files selection) and guard against drift."
@@ -50,15 +50,22 @@ id_source: "generated"
 
 (See task README Plan section.)
 
-## Risks
+## Verify Steps
 
-- Regressions in CLI behavior or tests due to contract changes.
+### Scope
+- Unit tests for close message builder contract.
+- CLI tests for `agentplane commit <task-id> --close` invariants.
+
+### Checks
+- bun run typecheck
+- bun run lint
+- bun run test:full
+
+### Pass criteria
+- All checks pass.
+- Tests enforce subject/body shape and deterministic key files selection.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T15:44:44.712Z — VERIFY — ok
@@ -75,17 +82,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T15:44:35.668Z, excerpt_
 
 - Revert the implementation commit and re-run bun run test:full.
 
-## Verify Steps
+## Findings
 
-### Scope
-- Unit tests for close message builder contract.
-- CLI tests for `agentplane commit <task-id> --close` invariants.
 
-### Checks
-- bun run typecheck
-- bun run lint
-- bun run test:full
+## Risks
 
-### Pass criteria
-- All checks pass.
-- Tests enforce subject/body shape and deterministic key files selection.
+- Regressions in CLI behavior or tests due to contract changes.

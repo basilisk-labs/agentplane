@@ -28,7 +28,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "verified: reviewed recipes CLI and docs commits | details: no additional verification required."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:55.776Z"
 doc_updated_by: "agentplane"
 description: "Run any required verification, ensure task artifacts are complete, and close the recipes CLI/doc tasks in direct workflow."
@@ -45,23 +45,26 @@ Closed out tasks for recipes CLI implementation and documentation wiring in dire
 
 Validated that recipes.py is implemented, RECIPES.md is wired through AGENTS.md/README/docs, and task records are up to date.
 
-## Risks
+## Plan
 
-No additional risks beyond those captured in the implementation and docs tasks.
 
 ## Verify Steps
 
 Confirmed python .agent-plane/recipes.py --help in CLI task; reviewed docs updates in AGENTS.md/README/docs.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the recipes CLI and documentation commits if integration needs to be undone.
 
-## Notes
+## Findings
 
 Integration complete in direct mode; no branch/worktree merge required.
 
-## Plan
+## Risks
 
-
-## Verification
+No additional risks beyond those captured in the implementation and docs tasks.

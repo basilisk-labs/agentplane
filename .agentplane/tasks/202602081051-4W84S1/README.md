@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: extracted init/core/config/ide CLI2 command specs+handlers into packages/agentplane/src/cli/run-cli/commands and removed remaining exported *_USAGE constants/re-exports to keep help/usage spec-driven; typecheck+lint+tests green."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T12:18:09.999Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Extract globals/help fast-path/registry builder/update-check gating into modules; keep CLI behavior stable."
@@ -46,29 +46,6 @@ id_source: "generated"
 ## Plan
 
 Decompose run-cli.ts: extract globals parsing, help fast-path, registry construction, update-check gating, and project bootstrap into cohesive modules without behavior changes.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T12:17:17.078Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: decomposed cli/run-cli.ts by extracting core/config/ide/init command specs+handlers into packages/agentplane/src/cli/run-cli/commands/*; removed remaining exported *_USAGE constants to prevent help drift; ran typecheck, lint, test:fast, test:cli:core; rg assertions for legacy flag parsers and *_USAGE exports are clean.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:16:40.807Z, excerpt_hash=sha256:81c4fd78229ac94cc4e21f2ff8bf1814622474d2eeb9d33a225aef87ecab9a07
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -85,3 +62,24 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:16:40.807Z, excerpt_
 ### Pass criteria
 - All commands succeed.
 - The assertions are satisfied.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T12:17:17.078Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: decomposed cli/run-cli.ts by extracting core/config/ide/init command specs+handlers into packages/agentplane/src/cli/run-cli/commands/*; removed remaining exported *_USAGE constants to prevent help drift; ran typecheck, lint, test:fast, test:cli:core; rg assertions for legacy flag parsers and *_USAGE exports are clean.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T12:16:40.807Z, excerpt_hash=sha256:81c4fd78229ac94cc4e21f2ff8bf1814622474d2eeb9d33a225aef87ecab9a07
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

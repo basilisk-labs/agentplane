@@ -35,7 +35,7 @@ comments:
   -
     author: "REDMINE"
     body: "verified: Redmine backend parity and recipe enablement completed | details: CI agentplane, build, and full sandbox Redmine flow (new/list/show/doc/start/block/verify/finish/push/pull) passed; full bun run ci currently fails on coverage thresholds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:20.148Z"
 doc_updated_by: "agentplane"
 description: "Implement Redmine backend in core and enable via recipe; align with .env contract and offline init catalog."
@@ -52,11 +52,8 @@ Implemented Node.js Redmine backend parity, backend sync routing, and Redmine re
 - Redmine recipe assets/tool/scenario + index entry
 - Fix Redmine sync params and normalize priority mapping
 
-## Risks
+## Plan
 
-- Backend routing changes can affect local-only workflows if config or cache paths are wrong
-- Redmine field IDs or status mapping mismatches can drop metadata or mislabel status
-- Network issues require offline cache + explicit sync to avoid stale state
 
 ## Verify Steps
 
@@ -67,15 +64,21 @@ Implemented Node.js Redmine backend parity, backend sync routing, and Redmine re
 - backend sync redmine --direction pull
 - bun run ci (fails due to global coverage thresholds in repo)
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the backend/CLI changes and the redmine recipe commit\n- Restore previous task command behavior and recipe index
 
-## Notes
+## Findings
 
 Redmine sandbox smoke tasks created: 202601291651-9D0NT9 (push test), 202601291655-EKSR2G (full flow).
 
-## Plan
+## Risks
 
-
-## Verification
+- Backend routing changes can affect local-only workflows if config or cache paths are wrong
+- Redmine field IDs or status mapping mismatches can drop metadata or mislabel status
+- Network issues require offline cache + explicit sync to avoid stale state

@@ -31,7 +31,7 @@ comments:
     author: "ORCHESTRATOR"
     body: "Verified: upgrade is fully spec-driven (no legacy argv parser/usage constants), archive extraction no longer depends on usage strings, and typecheck + cli core + fast tests pass."
 events: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T10:58:01.631Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Delete parseUpgradeFlags/usage constants and legacy argv entrypoints; migrate tests to spec-driven/parsed APIs."
@@ -46,29 +46,6 @@ id_source: "generated"
 ## Plan
 
 Remove legacy upgrade argv parsing: delete parse/usage constants and legacy argv entrypoints; rewrite tests to use parsed-only APIs or runCli.
-
-## Risks
-
-
-## Verification
-
-### Plan
-
-### Results
-
-<!-- BEGIN VERIFICATION RESULTS -->
-#### 2026-02-08T10:56:54.350Z — VERIFY — ok
-
-By: ORCHESTRATOR
-
-Note: Verified: removed legacy upgrade argv parsing (parseUpgradeFlags/usage constants/cmdUpgrade wrapper), updated extractArchive API, and confirmed typecheck + cli core + fast tests pass.
-
-VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T10:56:42.439Z, excerpt_hash=sha256:c03bf8f1c7d84f2aa83c2fab81c935aac32925c4ba0e6d4b1e13bf8874bbf69c
-
-<!-- END VERIFICATION RESULTS -->
-
-## Rollback Plan
-
 
 ## Verify Steps
 
@@ -85,3 +62,24 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T10:56:42.439Z, excerpt_
 ### Pass criteria
 - All commands succeed.
 - The assertions are satisfied.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-02-08T10:56:54.350Z — VERIFY — ok
+
+By: ORCHESTRATOR
+
+Note: Verified: removed legacy upgrade argv parsing (parseUpgradeFlags/usage constants/cmdUpgrade wrapper), updated extractArchive API, and confirmed typecheck + cli core + fast tests pass.
+
+VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T10:56:42.439Z, excerpt_hash=sha256:c03bf8f1c7d84f2aa83c2fab81c935aac32925c4ba0e6d4b1e13bf8874bbf69c
+
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

@@ -25,7 +25,7 @@ comments:
   -
     author: "CODER"
     body: "verified: close: roadmap runner generates roadmap, plan, and task draft | details: manifest outputs updated; recipe inventory refreshed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:56.724Z"
 doc_updated_by: "agentplane"
 description: "Update the recipe manifest and runner script to generate a complete roadmap from a top-level task, rename env vars away from CYBOS, and refresh the recipes inventory output."
@@ -42,23 +42,26 @@ The roadmap recipe needed a real end-to-end runner that emits roadmap, plan, and
 
 Updated the manifest outputs and tool env vars; rewrote run-feature.js to generate roadmap markdown, milestones, and task draft; regenerated docs/recipes-inventory.json.
 
-## Risks
+## Plan
 
-The generated roadmap is heuristic and may need manual adjustment for complex tasks; changes to outputs require inventory refresh.
 
 ## Verify Steps
 
 Ran python .agent-plane/recipes.py scan --recipes-dir .agent-plane/recipes --output docs/recipes-inventory.json; ran the runner with sample inputs to confirm roadmap and artifacts are created.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commit cdb841383165 to restore the previous runner, manifest, and inventory.
 
-## Notes
+## Findings
 
 Runner remains local-only and deterministic with no network access.
 
-## Plan
+## Risks
 
-
-## Verification
+The generated roadmap is heuristic and may need manual adjustment for complex tasks; changes to outputs require inventory refresh.

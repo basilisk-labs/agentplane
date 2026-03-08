@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Released v0.1.8 with notes, package version bumps, and updated CLI version expectations. Tagged v0.1.8 after passing format:check, lint, test:fast, and test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T11:01:05.237Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Release 0.1.8: add release notes, bump package versions, update CLI version expectations, tag and push."
@@ -53,14 +53,15 @@ id_source: "generated"
 7) Записать verify (ok) и finish с --commit на release commit; сделать close commit (README).
 8) Запушить main и tag v0.1.8 в origin.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T11:00:59.525Z — VERIFY — ok
@@ -72,3 +73,9 @@ Note: Release 0.1.8 verified: format:check, lint, test:fast, test:cli:core all g
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

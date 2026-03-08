@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: ran bun run test:cli:core and bun run test:cli:scenario | details: synced agent template text with repo agents and asserted exact matches."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:40.044Z"
 doc_updated_by: "agentplane"
 description: "Ensure agentplane init writes AGENTS.md and agent files exactly matching current templates; include only direct or branch_pr sections in AGENTS.md based on selection."
@@ -43,22 +43,28 @@ Audit and fix agentplane init to render AGENTS.md and agent JSON files from curr
 - Filter AGENTS.md content by workflow mode (direct/branch_pr) at init.
 - Add/adjust tests for init output parity.
 
-## Risks
+## Plan
 
-- Template drift between assets and runtime rendering could require updating multiple files.
-- Filtering may accidentally drop shared rules if sections are not clearly delimited.
 
 ## Verify Steps
 
 - bun run test:cli:core
 - bun run test:cli:scenario
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert changes to init/template rendering and related tests.
 - Restore previous AGENTS.md/agent templates if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Template drift between assets and runtime rendering could require updating multiple files.
+- Filtering may accidentally drop shared rules if sections are not clearly delimited.

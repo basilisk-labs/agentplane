@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: upgrade --auto now removes transient artifacts created during the run (backup files and .agentplane/.upgrade/agent run dirs) while preserving durable upgrade state files. Added regression coverage in upgrade cleanup test."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T04:48:14.964Z"
 doc_updated_by: "CODER"
 description: "Ensure agentplane upgrade removes or quarantines transient artifacts it creates (e.g. .agentplane/.upgrade/agent run dirs and *.bak-* backups) after successful auto mode, keeping normal workspaces clean."
@@ -74,14 +74,6 @@ Out of scope:
 3. Add tests for backup cleanup and `.upgrade/agent` cleanup behavior.
 4. Run required build/lint/test sequence.
 
-## Risks
-
-- Risk: cleanup may remove artifacts users still need for debugging.
-Mitigation: keep durable `state.json`, `last-review.json`, and baseline snapshots.
-
-- Risk: cleanup could remove files not created by current run.
-Mitigation: delete only paths explicitly tracked as created in this run.
-
 ## Verify Steps
 
 - `bun run --filter=@agentplaneorg/core build`
@@ -95,13 +87,20 @@ Pass criteria:
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert the task commit. This restores previous upgrade artifact behavior.
+
+## Findings
+
+
+## Risks
+
+- Risk: cleanup may remove artifacts users still need for debugging.
+Mitigation: keep durable `state.json`, `last-review.json`, and baseline snapshots.
+
+- Risk: cleanup could remove files not created by current run.
+Mitigation: delete only paths explicitly tracked as created in this run.

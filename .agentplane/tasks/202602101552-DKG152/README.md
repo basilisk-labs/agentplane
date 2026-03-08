@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: bun run lint; bun run test:fast; bun run test:agentplane packages/agentplane/src/cli/help.all-commands.contract.test.ts; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T16:10:57.462Z"
 doc_updated_by: "CODER"
 description: "Add agentplane release plan to emit structured changes for DOCS agent; default bump=patch; require --yes for minor/major."
@@ -60,15 +60,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
-
-
-## Verification
-
-
-## Rollback Plan
 
 
 ## Verify Steps
@@ -87,3 +78,16 @@ id_source: "generated"
 ### Pass criteria
 - All commands exit 0.
 - `agentplane help` includes the new release command and help contract tests pass.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings
+
+
+## Risks

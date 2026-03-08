@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: quickstart/role guide, recipes explain + docs updates; tests: bun test packages/agentplane/src/run-cli.test.ts (pass)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:33.595Z"
 doc_updated_by: "agentplane"
 description: "Implement Node CLI support for Python recipes.py features: list-remote/install/list/full/tag search/metadata cache and optimized recipe handling."
@@ -44,19 +44,25 @@ Recipes CLI now uses the installed registry for list/tag, adds recipes explain w
 
 packages/agentplane/src/run-cli.ts; packages/agentplane/src/help.ts; packages/agentplane/src/run-cli.test.ts; docs/recipes-how-it-works.mdx; docs/recipes-spec.mdx; docs/commands.mdx; docs/cli-contract.mdx.
 
-## Risks
+## Plan
 
-Explain output can be verbose; scenario details depend on definition files being present in installed recipes.
 
 ## Verify Steps
 
 bun test packages/agentplane/src/run-cli.test.ts
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert recipe CLI and docs changes to restore previous list/info behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Explain output can be verbose; scenario details depend on definition files being present in installed recipes.

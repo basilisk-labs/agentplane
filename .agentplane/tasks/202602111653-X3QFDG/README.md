@@ -49,7 +49,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: downstream tasks X32XPT and QRQWRQ are DONE with passing targeted tests and builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T17:02:53.555Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add targeted tests to increase branch coverage in pr/internal modules and guard allow helper paths, with per-task commits."
@@ -67,17 +67,22 @@ In scope: downstream tasks X32XPT and QRQWRQ and their test-only changes. Out of
 
 1) Execute coverage tasks for pr/internal and guard allow modules. 2) Validate tests/builds and capture focused coverage reports. 3) Close epic with result summary.
 
-## Risks
+## Verify Steps
 
-Residual risk: global branch threshold is not targeted by these two tasks alone; broader module coverage remains future work.
+- bunx vitest run packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/commands/pr/integrate/internal/worktree.test.ts packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts\n- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Revert downstream commits for X32XPT and QRQWRQ if regressions appear in PR/guard test suites.
 
-## Verify Steps
+## Findings
 
-- bunx vitest run packages/agentplane/src/commands/pr/internal/pr-paths.test.ts packages/agentplane/src/commands/pr/integrate/internal/worktree.test.ts packages/agentplane/src/commands/pr/integrate/internal/merge.test.ts\n- bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts\n- bun run --filter=@agentplaneorg/core build\n- bun run --filter=agentplane build
+
+## Risks
+
+Residual risk: global branch threshold is not targeted by these two tasks alone; broader module coverage remains future work.

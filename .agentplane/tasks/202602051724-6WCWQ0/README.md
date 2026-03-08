@@ -32,7 +32,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: release notes created and reviewed against v0.1.4..HEAD log."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T17:33:36.631Z"
 doc_updated_by: "DOCS"
 description: "Draft release notes for v0.1.5 from v0.1.4..HEAD."
@@ -46,9 +46,8 @@ Draft release notes for v0.1.5 based on v0.1.4..HEAD changes.
 
 Create docs/releases/v0.1.5.md with concise user-facing highlights.
 
-## Risks
+## Plan
 
-Release notes may omit important changes if commit scan misses user-facing impact.
 
 ## Verify Steps
 
@@ -58,8 +57,16 @@ Review docs/releases/v0.1.5.md for accuracy vs git log v0.1.4..HEAD.
 
 Reviewed docs/releases/v0.1.5.md against git log v0.1.4..HEAD.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Remove docs/releases/v0.1.5.md if notes are incorrect.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Release notes may omit important changes if commit scan misses user-facing impact.

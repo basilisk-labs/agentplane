@@ -30,7 +30,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: Integrated via squash; verify=ran; pr=docs/workflow/T-084/pr."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:28.249Z"
 doc_updated_by: "agentplane"
 description: "Audit scripts/agentctl.py capabilities and update .agent-plane/agents/*.json prompts so each agent uses agentctl for any supported operation (tasks.json ops, branch/worktree management, PR artifacts, verify logs, commit guardrails, integrate/cleanup). Only fall back to raw git/shell commands when agentctl has no equivalent."
@@ -42,16 +42,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

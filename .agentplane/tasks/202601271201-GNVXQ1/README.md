@@ -33,7 +33,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci passed (format, typecheck, lint, coverage)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:11.588Z"
 doc_updated_by: "agentplane"
 description: "Implement start/block/finish for direct mode with comments, commit metadata, and lint pass flow."
@@ -46,19 +46,25 @@ Added block/finish commands, enabled env task-id fallback, and expanded CLI cove
 
 - Implement block and finish CLI flows with comment validation and status updates.\n- Add env-based task id fallback for start/block/finish.\n- Expand CLI tests to meet coverage gates.
 
-## Risks
+## Plan
 
-- Direct workflow status changes could regress lint/export flow; mitigated by CI coverage tests.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 git revert 1385dbb3d412
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Direct workflow status changes could regress lint/export flow; mitigated by CI coverage tests.

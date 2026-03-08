@@ -25,7 +25,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun test packages/agentplane/src/run-cli.core.test.ts"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:46.239Z"
 doc_updated_by: "agentplane"
 description: "Investigate task README generation and remove duplicate required section headings."
@@ -37,16 +37,21 @@ id_source: "generated"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

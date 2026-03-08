@@ -48,7 +48,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release path now enforces GitHub-only npm publish, provenance-only publish config, and local full release prepublish gate before --push."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T18:44:36.901Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Enforce that npm publish can run only in GitHub Actions with provenance and require full local test run before release apply --push."
@@ -64,10 +64,23 @@ id_source: "generated"
 
 1. Enforce GitHub-only publish guard in package prepublish hooks. 2. Enforce provenance in package publishConfig for both packages. 3. Require full local release gate before release apply --push. 4. Run lint/tests and commit.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

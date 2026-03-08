@@ -53,7 +53,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: primary-tag policy is now enforced on create/update, strict/fallback behavior is covered by tests, and explicit --allow-primary-change is required to mutate primary classification."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T04:24:56.025Z"
 doc_updated_by: "CODER"
 description: "Resolve exactly one primary tag from allowlist, fallback/error by strict mode, and prevent primary drift on update unless explicit override flag."
@@ -68,14 +68,14 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/workflow.test.ts
+2. bun run --filter=agentplane build
+3. bun run lint
+Expected: all commands exit 0; primary-tag lock rejects changes without --allow-primary-change and passes with override.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T04:24:41.126Z — VERIFY — ok
@@ -91,9 +91,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T04:23:53.997Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/commands/task/shared.unit.test.ts packages/agentplane/src/commands/workflow.test.ts
-2. bun run --filter=agentplane build
-3. bun run lint
-Expected: all commands exit 0; primary-tag lock rejects changes without --allow-primary-change and passes with override.
+
+## Risks

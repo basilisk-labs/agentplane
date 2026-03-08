@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: quickstart and role provide compact JSON output for agent runtimes, reducing context size and parsing ambiguity."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:49:22.456Z"
 doc_updated_by: "CODER"
 description: "Add compact machine-friendly output for quickstart/role/task show to reduce prompt footprint."
@@ -67,14 +67,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts --hookTimeout 60000 --testTimeout 60000
+2. bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts -u --hookTimeout 60000 --testTimeout 60000
+3. bunx eslint packages/agentplane/src/cli/run-cli/commands/core.ts packages/agentplane/src/cli/run-cli/command-catalog.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:49:22.294Z — VERIFY — ok
@@ -90,8 +89,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:47:39.855Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts --hookTimeout 60000 --testTimeout 60000
-2. bunx vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts -u --hookTimeout 60000 --testTimeout 60000
-3. bunx eslint packages/agentplane/src/cli/run-cli/commands/core.ts packages/agentplane/src/cli/run-cli/command-catalog.ts packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts packages/agentplane/src/cli/run-cli.core.boot.test.ts
+
+## Risks

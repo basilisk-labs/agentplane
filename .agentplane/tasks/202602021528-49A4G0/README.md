@@ -28,7 +28,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run test:cli:core and bun run test:cli:smoke both pass; version bumps and CLI version assertions updated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:45.196Z"
 doc_updated_by: "agentplane"
 description: "Bump package versions to 0.1.1 and prepare release for npmjs."
@@ -40,16 +40,21 @@ id_source: "generated"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

@@ -26,7 +26,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: manual checks only; clean.sh/clean.ps1 prompt appears after init commit; no automated tests run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:42.554Z"
 doc_updated_by: "agentplane"
 description: "Update clean.sh and clean.ps1 to use a Agent Plane Initialized commit message and optionally install git hooks via an interactive prompt."
@@ -45,23 +45,26 @@ clean.sh and clean.ps1 initialize a fresh repo; add an explicit opt-in prompt to
 - Add an interactive prompt after the initial commit to optionally install hooks via agentctl.
 - Keep the hooks opt-in (no silent install).
 
-## Risks
+## Plan
 
-Prompt could be missed in non-interactive runs; default remains no install to preserve opt-in behavior.
 
 ## Verify Steps
 
 Manual: run clean.sh / clean.ps1 in a disposable repo and confirm the prompt appears after the initial commit.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert the clean script changes and restore the previous commit message and no-hook prompt.
 
-## Notes
+## Findings
 
 Hooks remain opt-in; prompt appears only on interactive runs.
 
-## Plan
+## Risks
 
-
-## Verification
+Prompt could be missed in non-interactive runs; default remains no install to preserve opt-in behavior.

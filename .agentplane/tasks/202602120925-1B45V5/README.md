@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: code/data/ops style tasks now receive a non-placeholder Verify Steps section at creation, reducing start-time dead-ends and token-heavy remediation."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T09:35:38.191Z"
 doc_updated_by: "CODER"
 description: "For verify-required primary tags, scaffold minimal Verify Steps automatically to avoid start-time dead-ends."
@@ -67,14 +67,12 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000
+2. bunx eslint packages/agentplane/src/commands/task/new.ts packages/agentplane/src/commands/task/new.spec.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T09:35:38.012Z — VERIFY — ok
@@ -90,7 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T09:32:42.726Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000
-2. bunx eslint packages/agentplane/src/commands/task/new.ts packages/agentplane/src/commands/task/new.spec.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts
+
+## Risks

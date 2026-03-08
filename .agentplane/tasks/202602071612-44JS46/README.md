@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Migrated historical task READMEs to the current required sections, then confirmed with agentplane task lint (OK) and bun run test:cli:core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T16:20:07.548Z"
 doc_updated_by: "CODER"
 description: "Scan all task READMEs under .agentplane/tasks and migrate any mismatching documents to the current doc_version/template using the built-in migrator."
@@ -52,10 +52,13 @@ Out of scope: translating existing task content.
 3. Commit only the migrated task README changes (no caches, no tasks.json).
 4. Record verification and finish the task.
 
-## Risks
+## Verify Steps
 
-Risk: a large number of historical READMEs may change, increasing diff size.
-Mitigation: the migrator is idempotent and only writes when needed; commits are allowlisted to .agentplane/tasks.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
 
@@ -74,3 +77,11 @@ Note: Verified: Ran task migrate-doc --all (changed=504), then task lint OK. Als
 ## Rollback Plan
 
 Revert the migration commit(s) for this task to restore the previous task README formatting.
+
+## Findings
+
+
+## Risks
+
+Risk: a large number of historical READMEs may change, increasing diff size.
+Mitigation: the migrator is idempotent and only writes when needed; commits are allowlisted to .agentplane/tasks.

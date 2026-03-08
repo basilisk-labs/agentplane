@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: epic goals met with implemented release guards, CI-equivalent prepublish gate, and successful v0.2.17 publication."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T12:45:44.251Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Analyze previous release publish failures, strengthen release guards in CLI/pipeline, validate with CI-equivalent checks, and publish next patch release."
@@ -70,15 +70,15 @@ Scope covered release guardrails, release workflow validation, and patch release
 ## Plan
 
 
-## Risks
+## Verify Steps
 
-Main risk was blocking valid release flow with over-strict checks; mitigated by moving registry check to push/publish contexts and keeping local prepublish deterministic.
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T12:45:43.841Z — VERIFY — ok
@@ -94,3 +94,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T12:45:43.534Z, excerpt_
 ## Rollback Plan
 
 If release failed before npm publish: revert release commit and delete tag. If partial npm publish occurred: complete missing package publish for same version and document incident.
+
+## Findings
+
+
+## Risks
+
+Main risk was blocking valid release flow with over-strict checks; mitigated by moving registry check to push/publish contexts and keeping local prepublish deterministic.

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: suggestAllowPrefixes keeps /abs for absolute inputs while retaining normalization for relative path forms."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T11:28:15.482Z"
 doc_updated_by: "CODER"
 description: "Restore absolute-path suggestion behavior (/abs) in suggestAllowPrefixes while keeping allowlist stage compaction changes."
@@ -66,14 +66,13 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+1. bunx vitest run packages/agentplane/src/commands/workflow.test.ts
+2. bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts
+3. bun run lint
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T11:25:49.190Z — VERIFY — ok
@@ -89,8 +88,7 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T11:24:37.288Z, excerpt_
 ## Rollback Plan
 
 
-## Verify Steps
+## Findings
 
-1. bunx vitest run packages/agentplane/src/commands/workflow.test.ts
-2. bunx vitest run packages/agentplane/src/commands/guard/impl/allow.test.ts
-3. bun run lint
+
+## Risks

@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: doctor now summarizes historical task-archive noise while keeping actionable commit invariant failures visible."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T19:43:21.111Z"
 doc_updated_by: "CODER"
 description: "Reduce doctor noise from legacy task metadata and historical archive inconsistencies without hiding actionable current-state failures."
@@ -71,11 +71,6 @@ Reduce doctor noise from legacy task metadata and historical archive inconsisten
 ## Plan
 
 1. Rework doctor's DONE-task commit invariant reporting so historical archive drift is aggregated into compact warning summaries instead of one-line-per-task flood, while keeping missing implementation hashes as direct actionable errors. 2. Cover the new reporting model with doctor.command tests, including multi-task historical noise cases and preservation of single-task warning behavior where appropriate. 3. Run targeted doctor tests, lint the touched files, rebuild agentplane, and verify that doctor still reports actionable current-state failures while reducing archive noise.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -98,10 +93,6 @@ Reduce doctor noise from legacy task metadata and historical archive inconsisten
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T19:43:11.503Z — VERIFY — ok
 
@@ -118,8 +109,13 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T19:37:31.006Z, excerpt_
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Treat task-archive drift as a reporting problem first, not as a data-migration task.
 - Prefer aggregated counts plus representative examples over silent suppression.
 - Do not weaken the missing implementation hash invariant, because that still describes current-state traceability failure.
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

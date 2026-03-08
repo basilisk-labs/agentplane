@@ -31,7 +31,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: Docs-only README update; no automated tests were run."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:48.954Z"
 doc_updated_by: "agentplane"
 description: "Review README.md for alignment with project positioning, fix inaccuracies/typos, update links/badges/anchors, and improve GitHub-quality presentation."
@@ -43,16 +43,21 @@ id_source: "generated"
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

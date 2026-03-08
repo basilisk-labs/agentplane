@@ -30,7 +30,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: Normalized task README spacing; formatted BRANCH.md to satisfy Prettier hook."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T16:03:46.822Z"
 doc_updated_by: "DOCS"
 description: "Accept consistent spacing changes in historical task READMEs after doc updates."
@@ -46,9 +46,8 @@ Normalize spacing between sections in historical task READMEs.
 
 - Accept whitespace normalization in existing task README files under .agentplane/tasks.\n- Format BRANCH.md to satisfy repo-wide Prettier hook.
 
-## Risks
+## Plan
 
-- Minimal: documentation-only formatting changes.
 
 ## Verify Steps
 
@@ -62,8 +61,16 @@ Pending.
 
 - ✅ git diff .agentplane/tasks shows only whitespace normalization (section spacing).\n- ✅ Prettier applied to BRANCH.md to satisfy hook.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert README formatting changes.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Minimal: documentation-only formatting changes.

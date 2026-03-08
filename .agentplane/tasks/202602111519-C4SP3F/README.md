@@ -48,7 +48,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: Redmine env diagnostics now distinguish missing keys from invalid values, backend call-sites point to explicit AGENTPLANE_REDMINE_* keys, and focused backend tests/build passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T16:06:36.597Z"
 doc_updated_by: "CODER"
 description: "Split Redmine env errors into missing/invalid with exact env key and expected format; remove backend.json guidance for custom_fields."
@@ -58,6 +58,10 @@ id_source: "generated"
 
 Разделить ошибки конфигурации Redmine на два типа: отсутствующий env-ключ и невалидное env-значение.
 
+## Context
+
+После перехода на env-first конфиг нужен точный диагноз по ключам, без ссылок на backend.json для custom fields.
+
 ## Scope
 
 In-scope: redmine env parser/messages и связанные call-site в backend. Out-of-scope: изменение схемы backend settings.
@@ -66,25 +70,23 @@ In-scope: redmine env parser/messages и связанные call-site в backend
 
 1) Вынести отдельные helpers для missing/invalid env. 2) Обновить env parser и redmine-backend call-site. 3) Обновить тесты на тексты ошибок.
 
-## Risks
+## Verify Steps
 
-Риск: поломать текущие ожидания тестов и совместимость текстов ошибок. Смягчение: обновить только целевые regex-проверки.
+1) bun run test:agentplane -- packages/agentplane/src/backends/task-backend/redmine/env.test.ts packages/agentplane/src/backends/task-backend.test.ts\n2) bun run --filter=agentplane build
 
 ## Verification
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
 
 Откатить коммит задачи; восстановить единый redmineConfigMissingMessage и прежние call-site.
 
-## Context
-
-После перехода на env-first конфиг нужен точный диагноз по ключам, без ссылок на backend.json для custom fields.
-
-## Verify Steps
-
-1) bun run test:agentplane -- packages/agentplane/src/backends/task-backend/redmine/env.test.ts packages/agentplane/src/backends/task-backend.test.ts\n2) bun run --filter=agentplane build
-
-## Notes
+## Findings
 
 ### Decisions\n- Ошибки должны ссылаться на конкретные AGENTPLANE_REDMINE_* ключи.\n### Implementation Notes\n- Заполняется после реализации.
+
+## Risks
+
+Риск: поломать текущие ожидания тестов и совместимость текстов ошибок. Смягчение: обновить только целевые regex-проверки.

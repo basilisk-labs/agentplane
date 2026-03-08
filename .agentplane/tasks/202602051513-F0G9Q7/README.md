@@ -25,7 +25,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: Redmine doc includes setup checklist, sources for IDs and API key, and env var list with sources."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T15:15:18.393Z"
 doc_updated_by: "DOCS"
 description: "Add step-by-step Redmine setup instructions including custom field configuration and env vars."
@@ -41,10 +41,8 @@ Add step-by-step Redmine setup instructions for new installations.
 - Explain where to get API key, project id, and custom field IDs.
 - List required .env variables and their sources.
 
-## Risks
+## Plan
 
-- Redmine UI steps may vary by version.
-- Field ID locations may differ if admin UI is customized.
 
 ## Verify Steps
 
@@ -58,8 +56,17 @@ Pending.
 
 - docs/user/backends/redmine.mdx now includes setup checklist, where to find API key/project id/custom field IDs, and env var sources.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert docs/user/backends/redmine.mdx changes.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Redmine UI steps may vary by version.
+- Field ID locations may differ if admin UI is customized.

@@ -47,7 +47,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: dedicated docs CI workflow with change filter and docs-specific checks is in place."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:07:42.655Z"
 doc_updated_by: "CODER"
 description: "Add docs-ci workflow with path filters for website/docs/design changes and run docs generation, build, and link checks."
@@ -60,9 +60,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -81,11 +78,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

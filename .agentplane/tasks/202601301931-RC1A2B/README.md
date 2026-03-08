@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: backfilled commit metadata during migration to satisfy lint; no code changes for this task."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:35.222Z"
 doc_updated_by: "agentplane"
 description: "Add ~/.agentplane recipes cache with link/copy/global-only storage modes; update CLI install/remove/scenario flows, lockfile metadata, tests, and docs."
@@ -45,19 +45,25 @@ Added global recipe cache with project storage modes (link/copy/global), updated
 
 Updated recipe install/storage resolution, lockfile fields, scenario/recipe lookup paths, CLI help/usage, and recipe docs; added tests for global-only storage and default behavior.
 
-## Risks
+## Plan
 
-Global cache now stores recipe content; incorrect storage mode or missing cache could break recipe resolution if project layer is absent. Symlink fallback copies content when links fail.
 
 ## Verify Steps
 
 bun test packages/agentplane/src/run-cli.test.ts -t "recipe"
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert changes in run-cli recipe handling, lockfile storage fields, and docs; restore previous recipe install path behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Global cache now stores recipe content; incorrect storage mode or missing cache could break recipe resolution if project layer is absent. Symlink fallback copies content when links fail.

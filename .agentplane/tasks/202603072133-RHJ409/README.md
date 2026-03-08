@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: incidents.md is now explicitly outside the normal startup path, recovery-only surfaces still point to it, onboarding/bootstrap checks passed, and doctor remained green aside from known historical archive warnings."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T21:41:15.118Z"
 doc_updated_by: "DOCS"
 description: "Update agent guidance and runtime help so .agentplane/policy/incidents.md is not part of the normal startup path and is consulted only for failures, recovery, or incident response."
@@ -69,11 +69,6 @@ Make incidents.md a recovery-only surface for agents: normal startup should not 
 ## Plan
 
 1. Update agent-facing gateway/docs so incidents.md is explicitly out of the normal startup path and is consulted only for recovery, incident response, or direct incidents work. 2. Adjust onboarding checks so they enforce that contract instead of expecting incidents.md in the normal setup path. 3. Verify docs/bootstrap/onboarding checks and close the task.
-
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
 
 ## Verify Steps
 
@@ -119,3 +114,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T21:40:59.108Z, excerpt_
 ## Rollback Plan
 
 Revert the gateway/docs/onboarding-check changes if the new recovery-only contract hides incidents.md from a required troubleshooting path.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

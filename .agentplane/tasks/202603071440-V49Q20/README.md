@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: the canonical bootstrap page now surfaces a copy-paste start block before the detailed startup narrative so agents can begin from one command block."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T15:00:38.236Z"
 doc_updated_by: "DOCS"
 description: "Expose one minimal startup command block that agents can execute without cross-reading multiple documents."
@@ -74,11 +74,6 @@ Expose one minimal startup command block that agents can execute without cross-r
 2. Run required checks and capture verification evidence.
 3. Finalize task notes and finish with traceable commit metadata.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -92,10 +87,6 @@ Expose one minimal startup command block that agents can execute without cross-r
 ### Pass criteria
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T15:00:37.531Z — VERIFY — ok
@@ -112,3 +103,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-07T14:57:55.938Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

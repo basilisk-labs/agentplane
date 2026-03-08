@@ -54,7 +54,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: introduced cli/spec/parse-utils and removed duplicated toStringList helpers across command modules; lint and task CLI test suite pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-10T14:18:25.887Z"
 doc_updated_by: "CODER"
 description: "Add parse-utils module and replace duplicated toStringList helpers across commands; update tests/snapshots if needed."
@@ -69,18 +69,11 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
-
-
 ## Verify Steps
 
 ### Scope\n- Shared CLI parse/validate utilities and removal of duplicated toStringList helpers in command implementations.\n\n### Checks\n- Lint\n- Task command help/registry contract tests\n\n### Evidence / Commands\n- bun run lint\n- bun run test:agentplane packages/agentplane/src/cli/run-cli.core.tasks.test.ts\n\n### Pass criteria\n- Lint passes.\n- Tests pass.\n- No duplicated "function toStringList" remains in packages/agentplane/src/commands and cli command modules.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-10T14:17:13.758Z — VERIFY — ok
@@ -94,3 +87,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-10T14:13:30.121Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

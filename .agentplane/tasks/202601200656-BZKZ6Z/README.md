@@ -32,7 +32,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: core minimum and migration plan tasks are complete | details: phase execution is tracked separately."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:58.064Z"
 doc_updated_by: "agentplane"
 description: "Define the minimal core agent/task workflow, allow recipe tool/agentctl usage with guardrails, and plan the migration of extension features into recipes."
@@ -45,19 +45,25 @@ description: "Define the minimal core agent/task workflow, allow recipe tool/age
 
 - Establish the minimal core workflow and permissions.\n- Plan migration of extension features into recipes and split execution into phased tasks.
 
-## Risks
+## Plan
 
-- Subsequent phase tasks could diverge from the planned core boundary if not kept in sync.\n- If recipes change, core/recipe separation guidance may need refresh.
 
 ## Verify Steps
 
 - python .agent-plane/agentctl.py task show 202601200656-J6NW39\n- python .agent-plane/agentctl.py task show 202601200657-E52CV8\n- python .agent-plane/agentctl.py task show 202601200657-W1Y6ND
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Reopen this task if core boundaries or migration scope change.\n- Update the phase tasks to reflect the corrected plan.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Subsequent phase tasks could diverge from the planned core boundary if not kept in sync.\n- If recipes change, core/recipe separation guidance may need refresh.

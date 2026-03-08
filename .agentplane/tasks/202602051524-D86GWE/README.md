@@ -30,7 +30,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: Implemented signed recipes index verification and published index.json.sig; bun run test:fast. Signature failure/success validated via recipes tests."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T15:44:10.341Z"
 doc_updated_by: "CODER"
 description: "Add signed recipes index verification in CLI and publish index.json.sig in recipes repo."
@@ -47,10 +47,8 @@ Sign recipes index and verify signatures before using the catalog.
 - Add tests for invalid/missing signature.
 - Update docs describing signed index.
 
-## Risks
+## Plan
 
-- Signature verification could break existing installs without signed index.
-- Key rotation mistakes could block updates.
 
 ## Verify Steps
 
@@ -64,9 +62,18 @@ Pending.
 
 - ✅ bun run test:fast (pass).\n- ✅ recipes list-remote signature failure/success covered in recipes tests (missing/invalid signature + signed index).
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert CLI signature verification changes.
 - Remove index.json.sig from recipes repo if needed.
 
-## Plan
+## Findings
+
+
+## Risks
+
+- Signature verification could break existing installs without signed index.
+- Key rotation mistakes could block updates.

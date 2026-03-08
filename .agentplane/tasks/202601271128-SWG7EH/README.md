@@ -27,7 +27,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: bun run ci passed | details: M1 completion tracked and AP-012 deliverables are pushed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:09.380Z"
 doc_updated_by: "agentplane"
 description: "Complete AP-012 task lint invariants and finish remaining M1 steps with commits and pushes"
@@ -40,19 +40,25 @@ Completed AP-012 task lint and marked M1 as finished with commits and push.
 
 Track M1 completion; ensure AP-012 code, verification, and push were completed.
 
-## Risks
+## Plan
 
-Low risk; only status tracking. If needed, revert AP-012 commits.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert commits d78c21e6561c and b000cf3964bf (and 33b854c64ad1 for task creation).
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low risk; only status tracking. If needed, revert AP-012 commits.

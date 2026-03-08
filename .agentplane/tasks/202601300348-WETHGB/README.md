@@ -24,7 +24,7 @@ commit:
   hash: "c18aac3d05c99734f94a00345f38a8a4b01022e0"
   message: "✨ 202601300348-KG2R32 document recipes usage, built-ins, and authoring"
 comments: []
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-01-30T04:05:44+00:00"
 doc_updated_by: "agentctl"
 description: "Run and validate the GitHub sync and Dokploy recipes; fix issues found."
@@ -44,10 +44,8 @@ Recipe execution depends on environment variables for external services; this ch
 - Validated scenario discovery and scenario run output
 - Confirmed Dokploy list-projects works when env vars are loaded
 
-## Risks
+## Plan
 
-- Deploy scenario was not executed to avoid triggering a real deployment.
-- Recipe tools rely on environment variables being present in the shell.
 
 ## Verify Steps
 
@@ -59,15 +57,20 @@ Recipe execution depends on environment variables for external services; this ch
 - set -a; source .env; set +a; node packages/agentplane/bin/agentplane.js scenario run dokploy:list-projects
 - set -a; source .env; set +a; node packages/agentplane/bin/agentplane.js scenario run github-sync:install
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Remove any temporary recipe verification workspace if present.
 
-## Notes
+## Findings
 
 Dokploy tools require DOKPLOY_API_ENDPOINTS (or DOKPLOY_API_BASE) and DOKPLOY_API_KEY to be exported in the shell for scenario runs.
 
-## Plan
+## Risks
 
-
-## Verification
+- Deploy scenario was not executed to avoid triggering a real deployment.
+- Recipe tools rely on environment variables being present in the shell.

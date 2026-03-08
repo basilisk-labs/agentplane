@@ -26,7 +26,7 @@ comments:
   -
     author: "docs"
     body: "clean.sh now removes CONTRIBUTING.md and deletes itself after repository cleanup."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:17.488Z"
 doc_updated_by: "agentplane"
 description: "Adjust clean.sh so it also deletes CONTRIBUTING.md and cleans itself up after resetting the repo."
@@ -38,16 +38,21 @@ dirty: false
 ## Scope
 
 
-## Risks
+## Plan
 
 
 ## Verify Steps
 
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks

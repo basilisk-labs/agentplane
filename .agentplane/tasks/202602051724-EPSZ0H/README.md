@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: main and v0.1.5 pushed; tag points to release commit."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T17:44:08.655Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Create tag v0.1.5 and push main + tag to origin."
@@ -43,9 +43,8 @@ Create tag v0.1.5 and push main and tag to origin.
 
 Tag current HEAD as v0.1.5 and push main + tag.
 
-## Risks
+## Plan
 
-Pushing wrong tag or missing release note commit.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Confirm HEAD includes release notes and version bumps; tag v0.1.5 points to the 
 
 Confirmed tag v0.1.5 points to commit b80aa9c1fd6b; push main and v0.1.5 succeeded with pre-push tests.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Delete tag v0.1.5 locally/remotely and reset to prior state if needed.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Pushing wrong tag or missing release note commit.

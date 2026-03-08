@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: bun run typecheck; bun run test:cli:core; migrated commit wrapper to cli2 spec and removed legacy commit dispatcher without changing behavior."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T05:15:17.140Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Spec + wiring for `commit` (alias/shortcut)."
@@ -54,11 +54,6 @@ Out of scope:
 
 Scope: migrate  to cli2 spec-driven parsing and help, preserving existing runtime behavior (guard checks, allowlist, auto-allow, quiet).\n\nSteps:\n1) Add cli2 spec + handler for  (including -m/--message and allow flags).\n2) Wire command into cli2 registries (fast help + runtime).\n3) Remove legacy  parsing from run-cli.ts.\n4) Update/extend CLI core tests for usage/help and behavior parity.\n5) Verify: bun run typecheck; bun run test:cli:core.
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Scope
@@ -79,10 +74,6 @@ bun run test:cli:core
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T05:14:37.290Z — VERIFY — ok
 
@@ -99,3 +90,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T05:12:00.680Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

@@ -29,7 +29,7 @@ comments:
   -
     author: "DOCS"
     body: "Verified: Formatted FIX.md with Prettier to satisfy lefthook pre-commit format:check; confirmed bun run format:check passes; committed verification record."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-06T17:44:16.527Z"
 doc_updated_by: "DOCS"
 description: "Pre-commit runs bun run format:check across repo; FIX.md currently fails Prettier check and blocks all commits. Format FIX.md without changing meaning."
@@ -47,15 +47,11 @@ Only FIX.md formatting; no semantic changes.
 
 1) Run Prettier on FIX.md only.\n2) Ensure bun run format:check passes.\n3) Commit with allowlist=FIX.md.
 
-## Risks
+## Verify Steps
 
-Risk: Prettier may reflow text; keep meaning intact.
+- bun run format:check
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-06T17:40:47.537Z — VERIFY — ok
@@ -70,6 +66,9 @@ Note: bunx prettier FIX.md --write; bun run format:check passes.
 
 Revert the commit for this task.
 
-## Verify Steps
+## Findings
 
-- bun run format:check
+
+## Risks
+
+Risk: Prettier may reflow text; keep meaning intact.

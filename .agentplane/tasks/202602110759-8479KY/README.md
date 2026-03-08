@@ -73,7 +73,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: release v0.2.13 completed with CI-equivalent preflight and both npm packages published at 0.2.13; registry checks confirmed availability."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T08:06:01.061Z"
 doc_updated_by: "INTEGRATOR"
 description: "Run CI-equivalent preflight, generate/apply patch release, publish @agentplaneorg/core and agentplane to npm, and verify installed versions."
@@ -82,6 +82,10 @@ id_source: "generated"
 ## Summary
 
 Publish patch release v0.2.13 after running the same CI-equivalent checks locally that GitHub CI runs, then publish both npm packages and verify published versions.
+
+## Context
+
+Release flow must fail fast locally if build/lint/tests would fail in GitHub CI. This task uses the new `release:ci-check` gate before version bump/tag/publish, then validates npm registry versions.
 
 ## Scope
 
@@ -104,18 +108,16 @@ Out of scope:
 5. Publish both packages to npm.
 6. Verify `npm view` versions and record evidence.
 
-## Risks
+## Verify Steps
 
-- npm auth/session expiration can block publish.
-- Local uncommitted changes can interfere with release apply.
-- Tag/version mismatch can fail release commands.
-Mitigation: verify clean tree before release steps, use explicit package publish commands, and validate registry versions after publish.
+- `bun run release:ci-check` exits 0.
+- `agentplane release plan` targets v0.2.13 patch release.
+- `agentplane release apply` creates release commit and `v0.2.13` tag.
+- `npm publish` succeeds for `packages/core` and `packages/agentplane`.
+- `npm view @agentplaneorg/core version` returns `0.2.13`.
+- `npm view agentplane version` returns `0.2.13`.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T08:06:00.769Z — VERIFY — ok
@@ -136,15 +138,12 @@ Checks run: bun run release:ci-check (pass), git push main+v0.2.13 (pass), npm v
 
 If release apply fails before publishing, reset only release task state and fix root cause without rewriting history. If publish partially fails, publish missing package with same version and re-verify. If irreversible publish problem occurs, document incident in task notes and release next patch with corrective fix.
 
-## Context
+## Findings
 
-Release flow must fail fast locally if build/lint/tests would fail in GitHub CI. This task uses the new `release:ci-check` gate before version bump/tag/publish, then validates npm registry versions.
 
-## Verify Steps
+## Risks
 
-- `bun run release:ci-check` exits 0.
-- `agentplane release plan` targets v0.2.13 patch release.
-- `agentplane release apply` creates release commit and `v0.2.13` tag.
-- `npm publish` succeeds for `packages/core` and `packages/agentplane`.
-- `npm view @agentplaneorg/core version` returns `0.2.13`.
-- `npm view agentplane version` returns `0.2.13`.
+- npm auth/session expiration can block publish.
+- Local uncommitted changes can interfere with release apply.
+- Tag/version mismatch can fail release commands.
+Mitigation: verify clean tree before release steps, use explicit package publish commands, and validate registry versions after publish.

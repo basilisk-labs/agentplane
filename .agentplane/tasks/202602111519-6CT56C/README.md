@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: unified approval-requirements API is in place, with network approval now routed through ensureActionApproved and passing tests/lint."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T15:23:10.933Z"
 doc_updated_by: "CODER"
 description: "Create shared approval-requirements layer with action enum and ensureActionApproved helper; consolidate network approval entrypoint."
@@ -70,19 +70,11 @@ In scope: shared approval module, action enum, requirement resolver, and unified
 
 1) Inspect current approval paths (network and force). 2) Add approval requirements module and shared helper. 3) Wire existing network approval through helper without behavior change. 4) Add unit tests.
 
-## Risks
-
-Risk: changing approval flow may alter CLI behavior unexpectedly. Mitigation: keep semantic parity for existing network approvals in this task and add focused tests.
-
 ## Verify Steps
 
 - bun run test:agentplane -- packages/agentplane/src/commands/shared\n- bun run lint\nExpected: network approval behavior remains intact and new shared helper tests pass.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-11T15:22:19.839Z — VERIFY — ok
@@ -98,3 +90,10 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-11T15:20:35.181Z, excerpt_
 ## Rollback Plan
 
 Revert module wiring commit and restore previous approval call sites if regressions appear.
+
+## Findings
+
+
+## Risks
+
+Risk: changing approval flow may alter CLI behavior unexpectedly. Mitigation: keep semantic parity for existing network approvals in this task and add focused tests.

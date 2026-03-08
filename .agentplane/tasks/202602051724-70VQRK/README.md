@@ -29,7 +29,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: package versions updated to 0.1.5 in agentplane and core."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T17:32:09.461Z"
 doc_updated_by: "CODER"
 description: "Update package versions to 0.1.5 for agentplane and core."
@@ -43,9 +43,8 @@ Bump package versions to 0.1.5 for agentplane and core.
 
 Update packages/agentplane/package.json and packages/core/package.json versions to 0.1.5.
 
-## Risks
+## Plan
 
-Version mismatch if any package is missed.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Check package.json versions are 0.1.5 in packages/agentplane and packages/core.
 
 Confirmed package versions updated to 0.1.5 in agentplane and core.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert package.json version changes.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Version mismatch if any package is missed.

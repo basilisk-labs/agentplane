@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "verified: bun run ci:agentplane (2026-01-29). | details: Scope: RECIPES.md index synced with recipe list output."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:16.492Z"
 doc_updated_by: "agentplane"
 description: "Generate RECIPES.md index after recipe install/remove and keep it in sync with recipe list output."
@@ -44,19 +44,25 @@ Keep .agentplane/RECIPES.md in sync with recipe list output by centralizing inde
 
 - Add shared helpers to build/write RECIPES.md from recipes.lock.json.\n- Use the same summaries for recipe list output and RECIPES.md.\n- Add tests to ensure list syncs RECIPES.md when manifest summaries change.
 
-## Risks
+## Plan
 
-- recipe list now writes RECIPES.md; this adds a small IO side effect to a read-only command.\n- Missing/invalid manifests still degrade summaries; handled with a fallback string.
 
 ## Verify Steps
 
 - 2026-01-29: bun run ci:agentplane (pass)
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Revert the task commit(s) to restore previous recipe list/index behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- recipe list now writes RECIPES.md; this adds a small IO side effect to a read-only command.\n- Missing/invalid manifests still degrade summaries; handled with a fallback string.

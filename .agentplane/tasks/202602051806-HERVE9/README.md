@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: reviewed v0.1.6 notes for accuracy against schema packaging fix and release workflow updates."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T18:14:44.733Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Draft release notes for v0.1.6."
@@ -43,9 +43,8 @@ Release notes for v0.1.6 covering schema packaging fix and release workflow chec
 
 Add docs/releases/v0.1.6.md.
 
-## Risks
+## Plan
 
-Low: inaccurate release notes could mislead users.
 
 ## Verify Steps
 
@@ -55,8 +54,16 @@ Human: review docs/releases/v0.1.6.md for accuracy vs shipped changes.
 
 Reviewed docs/releases/v0.1.6.md for accuracy against packaged schema fix and release workflow updates.
 
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Remove docs/releases/v0.1.6.md.
 
-## Plan
+## Findings
+
+
+## Risks
+
+Low: inaccurate release notes could mislead users.

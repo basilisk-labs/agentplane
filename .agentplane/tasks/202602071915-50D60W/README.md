@@ -30,7 +30,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: cli2 core (spec/parse/registry/help-render), cli2 help command + JSON contract docs, and run-cli integration migrating task new/work start/recipes install with full test coverage and updated error hints."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-07T19:59:57.010Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Define JSON help contract and document CLI2 contract decisions (globals vs per-command flags, help formats)."
@@ -54,10 +54,6 @@ Define the `agentplane help` contract and the JSON help schema optimized for age
 - a multi-synopsis command (`recipes install`)
 - a positional-arg command (`work start`)
 
-## Risks
-
-- `--json` naming conflict: global JSON errors vs help JSON output needs explicit scoping/precedence rules.
-
 ## Verify Steps
 
 ### Scope
@@ -74,10 +70,6 @@ Documentation must match cli2 help-render behavior.
 - `docs/developer/cli-contract.mdx` explicitly documents `agentplane help ...` and global flag scoping.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-07T19:46:20.563Z — VERIFY — ok
@@ -97,3 +89,10 @@ Files: docs/developer/cli-contract.mdx; docs/developer/cli-help-json.mdx
 ## Rollback Plan
 
 Revert changes under `docs/developer/*`.
+
+## Findings
+
+
+## Risks
+
+- `--json` naming conflict: global JSON errors vs help JSON output needs explicit scoping/precedence rules.

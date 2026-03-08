@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "Verified: docs cli renders deterministic MDX from cli2 specs; typecheck, cli core tests, and fast tests pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-08T08:43:58.138Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Add a generator to render registry/spec to Markdown/MDX and keep docs in sync."
@@ -60,11 +60,6 @@ Out of scope:
 - spec-derived help includes all options
 - parse errors produce E_USAGE with compact usage
 
-## Risks
-
-- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
-- Test brittleness due to exact string expectations.
-
 ## Verify Steps
 
 ### Commands
@@ -78,10 +73,6 @@ Out of scope:
 - All commands above succeed.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-08T08:38:03.441Z — VERIFY — ok
@@ -99,3 +90,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-08T08:37:51.179Z, excerpt_
 1. Revert the cli2 wiring/spec for this command.
 2. Restore legacy parsing/dispatch for the command.
 3. Re-run the targeted CLI tests.
+
+## Findings
+
+
+## Risks
+
+- Behavior drift during migration (flags/positional parsing) if spec does not match the current implementation.
+- Test brittleness due to exact string expectations.

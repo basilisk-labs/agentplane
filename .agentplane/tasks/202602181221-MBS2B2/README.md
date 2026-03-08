@@ -45,7 +45,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: docs generation pipeline now writes canonical reference content into docs/reference during site checks and builds."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T13:07:40.643Z"
 doc_updated_by: "CODER"
 description: "Add deterministic docs generation pipeline from repository code artifacts to Docusaurus content before build."
@@ -58,9 +58,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -79,11 +76,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

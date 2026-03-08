@@ -31,7 +31,7 @@ comments:
   -
     author: "CODER"
     body: "Verified: safe archive checks integrated with CLI; traversal tests added; pre-commit hooks passed."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-05T06:17:29.489Z"
 doc_updated_by: "CODER"
 description: "Integrate safe archive validation into CLI extraction paths and add tests."
@@ -45,19 +45,25 @@ Wire safe archive validation into CLI extraction paths and add integration tests
 
 Integrate safe validation into extractArchive; cover upgrade/recipes paths; add tests and fixtures.
 
-## Risks
+## Plan
 
-Risk: extraction fails for unusual archives; mitigate with explicit errors and tests.
 
 ## Verify Steps
 
 Run CLI tests covering archive extraction failures for traversal/symlinks; ensure E_VALIDATION.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert integration commit to restore original extractArchive behavior.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Risk: extraction fails for unusual archives; mitigate with explicit errors and tests.

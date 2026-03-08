@@ -61,7 +61,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: homepage, blog landing, content-map, docs-readiness follow-up, and the final website refinement all passed their recorded checks and now resolve the remaining open website/docs tasks without changing the DESIGN.md contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-06T13:22:32.533Z"
 doc_updated_by: "CODER"
 description: "Replace blog placeholder with a modern landing page and surface the first release post from the previous release cycle."
@@ -83,11 +83,6 @@ Replace blog placeholder with a modern landing page and surface the first releas
 
 Approved execution graph: inspect website blog implementation -> redesign custom /blog landing in website/src/pages/blog -> unhide and promote the first release-story post -> verify website build and record evidence.
 
-## Risks
-
-- Risk: hidden regressions in touched paths.
-- Mitigation: run required checks before finish and record evidence.
-
 ## Verify Steps
 
 <!-- TODO: FILL VERIFY STEPS -->
@@ -102,10 +97,8 @@ Approved execution graph: inspect website blog implementation -> redesign custom
 
 ## Verification
 
-### Plan
 Validate the redesigned /blog landing, confirm the roadmap article is publicly listed, and stage a hidden v0.3.0 release post based on formal release notes.
 
-### Results
 - Command: bun run typecheck
 - Result: pass
 - Evidence: root TypeScript build completed with no diagnostics.
@@ -159,3 +152,11 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-03-06T08:09:38.045Z, excerpt_
 
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
+
+## Findings
+
+
+## Risks
+
+- Risk: hidden regressions in touched paths.
+- Mitigation: run required checks before finish and record evidence.

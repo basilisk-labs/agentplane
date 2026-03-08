@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: foundation docs now reflect actual CLI setup and configuration contracts without stale assumptions from earlier workflow versions."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T07:46:29.488Z"
 doc_updated_by: "DOCS"
 description: "Rewrite docs/user/overview.mdx, prerequisites.mdx, setup.mdx, configuration.mdx with exact config fields, current defaults, and end-to-end setup flow matching init/runtime behavior."
@@ -66,14 +66,15 @@ id_source: "generated"
 ## Plan
 
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T07:46:29.333Z — VERIFY — ok
@@ -87,3 +88,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T07:43:42.258Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

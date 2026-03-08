@@ -37,9 +37,35 @@ events:
     from: "TODO"
     to: "DONE"
     note: "Verified: all downstream tasks completed; dependency parity fixed and CI/publish drift checks plus release parity validation are in place."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-11T21:02:59.025Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Close verified P0 gaps: core dependency drift in published package, missing schema/agent sync checks in CI/publish, and explicit release-time dependency parity validation."
 id_source: "generated"
 ---
+## Summary
+
+
+## Scope
+
+
+## Plan
+
+
+## Verify Steps
+
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+
+## Findings

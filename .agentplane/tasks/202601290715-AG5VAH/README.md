@@ -37,7 +37,7 @@ comments:
   -
     author: "REDMINE"
     body: "verified: ran bun run ci on 2026-01-30 | details: all checks passed (format, typecheck, lint, coverage)."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:20.445Z"
 doc_updated_by: "agentplane"
 description: "Implement .env autoloading with priority rules and no override, and document required Redmine env keys."
@@ -52,20 +52,26 @@ Implement shared .env loader, autoload it for CLI commands, and document Redmine
 - Update docs/.env.example to list required keys and precedence.
 - Add CLI test for autoload + no-override behavior.
 
-## Risks
+## Plan
 
-- Autoloading .env may surprise tools that previously relied on manual export; docs updated accordingly.
-- Unreadable .env still throws for commands that resolve a repo.
 
 ## Verify Steps
 
 bun run ci
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert .env loader/autoload changes and restore docs to previous environment-handling notes.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+- Autoloading .env may surprise tools that previously relied on manual export; docs updated accordingly.
+- Unreadable .env still throws for commands that resolve a repo.

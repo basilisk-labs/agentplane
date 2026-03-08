@@ -52,7 +52,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: task-backend and core task/branch CLI tests pass; lint/build pass."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-12T10:17:12.645Z"
 doc_updated_by: "CODER"
 description: "Short-lived cache for resolved project/config context across repeated CLI invocations."
@@ -68,14 +68,15 @@ id_source: "generated"
 
 1. Thread resolved project/config cache into task context creation.\n2. Extend backend loader to accept preloaded resolved/config.\n3. Verify no command behavior regressions via core task/branch CLI suites.
 
-## Risks
+## Verify Steps
 
+<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
+
+1. <Action>. Expected: <observable result>.
+2. <Action>. Expected: <observable result>.
+3. <Action>. Expected: <observable result>.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-02-12T10:16:37.016Z — VERIFY — ok
@@ -89,3 +90,9 @@ VerifyStepsRef: doc_version=2, doc_updated_at=2026-02-12T10:16:28.977Z, excerpt_
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

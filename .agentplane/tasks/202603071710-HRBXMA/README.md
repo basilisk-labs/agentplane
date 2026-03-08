@@ -51,7 +51,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: parity checks now cover bootstrap freshness, quickstart/role guidance, runtime recovery anchors, troubleshooting next actions, and release recovery docs."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-03-07T20:19:11.660Z"
 doc_updated_by: "TESTER"
 description: "Add parity checks across bootstrap docs, quickstart, role help, troubleshooting next actions, and runtime explain examples."
@@ -74,11 +74,6 @@ Add parity checks across bootstrap docs, quickstart, role help, troubleshooting 
 2. Update docs/help text only where the new gate exposes a real drift; keep runtime/help ownership unchanged.
 3. Run targeted parity, lint, docs-site, and routing checks; record evidence and close the task with traceable verification.
 
-## Risks
-
-- Risk: parity assertions become too brittle and fail on intentional wording changes.
-- Mitigation: assert stable command/doc anchors and recovery actions, not prose formatting.
-
 ## Verify Steps
 
 ### Scope
@@ -99,10 +94,6 @@ Add parity checks across bootstrap docs, quickstart, role help, troubleshooting 
 - The parity gate fails on drift and passes with the updated docs/help/runtime surfaces.
 
 ## Verification
-
-### Plan
-
-### Results
 
 <!-- BEGIN VERIFICATION RESULTS -->
 #### 2026-03-07T20:18:58.788Z — VERIFY — ok
@@ -147,8 +138,13 @@ Scope: policy routing integrity after task documentation and docs changes.
 - Revert task-related commit(s).
 - Re-run required checks to confirm rollback safety.
 
-## Notes
+## Findings
 
 - Keep the implementation in the existing bootstrap freshness script unless a second gate is strictly necessary.
 - Prefer checking canonical command/doc anchors over large prose snapshots.
 - Task-doc section writes must stay sequential for a single README; concurrent writes can overwrite each other.
+
+## Risks
+
+- Risk: parity assertions become too brittle and fail on intentional wording changes.
+- Mitigation: assert stable command/doc anchors and recovery actions, not prose formatting.

@@ -26,7 +26,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: python3 .agent-plane/agentctl.py task list --quiet; ids migrated."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:08:32.705Z"
 doc_updated_by: "agentplane"
 description: "Re-ID existing tasks to the new timestamp + short ID format while preserving order and dependencies."
@@ -40,33 +40,39 @@ dirty: false
 - Updated docs and prompts to use `<task-id>` placeholders instead of legacy numbering.
 - Rewrote task folders/IDs and exported the updated `.agent-plane/tasks.json` snapshot.
 
-## Goal
-
-- Transition the repository to the new task ID scheme while keeping dependencies and ordering intact.
-
 ## Scope
 
 - `.agent-plane/agentctl.py`: implement `task reid` for the local backend and update user-facing examples.
 - `.agent-plane/tasks/`: rename task directories, update frontmatter and headings.
 - `.agent-plane/tasks.json`: export the new snapshot after migration.
 
-## Risks
+## Plan
 
-- Task IDs change permanently; external references to legacy `T-###` IDs will be stale.
 
 ## Verify Steps
 
 - `python3 .agent-plane/agentctl.py task list --quiet`
 - `python3 .agent-plane/agentctl.py task show 202601041253-0003R`
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 - Restore `.agent-plane/tasks/` and `.agent-plane/tasks.json` from git history.
 
-## Plan
+## Findings
 
 
-## Verification
+## Goal
+
+- Transition the repository to the new task ID scheme while keeping dependencies and ordering intact.
+
+## Risks
+
+- Task IDs change permanently; external references to legacy `T-###` IDs will be stale.
 
 ## Changes Summary (auto)
 

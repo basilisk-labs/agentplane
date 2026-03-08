@@ -44,7 +44,7 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: publication baseline, IA gaps, SEO/discovery deficits, and rollout acceptance criteria were documented for the Docusaurus web stream."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-18T12:59:07.783Z"
 doc_updated_by: "ORCHESTRATOR"
 description: "Capture current-state readiness baseline for docs+website, identify IA/content/SEO gaps, and freeze acceptance criteria for publication."
@@ -57,9 +57,6 @@ id_source: "generated"
 
 
 ## Plan
-
-
-## Risks
 
 
 ## Verify Steps
@@ -78,11 +75,13 @@ id_source: "generated"
 
 ## Verification
 
-### Plan
-
-### Results
-
 <!-- BEGIN VERIFICATION RESULTS -->
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
+
+
+## Findings
+
+
+## Risks

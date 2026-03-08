@@ -26,7 +26,7 @@ comments:
   -
     author: "DOCS"
     body: "verified: close: redmine recipe spec defined with scenarios, inputs, outputs, and mini-cli contract."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:00.628Z"
 doc_updated_by: "agentplane"
 description: "Write the Redmine recipe specification: manifest, scenarios, inputs schema, outputs, and mini-CLI contract."
@@ -43,23 +43,26 @@ Redmine must be optional and enabled via recipes; the recipe needs a self-contai
 
 Recipe slug: redmine-backend.\nScenarios: install (copy backend files + set config), disable (switch to local backend), status (show current backend + env), sync-pull (agentctl sync redmine --direction pull), sync-push (agentctl sync redmine --direction push --yes), verify-connection (ping Redmine API).\nInputs schema: redmine_url, api_key, project_id, assignee_id (optional), owner_agent (optional), status_map, custom_fields, cache_dir, conflict_policy, confirm_push.\nOutputs: .agent-plane/backends/redmine/backend.json, .agent-plane/backends/redmine/backend.py, updated .agent-plane/config.json, run artifacts under .agent-plane/.runs/<run_id>/artifacts/*.\nMini-CLI: node or python runner with commands (install|disable|status|sync|verify) and --json output; errors follow RECIPES.md format; exit non-zero on failure.
 
-## Risks
+## Plan
 
-Recipe runner will need network access; misconfiguration of custom fields can corrupt sync. Ensure scenario prompts and inputs validation are strict.
 
 ## Verify Steps
 
 Review existing Redmine backend settings and confirm the recipe outputs cover backend.json, backend.py, and config updates.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Keep local backend as default; recipe disable scenario restores config to local backend and removes redmine backend files if needed.
 
-## Notes
+## Findings
 
 Runner should support --json output and emit artifacts list for install/sync actions; use agentctl for task operations.
 
-## Plan
+## Risks
 
-
-## Verification
+Recipe runner will need network access; misconfiguration of custom fields can corrupt sync. Ensure scenario prompts and inputs validation are strict.

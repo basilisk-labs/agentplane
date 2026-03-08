@@ -29,7 +29,7 @@ comments:
   -
     author: "ORCHESTRATOR"
     body: "verified: close: redmine backend audit and recipe migration plan complete."
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:00.341Z"
 doc_updated_by: "agentplane"
 description: "Audit the current Redmine backend and define a recipe-based replacement (scenarios, inputs, outputs, guardrails) so Redmine support can be enabled or disabled."
@@ -46,23 +46,26 @@ Goal: move Redmine backend into a recipe so it is optional and user-enabled, whi
 
 Reviewed current Redmine backend implementation (.agent-plane/backends/redmine/backend.py, backend.json) and agentctl sync behavior. Defined recipe specification (202601200743-6CQN5R) and migration steps (202601200743-NNSHSS).
 
-## Risks
+## Plan
 
-Redmine backend migration requires careful handling of config and custom fields; recipe must enforce safe defaults and explicit confirmation for sync push.
 
 ## Verify Steps
 
 Reviewed redmine backend code and agentctl sync command behavior; confirmed recipe plan covers install/disable/sync/verify flows.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Leave core local backend untouched; migration can be abandoned by keeping local backend config and not installing the recipe payload.
 
-## Notes
+## Findings
 
 Next step is implementing the redmine-backend recipe and updating docs/12-redmine.md to reference it.
 
-## Plan
+## Risks
 
-
-## Verification
+Redmine backend migration requires careful handling of config and custom fields; recipe must enforce safe defaults and explicit confirmation for sync push.

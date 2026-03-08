@@ -26,7 +26,7 @@ comments:
   -
     author: "INTEGRATOR"
     body: "Verified: bun run test:core; frontmatter scan on task READMEs"
-doc_version: 2
+doc_version: 3
 doc_updated_at: "2026-02-03T12:09:49.698Z"
 doc_updated_by: "agentplane"
 description: "Strip leading duplicate frontmatter blocks from task README bodies and normalize doc merges to avoid repeated headers."
@@ -42,19 +42,25 @@ Normalized task doc sections (dedupe).
 
 Update task README parsing/normalization, add tests, and re-run doc updates to clean existing duplicates.
 
-## Risks
+## Plan
 
-Low: parsing changes may affect unusual README bodies; validate with tests.
 
 ## Verify Steps
 
 Run relevant tests (task-readme, task-backend) and re-scan task READMEs for duplicate frontmatter.
 
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
 ## Rollback Plan
 
 Revert parsing changes; regenerate task READMEs via previous commits if needed.
 
-## Plan
+## Findings
 
 
-## Verification
+## Risks
+
+Low: parsing changes may affect unusual README bodies; validate with tests.
