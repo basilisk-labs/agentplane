@@ -31,8 +31,15 @@ afterEach(() => {
   }
 });
 
+function clearRuntimeHandoffEnv(): void {
+  delete process.env.AGENTPLANE_REPO_LOCAL_HANDOFF;
+  delete process.env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
+  delete process.env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK;
+}
+
 describe("runtime.command", () => {
   it("renders machine-readable runtime details", async () => {
+    clearRuntimeHandoffEnv();
     process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = path.join(
       workspaceRoot,
       "packages",
@@ -89,6 +96,7 @@ describe("runtime.command", () => {
   });
 
   it("renders handoff details in the text output", async () => {
+    clearRuntimeHandoffEnv();
     process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN = path.join(
       workspaceRoot,
       "packages",

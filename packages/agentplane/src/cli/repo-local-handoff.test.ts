@@ -17,6 +17,19 @@ type CliPayload = {
   handoff?: string;
 };
 
+function buildChildEnv(overrides: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
+  const env = { ...process.env };
+  delete env.AGENTPLANE_REPO_LOCAL_HANDOFF;
+  delete env.AGENTPLANE_RUNTIME_HANDOFF_FROM;
+  delete env.AGENTPLANE_RUNTIME_ACTIVE_BIN;
+  delete env.AGENTPLANE_RUNTIME_MODE;
+  delete env.AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK;
+  return {
+    ...env,
+    ...overrides,
+  };
+}
+
 function parsePayload(output: string, prefix: "LOCAL" | "GLOBAL"): CliPayload {
   return JSON.parse(output.replace(new RegExp(`^${prefix}`, "u"), "")) as CliPayload;
 }
@@ -114,6 +127,7 @@ describe("repo-local handoff wrapper", () => {
       {
         cwd: framework.nestedCwd,
         encoding: "utf8",
+        env: buildChildEnv(),
       },
     );
 
@@ -135,10 +149,9 @@ describe("repo-local handoff wrapper", () => {
       {
         cwd: framework.nestedCwd,
         encoding: "utf8",
-        env: {
-          ...process.env,
+        env: buildChildEnv({
           AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK: "1",
-        },
+        }),
       },
     );
 
@@ -160,10 +173,9 @@ describe("repo-local handoff wrapper", () => {
       {
         cwd: framework.nestedCwd,
         encoding: "utf8",
-        env: {
-          ...process.env,
+        env: buildChildEnv({
           AGENTPLANE_REPO_LOCAL_HANDOFF: "1",
-        },
+        }),
       },
     );
 
@@ -183,6 +195,7 @@ describe("repo-local handoff wrapper", () => {
       {
         cwd: framework.nestedCwd,
         encoding: "utf8",
+        env: buildChildEnv(),
       },
     );
 
