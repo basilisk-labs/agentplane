@@ -1,7 +1,8 @@
 ---
 id: "202603081218-FS24HK"
 title: "Make standard pre-push contour path-aware"
-status: "DOING"
+result_summary: "Made the standard fast pre-push contour path-aware for isolated hook and CI-routing changes by adding a targeted hooks bucket with focused selector and hook regression coverage."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T12:25:29.657Z"
   updated_by: "CODER"
   note: "Added a targeted hooks bucket for narrow pre-push/CI-routing changes. Selector regressions, targeted lint, and AGENTPLANE_FAST_CHANGED_FILES-driven fast CI now route scripts/run-pre-push-hook.mjs plus local-ci-selection.mjs to targeted:hooks instead of full-fast; the remaining cost is concentrated in run-cli.core.hooks.test.ts for the next bucket-splitting task."
-commit: null
+commit:
+  hash: "ef098557868eeadc5505d1d349b2f7d08344cd57"
+  message: "⚡ FS24HK task: make standard pre-push contour path-aware"
 comments:
   -
     author: "CODER"
     body: "Start: add a narrow pre-push/CI-routing bucket so standard fast pre-push runs stop paying for the blanket full-fast suite on isolated hook-selection changes."
+  -
+    author: "CODER"
+    body: "Verified: narrow pre-push and CI-routing changes now route to a targeted hooks contour instead of the blanket full-fast suite."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Added a targeted hooks bucket for narrow pre-push/CI-routing changes. Selector regressions, targeted lint, and AGENTPLANE_FAST_CHANGED_FILES-driven fast CI now route scripts/run-pre-push-hook.mjs plus local-ci-selection.mjs to targeted:hooks instead of full-fast; the remaining cost is concentrated in run-cli.core.hooks.test.ts for the next bucket-splitting task."
+  -
+    type: "status"
+    at: "2026-03-08T12:25:45.577Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: narrow pre-push and CI-routing changes now route to a targeted hooks contour instead of the blanket full-fast suite."
 doc_version: 3
-doc_updated_at: "2026-03-08T12:25:29.658Z"
+doc_updated_at: "2026-03-08T12:25:45.577Z"
 doc_updated_by: "CODER"
 description: "Replace the current one-size-fits-all standard pre-push broad path with scope-aware routing so narrow code changes do not always pay for the full blanket test sweep."
 id_source: "generated"
