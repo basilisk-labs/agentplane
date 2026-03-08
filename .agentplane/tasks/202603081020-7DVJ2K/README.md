@@ -1,7 +1,8 @@
 ---
 id: "202603081020-7DVJ2K"
 title: "Resequence README v3 rollout around compatibility boundary"
-status: "DOING"
+result_summary: "README v3 rollout resequenced around the compatibility boundary."
+status: "DONE"
 priority: "high"
 owner: "PLANNER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T10:22:13.251Z"
   updated_by: "PLANNER"
   note: "Resequenced the README v3 rollout so dual-read compatibility is ready before template defaults; task list and doctor both passed after dependency updates."
-commit: null
+commit:
+  hash: "15304c9314eb0b2cad564c5191919f9fb8d39518"
+  message: "🧭 7DVJ2K task: resequence README v3 rollout"
 comments:
   -
     author: "PLANNER"
     body: "Start: resequence the README v3 rollout so compatibility lands before new-task defaults and archive migration."
+  -
+    author: "PLANNER"
+    body: "Verified: the README v3 rollout graph now gates template-default changes behind compatibility work and leaves no unsafe mixed-state on main."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "PLANNER"
     state: "ok"
     note: "Resequenced the README v3 rollout so dual-read compatibility is ready before template defaults; task list and doctor both passed after dependency updates."
+  -
+    type: "status"
+    at: "2026-03-08T10:22:37.648Z"
+    author: "PLANNER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the README v3 rollout graph now gates template-default changes behind compatibility work and leaves no unsafe mixed-state on main."
 doc_version: 2
-doc_updated_at: "2026-03-08T10:22:13.252Z"
+doc_updated_at: "2026-03-08T10:22:37.648Z"
 doc_updated_by: "PLANNER"
 description: "Adjust the README v3 migration task graph so dual-read compatibility lands before new templates become the default, avoiding a broken mixed-state on main."
 id_source: "generated"
