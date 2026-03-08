@@ -89,32 +89,9 @@ jobs:
           node packages/agentplane/bin/agentplane.js workflow build --validate
           node packages/agentplane/bin/agentplane.js doctor
       - name: Workflow/Harness Coverage (guard)
-        run: |
-          bunx vitest run \
-            packages/agentplane/src/workflow-runtime/*.test.ts \
-            packages/agentplane/src/harness/*.test.ts \
-            --coverage \
-            --coverage.reporter=json \
-            --coverage.include='packages/agentplane/src/workflow-runtime/**' \
-            --coverage.include='packages/agentplane/src/harness/**' \
-            --coverage.thresholds.lines=0 \
-            --coverage.thresholds.functions=0 \
-            --coverage.thresholds.statements=0 \
-            --coverage.thresholds.branches=0
-          bun run coverage:workflow-harness
+        run: bun run test:workflow-coverage
       - name: Significant File Coverage (guard)
-        run: |
-          bunx vitest run \
-            packages/agentplane/src/commands/guard/impl/allow.test.ts \
-            packages/agentplane/src/commands/guard/impl/close-message.test.ts \
-            packages/agentplane/src/commands/guard/impl/commands.unit.test.ts \
-            packages/agentplane/src/commands/guard/impl/policy.test.ts \
-            packages/agentplane/src/commands/guard/impl/comment-commit.test.ts \
-            packages/agentplane/src/cli/run-cli.core.guard.test.ts \
-            --coverage \
-            --coverage.reporter=json \
-            --coverage.include='packages/agentplane/src/commands/guard/**'
-          bun run coverage:significant
+        run: bun run test:significant-coverage
 
   test-windows:
     needs: changes

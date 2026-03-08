@@ -97,18 +97,7 @@ jobs:
       - name: Significant File Coverage (guard)
         if: matrix.os == 'ubuntu-24.04'
         shell: bash
-        run: |
-          bunx vitest run \
-            packages/agentplane/src/commands/guard/impl/allow.test.ts \
-            packages/agentplane/src/commands/guard/impl/close-message.test.ts \
-            packages/agentplane/src/commands/guard/impl/commands.unit.test.ts \
-            packages/agentplane/src/commands/guard/impl/policy.test.ts \
-            packages/agentplane/src/commands/guard/impl/comment-commit.test.ts \
-            packages/agentplane/src/cli/run-cli.core.guard.test.ts \
-            --coverage \
-            --coverage.reporter=json \
-            --coverage.include='packages/agentplane/src/commands/guard/**'
-          bun run coverage:significant
+        run: bun run test:significant-coverage
       - name: Unit tests (platform-critical)
         if: matrix.os == 'windows-latest'
         run: bun run test:platform-critical
