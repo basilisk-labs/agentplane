@@ -2150,6 +2150,7 @@ describe("runCli", () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const taskId = "202602011330-SCAF02";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
 
     const io = captureStdIO();
     try {
@@ -2165,10 +2166,14 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stderr).toContain("task doc set applied a full-doc update");
+      expect(io.stdout).toBe("");
+      expect(io.stderr).toBe("");
     } finally {
       io.restore();
     }
+
+    const readme = await readFile(readmePath, "utf8");
+    expect(readme).toContain("Custom title");
   });
 
   it("task scaffold rejects missing title values and unknown flags", async () => {
