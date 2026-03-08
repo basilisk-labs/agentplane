@@ -1,7 +1,8 @@
 ---
 id: "202603081155-8GENY7"
 title: "Track README v3 task doc template source file"
-status: "DOING"
+result_summary: "Tracked the missing README v3 doc-template.ts source file so task creation, scaffold, add, and migrate-doc no longer depend on a local-only file outside git."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T11:56:27.901Z"
   updated_by: "CODER"
   note: "Tracked HEAD task commands already imported ./doc-template.js; adding packages/agentplane/src/commands/task/doc-template.ts closes that rollout gap. agentplane build, focused README v3 task tests, and lint:core for touched task command paths all passed."
-commit: null
+commit:
+  hash: "2119910ca65df44e50e505d00e346a84c7761f82"
+  message: "🧩 8GENY7 task: track README v3 doc template source"
 comments:
   -
     author: "CODER"
     body: "Start: add the missing tracked doc-template.ts source so README v3 task commands build correctly from a clean checkout and in CI."
+  -
+    author: "CODER"
+    body: "Verified: tracked the missing README v3 doc-template.ts source and confirmed task command build/test paths still pass."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Tracked HEAD task commands already imported ./doc-template.js; adding packages/agentplane/src/commands/task/doc-template.ts closes that rollout gap. agentplane build, focused README v3 task tests, and lint:core for touched task command paths all passed."
+  -
+    type: "status"
+    at: "2026-03-08T11:57:07.265Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: tracked the missing README v3 doc-template.ts source and confirmed task command build/test paths still pass."
 doc_version: 3
-doc_updated_at: "2026-03-08T11:56:27.902Z"
+doc_updated_at: "2026-03-08T11:57:07.265Z"
 doc_updated_by: "CODER"
 description: "Add the missing tracked doc-template.ts source used by README v3 task commands so framework checkouts and CI do not import a file that exists only locally."
 id_source: "generated"
