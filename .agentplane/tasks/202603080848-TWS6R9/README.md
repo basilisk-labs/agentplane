@@ -1,7 +1,8 @@
 ---
 id: "202603080848-TWS6R9"
 title: "Remove ignored d.ts lint noise in local hooks"
-status: "DOING"
+result_summary: "Extracted pre-commit staged-file selection into a helper and excluded .d.ts files from ESLint targets while preserving Prettier coverage and ordinary source-file linting."
+status: "DONE"
 priority: "low"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-08T08:59:32.443Z"
   updated_by: "TESTER"
   note: "Verified: pre-commit file selection now excludes declaration files from ESLint targets while preserving Prettier coverage and ordinary source-file lint coverage. Lint and the regression test both passed."
-commit: null
+commit:
+  hash: "1d0aea16ec77a4ab05204ee8e9f56cafe9389fb1"
+  message: "🧹 TWS6R9 hooks: drop ignored d.ts lint noise"
 comments:
   -
     author: "CODER"
     body: "Start: extracting the pre-commit staged-file selector and excluding declaration files from ESLint targets while keeping normal source-file lint coverage intact."
+  -
+    author: "CODER"
+    body: "Verified: pre-commit file selection now leaves declaration files in the formatter path but excludes them from ESLint targets, removing non-actionable ignored-file warnings from local hooks."
 events:
   -
     type: "status"
@@ -43,9 +49,16 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Verified: pre-commit file selection now excludes declaration files from ESLint targets while preserving Prettier coverage and ordinary source-file lint coverage. Lint and the regression test both passed."
+  -
+    type: "status"
+    at: "2026-03-08T08:59:46.396Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: pre-commit file selection now leaves declaration files in the formatter path but excludes them from ESLint targets, removing non-actionable ignored-file warnings from local hooks."
 doc_version: 2
-doc_updated_at: "2026-03-08T08:59:32.445Z"
-doc_updated_by: "TESTER"
+doc_updated_at: "2026-03-08T08:59:46.396Z"
+doc_updated_by: "CODER"
 description: "Stop local hook and targeted lint paths from printing ignored .d.ts warnings while preserving lint coverage for relevant runtime files."
 id_source: "generated"
 ---
