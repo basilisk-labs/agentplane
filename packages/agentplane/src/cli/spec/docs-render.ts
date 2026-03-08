@@ -33,6 +33,18 @@ function formatDefaultValue(value: unknown): string {
   }
 }
 
+function normalizeGeneratedMdx(text: string): string {
+  let normalized = text;
+  for (;;) {
+    const next = normalized
+      .replaceAll(/\n{3,}/g, "\n\n")
+      .replaceAll("```\n- ", "```\n\n- ")
+      .replaceAll(/\n(- [^\n]+)\n```/g, "\n$1\n\n```");
+    if (next === normalized) return normalized;
+    normalized = next;
+  }
+}
+
 export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
   const byGroup = new Map<string, readonly HelpJson[]>();
   for (const s of specs) {
@@ -134,5 +146,5 @@ export function renderCliDocsMdx(specs: readonly HelpJson[]): string {
     "",
   ];
 
-  return lines.join("\n");
+  return normalizeGeneratedMdx(lines.join("\n"));
 }

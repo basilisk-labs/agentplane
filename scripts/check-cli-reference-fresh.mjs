@@ -69,7 +69,7 @@ async function main() {
 
     if (expected !== actual) {
       throw new Error(
-        "CLI reference is stale. Regenerate with: node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx",
+        "CLI reference is stale. Regenerate with: agentplane docs cli --out docs/user/cli-reference.generated.mdx (inside a stale framework checkout, rebuild first or run node packages/agentplane/dist/cli.js docs cli --out docs/user/cli-reference.generated.mdx)",
       );
     }
 

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { readFile } from "node:fs/promises";
+import { spawn } from "node:child_process";
 import path from "node:path";
 
 import { runCli } from "./run-cli.js";
@@ -10,6 +11,21 @@ import {
   silenceStdIO,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
+
+function runBunx(args: string[], cwd: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn("bunx", args, {
+      cwd,
+      stdio: "ignore",
+      env: process.env,
+    });
+    child.on("error", reject);
+    child.on("exit", (code) => {
+      if (code === 0) return resolve();
+      reject(new Error(`bunx ${args.join(" ")} failed with exit code ${code ?? "unknown"}`));
+    });
+  });
+}
 
 let restoreStdIO: (() => void) | null = null;
 
@@ -41,6 +57,10 @@ describe("runCli docs cli", () => {
       expect(text).toContain("# CLI Reference (Generated)");
       expect(text).toContain("## Task");
       expect(text).toContain("### task new");
+
+      await runBunx(["prettier", "--write", outPath], root);
+      const formatted = await readFile(outPath, "utf8");
+      expect(formatted).toBe(text);
     } finally {
       io.restore();
     }
