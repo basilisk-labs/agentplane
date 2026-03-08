@@ -8,7 +8,7 @@ type FastCiPlan =
   | { kind: "docs-only"; reason: string; files: string[] }
   | {
       kind: "targeted";
-      bucket: "task" | "doctor" | "hooks";
+      bucket: "task" | "doctor" | "hooks" | "release" | "upgrade" | "guard";
       reason: string;
       files: string[];
       lintTargets: string[];
@@ -67,6 +67,30 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("hooks");
     expect(plan.reason).toBe("hook_and_ci_routing_paths_only");
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.hooks.test.ts");
+  });
+
+  it("routes isolated release paths to the release bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/commands/release/apply.command.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("release");
+    expect(plan.reason).toBe("release_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/commands/release/apply.test.ts");
+  });
+
+  it("routes isolated upgrade paths to the upgrade bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/commands/upgrade.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("upgrade");
+    expect(plan.reason).toBe("upgrade_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/commands/upgrade.merge.test.ts");
+  });
+
+  it("routes isolated guard paths to the guard bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/commands/guard/index.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("guard");
+    expect(plan.reason).toBe("guard_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.guard.test.ts");
   });
 
   it("falls back to full fast for broader infra-sensitive changes", () => {

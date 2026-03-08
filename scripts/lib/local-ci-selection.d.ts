@@ -11,7 +11,7 @@ export type FastCiPlan =
     }
   | {
       kind: "targeted";
-      bucket: "task" | "doctor";
+      bucket: "task" | "doctor" | "hooks" | "release" | "upgrade" | "guard";
       reason: string;
       files: string[];
       lintTargets: string[];

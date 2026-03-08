@@ -23,6 +23,25 @@ const HOOKS_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/pre-commit-staged-files\.test\.ts$/,
 ];
 
+const RELEASE_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/release\//,
+  /^scripts\/check-release-(?:parity|version)\.mjs$/,
+  /^scripts\/release-check\.mjs$/,
+  /^scripts\/check-npm-version-availability\.mjs$/,
+  /^scripts\/check-release-recovery-state\.mjs$/,
+  /^scripts\/check-published-packages\.mjs$/,
+];
+
+const UPGRADE_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/upgrade(?:\/|\.|$)/,
+  /^scripts\/check-upgrade-preview-fresh\.mjs$/,
+];
+
+const GUARD_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/guard\//,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.guard\.test\.ts$/,
+];
+
 const BROAD_FALLBACK_PATTERNS = [
   /^package\.json$/,
   /^bun\.lock$/,
@@ -50,6 +69,33 @@ const HOOKS_TEST_FILES = [
   "packages/agentplane/src/cli/local-ci-selection.test.ts",
   "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
   "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
+];
+const RELEASE_TEST_FILES = [
+  "packages/agentplane/src/commands/release/plan.test.ts",
+  "packages/agentplane/src/commands/release/release-check-script.test.ts",
+  "packages/agentplane/src/commands/release/check-release-parity-script.test.ts",
+  "packages/agentplane/src/commands/release/check-release-version-script.test.ts",
+  "packages/agentplane/src/commands/release/apply.test.ts",
+];
+const UPGRADE_TEST_FILES = [
+  "packages/agentplane/src/commands/upgrade.agent-mode.test.ts",
+  "packages/agentplane/src/commands/upgrade.cleanup.test.ts",
+  "packages/agentplane/src/commands/upgrade.json-merge.stability.test.ts",
+  "packages/agentplane/src/commands/upgrade.merge.test.ts",
+  "packages/agentplane/src/commands/upgrade.release-assets.unit.test.ts",
+  "packages/agentplane/src/commands/upgrade.safety.test.ts",
+  "packages/agentplane/src/commands/upgrade.spec-parse.test.ts",
+  "packages/agentplane/src/commands/upgrade.tarball-url.unit.test.ts",
+  "packages/agentplane/src/commands/upgrade.unit.test.ts",
+];
+const GUARD_TEST_FILES = [
+  "packages/agentplane/src/commands/guard/index.test.ts",
+  "packages/agentplane/src/commands/guard/impl/allow.test.ts",
+  "packages/agentplane/src/commands/guard/impl/comment-commit.test.ts",
+  "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
+  "packages/agentplane/src/commands/guard/impl/policy.test.ts",
+  "packages/agentplane/src/commands/guard/impl/close-message.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.guard.test.ts",
 ];
 const CLI_DOCS_RELEVANT_PATTERNS = [
   /^packages\/agentplane\/src\/cli\//,
@@ -116,6 +162,39 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: HOOKS_TEST_FILES,
+    };
+  }
+
+  if (everyPathMatches(files, RELEASE_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "release",
+      reason: "release_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: RELEASE_TEST_FILES,
+    };
+  }
+
+  if (everyPathMatches(files, UPGRADE_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "upgrade",
+      reason: "upgrade_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: UPGRADE_TEST_FILES,
+    };
+  }
+
+  if (everyPathMatches(files, GUARD_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "guard",
+      reason: "guard_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: GUARD_TEST_FILES,
     };
   }
 
