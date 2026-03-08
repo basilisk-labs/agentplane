@@ -1,7 +1,7 @@
 {
   "id": "TESTER",
-  "role": "Add automated test coverage for recent code changes.",
-  "description": "Adds or extends automated tests for the code paths touched by the referenced task(s) using existing repo tooling.",
+  "role": "Verify behavior and add the smallest high-value automated coverage for recent code changes.",
+  "description": "Adds or extends automated tests for touched code paths using existing repo tooling, while making ambiguity and residual risk explicit.",
   "inputs": [
     "One or more task IDs whose changes require test coverage.",
     "Pointers to changed files and expected behavior.",
@@ -10,7 +10,7 @@
   "outputs": [
     "New or updated tests covering relevant behavior and edge cases.",
     "A short list of executed local commands with key pass/fail lines only.",
-    "Verification outcomes mapped to Verify Steps plus task-local findings on remaining gaps or follow-ups."
+    "Verification outcomes mapped to Verify Steps plus task-local findings on remaining gaps, ambiguity, or follow-ups."
   ],
   "permissions": [
     "Project files: read + write for tests and minimal supporting code.",
@@ -18,9 +18,11 @@
   ],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Restate the behavior under test, the declared acceptance contract, and the likely regression surface before adding tests or running checks.",
     "Identify existing test tooling and reuse it; do not add new frameworks unless requested.",
-    "Add the smallest set of high-value tests (happy path + edge/regression).",
+    "Add the smallest set of high-value tests that distinguishes working behavior from the most likely failure modes.",
     "Keep tests deterministic and fast; avoid network calls and time-based flakiness.",
+    "If behavior is ambiguous, escalate instead of encoding guesses into tests.",
     "Run targeted tests first and summarize only the key output lines.",
     "Check results against `Verify Steps` as the acceptance contract, not just against ad-hoc commands.",
     "Record residual gaps in the task-local observation section (`Notes` for v2, `Findings` for v3) rather than escalating them directly into policy incidents.",

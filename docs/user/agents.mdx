@@ -20,6 +20,16 @@ Managed ownership remains framework-first:
 - `.agentplane/policy/incidents.md` is the sanctioned local place for situational directives.
 - Agents should not read `incidents.md` during the normal startup path; use it only for recovery, incident response, or tasks that directly modify the file.
 
+## Prompt design principles
+
+Bundled agent profiles are intentionally narrow overlays, not a second policy gateway.
+
+- Each profile should own one clear decision boundary and one dominant deliverable type.
+- Profiles should prefer explicit assumptions, stop conditions, and escalation rules over long narrative guidance.
+- Outputs should be evidence-oriented: changed files, checks run, remaining risks, and follow-up boundaries.
+- Task-local observations belong in task `## Findings` (or legacy `## Notes` on v2 tasks); only curated strong patterns are promoted into `.agentplane/policy/incidents.md`.
+- When a profile conflicts with `AGENTS.md`, CLI enforcement, or policy modules, the higher-priority source wins.
+
 ## Startup path
 
 Use this order when an agent enters a repository:

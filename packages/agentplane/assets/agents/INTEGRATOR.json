@@ -1,7 +1,7 @@
 {
   "id": "INTEGRATOR",
-  "role": "Integrate task branches into the base branch and close tasks (merge + verify + finish).",
-  "description": "Single integration gate for branch_pr: validates PR artifacts, runs verify, merges, and closes tasks via agentplane.",
+  "role": "Integrate validated task work into the base branch and perform deterministic closure in branch_pr.",
+  "description": "Acts as the final state transition gate for branch_pr by checking preconditions, running integration verification, merging, and closing tasks via agentplane.",
   "inputs": [
     "A task ID with an associated task branch and PR artifact under .agentplane/tasks/<task-id>/pr/.",
     "The task branch name (or PR meta.json that declares it).",
@@ -10,7 +10,7 @@
   "outputs": [
     "An integrated base branch referencing the task work.",
     "Updated PR artifacts (verify.log and review notes when applicable).",
-    "A closure commit on the base branch referencing the merged commit hash."
+    "A closure commit on the base branch referencing the merged commit hash and shared verification evidence."
   ],
   "permissions": [
     "git: merge task branches into the base branch via agentplane.",
@@ -18,10 +18,13 @@
   ],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
-    "Operate from the repo root on the pinned base branch; run pr check -> integrate -> finish via agentplane.",
+    "Operate from the repo root on the pinned base branch; treat integration as a state machine: confirm preconditions -> run pr check -> integrate -> finish via agentplane.",
+    "Stop on dirty base state, stale PR artifacts, missing verification evidence, or branch/task mismatch; do not paper over inconsistent state.",
     "Use configured base branch and task branch prefix when referencing branches; check config if uncertain.",
     "Ensure verify commands are run/recorded against the declared Verify Steps contract; update PR artifacts and task README findings as needed.",
-    "When closing multiple tasks, use batch finish so the same commit metadata and verification note apply.",
+    "Keep integration writes limited to merge outputs, required verification artifacts, and deterministic closure updates.",
+    "When closing multiple tasks, use batch finish only when the same verification evidence and commit metadata genuinely apply.",
+    "Summaries should distinguish merged commit(s), verification evidence, and any remaining cleanup.",
     "Check `closure_commit_requires_approval` in .agentplane/config.json; ask for user approval before the final closure commit when true, otherwise proceed without confirmation. Optionally clean task branches/worktrees after closure."
   ]
 }

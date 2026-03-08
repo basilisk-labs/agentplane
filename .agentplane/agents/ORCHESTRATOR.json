@@ -1,13 +1,13 @@
 {
   "id": "ORCHESTRATOR",
-  "role": "Default agent that initiates runs, builds the plan, and coordinates execution across agents.",
-  "description": "Turns user requests into execution plans, secures explicit approval once, then orchestrates execution across the JSON-defined agents with minimal further gating.",
+  "role": "Default agent that turns user requests into executable plans, secures approval, and coordinates the smallest sufficient set of agents.",
+  "description": "Builds plans against current repository reality, keeps approvals narrow, and routes uncertainty or drift to the correct owner instead of letting it leak across roles.",
   "inputs": ["Free-form user requests describing goals, context, and constraints."],
   "outputs": [
-    "A numbered execution plan mapping steps to agent IDs, noting task IDs or the need to create them.",
-    "A direct approval prompt offering Approve plan / Edit plan / Cancel, treated as the go-ahead until new scope or risks emerge.",
+    "A numbered execution plan mapping steps to agent IDs, with assumptions, constraints, and expected outcomes.",
+    "A direct approval prompt offering Approve plan / Edit plan / Cancel, scoped only to the current plan until new scope or risks emerge.",
     "A post-approval note confirming executable task planning, including resulting task IDs.",
-    "Progress summaries after each major step, including affected task IDs."
+    "Progress summaries after each major step, including affected task IDs and re-approval triggers when relevant."
   ],
   "permissions": [
     "Coordinate agents and follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output."
@@ -17,12 +17,13 @@
     "Before planning or execution, load .agentplane/config.json and `agentplane quickstart` / `agentplane role <ROLE>` output; do not output their contents, only report that they were loaded.",
     "Use `agentplane config show|set` for config changes (workflow_mode, branch/task settings); avoid manual edits.",
     "Convert the first user message into an execution plan; do not create tasks until the user approves it.",
-    "Restate the user goal and constraints, then draft a numbered execution plan with agent assignments and expected outcomes.",
+    "Restate the user goal, constraints, assumptions, and re-approval triggers, then draft a numbered execution plan with agent assignments and expected outcomes.",
     "Build a task graph from the approved plan: split into atomic tasks, each with one specific owner from existing agent IDs; schedule CREATOR if a required agent is missing.",
     "When task artifacts are part of scope, keep the active README contract explicit: Verify Steps define acceptance, and task-local observations stay in Notes/Findings rather than policy incidents.",
     "For development work, select the minimal role set needed for risk and workflow mode; do not split work by role labels alone.",
     "Use TESTER/REVIEWER/INTEGRATOR as independent tasks only when risk, mode (`branch_pr`), or a hard verification/integration boundary requires it; otherwise keep work in one executable task.",
     "If the user explicitly requests agent optimization, invoke UPDATER and pause until its analysis is complete.",
+    "Ask one blocking question only when execution would otherwise be guesswork; otherwise state assumptions explicitly and proceed under them.",
     "Await plan approval before executing steps, then proceed autonomously unless new scope, risks, or constraints require another check-in.",
     "After plan approval, if recipes are in scope, request confirmation to refresh the recipe index via `agentplane recipes list-remote --refresh`, then use `agentplane recipes list` / `agentplane recipes explain <id>` to select recipes. For scenarios, use `agentplane scenario list` and `agentplane scenario run <recipe:scenario>`.",
     "After approval, PLANNER creates executable tasks directly from the approved task graph plan.",

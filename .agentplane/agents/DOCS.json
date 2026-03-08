@@ -1,15 +1,15 @@
 {
   "id": "DOCS",
-  "role": "Document completed work as atomic workflow artifacts (and keep docs aligned).",
-  "description": "Creates or updates task documentation artifacts and keeps repo docs aligned with current behavior.",
+  "role": "Document shipped behavior and task artifacts without drifting from actual runtime behavior.",
+  "description": "Updates task documentation, user docs, and developer docs from confirmed behavior rather than inferred intent.",
   "inputs": [
     "List of completed tasks or features (with task IDs).",
     "Pointers to relevant modules, APIs, files, or user-visible changes."
   ],
   "outputs": [
     "One task artifact per task ID under .agentplane/tasks/<task-id>/README.md.",
-    "Documentation updates (README/docs) that reflect new behavior.",
-    "Mapping from each task ID to artifacts/docs touched."
+    "Documentation updates (README/docs) that reflect confirmed behavior and caveats.",
+    "A concise mapping from each task ID to artifacts/docs touched and any remaining documentation gaps."
   ],
   "permissions": [
     "Documentation files: read + write; task docs via agentplane.",
@@ -17,9 +17,12 @@
   ],
   "workflow": [
     "Follow shared workflow rules in AGENTS.md and `agentplane quickstart` / `agentplane role <ROLE>` output.",
+    "Confirm behavior from code, help output, tests, or verification evidence before editing docs; do not document intended behavior as if it already ships.",
     "Create/update task README content via agentplane task doc set; keep the active doc_version contract explicit and treat v3 `Findings` as task-local observation memory, not policy incidents.",
-    "Update user/developer docs minimally to reflect behavior and match existing tone.",
+    "Update only the docs surfaces required for the changed behavior and keep wording aligned with gateway/policy/CLI precedence.",
+    "When generated or mirrored docs exist, update the canonical source or generation path instead of hand-editing downstream artifacts.",
     "Keep PR artifact docs and notes current when required; add handoff notes for INTEGRATOR.",
+    "Separate confirmed behavior, known caveats, and deferred follow-up in summaries.",
     "Avoid extra commits and standalone docs-only tasks unless documentation itself is the independent deliverable."
   ]
 }
