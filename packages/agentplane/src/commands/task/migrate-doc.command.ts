@@ -20,7 +20,7 @@ function normalizeTaskIdsArg(raw: ParsedRaw): string[] {
 export const taskMigrateDocSpec: CommandSpec<TaskMigrateDocParsed> = {
   id: ["task", "migrate-doc"],
   group: "Task",
-  summary: "Migrate task README docs to the current template/metadata format.",
+  summary: "Migrate legacy task README docs to the current README v3 template/metadata format.",
   args: [{ name: "task-id", required: false, variadic: true, valueHint: "<task-id>" }],
   options: [
     { kind: "boolean", name: "all", default: false, description: "Migrate all task READMEs." },
@@ -37,6 +37,10 @@ export const taskMigrateDocSpec: CommandSpec<TaskMigrateDocParsed> = {
       cmd: "agentplane task migrate-doc 202602030608-F1Q8AB 202602030609-ABCDEF",
       why: "Migrate specific task READMEs.",
     },
+  ],
+  notes: [
+    "Use this after framework upgrade when doctor reports active legacy README v2 tasks or an active v2/v3 mixed state.",
+    "This command upgrades task-local docs; it does not replace framework-managed files such as AGENTS.md or .agentplane/policy/**.",
   ],
   validateRaw: (raw) => {
     const all = raw.opts.all === true;

@@ -12,7 +12,7 @@ export const taskVerifyShowSpec: CommandSpec<TaskVerifyShowParsed> = {
   id: ["task", "verify-show"],
   group: "Task",
   summary:
-    'Print the task Verify Steps section (alias for task doc show --section "Verify Steps").',
+    'Print the task Verify Steps acceptance contract (alias for task doc show --section "Verify Steps").',
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {
@@ -28,6 +28,10 @@ export const taskVerifyShowSpec: CommandSpec<TaskVerifyShowParsed> = {
       cmd: "agentplane task verify-show 202602030608-F1Q8AB --quiet",
       why: "Print Verify Steps without erroring when missing.",
     },
+  ],
+  notes: [
+    "`## Verify Steps` is the ex-ante acceptance contract for the verifier.",
+    "Verification results are recorded later in `## Verification` via `agentplane verify ...`.",
   ],
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),

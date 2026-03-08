@@ -140,6 +140,7 @@ Key points:
 - In `branch_pr`, `agentplane integrate --run-verify` can execute `verify:` commands and append output to `pr/verify.log`.
 - `## Verify Steps` is an acceptance contract, not a commands-only scratchpad.
 - Task-local deviations and follow-ups stay in `## Notes` for legacy `doc_version=2` tasks and in `## Findings` for target `doc_version=3` tasks.
+- New tasks default to `doc_version=3`; if doctor reports active legacy README v2 or active v2/v3 mixed state after an upgrade, run `agentplane task migrate-doc --all`.
 
 ## Spike tasks
 

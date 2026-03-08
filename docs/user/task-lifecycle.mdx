@@ -180,6 +180,8 @@ sequenceDiagram
   - Legacy `doc_version=2` tasks keep local deviations and follow-ups in `## Notes`.
   - Target `doc_version=3` tasks use `## Findings` for the same role.
   - Policy incidents are curated separately; they are not written directly from every task.
+  - New tasks default to `doc_version=3`; after upgrading an older workspace, run
+    `agentplane task migrate-doc --all` when doctor reports active legacy README v2 or active v2/v3 mixed state.
 - **Primary-tag verification policy**:
   - Verify-step and verification requirements are controlled by `tasks.verify.require_steps_for_primary` and `tasks.verify.require_verification_for_primary`.
 - **branch_pr verify logs**: `agentplane integrate --run-verify` executes frontmatter `verify:` commands and appends output to `.agentplane/tasks/<task-id>/pr/verify.log`.

@@ -99,7 +99,7 @@ Commands:
     task lint  Lint the exported tasks JSON file (schema + invariants).
     task list  List tasks (optionally filtered by status/owner/tag).
     task migrate  Import tasks from an exported JSON file into the configured backend.
-    task migrate-doc  Migrate task README docs to the current template/metadata format.
+    task migrate-doc  Migrate legacy task README docs to the current README v3 template/metadata format.
     task new  Create a new task (prints the generated task id).
     task next  List ready tasks (default status=TODO) with optional filters.
     task normalize  Normalize tasks in the configured backend (stable ordering and formatting).
@@ -117,7 +117,7 @@ Commands:
     task verify  Record verification results (ok/rework).
     task verify ok  Record verification as OK (updates Verification section and verification frontmatter).
     task verify rework  Record verification as needs rework (resets commit, sets status to DOING, updates Verification).
-    task verify-show  Print the task Verify Steps section (alias for task doc show --section "Verify Steps").
+    task verify-show  Print the task Verify Steps acceptance contract (alias for task doc show --section "Verify Steps").
   Work:
     work start  Prepare the workspace for a task (direct: single-stream on current branch; branch_pr: task branch/worktree).
   Workflow:

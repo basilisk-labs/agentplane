@@ -70,8 +70,8 @@ export const taskNewSpec: CommandSpec<TaskNewParsed> = {
     },
   ],
   notes: [
-    "Task README scaffolding is applied automatically during creation.",
-    "For verify-required primary tags, this command seeds a default ## Verify Steps section in README.",
+    "Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.",
+    "For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.",
   ],
   parse: (raw) => ({
     title: raw.opts.title as string,

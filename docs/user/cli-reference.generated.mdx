@@ -2174,7 +2174,7 @@ agentplane task migrate --source tasks-export.json
 
 ### task migrate-doc
 
-Migrate task README docs to the current template/metadata format.
+Migrate legacy task README docs to the current README v3 template/metadata format.
 
 Usage:
 
@@ -2186,6 +2186,11 @@ Options:
 
 - `--all`: Migrate all task READMEs. (default=false)
 - `--quiet`: Suppress normal output (still prints errors). (default=false)
+
+Notes:
+
+- Use this after framework upgrade when doctor reports active legacy README v2 tasks or an active v2/v3 mixed state.
+- This command upgrades task-local docs; it does not replace framework-managed files such as AGENTS.md or .agentplane/policy/\*\*.
 
 Examples:
 
@@ -2225,8 +2230,8 @@ Options:
 
 Notes:
 
-- Task README scaffolding is applied automatically during creation.
-- For verify-required primary tags, this command seeds a default ## Verify Steps section in README.
+- Task creation defaults to doc_version=3 and seeds the README v3 section contract automatically.
+- For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.
 
 Examples:
 
@@ -2682,7 +2687,7 @@ agentplane task verify rework 202602030608-F1Q8AB --by REVIEWER --note "Needs ch
 
 ### task verify-show
 
-Print the task Verify Steps section (alias for task doc show --section "Verify Steps").
+Print the task Verify Steps acceptance contract (alias for task doc show --section "Verify Steps").
 
 Usage:
 
@@ -2693,6 +2698,11 @@ agentplane task verify-show <task-id> [options]
 Options:
 
 - `--quiet`: Suppress errors when the section is missing. (default=false)
+
+Notes:
+
+- \`## Verify Steps\` is the ex-ante acceptance contract for the verifier.
+- Verification results are recorded later in \`## Verification\` via \`agentplane verify ...\`.
 
 Examples:
 
