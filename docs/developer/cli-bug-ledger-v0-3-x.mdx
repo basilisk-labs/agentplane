@@ -42,11 +42,11 @@ distinguishes shipped fixes from still-open gaps.
 - **Root cause:** missing repository-owned version expectation and no runtime diagnostic that
   compared it against the active CLI.
 - **Shipped fix:** `.agentplane/config.json` now supports `framework.cli.expected_version`; `init`
-  and `upgrade` persist it, and `runtime explain` plus `doctor` report older active CLI versions
-  with an explicit recovery path.
-- **Evidence:** task `202603081315-Y4D6AE`, `packages/core/src/config/config.ts`, `packages/agentplane/src/commands/runtime.command.ts`, `packages/agentplane/src/commands/doctor/runtime.ts`.
-- **Remaining gap:** this stays detection-only by design. Silent global CLI mutation from repo
-  config remains intentionally unsupported.
+  and `upgrade` persist it, `release apply` now keeps it aligned during release mutation, and
+  `runtime explain` plus `doctor` report older active CLI versions with an explicit recovery path.
+- **Evidence:** tasks `202603081315-Y4D6AE`, `202603081538-GF7P9C`; `packages/core/src/config/config.ts`, `packages/agentplane/src/commands/runtime.command.ts`, `packages/agentplane/src/commands/doctor/runtime.ts`, `packages/agentplane/src/commands/release/apply.command.ts`.
+- **Remaining gap:** this stays detection-only at runtime by design. Silent global CLI mutation
+  from repo config remains intentionally unsupported.
 
 ## 4. `release apply --push` could stall after local commit and tag creation
 
@@ -114,6 +114,22 @@ distinguishes shipped fixes from still-open gaps.
 - **Remaining gap:** the lock fixes correctness, but task-doc editing still has more CLI surface
   complexity than the happy path really needs.
 
+## 9. `task doc set` overstated section replacement success
+
+- **Symptom:** `task doc set --section ...` could print the README path even when the target section
+  did not actually change, which led contributors to assume the requested section replacement had
+  succeeded.
+- **Hidden premise:** a returned README path was treated as proof that the requested section was
+  updated.
+- **Root cause:** the command reported the touched artifact path, but not whether it performed a
+  target-section update, a full-doc write path, or an effective no-op.
+- **Shipped fix:** `task doc set` now reports which outcome actually occurred: target section
+  updated, full-doc update applied, or no effective README change.
+- **Evidence:** task `202603081422-5XXATM`, `packages/agentplane/src/commands/task/doc.ts`,
+  `packages/agentplane/src/cli/run-cli.core.tasks.test.ts`.
+- **Remaining gap:** the feedback is clearer now, but the task-doc surface still exposes more write
+  modes than the happy path ideally needs.
+
 ## Remaining open gaps before the next patch release
 
 1. **Do not auto-update the global CLI by default.**
@@ -128,7 +144,6 @@ distinguishes shipped fixes from still-open gaps.
    Narrow buckets already reduced a lot of latency, but broad runtime-sensitive changes still carry
    a heavy local loop cost.
 
-4. **Consider syncing repository CLI expectation during release version bumps.**
-   `init` and `upgrade` now persist the expected CLI version. The framework release flow is a
-   remaining place where that repository-owned expectation could drift if it is not updated as part
-   of the release mutation.
+4. **Keep task-doc writes outcome-oriented.**
+   Concurrency safety and explicit outcome reporting closed the major correctness and UX failures,
+   but task-doc editing still carries more mode complexity than the default happy path should need.
