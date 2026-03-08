@@ -22,8 +22,8 @@ verification:
   updated_by: "CODER"
   note: "Focused regression checks: run-cli.core.docs-cli.test.ts passes after prettier-stable MDX escaping, lint passes on the touched generator/help files, and the runtime was rebuilt before lifecycle mutation."
 commit:
-  hash: "f95eeb05e9e00b9eb4f4b667d7c63e3701f377d4"
-  message: "✅ MG88QJ close: Release notes for v0.3.3 are ready for release apply. (202603081558-MG88QJ) [docs,release]"
+  hash: "53ca93da224e5dab897a2117403ba98b556a6130"
+  message: "🩺 DA2WJ5 cli: stabilize docs-cli mdx escaping"
 comments:
   -
     author: "CODER"
@@ -52,8 +52,14 @@ events:
     from: "DOING"
     to: "DONE"
     note: "Verified: made CLI docs MDX generation stable under prettier by escaping plain-text markdown metacharacters in the docs renderer, reran the focused docs-cli regression, and rebuilt the runtime before closing the task."
+  -
+    type: "status"
+    at: "2026-03-08T16:15:53.718Z"
+    author: "CODER"
+    from: "DONE"
+    to: "DONE"
 doc_version: 3
-doc_updated_at: "2026-03-08T16:14:21.043Z"
+doc_updated_at: "2026-03-08T16:15:53.718Z"
 doc_updated_by: "CODER"
 description: "Make the generated docs cli MDX output stable under prettier so the release prepublish gate passes without output drift in task migrate-doc help text."
 id_source: "generated"
