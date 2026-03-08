@@ -1,7 +1,8 @@
 ---
 id: "202603081006-ZWK4YX"
 title: "Validate README v3 migration on a legacy project scenario"
-status: "DOING"
+result_summary: "Added a regression scenario that validates the README v2 to v3 recovery path on a legacy-style project through the real CLI."
+status: "DONE"
 priority: "med"
 owner: "TESTER"
 depends_on:
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-08T12:13:31.886Z"
   updated_by: "TESTER"
   note: "Added a real CLI integration scenario that creates a project, commits a legacy README v2 task state, confirms doctor recommends agentplane task migrate-doc --all, then validates upgrade --yes, task migrate-doc --all, task export, and a clean final doctor run on the migrated snapshot."
-commit: null
+commit:
+  hash: "44269f2202043d061d349aa5f5c6d98b592afa31"
+  message: "🧪 ZWK4YX task: validate README v3 migration on legacy scenario"
 comments:
   -
     author: "TESTER"
     body: "Start: codify a real CLI legacy-project migration scenario covering upgrade, doctor, task migrate-doc --all, and export."
+  -
+    author: "TESTER"
+    body: "Verified: the real CLI scenario now proves that a committed legacy README v2 task state can be recovered through doctor guidance, upgrade --yes, task migrate-doc --all, task export, and a clean final doctor run."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "TESTER"
     state: "ok"
     note: "Added a real CLI integration scenario that creates a project, commits a legacy README v2 task state, confirms doctor recommends agentplane task migrate-doc --all, then validates upgrade --yes, task migrate-doc --all, task export, and a clean final doctor run on the migrated snapshot."
+  -
+    type: "status"
+    at: "2026-03-08T12:13:54.300Z"
+    author: "TESTER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the real CLI scenario now proves that a committed legacy README v2 task state can be recovered through doctor guidance, upgrade --yes, task migrate-doc --all, task export, and a clean final doctor run."
 doc_version: 3
-doc_updated_at: "2026-03-08T12:13:31.888Z"
+doc_updated_at: "2026-03-08T12:13:54.300Z"
 doc_updated_by: "TESTER"
 description: "Exercise upgrade, doctor, and migrate-doc against a legacy-style project to confirm the v2 to v3 rollout path is stable."
 id_source: "generated"
