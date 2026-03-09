@@ -37,7 +37,7 @@ Teams use AgentPlane when "just let the agent change files" is not enough.
 
 ## What appears in your repository
 
-`agentplane init` adds a small set of visible artifacts so the workflow is legible to both humans and agents.
+A repository using AgentPlane typically includes a small set of visible artifacts so the workflow stays legible to both humans and agents.
 
 ```text
 AGENTS.md or CLAUDE.md   Policy gateway for the repository
@@ -45,7 +45,7 @@ AGENTS.md or CLAUDE.md   Policy gateway for the repository
 .agentplane/config.json Current repo configuration
 .agentplane/tasks/      Per-task records
 .agentplane/WORKFLOW.md Materialized workflow contract
-.agentplane/tasks.json  Exported task snapshot derived from the current backend projection
+.agentplane/tasks.json  Optional exported task snapshot derived from the current backend projection
 ```
 
 These files matter because they make agent work inspectable. A reviewer can see what policy governs the repo, what task is active, what was verified, and how the task was closed.
@@ -77,6 +77,8 @@ agentplane task verify-show <task-id>
 agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 agentplane finish <task-id> --author DOCS --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
+
+If your repository requires explicit plan approval, run `agentplane task plan approve <task-id> --by ORCHESTRATOR` before `agentplane task start-ready`.
 
 If you need structured worktrees and PR-style integration, switch to `branch_pr` before you begin active work:
 
