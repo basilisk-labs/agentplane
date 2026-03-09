@@ -3,6 +3,7 @@ import { loadConfig, resolveProject } from "@agentplaneorg/core";
 import type { CommandHandler } from "../cli/spec/spec.js";
 import { warnMessage, successMessage } from "../cli/output.js";
 import type { DoctorParsed } from "./doctor.spec.js";
+import { loadCommandContext } from "./shared/task-backend.js";
 import { checkDoneTaskCommitInvariants } from "./doctor/archive.js";
 import { safeFixGitignore, safeFixTaskIndex } from "./doctor/fixes.js";
 import { checkLayering } from "./doctor/layering.js";
@@ -18,10 +19,16 @@ export const runDoctor: CommandHandler<DoctorParsed> = async (ctx, p) => {
   const resolved = await resolveProject({ cwd: ctx.cwd, rootOverride: ctx.rootOverride ?? null });
   const repoRoot = resolved.gitRoot;
   const loadedConfig = await loadConfig(resolved.agentplaneDir);
+  const commandCtx = await loadCommandContext({
+    cwd: ctx.cwd,
+    rootOverride: ctx.rootOverride ?? null,
+    resolvedProject: resolved,
+    config: loadedConfig.config,
+  });
 
   const runChecks = async (): Promise<string[]> => {
     let checks = [
-      ...(await checkWorkspace(repoRoot)),
+      ...(await checkWorkspace(repoRoot, { ctx: commandCtx })),
       ...checkRuntimeSourceFacts(ctx.cwd, loadedConfig.config),
       ...(await checkDoneTaskCommitInvariants(repoRoot, { fullArchive: p.archiveFull })),
     ];

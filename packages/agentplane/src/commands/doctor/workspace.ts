@@ -2,8 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import type { TaskData } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../../shared/diagnostics.js";
 import { resolvePolicyGatewayForRepo } from "../../shared/policy-gateway.js";
+import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
 
 type TaskDocSnapshot = {
   id?: unknown;
@@ -56,7 +58,15 @@ async function listMissingManagedPolicyFiles(repoRoot: string): Promise<string[]
   return missing.toSorted();
 }
 
-async function checkTaskReadmeMigrationState(repoRoot: string): Promise<string[]> {
+function taskDataToSnapshot(task: TaskData): TaskDocSnapshot {
+  return {
+    id: task.id,
+    status: task.status,
+    doc_version: task.doc_version,
+  };
+}
+
+async function readTaskDocSnapshotsFromTasksJson(repoRoot: string): Promise<TaskDocSnapshot[]> {
   const tasksPath = path.join(repoRoot, ".agentplane", "tasks.json");
   let raw = "";
   try {
@@ -72,7 +82,23 @@ async function checkTaskReadmeMigrationState(repoRoot: string): Promise<string[]
     return [];
   }
 
-  const tasks = Array.isArray(parsed.tasks) ? (parsed.tasks as TaskDocSnapshot[]) : [];
+  return Array.isArray(parsed.tasks) ? (parsed.tasks as TaskDocSnapshot[]) : [];
+}
+
+async function readTaskDocSnapshotsFromProjection(
+  ctx?: CommandContext,
+): Promise<TaskDocSnapshot[] | null> {
+  if (!ctx) return null;
+  try {
+    const tasks = await listTaskProjection(ctx);
+    if (tasks === null) return null;
+    return tasks.map((task) => taskDataToSnapshot(task));
+  } catch {
+    return null;
+  }
+}
+
+function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): string[] {
   if (tasks.length === 0) return [];
 
   const legacy = tasks.filter((task) => task.doc_version !== 3);
@@ -131,7 +157,22 @@ async function checkTaskReadmeMigrationState(repoRoot: string): Promise<string[]
   ];
 }
 
-export async function checkWorkspace(repoRoot: string): Promise<string[]> {
+async function checkTaskReadmeMigrationState(
+  repoRoot: string,
+  ctx?: CommandContext,
+): Promise<string[]> {
+  const projectionTasks = await readTaskDocSnapshotsFromProjection(ctx);
+  const tasks =
+    projectionTasks && projectionTasks.length > 0
+      ? projectionTasks
+      : await readTaskDocSnapshotsFromTasksJson(repoRoot);
+  return buildTaskReadmeMigrationFindings(tasks);
+}
+
+export async function checkWorkspace(
+  repoRoot: string,
+  opts?: { ctx?: CommandContext },
+): Promise<string[]> {
   const problems: string[] = [];
   const requiredFiles = [path.join(repoRoot, ".agentplane", "config.json")];
   for (const filePath of requiredFiles) {
@@ -183,6 +224,6 @@ export async function checkWorkspace(repoRoot: string): Promise<string[]> {
   if (!hasJson) {
     problems.push("No agent profiles found in .agentplane/agents (*.json expected).");
   }
-  problems.push(...(await checkTaskReadmeMigrationState(repoRoot)));
+  problems.push(...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)));
   return problems;
 }

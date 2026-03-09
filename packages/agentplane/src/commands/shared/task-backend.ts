@@ -155,6 +155,16 @@ export async function listTasksMemo(ctx: CommandContext): Promise<TaskData[]> {
   return await ctx.memo.taskList;
 }
 
+export async function listTaskProjection(ctx: CommandContext): Promise<TaskData[] | null> {
+  if (ctx.taskBackend.listProjectionTasks) {
+    return await ctx.taskBackend.listProjectionTasks();
+  }
+  if (ctx.taskBackend.capabilities.reads_from_projection_by_default) {
+    return await listTasksMemo(ctx);
+  }
+  return null;
+}
+
 export async function exportTaskProjectionSnapshot(opts: {
   ctx: CommandContext;
   outputPath: string;

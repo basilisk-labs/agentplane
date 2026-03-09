@@ -202,6 +202,10 @@ export class LocalBackend implements TaskBackend {
     return tasks;
   }
 
+  async listProjectionTasks(): Promise<TaskData[]> {
+    return await this.listTasks();
+  }
+
   getLastListWarnings(): string[] {
     return [...this.lastListWarnings];
   }

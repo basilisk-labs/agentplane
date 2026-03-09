@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
+import { renderTaskReadme } from "@agentplaneorg/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { runDoctor } from "./doctor.command.js";
@@ -310,6 +311,69 @@ describe("doctor.command", () => {
       expect(output).toContain("historical task archive still mixes README v2 and v3");
       expect(output).toContain("agentplane task migrate-doc --all");
       expect(output).toContain("202603081006-LEGACY2");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("prefers live task projection over a stale exported snapshot for README migration checks", async () => {
+    const ws = await mkWorkspace();
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    await mkdir(path.join(ws.root, ".agentplane", "tasks", "202603081006-PRJ3"), {
+      recursive: true,
+    });
+    const readme = renderTaskReadme(
+      {
+        id: "202603081006-PRJ3",
+        title: "Projection task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["backend"],
+        verify: [],
+        plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        commit: null,
+        comments: [],
+        events: [],
+        doc_version: 3,
+        doc_updated_at: null,
+        doc_updated_by: null,
+        description: "Projection-backed task",
+        id_source: "generated",
+      },
+      "\n## Summary\n\nProjection-backed task.\n",
+    );
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks", "202603081006-PRJ3", "README.md"),
+      readme,
+      "utf8",
+    );
+    await writeFile(
+      path.join(ws.root, ".agentplane", "tasks.json"),
+      JSON.stringify(
+        {
+          tasks: [{ id: "202603081006-LEGACY-SNAPSHOT", status: "TODO", doc_version: 2 }],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).not.toContain("legacy README v2");
+      expect(output).not.toContain("active v2/v3 mixed state");
+      expect(output).not.toContain("202603081006-LEGACY-SNAPSHOT");
     } finally {
       stderr.mockRestore();
     }

@@ -78,6 +78,7 @@ export type TaskBackend = {
   id: string;
   capabilities: TaskBackendCapabilities;
   listTasks(): Promise<TaskData[]>;
+  listProjectionTasks?(): Promise<TaskData[]>;
   getLastListWarnings?(): string[];
   getTask(taskId: string): Promise<TaskData | null>;
   getTasks?(taskIds: string[]): Promise<(TaskData | null)[]>;

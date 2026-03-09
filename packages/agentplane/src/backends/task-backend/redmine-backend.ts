@@ -170,6 +170,16 @@ export class RedmineBackend implements TaskBackend {
     }
   }
 
+  async listProjectionTasks(): Promise<TaskData[]> {
+    if (!this.cache) {
+      throw new BackendError(
+        "Redmine cache is disabled; projection reads are unavailable",
+        "E_BACKEND",
+      );
+    }
+    return await this.cache.listTasks();
+  }
+
   async exportTasksJson(outputPath: string): Promise<void> {
     const tasks = await this.listTasks();
     await writeTasksExportFromTasks({ outputPath, tasks });
