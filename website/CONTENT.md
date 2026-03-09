@@ -1,340 +1,224 @@
 # Homepage Content Map
 
-This document is the content source for the public home page at `/`.
-It does not prescribe layout or styling. It defines what the page must say, what each section must prove, and which repository sources support each claim.
+This file is the content and presentation contract for the public home page at `/`.
+It defines what the page must say, what the page must prove, and what visual direction the implementation should follow.
+
+It does not replace the canonical product docs. The homepage is an acquisition and orientation surface.
 
 ## Canonical source set
 
-Primary content inputs:
+Primary inputs:
 
 - `README.md`
 - `docs/user/overview.mdx`
-- `docs/user/website-ia.mdx`
-- `docs/developer/harness-engeneering.mdx`
-
-Secondary supporting inputs:
-
 - `docs/user/workflow.mdx`
-- `docs/user/task-lifecycle.mdx`
 - `docs/user/commands.mdx`
+- `docs/user/task-lifecycle.mdx`
+
+Supporting inputs:
+
+- `docs/user/setup.mdx`
+- `docs/user/branching-and-pr-artifacts.mdx`
+- `docs/help/troubleshooting-by-symptom.mdx`
+- `docs/reference/generated-reference.mdx`
 - `docs/developer/release-and-publishing.mdx`
 - `docs/releases/`
 
-## Messaging model
+## Product statement
 
-### Core product statement
+### Canonical category phrase
 
-AgentPlane is a policy-driven CLI workflow for running agents inside real git repositories with explicit approvals, task traceability, and deterministic execution paths.
+AgentPlane is a Git-native control plane for auditable agent work.
 
-### What must be understood within the first screen
+### Human-readable value statement
 
-1. This is not a hosted agent platform.
-2. This is a repository-native workflow layer.
-3. The product promise is trust, control, and auditability.
-4. The differentiator is harness engeneering, not “smarter prompts”.
+Put coding agents on a governed Git workflow.
 
-### What the homepage must avoid
+### What a visitor should understand in the first screen
 
-1. Do not describe AgentPlane as autonomous magic.
-2. Do not lead with generic “AI coding assistant” language.
-3. Do not over-index on role names before explaining the workflow model.
-4. Do not duplicate full CLI reference or setup detail.
+1. AgentPlane is a local CLI workflow, not a hosted agent platform.
+2. It runs inside real git repositories.
+3. It adds approvals, task state, verification, and closure to agent work.
+4. Its value is trust, control, and traceability.
+5. It supports both a fast local path and a stricter PR-oriented path.
 
-## Information architecture for `/`
+## Anti-positioning
 
-The home page should follow this order.
+The homepage must not frame AgentPlane as:
+
+1. a generic AI coding assistant,
+2. an autonomous company OS,
+3. a prompt framework,
+4. a hosted runtime or control dashboard,
+5. a smarter wrapper around AGENTS.md alone.
+
+## 2026 visual direction
+
+The homepage should look current for 2026 without becoming decorative noise.
+
+### Visual principles
+
+1. Oversized editorial typography.
+2. Glass / translucent surfaces with restrained depth.
+3. Bento-style information blocks.
+4. Subtle aurora gradients and tactile noise.
+5. Small motion-friendly affordances and high-clarity hover states.
+6. Product proof presented as repository artifacts, not stock illustrations.
+
+### Product-specific constraint
+
+The visual language must still feel technical, controlled, and trustworthy.
+Do not drift into playful consumer-AI aesthetics or glossy autonomy theater.
+
+## Page architecture
 
 ### 1. Hero
 
 Goal:
-Make the product category and value proposition legible in one screen.
+Make category, value, and trust model legible immediately.
 
-Primary message:
-Agents you can actually trust in a repository.
+Must include:
 
-Supporting message:
-AgentPlane turns agent execution into an engineering process with policy gates, approvals, role boundaries, and auditable task artifacts.
+- category phrase,
+- one-sentence value statement,
+- repository-native proof,
+- primary CTA into docs,
+- a concrete command / workflow preview.
 
-Proof points:
+Recommended proof points:
 
-- Policy-first execution
-- Approval and planning gates
-- Role-based workflows
-- Safety guardrails by default
-- Repository-local task and verification artifacts
+- local CLI,
+- repo-local state,
+- verify / finish flow,
+- direct and `branch_pr` modes.
 
-Primary CTA:
-
-- `Start with docs` -> `/docs/user/overview`
-
-Secondary CTA:
-
-- `Read the blog` -> `/blog`
-
-Optional tertiary action:
-
-- `Browse release notes` -> `/docs/releases`
-
-Source basis:
-
-- `README.md` sections: “What is agent/plane?”, “Key Principles”, “Quickstart”
-- `docs/user/overview.mdx`
-
-### 2. Why it exists
+### 2. Why teams adopt it
 
 Goal:
-Explain the failure mode in ordinary agent workflows that AgentPlane is meant to fix.
+Explain the process failure mode AgentPlane fixes.
 
-Section message:
-Traditional coding agents are hard to trust because intent, scope, approval state, and verification are often implicit or missing.
+Core message:
+Fast agents are easy. Governed agent work is the harder problem.
 
-Required points:
+Must contrast:
 
-1. Unpredictable file mutation is a systems problem, not only a prompting problem.
-2. Teams need bounded execution, not just helpful output.
-3. AgentPlane makes behavior inspectable and reproducible.
+- hidden session state,
+- implicit approvals,
+- vague completion,
+- repo-visible state,
+- explicit verification,
+- deterministic closure.
 
-Tone:
-Analytical, not dramatic.
-
-Source basis:
-
-- `README.md` introduction
-- `docs/developer/harness-engeneering.mdx`
-
-### 3. Harness engeneering differentiator
+### 3. Repository surface
 
 Goal:
-Introduce the product’s conceptual frame and explain why the system feels different from generic agent tooling.
+Translate abstraction into concrete files and state.
 
-Section message:
-AgentPlane treats agent execution as harness engeneering: constrain, execute, observe, recover, integrate.
+Must answer:
+What appears in my repo, and why does it matter?
 
-Required subpoints:
+Must show:
 
-1. Legibility is the target.
-2. Process beats vibes.
-3. Throughput changes integration style.
-4. Control autonomy by harness design.
-5. Fight entropy continuously.
+- `AGENTS.md` or `CLAUDE.md`,
+- `.agentplane/`,
+- task records,
+- `start -> verify -> finish`,
+- optional backend paths.
 
-Suggested device:
-A five-step operating loop:
-
-`Constrain -> Execute -> Observe -> Recover -> Integrate`
-
-Source basis:
-
-- `docs/developer/harness-engeneering.mdx`
-- `README.md` section “Harness Engeneering”
-
-### 4. What you get in a repository
+### 4. Control model
 
 Goal:
-Translate abstract workflow claims into concrete repository artifacts.
+Show that AgentPlane governs execution as a stateful workflow.
 
-Section message:
-The system is made of visible files, commands, and state transitions inside the repo.
+Preferred loop:
 
-Required artifact list:
+`Constrain -> Start -> Execute -> Verify -> Finish`
 
-- `AGENTS.md` as policy gateway
-- `.agentplane/` as repo-local workspace
-- task records in `.agentplane/tasks/`
-- guarded `start -> verify -> finish` lifecycle
-- optional backend integration
-
-This section should answer:
-What appears in my repository after initialization, and why does it matter?
-
-Source basis:
-
-- `docs/user/overview.mdx`
-- `README.md` sections “Policy Gateway”, “Project Structure”, “Roles”
+Must stay below the fold; the homepage should not open with deep doctrine.
 
 ### 5. Workflow modes
 
 Goal:
-Show that the product supports both solo and structured team flow without making the page feel like reference docs.
+Explain mode choice as integration discipline, not feature gating.
 
-Section message:
-AgentPlane supports a fast `direct` mode and a stricter `branch_pr` mode for structured multi-role integration.
+Must show:
 
-Required points:
+- `direct` for fast local loops,
+- `branch_pr` for structured worktree / PR flow.
 
-1. `direct` is single-checkout and good for short loops.
-2. `branch_pr` is structured, worktree-based, and integrator-oriented.
-3. The choice is about integration discipline, not feature gating.
-
-Source basis:
-
-- `README.md` section “Workflow Modes”
-- `docs/user/workflow.mdx`
-
-### 6. Homepage section rail mapped to docs
+### 6. Docs rail
 
 Goal:
-Satisfy the `website-ia` contract and make the home page a reliable entry point into canonical docs.
+Turn the homepage into a reliable navigation surface.
 
-Required doc groups:
+Required groups:
 
-1. Getting Started
-   Links:
-   - `/docs/user/overview`
-   - `/docs/user/prerequisites`
-   - `/docs/user/setup`
+- Getting started
+- Workflow model
+- Reference
+- Developer track
+- Support
 
-2. Workflow Model
-   Links:
-   - `/docs/user/workflow`
-   - `/docs/user/task-lifecycle`
-   - `/docs/user/agents`
-
-3. Reference
-   Links:
-   - `/docs/user/commands`
-   - `/docs/user/configuration`
-   - `/docs/reference/generated-reference`
-
-4. Developer Track
-   Links:
-   - `/docs/developer/architecture`
-   - `/docs/developer/cli-contract`
-   - `/docs/developer/release-and-publishing`
-
-5. Support
-   Links:
-   - `/docs/help/troubleshooting-by-symptom`
-   - `/docs/help/glossary`
-
-Source basis:
-
-- `docs/user/website-ia.mdx`
-
-### 7. Release and journal surface
+### 7. Journal surface
 
 Goal:
-Show that the product ships with an editorial record, not only static docs.
+Show evidence of active shipping.
 
-Section message:
-Blog and release notes provide two different layers:
+Must distinguish:
 
-1. the blog explains why changes matter,
-2. release notes provide the formal record of shipped changes.
-
-Required links:
-
-- `/blog`
-- `/docs/releases`
-
-Optional supporting framing:
-The website should present blog posts as analysis and release notes as source-of-truth archive.
-
-Source basis:
-
-- `docs/user/website-ia.mdx`
-- existing website blog scope
+- blog as context and analysis,
+- release notes as formal source of truth.
 
 ### 8. Closing CTA
 
 Goal:
-Resolve ambiguity about the next action.
+Resolve ambiguity about next action.
 
-Recommended CTA hierarchy:
+Preferred order:
 
-1. Start with docs
-2. Read the workflow model
-3. Explore blog / release notes
-
-Do not end with “contact us” or generic marketing copy.
-
-Source basis:
-
-- `README.md`
-- `docs/user/overview.mdx`
+1. Open overview
+2. Read workflow model
+3. Browse release notes / blog
 
 ## Claim inventory
 
-These are safe homepage claims because they are supported by repository sources.
-
 ### Safe claims
 
-1. AgentPlane is a local CLI workflow for agent-driven development in a git repository.
-2. It is policy-driven and repository-native.
-3. It introduces approvals, planning gates, role boundaries, and verification paths.
-4. It keeps task artifacts and metadata inside the repository.
-5. It supports `direct` and `branch_pr` workflow modes.
-6. It uses a harness engeneering operating model for predictable execution.
-7. It is not a hosted service and does not replace git visibility.
+- Local CLI workflow.
+- Repository-native setup and state.
+- Policy gateway file (`AGENTS.md` or `CLAUDE.md`).
+- `.agentplane/` workspace.
+- Task records and verification state.
+- Explicit workflow operations such as `start-ready`, `verify`, and `finish`.
+- `direct` and `branch_pr` workflow modes.
+- Release notes and blog as separate surfaces.
 
-### Claims that need caution
+### Claims to avoid unless separately validated
 
-1. “Enterprise-ready”
-   Use only when tied to concrete safety/audit features.
-2. “Autonomous”
-   Use carefully; prefer “bounded” or “policy-aware”.
-3. “Safe by default”
-   Keep tied to specific guardrails, not as an absolute guarantee.
+- Enterprise compliance guarantees.
+- Support for every external coding agent.
+- Hosted orchestration features.
+- Cost governance / budgeting.
+- Autonomous long-running operation.
+- Any performance or productivity percentage.
 
-## Writing guidance
+## Copy rules
 
-### Tone
+1. Use simple product language before internal terminology.
+2. Do not lead with roles, projections, or harness doctrine.
+3. Avoid repetitive "framework" wording.
+4. Prefer repository, workflow, state, verification, closure, and audit language.
+5. Keep "Harness engineering" spelled correctly everywhere.
+6. Standardize product naming:
+   - product: `AgentPlane`
+   - CLI/package: `agentplane`
 
-- Technical, calm, precise
-- Confident without hype
-- Product-oriented, but still legible to engineers
+## Definition of done
 
-### Style rules
+The homepage is correct when:
 
-1. Prefer short declarative sentences.
-2. Use repository terms exactly as they exist in the product: `AGENTS.md`, `.agentplane/`, `direct`, `branch_pr`, `start`, `verify`, `finish`.
-3. Distinguish facts from interpretation.
-4. Every strong claim should have a nearby proof link into docs or release records.
-
-### Vocabulary to prefer
-
-- policy
-- workflow
-- repository
-- traceability
-- guardrails
-- verification
-- deterministic
-- harness engeneering
-- task artifacts
-
-### Vocabulary to avoid
-
-- magic
-- autonomous coding revolution
-- AI teammate that does everything
-- zero-process automation
-- self-driving repository
-
-## Content components to prepare later
-
-These are not required in this file, but the future homepage implementation should likely include them.
-
-1. Hero headline + subhead
-2. Proof-chip row
-3. Diagram or operating loop for harness engeneering
-4. Artifact panel showing repo-local files
-5. Mode comparison cards
-6. Docs entry rail mapped to IA
-7. Blog and release surface
-8. Final CTA block
-
-## Open questions for homepage implementation
-
-1. Should the hero lead with “policy-driven framework” or “workflow layer for repositories”?
-2. How prominently should role names appear on the home page versus deeper docs pages?
-3. Should harness engeneering be a dedicated full-width section or a tighter mid-page system block?
-4. Should release notes and blog be merged into one “journal” surface on home, or remain separate entry paths?
-
-## Minimum acceptance criteria for using this document
-
-1. The implemented homepage must preserve the section order or justify deviations.
-2. Hero claims must map back to canonical sources above.
-3. The docs entry rail must follow `docs/user/website-ia.mdx`.
-4. Harness engeneering must appear as a differentiator, not as buried developer jargon.
-5. The page must guide users toward docs, workflow model, and release/journal surfaces without duplicating reference docs inline.
+1. A new visitor can identify category and value in under 10 seconds.
+2. The first screen communicates trust through repository proof, not abstraction.
+3. The layout feels current for 2026 while staying credible for a technical product.
+4. The page sends users cleanly into docs, workflow docs, and release history.
+5. Nothing on the page promises more than the current release supports.
