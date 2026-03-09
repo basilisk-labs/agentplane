@@ -111,6 +111,9 @@ agentplane task export
 agentplane task lint
 ```
 
+The exported snapshot is derived from the current backend projection. It is not the canonical
+source of truth.
+
 ## Backend sync (remote backends)
 
 For remote backends (for example Redmine), use explicit sync:
@@ -121,7 +124,11 @@ agentplane backend sync redmine --direction pull
 agentplane backend sync redmine --direction push --yes
 ```
 
-`sync` and `backend sync` default to `--direction push`; prefer explicit `--direction pull` when refreshing local state from Redmine.
+`sync` and `backend sync` default to `--direction push`; prefer explicit `--direction pull` when
+refreshing the local projection from Redmine.
+
+Ordinary task reads (`task list`, `task show`, `doctor`) use the current projection by default and
+do not implicitly refresh from the network.
 
 ## Workflow
 

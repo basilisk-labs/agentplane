@@ -90,10 +90,12 @@ agentplane runtime explain
 
 ## redmine sync conflicts or drift
 
-- Why this happens: local cache and remote Redmine tasks diverged.
+- Why this happens: the local projection and the canonical Redmine state diverged.
 - What to do:
-- Pull latest remote state with `agentplane backend sync redmine --direction pull`.
+- Refresh the projection with `agentplane backend sync redmine --direction pull`.
 - Note: if you omit direction, sync defaults to `push`.
+- Re-check `task list`, `task show`, or `doctor` after the pull so you are reading the refreshed
+  projection.
 - If push still fails, run sync with an explicit conflict policy and inspect changed fields.
 
 ## release apply stops before push

@@ -193,6 +193,8 @@ workspace is in an active v2/v3 mixed state.
 **Fix:**
 
 - For redmine, configure secrets in `.env` (`REDMINE_URL`, `REDMINE_API_KEY`) and keep backend JSON non-secret.
-- Retry with `--direction pull` to refresh local cache, for example:
+- Retry with `--direction pull` to refresh the local projection, for example:
   - `agentplane backend sync redmine --direction pull`
+- Then re-run the read command (`task list`, `task show`, or `doctor`) so you are reading the
+  refreshed projection instead of an older snapshot.
 - Check custom field env mappings if using Redmine.

@@ -25,16 +25,29 @@ agentplane init --backend redmine
 agentplane config show
 ```
 
-4. Pull then push sync:
+4. Pull the first local projection:
 
 ```bash
 agentplane backend sync redmine --direction pull
+```
+
+5. Confirm ordinary task reads against the projection:
+
+```bash
+agentplane task list
+agentplane doctor
+```
+
+6. Push local dirty changes only when needed:
+
+```bash
 agentplane backend sync redmine --direction push --yes
 ```
 
 ## Day-to-day sync pattern
 
 - Pull before starting a task if remote state may have changed.
+- Read tasks and diagnostics from the local projection between sync operations.
 - Push after important updates and before final closure.
 - Use `--conflict diff` first when diagnosing mismatches.
 
@@ -42,4 +55,4 @@ agentplane backend sync redmine --direction push --yes
 
 - If connection fails, verify URL/API key/project env values first.
 - If writes fail, check custom field IDs in env.
-- If sync output looks stale, run pull and then inspect local task README metadata.
+- If task output looks stale, run pull and then re-run `task list`, `task show`, or `doctor`.
