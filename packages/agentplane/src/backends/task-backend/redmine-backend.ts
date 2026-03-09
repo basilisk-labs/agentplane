@@ -70,8 +70,8 @@ export class RedmineBackend implements TaskBackend {
   capabilities = {
     canonical_source: "remote",
     projection: "cache",
-    reads_from_projection_by_default: false,
-    may_access_network_on_read: true,
+    reads_from_projection_by_default: true,
+    may_access_network_on_read: false,
     may_access_network_on_write: true,
     supports_projection_refresh: true,
     supports_push_sync: true,
@@ -158,16 +158,13 @@ export class RedmineBackend implements TaskBackend {
   }
 
   async listTasks(): Promise<TaskData[]> {
-    try {
-      // Read-only listing must not rewrite local task READMEs through cache updates.
-      return await this.listTasksRemote();
-    } catch (err) {
-      if (err instanceof RedmineUnavailable) {
-        if (!this.cache) throw err;
-        return await this.cache.listTasks();
-      }
-      throw err;
+    if (!this.cache) {
+      throw new BackendError(
+        "Redmine cache is disabled; projection reads are unavailable",
+        "E_BACKEND",
+      );
     }
+    return await this.cache.listTasks();
   }
 
   async listProjectionTasks(): Promise<TaskData[]> {
@@ -214,19 +211,13 @@ export class RedmineBackend implements TaskBackend {
   }
 
   async getTask(taskId: string): Promise<TaskData | null> {
-    try {
-      const issue = await this.findIssueByTaskId(taskId);
-      if (!issue) return null;
-      // Read-only fetch must not rewrite local task READMEs through cache updates.
-      return this.issueToTask(issue, taskId);
-    } catch (err) {
-      if (err instanceof RedmineUnavailable) {
-        if (!this.cache) throw err;
-        const cached = await this.cache.getTask(taskId);
-        return cached ?? null;
-      }
-      throw err;
+    if (!this.cache) {
+      throw new BackendError(
+        "Redmine cache is disabled; projection reads are unavailable",
+        "E_BACKEND",
+      );
     }
+    return (await this.cache.getTask(taskId)) ?? null;
   }
 
   async getTasks(taskIds: string[]): Promise<(TaskData | null)[]> {

@@ -1,7 +1,7 @@
 ---
 id: "202603090655-P6BRCZ"
 title: "Switch Redmine backend to projection-first reads"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,9 +19,21 @@ verification:
   updated_at: null
   updated_by: null
   note: null
-comments: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: switching Redmine reads to projection-first so install-first users get deterministic local task state and explicit network boundaries."
+events:
+  -
+    type: "status"
+    at: "2026-03-09T07:30:26.072Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: switching Redmine reads to projection-first so install-first users get deterministic local task state and explicit network boundaries."
 doc_version: 3
-doc_updated_at: "2026-03-09T06:55:31.402Z"
+doc_updated_at: "2026-03-09T07:36:30.155Z"
 doc_updated_by: "CODER"
 description: "Use the local projection as the default read model for Redmine-backed repos and keep network access behind explicit refresh/sync paths."
 id_source: "generated"
@@ -45,11 +57,9 @@ Use the local projection as the default read model for Redmine-backed repos and 
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. bunx vitest run packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/commands/task/export.unit.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000
+2. bun run lint:core -- packages/agentplane/src/backends/task-backend/redmine-backend.ts packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/doctor/workspace.ts packages/agentplane/src/commands/shared/task-backend.ts
+3. bun run --filter=agentplane build
 
 ## Verification
 

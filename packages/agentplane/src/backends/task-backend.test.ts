@@ -769,13 +769,11 @@ describe("RedmineBackend (mocked)", () => {
       { cache },
     );
 
-    const tasks = await backend.listTasks();
-    expect(tasks).toHaveLength(1);
-    expect(tasks[0]?.status).toBe("DONE");
-    expect(tasks[0]?.priority).toBe("high");
+    const tasksBeforePull = await backend.listTasks();
+    expect(tasksBeforePull).toHaveLength(0);
 
-    const task = await backend.getTask("202601300000-ABCD");
-    expect(task?.title).toBe("Issue");
+    const taskBeforePull = await backend.getTask("202601300000-ABCD");
+    expect(taskBeforePull).toBeNull();
 
     await backend.sync({
       direction: "pull",
@@ -783,11 +781,20 @@ describe("RedmineBackend (mocked)", () => {
       quiet: true,
       confirm: false,
     });
+
+    const tasksAfterPull = await backend.listTasks();
+    expect(tasksAfterPull).toHaveLength(1);
+    expect(tasksAfterPull[0]?.status).toBe("DONE");
+    expect(tasksAfterPull[0]?.priority).toBe("high");
+
+    const taskAfterPull = await backend.getTask("202601300000-ABCD");
+    expect(taskAfterPull?.title).toBe("Issue");
+
     const cached = await cache.listTasks();
     expect(cached).toHaveLength(1);
   });
 
-  it("does not rewrite local cache on read-only list/get when Redmine is available", async () => {
+  it("uses projection-only reads and does not touch network or cache writes for list/get", async () => {
     const issues: Record<string, unknown>[] = [
       {
         id: 101,
@@ -798,7 +805,7 @@ describe("RedmineBackend (mocked)", () => {
       },
     ];
 
-    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+    const fetchSpy = vi.fn((url: string, init?: RequestInit) => {
       const reqUrl = new URL(url);
       const pathname = reqUrl.pathname.replace(/^\//u, "");
       const method = init?.method ?? "GET";
@@ -812,8 +819,20 @@ describe("RedmineBackend (mocked)", () => {
       }
       return new Response("not found", { status: 404 });
     });
+    vi.stubGlobal("fetch", fetchSpy);
 
     const cache = new LocalBackend({ dir: tempDir });
+    await cache.writeTask({
+      id: "202601300000-ABCD",
+      title: "Cached issue",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    });
     const cacheWriteSpy = vi.spyOn(cache, "writeTask");
     const backend = new RedmineBackend(
       {
@@ -828,10 +847,12 @@ describe("RedmineBackend (mocked)", () => {
 
     const tasks = await backend.listTasks();
     expect(tasks).toHaveLength(1);
+    expect(tasks[0]?.title).toBe("Cached issue");
 
     const task = await backend.getTask("202601300000-ABCD");
     expect(task?.id).toBe("202601300000-ABCD");
 
+    expect(fetchSpy).not.toHaveBeenCalled();
     expect(cacheWriteSpy).not.toHaveBeenCalled();
   });
 
@@ -874,6 +895,13 @@ describe("RedmineBackend (mocked)", () => {
       { cache },
     );
 
+    await backend.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: false,
+    });
+
     const tasks = await backend.listTasks();
     const byId = new Map(tasks.map((task) => [task.id, task.status]));
     expect(byId.get("202601300000-D2GNQ1")).toBe("DOING");
@@ -912,6 +940,13 @@ describe("RedmineBackend (mocked)", () => {
       },
       { cache },
     );
+
+    await backend.sync({
+      direction: "pull",
+      conflict: "prefer-remote",
+      quiet: true,
+      confirm: false,
+    });
 
     const tasks = await backend.listTasks();
     expect(tasks[0]?.status).toBe("DOING");
@@ -1248,7 +1283,14 @@ describe("RedmineBackend (mocked)", () => {
       { cache: new LocalBackend({ dir: tempDir }) },
     );
 
-    await expect(backend.listTasks()).rejects.toBeInstanceOf(BackendError);
+    await expect(
+      backend.sync({
+        direction: "pull",
+        conflict: "prefer-remote",
+        quiet: true,
+        confirm: false,
+      }),
+    ).rejects.toBeInstanceOf(BackendError);
   });
 
   it("syncPush requires cache and confirmation", async () => {
@@ -1652,7 +1694,7 @@ describe("RedmineBackend (mocked)", () => {
     );
   });
 
-  it("handles redmine unavailability with cache fallbacks", async () => {
+  it("reads from cache without remote access and keeps write fallbacks when Redmine is unavailable", async () => {
     const cache = new LocalBackend({ dir: tempDir });
     const task: TaskData = {
       id: "202601300000-ABCD",
@@ -1680,18 +1722,15 @@ describe("RedmineBackend (mocked)", () => {
       listTasksRemote: () => Promise<TaskData[]>;
       findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
     };
-    helper.listTasksRemote = vi.fn(() => {
-      throw new RedmineUnavailable("down");
-    });
     const tasks = await backend.listTasks();
     expect(tasks).toHaveLength(1);
+
+    const cached = await backend.getTask(task.id);
+    expect(cached?.id).toBe(task.id);
 
     helper.findIssueByTaskId = vi.fn(() => {
       throw new RedmineUnavailable("down");
     });
-    const cached = await backend.getTask(task.id);
-    expect(cached?.id).toBe(task.id);
-
     await backend.setTaskDoc(task.id, "Doc");
     const updated = await cache.getTask(task.id);
     expect(updated?.dirty).toBe(true);
@@ -1756,15 +1795,20 @@ describe("RedmineBackend (mocked)", () => {
       listTasksRemote: () => Promise<TaskData[]>;
       findIssueByTaskId: (taskId: string) => Promise<Record<string, unknown> | null>;
     };
-    helper.listTasksRemote = vi.fn(() => {
-      throw new RedmineUnavailable("down");
-    });
-    await expect(backend.listTasks()).rejects.toBeInstanceOf(RedmineUnavailable);
+    await expect(backend.listTasks()).rejects.toBeInstanceOf(BackendError);
+    await expect(backend.listTasks()).rejects.toThrow(/projection reads are unavailable/);
+
+    await expect(backend.getTask("202601300000-ABCD")).rejects.toBeInstanceOf(BackendError);
+    await expect(backend.getTask("202601300000-ABCD")).rejects.toThrow(
+      /projection reads are unavailable/,
+    );
 
     helper.findIssueByTaskId = vi.fn(() => {
       throw new RedmineUnavailable("down");
     });
-    await expect(backend.getTask("202601300000-ABCD")).rejects.toBeInstanceOf(RedmineUnavailable);
+    await expect(backend.setTaskDoc("202601300000-ABCD", "Doc")).rejects.toBeInstanceOf(
+      RedmineUnavailable,
+    );
   });
 
   it("validates task id resolution and generateTaskId errors", async () => {
