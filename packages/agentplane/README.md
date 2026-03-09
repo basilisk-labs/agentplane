@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/basilisk-labs/agentplane/blob/main/LICENSE)
-[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](https://github.com/basilisk-labs/agentplane/blob/main/docs/user/prerequisites.mdx)
+[![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](https://agentplane.org/docs/user/prerequisites)
 
 **Git-native control plane for auditable agent work.**
 
@@ -39,7 +39,7 @@ AGENTS.md or CLAUDE.md   Policy gateway for the repository
 .agentplane/config.json Current repo configuration
 .agentplane/agents/     Installed agent profiles
 .agentplane/tasks/      Per-task records and evidence
-.agentplane/WORKFLOW.md Materialized workflow contract
+.agentplane/WORKFLOW.md Current workflow contract
 ```
 
 You may also see `.agentplane/tasks.json` later if you export a task snapshot, and `.agentplane/workflows/last-known-good.md` as part of the workflow runtime state.
