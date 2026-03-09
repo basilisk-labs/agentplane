@@ -1,6 +1,11 @@
 .page {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.92) 26%, rgb(var(--bg)) 48%),
+    linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.96),
+      rgb(255 255 255 / 0.92) 26%,
+      rgb(var(--bg)) 48%
+    ),
     rgb(var(--bg));
   overflow: clip;
   padding: clamp(1.8rem, 3vw, 2.8rem) 0 6rem;
@@ -38,7 +43,9 @@
   background-image:
     linear-gradient(rgb(255 255 255 / 0.24), rgb(255 255 255 / 0.24)),
     radial-gradient(circle at 20% 20%, rgb(0 0 0 / 0.035) 0 0.7px, transparent 0.8px);
-  background-size: auto, 15px 15px;
+  background-size:
+    auto,
+    15px 15px;
   inset: 0;
   mix-blend-mode: soft-light;
   opacity: 0.42;
