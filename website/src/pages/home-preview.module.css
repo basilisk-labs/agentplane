@@ -74,8 +74,7 @@
 .journalCard,
 .closingCard {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.58)),
-    rgb(var(--bg) / 0.72);
+    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.58)), rgb(var(--bg) / 0.72);
   backdrop-filter: blur(18px) saturate(122%);
   border: 1px solid rgb(var(--border) / 0.9);
   border-radius: 24px;
@@ -333,8 +332,7 @@
 
 .commandPre {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.66), rgb(255 255 255 / 0.44)),
-    rgb(var(--bg) / 0.62);
+    linear-gradient(180deg, rgb(255 255 255 / 0.66), rgb(255 255 255 / 0.44)), rgb(var(--bg) / 0.62);
   border: 1px solid rgb(var(--border));
   border-radius: 18px;
   margin: 0;
@@ -417,14 +415,12 @@
 
 .compareCardMuted {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(249 249 249 / 0.58)),
-    rgb(var(--bg) / 0.72);
+    linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(249 249 249 / 0.58)), rgb(var(--bg) / 0.72);
 }
 
 .compareCardAccent {
   background:
-    linear-gradient(180deg, rgb(245 250 255 / 0.92), rgb(255 255 255 / 0.6)),
-    rgb(var(--bg) / 0.72);
+    linear-gradient(180deg, rgb(245 250 255 / 0.92), rgb(255 255 255 / 0.6)), rgb(var(--bg) / 0.72);
   border-color: rgb(var(--accent) / 0.18);
 }
 
@@ -481,8 +477,7 @@
 
 .timelineItem {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.56)),
-    rgb(var(--bg) / 0.72);
+    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.56)), rgb(var(--bg) / 0.72);
   backdrop-filter: blur(16px) saturate(120%);
   border: 1px solid rgb(var(--border) / 0.9);
   border-radius: 24px;
@@ -601,8 +596,7 @@
 
 .tabButtonActive {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.88), rgb(244 250 255 / 0.72)),
-    rgb(var(--bg) / 0.84);
+    linear-gradient(180deg, rgb(255 255 255 / 0.88), rgb(244 250 255 / 0.72)), rgb(var(--bg) / 0.84);
   border-color: rgb(var(--accent) / 0.38);
   box-shadow:
     0 8px 18px rgb(15 23 42 / 0.05),
@@ -611,8 +605,7 @@
 
 .tabPanel {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.52)),
-    rgb(var(--bg) / 0.72);
+    linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.52)), rgb(var(--bg) / 0.72);
   border: 1px solid rgb(var(--border));
   border-radius: 18px;
   display: grid;
@@ -733,8 +726,7 @@
   background:
     radial-gradient(circle at 20% 0%, rgb(0 132 184 / 0.12), transparent 24%),
     radial-gradient(circle at 82% 0%, rgb(82 149 255 / 0.12), transparent 24%),
-    linear-gradient(180deg, rgb(255 255 255 / 0.84), rgb(255 255 255 / 0.64)),
-    rgb(var(--bg) / 0.74);
+    linear-gradient(180deg, rgb(255 255 255 / 0.84), rgb(255 255 255 / 0.64)), rgb(var(--bg) / 0.74);
   display: grid;
   gap: 1rem;
   justify-items: start;
