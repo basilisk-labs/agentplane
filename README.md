@@ -1,6 +1,6 @@
 ![Agent Plane Header](docs/assets/header.png)
 
-# agent/plane
+# AgentPlane
 
 [![npm](https://img.shields.io/npm/v/agentplane.svg)](https://www.npmjs.com/package/agentplane)
 [![Downloads](https://img.shields.io/npm/dm/agentplane.svg)](https://www.npmjs.com/package/agentplane)
@@ -8,19 +8,21 @@
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](docs/user/prerequisites.mdx)
 [![CLI Contract](https://img.shields.io/badge/CLI-contract-111827.svg)](docs/developer/cli-contract.mdx)
 
-**Agents you can actually trust in a repository.**
+**Git-native control plane for auditable agent work.**
 
-agent/plane (Agent Plane) is a policy-driven framework for running LLM agents inside real repositories. It turns "AI magic" into an engineering process: explicit approvals, role boundaries, and a reproducible execution pipeline. The goal is simple: make agents _boring, safe, and auditable_.
+Put coding agents on a governed Git workflow.
 
-## 🚀 What is agent/plane?
+AgentPlane is a local CLI for agent-driven development inside a git repository. It runs in your repo, not in a hosted runtime, and adds visible workflow artifacts such as `AGENTS.md` or `CLAUDE.md`, `.agentplane/`, task records, verification state, and deterministic closure. Teams trust it because approvals, task state, verification, and finish are explicit instead of implied. Use `agentplane` when you want agents to work inside a governed repository workflow rather than as an opaque assistant.
 
-Traditional AI coding agents may behave unpredictably, modify files without clear intent, or act outside expected boundaries. agent/plane changes that by introducing:
+## What AgentPlane is
+
+Traditional coding agents may behave unpredictably, modify files without clear intent, or act outside expected boundaries. AgentPlane changes that by introducing:
 
 - **Policy-first execution** - every run follows a defined pipeline.
-- **Approval & planning gates** - nothing runs without explicit consent.
-- **Role-based workflows** - ORCHESTRATOR, PLANNER, CREATOR, INTEGRATOR, etc.
+- **Approval and planning gates** - nothing runs without explicit consent.
+- **Visible repository state** - policy gateway, task records, verification history, and workflow state stay in the repo.
 - **Safety guardrails by default** - actions outside the repo, network access, or unrestricted writes are disabled unless explicitly approved.
-- **Support for team workflows** - including `direct` and `branch_pr` modes.
+- **Support for governed workflows** - including `direct` and `branch_pr` modes.
 
 Agent behavior is not hidden: it's inspectable, reproducible, and constrained by policy.
 
