@@ -45,10 +45,7 @@ function collectViolations(content, file) {
   for (const match of content.matchAll(/border-radius\s*:\s*([^;]+);/gi)) {
     const value = match[1].trim();
     const allowMinimalChromeRadius =
-      file === "website/src/css/custom.css" &&
-      (value === "var(--chrome-radius)" ||
-        value === "calc(var(--chrome-radius) - 1px)" ||
-        value === "10px");
+      file === "website/src/css/custom.css" && /^var\(--chrome-radius(?:-[a-z]+)?\)$/.test(value);
     const allowed =
       value === "0" ||
       value === "0px" ||

@@ -45,6 +45,8 @@
   --glass-border: rgb(255 255 255 / 0.46);
   --glass-blur: 14px;
   --chrome-radius: 12px;
+  --chrome-radius-inner: 11px;
+  --chrome-radius-control: 10px;
   --docs-shell-gutter: clamp(1.15rem, 2.6vw, 2.4rem);
   --docs-sidebar-gutter: clamp(1rem, 2vw, 1.9rem);
 }
@@ -107,7 +109,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__inner::before {
   border: 1px solid var(--glass-border);
-  border-radius: calc(var(--chrome-radius) - 1px);
+  border-radius: var(--chrome-radius-inner);
   content: "";
   inset: 0;
   pointer-events: none;
@@ -179,7 +181,7 @@ html.nav-scrolled .navbar__inner {
 
 .navbar__toggle {
   border: 1px solid rgb(var(--border));
-  border-radius: 10px;
+  border-radius: var(--chrome-radius-control);
   padding: 0.35rem;
   transition:
     border-color 180ms ease,
@@ -306,7 +308,7 @@ html.nav-scrolled .navbar__inner {
   content: "SYNC";
 }
 
-.theme-doc-sidebar-container {
+.ap-doc-sidebar-shell {
   border-right: none;
   margin-top: calc(-1 * (var(--ifm-navbar-height) + 0.9rem));
   padding-left: var(--docs-sidebar-gutter);
@@ -314,7 +316,7 @@ html.nav-scrolled .navbar__inner {
   position: relative;
 }
 
-.theme-doc-sidebar-container::after {
+.ap-doc-sidebar-shell::after {
   background: rgb(var(--border));
   bottom: 1rem;
   content: "";
@@ -324,12 +326,12 @@ html.nav-scrolled .navbar__inner {
   width: 1px;
 }
 
-.theme-doc-sidebar-container [class*="sidebarViewport"] {
+.ap-doc-sidebar-viewport {
   max-height: calc(100vh - 1.25rem);
   top: 1.25rem;
 }
 
-.theme-doc-sidebar-container :is([class^="sidebar_"], [class*=" sidebar_"]) {
+.ap-doc-sidebar-desktop {
   padding-top: calc(var(--ifm-navbar-height) + 1.1rem);
 }
 
@@ -709,11 +711,11 @@ nav[aria-label="Breadcrumbs"] {
     max-width: none;
   }
 
-  .theme-doc-sidebar-container {
+  .ap-doc-sidebar-shell {
     padding-right: 0;
   }
 
-  .theme-doc-sidebar-container::after {
+  .ap-doc-sidebar-shell::after {
     display: none;
   }
 

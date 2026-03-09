@@ -1,0 +1,37 @@
+@media (min-width: 997px) {
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-top: var(--ifm-navbar-height);
+    width: var(--doc-sidebar-width);
+  }
+
+  .sidebarWithHideableNavbar {
+    padding-top: 0;
+  }
+
+  .sidebarHidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .sidebarLogo {
+    align-items: center;
+    color: inherit !important;
+    display: flex !important;
+    margin: 0 var(--ifm-navbar-padding-horizontal);
+    max-height: var(--ifm-navbar-height);
+    min-height: var(--ifm-navbar-height);
+    text-decoration: none !important;
+  }
+
+  .sidebarLogo img {
+    height: 2rem;
+    margin-right: 0.5rem;
+  }
+}
+
+.sidebarLogo {
+  display: none;
+}
