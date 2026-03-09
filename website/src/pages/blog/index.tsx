@@ -4,10 +4,24 @@ import styles from "./index.module.css";
 
 const releaseLineEntries = [
   {
-    href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
-    title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
+    href: "/blog/release-0-3-4-install-first-startup-and-upgrade-repair",
+    title: "AgentPlane 0.3.4: install-first startup, upgrade repair, cleaner role surfaces",
     excerpt:
-      "How policy routing became easier to follow, release notes got more concrete, and safe publish reruns stopped being awkward.",
+      "How the npm-installed path stopped leaking framework-only docs, why upgrade now restores workflow artifacts, and what changed in role guidance.",
+    meta: "Release journal • 5 min read",
+  },
+  {
+    href: "/blog/release-0-3-3-runtime-hardening-and-readme-v3",
+    title: "AgentPlane 0.3.3: runtime hardening, README v3, faster local feedback",
+    excerpt:
+      "How runtime diagnostics became explicit, task docs got a real migration path, and local contributor loops got less expensive.",
+    meta: "Release journal • 6 min read",
+  },
+  {
+    href: "/blog/release-0-3-2-smoother-upgrades-and-framework-dev",
+    title: "AgentPlane 0.3.2: smoother upgrades, cleaner finish, better framework dev",
+    excerpt:
+      "Why upgrades got less weird, why finish now leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
     meta: "Release journal • 5 min read",
   },
   {
@@ -18,10 +32,10 @@ const releaseLineEntries = [
     meta: "Release journal • 4 min read",
   },
   {
-    href: "/blog/release-0-3-2-smoother-upgrades-and-framework-dev",
-    title: "AgentPlane 0.3.2: smoother upgrades, cleaner finish, better framework dev",
+    href: "/blog/release-0-3-0-policy-gateway-and-release-discipline",
+    title: "AgentPlane 0.3.0: policy gateway, stricter release discipline",
     excerpt:
-      "Why upgrades got less weird, why finish now leaves a cleaner tree, and why framework contributors are less likely to run the wrong binary.",
+      "How policy routing became easier to follow, release notes got more concrete, and safe publish reruns stopped being awkward.",
     meta: "Release journal • 5 min read",
   },
 ];

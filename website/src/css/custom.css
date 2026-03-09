@@ -39,10 +39,11 @@
   --content-width: 74ch;
   --site-frame-width: 1240px;
   --site-gutter: 0.75rem;
-  --glass-fill-strong: rgb(255 255 255 / 0.84);
-  --glass-fill-soft: rgb(255 255 255 / 0.62);
-  --glass-border: rgb(255 255 255 / 0.54);
+  --glass-fill-strong: rgb(255 255 255 / 0.7);
+  --glass-fill-soft: rgb(255 255 255 / 0.42);
+  --glass-border: rgb(255 255 255 / 0.46);
   --glass-blur: 14px;
+  --chrome-radius: 12px;
 }
 
 html,
@@ -89,10 +90,11 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__inner {
   background:
-    linear-gradient(180deg, var(--glass-fill-strong), var(--glass-fill-soft)), rgb(var(--bg) / 0.56);
+    linear-gradient(180deg, var(--glass-fill-strong), var(--glass-fill-soft)), rgb(var(--bg) / 0.36);
   backdrop-filter: blur(var(--glass-blur)) saturate(122%);
   border: 1px solid rgb(var(--border) / 0.85);
-  border-bottom-color: rgb(var(--border));
+  border-bottom-color: rgb(var(--border) / 0.78);
+  border-radius: var(--chrome-radius);
   gap: 0.65rem;
   min-height: 64px;
   padding: 0.55rem 0.75rem;
@@ -102,6 +104,7 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__inner::before {
   border: 1px solid var(--glass-border);
+  border-radius: calc(var(--chrome-radius) - 1px);
   content: "";
   inset: 0;
   pointer-events: none;
@@ -164,12 +167,12 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 html.nav-scrolled .navbar__inner {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.9), rgb(255 255 255 / 0.68)), rgb(var(--bg) / 0.62);
+    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.54)), rgb(var(--bg) / 0.42);
 }
 
 .navbar__toggle {
   border: 1px solid rgb(var(--border));
-  border-radius: 0;
+  border-radius: 10px;
   padding: 0.35rem;
   transition:
     border-color 180ms ease,

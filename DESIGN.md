@@ -30,7 +30,7 @@ The following are explicitly disallowed unless this document is revised:
 
 - SaaS-style **card grids** as the primary layout language.
 - Heavy backgrounds, gradients, generic glassmorphism, glow, 3D, illustrations-for-vibes.
-- Rounded shapes as a motif (`rounded-none` by default).
+- Large rounded shapes as a motif (`rounded-none` by default outside narrow shell exceptions).
 - Shadows as a structural tool (`shadow-none` by default).
 - “Playful” motion: bouncing, parallax, scroll-jacking, animated backgrounds.
 - Multi-accent color palettes, neon, or “AI futurism”.
@@ -47,7 +47,7 @@ The following are explicitly disallowed unless this document is revised:
 
 ### 3.2 Visual constraints
 
-- Default: **no radius**, **no shadows**.
+- Default: **no radius or minimal radius only**, **no shadows**.
 - Borders are **hairline** and low contrast.
 - Visual ornaments must be:
   - low-frequency (not repeated everywhere),
@@ -194,7 +194,7 @@ without turning the entire website into a glassmorphism system.
 Rules:
 
 - Allowed only for compact shell elements such as the top navbar.
-- Keep the shape rectangular; the no-radius default still applies.
+- Small radius is allowed for the shell itself, but keep it restrained and clearly secondary to the typography.
 - Fill must stay near-white and translucent, never colorful.
 - Blur is allowed only as a subtle backdrop treatment, not as a glow effect.
 - No soft drop shadows; separation should come from border, translucency, and contrast.
@@ -250,7 +250,7 @@ Buttons should feel like “links with intent”.
 Rules:
 
 - Rectangular, border 1px.
-- No radius.
+- No radius by default; a very small radius is acceptable only when a shell/chrome element needs separation.
 - No shadows.
 - Primary CTA may invert foreground/background; secondary stays outline.
 
@@ -404,7 +404,7 @@ Typography & layout
 
 Visual discipline
 
-- [ ] No shadows and no radius unless explicitly justified.
+- [ ] No shadows and no broad rounding motif; any radius remains minimal and localized.
 - [ ] Only one accent color in use.
 - [ ] Grid paper is used sparingly and remains subtle.
 

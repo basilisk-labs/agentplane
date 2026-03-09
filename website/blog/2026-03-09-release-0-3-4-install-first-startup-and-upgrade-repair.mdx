@@ -1,0 +1,75 @@
+---
+slug: release-0-3-4-install-first-startup-and-upgrade-repair
+title: "AgentPlane 0.3.4: install-first startup, upgrade repair, and cleaner role surfaces"
+description: "What changed in AgentPlane 0.3.4, in plain language: npm-installed startup got self-contained, upgrade now restores workflow artifacts, and role guidance lines up with installed prompts."
+authors: [team]
+tags: [release, workflow, operations]
+---
+
+AgentPlane `0.3.4` is the version where the product finally stops assuming that users live inside the framework repository.
+
+That sounds obvious, but it matters. The main distribution path is `npm i -g agentplane`, not “clone the framework repo and learn its internal file layout.” Once that becomes the real product lens, a few behaviors that looked acceptable from inside the framework stop being acceptable at all.
+
+`0.3.4` fixes that.
+
+<!-- truncate -->
+
+## The startup path is self-contained now
+
+The most important repair in `0.3.4` is simple: installed runtime guidance no longer points users at repo-only docs artifacts.
+
+That bug was subtle in one sense and obvious in another. The startup flow worked fine as long as you were standing inside the framework repo, where generated docs files already existed. But for a normal npm-installed user, a startup surface that points to a non-installed local docs file is just broken.
+
+`0.3.4` cleans this up by making the startup path self-contained again:
+
+- `AGENTS.md`,
+- `agentplane quickstart`,
+- `agentplane role <ROLE>`,
+- and the installed runtime guidance all line up around files and commands that actually exist in the user repo.
+
+That is the right direction. Public product behavior should not depend on framework-internal artifacts.
+
+## Upgrade finally restores the workflow shell
+
+The second big fix is in `upgrade`.
+
+Older initialized repositories could update managed files and still miss workflow runtime artifacts such as:
+
+- `.agentplane/WORKFLOW.md`
+- `.agentplane/workflows/last-known-good.md`
+
+That meant the repo was “upgraded” in one sense but still incomplete in another.
+
+`0.3.4` closes that gap. If the repository is initialized enough to own the workflow surface, `agentplane upgrade --yes` now restores those runtime artifacts as part of the normal upgrade path.
+
+This is exactly the kind of thing users should not have to discover manually after the fact.
+
+## Role help and installed prompts now describe the same world
+
+Another good repair in `0.3.4` is the alignment between installed prompts and CLI role help.
+
+Earlier in the `0.3.x` line, these surfaces were both improving, but they were still not the same surface. That leaves room for drift: the installed agent profile says one thing, while `agentplane role CODER` explains the same role a little differently.
+
+`0.3.4` tightens that by making installed profiles the primary surface for role help, with CLI-specific notes layered on top instead of a separate competing guide.
+
+That sounds like polish. It is also operational clarity.
+
+## The practical shift
+
+This is not a flashy release. It is a product-boundary release.
+
+It makes three things truer than they were before:
+
+- the installed startup path is self-contained,
+- upgrade can bring an older initialized repo back to a complete workflow state,
+- installed prompts and role help describe one coherent operating model.
+
+That is exactly the kind of patch release you want in a tool like this. Less accidental framework leakage. Fewer half-upgraded states. Less drift between what the tool says and what it actually installs.
+
+## Upgrade note
+
+There are no breaking workflow-mode changes in `0.3.4`.
+
+If you maintain older initialized repositories, `agentplane upgrade --yes` is now more complete than it was in earlier `0.3.x` builds because it restores required workflow runtime artifacts when the repository already owns the managed workflow tree.
+
+The formal source record remains the release notes at [`/docs/releases/v0.3.4`](/docs/releases/v0.3.4).

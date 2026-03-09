@@ -1,0 +1,85 @@
+---
+slug: release-0-3-3-runtime-hardening-and-readme-v3
+title: "AgentPlane 0.3.3: runtime hardening, README v3, faster local feedback"
+description: "What changed in AgentPlane 0.3.3, in plain language: clearer runtime diagnostics, a real README v3 migration path, and less friction in local development."
+authors: [team]
+tags: [release, workflow, operations]
+---
+
+AgentPlane `0.3.3` is the release where a lot of framework-internal friction finally turned into explicit product behavior.
+
+Before this version, several important things still worked more by convention than by contract. Runtime selection inside the framework repo could be confusing. Task docs carried too much historical baggage. Local CI was correct but expensive. Release recovery was real, but not fully codified.
+
+`0.3.3` tightens all of that.
+
+<!-- truncate -->
+
+## The runtime got easier to trust
+
+The biggest shift in `0.3.3` is runtime visibility.
+
+This release adds `agentplane runtime explain`, which sounds small until you hit the class of failure it removes. When a repo expects one CLI version and the machine is running another, or when a framework checkout is quietly using the wrong binary from `PATH`, a lot of confusion follows from that single mismatch.
+
+`0.3.3` makes that state explicit:
+
+- which binary is actually running,
+- which framework source it resolves to,
+- which version the repository expects,
+- and what to do if those things do not line up.
+
+That is less glamorous than new commands usually sound, but more valuable. Good tooling should tell you which reality you are in before it asks you to debug anything else.
+
+## README v3 became the real task-doc contract
+
+This release also completes the task README transition in a serious way.
+
+Older task docs were still readable, but the system needed a cleaner target format. `README v3` becomes that target in `0.3.3`, with a better split between plan, verification, rollback, and local findings.
+
+The important part is not just the new layout. The important part is that migration is now treated as a real path:
+
+- legacy README v2 tasks still read correctly,
+- new tasks default to README v3,
+- `agentplane task migrate-doc` exists as a normal upgrade step,
+- docs and diagnostics explain the recovery flow instead of assuming a pristine repo.
+
+That matters because task docs are not decorative. They are part of the operational state of the repository.
+
+## Release and recovery got stricter in the right places
+
+`0.3.3` also hardens the release path itself.
+
+This release closes a few annoying but expensive failure classes:
+
+- release apply recursing into local `pre-push`,
+- generated docs drifting during release mutation,
+- the repository silently expecting a newer CLI than the one the user is running,
+- partial publish states without a clear recovery path.
+
+The pattern underneath all of these fixes is the same: release behavior should be explicit before things go wrong, not only diagnosable afterward.
+
+## Local feedback got lighter
+
+Another practical gain in `0.3.3` is the local developer loop.
+
+The repo now does a better job of routing smaller changes through narrower validation buckets. That does not remove the heavy path for broad changes, but it does stop every narrow docs or CLI-help edit from paying the same price as a release-sensitive code change.
+
+`doctor` also became less noisy and faster on large historical archives, which matters more than it sounds once a repository has accumulated real history.
+
+## Practical outcome
+
+For everyday use, `0.3.3` means:
+
+- runtime state is easier to inspect,
+- older repositories have a real task-doc migration path,
+- releases and recoveries are harder to fake and easier to reason about,
+- local feedback loops waste less time on obviously narrow changes.
+
+That is a broad release, but it is not unfocused. The thread is consistent: make hidden operational state visible, then make the normal path shorter.
+
+## Upgrade note
+
+There are no breaking workflow-mode changes in `0.3.3`.
+
+If your repository still contains legacy task docs, run `agentplane doctor` and follow the recovery path it gives you. In practice that usually means upgrading the framework and then migrating task docs to README v3 where needed.
+
+The formal source record remains the release notes at [`/docs/releases/v0.3.3`](/docs/releases/v0.3.3).
