@@ -109,7 +109,17 @@ bun run test:platform-critical:scenario
 bun run test:platform-critical:init-upgrade-backend
 
 bun run test:backend-critical
+bun run test:backend:redmine-live
+bun run test:backend:matrix
 ```
+
+Backend matrix guidance:
+
+- `test:backend-critical` is the hermetic backend regression suite.
+- `test:backend:redmine-live` is an env-gated, read-only Redmine contract suite. It loads `.env`
+  when present, refreshes the local projection from Redmine, reads tasks from that projection, and
+  exports a snapshot. If required Redmine env keys are missing, it exits cleanly with a skip.
+- `test:backend:matrix` runs `test:backend-critical` and then the live Redmine suite.
 
 To run the canonical workflow/harness and significant-file coverage suites that GitHub workflows
 now call via shared scripts instead of inline `vitest` command lines:

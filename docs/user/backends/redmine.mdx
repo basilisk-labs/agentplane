@@ -83,6 +83,23 @@ Operational rule:
 - use `push --yes` when you want to send local dirty task state back to Redmine;
 - ordinary task reads do not implicitly refresh from the network.
 
+## Validation
+
+To validate the install-first Redmine contract against a real backend without performing remote
+writes:
+
+```bash
+bun run test:backend:redmine-live
+```
+
+The suite:
+
+- loads Redmine env from `.env` when present;
+- refreshes the local projection from Redmine;
+- reads tasks from the projection;
+- exports a snapshot from that projection;
+- exits cleanly with a skip if required Redmine env keys are missing.
+
 ## Troubleshooting pointers
 
 - Missing env key errors: fill required vars in `.env` or shell env.

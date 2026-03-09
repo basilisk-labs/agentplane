@@ -40,6 +40,8 @@
     "test:platform-critical:pr-meta": "vitest run packages/agentplane/src/commands/shared/pr-meta.test.ts --hookTimeout 60000 --testTimeout 60000",
     "test:platform-critical:scenario": "vitest run packages/agentplane/src/commands/scenario/impl/commands.test.ts --hookTimeout 60000 --testTimeout 60000",
     "test:backend-critical": "vitest run packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/backends/task-backend/redmine/env.test.ts packages/agentplane/src/commands/backend.test.ts packages/agentplane/src/commands/shared/task-backend.test.ts packages/agentplane/src/commands/task/export.unit.test.ts packages/agentplane/src/commands/task/migrate-doc.test.ts packages/agentplane/src/commands/doctor.fast.test.ts packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts --hookTimeout 60000 --testTimeout 60000",
+    "test:backend:redmine-live": "node scripts/run-backend-live-suite.mjs",
+    "test:backend:matrix": "bun run test:backend-critical && bun run test:backend:redmine-live",
     "test:workflow-coverage": "node scripts/run-workflow-coverage-suite.mjs",
     "test:significant-coverage": "node scripts/run-significant-coverage-suite.mjs",
     "test:guard": "vitest run packages/agentplane/src/commands/guard/index.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/commands/guard/impl/comment-commit.test.ts packages/agentplane/src/commands/guard/impl/commands.unit.test.ts packages/agentplane/src/commands/guard/impl/policy.test.ts packages/agentplane/src/commands/guard/impl/close-message.test.ts",
