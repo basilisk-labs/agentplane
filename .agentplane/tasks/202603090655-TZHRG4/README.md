@@ -1,7 +1,8 @@
 ---
 id: "202603090655-TZHRG4"
 title: "Make doctor and task migration backend-aware"
-status: "DOING"
+result_summary: "Made doctor backend-aware for README migration checks by preferring live projection tasks over stale tasks.json snapshots, while preserving snapshot fallback for empty/synthetic fixtures and adding regressions for stale-snapshot scenarios."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-09T07:27:47.586Z"
+  updated_by: "CODER"
+  note: "Projection-aware doctor now prefers live backend task state over stale tasks.json snapshots; targeted doctor/migrate-doc/export tests, lint:core, and agentplane build passed."
+commit:
+  hash: "1cf13ab0dce6a2940b8b99db76b2ed580df4f058"
+  message: "🩺 TZHRG4 task: make doctor projection-aware"
 comments:
   -
     author: "CODER"
     body: "Start: make doctor and task doc migration flows read backend projection state instead of stale exported snapshots."
+  -
+    author: "CODER"
+    body: "Verified: doctor now prefers live backend projection state over stale snapshot export; migration and export paths remain green."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: make doctor and task doc migration flows read backend projection state instead of stale exported snapshots."
+  -
+    type: "verify"
+    at: "2026-03-09T07:27:47.586Z"
+    author: "CODER"
+    state: "ok"
+    note: "Projection-aware doctor now prefers live backend task state over stale tasks.json snapshots; targeted doctor/migrate-doc/export tests, lint:core, and agentplane build passed."
+  -
+    type: "status"
+    at: "2026-03-09T07:27:54.374Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor now prefers live backend projection state over stale snapshot export; migration and export paths remain green."
 doc_version: 3
-doc_updated_at: "2026-03-09T07:17:42.842Z"
+doc_updated_at: "2026-03-09T07:27:54.374Z"
 doc_updated_by: "CODER"
 description: "Teach doctor and task doc migration flows to reason about backend projection state instead of stale export snapshots."
 id_source: "generated"
@@ -64,6 +83,14 @@ Teach doctor and task doc migration flows to reason about backend projection sta
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-09T07:27:47.586Z — VERIFY — ok
+
+By: CODER
+
+Note: Projection-aware doctor now prefers live backend task state over stale tasks.json snapshots; targeted doctor/migrate-doc/export tests, lint:core, and agentplane build passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-09T07:17:42.842Z, excerpt_hash=sha256:b49f50d7f0a20ee1d66f8a31c7364aa5f0423c982fef44a2d3edf16a552190d7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
