@@ -11,6 +11,7 @@ type FastCiPlan =
       bucket:
         | "task"
         | "doctor"
+        | "backend"
         | "hooks"
         | "workflow"
         | "cli-help"
@@ -23,6 +24,7 @@ type FastCiPlan =
       files: string[];
       lintTargets: string[];
       testFiles: string[];
+      vitestPool: "threads" | "forks";
     };
 
 type PrePushUpdate = {
@@ -69,6 +71,21 @@ describe("local CI fast selection", () => {
     ]);
     expect(plan.kind).toBe("targeted");
     expect(plan.bucket).toBe("doctor");
+  });
+
+  it("routes isolated backend projection paths to the backend bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/backends/task-backend/redmine-backend.ts",
+      "packages/agentplane/src/commands/task/migrate-doc.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("backend");
+    expect(plan.reason).toBe("backend_projection_paths_only");
+    expect(plan.vitestPool).toBe("forks");
+    expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts",
+    );
   });
 
   it("routes isolated hook and CI routing paths to the hooks bucket", () => {

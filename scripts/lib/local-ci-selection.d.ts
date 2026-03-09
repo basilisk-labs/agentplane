@@ -14,6 +14,7 @@ export type FastCiPlan =
       bucket:
         | "task"
         | "doctor"
+        | "backend"
         | "hooks"
         | "workflow"
         | "cli-help"
@@ -26,6 +27,7 @@ export type FastCiPlan =
       files: string[];
       lintTargets: string[];
       testFiles: string[];
+      vitestPool: "threads" | "forks";
     };
 
 export function parseChangedFilesEnv(rawValue: unknown): string[];

@@ -94,6 +94,23 @@ To run the platform-critical cross-runner suite that backs Windows CI and prepub
 bun run test:platform-critical
 ```
 
+The critical suites are now split into canonical named sub-suites so workflow YAML, local CI,
+and manual debugging can point at the same contracts:
+
+```bash
+bun run test:critical:exit-codes
+bun run test:critical:git-edge
+bun run test:critical:protected-paths
+bun run test:critical:scope-leak
+bun run test:critical:symlink-root
+
+bun run test:platform-critical:pr-meta
+bun run test:platform-critical:scenario
+bun run test:platform-critical:init-upgrade-backend
+
+bun run test:backend-critical
+```
+
 To run the canonical workflow/harness and significant-file coverage suites that GitHub workflows
 now call via shared scripts instead of inline `vitest` command lines:
 
@@ -182,6 +199,7 @@ By default, hooks run:
   - `docs-only`: docs, website, policy, and task-doc changes skip code-heavy checks
   - `targeted(task)`: task command paths run the task-focused fast suite
   - `targeted(doctor)`: doctor command paths run the doctor-focused fast suite
+  - `targeted(backend)`: backend/projection paths run the backend-critical fast suite
   - `targeted(hooks)`: hook and CI-routing paths run the hook-focused fast suite
   - `targeted(workflow)`: workflow YAML, actionlint config, and workflow command-contract paths run
     workflow lint + contract enforcement without the broad fallback

@@ -12,6 +12,14 @@ const TASK_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/task\//];
 
 const DOCTOR_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/doctor(?:\/|\.|$)/];
 
+const BACKEND_BUCKET_PATTERNS = [
+  /^packages\/agentplane\/src\/backends\/task-backend\//,
+  /^packages\/agentplane\/src\/backends\/task-index\.ts$/,
+  /^packages\/agentplane\/src\/commands\/backend(?:\/|\.|$)/,
+  /^packages\/agentplane\/src\/commands\/shared\/task-backend(?:\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/commands\/task\/(?:export|migrate-doc)(?:\.test|\.unit\.test)?\.ts$/,
+];
+
 const HOOKS_BUCKET_PATTERNS = [
   /^scripts\/run-(?:pre-push|pre-commit|commit-msg)-hook\.mjs$/,
   /^scripts\/run-local-ci\.mjs$/,
@@ -104,6 +112,17 @@ const TASK_TEST_FILES = [
 ];
 
 const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.fast.test.ts"];
+const BACKEND_TEST_FILES = [
+  "packages/agentplane/src/backends/task-backend.test.ts",
+  "packages/agentplane/src/backends/task-backend/redmine/env.test.ts",
+  "packages/agentplane/src/commands/backend.test.ts",
+  "packages/agentplane/src/commands/shared/task-backend.test.ts",
+  "packages/agentplane/src/commands/task/export.unit.test.ts",
+  "packages/agentplane/src/commands/task/migrate-doc.test.ts",
+  "packages/agentplane/src/commands/doctor.fast.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.test.ts",
+];
 const HOOKS_TEST_FILES = [
   "packages/agentplane/src/cli/local-ci-selection.test.ts",
   "packages/agentplane/src/cli/run-cli.core.hooks.test.ts",
@@ -214,6 +233,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: TASK_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 
@@ -225,6 +245,19 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: DOCTOR_TEST_FILES,
+      vitestPool: "threads",
+    };
+  }
+
+  if (everyPathMatches(files, BACKEND_BUCKET_PATTERNS)) {
+    return {
+      kind: "targeted",
+      bucket: "backend",
+      reason: "backend_projection_paths_only",
+      files,
+      lintTargets: files,
+      testFiles: BACKEND_TEST_FILES,
+      vitestPool: "forks",
     };
   }
 
@@ -236,6 +269,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: HOOKS_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 
@@ -247,6 +281,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: WORKFLOW_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 
@@ -258,6 +293,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: CLI_HELP_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 
@@ -269,6 +305,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: CLI_CORE_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 
@@ -280,6 +317,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: CLI_RUNTIME_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 
@@ -291,6 +329,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: RELEASE_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 
@@ -302,6 +341,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: UPGRADE_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 
@@ -313,6 +353,7 @@ export function selectFastCiPlan(changedFiles) {
       files,
       lintTargets: files,
       testFiles: GUARD_TEST_FILES,
+      vitestPool: "threads",
     };
   }
 

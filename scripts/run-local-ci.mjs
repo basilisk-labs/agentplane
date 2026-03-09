@@ -66,20 +66,7 @@ const fullOnlySteps = [
     () => run("bun", ["run", "docs:site:check"]),
   ],
   ["Workflows lint (actionlint)", () => run("bun", ["run", "workflows:lint"])],
-  [
-    "Windows platform-critical tests",
-    () =>
-      run(
-        "bun",
-        [
-          "test",
-          "packages/agentplane/src/commands/shared/pr-meta.test.ts",
-          "packages/agentplane/src/commands/scenario/impl/commands.test.ts",
-          "packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts",
-        ],
-        testEnv,
-      ),
-  ],
+  ["Windows platform-critical tests", () => run("bun", ["run", "test:platform-critical"], testEnv)],
   [
     "Significant file coverage (guard)",
     () =>
@@ -164,7 +151,7 @@ function runTargetedFastPath(plan) {
         "vitest",
         "run",
         ...plan.testFiles,
-        "--pool=threads",
+        `--pool=${plan.vitestPool}`,
         "--testTimeout",
         "60000",
         "--hookTimeout",
