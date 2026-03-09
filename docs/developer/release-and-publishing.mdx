@@ -85,12 +85,12 @@ GitHub workflow `Publish to npm`:
 - `docs/releases/**`
 - uses OIDC trusted publishing
 - sets provenance
-- waits for green `Core CI` and `Docs CI` workflows for the exact target commit SHA
+- validates the exact publish ref with `bun run release:prepublish` inside the workflow itself
 - validates notes and version/tag parity
 - validates workspace parity (`core`, `agentplane`, and `@agentplaneorg/core` dependency)
 - runs release-specific checks (`release:check`, release notes/version validation, origin tag existence)
 - publishes `@agentplaneorg/core` first, then `agentplane`
-- uses detect-and-skip logic for already-published versions to tolerate reruns
+- uses detect-and-skip logic for already-published versions to tolerate reruns and workflow-dispatch recovery
 
 `Pre-publish Checks` workflow remains available as a manual matrix gate (`workflow_dispatch`) for explicit validation runs.
 

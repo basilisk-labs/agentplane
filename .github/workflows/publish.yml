@@ -92,70 +92,8 @@ jobs:
             echo "cli_published=$CLI_PUBLISHED"
           } >> "$GITHUB_OUTPUT"
 
-  ci-gate:
-    needs: detect
-    if: needs.detect.outputs.should_publish == 'true'
-    name: Wait for green CI gates
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    steps:
-      - name: Wait for Core CI and Docs CI
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const sha = "${{ needs.detect.outputs.sha }}";
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const required = ["Core CI", "Docs CI"];
-            const maxAttempts = 90;
-            const sleepMs = 20_000;
-
-            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-            for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-              const { data } = await github.rest.actions.listWorkflowRunsForRepo({
-                owner,
-                repo,
-                head_sha: sha,
-                event: "push",
-                per_page: 100,
-              });
-
-              const statusMap = new Map();
-              for (const name of required) {
-                const run = data.workflow_runs.find((candidate) => candidate.name === name);
-                if (!run) {
-                  statusMap.set(name, "missing");
-                  continue;
-                }
-                if (run.status !== "completed") {
-                  statusMap.set(name, run.status);
-                  continue;
-                }
-                statusMap.set(name, run.conclusion ?? "unknown");
-              }
-
-              const pending = required.filter((name) => {
-                const state = statusMap.get(name);
-                return state === "missing" || state === "queued" || state === "in_progress" || state === "requested" || state === "waiting" || state === "pending";
-              });
-              const failed = required.filter((name) => statusMap.get(name) !== "success" && !pending.includes(name));
-
-              core.info(`CI gate status for ${sha}: ${JSON.stringify(Object.fromEntries(statusMap.entries()))}`);
-
-              if (failed.length > 0) {
-                core.setFailed(`Required workflows failed for ${sha}: ${failed.map((name) => `${name}=${statusMap.get(name)}`).join(", ")}`);
-                return;
-              }
-              if (pending.length === 0) return;
-
-              await sleep(sleepMs);
-            }
-
-            core.setFailed(`Timed out waiting for required workflows for ${sha}.`);
-
   publish:
-    needs: [detect, ci-gate]
+    needs: detect
     if: needs.detect.outputs.should_publish == 'true'
     environment: npm
     runs-on: ubuntu-24.04
@@ -191,6 +129,11 @@ jobs:
         run: node scripts/check-release-notes.mjs --tag "${{ needs.detect.outputs.tag }}"
       - name: Validate release versions
         run: node scripts/check-release-version.mjs --tag "${{ needs.detect.outputs.tag }}"
+      - name: Run exact-ref release prepublish gate
+        # Validate the checked-out publish ref directly. Waiting for external
+        # push workflows by exact SHA deadlocks on workflow_dispatch recovery
+        # when the release tag points to a non-tip commit.
+        run: bun run release:prepublish
       - name: Validate origin tag state
         id: tag_state
         shell: bash
