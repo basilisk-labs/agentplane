@@ -1,7 +1,8 @@
 ---
 id: "202603091625-YR0ZNN"
 title: "Repair docs shell layout and sidebar markers"
-status: "DOING"
+result_summary: "Documentation shell repaired without touching homepage surfaces."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -14,15 +15,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-09T16:30:36.658Z"
+  updated_by: "REVIEWER"
+  note: "Docs shell repaired: sidebar markers hidden, layout top-aligned, side gutters restored, main prose column widened; bun run docs:site:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor all passed."
+commit:
+  hash: "7333252cbab0d969568bdba5a27a896218bb556b"
+  message: "🩹 YR0ZNN docs: repair docs shell layout"
 comments:
   -
     author: "CODER"
     body: "Start: repair the docs-shell grid, remove sidebar section icons, widen the main docs column, and restore sane side gutters without touching the preview homepage."
+  -
+    author: "CODER"
+    body: "Verified: docs shell markers removed, layout top-aligned, gutters restored, main prose width widened."
 events:
   -
     type: "status"
@@ -31,8 +37,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: repair the docs-shell grid, remove sidebar section icons, widen the main docs column, and restore sane side gutters without touching the preview homepage."
+  -
+    type: "verify"
+    at: "2026-03-09T16:30:36.658Z"
+    author: "REVIEWER"
+    state: "ok"
+    note: "Docs shell repaired: sidebar markers hidden, layout top-aligned, side gutters restored, main prose column widened; bun run docs:site:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor all passed."
+  -
+    type: "status"
+    at: "2026-03-09T16:30:57.947Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: docs shell markers removed, layout top-aligned, gutters restored, main prose width widened."
 doc_version: 3
-doc_updated_at: "2026-03-09T16:29:52.975Z"
+doc_updated_at: "2026-03-09T16:30:57.947Z"
 doc_updated_by: "CODER"
 description: "Fix the docs shell after the last spacing change: widen the main docs column, restore healthy side gutters, top-align the content area, and remove sidebar section icons without touching the preview homepage."
 id_source: "generated"
@@ -65,6 +84,14 @@ Fix the docs shell after the last spacing change: widen the main docs column, re
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-09T16:30:36.658Z — VERIFY — ok
+
+By: REVIEWER
+
+Note: Docs shell repaired: sidebar markers hidden, layout top-aligned, side gutters restored, main prose column widened; bun run docs:site:check, node .agentplane/policy/check-routing.mjs, and agentplane doctor all passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-09T16:29:52.975Z, excerpt_hash=sha256:aa87323828d897dd0bd9b29007289d41a6bb7305f227075be0ee7d3f95d75d03
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
