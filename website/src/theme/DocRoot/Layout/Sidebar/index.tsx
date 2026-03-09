@@ -8,10 +8,6 @@ import type { Props } from "@theme/DocRoot/Layout/Sidebar";
 
 import styles from "./styles.module.css";
 
-function ResetOnSidebarChange({ children }: { children: ReactNode }) {
-  return <React.Fragment>{children}</React.Fragment>;
-}
-
 export default function DocRootLayoutSidebar({
   sidebar,
   hiddenSidebarContainer,
@@ -48,24 +44,22 @@ export default function DocRootLayoutSidebar({
         }
       }}
     >
-      <ResetOnSidebarChange>
-        <div
-          className={clsx(
-            styles.sidebarViewport,
-            "ap-doc-sidebar-viewport",
-            hiddenSidebar && styles.sidebarViewportHidden,
-          )}
-          key={pathname}
-        >
-          <DocSidebar
-            sidebar={sidebar}
-            path={pathname}
-            onCollapse={toggleSidebar}
-            isHidden={hiddenSidebar}
-          />
-          {hiddenSidebar ? <ExpandButton toggleSidebar={toggleSidebar} /> : null}
-        </div>
-      </ResetOnSidebarChange>
+      <div
+        className={clsx(
+          styles.sidebarViewport,
+          "ap-doc-sidebar-viewport",
+          hiddenSidebar && styles.sidebarViewportHidden,
+        )}
+        key={pathname}
+      >
+        <DocSidebar
+          sidebar={sidebar}
+          path={pathname}
+          onCollapse={toggleSidebar}
+          isHidden={hiddenSidebar}
+        />
+        {hiddenSidebar ? <ExpandButton toggleSidebar={toggleSidebar} /> : null}
+      </div>
     </aside>
   );
 }
