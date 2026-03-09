@@ -58,16 +58,16 @@ Install the CLI:
 npm install -g agentplane
 ```
 
-Initialize a repository:
+Initialize your repository and print the built-in startup guide:
 
 ```bash
 agentplane init
 agentplane quickstart
 ```
 
-`agentplane init` creates the repo-local workflow surface: a policy gateway file (`AGENTS.md` or `CLAUDE.md`), `.agentplane/config.json`, built-in agent profiles, task storage, and workflow state files such as `.agentplane/WORKFLOW.md`.
+`agentplane init` creates the repo-local workflow surface: a policy gateway file (`AGENTS.md` or `CLAUDE.md`), `.agentplane/config.json`, built-in agent profiles, task storage, and workflow state such as `.agentplane/WORKFLOW.md`.
 
-The daily workflow starts with a task, not with a free-form prompt:
+The default path is `direct`, and the daily loop starts with a task instead of a free-form prompt:
 
 ```bash
 agentplane task new --title "First task" --description "Describe the change" --priority med --owner DOCS --tag docs
@@ -78,7 +78,13 @@ agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
 agentplane finish <task-id> --author DOCS --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
 
-For the exact startup path and command semantics, use:
+If you need structured worktrees and PR-style integration, switch to `branch_pr` before you begin active work:
+
+```bash
+agentplane config set workflow_mode branch_pr
+```
+
+For exact flags and recovery paths, use:
 
 - [Overview](docs/user/overview.mdx)
 - [Setup](docs/user/setup.mdx)
@@ -93,12 +99,14 @@ AgentPlane supports two integration styles.
 - single checkout
 - short loops in the current working tree
 - good for solo work and fast iteration
+- default mode after `agentplane init`
 
 ### `branch_pr`
 
 - structured per-task branch or worktree flow
 - explicit PR artifacts under `.agentplane/tasks/<task-id>/pr/`
 - better fit when integration must stay separate from implementation
+- use it when the repository needs stricter handoff and integration discipline
 
 The difference is workflow discipline, not product tiering.
 
