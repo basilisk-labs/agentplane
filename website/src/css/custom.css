@@ -39,7 +39,8 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.04);
   --content-width: 96ch;
   --site-frame-width: 1240px;
-  --docs-frame-width: 1280px;
+  --docs-frame-width: 1360px;
+  --doc-sidebar-width: 336px;
   --site-gutter: 0.75rem;
   --glass-fill-strong: rgb(255 255 255 / 0.44);
   --glass-fill-soft: rgb(255 255 255 / 0.1);
@@ -48,9 +49,9 @@
   --chrome-radius: 14px;
   --chrome-radius-inner: 13px;
   --chrome-radius-control: 12px;
-  --docs-shell-gutter: clamp(1.4rem, 2vw, 2rem);
-  --docs-sidebar-gutter: clamp(1.2rem, 2.2vw, 2.1rem);
-  --docs-shell-outer-gutter: clamp(1.35rem, 3vw, 2.6rem);
+  --docs-shell-gutter: clamp(1.6rem, 2.6vw, 2.5rem);
+  --docs-sidebar-gutter: clamp(1.65rem, 2.8vw, 2.9rem);
+  --docs-shell-outer-gutter: clamp(1.75rem, 3.6vw, 3.4rem);
   --docs-navbar-clearance: calc(var(--ifm-navbar-height) + 1.55rem);
 }
 
@@ -272,7 +273,7 @@ html.nav-scrolled .navbar__inner {
   max-width: var(--docs-frame-width);
   padding-left: var(--docs-shell-outer-gutter);
   padding-right: var(--docs-shell-outer-gutter);
-  width: min(100%, calc(var(--docs-frame-width) + (var(--docs-shell-outer-gutter) * 2)));
+  width: 100%;
 }
 
 .ap-doc-layout-wrap .row {
@@ -282,15 +283,18 @@ html.nav-scrolled .navbar__inner {
 }
 
 .ap-doc-layout-wrap .row > .col:first-child {
-  padding-left: 0;
-  padding-right: 0;
+  flex: 1 1 auto;
+  max-width: none;
+  padding-left: var(--docs-shell-gutter);
+  padding-right: clamp(1.8rem, 4.6vw, 4rem);
+  width: auto;
 }
 
 .theme-doc-markdown.markdown {
   box-sizing: border-box;
   margin-left: 0;
   margin-top: 0;
-  max-width: min(100%, var(--content-width));
+  max-width: none;
   padding-left: 0;
   padding-right: 0;
   padding-top: 0.2rem;
@@ -364,31 +368,44 @@ html.nav-scrolled .navbar__inner {
 }
 
 .theme-doc-sidebar-container {
+  align-self: flex-start;
   border-right: none;
-  margin-top: calc(-1 * var(--docs-navbar-clearance));
+  margin-top: 0;
   padding-left: var(--docs-sidebar-gutter);
-  padding-right: var(--docs-sidebar-gutter);
+  padding-right: var(--docs-shell-gutter);
   position: relative;
 }
 
 .theme-doc-sidebar-container::after {
   background: rgb(var(--border));
-  bottom: 1rem;
+  bottom: 0;
   content: "";
   position: absolute;
   right: 0;
-  top: var(--docs-navbar-clearance);
+  top: 0;
   width: 1px;
 }
 
 .theme-doc-sidebar-container > div {
   align-self: flex-start;
-  max-height: calc(100vh - var(--docs-navbar-clearance) - 0.8rem);
+  max-height: calc(100vh - var(--docs-navbar-clearance));
   top: var(--docs-navbar-clearance);
 }
 
+.theme-doc-sidebar-container .sidebar {
+  height: auto;
+  justify-content: flex-start;
+  padding-top: 0;
+}
+
 .theme-doc-sidebar-container .theme-doc-sidebar-menu {
-  padding-top: 0.35rem;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.theme-doc-sidebar-container .menu__list {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .menu__list-item-collapsible > .menu__link {
@@ -405,21 +422,18 @@ nav[aria-label="Breadcrumbs"] .breadcrumbs__item svg {
 }
 
 .theme-doc-sidebar-container .menu__link::before,
+.theme-doc-sidebar-container .menu__list-item-collapsible::before,
 .theme-doc-sidebar-container .menu__list-item-collapsible > .menu__link::before,
 .theme-doc-sidebar-container .menu__list-item-collapsible > .menu__link > svg,
-.theme-doc-sidebar-container .menu__list-item > .menu__link > svg {
+.theme-doc-sidebar-container .menu__list-item > .menu__link > svg,
+.theme-doc-sidebar-container .menu__caret,
+.theme-doc-sidebar-container .menu__link--sublist-caret::after {
   content: none !important;
   display: none !important;
 }
 
 .theme-doc-sidebar-container .menu__list-item-collapsible {
   align-items: flex-start;
-}
-
-.menu__caret::before,
-.menu__link--sublist-caret::after {
-  transform: scale(0.52);
-  transform-origin: center;
 }
 
 .menu__list .menu__link {
