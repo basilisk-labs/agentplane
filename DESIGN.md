@@ -1,432 +1,499 @@
-# AgentPlane Website — Design Language & Constraints (v1)
+# AgentPlane Website — Design System & Experience Principles (v2)
 
-This document defines the design system for the AgentPlane presentation website: a typography-first, engineering-grade, minimal interface. It is intended as a **contract** for implementation decisions, to prevent stylistic drift.
+This document defines the presentation design system for AgentPlane.
+Its purpose is not aesthetic exploration. Its purpose is category legibility, trust, and proof.
 
----
+AgentPlane is not a generic AI product and not a hosted autonomy narrative.
+The website must make one thing clear within the first screen:
 
-## 1. Core Intent
+**AgentPlane is a Git-native control plane for auditable agent work.**
 
-### 1.1 Product story the design must support
+Human version:
 
-- **Agent-first**: the interface foregrounds agent workflows and enforcement mechanisms (policy, gates, auditability).
-- **Proof over promise**: claims are backed by artifacts (CLI transcripts, policy excerpts, workflow lines), not decorative visuals.
-- **Boring on purpose**: calm, precise, “tooling” energy—no hype.
-
-### 1.2 Visual metaphor
-
-A clean **engineering sheet**:
-
-- editorial typography,
-- subtle grid paper when warranted,
-- margin notes,
-- calibration marks / corner ticks,
-- small “watchdog” anchors in **Geist Pixel** as minimal visual cues.
+**Put coding agents on a governed Git workflow.**
 
 ---
 
-## 2. Non-goals (Hard No)
+## 1. Strategic Role of Design
 
-The following are explicitly disallowed unless this document is revised:
+### 1.1 What the design must accomplish
 
-- SaaS-style **card grids** as the primary layout language.
-- Heavy backgrounds, gradients, generic glassmorphism, glow, 3D, illustrations-for-vibes.
-- Large rounded shapes as a motif (`rounded-none` by default outside narrow shell exceptions).
-- Shadows as a structural tool (`shadow-none` by default).
-- “Playful” motion: bouncing, parallax, scroll-jacking, animated backgrounds.
-- Multi-accent color palettes, neon, or “AI futurism”.
+The website must do five things, in order:
 
----
+1. Make the product category legible in one screen.
+2. Show where the product lives: inside real Git repositories.
+3. Show why it is trusted: approvals, task state, verification, closure.
+4. Show what appears in the repo: `AGENTS.md` / `CLAUDE.md`, `.agentplane/`, task artifacts.
+5. Route the visitor to the next concrete action: docs, workflow, install, demo.
 
-## 3. Global Constraints
+### 1.2 What the design is not allowed to imply
 
-### 3.1 Layout constraints
+The design must not make AgentPlane look like:
 
-- **Text column width:** target `66–78ch` for main prose.
-- **Structure comes from rhythm:** spacing + hairline dividers, not boxes.
-- **Sections:** large vertical spacing; avoid nested containers.
+- a generic AI coding assistant,
+- an autonomous company dashboard,
+- a consumer chat product,
+- a vague workflow framework,
+- a decorative “futurist AI” brand.
 
-### 3.2 Visual constraints
+### 1.3 Visual metaphor
 
-- Default: **no radius or minimal radius only**, **no shadows**.
-- Borders are **hairline** and low contrast.
-- Visual ornaments must be:
-  - low-frequency (not repeated everywhere),
-  - low-contrast (never competing with content),
-  - functional (anchoring, navigation, orientation).
+The core metaphor is:
 
-### 3.3 Performance constraints
+**editorial control surface over an engineering sheet**
 
-- Marketing pages should be **static/SSG** by default.
-- Minimize client-side JS; prefer CSS transitions for interactions.
-- Avoid heavy client libraries for visuals (Lottie, large icon packs, client syntax highlighting).
+That means:
 
-### 3.4 Accessibility constraints
+- editorial typography for hierarchy,
+- engineering artifacts for proof,
+- restrained depth for modernity,
+- visible control boundaries instead of vague “AI magic”.
 
-- All motion respects `prefers-reduced-motion`.
-- Focus states are explicit and high-clarity (no blur/glow).
-- Grid overlays must not reduce readability (if you _notice_ the grid while reading, it is too strong).
+The site should feel like a precise operator surface with modern finish, not a flat spec sheet and not a glossy SaaS fantasy.
 
 ---
 
-## 4. Typography
+## 2. Core Design Principles
 
-### 4.1 Font stack
+### 2.1 Legibility before flourish
+
+If a visitor cannot tell what AgentPlane is within one screen, the page fails.
+
+### 2.2 Proof over vibe
+
+Every major claim should be backed by one concrete surface:
+
+- command,
+- file path,
+- workflow line,
+- task artifact,
+- repo structure,
+- real screenshot,
+- policy excerpt.
+
+### 2.3 Product before doctrine
+
+Top-level pages should explain the product before introducing internal philosophy such as harness engineering, role taxonomy, or workflow internals.
+
+### 2.4 Modern, but restrained
+
+The website should look current for 2026, but the modernity should come from:
+
+- typography,
+- spacing,
+- composition,
+- controlled translucency,
+- restrained gradients,
+- subtle depth,
+- clean motion.
+
+Not from spectacle.
+
+### 2.5 One strong idea per screen
+
+Each viewport should communicate one dominant point. Avoid stacking too many competing elements.
+
+---
+
+## 3. Allowed vs Disallowed Visual Language
+
+### 3.1 Allowed
+
+The following are explicitly allowed:
+
+- oversized editorial typography,
+- bento-style layouts **when each tile maps to a real product surface or proof artifact**,
+- restrained glass chrome for shell/navigation and selected callout surfaces,
+- soft aurora or directional gradient fields with low saturation,
+- small to medium radius where it improves separation,
+- very subtle shadows for depth separation,
+- layered proof stacks (terminal + repo surface + workflow chip),
+- large whitespace and asymmetrical composition,
+- quiet texture or noise at very low opacity,
+- product visuals that resemble actual repository or workflow surfaces.
+
+### 3.2 Disallowed
+
+The following remain disallowed:
+
+- rainbow “AI futurism”, neon, cyberpunk styling,
+- decorative glassmorphism everywhere,
+- generic feature-card farms with no proof,
+- fake dashboards that do not map to shipped behavior,
+- playful motion, bounce, parallax, scroll theater,
+- oversized illustration systems used as filler,
+- multi-accent palettes,
+- visual density that competes with the copy.
+
+### 3.3 Rule of evidence for cards and surfaces
+
+A card is allowed only if it carries one of these:
+
+- artifact,
+- workflow step,
+- repo surface,
+- user mode,
+- proof point,
+- routing CTA.
+
+A card that only repeats marketing language is design debt.
+
+---
+
+## 4. Information Architecture by Page Type
+
+### 4.1 Homepage
+
+Required sequence:
+
+1. Hero: category + value + trust mechanism
+2. Problem framing: what breaks without a control plane
+3. Repository surface: what AgentPlane adds to a repo
+4. Workflow path: plan -> start -> execute -> verify -> finish
+5. Modes: `direct` and `branch_pr`
+6. Control model: approvals, scope, verification, closure
+7. Documentation rail
+8. Release / journal / roadmap rail
+9. Closing CTA
+
+### 4.2 Docs index
+
+The docs landing page should optimize for orientation, not persuasion:
+
+- start here,
+- first task flow,
+- workflow modes,
+- recovery / troubleshooting,
+- command reference.
+
+### 4.3 Blog / journal pages
+
+Blog pages can carry more visual texture, but must still prioritize readability and evidence.
+
+---
+
+## 5. Layout System
+
+### 5.1 Widths
+
+- Main prose: target `66–76ch`
+- Hero content: up to `12–14` grid columns, usually split `5/7` or `6/6`
+- Dense proof sections may expand wider, but prose must remain readable
+
+### 5.2 Rhythm
+
+- Major section spacing: `96–144px` desktop, `72–96px` tablet, `56–72px` mobile
+- Use spacing and contrast first; borders and shadows second
+- Avoid deeply nested containers
+
+### 5.3 Structural patterns
+
+Approved section patterns:
+
+- editorial left / proof right,
+- proof left / explanatory right,
+- 2x2 or 3-up bento for product surfaces,
+- horizontal timeline or control loop,
+- compact comparison rows.
+
+Avoid long runs of identical section geometry.
+
+---
+
+## 6. Typography
+
+### 6.1 Tone
+
+Typography should carry the authority of the brand.
+It must feel exact, current, and controlled.
+
+### 6.2 Font stack
 
 - Primary: **Geist Sans**
 - Monospace artifacts: **Geist Mono**
-- Micro-anchors: **Geist Pixel** (very limited usage; see §8)
+- Micro tags / anchors: **Geist Pixel** (strictly limited)
 
-### 4.2 Type scale (targets, not absolutes)
+### 6.3 Type scale
 
-Use clamp-based sizes when possible.
+Use clamp-based sizing.
 
-- **H1:** 56–72px, weight 700, `tracking ~ -0.03em`, controlled leading (`~1.04–1.1`)
-- **H2:** 36–44px, weight 650–700, leading (`~1.08–1.14`)
-- **H3:** 22–26px, weight 650, leading (`~1.12–1.18`)
-- **Body:** 17–18px, weight 400–450, `leading 1.45–1.6`
-- **Meta:** 13–14px, weight 450–500
-- **Mono artifacts:** 13–15px, weight 450–500
+- H1: `60–84px`, weight `700`, tracking `-0.04em` to `-0.02em`
+- H2: `40–52px`, weight `650–700`
+- H3: `24–30px`, weight `650`
+- Body: `17–19px`, weight `400–450`, line-height `1.5–1.65`
+- Meta: `13–14px`
+- Mono: `13–15px`
 
-### 4.3 Typographic rules
+### 6.4 Copy fit rules
 
-- Headings should be short (1–2 lines). Prefer **precision** over cleverness.
-- Avoid italics as a primary emphasis tool; prefer weight and spacing.
-- Links: subtle underline behavior; never “buttonize” everything.
-- Mono text is reserved for artifacts: commands, file paths, snippets, gates, policies.
-
----
-
-## 5. Color Tokens
-
-### 5.1 Philosophy
-
-- Neutral, print-like contrast.
-- **One accent** maximum, used sparingly.
-
-### 5.2 Recommended tokens (CSS variables)
-
-Define as RGB triplets to allow alpha composition.
-
-- `--bg`: `255 255 255`
-- `--fg`: `10 10 10` (near-black, not pure #000)
-- `--muted`: `90 90 90`
-- `--faint`: `120 120 120`
-- `--border`: `230 230 230`
-- `--grid`: `0 0 0` (used only with very low alpha)
-- `--accent`: choose one:
-  - Neutral accent: `10 10 10` (accent via underline/weight)
-  - Teal accent: `13 148 136` (quiet teal)
-
-### 5.3 Accent usage rules
-
-Accent is allowed only for:
-
-- link hover/active,
-- current nav item,
-- the `/` in the wordmark,
-- tiny state markers in artifacts (e.g., `MUST NOT`).
-
-No accent backgrounds. No full-bleed accent sections.
+- Hero headings: 1–3 lines max
+- Supporting copy: 2–4 short paragraphs or one compact list
+- Avoid long abstract intros
+- Prefer nouns like `repo`, `task`, `verification`, `approval`, `closure`, `artifact`, `workflow`
 
 ---
 
-## 6. Spacing & Rhythm
+## 7. Color, Depth, and Materiality
 
-### 6.1 Grid
+### 7.1 Philosophy
 
-- Base unit: **4px**.
-- Major section spacing: **64–96px** (desktop), **48–72px** (mobile).
+The palette should feel neutral, technical, and high-trust.
+Depth is allowed, but it must remain restrained.
 
-### 6.2 Rhythm rules
+### 7.2 Base tokens
 
-- Prefer vertical rhythm over boxes.
-- Use hairline dividers to separate semantic blocks.
+- `--bg`: warm or cool white
+- `--fg`: near-black
+- `--muted`: neutral gray
+- `--border`: low-contrast gray
+- `--surface`: translucent near-white or very light neutral
+- `--accent`: one cool technical accent only
 
----
+Recommended accent direction:
 
-## 7. Engineering Sheet Elements (Minimal “Agent-first” Ornament)
+- quiet teal,
+- cool cyan,
+- deep blue-teal.
 
-These are the only approved “decorative” elements, and must remain subtle.
+No purple/pink neon systems.
 
-### 7.1 Grid paper overlay
+### 7.3 Gradient rules
 
-Purpose: provide an engineering feel and orientation.
+Gradients are allowed only as atmosphere or separation.
+They must be:
 
-Rules:
+- low saturation,
+- low frequency,
+- not text-dependent,
+- never the main proof surface.
 
-- Use only on hero or one demonstrative section—not globally.
-- Opacity target: **4–8%** depending on screen and content density.
-- Mobile: weaken or disable.
+Good uses:
 
-Implementation hint:
+- hero backdrop,
+- CTA field,
+- selected section halo.
 
-- 64px major grid + optional 16px minor grid with lower alpha.
+Bad uses:
 
-### 7.2 Corner ticks / calibration marks
+- gradient text everywhere,
+- gradient-heavy cards,
+- glowing feature matrix.
 
-Purpose: anchor the “sheet” metaphor.
+### 7.4 Shadow rules
 
-Rules:
+Shadows are allowed only for depth separation between layers.
+They must remain soft and short.
 
-- Only on hero and/or a single key section.
-- 1px lines, short segments, low contrast.
+Use shadows for:
 
-### 7.3 Margin notes (engineering annotations)
+- floating shell,
+- hero proof stack,
+- elevated CTA or reference surfaces.
 
-A margin note is a compact mono label tied to a nearby paragraph/section.
-
-Rules:
-
-- Max 1–2 per viewport.
-- 120–160 characters max.
-- Use tags like: `NOTE`, `RISK`, `INVARIANT`, `ASSUMPTION`.
-
-Visual:
-
-- Small mono, faint text.
-- One thin vertical line—no box.
-
-### 7.4 Liquid-glass chrome (exception)
-
-Purpose: allow a single layer of navigational chrome to feel slightly suspended above the sheet
-without turning the entire website into a glassmorphism system.
-
-Rules:
-
-- Allowed only for compact shell elements such as the top navbar.
-- Small radius is allowed for the shell itself, but keep it restrained and clearly secondary to the typography.
-- Fill must stay near-white and translucent, never colorful.
-- Blur is allowed only as a subtle backdrop treatment, not as a glow effect.
-- No soft drop shadows; separation should come from border, translucency, and contrast.
-- Never stack multiple glass layers in one viewport.
+Do not use shadows as the main structural language.
 
 ---
 
-## 8. Geist Pixel Usage (Micro Anchors)
+## 8. Component System
 
-### 8.1 Intent
+### 8.1 Hero
 
-Geist Pixel is used as a **watchdog-style anchor**: tiny, deliberate, technical. It must never become a “style” that dominates the site.
+The hero must include:
 
-### 8.2 Allowed uses (only)
+- category line or eyebrow,
+- primary headline,
+- supporting value statement,
+- 1–2 CTAs,
+- compact proof chips,
+- one proof-oriented visual surface.
 
-- Tiny **section anchor labels** (e.g., `A01`, `WF-02`, `POL-01`) near dividers.
-- Small “stamp” labels on artifacts: `PROOF`, `TRACE`, `GATE`, `EXPORT`.
-- Minimal corner tags in the hero (e.g., build/commit placeholder).
-- Optional micro-status in workflow lines (e.g., `APPROVAL REQUIRED`).
+The visual surface should show product reality, not abstraction for its own sake.
 
-### 8.3 Disallowed uses
+### 8.2 Proof chips
 
-- Body text, headings, navigation labels, CTAs.
-- Large blocks or repeated patterns.
-- Anything that reduces readability.
+Small inline chips are allowed for concise trust signals:
 
-### 8.4 Visual constraints
+- `Repo-native`
+- `Explicit approvals`
+- `Verification record`
+- `Direct + PR modes`
+- `Local CLI`
 
-- Size: **10–12px** (rarely 13px).
-- Tracking: slightly positive (`0.06em` to `0.12em`).
-- Color: `--faint` or `--muted`; accent only in exceptional cases.
-- Placement: near edges or as a margin cue; never central.
+Do not overload with more than 4–5 chips.
 
----
+### 8.3 Bento surfaces
 
-## 9. Core Components (Primitive-first)
+Bento blocks are approved when they clarify distinct product surfaces such as:
 
-### 9.1 Divider (hairline)
+- repo artifacts,
+- workflow stages,
+- modes,
+- operator controls,
+- proof outputs.
 
-- 1px border using `--border`.
-- Used to structure content instead of cards.
+Each tile needs a clear title, short explanation, and either a concrete artifact or a precise concept.
 
-### 9.2 Link
+### 8.4 Artifact blocks
 
-- Default: no pill, no icon noise.
-- Hover: underline appears (or thickens slightly).
-- Active: subtle contrast increase; optional accent underline.
+Artifact blocks remain core to trust.
+Approved artifact types:
 
-### 9.3 Button (rare)
+- terminal transcript,
+- repo tree,
+- workflow line,
+- policy excerpt,
+- task record,
+- verification summary,
+- diff snippet.
 
-Buttons should feel like “links with intent”.
+Artifacts should be readable first, stylized second.
 
-Rules:
+### 8.5 Comparison rows
 
-- Rectangular, border 1px.
-- No radius by default; a very small radius is acceptable only when a shell/chrome element needs separation.
-- No shadows.
-- Primary CTA may invert foreground/background; secondary stays outline.
+Comparison components are encouraged for category legibility.
+Examples:
 
-### 9.4 Artifact blocks (the “proof” layer)
+- without AgentPlane / with AgentPlane
+- raw agent session / governed task flow
+- direct / branch_pr
 
-Artifacts must be minimal and readable:
+### 8.6 CTA surfaces
 
-- **Terminal Transcript**
-  - mono, plain, minimal emphasis (no rainbow highlighting)
-  - copy action allowed (microinteraction)
-- **Policy Excerpt**
-  - emphasize `MUST` / `MUST NOT` via weight + minimal marker
-- **Workflow Line**
-  - textual pipeline `Preflight → Plan → Approve → Execute → Verify → Export`
-- **Diff Snippet** (optional)
-  - simple `+/-` lines; no GitHub mimicry
-
-Artifacts should be limited to **one per section**.
-
----
-
-## 10. Editorial Illustrations (Roadmap/Blog)
-
-### 10.1 Style goal
-
-Editorial illustrations for roadmap and strategy posts use a **Kandinsky-inspired abstraction** adapted to AgentPlane's engineering language.
-
-### 10.2 Hard style constraints
-
-- Monochrome only: black/white + opacity (no accent colors).
-- Geometric composition first: circles, lines, triangles, rectangles.
-- Add AgentPlane-native motifs inside the abstraction:
-  - workflow arrows (`PLAN -> ... -> EXPORT`),
-  - CLI command fragments in monospace,
-  - task/status markers and grid anchors.
-- Keep the illustration structural, not decorative wallpaper.
-
-### 10.3 Composition rules
-
-- Dense center of gravity with asymmetrical balance.
-- At least one strong focal node (target/rings, black dot, or bold block).
-- Include an engineering-sheet frame or calibration marks.
-- Background remains white; texture comes from sparse grid lines and overlap.
-
-### 10.4 Rendering and delivery rules
-
-- Default deliverable: SVG generated from code for deterministic output.
-- Target canvas: `1600x900` for blog hero usage.
-- Preserve crisp strokes and avoid raster effects.
-- Keep assets in `website/static/img/blog/`.
-
-### 10.5 Reproducibility
-
-- Prefer script-generated illustrations with a fixed seed.
-- A generated illustration must be reproducible by re-running its script.
-- Document generation entrypoint in blog/dev docs when introducing a new style.
+CTA surfaces may use slightly richer visual treatment than documentation sections, but copy must remain concrete.
 
 ---
 
-## 10. Motion & Microinteractions
+## 9. Motion and Microinteractions
 
-### 10.1 Motion principles
+### 9.1 Principle
 
-- Motion must provide **feedback** or **orientation**.
-- Avoid attention-seeking animation.
-- Respect `prefers-reduced-motion`.
+Motion must provide feedback, orientation, or hierarchy.
+Never entertainment.
 
-### 10.2 Approved microinteractions
+### 9.2 Approved motion
 
-- Link underline transition (opacity/width).
-- Hairline divider highlight on hover (very subtle).
-- Copy button feedback on artifacts (“Copied”).
-- Nav active indicator transitions.
-- The wordmark slash (`/`) animation (see below).
+- fade and rise transitions,
+- small translate transitions,
+- underline expansion,
+- active nav interpolation,
+- artifact copy feedback,
+- subtle wordmark micro-motion.
 
-### 10.3 Slash animation (`agent/plane`)
+### 9.3 Motion limits
 
-Intent: a quiet sign of “separation / operator / cursor”, not a mascot.
+- duration generally `120–280ms`
+- slower hero entry only when it does not delay comprehension
+- all motion must respect `prefers-reduced-motion`
 
-Default recommended behavior: **blink**
+### 9.4 Disallowed motion
 
-- Opacity: `1.0 ↔ 0.35`
-- Period: ~1.2–1.6s
-- On hover: stabilize at opacity 1.0
-
-Alternative (slightly more visible): **micro-nudge**
-
-- Translate X by 1px back and forth every ~2.4–3.2s
-
-Hard rules:
-
-- No rotation, no scaling.
-- No multi-color cycling.
+- bounce,
+- elastic easing,
+- parallax,
+- background animation that competes with reading,
+- auto-playing visual loops with no functional role.
 
 ---
 
-## 11. Content Style Rules (So the design holds)
+## 10. Imagery and Proof Strategy
 
-### 11.1 Claim structure
+### 10.1 Visual proof hierarchy
 
-Each section should follow:
+Use visuals in this order of preference:
 
-1. One-line claim (what).
-2. 2–4 lines rationale (why).
-3. One artifact (proof).
-4. Optional margin note (risk/invariant).
+1. real repository artifacts,
+2. real CLI output,
+3. stylized but truthful workflow diagrams,
+4. abstract editorial textures.
 
-### 11.2 Language
+### 10.2 Product screenshots
 
-- Short sentences.
-- Technical precision.
-- No vague “AI will change everything” statements.
-- Prefer verbs: enforce, gate, trace, export, reproduce.
+Screenshots are preferred when they help the user understand:
 
----
+- what appears in the repo,
+- how a task progresses,
+- how modes differ,
+- where verification and closure live.
 
-## 12. Implementation Notes (Tailwind + Next.js)
+Screenshots should be cropped, intentional, and never tiny.
 
-### 12.1 Tailwind defaults
+### 10.3 Illustration rule
 
-- `rounded-none`, `shadow-none`.
-- Prefer borders and spacing to create structure.
-- Custom utilities recommended:
-  - `grid-paper` background
-  - `hairline-divider`
-  - `margin-note`
-  - `pixel-tag`
-  - `artifact-block`
-
-### 12.2 Rendering strategy
-
-- Static pages by default (SSG/export).
-- Avoid `use client` unless strictly necessary.
-- Any interactive component must justify its client JS cost.
-
-### 12.3 Dark mode policy
-
-- Light-first.
-- Dark mode only via `prefers-color-scheme` (no UI toggle unless required).
-- Grid overlays must be recalibrated in dark mode to avoid noise.
+Illustration is allowed only when it clarifies a product concept or supports a journal/roadmap piece.
+Illustration may not replace proof on top-level acquisition pages.
 
 ---
 
-## 13. QA Checklist (Definition of Done)
+## 11. Content Fit Rules for Design
 
-Typography & layout
+Design and editorial must work together.
+Every major section should ideally follow this shape:
 
-- [ ] Main text stays within 66–78ch.
-- [ ] Headings are short and readable.
-- [ ] No card-grid dominates the layout.
+1. one-line claim,
+2. short rationale,
+3. one proof surface,
+4. one route to the next action.
 
-Visual discipline
-
-- [ ] No shadows and no broad rounding motif; any radius remains minimal and localized.
-- [ ] Only one accent color in use.
-- [ ] Grid paper is used sparingly and remains subtle.
-
-Artifacts
-
-- [ ] At least one “proof artifact” exists for each major claim.
-- [ ] Artifacts are minimal, mono-first, and readable.
-
-Motion & a11y
-
-- [ ] `prefers-reduced-motion` disables non-essential animation.
-- [ ] Focus outlines are clear, not decorative.
-- [ ] Hover states are informative, not playful.
-
-Performance
-
-- [ ] Minimal client JS.
-- [ ] No heavy visual libraries.
+If a section has no proof and no next action, question why it exists.
 
 ---
 
-## 14. Versioning
+## 12. Accessibility and Performance
 
-- v1: initial contract (typography-first engineering sheet + Geist Pixel micro anchors).
-- Any addition of new motifs must update this document first.
+### 12.1 Accessibility
+
+- Strong contrast on all primary copy
+- Visible focus states
+- No essential meaning carried by color alone
+- Motion reduction respected everywhere
+- Decorative texture must remain non-blocking
+
+### 12.2 Performance
+
+- Static/SSG by default
+- Minimal client JS
+- No heavy visual libraries without justification
+- Visual richness should come primarily from CSS and composition
+
+---
+
+## 13. QA Checklist
+
+A page is not done until all are true:
+
+### Category legibility
+
+- [ ] The first screen clearly says what AgentPlane is.
+- [ ] The page makes AgentPlane look Git-native, governed, and auditable.
+- [ ] The page does not imply a hosted AI assistant or company OS.
+
+### Visual discipline
+
+- [ ] Modern depth exists, but does not overpower the content.
+- [ ] Bento, gradient, glass, and shadow are all restrained and purposeful.
+- [ ] No section uses decorative cards with empty marketing copy.
+
+### Proof
+
+- [ ] Each major claim has at least one proof surface.
+- [ ] Artifact blocks are readable and accurate.
+- [ ] Repo, workflow, or verification surfaces appear early.
+
+### Conversion and routing
+
+- [ ] The page tells the visitor what to do next.
+- [ ] The primary CTA is obvious.
+- [ ] Docs and workflow links are easy to find.
+
+### Technical quality
+
+- [ ] Works without visual gimmicks.
+- [ ] Respects reduced motion.
+- [ ] Keeps JS weight low.
+
+---
+
+## 14. Versioning Rule
+
+This file is a contract.
+Any substantial addition of a new motif, motion system, or visual language must update this document first.

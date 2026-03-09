@@ -7,12 +7,22 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 const scanRoot = path.join(repoRoot, "website", "src");
 
-const forbiddenPatterns = [
+const disallowedKeywordPatterns = [
   {
-    name: "Rounded utility classes",
-    regex: /\brounded-(?!none)\S*/gi,
+    name: "Neon/cyberpunk keyword",
+    regex: /\b(neon|cyberpunk)\b/gi,
+  },
+  {
+    name: "Parallax usage",
+    regex: /\bparallax\b/gi,
   },
 ];
+
+function isExpressiveSurface(file) {
+  return (
+    file === "website/src/css/custom.css" || /^website\/src\/pages\/.+\.module\.css$/.test(file)
+  );
+}
 
 async function walk(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -32,7 +42,7 @@ async function walk(dir) {
 
 function collectViolations(content, file) {
   const violations = [];
-  for (const rule of forbiddenPatterns) {
+  for (const rule of disallowedKeywordPatterns) {
     for (const match of content.matchAll(rule.regex)) {
       violations.push({
         rule: rule.name,
@@ -44,16 +54,14 @@ function collectViolations(content, file) {
 
   for (const match of content.matchAll(/border-radius\s*:\s*([^;]+);/gi)) {
     const value = match[1].trim();
-    const allowMinimalChromeRadius =
-      file === "website/src/css/custom.css" && /^var\(--chrome-radius(?:-[a-z]+)?\)$/.test(value);
     const allowed =
+      isExpressiveSurface(file) ||
       value === "0" ||
       value === "0px" ||
-      value === "var(--ifm-global-radius)" ||
-      allowMinimalChromeRadius;
+      value === "var(--ifm-global-radius)";
     if (!allowed) {
       violations.push({
-        rule: "Non-zero border radius",
+        rule: "Border radius outside expressive surface allowlist",
         file,
         sample: match[0].slice(0, 80),
       });
@@ -62,20 +70,19 @@ function collectViolations(content, file) {
 
   for (const match of content.matchAll(/box-shadow\s*:\s*([^;]+);/gi)) {
     const value = match[1].trim();
-    if (value !== "none") {
+    if (value !== "none" && !isExpressiveSurface(file)) {
       violations.push({
-        rule: "Box shadow usage",
+        rule: "Box shadow outside expressive surface allowlist",
         file,
         sample: match[0].slice(0, 80),
       });
     }
   }
 
-  const allowGradientsInFile = file === "website/src/css/custom.css";
   for (const match of content.matchAll(/(linear-gradient|radial-gradient|conic-gradient)/gi)) {
-    if (!allowGradientsInFile) {
+    if (!isExpressiveSurface(file)) {
       violations.push({
-        rule: "Gradient usage outside approved grid overlay",
+        rule: "Gradient usage outside expressive surface allowlist",
         file,
         sample: match[0].slice(0, 80),
       });

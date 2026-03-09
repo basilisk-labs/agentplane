@@ -1,16 +1,47 @@
 .page {
-  padding: 2rem 0 6rem;
+  background:
+    radial-gradient(circle at 12% 10%, rgb(0 132 184 / 0.13), transparent 24%),
+    radial-gradient(circle at 84% 12%, rgb(106 114 255 / 0.1), transparent 26%),
+    radial-gradient(circle at 50% 0%, rgb(255 255 255 / 0.86), rgb(var(--bg)) 58%);
+  isolation: isolate;
+  overflow: clip;
+  padding: clamp(2rem, 3vw, 3.75rem) 0 6rem;
+  position: relative;
+}
+
+.pageGlow,
+.pageNoise {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.pageGlow {
+  background:
+    radial-gradient(circle at 18% 18%, rgb(255 255 255 / 0.72), transparent 14%),
+    radial-gradient(circle at 76% 18%, rgb(255 255 255 / 0.5), transparent 15%),
+    radial-gradient(circle at 50% 65%, rgb(0 132 184 / 0.08), transparent 28%);
+  filter: blur(18px);
+  opacity: 0.95;
+  z-index: -2;
+}
+
+.pageNoise {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.42), rgb(255 255 255 / 0.42)),
+    radial-gradient(circle at 20% 20%, rgb(0 0 0 / 0.04) 0 0.7px, transparent 0.8px);
+  background-size:
+    auto,
+    14px 14px;
+  mix-blend-mode: soft-light;
+  opacity: 0.45;
+  z-index: -1;
 }
 
 .shell {
   margin-inline: auto;
   max-width: var(--site-frame-width);
   width: calc(100% - (var(--site-gutter) * 2));
-}
-
-.pageGlow,
-.pageNoise {
-  display: none;
 }
 
 .hero,
@@ -20,8 +51,9 @@
 }
 
 .hero {
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  margin-bottom: 1.5rem;
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
+  margin-bottom: 2rem;
 }
 
 .heroCopy,
@@ -32,22 +64,55 @@
 .modeCard,
 .docsCard,
 .journalCard,
-.closingCard,
-.timelineItem {
-  background: rgb(var(--bg));
-  border: 1px solid rgb(var(--border));
+.closingCard {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.82), rgb(255 255 255 / 0.62)), rgb(var(--bg) / 0.72);
+  backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid rgb(var(--border) / 0.9);
+  border-radius: 24px;
+  box-shadow:
+    0 14px 40px rgb(15 23 42 / 0.05),
+    inset 0 1px 0 rgb(255 255 255 / 0.58);
+  position: relative;
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+.heroCopy,
+.commandCard,
+.closingCard {
+  overflow: hidden;
+}
+
+.heroCopy::before,
+.commandCard::before,
+.surfaceCard::before,
+.modeCard::before,
+.docsCard::before,
+.journalCard::before,
+.closingCard::before,
+.compareCard::before,
+.proofCard::before {
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.72), transparent 42%);
+  content: "";
+  height: 1px;
+  inset: 0 auto auto 0;
+  opacity: 0.65;
+  position: absolute;
+  width: 100%;
 }
 
 .heroCopy {
   display: grid;
-  gap: 1rem;
-  padding: 1.4rem;
+  gap: 1.2rem;
+  min-height: 100%;
+  padding: clamp(1.5rem, 3vw, 2.4rem);
 }
 
 .brandRow {
-  align-items: start;
+  align-items: center;
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.85rem;
   justify-content: space-between;
 }
 
@@ -64,87 +129,85 @@
 .compareLabel,
 .proofLabel,
 .modeBadge {
+  align-items: center;
+  background: rgb(255 255 255 / 0.7);
+  border: 1px solid rgb(var(--border));
+  border-radius: 999px;
   color: rgb(var(--faint));
   display: inline-flex;
-  font-family: var(--font-pixel), var(--ifm-font-family-monospace);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.72rem;
+  gap: 0.35rem;
+  letter-spacing: 0.06em;
+  padding: 0.38rem 0.7rem;
   text-transform: uppercase;
+  width: fit-content;
 }
 
 .heroChips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.heroChip,
-.inlineLink,
-.action {
-  border: 1px solid rgb(var(--border));
-  color: rgb(var(--fg));
-  display: inline-flex;
-  font-size: 0.88rem;
-  line-height: 1.3;
-  min-height: 2.6rem;
-  padding: 0.62rem 0.82rem;
-  text-decoration: none;
-  transition:
-    border-color 180ms ease,
-    color 180ms ease,
-    background-color 180ms ease,
-    transform 180ms ease;
+  gap: 0.55rem;
 }
 
 .heroChip {
-  align-items: center;
-  font-family: var(--ifm-font-family-monospace);
-  min-height: auto;
-  padding-block: 0.42rem;
+  background: rgb(255 255 255 / 0.56);
+  border: 1px solid rgb(var(--border) / 0.88);
+  border-radius: 999px;
+  color: rgb(var(--fg));
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.5rem 0.8rem;
 }
 
 .heroCopy h1,
 .sectionLead h2,
 .closingCard h2 {
-  letter-spacing: -0.04em;
-  line-height: 1.02;
+  letter-spacing: -0.05em;
+  line-height: 0.95;
   margin: 0;
   text-wrap: balance;
 }
 
 .heroCopy h1 {
-  font-size: clamp(3rem, 7vw, 5.8rem);
-  max-width: 10ch;
+  font-size: clamp(3.1rem, 8vw, 6.2rem);
+  max-width: 10.5ch;
+}
+
+.heroSubtitle,
+.sectionLead p,
+.closingCard p,
+.commandCard p,
+.proofCard p,
+.compareCard li,
+.surfaceCard p,
+.modeCard p,
+.modeCard li,
+.docsCard a,
+.journalCard p {
+  color: rgb(var(--muted));
 }
 
 .heroSubtitle {
-  color: rgb(var(--fg));
-  font-size: clamp(1.05rem, 1.4vw, 1.22rem);
+  font-size: clamp(1.08rem, 1.5vw, 1.28rem);
   line-height: 1.45;
   margin: 0;
-  max-width: 60ch;
+  max-width: 58ch;
 }
 
-.heroSupporting,
-.sectionLead,
-.timelineContent,
-.cardChrome,
-.docsCard,
-.closingCard {
+.heroSupporting {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.55rem;
 }
 
 .heroSupporting p,
 .sectionLead p,
+.closingCard p,
 .surfaceCard p,
 .modeCard p,
 .journalCard p,
-.closingCard p,
-.timelineContent p,
-.compareCard li,
-.proofCard p {
-  color: rgb(var(--muted));
+.compareCard li {
   font-size: 0.96rem;
   line-height: 1.55;
   margin: 0;
@@ -153,43 +216,39 @@
 .actionsRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
+  gap: 0.72rem;
 }
 
 .action {
   align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.92rem;
   font-weight: 600;
+  gap: 0.5rem;
   justify-content: center;
+  min-height: 2.9rem;
+  padding: 0.78rem 1.1rem;
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
 }
 
-.actionPrimary {
-  background: rgb(var(--fg));
-  border-color: rgb(var(--fg));
-  color: rgb(var(--bg));
-}
-
-.actionPrimary:hover,
-.actionPrimary:focus-visible {
-  background: rgb(var(--fg));
-  border-color: rgb(var(--accent));
-  color: rgb(var(--bg));
-}
-
-.actionSecondary {
-  background: transparent;
-}
-
-.actionSecondary:hover,
-.actionSecondary:focus-visible,
-.heroChip:hover,
-.heroChip:focus-visible,
-.inlineLink:hover,
-.inlineLink:focus-visible,
+.action:hover,
+.action:focus-visible,
 .journalCard:hover,
-.journalCard:focus-visible {
-  border-color: rgb(var(--accent));
-  color: rgb(var(--accent));
-  transform: translateY(-1px);
+.journalCard:focus-visible,
+.docsCard:hover,
+.docsCard:focus-within,
+.surfaceCard:hover,
+.modeCard:hover,
+.proofCard:hover,
+.compareCard:hover {
+  transform: translateY(-2px);
 }
 
 .action:focus-visible,
@@ -197,6 +256,32 @@
 .journalCard:focus-visible {
   outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
+}
+
+.actionPrimary {
+  background: linear-gradient(180deg, rgb(var(--fg)), rgb(20 20 20));
+  border: 1px solid rgb(var(--fg));
+  box-shadow: 0 10px 24px rgb(10 10 10 / 0.14);
+  color: rgb(255 255 255);
+}
+
+.actionPrimary:hover,
+.actionPrimary:focus-visible {
+  background: linear-gradient(180deg, rgb(25 25 25), rgb(10 10 10));
+  color: rgb(255 255 255);
+}
+
+.actionSecondary {
+  background: rgb(255 255 255 / 0.66);
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--fg));
+}
+
+.actionSecondary:hover,
+.actionSecondary:focus-visible {
+  background: rgb(255 255 255 / 0.86);
+  border-color: rgb(var(--accent) / 0.35);
+  color: rgb(var(--fg));
 }
 
 .heroVisual {
@@ -210,18 +295,25 @@
 
 .commandBar {
   display: flex;
-  gap: 0.35rem;
-  margin-bottom: 0.7rem;
+  gap: 0.42rem;
+  margin-bottom: 0.8rem;
 }
 
 .commandBar span {
   background: rgb(var(--border));
-  height: 0.5rem;
-  width: 0.5rem;
+  border-radius: 999px;
+  height: 0.58rem;
+  width: 0.58rem;
+}
+
+.commandLabel {
+  margin-bottom: 0.8rem;
 }
 
 .commandPre {
+  background: rgb(255 255 255 / 0.54);
   border: 1px solid rgb(var(--border));
+  border-radius: 18px;
   margin: 0;
   overflow-x: auto;
   padding: 1rem;
@@ -232,8 +324,8 @@
   display: grid;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.8rem;
-  gap: 0.7rem;
-  line-height: 1.55;
+  gap: 0.78rem;
+  line-height: 1.5;
 }
 
 .commandLine {
@@ -245,15 +337,12 @@
 .commandPrompt {
   color: rgb(var(--accent));
   display: inline-block;
-  margin-right: 0.65rem;
+  margin-right: 0.7rem;
 }
 
-.proofGrid,
-.compareGrid,
-.modeGrid,
-.journalGrid {
+.proofGrid {
   display: grid;
-  gap: 1rem;
+  gap: 0.95rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -264,111 +353,65 @@
 .docsCard,
 .journalCard,
 .closingCard {
-  padding: 1rem;
+  padding: 1.1rem;
 }
 
 .proofCard {
-  min-height: 8.5rem;
+  min-height: 8.8rem;
 }
 
 .proofCard p {
-  margin-top: 0.65rem;
+  line-height: 1.52;
+  margin: 0.9rem 0 0;
 }
 
 .section {
-  grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
   margin-top: 1.25rem;
+}
+
+.sectionLead {
+  display: grid;
+  gap: 0.9rem;
 }
 
 .sectionLead h2,
 .closingCard h2 {
-  font-size: clamp(2rem, 4vw, 3.2rem);
-  max-width: 12ch;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  max-width: 11ch;
 }
 
 .sectionLead p {
   max-width: 34ch;
 }
 
-.tabsBlock {
-  border: 1px solid rgb(var(--border));
-  padding: 1rem;
-}
-
-.tabsBlock :global(.tabs) {
-  border-bottom: 1px solid rgb(var(--border));
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-}
-
-.tabsBlock :global(.tabs__item) {
-  border: 1px solid rgb(var(--border));
-  color: rgb(var(--muted));
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
-  padding: 0.55rem 0.75rem;
-  text-transform: uppercase;
-  transition:
-    border-color 180ms ease,
-    color 180ms ease,
-    background-color 180ms ease,
-    transform 180ms ease;
-}
-
-.tabsBlock :global(.tabs__item:hover),
-.tabsBlock :global(.tabs__item:focus-visible) {
-  border-color: rgb(var(--accent));
-  color: rgb(var(--accent));
-  transform: translateY(-1px);
-}
-
-.tabsBlock :global(.tabs__item--active) {
-  background: rgb(var(--fg));
-  border-color: rgb(var(--fg));
-  color: rgb(var(--bg));
-}
-
-.tabsBlock :global(.tabs__item--active:hover),
-.tabsBlock :global(.tabs__item--active:focus-visible) {
-  color: rgb(var(--bg));
-}
-
-.tabPanel {
+.compareGrid {
   display: grid;
   gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.panelIntroCard {
-  border: 1px solid rgb(var(--border));
-  display: grid;
-  gap: 0.65rem;
-  padding: 1rem;
+.compareCard {
+  min-height: 100%;
 }
 
-.panelIntroCard h3 {
-  font-size: clamp(1.3rem, 1.8vw, 1.6rem);
-  letter-spacing: -0.02em;
-  line-height: 1.08;
-  margin: 0;
+.compareCardMuted {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.74), rgb(248 248 248 / 0.62)), rgb(var(--bg) / 0.72);
 }
 
-.panelIntroCard p {
-  color: rgb(var(--muted));
-  line-height: 1.55;
-  margin: 0;
-  max-width: 58ch;
+.compareCardAccent {
+  background:
+    linear-gradient(180deg, rgb(243 249 255 / 0.92), rgb(255 255 255 / 0.64)), rgb(var(--bg) / 0.74);
+  border-color: rgb(var(--accent) / 0.18);
 }
 
 .compareList,
 .modeList {
   display: grid;
-  gap: 0.75rem;
-  margin: 0.85rem 0 0;
-  padding-left: 1.15rem;
+  gap: 0.8rem;
+  margin: 1rem 0 0;
+  padding-left: 1.1rem;
 }
 
 .compareList li::marker,
@@ -376,18 +419,38 @@
   color: rgb(var(--accent));
 }
 
+.surfaceGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
 .surfaceCard {
-  min-height: 13rem;
+  min-height: 14rem;
+}
+
+.cardChrome {
+  display: grid;
+  gap: 0.9rem;
+  height: 100%;
 }
 
 .surfaceTreeCard {
+  grid-column: span 7;
   min-height: 20rem;
 }
 
-.surfaceList {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.surfaceGrid > .surfaceCard:not(.surfaceTreeCard) {
+  grid-column: span 5;
+}
+
+.surfaceGrid > .surfaceCard:nth-child(3),
+.surfaceGrid > .surfaceCard:nth-child(5) {
+  grid-column: span 4;
+}
+
+.surfaceGrid > .surfaceCard:nth-child(4) {
+  grid-column: span 8;
 }
 
 .surfaceCard h3,
@@ -395,22 +458,19 @@
 .docsCard h3,
 .journalCard h3,
 .timelineContent h3 {
-  font-size: clamp(1.14rem, 1.4vw, 1.35rem);
-  letter-spacing: -0.02em;
-  line-height: 1.08;
+  font-size: clamp(1.16rem, 1.4vw, 1.4rem);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   margin: 0;
 }
 
 .treePre {
+  background: rgb(255 255 255 / 0.52);
   border: 1px solid rgb(var(--border));
-  color: rgb(var(--fg));
-  flex: 1;
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.87rem;
-  line-height: 1.65;
+  border-radius: 18px;
   margin: 0;
   overflow-x: auto;
-  padding: 1rem;
+  padding: 1rem 1.1rem;
 }
 
 .treeLine {
@@ -424,7 +484,7 @@
 
 .timeline {
   display: grid;
-  gap: 0.9rem;
+  gap: 0.95rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -432,19 +492,78 @@
 
 .timelineItem {
   align-items: start;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.58)), rgb(var(--bg) / 0.72);
+  backdrop-filter: blur(16px) saturate(120%);
+  border: 1px solid rgb(var(--border) / 0.92);
+  border-radius: 24px;
+  box-shadow:
+    0 12px 32px rgb(15 23 42 / 0.04),
+    inset 0 1px 0 rgb(255 255 255 / 0.5);
   display: grid;
   gap: 1rem;
   grid-template-columns: auto minmax(0, 1fr);
-  padding: 1rem;
+  padding: 1.1rem;
+  position: relative;
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+}
+
+.timelineItem::after {
+  background: linear-gradient(180deg, rgb(var(--accent) / 0.24), rgb(var(--accent) / 0.04));
+  border-radius: 999px;
+  content: "";
+  height: calc(100% + 0.95rem);
+  left: 2rem;
+  position: absolute;
+  top: 100%;
+  width: 1px;
+}
+
+.timelineItem:last-child::after {
+  display: none;
 }
 
 .timelineIndex {
-  color: rgb(var(--faint));
+  align-items: center;
+  background: rgb(255 255 255 / 0.74);
+  border: 1px solid rgb(var(--border));
+  border-radius: 18px;
+  color: rgb(var(--fg));
   display: inline-flex;
-  font-family: var(--font-pixel), var(--ifm-font-family-monospace);
-  font-size: 0.86rem;
-  letter-spacing: 0.08em;
-  min-width: 2.4rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.88rem;
+  font-weight: 700;
+  height: 2.6rem;
+  justify-content: center;
+  width: 2.6rem;
+}
+
+.timelineContent {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.timelineContent p {
+  color: rgb(var(--muted));
+  font-size: 0.95rem;
+  line-height: 1.58;
+  margin: 0;
+  max-width: 58ch;
+}
+
+.modeGrid,
+.journalGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.modeCard {
+  min-height: 16rem;
+}
+
+.modeBadge {
+  margin-bottom: 0.9rem;
 }
 
 .docsGrid {
@@ -453,17 +572,57 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.docsCard {
+  display: grid;
+  gap: 1rem;
+  min-height: 12rem;
+}
+
 .docsLinks {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.7rem;
+  gap: 0.72rem;
+}
+
+.inlineLink {
+  align-items: center;
+  background: rgb(255 255 255 / 0.66);
+  border: 1px solid rgb(var(--border));
+  border-radius: 999px;
+  color: rgb(var(--fg));
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 500;
+  min-height: 2.2rem;
+  padding: 0.46rem 0.72rem;
+  text-decoration: none;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.inlineLink:hover,
+.inlineLink:focus-visible {
+  background: rgb(255 255 255 / 0.9);
+  border-color: rgb(var(--accent) / 0.35);
+  color: rgb(var(--fg));
+  transform: translateY(-1px);
 }
 
 .journalCard {
   color: inherit;
   display: grid;
-  gap: 0.8rem;
-  min-height: 13rem;
+  gap: 0.9rem;
+  min-height: 14rem;
+  text-decoration: none;
+}
+
+.journalCard:hover,
+.journalCard:focus-visible {
+  border-color: rgb(var(--accent) / 0.26);
+  color: inherit;
   text-decoration: none;
 }
 
@@ -472,23 +631,48 @@
 }
 
 .closingCard {
-  padding: 1.25rem;
+  background:
+    radial-gradient(circle at 20% 0%, rgb(0 132 184 / 0.12), transparent 22%),
+    radial-gradient(circle at 80% 0%, rgb(120 104 255 / 0.12), transparent 22%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.86), rgb(255 255 255 / 0.66)), rgb(var(--bg) / 0.75);
+  display: grid;
+  gap: 1rem;
+  padding: clamp(1.4rem, 3vw, 2.1rem);
+}
+
+.closingCard h2 {
+  max-width: 12ch;
 }
 
 @media (min-width: 997px) {
   .stickyLeadWrap .sectionLead {
     position: sticky;
-    top: calc(var(--ifm-navbar-height) + 1.25rem);
+    top: calc(var(--ifm-navbar-height) + 1.5rem);
   }
 }
 
 @media (max-width: 1180px) {
-  .hero,
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
   .section {
     grid-template-columns: 1fr;
   }
 
-  .surfaceList,
+  .sectionLead h2,
+  .closingCard h2 {
+    max-width: 14ch;
+  }
+
+  .surfaceTreeCard,
+  .surfaceGrid > .surfaceCard:not(.surfaceTreeCard),
+  .surfaceGrid > .surfaceCard:nth-child(3),
+  .surfaceGrid > .surfaceCard:nth-child(4),
+  .surfaceGrid > .surfaceCard:nth-child(5) {
+    grid-column: span 12;
+  }
+
   .docsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -499,19 +683,18 @@
   .compareGrid,
   .modeGrid,
   .journalGrid,
-  .surfaceList,
   .docsGrid {
     grid-template-columns: 1fr;
   }
 
   .heroCopy h1 {
-    max-width: 11ch;
+    max-width: 12ch;
   }
 }
 
 @media (max-width: 640px) {
   .page {
-    padding-top: 1rem;
+    padding-top: 1.2rem;
   }
 
   .heroCopy,
@@ -524,7 +707,20 @@
   .journalCard,
   .closingCard,
   .timelineItem {
-    padding: 0.95rem;
+    border-radius: 20px;
+  }
+
+  .heroCopy,
+  .proofCard,
+  .compareCard,
+  .surfaceCard,
+  .modeCard,
+  .docsCard,
+  .journalCard,
+  .closingCard,
+  .timelineItem,
+  .commandCard {
+    padding: 1rem;
   }
 
   .brandRow {
@@ -533,13 +729,25 @@
   }
 
   .heroCopy h1 {
-    font-size: clamp(2.4rem, 13vw, 3.5rem);
+    font-size: clamp(2.45rem, 14vw, 3.55rem);
     max-width: 100%;
+  }
+
+  .heroSubtitle {
+    font-size: 1rem;
+  }
+
+  .commandPre {
+    padding: 0.88rem;
+  }
+
+  .commandPre code {
+    font-size: 0.74rem;
   }
 
   .sectionLead h2,
   .closingCard h2 {
-    font-size: clamp(1.8rem, 10vw, 2.45rem);
+    font-size: clamp(1.8rem, 10vw, 2.5rem);
   }
 
   .actionsRow {
@@ -551,8 +759,7 @@
     width: 100%;
   }
 
-  .commandPre code,
   .treePre {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
   }
 }

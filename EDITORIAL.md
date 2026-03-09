@@ -1,140 +1,451 @@
-# AgentPlane Editorial Guide
+# AgentPlane Editorial & Messaging Guide (v2)
 
-## 1. Brand Voice
+This document defines how AgentPlane speaks across the website, README, docs, release notes, blog posts, demos, and in-product user-facing prompts.
 
-### 1.1 Core tone
+Its purpose is not tone consistency alone.
+Its purpose is category clarity, trust, and disciplined messaging.
 
-- Precise, operational, and accountable.
-- Calm confidence, no hype language.
-- Evidence-first: claims must map to shipped behavior, policy, or measurable outcome.
+---
 
-### 1.2 Writing principles
+## 1. Messaging Foundation
 
-- Lead with what changed and why it matters.
-- Prefer concrete nouns and verbs over abstract positioning language.
-- Keep paragraphs short and scannable.
-- Use active voice and explicit responsibility.
-- Separate facts, decisions, and next steps.
+### 1.1 Canonical category
 
-### 1.3 Language guardrails
+Use this as the primary positioning line when the surface needs product-category clarity:
 
-- Avoid buzzwords: "revolutionary", "game-changing", "magic", "seamless".
-- Avoid vague claims without proof.
-- Avoid performative urgency.
-- Prefer exact command names, file paths, and version references where relevant.
+**AgentPlane is a Git-native control plane for auditable agent work.**
 
-### 1.4 Preferred content structure
+### 1.2 Human version
 
-- Context: current state and user/operator pain.
-- Change: what was introduced.
-- Impact: what improves in day-to-day execution.
-- Limits: what is not solved yet.
-- Next: concrete follow-up or roadmap steps.
+Use this when the surface needs a simpler value statement:
 
-## 2. Content Generation Rules
+**Put coding agents on a governed Git workflow.**
 
-### 2.1 Quality bar
+### 1.3 One-sentence explainer
 
-- Every generated text must be publishable without stylistic cleanup.
-- Generated copy must preserve project terminology consistency.
-- If uncertainty exists, state assumptions explicitly.
+Default explainer:
 
-### 2.2 Consistency contracts
+**AgentPlane adds task state, approvals, verification, and deterministic closure to agent work inside real Git repositories.**
 
-- Product naming: use "AgentPlane" for brand, `agentplane` for CLI/tooling identifiers.
-- Workflow terminology: use existing lifecycle words (`plan`, `verify`, `finish`, `export`).
-- Release and roadmap text must align with committed repository state.
+### 1.4 What AgentPlane is not
 
-### 2.3 Style constraints for generated content
+Do not position AgentPlane as:
 
-- No fluff intros.
-- No rhetorical questions.
-- No pseudo-conversational filler.
-- No contradiction with policy docs (`AGENTS.md`, `POLICY.md`, `DESIGN.md`).
+- a generic AI coding assistant,
+- a hosted autonomous coding platform,
+- an “AI company OS”,
+- a prompt framework,
+- a repository instructions file,
+- a replacement for Git or CI.
 
-## 3. Blog Post Formats
+### 1.5 Product naming
 
-## 3.1 Roadmap post
+- Use **AgentPlane** for the product/brand.
+- Use `agentplane` for CLI, code, package names, paths, and commands.
+
+---
+
+## 2. Audience Lanes
+
+Every major page should implicitly know who it is speaking to.
+
+### 2.1 Individual engineer
+
+Primary pain:
+
+- agents are fast but messy,
+- changes are hard to verify,
+- chat history is not a reliable workflow.
+
+Value language:
+
+- governed local workflow,
+- clear task lifecycle,
+- repo-visible state,
+- cleaner closure.
+
+### 2.2 Team lead / engineering manager
+
+Primary pain:
+
+- multiple agent surfaces create inconsistency,
+- PRs and tasks lose discipline,
+- review and verification become ambiguous.
+
+Value language:
+
+- standardized workflow,
+- explicit approvals,
+- predictable task execution,
+- clearer team conventions.
+
+### 2.3 Platform / security / developer productivity
+
+Primary pain:
+
+- AI coding enters the repo without control boundaries,
+- there is no consistent audit trail,
+- repo policy and agent behavior drift apart.
+
+Value language:
+
+- policy layer for AI coding,
+- auditable task artifacts,
+- repository-native governance,
+- coexistence with existing Git and CI controls.
+
+---
+
+## 3. Voice and Tone
+
+### 3.1 Core tone
+
+- Precise
+- Calm
+- Operational
+- Evidence-first
+- Non-theatrical
+
+### 3.2 What confidence should sound like
+
+Confidence comes from concrete shipped behavior, not emphasis.
+Write like an operator describing a reliable system.
+
+### 3.3 Disallowed tone
+
+Avoid:
+
+- hype,
+- futurist grandstanding,
+- “AI magic” framing,
+- empty certainty,
+- swagger language,
+- conversational filler.
+
+Examples of words to avoid unless quoting someone else:
+
+- revolutionary
+- magical
+- seamless
+- game-changing
+- autonomous company
+- superhuman
+
+---
+
+## 4. Messaging Order
+
+Across homepage, README, overview docs, and comparison pages, use this order:
+
+1. **Job** — what the product does for the user.
+2. **Surface** — where it operates.
+3. **Control boundary** — what makes it safe/governed.
+4. **Proof** — the artifact or mechanism that proves the claim.
+5. **Next action** — what the reader should do next.
+
+Do not lead with doctrine, architecture philosophy, or internal taxonomy.
+
+---
+
+## 5. Preferred Vocabulary
+
+### 5.1 Prefer
+
+Prefer concrete nouns and verbs such as:
+
+- repository
+- repo-native
+- task
+- verification
+- approval
+- closure
+- workflow
+- artifact
+- audit trail
+- governed
+- scoped
+- traceable
+- finish
+- verify
+- restore
+- integrate
+
+### 5.2 Use carefully
+
+Use only when the surrounding copy already explains the product:
+
+- harness engineering
+- workflow contract
+- projection
+- policy tree
+- deterministic recovery
+- operator surface
+
+### 5.3 Avoid as lead language
+
+Avoid leading with:
+
+- policy-driven framework
+- agent-first workflow tooling
+- deterministic workflow framework
+- project automation platform
+- multi-agent system
+
+These may appear deeper in docs if they are concretely explained.
+
+---
+
+## 6. First-Screen Contracts by Surface
+
+### 6.1 Homepage
+
+The first screen must answer:
+
+1. What is AgentPlane?
+2. Where does it run?
+3. Why should I trust it?
+4. What do I do next?
+
+### 6.2 README
+
+The first 100–140 words must make the category legible and provide a believable first-win path.
+
+### 6.3 Docs overview
+
+The top of the page must orient the user toward first value, not explain every concept.
+
+### 6.4 Comparison pages
+
+Comparison pages must make the axis explicit.
+Examples:
+
+- raw agent usage vs governed task flow
+- repo instructions only vs full workflow control
+- direct vs branch_pr
+
+Do not write vague “better than X” copy.
+
+---
+
+## 7. User Dialogue Rules
+
+These rules apply to demos, walkthroughs, examples, and user-facing agent text.
+
+### 7.1 Correct order of conversation
+
+When describing or simulating agent work, use this order:
+
+1. Goal
+2. Scope
+3. Likely changes
+4. Verification plan
+5. Risks
+6. Approval status
+7. Outcome
+8. Remaining risk
+9. Next action
+
+### 7.2 What the user should see early
+
+Before execution details, the user should understand:
+
+- blast radius,
+- proof path,
+- approval point,
+- closure path.
+
+### 7.3 What to avoid
+
+Avoid early overuse of:
+
+- role theater,
+- architecture exposition,
+- abstract internal terminology,
+- long motivational framing.
+
+---
+
+## 8. Content Types
+
+## 8.1 Homepage / acquisition copy
 
 Purpose:
 
-- Explain strategic direction and sequencing.
+- category legibility,
+- trust,
+- routing to the next action.
 
-Mandatory sections:
+Required ingredients:
+
+- category line,
+- value statement,
+- concrete proof points,
+- real workflow or repo surfaces,
+- one dominant CTA.
+
+## 8.2 README
+
+Purpose:
+
+- turn a repository visitor into an activated evaluator.
+
+Required ingredients:
+
+- what AgentPlane is,
+- what it adds to a repo,
+- quickstart,
+- workflow modes,
+- docs links.
+
+## 8.3 Docs page
+
+Purpose:
+
+- help a user complete a task with minimal ambiguity.
+
+Required ingredients:
+
+- current context,
+- exact command or step,
+- expected output or artifact,
+- failure mode or limit,
+- next route.
+
+## 8.4 Release post
+
+Purpose:
+
+- explain shipped changes in operator language.
+
+Required sections:
+
+- Release scope
+- What changed
+- Why it matters operationally
+- Breaking or behavioral changes
+- Upgrade path
+- Verification signals
+- What follows next
+
+## 8.5 Roadmap post
+
+Purpose:
+
+- explain sequence and strategic constraints.
+
+Required sections:
 
 - Why now
-- Version-by-version roadmap
-- Operational impact for users
-- Risks and open questions
+- Current limit
+- What each next version unlocks
+- Risks / open questions
 - What to expect next
 
-Constraints:
-
-- Must stay future-facing and avoid design-system deep dives unless directly roadmap-critical.
-- Must tie each version to an execution outcome.
-
-## 3.2 Release post
+## 8.6 Research / benchmark / method note
 
 Purpose:
 
-- Document shipped changes in an operator-friendly format.
+- publish reasoning, method, or measurement.
 
-Mandatory sections:
-
-- Release scope (version + date)
-- Key changes
-- Breaking/behavioral changes
-- Upgrade path
-- Verification signals (tests/checks/CI status)
-
-Constraints:
-
-- Include migration commands when needed.
-- Use explicit "before/after" statements for behavior changes.
-
-## 3.3 Announcement post
-
-Purpose:
-
-- Announce new capability, integration, or major process change.
-
-Mandatory sections:
-
-- Problem statement
-- What is new
-- Who should use it now
-- Rollout status (GA/beta/experimental)
-- Immediate next actions
-
-Constraints:
-
-- Announcements must include scope boundaries and known limitations.
-
-## 3.4 Publication or research note
-
-Purpose:
-
-- Publish a method, analysis, benchmark, or implementation rationale.
-
-Mandatory sections:
+Required sections:
 
 - Objective
 - Method
 - Findings
 - Decision
+- Reproducibility details
 - Follow-up work
 
-Constraints:
+---
 
-- Include reproducibility details (commands, scripts, data paths) when applicable.
+## 9. Writing Rules
 
-## 4. Editorial QA Checklist
+### 9.1 Sentence style
 
-Before publishing, confirm:
+- Prefer short to medium-length sentences.
+- Prefer active voice.
+- Prefer concrete subjects and verbs.
+- Keep paragraphs compact.
 
-- Title is concrete and non-promotional.
-- First paragraph states the operational value.
-- Sections follow the selected format contract.
-- Terminology matches repository conventions.
-- Claims are verifiable from repository state.
-- Closing section states the next concrete milestone.
+### 9.2 Structural rule
+
+For most sections, use:
+
+1. current state or problem,
+2. what changed,
+3. operational impact,
+4. limit or boundary,
+5. next action.
+
+### 9.3 Claims rule
+
+Every meaningful claim should map to one of these:
+
+- a shipped behavior,
+- a command,
+- a file path,
+- a workflow artifact,
+- a policy guarantee,
+- a measured result.
+
+### 9.4 Limits rule
+
+State limits explicitly.
+Do not hide scope boundaries.
+Trust increases when the product boundary is clear.
+
+---
+
+## 10. Anti-Patterns
+
+Do not publish copy that does any of the following:
+
+- sells AgentPlane as “another coding agent”,
+- leads with internal doctrine instead of user value,
+- overuses “framework” language,
+- substitutes proof with abstraction,
+- implies capabilities not present in the current release,
+- hides product limits behind vague future language,
+- uses trend language without operational meaning.
+
+---
+
+## 11. Editorial QA Checklist
+
+Before publishing, confirm all are true:
+
+### Positioning discipline
+
+- [ ] The category is legible.
+- [ ] The text matches current release reality.
+- [ ] The copy does not drift into hosted platform or company-OS language.
+
+### Readability
+
+- [ ] The first paragraph states operational value.
+- [ ] Headings are concrete.
+- [ ] No filler or rhetorical opening exists.
+
+### Proof
+
+- [ ] Major claims are backed by concrete artifacts or commands.
+- [ ] Workflow terms are used consistently.
+- [ ] Product naming is correct: AgentPlane / `agentplane`.
+
+### Routing
+
+- [ ] The piece tells the user what to do next.
+- [ ] Docs, install, or workflow links are obvious where relevant.
+
+### Trust
+
+- [ ] Limits and boundaries are explicit.
+- [ ] No unsupported promises are present.
+- [ ] The tone remains calm and accountable.
+
+---
+
+## 12. Versioning Rule
+
+This document governs all public-facing product language.
+Any major positioning, audience, or category change must update this file first.

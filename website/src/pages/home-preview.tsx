@@ -1,8 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Layout from "@theme/Layout";
-import Tabs from "@theme/Tabs";
-import TabItem from "@theme/TabItem";
 import { homepageContent } from "../data/homepage-content";
 import styles from "./home-preview.module.css";
 
@@ -149,102 +147,78 @@ export default function HomePreview(): ReactNode {
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead
+            label={repositorySurface.label}
+            title={repositorySurface.title}
+            text={repositorySurface.intro}
+          />
+
+          <div className={styles.surfaceGrid}>
+            <article className={`${styles.surfaceTreeCard} ${styles.surfaceCard}`}>
+              <div className={styles.cardChrome}>
+                <span className={styles.cardKicker}>Repository preview</span>
+                <pre className={styles.treePre} aria-label="Repository structure preview">
+                  <code>
+                    {repositorySurface.tree.map((line) => (
+                      <span key={line} className={styles.treeLine}>
+                        {line}
+                      </span>
+                    ))}
+                  </code>
+                </pre>
+              </div>
+            </article>
+
+            {repositorySurface.items.map((item) => (
+              <article key={item.name} className={styles.surfaceCard}>
+                <div className={styles.cardChrome}>
+                  <span className={styles.cardKicker}>{item.path}</span>
+                  <h3>{item.name}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className={`${styles.section} ${styles.shell}`}>
           <div className={styles.stickyLeadWrap}>
             <SectionLead
-              label="Operator surface"
-              title="Read the product through state, files, and integration choices."
-              text="Switch views instead of scanning three separate sections. The same repository story is exposed as artifacts, lifecycle, and workflow mode."
+              label={controlModel.label}
+              title={controlModel.title}
+              text={controlModel.text}
             />
           </div>
 
-          <div className={styles.tabsBlock}>
-            <Tabs
-              className={styles.previewTabs}
-              defaultValue="repository"
-              groupId="home-preview-surface"
-            >
-              <TabItem value="repository" label={repositorySurface.label}>
-                <div className={styles.tabPanel}>
-                  <article className={`${styles.surfaceTreeCard} ${styles.surfaceCard}`}>
-                    <div className={styles.cardChrome}>
-                      <span className={styles.cardKicker}>Repository preview</span>
-                      <h3>{repositorySurface.title}</h3>
-                      <p>{repositorySurface.intro}</p>
-                      <pre className={styles.treePre} aria-label="Repository structure preview">
-                        <code>
-                          {repositorySurface.tree.map((line) => (
-                            <span key={line} className={styles.treeLine}>
-                              {line}
-                            </span>
-                          ))}
-                        </code>
-                      </pre>
-                    </div>
-                  </article>
-
-                  <div className={styles.surfaceList}>
-                    {repositorySurface.items.map((item) => (
-                      <article key={item.name} className={styles.surfaceCard}>
-                        <div className={styles.cardChrome}>
-                          <span className={styles.cardKicker}>{item.path}</span>
-                          <h3>{item.name}</h3>
-                          <p>{item.text}</p>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
+          <ol className={styles.timeline}>
+            {controlModel.steps.map((step, index) => (
+              <li key={step.name} className={styles.timelineItem}>
+                <span className={styles.timelineIndex}>{String(index + 1).padStart(2, "0")}</span>
+                <div className={styles.timelineContent}>
+                  <h3>{step.name}</h3>
+                  <p>{step.text}</p>
                 </div>
-              </TabItem>
+              </li>
+            ))}
+          </ol>
+        </section>
 
-              <TabItem value="control" label={controlModel.label}>
-                <div className={styles.tabPanel}>
-                  <article className={styles.panelIntroCard}>
-                    <span className={styles.cardKicker}>Lifecycle map</span>
-                    <h3>{controlModel.title}</h3>
-                    <p>{controlModel.text}</p>
-                  </article>
+        <section className={`${styles.section} ${styles.shell}`}>
+          <SectionLead label={workflowModes.label} title={workflowModes.title} />
 
-                  <ol className={styles.timeline}>
-                    {controlModel.steps.map((step, index) => (
-                      <li key={step.name} className={styles.timelineItem}>
-                        <span className={styles.timelineIndex}>
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <div className={styles.timelineContent}>
-                          <h3>{step.name}</h3>
-                          <p>{step.text}</p>
-                        </div>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </TabItem>
-
-              <TabItem value="modes" label={workflowModes.label}>
-                <div className={styles.tabPanel}>
-                  <article className={styles.panelIntroCard}>
-                    <span className={styles.cardKicker}>Mode selection</span>
-                    <h3>{workflowModes.title}</h3>
-                    <p>Pick the workflow by integration discipline, not by product tier.</p>
-                  </article>
-
-                  <div className={styles.modeGrid}>
-                    {workflowModes.items.map((mode) => (
-                      <article key={mode.name} className={styles.modeCard}>
-                        <span className={styles.modeBadge}>{mode.badge}</span>
-                        <h3>{mode.name}</h3>
-                        <p>{mode.text}</p>
-                        <ul className={styles.modeList}>
-                          {mode.bullets.map((bullet) => (
-                            <li key={bullet}>{bullet}</li>
-                          ))}
-                        </ul>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </TabItem>
-            </Tabs>
+          <div className={styles.modeGrid}>
+            {workflowModes.items.map((mode) => (
+              <article key={mode.name} className={styles.modeCard}>
+                <span className={styles.modeBadge}>{mode.badge}</span>
+                <h3>{mode.name}</h3>
+                <p>{mode.text}</p>
+                <ul className={styles.modeList}>
+                  {mode.bullets.map((bullet) => (
+                    <li key={bullet}>{bullet}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
         </section>
 
