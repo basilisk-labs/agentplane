@@ -290,6 +290,79 @@
   max-width: 34ch;
 }
 
+.tabsBlock {
+  border: 1px solid rgb(var(--border));
+  padding: 1rem;
+}
+
+.tabsBlock :global(.tabs) {
+  border-bottom: 1px solid rgb(var(--border));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+}
+
+.tabsBlock :global(.tabs__item) {
+  border: 1px solid rgb(var(--border));
+  color: rgb(var(--muted));
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  padding: 0.55rem 0.75rem;
+  text-transform: uppercase;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.tabsBlock :global(.tabs__item:hover),
+.tabsBlock :global(.tabs__item:focus-visible) {
+  border-color: rgb(var(--accent));
+  color: rgb(var(--accent));
+  transform: translateY(-1px);
+}
+
+.tabsBlock :global(.tabs__item--active) {
+  background: rgb(var(--fg));
+  border-color: rgb(var(--fg));
+  color: rgb(var(--bg));
+}
+
+.tabsBlock :global(.tabs__item--active:hover),
+.tabsBlock :global(.tabs__item--active:focus-visible) {
+  color: rgb(var(--bg));
+}
+
+.tabPanel {
+  display: grid;
+  gap: 1rem;
+}
+
+.panelIntroCard {
+  border: 1px solid rgb(var(--border));
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+}
+
+.panelIntroCard h3 {
+  font-size: clamp(1.3rem, 1.8vw, 1.6rem);
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  margin: 0;
+}
+
+.panelIntroCard p {
+  color: rgb(var(--muted));
+  line-height: 1.55;
+  margin: 0;
+  max-width: 58ch;
+}
+
 .compareList,
 .modeList {
   display: grid;
@@ -303,32 +376,18 @@
   color: rgb(var(--accent));
 }
 
-.surfaceGrid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-}
-
 .surfaceCard {
   min-height: 13rem;
 }
 
 .surfaceTreeCard {
-  grid-column: span 7;
   min-height: 20rem;
 }
 
-.surfaceGrid > .surfaceCard:not(.surfaceTreeCard) {
-  grid-column: span 5;
-}
-
-.surfaceGrid > .surfaceCard:nth-child(3),
-.surfaceGrid > .surfaceCard:nth-child(5) {
-  grid-column: span 4;
-}
-
-.surfaceGrid > .surfaceCard:nth-child(4) {
-  grid-column: span 8;
+.surfaceList {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .surfaceCard h3,
@@ -429,14 +488,7 @@
     grid-template-columns: 1fr;
   }
 
-  .surfaceTreeCard,
-  .surfaceGrid > .surfaceCard:not(.surfaceTreeCard),
-  .surfaceGrid > .surfaceCard:nth-child(3),
-  .surfaceGrid > .surfaceCard:nth-child(4),
-  .surfaceGrid > .surfaceCard:nth-child(5) {
-    grid-column: span 12;
-  }
-
+  .surfaceList,
   .docsGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -447,6 +499,7 @@
   .compareGrid,
   .modeGrid,
   .journalGrid,
+  .surfaceList,
   .docsGrid {
     grid-template-columns: 1fr;
   }
