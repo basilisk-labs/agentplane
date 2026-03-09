@@ -237,13 +237,11 @@
         "doc": {
           "sections": [
             "Summary",
-            "Context",
             "Scope",
             "Plan",
             "Verify Steps",
             "Verification",
             "Rollback Plan",
-            "Notes",
             "Findings"
           ],
           "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
@@ -335,13 +333,11 @@
           "default": {
             "sections": [
               "Summary",
-              "Context",
               "Scope",
               "Plan",
               "Verify Steps",
               "Verification",
               "Rollback Plan",
-              "Notes",
               "Findings"
             ],
             "required_sections": ["Summary", "Scope", "Plan", "Verification", "Rollback Plan"]
@@ -352,13 +348,11 @@
               "items": { "type": "string", "minLength": 1 },
               "default": [
                 "Summary",
-                "Context",
                 "Scope",
                 "Plan",
                 "Verify Steps",
                 "Verification",
                 "Rollback Plan",
-                "Notes",
                 "Findings"
               ]
             },

@@ -38,13 +38,11 @@
     "doc": {
       "sections": [
         "Summary",
-        "Context",
         "Scope",
         "Plan",
         "Verify Steps",
         "Verification",
         "Rollback Plan",
-        "Notes",
         "Findings"
       ],
       "required_sections": [

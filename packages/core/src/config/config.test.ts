@@ -95,6 +95,26 @@ describe("config", () => {
     expect(cfg.framework.cli.expected_version).toBeNull();
   });
 
+  it("default task README contract uses the active v3 sections", () => {
+    const cfg = defaultConfig();
+    expect(cfg.tasks.doc.sections).toEqual([
+      "Summary",
+      "Scope",
+      "Plan",
+      "Verify Steps",
+      "Verification",
+      "Rollback Plan",
+      "Findings",
+    ]);
+    expect(cfg.tasks.doc.required_sections).toEqual([
+      "Summary",
+      "Scope",
+      "Plan",
+      "Verification",
+      "Rollback Plan",
+    ]);
+  });
+
   it("setByDottedKey handles edge scalar parsing cases", () => {
     const cfg = defaultConfig() as unknown as Record<string, unknown>;
 

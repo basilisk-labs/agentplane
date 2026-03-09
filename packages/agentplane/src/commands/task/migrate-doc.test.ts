@@ -78,6 +78,61 @@ Keep scope.
     expect(migrated2).toBe(migrated);
   });
 
+  it("preserves legacy Context content without keeping it in the canonical v3 section order", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const taskId = "202601011559-C0N7";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    const readmePath = path.join(taskDir, "README.md");
+    await mkdir(taskDir, { recursive: true });
+
+    const legacy = `---
+id: "${taskId}"
+title: "Legacy task"
+status: "TODO"
+priority: "low"
+owner: "CODER"
+depends_on: []
+tags: []
+verify: []
+comments: []
+doc_version: 2
+doc_updated_at: "2026-01-01T00:00:00.000Z"
+doc_updated_by: "CODER"
+description: "Legacy"
+id_source: "generated"
+---
+## Summary
+
+Keep me.
+
+## Context
+
+Legacy context that should not stay in the canonical v3 contract.
+
+## Scope
+
+Keep scope.
+`;
+
+    await writeFile(readmePath, legacy, "utf8");
+
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
+    expect(code).toBe(0);
+
+    const migrated = await readFile(readmePath, "utf8");
+    expect(migrated).toContain("## Context");
+    expect(migrated).toContain("Legacy context that should not stay in the canonical v3 contract.");
+    expect(migrated.indexOf("## Context")).toBeGreaterThan(migrated.indexOf("## Findings"));
+  });
+
   it("normalizes date-only timestamps in approval and verification notes to ISO updated_at when the date matches", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

@@ -177,8 +177,8 @@ sequenceDiagram
   - `## Verify Steps` is the ex-ante verification contract (criteria/protocol addressed to the verifier).
   - `## Verification` is the ex-post append-only record written by `agentplane verify ...`.
 - **Task-local observations**:
-  - Legacy `doc_version=2` tasks keep local deviations and follow-ups in `## Notes`.
-  - Target `doc_version=3` tasks use `## Findings` for the same role.
+  - Active `doc_version=3` tasks use `## Findings` for local deviations, follow-ups, and incident candidates.
+  - Legacy `doc_version=2` tasks keep `## Notes` only until the workspace is migrated.
   - Policy incidents are curated separately; they are not written directly from every task.
   - New tasks default to `doc_version=3`; after upgrading an older workspace, run
     `agentplane task migrate-doc --all` when doctor reports active legacy README v2 or active v2/v3 mixed state.

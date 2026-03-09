@@ -34,7 +34,6 @@ type TaskMigrateDocParams = { all: boolean; quiet: boolean; taskIds: string[] };
 type MarkdownSection = { title: string; text: string };
 const V3_CANONICAL_ORDER = [
   "Summary",
-  "Context",
   "Scope",
   "Plan",
   "Verify Steps",
@@ -136,7 +135,6 @@ function migrateDocToV3(opts: { title: string; description: string; doc: string 
     const defaultText = firstSectionText(defaultSections, title) ?? "";
 
     let nextText: string | null = currentText ?? defaultText;
-    if (title === "Context" && !(currentText ?? "").trim()) continue;
     if (title === "Verification") {
       nextText = normalizeVerificationSectionLayout(currentText ?? defaultText, 3);
     }
