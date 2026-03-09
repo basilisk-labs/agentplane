@@ -20,111 +20,115 @@ Put coding agents on a governed Git workflow.
 - It supports both `direct` and `branch_pr` workflow modes.
 - It keeps repository artifacts visible instead of hiding execution behind a hosted control plane.
 
-## 5-minute start
+## Why teams use it
 
-Install and initialize the CLI:
+Teams use `agentplane` when changing files is not enough and they need the work itself to stay legible.
+
+- **Trust comes from visible process.** Plans, verification, and finish are recorded instead of implied.
+- **The workflow stays local.** There is no hosted control plane between your repository and your team.
+- **Git remains first-class.** `agentplane` governs agent work inside commits and repository state instead of bypassing them.
+- **The same CLI fits different review styles.** Use `direct` for short loops or `branch_pr` for stricter integration.
+
+## What appears in your repository
+
+`agentplane init` creates a visible workflow surface inside the repository.
+
+```text
+AGENTS.md or CLAUDE.md   Policy gateway for the repository
+.agentplane/            Repo-local workspace and workflow state
+.agentplane/config.json Current repo configuration
+.agentplane/agents/     Installed agent profiles
+.agentplane/tasks/      Per-task records and evidence
+.agentplane/WORKFLOW.md Materialized workflow contract
+```
+
+You may also see `.agentplane/tasks.json` later if you export a task snapshot, and `.agentplane/workflows/last-known-good.md` as part of the workflow runtime state.
+
+## Install and first run
 
 ```bash
 npm install -g agentplane
+```
+
+Initialize the repository and print the built-in startup path:
+
+```bash
 agentplane init
 agentplane quickstart
 ```
 
-`agentplane init` is human-oriented: interactive onboarding includes workflow/backend selection,
-policy gateway selection (`--policy-gateway codex|claude` -> `AGENTS.md` or `CLAUDE.md`),
-execution profile selection (`conservative|balanced|aggressive`), approval toggles, and optional recipes.
+`agentplane init` is interactive by default. It lets you choose the workflow mode, backend, gateway file (`AGENTS.md` or `CLAUDE.md`), execution profile, and optional recipe setup.
 
-Create your first task and run the workflow:
-
-```bash
-agentplane task new --title "First task" --description "Describe the change" --priority med --owner ORCHESTRATOR --tag docs
-agentplane verify <task-id> --ok --by ORCHESTRATOR --note "Verified"
-agentplane finish <task-id> --author ORCHESTRATOR --body "Verified: done" --result "First task completed"
-```
-
-Prefer `npx` instead of a global install?
+Prefer not to install globally:
 
 ```bash
 npx agentplane init
 npx agentplane quickstart
 ```
 
-## What gets installed automatically
-
-- `.agentplane/` is created with config, tasks, agents, and caches.
-- The selected policy gateway file is created if missing and defines the policy/guardrails:
-  `AGENTS.md` (Codex) or `CLAUDE.md` (Claude Code).
-- Built-in agent definitions are copied into `.agentplane/agents/`.
-- Optional recipes can install additional agents when you run `agentplane recipes install ...`.
-- `.agentplane/config.json` stores execution defaults under `execution` (profile, reasoning effort, tool budget, safety gates).
-
-## Upgrade review reports
-
-After `agentplane upgrade` (auto or agent-assisted mode), a machine-readable review report is written under `.agentplane/.upgrade/`:
-
-- Agent mode: `.agentplane/.upgrade/agent/<runId>/review.json`
-- Auto mode: `.agentplane/.upgrade/last-review.json`
-
-If any entry has `needsSemanticReview: true`, treat it as a signal to create an `UPGRADER` task to perform a semantic prompt merge.
-
-## Guardrails and artifacts
-
-- Approval gates for plans and network access (configured in `.agentplane/config.json`).
-- Role boundaries (ORCHESTRATOR, PLANNER, CODER, INTEGRATOR, etc.).
-- Agent definitions in `.agentplane/agents/`.
-- Task records in `.agentplane/tasks/` with a snapshot export in `.agentplane/tasks.json`.
-- A visible, reproducible pipeline:
-
-```text
-Preflight -> Plan -> Approval -> Tasks -> Verify -> Finish -> Export
-```
-
-## Features
-
-- Policy-first execution with explicit approvals and guardrails.
-- Role-based workflows for teams: ORCHESTRATOR, PLANNER, CREATOR, INTEGRATOR, etc.
-- Two workflow modes: `direct` (single checkout) and `branch_pr` (worktrees + integration).
-- Task tracking, verification, and exports baked in.
-- Recipes for repeatable setup and automation.
-
-## Install
+## First task flow
 
 ```bash
-npm install -g agentplane
+agentplane task new --title "First task" --description "Describe the change" --priority med --owner DOCS --tag docs
+agentplane task plan set <task-id> --text "Explain the plan" --updated-by DOCS
+agentplane task start-ready <task-id> --author DOCS --body "Start: ..."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
+agentplane finish <task-id> --author DOCS --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
 
-Or run without installing:
+If your repository requires explicit plan approval, run:
 
 ```bash
-npx agentplane --help
+agentplane task plan approve <task-id> --by ORCHESTRATOR
 ```
+
+before `agentplane task start-ready`.
+
+## Workflow modes
+
+### `direct`
+
+- single checkout
+- fast local iteration
+- deterministic close commit on `finish` by default
+- best fit for solo work or short loops
+
+### `branch_pr`
+
+- per-task branch or worktree flow
+- explicit PR artifacts under `.agentplane/tasks/<task-id>/pr/`
+- stricter handoff and integration discipline
+- better fit for teams that want implementation separated from integration
+
+## When to use it
+
+Use `agentplane` when:
+
+- you want coding agents to work inside a real git repository
+- you need explicit task state, approvals, verification, and closure
+- you want repo-local workflow artifacts instead of a hidden assistant session
+
+Do not use `agentplane` when:
+
+- you want a hosted agent platform
+- you want a generic prompt framework
+- you want the tool to hide git or replace your editor
 
 ## Requirements
 
-- Node.js >= 20
+- Node.js 20+
 
-## Common Commands
+## Documentation
 
-```bash
-agentplane --help
-agentplane quickstart
-agentplane role ORCHESTRATOR
-agentplane role UPGRADER
-agentplane config show
-agentplane task list
-agentplane task new --title "..." --description "..." --priority med --owner ORCHESTRATOR --tag docs
-agentplane verify <task-id> --ok --by ORCHESTRATOR --note "Verified"
-agentplane finish <task-id> --author ORCHESTRATOR --body "Verified: done" --result "Task completed"
-agentplane recipes list
-```
-
-## Docs and Guides
-
-- Documentation index: https://github.com/basilisk-labs/agentplane/tree/main/docs
-- Workflow overview: https://github.com/basilisk-labs/agentplane/blob/main/docs/user/workflow.mdx
-- CLI commands: https://github.com/basilisk-labs/agentplane/blob/main/docs/user/commands.mdx
-- Project layout: https://github.com/basilisk-labs/agentplane/blob/main/docs/developer/project-layout.mdx
-- Recipes: https://github.com/basilisk-labs/agentplane/tree/main/agentplane-recipes
+- Overview: https://agentplane.org/docs/user/overview
+- Setup: https://agentplane.org/docs/user/setup
+- Workflow: https://agentplane.org/docs/user/workflow
+- Commands: https://agentplane.org/docs/user/commands
+- Backends: https://agentplane.org/docs/user/backends
+- CLI reference: https://agentplane.org/docs/user/cli-reference.generated
+- Release notes: https://agentplane.org/docs/releases
+- Recipes repository: https://github.com/basilisk-labs/agentplane/tree/main/agentplane-recipes
 
 ## Support
 
