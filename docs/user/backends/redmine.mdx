@@ -9,6 +9,14 @@ Redmine backend stores tasks as Redmine issues.
 
 Runtime loading is env-first for connection secrets and field IDs. Backend JSON keeps non-secret behavior settings.
 
+Install-first runtime model:
+
+- Redmine is the canonical remote source of truth.
+- `agentplane` keeps a local task projection under `.agentplane/`.
+- Ordinary task reads (`task list`, `task show`, `doctor`) use the local projection by default.
+- `agentplane backend sync redmine --direction pull` refreshes the projection from Redmine.
+- `agentplane task export` writes `.agentplane/tasks.json` from the current projection.
+
 ## Required environment keys
 
 - `AGENTPLANE_REDMINE_URL`
@@ -69,10 +77,16 @@ agentplane backend sync redmine --direction pull
 agentplane backend sync redmine --direction push --yes
 ```
 
-When Redmine is unavailable, backend can fall back to local cache if configured.
+Operational rule:
+
+- use `pull` when you want to refresh the local projection from Redmine;
+- use `push --yes` when you want to send local dirty task state back to Redmine;
+- ordinary task reads do not implicitly refresh from the network.
 
 ## Troubleshooting pointers
 
 - Missing env key errors: fill required vars in `.env` or shell env.
 - Invalid integer errors: check numeric env keys (`*_ID`, `*_BATCH_*`, custom field IDs).
 - Missing custom field mapping: set env key for the field ID and re-run sync.
+- If task output looks stale, run `agentplane backend sync redmine --direction pull` first, then
+  retry the read command.

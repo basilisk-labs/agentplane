@@ -16,6 +16,21 @@ For local backend, records are persisted under:
 
 - `.agentplane/tasks/<task-id>/README.md`
 
+## Source, projection, and snapshot
+
+Task backends now follow one install-first contract:
+
+- **canonical source**: where the authoritative task state lives
+- **local projection**: the task state that ordinary CLI reads use
+- **sync boundary**: explicit refresh/push operations between projection and canonical source
+- **export snapshot**: `.agentplane/tasks.json` for integrations
+
+For `local`, the canonical source and projection are the same repository state.
+
+For `redmine`, Redmine is the canonical source and `.agentplane/` holds the local projection.
+`task list`, `task show`, and `doctor` read the projection by default; `backend sync redmine
+--direction pull` refreshes it from Redmine.
+
 ## README contract versions
 
 - `doc_version=2` is the legacy task README layout and remains readable.
@@ -80,7 +95,8 @@ agentplane doctor
 Operational split:
 
 - `agentplane upgrade --yes` updates framework-managed files.
-- `agentplane task migrate-doc --all` updates task-local README docs to `doc_version=3`.
+- `agentplane task migrate-doc --all` updates task-local README docs to `doc_version=3` and
+  refreshes the projection snapshot for the configured backend.
 - `agentplane doctor` tells you whether active work is still blocked by a mixed v2/v3 state or
   whether only the historical archive remains on the old format.
 
@@ -91,6 +107,8 @@ An export-only snapshot is written to `.agentplane/tasks.json` for integrations 
 ```bash
 agentplane task export
 ```
+
+The snapshot is derived from the current backend projection. It is not the canonical source of truth.
 
 Do not edit `.agentplane/tasks.json` manually.
 

@@ -27,7 +27,16 @@ agentplane backend sync <id> --direction pull
 agentplane backend sync <id> --direction push --yes
 ```
 
-The CLI may maintain a local cache and falls back to it when remote services are unavailable.
+Remote backends follow the same install-first model as the local backend:
+
+- the backend keeps a local projection under `.agentplane/`;
+- ordinary task reads (`task list`, `task show`, `doctor`) use that projection by default;
+- `agentplane backend sync <id> --direction pull` refreshes the projection from the remote source;
+- `agentplane backend sync <id> --direction push --yes` pushes local dirty state back to the
+  remote source;
+- `agentplane task export` writes an integration snapshot from the current projection.
+
+Do not assume ordinary task reads will hit the network implicitly.
 
 Prefer `agentplane backend sync` in docs and automation.
 

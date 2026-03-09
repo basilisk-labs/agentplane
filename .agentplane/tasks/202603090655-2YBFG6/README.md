@@ -1,7 +1,7 @@
 ---
 id: "202603090655-2YBFG6"
 title: "Add backend matrix regressions and install-first docs"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -10,18 +10,30 @@ tags:
   - "backend"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-09T07:39:35.953Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: adding backend matrix regressions and install-first guidance around projection, sync, and snapshot behavior."
+events:
+  -
+    type: "status"
+    at: "2026-03-09T07:39:36.332Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: adding backend matrix regressions and install-first guidance around projection, sync, and snapshot behavior."
 doc_version: 3
-doc_updated_at: "2026-03-09T06:55:51.163Z"
+doc_updated_at: "2026-03-09T07:45:04.995Z"
 doc_updated_by: "CODER"
 description: "Cover local and Redmine backends with shared integration scenarios and document the universal backend contract for npm-installed users."
 id_source: "generated"
@@ -45,11 +57,9 @@ Cover local and Redmine backends with shared integration scenarios and document 
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Run `bunx vitest run packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts --pool=forks --testTimeout 60000 --hookTimeout 60000`. Expected: backend matrix regressions pass for local and Redmine-backed flows.
+2. Run `bun run lint:core -- packages/agentplane/src/backends/task-backend.test.ts packages/agentplane/src/commands/doctor.command.test.ts packages/agentplane/src/cli/run-cli.core.tasks.test.ts packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts`. Expected: modified backend and CLI test surfaces lint cleanly.
+3. Run `bun run docs:site:check`. Expected: install-first backend docs render cleanly without stale cache/fallback wording.
 
 ## Verification
 
