@@ -50,14 +50,25 @@ You may also see `.agentplane/tasks.json` later if you export a task snapshot, a
 npm install -g agentplane
 ```
 
-Initialize the repository and print the built-in startup path:
+Run the CLI inside the git repository you want to govern:
 
 ```bash
+cd /path/to/your-repository
 agentplane init
 agentplane quickstart
 ```
 
+If the directory is not a git repository yet, `agentplane init` initializes git first.
+
 `agentplane init` is interactive by default. It lets you choose the workflow mode, backend, gateway file (`AGENTS.md` or `CLAUDE.md`), execution profile, and optional recipe setup.
+
+On the first run it creates the visible workflow surface:
+
+- `AGENTS.md` or `CLAUDE.md`
+- `.agentplane/config.json`
+- `.agentplane/tasks/`
+- `.agentplane/agents/`
+- `.agentplane/WORKFLOW.md`
 
 Prefer not to install globally:
 
@@ -68,13 +79,11 @@ npx agentplane quickstart
 
 ## First task flow
 
+Create a task and record the plan:
+
 ```bash
 agentplane task new --title "First task" --description "Describe the change" --priority med --owner DOCS --tag docs
 agentplane task plan set <task-id> --text "Explain the plan" --updated-by DOCS
-agentplane task start-ready <task-id> --author DOCS --body "Start: ..."
-agentplane task verify-show <task-id>
-agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
-agentplane finish <task-id> --author DOCS --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
 
 If your repository requires explicit plan approval, run:
@@ -83,7 +92,16 @@ If your repository requires explicit plan approval, run:
 agentplane task plan approve <task-id> --by ORCHESTRATOR
 ```
 
-before `agentplane task start-ready`.
+Then start work, record verification, and finish:
+
+```bash
+agentplane task start-ready <task-id> --author DOCS --body "Start: ..."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
+agentplane finish <task-id> --author DOCS --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
+```
+
+That is the shortest believable first-win path: initialize the repo, create a task, verify the change, and close it through the recorded workflow instead of an unstructured agent session.
 
 ## Workflow modes
 
