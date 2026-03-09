@@ -68,12 +68,20 @@ export default function HomePreview(): ReactNode {
     [activeControlTab, controlModel.tabs],
   );
 
+  const repositoryTree = [
+    ".",
+    "├── AGENTS.md / CLAUDE.md",
+    "└── .agentplane/",
+    "    ├── config.json",
+    "    ├── agents/",
+    "    ├── policy/",
+    "    ├── tasks/",
+    "    └── WORKFLOW.md",
+  ];
+
   return (
     <Layout title={seo.title} description={seo.description}>
       <main className={styles.page}>
-        <div className={styles.pageGlow} aria-hidden="true" />
-        <div className={styles.pageNoise} aria-hidden="true" />
-
         <section className={`${styles.hero} ${styles.shell}`}>
           <div className={styles.heroCopy}>
             <span className={styles.heroEyebrow}>{hero.eyebrow}</span>
@@ -101,68 +109,51 @@ export default function HomePreview(): ReactNode {
             </ul>
           </div>
 
-          <div className={styles.heroProofStack}>
-            <article className={`${styles.heroCard} ${styles.heroCardPrimary} grid-paper`}>
-              <span className={styles.cardKicker}>{hero.terminalPanel.title}</span>
-              <pre className={styles.commandPre} aria-label="AgentPlane workflow preview">
-                <code>
-                  {hero.terminalPanel.lines.map((line) => (
-                    <span key={line} className={styles.commandLine}>
-                      <span className={styles.commandPrompt}>$</span>
-                      {line}
-                    </span>
-                  ))}
-                </code>
-              </pre>
-            </article>
+          <article className={`${styles.heroPanel} ${styles.glassPanel} grid-paper`}>
+            <span className={styles.cardKicker}>{hero.terminalPanel.title}</span>
+            <pre className={styles.commandPre} aria-label="AgentPlane workflow preview">
+              <code>
+                {hero.terminalPanel.lines.map((line) => (
+                  <span key={line} className={styles.commandLine}>
+                    <span className={styles.commandPrompt}>$</span>
+                    {line}
+                  </span>
+                ))}
+              </code>
+            </pre>
 
-            <div className={styles.heroStackLower}>
-              <article className={`${styles.heroCard} ${styles.heroCardSecondary}`}>
-                <span className={styles.cardKicker}>{hero.repositoryPanel.title}</span>
-                <ul className={styles.miniList}>
-                  {hero.repositoryPanel.lines.map((line) => (
-                    <li key={line}>
-                      <code>{line}</code>
-                    </li>
-                  ))}
-                </ul>
-                <p>{hero.repositoryPanel.text}</p>
-              </article>
-
-              <article className={`${styles.heroCard} ${styles.heroCardTertiary}`}>
-                <span className={styles.cardKicker}>{hero.trustPanel.title}</span>
-                <ul className={styles.trustList}>
-                  {hero.trustPanel.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
-                <p>{hero.trustPanel.text}</p>
-              </article>
+            <div className={styles.heroMeta}>
+              {hero.repositoryPanel.lines.map((line) => (
+                <span key={line} className={styles.metaTag}>
+                  {line}
+                </span>
+              ))}
+              <span className={styles.heroMetaNote}>{hero.trustPanel.text}</span>
             </div>
-          </div>
+          </article>
         </section>
 
         <section className={`${styles.section} ${styles.shell}`}>
           <SectionLead label={problem.label} title={problem.title} text={problem.text} />
 
-          <div className={styles.compareGrid}>
-            <article className={`${styles.compareCard} ${styles.compareCardMuted}`}>
+          <div className={styles.problemGrid}>
+            <div className={styles.problemColumn}>
               <span className={styles.compareLabel}>{problem.beforeTitle}</span>
-              <ul className={styles.compareList}>
+              <ul className={styles.problemList}>
                 {problem.before.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-            </article>
+            </div>
 
-            <article className={`${styles.compareCard} ${styles.compareCardAccent}`}>
+            <div className={styles.problemColumn}>
               <span className={styles.compareLabel}>{problem.afterTitle}</span>
-              <ul className={styles.compareList}>
+              <ul className={styles.problemList}>
                 {problem.after.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-            </article>
+            </div>
           </div>
         </section>
 
@@ -173,21 +164,31 @@ export default function HomePreview(): ReactNode {
             text={repositorySurface.intro}
           />
 
-          <div className={styles.repositoryGrid}>
-            {repositorySurface.items.map((item) => (
-              <article key={item.name} className={styles.repositoryCard}>
-                <span className={styles.cardKicker}>{item.kicker}</span>
-                <h3>{item.name}</h3>
-                <p>{item.text}</p>
-                <div className={styles.artifactRow}>
-                  {item.artifact.map((fragment) => (
-                    <span key={fragment} className={styles.artifactChip}>
-                      {fragment}
+          <div className={styles.repositorySurface}>
+            <article className={`${styles.repoTreePanel} grid-paper`}>
+              <span className={styles.cardKicker}>Repository preview</span>
+              <pre className={styles.treePre} aria-label="Repository surface preview">
+                <code>
+                  {repositoryTree.map((line) => (
+                    <span key={line} className={styles.treeLine}>
+                      {line}
                     </span>
                   ))}
+                </code>
+              </pre>
+            </article>
+
+            <div className={styles.repositoryLabels}>
+              {repositorySurface.items.map((item) => (
+                <div key={item.name} className={styles.repositoryRow}>
+                  <div className={styles.repositoryRowLead}>
+                    <span className={styles.cardKicker}>{item.kicker}</span>
+                    <h3>{item.name}</h3>
+                  </div>
+                  <p>{item.text}</p>
                 </div>
-              </article>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
@@ -307,7 +308,7 @@ export default function HomePreview(): ReactNode {
 
           <div className={styles.docsGrid}>
             {docsRail.groups.map((group) => (
-              <article key={group.name} className={styles.docsCard}>
+              <article key={group.name} className={styles.docsGroup}>
                 <h3>{group.name}</h3>
                 <div className={styles.docsLinks}>
                   {group.links.map((link) => (

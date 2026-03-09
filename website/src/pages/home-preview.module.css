@@ -1,41 +1,8 @@
 .page {
   background:
-    radial-gradient(circle at 12% 6%, rgb(0 132 184 / 0.12), transparent 24%),
-    radial-gradient(circle at 88% 10%, rgb(35 108 255 / 0.1), transparent 22%),
-    radial-gradient(circle at 50% 0%, rgb(255 255 255 / 0.88), rgb(var(--bg)) 58%);
-  isolation: isolate;
-  overflow: clip;
-  padding: clamp(2rem, 3vw, 3.25rem) 0 6rem;
-  position: relative;
-}
-
-.pageGlow,
-.pageNoise {
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-}
-
-.pageGlow {
-  background:
-    radial-gradient(circle at 18% 18%, rgb(255 255 255 / 0.72), transparent 16%),
-    radial-gradient(circle at 84% 14%, rgb(255 255 255 / 0.45), transparent 18%),
-    radial-gradient(circle at 48% 40%, rgb(0 132 184 / 0.07), transparent 26%);
-  filter: blur(22px);
-  opacity: 0.9;
-  z-index: -2;
-}
-
-.pageNoise {
-  background-image:
-    linear-gradient(rgb(255 255 255 / 0.32), rgb(255 255 255 / 0.32)),
-    radial-gradient(circle at 20% 20%, rgb(0 0 0 / 0.045) 0 0.72px, transparent 0.9px);
-  background-size:
-    auto,
-    15px 15px;
-  mix-blend-mode: soft-light;
-  opacity: 0.34;
-  z-index: -1;
+    radial-gradient(circle at 50% 0%, rgb(255 255 255 / 0.92), transparent 34%),
+    radial-gradient(circle at 12% 8%, rgb(0 132 184 / 0.08), transparent 20%), rgb(var(--bg));
+  padding: clamp(2rem, 3vw, 3rem) 0 6rem;
 }
 
 .shell {
@@ -50,79 +17,21 @@
 }
 
 .hero {
-  align-items: stretch;
-  gap: 1.25rem;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  margin-bottom: clamp(3.5rem, 7vw, 5.75rem);
+  align-items: start;
+  gap: clamp(1.6rem, 3vw, 2.8rem);
+  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+  margin-bottom: clamp(4rem, 8vw, 6.5rem);
 }
 
 .section {
-  gap: 1.6rem;
-  grid-template-columns: minmax(250px, 320px) minmax(0, 1fr);
-  margin-top: clamp(4.4rem, 8vw, 7.75rem);
-}
-
-.heroCopy,
-.heroCard,
-.compareCard,
-.repositoryCard,
-.modeCard,
-.controlNarrative,
-.controlPanel,
-.harnessCard,
-.docsCard,
-.journalCard,
-.closingCard {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.58)), rgb(var(--bg) / 0.72);
-  backdrop-filter: blur(18px) saturate(122%);
-  border: 1px solid rgb(var(--border) / 0.9);
-  border-radius: 24px;
-  box-shadow:
-    0 18px 42px rgb(15 23 42 / 0.05),
-    inset 0 1px 0 rgb(255 255 255 / 0.58);
-  position: relative;
-  -webkit-backdrop-filter: blur(18px) saturate(122%);
-}
-
-.heroCopy::before,
-.heroCard::before,
-.compareCard::before,
-.repositoryCard::before,
-.modeCard::before,
-.controlNarrative::before,
-.controlPanel::before,
-.harnessCard::before,
-.docsCard::before,
-.journalCard::before,
-.closingCard::before {
-  background: linear-gradient(90deg, rgb(255 255 255 / 0.74), transparent 42%);
-  content: "";
-  height: 1px;
-  inset: 0 auto auto 0;
-  opacity: 0.74;
-  position: absolute;
-  width: 100%;
-}
-
-.heroCopy,
-.heroCard,
-.compareCard,
-.repositoryCard,
-.modeCard,
-.controlNarrative,
-.controlPanel,
-.harnessCard,
-.docsCard,
-.journalCard,
-.closingCard {
-  padding: clamp(1.15rem, 2.6vw, 1.7rem);
+  gap: clamp(1.4rem, 3vw, 2rem);
+  grid-template-columns: minmax(240px, 320px) minmax(0, 1fr);
+  margin-top: clamp(4.8rem, 8vw, 8rem);
 }
 
 .heroCopy {
   display: grid;
-  gap: 1.1rem;
-  min-height: 100%;
+  gap: 1.15rem;
 }
 
 .heroEyebrow,
@@ -132,7 +41,7 @@
 .modeBadge {
   align-items: center;
   background: rgb(255 255 255 / 0.72);
-  border: 1px solid rgb(var(--border));
+  border: 1px solid rgb(var(--border) / 0.9);
   border-radius: 999px;
   color: rgb(var(--faint));
   display: inline-flex;
@@ -155,28 +64,30 @@
 }
 
 .heroCopy h1 {
-  font-size: clamp(3.45rem, 8.2vw, 6.7rem);
-  max-width: 8.6ch;
+  font-size: clamp(3.5rem, 8vw, 6.7rem);
+  max-width: 8.4ch;
 }
 
 .heroSubtitle,
 .sectionLead p,
 .closingCard p,
-.compareCard li,
-.repositoryCard p,
+.problemList li,
+.repositoryRow p,
+.timelineContent p,
 .modeCard p,
 .modeCard li,
-.controlNarrative li,
-.controlPanel p,
+.proofPointList li,
+.tabPanel p,
+.docsLinks a,
 .journalCard p {
   color: rgb(var(--muted));
 }
 
 .heroSubtitle {
-  font-size: clamp(1.05rem, 1.55vw, 1.22rem);
-  line-height: 1.5;
+  font-size: clamp(1.05rem, 1.45vw, 1.2rem);
+  line-height: 1.52;
   margin: 0;
-  max-width: 58ch;
+  max-width: 56ch;
 }
 
 .actionsRow {
@@ -197,23 +108,37 @@
   padding: 0.8rem 1.08rem;
   text-decoration: none;
   transition:
-    transform 180ms ease,
     border-color 180ms ease,
     background-color 180ms ease,
     color 180ms ease,
-    box-shadow 180ms ease;
+    transform 180ms ease;
 }
 
-.action:hover,
-.action:focus-visible,
-.compareCard:hover,
-.repositoryCard:hover,
-.modeCard:hover,
-.docsCard:hover,
-.journalCard:hover,
-.controlPanel:hover,
-.controlNarrative:hover {
-  transform: translateY(-2px);
+.actionPrimary {
+  background: rgb(var(--fg));
+  border: 1px solid rgb(var(--fg));
+  color: rgb(255 255 255);
+}
+
+.actionPrimary:hover,
+.actionPrimary:focus-visible {
+  background: rgb(30 30 30);
+  color: rgb(255 255 255);
+  transform: translateY(-1px);
+}
+
+.actionSecondary {
+  background: rgb(255 255 255 / 0.82);
+  border: 1px solid rgb(var(--border) / 0.92);
+  color: rgb(var(--fg));
+}
+
+.actionSecondary:hover,
+.actionSecondary:focus-visible {
+  background: rgb(255 255 255 / 0.94);
+  border-color: rgb(var(--accent) / 0.28);
+  color: rgb(var(--fg));
+  transform: translateY(-1px);
 }
 
 .action:focus-visible,
@@ -224,31 +149,6 @@
   outline-offset: 2px;
 }
 
-.actionPrimary {
-  background: linear-gradient(180deg, rgb(var(--fg)), rgb(26 26 26));
-  border: 1px solid rgb(var(--fg));
-  box-shadow: 0 10px 24px rgb(15 23 42 / 0.12);
-  color: rgb(255 255 255);
-}
-
-.actionPrimary:hover,
-.actionPrimary:focus-visible {
-  color: rgb(255 255 255);
-}
-
-.actionSecondary {
-  background: rgb(255 255 255 / 0.64);
-  border: 1px solid rgb(var(--border));
-  color: rgb(var(--fg));
-}
-
-.actionSecondary:hover,
-.actionSecondary:focus-visible {
-  background: rgb(255 255 255 / 0.86);
-  border-color: rgb(var(--accent) / 0.35);
-  color: rgb(var(--fg));
-}
-
 .heroChips {
   display: flex;
   flex-wrap: wrap;
@@ -256,85 +156,87 @@
 }
 
 .heroChip,
-.artifactChip {
+.artifactChip,
+.metaTag {
   align-items: center;
-  background: rgb(255 255 255 / 0.64);
-  border: 1px solid rgb(var(--border) / 0.9);
+  background: rgb(255 255 255 / 0.72);
+  border: 1px solid rgb(var(--border) / 0.88);
   border-radius: 999px;
   color: rgb(var(--fg));
   display: inline-flex;
   font-size: 0.8rem;
   font-weight: 500;
-  padding: 0.5rem 0.8rem;
+  padding: 0.46rem 0.74rem;
 }
 
-.artifactChip {
+.artifactChip,
+.metaTag {
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.74rem;
+  font-size: 0.73rem;
 }
 
 .heroBullets,
-.compareList,
+.problemList,
 .modeList,
-.proofPointList,
-.miniList,
-.trustList {
+.proofPointList {
   display: grid;
-  gap: 0.78rem;
+  gap: 0.72rem;
   margin: 0;
   padding-left: 1.1rem;
 }
 
 .heroBullets li,
-.compareList li,
+.problemList li,
 .modeList li,
-.proofPointList li,
-.miniList li,
-.trustList li {
-  line-height: 1.56;
+.proofPointList li {
+  line-height: 1.58;
 }
 
 .heroBullets li::marker,
-.compareList li::marker,
+.problemList li::marker,
 .modeList li::marker,
-.proofPointList li::marker,
-.miniList li::marker,
-.trustList li::marker {
+.proofPointList li::marker {
   color: rgb(var(--accent));
 }
 
-.heroProofStack {
+.glassPanel,
+.repoTreePanel,
+.modeCard,
+.controlPanel,
+.docsGroup,
+.journalCard {
+  background: rgb(255 255 255 / 0.82);
+  border: 1px solid rgb(var(--border) / 0.92);
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.glassPanel {
+  background: rgb(255 255 255 / 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.heroPanel,
+.repoTreePanel,
+.modeCard,
+.controlPanel,
+.docsGroup,
+.journalCard,
+.closingCard {
+  padding: clamp(1.05rem, 2vw, 1.5rem);
+}
+
+.heroPanel {
   display: grid;
-  gap: 1rem;
-  grid-template-rows: minmax(0, 1.3fr) auto;
-}
-
-.heroStackLower {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-}
-
-.heroCard {
-  display: grid;
-  gap: 0.9rem;
-  overflow: hidden;
-}
-
-.heroCardPrimary {
-  min-height: 22rem;
-}
-
-.heroCardSecondary,
-.heroCardTertiary {
-  min-height: 13.2rem;
+  gap: 0.95rem;
+  min-height: 100%;
 }
 
 .commandPre {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.66), rgb(255 255 255 / 0.44)), rgb(var(--bg) / 0.62);
-  border: 1px solid rgb(var(--border));
-  border-radius: 18px;
+  background: rgb(255 255 255 / 0.34);
+  border: 1px solid rgb(var(--border) / 0.82);
+  border-radius: 14px;
   margin: 0;
   overflow-x: auto;
   padding: 1rem;
@@ -346,7 +248,7 @@
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.79rem;
   gap: 0.74rem;
-  line-height: 1.48;
+  line-height: 1.5;
 }
 
 .commandLine {
@@ -361,204 +263,226 @@
   margin-right: 0.68rem;
 }
 
-.miniList code {
-  background: none;
-  color: rgb(var(--fg));
-  font-size: 0.78rem;
-  padding: 0;
+.heroMeta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
 }
 
-.trustList {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  padding-left: 0;
-}
-
-.trustList li {
-  list-style: none;
+.heroMetaNote {
+  color: rgb(var(--muted));
+  font-size: 0.84rem;
+  line-height: 1.5;
+  margin-left: 0.2rem;
 }
 
 .sectionLead {
   display: grid;
-  gap: 0.9rem;
+  gap: 0.85rem;
 }
 
 .sectionLead h2,
 .closingCard h2 {
-  font-size: clamp(2rem, 4.5vw, 3.35rem);
+  font-size: clamp(2rem, 4.4vw, 3.3rem);
   max-width: 11ch;
 }
 
 .sectionLead p,
 .closingCard p,
-.repositoryCard p,
+.repositoryRow p,
 .modeCard p,
-.controlPanel p,
-.journalCard p {
+.journalCard p,
+.tabPanel p {
   font-size: 0.96rem;
   line-height: 1.58;
   margin: 0;
 }
 
-.compareGrid,
-.modeGrid,
-.journalGrid,
-.controlGrid {
+.problemGrid {
   display: grid;
-  gap: 1rem;
-}
-
-.compareGrid,
-.modeGrid,
-.journalGrid {
+  gap: 1.25rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.compareCardMuted {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(249 249 249 / 0.58)), rgb(var(--bg) / 0.72);
-}
-
-.compareCardAccent {
-  background:
-    linear-gradient(180deg, rgb(245 250 255 / 0.92), rgb(255 255 255 / 0.6)), rgb(var(--bg) / 0.72);
-  border-color: rgb(var(--accent) / 0.18);
-}
-
-.repositoryGrid {
+.problemColumn {
+  border-top: 1px solid rgb(var(--border) / 0.92);
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.9rem;
+  padding-top: 0.85rem;
 }
 
-.repositoryCard {
+.repositorySurface {
   display: grid;
-  gap: 0.88rem;
-  min-height: 14rem;
+  gap: 1.25rem;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
 }
 
-.repositoryCard:nth-child(1),
-.repositoryCard:nth-child(2) {
-  grid-column: span 6;
+.repoTreePanel {
+  display: grid;
+  gap: 0.85rem;
 }
 
-.repositoryCard:nth-child(3),
-.repositoryCard:nth-child(4),
-.repositoryCard:nth-child(5) {
-  grid-column: span 4;
+.treePre {
+  background: rgb(255 255 255 / 0.52);
+  border: 1px solid rgb(var(--border) / 0.86);
+  border-radius: 14px;
+  margin: 0;
+  overflow-x: auto;
+  padding: 1rem 1.1rem;
 }
 
-.repositoryCard h3,
+.treeLine {
+  display: block;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.86rem;
+  line-height: 1.7;
+  white-space: pre;
+}
+
+.repositoryLabels {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.repositoryRow {
+  border-top: 1px solid rgb(var(--border) / 0.88);
+  display: grid;
+  gap: 0.42rem;
+  padding-top: 0.85rem;
+}
+
+.repositoryRowLead {
+  align-items: center;
+  column-gap: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+}
+
+.repositoryRowLead h3,
 .modeCard h3,
-.docsCard h3,
+.docsGroup h3,
 .journalCard h3,
 .timelineContent h3,
-.controlPanel h3 {
-  font-size: clamp(1.18rem, 1.4vw, 1.42rem);
+.tabPanel h3 {
+  font-size: clamp(1.16rem, 1.34vw, 1.36rem);
   letter-spacing: -0.03em;
   line-height: 1.08;
   margin: 0;
 }
 
-.artifactRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.62rem;
-  margin-top: auto;
-}
-
 .timeline {
   display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0.95rem;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 1.1rem;
+  position: relative;
+}
+
+.timeline::before {
+  background: rgb(var(--border) / 0.9);
+  content: "";
+  inset: 0 auto 0 0;
+  position: absolute;
+  width: 1px;
 }
 
 .timelineItem {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.56)), rgb(var(--bg) / 0.72);
-  backdrop-filter: blur(16px) saturate(120%);
-  border: 1px solid rgb(var(--border) / 0.9);
-  border-radius: 24px;
-  box-shadow:
-    0 14px 32px rgb(15 23 42 / 0.04),
-    inset 0 1px 0 rgb(255 255 255 / 0.52);
+  column-gap: 1rem;
   display: grid;
-  gap: 1rem;
-  min-height: 14rem;
-  padding: 1rem;
+  grid-template-columns: auto minmax(0, 1fr);
   position: relative;
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
+}
+
+.timelineItem::before {
+  background: rgb(var(--bg));
+  border: 1px solid rgb(var(--border));
+  border-radius: 999px;
+  content: "";
+  height: 0.7rem;
+  left: -1.44rem;
+  position: absolute;
+  top: 0.78rem;
+  width: 0.7rem;
 }
 
 .timelineIndex {
-  align-items: center;
-  background: rgb(255 255 255 / 0.74);
-  border: 1px solid rgb(var(--border));
-  border-radius: 14px;
-  color: rgb(var(--fg));
+  color: rgb(var(--faint));
   display: inline-flex;
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.82rem;
-  font-weight: 700;
-  height: 2.2rem;
-  justify-content: center;
-  width: 2.2rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  padding-top: 0.2rem;
+  text-transform: uppercase;
 }
 
 .timelineContent {
+  border-bottom: 1px solid rgb(var(--border) / 0.82);
   display: grid;
-  gap: 0.65rem;
+  gap: 0.48rem;
+  padding: 0 0 1rem;
+}
+
+.timelineItem:last-child .timelineContent {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .timelineHeader {
-  display: grid;
-  gap: 0.6rem;
+  align-items: baseline;
+  column-gap: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 0.35rem;
 }
 
 .timelineHeader code {
-  background: rgb(255 255 255 / 0.66);
-  border: 1px solid rgb(var(--border));
-  border-radius: 999px;
-  color: rgb(var(--fg));
-  display: inline-flex;
+  background: none;
+  border: 0;
+  color: rgb(var(--faint));
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.72rem;
-  padding: 0.34rem 0.62rem;
-  width: fit-content;
+  font-size: 0.74rem;
+  padding: 0;
 }
 
-.timelineContent p,
-.controlNarrative li,
-.controlPanel p {
-  font-size: 0.95rem;
-  line-height: 1.58;
-  margin: 0;
-}
-
-.modeCard {
+.modeGrid,
+.journalGrid {
   display: grid;
-  gap: 0.9rem;
-  min-height: 16rem;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.modeCard,
+.controlPanel,
+.docsGroup,
+.journalCard {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.modeCard,
+.journalCard {
+  min-height: 100%;
 }
 
 .controlGrid {
-  align-items: stretch;
-  grid-template-columns: minmax(0, 0.98fr) minmax(0, 1.02fr);
+  align-items: start;
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
 }
 
 .controlNarrative {
-  display: grid;
+  border-top: 1px solid rgb(var(--border) / 0.92);
+  padding-top: 0.85rem;
 }
 
 .proofPointList {
-  align-content: start;
-}
-
-.controlPanel {
-  display: grid;
-  gap: 1rem;
+  padding-left: 1rem;
 }
 
 .tabRow {
@@ -568,63 +492,52 @@
 }
 
 .tabButton {
-  background: rgb(255 255 255 / 0.58);
-  border: 1px solid rgb(var(--border));
+  background: rgb(255 255 255 / 0.7);
+  border: 1px solid rgb(var(--border) / 0.9);
   border-radius: 14px;
   color: rgb(var(--fg));
   cursor: pointer;
   font: inherit;
-  font-size: 0.84rem;
+  font-size: 0.83rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
-  min-height: 2.6rem;
-  padding: 0.58rem 0.8rem;
+  min-height: 2.5rem;
+  padding: 0.55rem 0.78rem;
   transition:
-    transform 180ms ease,
     border-color 180ms ease,
     background-color 180ms ease,
-    color 180ms ease,
-    box-shadow 180ms ease;
+    transform 180ms ease;
 }
 
 .tabButton:hover,
 .tabButton:focus-visible {
-  background: rgb(255 255 255 / 0.82);
-  border-color: rgb(var(--accent) / 0.35);
+  background: rgb(255 255 255 / 0.92);
+  border-color: rgb(var(--accent) / 0.3);
   transform: translateY(-1px);
 }
 
 .tabButtonActive {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.88), rgb(244 250 255 / 0.72)), rgb(var(--bg) / 0.84);
-  border-color: rgb(var(--accent) / 0.38);
-  box-shadow:
-    0 8px 18px rgb(15 23 42 / 0.05),
-    inset 0 1px 0 rgb(255 255 255 / 0.7);
+  background: rgb(245 250 255 / 0.92);
+  border-color: rgb(var(--accent) / 0.34);
 }
 
 .tabPanel {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(255 255 255 / 0.52)), rgb(var(--bg) / 0.72);
-  border: 1px solid rgb(var(--border));
-  border-radius: 18px;
+  border-top: 1px solid rgb(var(--border) / 0.9);
   display: grid;
   gap: 0.9rem;
-  min-height: 18rem;
-  padding: 1.1rem;
+  padding-top: 0.9rem;
 }
 
 .tabArtifacts {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.65rem;
-  margin-top: auto;
+  gap: 0.6rem;
 }
 
 .harnessCard {
-  align-items: center;
-  display: flex;
-  min-height: 11rem;
+  border-top: 1px solid rgb(var(--border) / 0.92);
+  display: grid;
+  gap: 0.8rem;
+  padding-top: 0.9rem;
 }
 
 .harnessLoop {
@@ -642,20 +555,18 @@
 }
 
 .harnessStep span:first-child {
-  background: rgb(255 255 255 / 0.72);
-  border: 1px solid rgb(var(--border));
-  border-radius: 999px;
+  border-bottom: 1px solid rgb(var(--border));
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   letter-spacing: 0.04em;
-  padding: 0.48rem 0.78rem;
+  padding-bottom: 0.2rem;
   text-transform: uppercase;
 }
 
 .harnessArrow {
   color: rgb(var(--accent));
   font-family: var(--ifm-font-family-monospace);
-  font-size: 1rem;
+  font-size: 0.9rem;
 }
 
 .docsGrid {
@@ -664,50 +575,32 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
-.docsCard {
-  display: grid;
-  gap: 1rem;
-  min-height: 13rem;
-}
-
 .docsLinks {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.58rem;
 }
 
 .inlineLink {
-  align-items: center;
-  background: rgb(255 255 255 / 0.62);
-  border: 1px solid rgb(var(--border));
-  border-radius: 14px;
   color: rgb(var(--fg));
-  display: inline-flex;
-  font-size: 0.84rem;
-  font-weight: 500;
-  min-height: 2.45rem;
-  padding: 0.5rem 0.76rem;
+  font-size: 0.87rem;
+  line-height: 1.5;
   text-decoration: none;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
   transition:
-    transform 180ms ease,
-    border-color 180ms ease,
-    background-color 180ms ease,
-    color 180ms ease;
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .inlineLink:hover,
 .inlineLink:focus-visible {
-  background: rgb(255 255 255 / 0.9);
-  border-color: rgb(var(--accent) / 0.34);
-  color: rgb(var(--fg));
-  transform: translateY(-1px);
+  color: rgb(var(--accent));
+  transform: translateX(1px);
 }
 
 .journalCard {
   color: inherit;
-  display: grid;
-  gap: 0.88rem;
-  min-height: 13rem;
   text-decoration: none;
 }
 
@@ -716,6 +609,7 @@
   border-color: rgb(var(--accent) / 0.26);
   color: inherit;
   text-decoration: none;
+  transform: translateY(-1px);
 }
 
 .closingWrap {
@@ -724,18 +618,22 @@
 
 .closingCard {
   background:
-    radial-gradient(circle at 20% 0%, rgb(0 132 184 / 0.12), transparent 24%),
-    radial-gradient(circle at 82% 0%, rgb(82 149 255 / 0.12), transparent 24%),
-    linear-gradient(180deg, rgb(255 255 255 / 0.84), rgb(255 255 255 / 0.64)), rgb(var(--bg) / 0.74);
+    radial-gradient(circle at 28% 40%, rgb(120 160 255 / 0.18), transparent 56%),
+    radial-gradient(circle at 76% 28%, rgb(0 132 184 / 0.12), transparent 52%),
+    rgb(255 255 255 / 0.86);
+  border: 1px solid rgb(var(--border) / 0.92);
+  border-radius: 20px;
+  box-shadow: none;
   display: grid;
   gap: 1rem;
   justify-items: start;
-  padding: clamp(1.4rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 2.8vw, 1.9rem);
 }
 
 @media (max-width: 1200px) {
   .hero,
   .section,
+  .repositorySurface,
   .controlGrid {
     grid-template-columns: 1fr;
   }
@@ -743,70 +641,31 @@
   .docsGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
-  .repositoryCard:nth-child(1),
-  .repositoryCard:nth-child(2),
-  .repositoryCard:nth-child(3),
-  .repositoryCard:nth-child(4),
-  .repositoryCard:nth-child(5) {
-    grid-column: span 6;
-  }
 }
 
 @media (max-width: 980px) {
-  .heroStackLower,
-  .compareGrid,
+  .problemGrid,
   .modeGrid,
   .journalGrid,
   .docsGrid {
     grid-template-columns: 1fr;
   }
-
-  .timeline {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .repositoryCard:nth-child(1),
-  .repositoryCard:nth-child(2),
-  .repositoryCard:nth-child(3),
-  .repositoryCard:nth-child(4),
-  .repositoryCard:nth-child(5) {
-    grid-column: span 12;
-  }
 }
 
 @media (max-width: 720px) {
   .page {
-    padding-top: 1.25rem;
+    padding-top: 1.2rem;
   }
 
   .heroCopy h1 {
-    font-size: clamp(2.6rem, 13vw, 4rem);
-    max-width: 9.8ch;
+    font-size: clamp(2.65rem, 13vw, 4rem);
+    max-width: 9.4ch;
   }
 
-  .timeline {
-    grid-template-columns: 1fr;
-  }
-
-  .docsGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .heroCopy,
-  .heroCard,
-  .compareCard,
-  .repositoryCard,
-  .modeCard,
-  .controlNarrative,
-  .controlPanel,
-  .harnessCard,
-  .docsCard,
-  .journalCard,
-  .closingCard,
-  .timelineItem {
-    border-radius: 20px;
-    padding: 1rem;
+  .sectionLead h2,
+  .closingCard h2 {
+    font-size: clamp(1.9rem, 10vw, 2.6rem);
+    max-width: 12ch;
   }
 
   .actionsRow {
@@ -817,26 +676,26 @@
     width: 100%;
   }
 
-  .heroChips,
-  .artifactRow,
-  .tabArtifacts {
-    gap: 0.48rem;
+  .heroPanel,
+  .repoTreePanel,
+  .modeCard,
+  .controlPanel,
+  .docsGroup,
+  .journalCard,
+  .closingCard {
+    border-radius: 16px;
+    padding: 1rem;
   }
 
-  .trustList {
+  .timeline {
+    padding-left: 0.95rem;
+  }
+
+  .timelineItem::before {
+    left: -1.29rem;
+  }
+
+  .docsGrid {
     grid-template-columns: 1fr;
-  }
-
-  .harnessLoop {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .harnessStep {
-    gap: 0.5rem;
-  }
-
-  .harnessArrow {
-    display: none;
   }
 }
