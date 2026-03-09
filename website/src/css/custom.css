@@ -37,18 +37,21 @@
   --ifm-hr-border-color: rgb(var(--border));
   --ifm-blockquote-border-left-color: rgb(var(--border));
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.04);
-  --content-width: 74ch;
+  --content-width: 68ch;
   --site-frame-width: 1240px;
+  --docs-frame-width: 1120px;
   --site-gutter: 0.75rem;
-  --glass-fill-strong: rgb(255 255 255 / 0.7);
-  --glass-fill-soft: rgb(255 255 255 / 0.42);
-  --glass-border: rgb(255 255 255 / 0.46);
-  --glass-blur: 14px;
-  --chrome-radius: 12px;
-  --chrome-radius-inner: 11px;
-  --chrome-radius-control: 10px;
-  --docs-shell-gutter: clamp(1.15rem, 2.6vw, 2.4rem);
-  --docs-sidebar-gutter: clamp(1rem, 2vw, 1.9rem);
+  --glass-fill-strong: rgb(255 255 255 / 0.54);
+  --glass-fill-soft: rgb(255 255 255 / 0.2);
+  --glass-border: rgb(255 255 255 / 0.38);
+  --glass-blur: 18px;
+  --chrome-radius: 14px;
+  --chrome-radius-inner: 13px;
+  --chrome-radius-control: 12px;
+  --docs-shell-gutter: clamp(1.85rem, 3.2vw, 3rem);
+  --docs-sidebar-gutter: clamp(1.2rem, 2.2vw, 2.1rem);
+  --docs-shell-outer-gutter: clamp(1.6rem, 4vw, 3.4rem);
+  --docs-navbar-clearance: calc(var(--ifm-navbar-height) + 1.55rem);
 }
 
 html,
@@ -95,16 +98,19 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__inner {
   background:
-    linear-gradient(180deg, var(--glass-fill-strong), var(--glass-fill-soft)), rgb(var(--bg) / 0.36);
-  backdrop-filter: blur(var(--glass-blur)) saturate(122%);
+    linear-gradient(180deg, var(--glass-fill-strong), var(--glass-fill-soft)),
+    linear-gradient(180deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.06)), rgb(var(--bg) / 0.18);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
   border: 1px solid rgb(var(--border) / 0.85);
-  border-bottom-color: rgb(var(--border) / 0.78);
+  border-bottom-color: rgb(var(--border) / 0.68);
   border-radius: var(--chrome-radius);
   gap: 0.65rem;
+  isolation: isolate;
   min-height: 64px;
+  overflow: visible;
   padding: 0.55rem 0.75rem;
   position: relative;
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(122%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
 }
 
 .navbar__inner::before {
@@ -114,6 +120,20 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   inset: 0;
   pointer-events: none;
   position: absolute;
+}
+
+.navbar__inner::after {
+  background:
+    radial-gradient(circle at 14% 18%, rgb(78 196 255 / 0.22), transparent 22%),
+    radial-gradient(circle at 86% 16%, rgb(77 119 255 / 0.18), transparent 23%),
+    radial-gradient(circle at 54% -8%, rgb(255 230 168 / 0.16), transparent 24%);
+  content: "";
+  filter: blur(20px);
+  inset: -12px -18px -6px;
+  opacity: 0.72;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
 }
 
 .navbar__brand {
@@ -132,13 +152,12 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__item.navbar__link {
   background: rgb(255 255 255 / 0);
-  border: 0;
-  border-bottom: 1px solid transparent;
-  border-radius: 0;
+  border: 1px solid transparent;
+  border-radius: 13px;
   font-family: var(--ifm-font-family-monospace);
   font-size: 0.76rem;
   line-height: 1.2;
-  padding: 0.45rem 0.72rem;
+  padding: 0.52rem 0.76rem;
   letter-spacing: 0.04em;
   position: relative;
   text-transform: uppercase;
@@ -155,28 +174,35 @@ html.nav-scrolled .navbar.navbar--fixed-top {
 
 .navbar__item.navbar__link:hover,
 .navbar__item.navbar__link:focus-visible {
-  background-color: rgb(255 255 255 / 0.52);
-  border-bottom-color: rgb(var(--accent) / 0.45);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.5), rgb(255 255 255 / 0.24)), rgb(var(--bg) / 0.18);
+  border-color: rgb(var(--border) / 0.92);
   transform: translateY(-1px);
 }
 
 .navbar__link--active {
-  background: rgb(255 255 255 / 0.7);
-  border-bottom-color: rgb(var(--accent));
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.72), rgb(244 250 255 / 0.38)), rgb(var(--bg) / 0.2);
+  border-color: rgb(var(--accent) / 0.3);
+  box-shadow:
+    0 6px 16px rgb(15 23 42 / 0.06),
+    inset 0 1px 0 rgb(255 255 255 / 0.58);
   color: rgb(var(--fg)) !important;
   font-weight: 600;
 }
 
 .navbar__link--active:hover,
 .navbar__link--active:focus-visible {
-  background: rgb(255 255 255 / 0.76);
-  border-bottom-color: rgb(var(--accent));
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.78), rgb(245 250 255 / 0.42)), rgb(var(--bg) / 0.22);
+  border-color: rgb(var(--accent) / 0.36);
   color: rgb(var(--fg)) !important;
 }
 
 html.nav-scrolled .navbar__inner {
   background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0.54)), rgb(var(--bg) / 0.42);
+    linear-gradient(180deg, rgb(255 255 255 / 0.58), rgb(255 255 255 / 0.24)),
+    linear-gradient(180deg, rgb(255 255 255 / 0.22), rgb(255 255 255 / 0.05)), rgb(var(--bg) / 0.14);
 }
 
 .navbar__toggle {
@@ -235,9 +261,27 @@ html.nav-scrolled .navbar__inner {
   padding-top: 1.25rem;
 }
 
+.ap-doc-main-shell > main > .container.padding-top--md.padding-bottom--lg {
+  margin-inline: auto;
+  max-width: var(--docs-frame-width);
+  padding-left: var(--docs-shell-outer-gutter);
+  padding-right: var(--docs-shell-outer-gutter);
+  width: min(100%, calc(var(--docs-frame-width) + (var(--docs-shell-outer-gutter) * 2)));
+}
+
+.ap-doc-layout-wrap .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.ap-doc-layout-wrap .row > .col:first-child {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .theme-doc-markdown.markdown {
-  margin-left: var(--docs-shell-gutter);
   max-width: var(--content-width);
+  padding-left: var(--docs-shell-gutter);
   padding-right: var(--docs-shell-gutter);
   padding-top: 0.45rem;
   position: relative;
@@ -308,31 +352,31 @@ html.nav-scrolled .navbar__inner {
   content: "SYNC";
 }
 
-.ap-doc-sidebar-shell {
+.theme-doc-sidebar-container {
   border-right: none;
-  margin-top: calc(-1 * (var(--ifm-navbar-height) + 0.9rem));
+  margin-top: calc(-1 * var(--docs-navbar-clearance));
   padding-left: var(--docs-sidebar-gutter);
   padding-right: var(--docs-sidebar-gutter);
   position: relative;
 }
 
-.ap-doc-sidebar-shell::after {
+.theme-doc-sidebar-container::after {
   background: rgb(var(--border));
   bottom: 1rem;
   content: "";
   position: absolute;
   right: 0;
-  top: 1rem;
+  top: var(--docs-navbar-clearance);
   width: 1px;
 }
 
-.ap-doc-sidebar-viewport {
-  max-height: calc(100vh - 1.25rem);
-  top: 1.25rem;
+.theme-doc-sidebar-container > div {
+  max-height: calc(100vh - var(--docs-navbar-clearance) - 0.8rem);
+  top: var(--docs-navbar-clearance);
 }
 
-.ap-doc-sidebar-desktop {
-  padding-top: calc(var(--ifm-navbar-height) + 1.1rem);
+.theme-doc-sidebar-container .theme-doc-sidebar-menu {
+  padding-top: var(--docs-navbar-clearance);
 }
 
 .menu__list-item-collapsible > .menu__link {
@@ -383,9 +427,14 @@ nav[aria-label="Breadcrumbs"] {
 }
 
 @media (min-width: 997px) {
+  .ap-doc-layout-wrap .row > .col:first-child {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .ap-doc-layout-wrap .row > .col.col--3,
   .theme-doc-toc-desktop,
-  .table-of-contents,
-  main .row > .col:has(.theme-doc-toc-desktop) {
+  .table-of-contents {
     display: none !important;
   }
 }
@@ -696,9 +745,16 @@ nav[aria-label="Breadcrumbs"] {
 }
 
 @media (max-width: 996px) {
+  .ap-doc-main-shell > main > .container.padding-top--md.padding-bottom--lg {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    width: 100%;
+  }
+
   .theme-doc-markdown.markdown {
-    margin-left: 0;
     max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .blog-post-page article,
@@ -711,11 +767,11 @@ nav[aria-label="Breadcrumbs"] {
     max-width: none;
   }
 
-  .ap-doc-sidebar-shell {
+  .theme-doc-sidebar-container {
     padding-right: 0;
   }
 
-  .ap-doc-sidebar-shell::after {
+  .theme-doc-sidebar-container::after {
     display: none;
   }
 
