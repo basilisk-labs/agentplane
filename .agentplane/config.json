@@ -23,7 +23,7 @@
     "source": "https://github.com/basilisk-labs/agentplane",
     "last_update": null,
     "cli": {
-      "expected_version": "0.3.4"
+      "expected_version": "0.3.5"
     }
   },
   "tasks": {
