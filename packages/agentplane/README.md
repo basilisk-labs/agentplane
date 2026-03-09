@@ -5,14 +5,20 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/basilisk-labs/agentplane/blob/main/LICENSE)
 [![Node.js 20+](https://img.shields.io/badge/Node.js-20%2B-3c873a.svg)](https://github.com/basilisk-labs/agentplane/blob/main/docs/user/prerequisites.mdx)
 
-Agent Plane is a policy-driven framework for running LLM agents inside real repositories. It turns "AI magic" into an engineering process: explicit approvals, role boundaries, and a reproducible execution pipeline. The goal is simple: make agents boring, safe, and auditable.
+**Git-native control plane for auditable agent work.**
 
-## Why Agent Plane
+Put coding agents on a governed Git workflow.
 
-- You want agents that behave predictably inside real repos.
-- You need human approvals, clear roles, and traceable artifacts.
-- You want guardrails by default, not optional add-ons.
-- You want an offline-first CLI that keeps state local and inspectable.
+`agentplane` is the CLI for AgentPlane. It runs locally inside a git repository, not in a hosted runtime, and adds visible workflow artifacts such as `AGENTS.md` or `CLAUDE.md`, `.agentplane/`, task records, verification state, and deterministic closure. Teams use it when they want agent work to stay explicit, inspectable, and governed inside the repository instead of behaving like an opaque assistant.
+
+## What agentplane is
+
+`agentplane` is a repo-native CLI workflow for agent-driven development.
+
+- It runs in your repository and keeps workflow state local.
+- It adds approvals, task state, verification, and finish to agent work.
+- It supports both `direct` and `branch_pr` workflow modes.
+- It keeps repository artifacts visible instead of hiding execution behind a hosted control plane.
 
 ## 5-minute start
 
