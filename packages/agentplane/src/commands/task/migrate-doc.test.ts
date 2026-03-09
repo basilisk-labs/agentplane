@@ -444,4 +444,117 @@ Already normalized.
     expect(migratedCurrent).toContain("Already normalized.");
     expect(migratedCurrent).not.toContain("## Notes");
   });
+
+  it("refreshes the local tasks export snapshot automatically after migration", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const taskId = "202601060000-CCCCCC";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    const readmePath = path.join(taskDir, "README.md");
+    const exportPath = path.join(root, ".agentplane", "tasks.json");
+    await mkdir(taskDir, { recursive: true });
+
+    const currentV3 = `---
+id: "${taskId}"
+title: "Current task"
+status: "TODO"
+priority: "low"
+owner: "CODER"
+depends_on: []
+tags: []
+verify: []
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+comments: []
+events: []
+doc_version: 3
+doc_updated_at: "2026-01-06T00:00:00.000Z"
+doc_updated_by: "CODER"
+description: "Current"
+id_source: "generated"
+---
+## Summary
+
+Current summary.
+
+## Scope
+
+Current scope.
+
+## Plan
+
+1. Keep.
+
+## Verify Steps
+
+1. Review. Expected: okay.
+
+## Verification
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert.
+
+## Findings
+
+Already normalized.
+`;
+
+    await writeFile(readmePath, currentV3, "utf8");
+    await writeFile(
+      exportPath,
+      JSON.stringify(
+        {
+          schema_version: 1,
+          tasks: [
+            {
+              id: taskId,
+              title: "Current task",
+              status: "TODO",
+              priority: "low",
+              owner: "CODER",
+              depends_on: [],
+              tags: [],
+              verify: [],
+              comments: [],
+              doc_version: 2,
+              doc_updated_at: "2026-01-06T00:00:00.000Z",
+              doc_updated_by: "CODER",
+              description: "Current",
+              id_source: "generated",
+            },
+          ],
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
+    expect(code).toBe(0);
+
+    const exported = JSON.parse(await readFile(exportPath, "utf8")) as {
+      tasks?: { id?: string; doc_version?: number }[];
+    };
+    expect(exported.tasks?.find((task) => task.id === taskId)?.doc_version).toBe(3);
+  });
 });

@@ -20,6 +20,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../cli/fs-utils.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
+import { loadCommandContext } from "../shared/task-backend.js";
 import {
   extractDocSection,
   extractTaskObservationSection,
@@ -302,6 +303,12 @@ export async function cmdTaskMigrateDoc(opts: {
       rootOverride: opts.rootOverride ?? null,
     });
     const loaded = await loadConfig(resolved.agentplaneDir);
+    const ctx = await loadCommandContext({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      resolvedProject: resolved,
+      config: loaded.config,
+    });
     const tasksDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir);
 
     const readmePaths = await resolveReadmePaths({ tasksDir, params });
@@ -322,6 +329,13 @@ export async function cmdTaskMigrateDoc(opts: {
     for (const readmePath of readmePaths) {
       const res = await migrateTaskReadmeDoc({ readmePath, config: loaded.config });
       if (res.changed) changed += 1;
+    }
+
+    // Refresh the local export snapshot so doctor and other snapshot-based checks
+    // immediately observe the migrated README contract without a separate task export.
+    if (ctx.backendId === "local" && ctx.taskBackend.exportTasksJson) {
+      const outPath = path.join(resolved.gitRoot, loaded.config.paths.tasks_path);
+      await ctx.taskBackend.exportTasksJson(outPath);
     }
 
     if (!params.quiet) {
