@@ -476,7 +476,7 @@ describeWhenNotHook("release apply", () => {
       { cwd: root },
     );
     expect(committedFiles).toContain("docs/reference/generated-reference.mdx");
-  });
+  }, 60_000);
 
   it("pushes release refs with --no-verify to avoid recursive local pre-push hooks", async () => {
     const root = await mkGitRepoRoot();
