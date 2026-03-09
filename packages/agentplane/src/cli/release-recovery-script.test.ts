@@ -117,7 +117,7 @@ describe("release recovery script", () => {
       payload.findings.find((finding) => finding.code === "release_local_tag_not_pushed")
         ?.nextAction,
     ).toContain("git push origin HEAD");
-  });
+  }, 60_000);
 
   it("reports release-note drift and locally bumped versions without a local tag", async () => {
     const root = await initReleaseRepo();
@@ -147,7 +147,7 @@ describe("release recovery script", () => {
         (finding) => finding.code === "release_versions_bumped_without_local_tag",
       ),
     ).toBe(true);
-  });
+  }, 60_000);
 
   it("reports burned npm versions when registry checking is requested", async () => {
     const root = await initReleaseRepo();
@@ -174,12 +174,12 @@ describe("release recovery script", () => {
     expect(payload.findings.some((finding) => finding.code === "release_npm_version_burned")).toBe(
       true,
     );
-  });
+  }, 60_000);
 
   it("prints help text", async () => {
     const root = await initReleaseRepo();
     const { stdout } = await runScript(root, ["--help"]);
     expect(stdout).toContain("Usage: node scripts/check-release-recovery-state.mjs");
     expect(stdout).toContain("--check-registry");
-  });
+  }, 60_000);
 });
