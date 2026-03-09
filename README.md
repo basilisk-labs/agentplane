@@ -16,171 +16,146 @@ AgentPlane is a local CLI for agent-driven development inside a git repository. 
 
 ## What AgentPlane is
 
-Traditional coding agents may behave unpredictably, modify files without clear intent, or act outside expected boundaries. AgentPlane changes that by introducing:
+AgentPlane is a repository-native workflow layer for agent work.
 
-- **Policy-first execution** - every run follows a defined pipeline.
-- **Approval and planning gates** - nothing runs without explicit consent.
-- **Visible repository state** - policy gateway, task records, verification history, and workflow state stay in the repo.
-- **Safety guardrails by default** - actions outside the repo, network access, or unrestricted writes are disabled unless explicitly approved.
-- **Support for governed workflows** - including `direct` and `branch_pr` modes.
+It does not replace git, your editor, or your terminal. It sits inside an existing repository and gives agent execution a visible operating model:
 
-Agent behavior is not hidden: it's inspectable, reproducible, and constrained by policy.
+- a policy gateway in the repo root
+- a repo-local workspace in `.agentplane/`
+- task state with ownership and dependencies
+- verification and closure recorded in the repository
+- workflow modes for both short loops and stricter team integration
 
-## 📌 Key Principles
+## Why teams use it
 
-1. **Determinism over Magic**
-   Agents follow a reproducible path:
+Teams use AgentPlane when "just let the agent change files" is not enough.
 
-   ```text
-   Preflight → Plan → Approval → Tasks → Verify → Finish → Export
-   ```
+- **Trust comes from visible state**. Approvals, task transitions, verification, and finish are all recorded in the repo.
+- **The workflow stays local and inspectable**. There is no hosted control plane sitting between your repository and your team.
+- **Agents work inside git, not around it**. Commits, review points, and closure remain explicit.
+- **You can pick the right integration style**. Use `direct` for short loops or `branch_pr` for stricter handoff and integration.
 
-2. **Guardrails by Default**
-   - Network and external actions require explicit approvals.
-   - Writes are scoped to allow-listed paths.
-   - Nothing can "just change files" without a plan and audit trail.
+## What appears in your repository
 
-3. **Team-first workflows**
-   `direct` mode is suitable for solo work;
-   `branch_pr` enforces structured worktrees, single-writer flow, and an integrator role.
+`agentplane init` adds a small set of visible artifacts so the workflow is legible to both humans and agents.
 
-4. **Traceability**
-   Task states, artifacts, and agents are documented and versioned: no hidden side effects.
+```text
+AGENTS.md or CLAUDE.md   Policy gateway for the repository
+.agentplane/            Repo-local workspace and workflow state
+.agentplane/config.json Current repo configuration
+.agentplane/tasks/      Per-task records
+.agentplane/WORKFLOW.md Materialized workflow contract
+.agentplane/tasks.json  Exported task snapshot derived from the current backend projection
+```
 
-## 🧱 Harness Engeneering
+These files matter because they make agent work inspectable. A reviewer can see what policy governs the repo, what task is active, what was verified, and how the task was closed.
 
-Agent Plane treats agent execution as a systems problem, not a prompt-writing contest.
+## 2-minute quickstart
 
-- **Legibility is the target**
-  - Operators should be able to answer: what happened, why it happened, and what to do next.
-  - This is why contracts (`AGENTS.md`, `WORKFLOW.md`), structured task docs, and deterministic artifacts are first-class.
+Install the CLI:
 
-- **Process beats vibes**
-  - Behavior quality is enforced by workflow gates, checks, and rollback paths.
-  - Prompt text matters, but stable outcomes come from execution design and guardrails.
-
-- **Throughput changes integration style**
-  - When agents can produce many small changes quickly, long-lived branches become a bottleneck.
-  - Agent Plane favors short loops: preflight -> scoped change -> verify -> integrate.
-
-- **Control autonomy by harness design**
-  - More autonomy is safe only with strict boundaries: scoped writes, approval gates, explicit status transitions, and typed command surfaces.
-
-- **Fight entropy continuously**
-  - Agent-generated output accumulates quickly.
-  - Keep quality by running doctor/preflight, enforcing verification contracts, and pruning workflow drift early.
-
-## 🔧 Quickstart
-
-Install the CLI (or use `npx`):
-
-```sh
+```bash
 npm install -g agentplane
 ```
 
-Initialize a repo:
+Initialize a repository:
 
-```sh
-npx agentplane init
+```bash
+agentplane init
+agentplane quickstart
 ```
 
-See the CLI quickstart:
+`agentplane init` creates the repo-local workflow surface: a policy gateway file (`AGENTS.md` or `CLAUDE.md`), `.agentplane/config.json`, built-in agent profiles, task storage, and workflow state files such as `.agentplane/WORKFLOW.md`.
 
-```sh
-npx agentplane quickstart
+The daily workflow starts with a task, not with a free-form prompt:
+
+```bash
+agentplane task new --title "First task" --description "Describe the change" --priority med --owner DOCS --tag docs
+agentplane task plan set <task-id> --text "Explain the plan" --updated-by DOCS
+agentplane task start-ready <task-id> --author DOCS --body "Start: ..."
+agentplane task verify-show <task-id>
+agentplane verify <task-id> --ok --by REVIEWER --note "Looks good"
+agentplane finish <task-id> --author DOCS --body "Verified: ..." --result "One-line outcome" --commit <git-rev>
 ```
 
-**Note:** Full setup details, configuration options, and advanced workflows are in the docs (links below).
+For the exact startup path and command semantics, use:
 
-## 💡 Workflow Modes
+- [Overview](docs/user/overview.mdx)
+- [Setup](docs/user/setup.mdx)
+- [Commands](docs/user/commands.mdx)
 
-### `direct` (default)
+## Workflow modes
 
-- Single-checkout mode.
-- Agents and tasks run within the same working tree.
-- Good for experiments and rapid iteration.
+AgentPlane supports two integration styles.
+
+### `direct`
+
+- single checkout
+- short loops in the current working tree
+- good for solo work and fast iteration
 
 ### `branch_pr`
 
-- Structured team workflow.
-- Each task flows through its own worktree + tracked PR artifacts.
-- Only the _INTEGRATOR_ role merges changes back into the main branch.
+- structured per-task branch or worktree flow
+- explicit PR artifacts under `.agentplane/tasks/<task-id>/pr/`
+- better fit when integration must stay separate from implementation
 
-Use:
+The difference is workflow discipline, not product tiering.
 
-```sh
-npx agentplane config set workflow_mode branch_pr
-```
+## Typical task flow
 
-## 🧠 Core Concepts
+The normal happy path is short and explicit:
 
-### 🔹 Policy Gateway
+1. Run preflight and inspect the current repo state.
+2. Create the task and record the plan.
+3. Start the task with `agentplane task start-ready`.
+4. Implement the change in the repository.
+5. Print `Verify Steps` and record the result with `agentplane verify`.
+6. Close the task with `agentplane finish`.
 
-This repository contains a special policy file (`AGENTS.md` for Codex or `CLAUDE.md` for Claude Code) that defines:
+Under `direct`, `finish` creates the deterministic close commit by default. Under `branch_pr`, integration stays more structured and PR-oriented.
 
-- Global guardrails
-- Allowed actions
-- Agent roles and permissions
-- Workflow defaults
+## When to use it
 
-It acts as the canonical policy layer (the "constitution") for agents.
+Use AgentPlane when:
 
-Notes:
+- you want agents to work inside a real git repository
+- you need explicit approvals, task state, verification, and closure
+- you want repo-local artifacts that show what happened and why
+- you need a governed workflow instead of a chat-style assistant loop
 
-- `agentplane init` creates the selected gateway file (`AGENTS.md` or `CLAUDE.md`) at the repository root (if missing).
-- `agentplane upgrade` writes a machine-readable review report under `.agentplane/.upgrade/` (for example `.agentplane/.upgrade/agent/<runId>/review.json` or `.agentplane/.upgrade/last-review.json`) that can signal when a semantic prompt merge is required.
+Do not use AgentPlane when:
 
-### 🔹 Roles
+- you are looking for a hosted agent platform
+- you want a generic prompt framework
+- you want the tool to hide git or replace your editor
 
-Common roles include:
+## Documentation
 
-- **ORCHESTRATOR:** Drives the session and interprets user goals.
-- **PLANNER:** Breaks goals into plan steps/tasks.
-- **CREATOR:** Implements code/config changes.
-- **INTEGRATOR:** Verifies and merges changes.
-- **Additional roles** (e.g., TESTER, DOCS) can be defined per project.
+Start here:
 
-Use `agentplane role <ROLE>` to print the built-in CLI guide and, when available, the project-defined agent profile from `.agentplane/agents/<ROLE>.json`.
+- [Overview](docs/user/overview.mdx)
+- [Workflow](docs/user/workflow.mdx)
+- [Commands](docs/user/commands.mdx)
+- [Configuration](docs/user/configuration.mdx)
+- [Backends](docs/user/backends.mdx)
+- [CLI reference (generated)](docs/user/cli-reference.generated.mdx)
 
-## 📁 Project Structure
+Developer and release docs:
 
-Your project with agent/plane typically includes:
+- [Architecture](docs/developer/architecture.mdx)
+- [CLI contract](docs/developer/cli-contract.mdx)
+- [Release and publishing](docs/developer/release-and-publishing.mdx)
+- [Release notes](docs/releases/)
 
-```
-AGENTS.md or CLAUDE.md # Policy & guardrails
-.agentplane/           # Internal agent artifacts and config
-.agentplane/tasks/     # Per-task records
-.agentplane/config.json # agent/plane configuration
-docs/                  # Full reference docs (see docs/index.mdx)
-```
+If you need the deeper execution philosophy, keep it below the product surface:
 
-## 🛠 Safety and Security
+- [Harness Engineering](docs/developer/harness-engeneering.mdx)
 
-agent/plane enforces:
+## Contributing
 
-- No external execution without explicit approval.
-- No silent state changes.
-- No unreviewed commits by agents.
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-This makes it suitable for **enterprise**, **team**, and **audit-sensitive** workflows.
+## License
 
-## 📚 Documentation & Resources
-
-The bulk of the guidance and API info lives in the docs:
-
-- 🧭 **Full documentation:** `docs/index.mdx`
-- 📌 **Workflow reference:** `docs/user/workflow.mdx`
-- ⚙️ **CLI commands:** `docs/user/commands.mdx`
-- 🧱 **Project layout:** `docs/developer/project-layout.mdx`
-- 📝 **Canonical changelog:** `docs/releases/v*.md` (source of truth for release history)
-- 💡 **Examples & recipes:** `agentplane-recipes/README.md`
-
-## 💬 Community & Contributing
-
-Contributions are welcome. See `CONTRIBUTING.md` for guidelines and how to get involved.
-
-## 📜 License
-
-agent/plane is released under the MIT License.
-
-> agent/plane is not about replacing developers - it's about giving developers **predictable, auditable, and controlled agent workflows** that scale with team and project complexity.
+MIT
