@@ -101,6 +101,17 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
 
   const backend: TaskBackend = {
     id: "mock",
+    capabilities: {
+      canonical_source: "local",
+      projection: "canonical",
+      reads_from_projection_by_default: true,
+      writes_task_readmes: true,
+      may_access_network_on_read: false,
+      may_access_network_on_write: false,
+      supports_projection_refresh: false,
+      supports_push_sync: false,
+      supports_snapshot_export: true,
+    },
     listTasks: () => Promise.resolve([]),
     getTask: () => Promise.resolve(null),
     writeTask: () => Promise.resolve(),
@@ -280,6 +291,62 @@ describe("task finish (unit)", () => {
     };
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(mocks.cmdCommit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        taskId: "T-1",
+        close: true,
+        closeUnstageOthers: false,
+      }),
+    );
+  });
+
+  it("auto-runs deterministic close commit by default in direct mode with a projection-backed backend", async () => {
+    const task = mkTask({ id: "T-1", tags: ["meta"] });
+    const ctx = mkCtx({
+      taskBackend: {
+        id: "redmine",
+        capabilities: {
+          canonical_source: "remote",
+          projection: "cache",
+          reads_from_projection_by_default: true,
+          writes_task_readmes: true,
+          may_access_network_on_read: false,
+          may_access_network_on_write: true,
+          supports_projection_refresh: true,
+          supports_push_sync: true,
+          supports_snapshot_export: true,
+        },
+        listTasks: () => Promise.resolve([]),
+        getTask: () => Promise.resolve(task),
+        writeTask: () => Promise.resolve(),
+      } as TaskBackend,
+    });
+    ctx.config.workflow_mode = "direct";
+    mocks.loadTaskFromContext.mockResolvedValue(task);
 
     const { cmdFinish } = await import("./finish.js");
     await cmdFinish({
@@ -588,6 +655,17 @@ describe("task finish (unit)", () => {
     const ctx = mkCtx({
       taskBackend: {
         id: "mock",
+        capabilities: {
+          canonical_source: "local",
+          projection: "canonical",
+          reads_from_projection_by_default: true,
+          writes_task_readmes: true,
+          may_access_network_on_read: false,
+          may_access_network_on_write: false,
+          supports_projection_refresh: false,
+          supports_push_sync: false,
+          supports_snapshot_export: true,
+        },
         listTasks: () => Promise.resolve([]),
         getTask: () => Promise.resolve(null),
         writeTask,
@@ -651,6 +729,75 @@ describe("task finish (unit)", () => {
     stageSpy.mockRestore();
     amendSpy.mockRestore();
     writeSpy.mockRestore();
+  });
+
+  it("amends the generated commit when a projection-backed backend writes tracked task READMEs", async () => {
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["spike"],
+      comments: [{ author: "X", body: "old" }],
+    });
+    const writeTask = vi.fn<(t: TaskData) => Promise<void>>((t) => {
+      currentTask = { ...t };
+      return Promise.resolve();
+    });
+    const ctx = mkCtx({
+      taskBackend: {
+        id: "redmine",
+        capabilities: {
+          canonical_source: "remote",
+          projection: "cache",
+          reads_from_projection_by_default: true,
+          writes_task_readmes: true,
+          may_access_network_on_read: false,
+          may_access_network_on_write: true,
+          supports_projection_refresh: true,
+          supports_push_sync: true,
+          supports_snapshot_export: true,
+        },
+        listTasks: () => Promise.resolve([]),
+        getTask: () => Promise.resolve(currentTask),
+        writeTask,
+      } as TaskBackend,
+    });
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.loadTaskFromContext.mockImplementation(() => Promise.resolve(currentTask));
+    const stageSpy = vi.spyOn(ctx.git, "stage").mockResolvedValue();
+    const amendSpy = vi.spyOn(ctx.git, "commitAmendNoEdit").mockResolvedValue();
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      risk: "high",
+      breaking: true,
+      force: false,
+      commitFromComment: true,
+      commitEmoji: "✅",
+      commitAllow: ["packages/agentplane"],
+      commitAutoAllow: false,
+      commitAllowTasks: true,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(writeTask).toHaveBeenCalledTimes(2);
+    expect(stageSpy).toHaveBeenCalledWith([".agentplane/tasks/T-1/README.md"]);
+    expect(amendSpy).toHaveBeenCalledTimes(1);
+
+    stageSpy.mockRestore();
+    amendSpy.mockRestore();
   });
 
   it("prints close-commit progress before the deterministic close commit runs", async () => {

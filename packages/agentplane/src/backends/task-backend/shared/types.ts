@@ -61,6 +61,7 @@ export type TaskBackendCapabilities = {
   canonical_source: "local" | "remote";
   projection: "canonical" | "cache";
   reads_from_projection_by_default: boolean;
+  writes_task_readmes?: boolean;
   may_access_network_on_read: boolean;
   may_access_network_on_write: boolean;
   supports_projection_refresh: boolean;

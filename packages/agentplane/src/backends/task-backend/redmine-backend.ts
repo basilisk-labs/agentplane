@@ -71,6 +71,7 @@ export class RedmineBackend implements TaskBackend {
     canonical_source: "remote",
     projection: "cache",
     reads_from_projection_by_default: true,
+    writes_task_readmes: true,
     may_access_network_on_read: false,
     may_access_network_on_write: true,
     supports_projection_refresh: true,

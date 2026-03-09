@@ -171,9 +171,10 @@ export async function cmdFinish(opts: {
 
     const useStore = backendIsLocalFileBackend(ctx);
     const store = useStore ? getTaskStore(ctx) : null;
+    const backendWritesTaskReadmes = ctx.taskBackend.capabilities.writes_task_readmes === true;
     const defaultDirectCloseCommit =
       ctx.config.workflow_mode === "direct" &&
-      useStore &&
+      backendWritesTaskReadmes &&
       opts.taskIds.length === 1 &&
       !opts.commitFromComment &&
       !statusCommitRequested;
@@ -360,7 +361,7 @@ export async function cmdFinish(opts: {
         ? store!.update(primaryTaskId, () => updatedAfterCommit)
         : ctx.taskBackend.writeTask(updatedAfterCommit));
 
-      if (useStore) {
+      if (backendWritesTaskReadmes) {
         const workflowReadmeRelPath = path.join(
           ctx.config.paths.workflow_dir,
           primaryTaskId,

@@ -56,6 +56,17 @@ describe("commands/shared/GitContext", () => {
     expect(mocked).toHaveBeenCalledTimes(1);
   });
 
+  it("exposes untracked paths from porcelain status", async () => {
+    const mocked = vi.mocked(execFileAsync);
+    mocked.mockResolvedValueOnce({
+      stdout: Buffer.from([" M tracked.txt", "?? task/README.md", ""].join("\0"), "utf8"),
+      stderr: Buffer.from("", "utf8"),
+    } as never);
+
+    const git = new GitContext({ gitRoot: "/repo" });
+    await expect(git.statusUntrackedPaths()).resolves.toEqual(["task/README.md"]);
+  });
+
   it("runs amend --no-edit and invalidates memoized status/head", async () => {
     const mocked = vi.mocked(execFileAsync);
     mocked

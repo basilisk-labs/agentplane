@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import type { TaskData } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../../shared/diagnostics.js";
 import { resolvePolicyGatewayForRepo } from "../../shared/policy-gateway.js";
+import { GitContext } from "../shared/git-context.js";
 import { listTaskProjection, type CommandContext } from "../shared/task-backend.js";
 
 type TaskDocSnapshot = {
@@ -169,6 +170,63 @@ async function checkTaskReadmeMigrationState(
   return buildTaskReadmeMigrationFindings(tasks);
 }
 
+async function readUntrackedPaths(repoRoot: string, ctx?: CommandContext): Promise<Set<string>> {
+  try {
+    const git = ctx?.git ?? new GitContext({ gitRoot: repoRoot });
+    return new Set(await git.statusUntrackedPaths());
+  } catch {
+    return new Set();
+  }
+}
+
+async function checkDoneTaskReadmeArchiveDrift(
+  repoRoot: string,
+  ctx?: CommandContext,
+): Promise<string[]> {
+  const projectionTasks = await readTaskDocSnapshotsFromProjection(ctx);
+  const tasks =
+    projectionTasks && projectionTasks.length > 0
+      ? projectionTasks
+      : await readTaskDocSnapshotsFromTasksJson(repoRoot);
+  if (tasks.length === 0) return [];
+
+  const workflowDir = (ctx?.config.paths.workflow_dir ?? ".agentplane/tasks").replaceAll("\\", "/");
+  const untracked = await readUntrackedPaths(repoRoot, ctx);
+  if (untracked.size === 0) return [];
+
+  const affected = tasks
+    .filter((task) => {
+      const status = typeof task.status === "string" ? task.status.trim().toUpperCase() : "";
+      const taskId = typeof task.id === "string" ? task.id.trim() : "";
+      if (status !== "DONE" || !taskId) return false;
+      return untracked.has(`${workflowDir}/${taskId}/README.md`);
+    })
+    .map((task) => String(task.id))
+    .toSorted();
+  if (affected.length === 0) return [];
+
+  const examples = affected.slice(0, 5).join(", ");
+  const stagedCommand = `git add ${affected
+    .map((taskId) => `${workflowDir}/${taskId}/README.md`)
+    .join(" ")}`;
+  return [
+    renderDiagnosticFinding({
+      severity: "WARN",
+      state: "DONE task archive README files exist on disk but are missing from the git index",
+      likelyCause:
+        "task metadata reached DONE state, but the human-readable task README archive never landed in a tracked close commit",
+      nextAction: {
+        command: stagedCommand,
+        reason: "stage the missing archived task README files and commit them before continuing",
+      },
+      details: [
+        `Affected DONE tasks: ${affected.length}`,
+        examples ? `Examples: ${examples}` : "Examples unavailable.",
+      ],
+    }),
+  ];
+}
+
 export async function checkWorkspace(
   repoRoot: string,
   opts?: { ctx?: CommandContext },
@@ -224,6 +282,9 @@ export async function checkWorkspace(
   if (!hasJson) {
     problems.push("No agent profiles found in .agentplane/agents (*.json expected).");
   }
-  problems.push(...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)));
+  problems.push(
+    ...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)),
+    ...(await checkDoneTaskReadmeArchiveDrift(repoRoot, opts?.ctx)),
+  );
   return problems;
 }

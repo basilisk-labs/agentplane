@@ -112,6 +112,11 @@ export class GitContext {
     return status.stagedPaths;
   }
 
+  async statusUntrackedPaths(): Promise<string[]> {
+    const status = await this.statusPorcelainZ();
+    return status.untrackedPaths;
+  }
+
   async statusUnstagedTrackedPaths(): Promise<string[]> {
     const status = await this.statusPorcelainZ();
     return status.unstagedTrackedPaths;

@@ -744,6 +744,102 @@ describe("doctor.command", () => {
     }
   });
 
+  it("warns when DONE task README archives exist on disk but are missing from the git index", async () => {
+    const ws = await mkWorkspace();
+    await gitInitWithCommit(ws.root, "feat: initial");
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      const taskId = "202603081538-0YPG92";
+      const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
+      await mkdir(taskDir, { recursive: true });
+      await writeFile(
+        path.join(taskDir, "README.md"),
+        `${renderTaskReadme(
+          {
+            id: taskId,
+            title: "Backfilled task",
+            status: "DONE",
+            priority: "high",
+            owner: "DOCS",
+            depends_on: [],
+            tags: ["docs"],
+            verify: [],
+            plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+            verification: { state: "ok", updated_at: null, updated_by: null, note: null },
+            commit: {
+              hash: "abcdef1234567890abcdef1234567890abcdef12",
+              message: "📝 T-1 docs: backfilled task archive",
+            },
+            comments: [],
+            events: [],
+            doc_version: 3,
+            doc_updated_at: "2026-03-09T00:00:00.000Z",
+            doc_updated_by: "DOCS",
+            description: "Backfilled task",
+            id_source: "generated",
+          },
+          [
+            "## Summary",
+            "Backfilled task",
+            "",
+            "## Scope",
+            "- In scope: reproduce archive drift warning.",
+            "- Out of scope: unrelated changes.",
+            "",
+            "## Plan",
+            "1. Reproduce warning.",
+            "",
+            "## Verify Steps",
+            "1. Run agentplane doctor. Expected: warning references the missing archived README path.",
+            "",
+            "## Verification",
+            "<!-- BEGIN VERIFICATION RESULTS -->",
+            "<!-- END VERIFICATION RESULTS -->",
+            "",
+            "## Rollback Plan",
+            "- Revert.",
+            "",
+            "## Findings",
+          ].join("\n"),
+        )}\n`,
+        "utf8",
+      );
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify(
+          {
+            tasks: [
+              {
+                id: taskId,
+                status: "DONE",
+                doc_version: 3,
+                commit: { hash: "abcdef1234567890abcdef1234567890abcdef12" },
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain(
+        "[WARN] State: DONE task archive README files exist on disk but are missing from the git index",
+      );
+      expect(output).toContain(taskId);
+      expect(output).toContain(`git add .agentplane/tasks/${taskId}/README.md`);
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
   it("warns when the active CLI is older than the repository expectation", async () => {
     const ws = await mkWorkspace();
     const stderr = vi.spyOn(console, "error").mockImplementation(() => {
