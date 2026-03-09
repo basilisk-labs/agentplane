@@ -20,6 +20,7 @@
     "Geist Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, Consolas, monospace;
   --font-pixel: "Geist Pixel";
   --ifm-font-size-base: 15px;
+  --ifm-navbar-height: 76px;
   --ifm-heading-font-family: var(--ifm-font-family-base);
   --ifm-heading-color: rgb(var(--fg));
   --ifm-font-color-base: rgb(var(--fg));
@@ -44,6 +45,8 @@
   --glass-border: rgb(255 255 255 / 0.46);
   --glass-blur: 14px;
   --chrome-radius: 12px;
+  --docs-shell-gutter: clamp(1.15rem, 2.6vw, 2.4rem);
+  --docs-sidebar-gutter: clamp(1rem, 2vw, 1.9rem);
 }
 
 html,
@@ -144,6 +147,10 @@ html.nav-scrolled .navbar.navbar--fixed-top {
     transform 180ms ease;
 }
 
+.navbar__item.navbar__link > svg {
+  display: none;
+}
+
 .navbar__item.navbar__link:hover,
 .navbar__item.navbar__link:focus-visible {
   background-color: rgb(255 255 255 / 0.52);
@@ -227,8 +234,9 @@ html.nav-scrolled .navbar__inner {
 }
 
 .theme-doc-markdown.markdown {
-  margin-left: clamp(0.4rem, 1.1vw, 1rem);
+  margin-left: var(--docs-shell-gutter);
   max-width: var(--content-width);
+  padding-right: var(--docs-shell-gutter);
   padding-top: 0.45rem;
   position: relative;
 }
@@ -300,7 +308,9 @@ html.nav-scrolled .navbar__inner {
 
 .theme-doc-sidebar-container {
   border-right: none;
-  padding-right: clamp(0.85rem, 1.3vw, 1.25rem);
+  margin-top: calc(-1 * (var(--ifm-navbar-height) + 0.9rem));
+  padding-left: var(--docs-sidebar-gutter);
+  padding-right: var(--docs-sidebar-gutter);
   position: relative;
 }
 
@@ -314,11 +324,26 @@ html.nav-scrolled .navbar__inner {
   width: 1px;
 }
 
+.theme-doc-sidebar-container [class*="sidebarViewport"] {
+  max-height: calc(100vh - 1.25rem);
+  top: 1.25rem;
+}
+
+.theme-doc-sidebar-container :is([class^="sidebar_"], [class*=" sidebar_"]) {
+  padding-top: calc(var(--ifm-navbar-height) + 1.1rem);
+}
+
 .menu__list-item-collapsible > .menu__link {
   font-family: var(--font-pixel), var(--ifm-font-family-monospace);
   font-size: 0.66rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.theme-doc-sidebar-item-category summary::marker,
+.theme-doc-sidebar-item-category summary::-webkit-details-marker,
+nav[aria-label="Breadcrumbs"] .breadcrumbs__item svg {
+  display: none;
 }
 
 .menu__caret::before,
@@ -353,6 +378,14 @@ html.nav-scrolled .navbar__inner {
 
 nav[aria-label="Breadcrumbs"] {
   margin-bottom: 1rem;
+}
+
+@media (min-width: 997px) {
+  .theme-doc-toc-desktop,
+  .table-of-contents,
+  main .row > .col:has(.theme-doc-toc-desktop) {
+    display: none !important;
+  }
 }
 
 .theme-edit-this-page:hover,
