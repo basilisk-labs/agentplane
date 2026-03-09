@@ -155,6 +155,28 @@ To run the CLI smoke test (slowest end-to-end path):
 bun run test:cli:smoke
 ```
 
+To run the compact release-only smoke layer that checks install-first init/upgrade and
+README migration recovery without pulling the full `run-cli.core.init-upgrade-backend`
+regression file into `release:ci-check`:
+
+```bash
+bun run test:release:smoke
+```
+
+The release gate now uses:
+
+```bash
+bun run test:release:ci-base
+bun run test:release:critical
+```
+
+Where:
+
+- `test:release:ci-base` is the broad release validation sweep with the slow non-release-specific
+  `cli-smoke`, `release-recovery-script`, and `run-cli.core.init-upgrade-backend` files excluded.
+- `test:release:critical` reruns the truly release-critical slow paths explicitly:
+  `test:release:recovery`, `test:release:smoke`, and `test:cli:smoke`.
+
 To run the slow CLI suites together (scenario + smoke):
 
 ```bash
