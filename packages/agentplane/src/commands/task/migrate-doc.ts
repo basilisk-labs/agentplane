@@ -20,7 +20,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../cli/fs-utils.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { loadCommandContext } from "../shared/task-backend.js";
+import { exportTaskProjectionSnapshot, loadCommandContext } from "../shared/task-backend.js";
 import {
   extractDocSection,
   extractTaskObservationSection,
@@ -333,9 +333,9 @@ export async function cmdTaskMigrateDoc(opts: {
 
     // Refresh the local export snapshot so doctor and other snapshot-based checks
     // immediately observe the migrated README contract without a separate task export.
-    if (ctx.backendId === "local" && ctx.taskBackend.exportTasksJson) {
+    if (ctx.taskBackend.exportProjectionSnapshot || ctx.taskBackend.exportTasksJson) {
       const outPath = path.join(resolved.gitRoot, loaded.config.paths.tasks_path);
-      await ctx.taskBackend.exportTasksJson(outPath);
+      await exportTaskProjectionSnapshot({ ctx, outputPath: outPath });
     }
 
     if (!params.quiet) {

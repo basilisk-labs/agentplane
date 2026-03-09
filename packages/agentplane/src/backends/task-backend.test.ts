@@ -419,6 +419,13 @@ describe("LocalBackend", () => {
     await backend.exportTasksJson(outPath);
     const raw = JSON.parse(await readFile(outPath, "utf8")) as { tasks: TaskData[] };
     expect(raw.tasks).toHaveLength(1);
+
+    const projectionOutPath = path.join(tempDir, "projection-tasks.json");
+    await backend.exportProjectionSnapshot(projectionOutPath);
+    const projectionRaw = JSON.parse(await readFile(projectionOutPath, "utf8")) as {
+      tasks: TaskData[];
+    };
+    expect(projectionRaw.tasks).toHaveLength(1);
   });
 
   it("writes a task index cache for local tasks", async () => {
@@ -1694,6 +1701,45 @@ describe("RedmineBackend (mocked)", () => {
     await backend.touchTaskDocMetadata(task.id, "tester");
     const touched = await cache.getTask(task.id);
     expect(touched?.dirty).toBe(true);
+  });
+
+  it("exports a Redmine projection snapshot from cache without touching the remote source", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    const task: TaskData = {
+      id: "202601300111-ABCD",
+      title: "Cached snapshot",
+      description: "",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      depends_on: [],
+      tags: [],
+      verify: [],
+    };
+    await cache.writeTask(task);
+
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2 },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as {
+      listTasksRemote: () => Promise<TaskData[]>;
+    };
+    helper.listTasksRemote = vi.fn(() => {
+      throw new Error("remote should not be called during projection snapshot export");
+    });
+
+    const outPath = path.join(tempDir, "tasks-projection.json");
+    await backend.exportProjectionSnapshot(outPath);
+
+    const raw = JSON.parse(await readFile(outPath, "utf8")) as { tasks: TaskData[] };
+    expect(raw.tasks).toHaveLength(1);
+    expect(raw.tasks[0]?.id).toBe(task.id);
   });
 
   it("surfaces errors when redmine unavailable without cache", async () => {

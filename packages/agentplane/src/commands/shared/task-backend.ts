@@ -154,3 +154,22 @@ export async function listTasksMemo(ctx: CommandContext): Promise<TaskData[]> {
   ctx.memo.taskList ??= ctx.taskBackend.listTasks();
   return await ctx.memo.taskList;
 }
+
+export async function exportTaskProjectionSnapshot(opts: {
+  ctx: CommandContext;
+  outputPath: string;
+}): Promise<void> {
+  if (opts.ctx.taskBackend.exportProjectionSnapshot) {
+    await opts.ctx.taskBackend.exportProjectionSnapshot(opts.outputPath);
+    return;
+  }
+  if (opts.ctx.taskBackend.exportTasksJson) {
+    await opts.ctx.taskBackend.exportTasksJson(opts.outputPath);
+    return;
+  }
+  throw new CliError({
+    exitCode: 3,
+    code: "E_VALIDATION",
+    message: "Configured backend does not support exporting a task snapshot",
+  });
+}

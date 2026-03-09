@@ -4,10 +4,12 @@ export type {
   PlanApproval,
   PlanApprovalState,
   TaskBackend,
+  TaskBackendCapabilities,
   TaskData,
   TaskDocMeta,
   TaskEvent,
   TaskEventType,
+  TaskProjectionRefreshOptions,
   VerificationResult,
   VerificationState,
 } from "./shared/types.js";

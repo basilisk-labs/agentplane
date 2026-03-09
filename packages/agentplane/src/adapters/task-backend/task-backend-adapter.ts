@@ -21,10 +21,13 @@ export class TaskBackendAdapter implements TaskBackendPort {
     return this.ctx.taskBackend.writeTask(task);
   }
 
-  exportTasksJson(path: string): Promise<void> {
+  exportProjectionSnapshot(path: string): Promise<void> {
     const backend = this.ctx.taskBackend;
+    if (backend.exportProjectionSnapshot) {
+      return backend.exportProjectionSnapshot(path);
+    }
     if (!backend.exportTasksJson) {
-      throw new Error("Backend does not support exportTasksJson");
+      throw new Error("Backend does not support exportProjectionSnapshot");
     }
     return backend.exportTasksJson(path);
   }

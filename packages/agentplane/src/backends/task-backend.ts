@@ -9,9 +9,11 @@ export {
   type PlanApproval,
   type PlanApprovalState,
   type TaskBackend,
+  type TaskBackendCapabilities,
   type TaskData,
   type TaskEvent,
   type TaskEventType,
+  type TaskProjectionRefreshOptions,
   type VerificationResult,
   type VerificationState,
 } from "./task-backend/shared.js";

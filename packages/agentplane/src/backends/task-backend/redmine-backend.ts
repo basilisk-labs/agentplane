@@ -67,6 +67,16 @@ export type RedmineSettings = {
 
 export class RedmineBackend implements TaskBackend {
   id = "redmine";
+  capabilities = {
+    canonical_source: "remote",
+    projection: "cache",
+    reads_from_projection_by_default: false,
+    may_access_network_on_read: true,
+    may_access_network_on_write: true,
+    supports_projection_refresh: true,
+    supports_push_sync: true,
+    supports_snapshot_export: true,
+  } as const;
   baseUrl: string;
   apiKey: string;
   projectId: string;
@@ -163,6 +173,28 @@ export class RedmineBackend implements TaskBackend {
   async exportTasksJson(outputPath: string): Promise<void> {
     const tasks = await this.listTasks();
     await writeTasksExportFromTasks({ outputPath, tasks });
+  }
+
+  async exportProjectionSnapshot(outputPath: string): Promise<void> {
+    if (!this.cache) {
+      throw new BackendError(
+        "Redmine cache is disabled; projection snapshot export is unavailable",
+        "E_BACKEND",
+      );
+    }
+    const tasks = await this.cache.listTasks();
+    await writeTasksExportFromTasks({ outputPath, tasks });
+  }
+
+  async refreshProjection(opts: {
+    allowNetwork: boolean;
+    quiet?: boolean;
+    conflict?: "diff" | "prefer-local" | "prefer-remote" | "fail";
+  }): Promise<void> {
+    if (!opts.allowNetwork) {
+      throw new BackendError("Projection refresh requires network access approval", "E_BACKEND");
+    }
+    await this.syncPull(opts.conflict ?? "prefer-remote", opts.quiet ?? true);
   }
 
   async normalizeTasks(): Promise<{ scanned: number; changed: number }> {

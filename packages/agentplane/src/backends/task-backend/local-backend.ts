@@ -42,6 +42,16 @@ import {
 
 export class LocalBackend implements TaskBackend {
   id = "local";
+  capabilities = {
+    canonical_source: "local",
+    projection: "canonical",
+    reads_from_projection_by_default: true,
+    may_access_network_on_read: false,
+    may_access_network_on_write: false,
+    supports_projection_refresh: false,
+    supports_push_sync: false,
+    supports_snapshot_export: true,
+  } as const;
   root: string;
   updatedBy: string;
   private lastListWarnings: string[] = [];
@@ -436,5 +446,9 @@ export class LocalBackend implements TaskBackend {
   async exportTasksJson(outputPath: string): Promise<void> {
     const tasks = await this.listTasks();
     await writeTasksExportFromTasks({ outputPath, tasks });
+  }
+
+  async exportProjectionSnapshot(outputPath: string): Promise<void> {
+    await this.exportTasksJson(outputPath);
   }
 }
