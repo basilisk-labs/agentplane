@@ -1,7 +1,8 @@
 ---
 id: "202603100809-JCK8G1"
 title: "Recipes v1: make scenario CLI a validating placeholder over resolver surface"
-status: "DOING"
+result_summary: "Scenario CLI now exposes the recipe resolver surface directly and no longer executes recipe tools in v1."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -19,15 +20,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved by user in chat: continue closing the remaining recipes v1 task graph; scenario CLI may now be reduced to a validating placeholder on top of the resolver surface without implementing orchestration execution."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-10T11:50:07.163Z"
+  updated_by: "CODER"
+  note: "Scenario list/info/run output inspected through the updated resolver-backed scenario test contours; bun typecheck, targeted recipes/scenario vitest suites, and package builds passed on commit 9424f196."
+commit:
+  hash: "9424f19695a4192f3e88009fb0a8712422c36500"
+  message: "✨ JCK8G1 task: make scenario CLI a validating placeholder"
 comments:
   -
     author: "CODER"
     body: "Start: rework scenario list/info/run to use resolver outputs and make scenario run a validating placeholder that prepares but does not execute recipe orchestration."
+  -
+    author: "CODER"
+    body: "Verified: scenario list/info now read resolver-backed manifest descriptors, and scenario run is reduced to a validating prepared-plan placeholder with no orchestration execution."
 events:
   -
     type: "status"
@@ -36,8 +42,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: rework scenario list/info/run to use resolver outputs and make scenario run a validating placeholder that prepares but does not execute recipe orchestration."
+  -
+    type: "verify"
+    at: "2026-03-10T11:50:07.163Z"
+    author: "CODER"
+    state: "ok"
+    note: "Scenario list/info/run output inspected through the updated resolver-backed scenario test contours; bun typecheck, targeted recipes/scenario vitest suites, and package builds passed on commit 9424f196."
+  -
+    type: "status"
+    at: "2026-03-10T11:50:17.407Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: scenario list/info now read resolver-backed manifest descriptors, and scenario run is reduced to a validating prepared-plan placeholder with no orchestration execution."
 doc_version: 3
-doc_updated_at: "2026-03-10T11:49:44.971Z"
+doc_updated_at: "2026-03-10T11:50:17.407Z"
 doc_updated_by: "CODER"
 description: "Rework scenario list/info/run to use manifest-level descriptors and resolver outputs, with scenario run limited to validation and prepared run-plan output until orchestration runtime exists."
 id_source: "generated"
@@ -69,6 +88,14 @@ Keep scenario discovery and info manifest-driven for project-local recipes, and 
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-10T11:50:07.163Z — VERIFY — ok
+
+By: CODER
+
+Note: Scenario list/info/run output inspected through the updated resolver-backed scenario test contours; bun typecheck, targeted recipes/scenario vitest suites, and package builds passed on commit 9424f196.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-10T11:49:44.971Z, excerpt_hash=sha256:6dc0479f6c11022c2e011f7ad66c6317b763207996594e1d093b86bf40a02db7
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
