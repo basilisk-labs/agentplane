@@ -49,8 +49,9 @@
   --chrome-radius: 14px;
   --chrome-radius-inner: 13px;
   --chrome-radius-control: 12px;
-  --docs-shell-column-gap: clamp(1.6rem, 2.6vw, 2.25rem);
-  --docs-shell-outer-gutter: clamp(1rem, 2vw, 2rem);
+  --docs-shell-column-gap: 0px;
+  --docs-shell-outer-gutter: 0px;
+  --docs-sidebar-top-offset: 6rem;
   --docs-navbar-clearance: calc(var(--ifm-navbar-height) + 1.45rem);
 }
 
@@ -290,8 +291,10 @@ html.nav-scrolled .navbar__inner {
 .ap-doc-main-shell > main > .container.padding-top--md.padding-bottom--lg {
   margin-inline: 0;
   max-width: none;
+  padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
+  padding-top: 0;
   width: 100%;
 }
 
@@ -317,7 +320,7 @@ html.nav-scrolled .navbar__inner {
   max-width: none;
   padding-left: 0;
   padding-right: 0;
-  padding-top: 0.2rem;
+  padding-top: 0;
   position: relative;
   width: 100%;
 }
@@ -374,10 +377,12 @@ html.nav-scrolled .navbar__inner {
   align-self: flex-start;
   border-right: 1px solid rgb(var(--border));
   box-sizing: border-box;
+  flex: 0 0 var(--doc-sidebar-width);
   margin-top: 0;
   padding-left: 0;
   padding-right: 0;
   position: relative;
+  width: var(--doc-sidebar-width);
 }
 
 .ap-doc-sidebar-shell.theme-doc-sidebar-container::after {
@@ -386,9 +391,9 @@ html.nav-scrolled .navbar__inner {
 
 .ap-doc-sidebar-shell.theme-doc-sidebar-container > div {
   align-self: flex-start;
-  max-height: calc(100vh - var(--docs-navbar-clearance));
-  padding-right: var(--docs-shell-column-gap);
-  top: var(--docs-navbar-clearance);
+  max-height: calc(100vh - var(--docs-sidebar-top-offset));
+  padding-right: 0;
+  top: var(--docs-sidebar-top-offset);
 }
 
 .ap-doc-sidebar-shell.theme-doc-sidebar-container .sidebar {
@@ -467,11 +472,48 @@ nav[aria-label="Breadcrumbs"] {
 }
 
 @media (min-width: 997px) {
+  .ap-docs-wrapper > div {
+    justify-content: center;
+  }
+
   .ap-docs-wrapper > div > div {
     margin-inline: auto;
-    max-width: var(--docs-frame-width);
-    padding-left: var(--docs-shell-outer-gutter);
-    padding-right: var(--docs-shell-outer-gutter);
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+    width: min(100%, calc(var(--doc-sidebar-width) + var(--content-width)));
+  }
+
+  .ap-doc-main-shell {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .ap-doc-main-shell > main {
+    flex: 1 1 auto;
+    max-width: none;
+    width: 100%;
+  }
+
+  .ap-doc-layout-wrap {
+    width: 100%;
+  }
+
+  .ap-doc-layout-wrap .row {
+    width: 100%;
+  }
+
+  .ap-doc-layout-wrap .row > .col:first-child {
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .theme-doc-markdown.markdown {
+    margin-inline: auto;
+    max-width: var(--content-width);
     width: 100%;
   }
 
