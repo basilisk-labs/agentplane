@@ -42,7 +42,7 @@ const sidebars: SidebarsConfig = {
   docsSidebar: [
     {
       type: "category",
-      label: "◈ Start",
+      label: "Start",
       items: [
         "user/overview",
         "user/prerequisites",
@@ -52,7 +52,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "◉ Work on a task",
+      label: "Work on a task",
       items: [
         "user/workflow",
         "user/task-lifecycle",
@@ -63,7 +63,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "◌ Upgrade & recover",
+      label: "Upgrade & recover",
       items: [
         "user/breaking-changes",
         "user/workflow-migration",
@@ -74,7 +74,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "◍ Reference & integrations",
+      label: "Reference & integrations",
       items: [
         "user/tasks-and-backends",
         "user/backends",
@@ -91,7 +91,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "◎ Developer guide",
+      label: "Developer guide",
       items: [
         "developer/design-principles",
         "developer/architecture",
@@ -117,12 +117,12 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: "category",
-      label: "◇ Release notes",
+      label: "Release notes",
       items: ["releases/index", ...releaseDocItems],
     },
     {
       type: "category",
-      label: "□ Help",
+      label: "Help",
       items: ["help/broken-workflow-runbook", "help/glossary"],
     },
   ],
