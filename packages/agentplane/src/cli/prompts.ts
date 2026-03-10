@@ -25,7 +25,10 @@ export async function promptYesNo(prompt: string, defaultValue: boolean): Promis
   rl.close();
   const trimmed = answer.trim().toLowerCase();
   if (!trimmed) return defaultValue;
-  return ["y", "yes", "true", "1", "on"].includes(trimmed);
+
+  if (["y", "yes", "true", "1", "on"].includes(trimmed)) return true;
+  if (["n", "no", "false", "0", "off"].includes(trimmed)) return false;
+  return defaultValue;
 }
 
 export async function promptInput(prompt: string): Promise<string> {
