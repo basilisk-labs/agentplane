@@ -1,7 +1,8 @@
 ---
 id: "202603100816-BRJSBM"
 title: "Recipes v1: add deterministic resolver and run-profile selection"
-status: "DOING"
+result_summary: "Deterministic resolver library landed for manifest-driven recipe selection; future CLI surfaces can now consume a single compatibility+run_profile contract."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -18,15 +19,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved by user in chat: continue closing the remaining recipes v1 task graph; resolver is the next ready task and remains bounded to manifest-driven selection without orchestration execution."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-10T11:40:23.224Z"
+  updated_by: "CODER"
+  note: "Resolver API inspected via packages/agentplane/src/commands/recipes/impl/resolver.ts and representative selection assertions in packages/agentplane/src/commands/recipes.test.ts; bun typecheck, targeted recipes/scenario vitest contour, and package builds passed on commit b45ca2ba."
+commit:
+  hash: "b45ca2bab87de697e2dfb7ceef7e3a48f9fd6777"
+  message: "✨ BRJSBM task: add deterministic recipe resolver"
 comments:
   -
     author: "CODER"
     body: "Start: add a deterministic resolver over project-local self-contained recipes, producing scenario selection output and normalized run profiles without implementing orchestration execution."
+  -
+    author: "CODER"
+    body: "Verified: added a deterministic recipe resolver over project-local self-contained recipes, normalized scenario run profiles, and explicit selection reasons without implementing orchestration execution."
 events:
   -
     type: "status"
@@ -35,8 +41,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: add a deterministic resolver over project-local self-contained recipes, producing scenario selection output and normalized run profiles without implementing orchestration execution."
+  -
+    type: "verify"
+    at: "2026-03-10T11:40:23.224Z"
+    author: "CODER"
+    state: "ok"
+    note: "Resolver API inspected via packages/agentplane/src/commands/recipes/impl/resolver.ts and representative selection assertions in packages/agentplane/src/commands/recipes.test.ts; bun typecheck, targeted recipes/scenario vitest contour, and package builds passed on commit b45ca2ba."
+  -
+    type: "status"
+    at: "2026-03-10T11:40:29.210Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: added a deterministic recipe resolver over project-local self-contained recipes, normalized scenario run profiles, and explicit selection reasons without implementing orchestration execution."
 doc_version: 3
-doc_updated_at: "2026-03-10T11:37:07.344Z"
+doc_updated_at: "2026-03-10T11:40:29.210Z"
 doc_updated_by: "CODER"
 description: "Introduce a recipe resolver layer that scans project-local recipes, validates manifest compatibility, resolves scenario selection, and produces a deterministic run profile without implementing orchestration execution."
 id_source: "generated"
@@ -66,6 +85,14 @@ Introduce a recipe resolver layer that scans project-local recipes, validates ma
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-10T11:40:23.224Z — VERIFY — ok
+
+By: CODER
+
+Note: Resolver API inspected via packages/agentplane/src/commands/recipes/impl/resolver.ts and representative selection assertions in packages/agentplane/src/commands/recipes.test.ts; bun typecheck, targeted recipes/scenario vitest contour, and package builds passed on commit b45ca2ba.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-10T11:37:07.344Z, excerpt_hash=sha256:6d601a34522f42b41c58d20d508ebb8c5931cbf38cb60b2656a4b55d02f42b97
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
