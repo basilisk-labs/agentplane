@@ -1,7 +1,8 @@
 ---
 id: "202603100809-1EE43W"
 title: "Recipes v1: migrate examples, docs, and tests to self-contained model"
-status: "DOING"
+result_summary: "Bundled recipes, inventory/docs, and CLI reference surfaces are synchronized with recipes v1 self-contained architecture and resolver-backed scenario semantics."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -20,15 +21,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved by user in chat: finish the remaining recipes v1 migration work by syncing examples, docs, help, and reference artifacts with the self-contained scenario-first placeholder model."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-10T12:00:29.566Z"
+  updated_by: "CODER"
+  note: "Updated docs/inventory and generated CLI reference were inspected directly; bundled viewer/dokploy manifests in agentplane-recipes were validated through the runtime parser; bun typecheck, targeted recipes/scenario/help vitest suites, and package builds passed on commit 6839068e."
+commit:
+  hash: "6839068ed67e7a784734556fd4dccc3fa474f3de"
+  message: "✨ 1EE43W task: sync recipe docs and examples with v1"
 comments:
   -
     author: "CODER"
     body: "Start: migrate recipe docs, inventory, command metadata, and remaining reference surfaces to the self-contained scenario-first model and the non-executing scenario-run placeholder."
+  -
+    author: "CODER"
+    body: "Verified: recipe docs, bundled examples, command metadata, help snapshot, and generated CLI reference now match the self-contained scenario-first v1 model and the non-executing scenario-run placeholder."
 events:
   -
     type: "status"
@@ -37,8 +43,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: migrate recipe docs, inventory, command metadata, and remaining reference surfaces to the self-contained scenario-first model and the non-executing scenario-run placeholder."
+  -
+    type: "verify"
+    at: "2026-03-10T12:00:29.566Z"
+    author: "CODER"
+    state: "ok"
+    note: "Updated docs/inventory and generated CLI reference were inspected directly; bundled viewer/dokploy manifests in agentplane-recipes were validated through the runtime parser; bun typecheck, targeted recipes/scenario/help vitest suites, and package builds passed on commit 6839068e."
+  -
+    type: "status"
+    at: "2026-03-10T12:00:37.355Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: recipe docs, bundled examples, command metadata, help snapshot, and generated CLI reference now match the self-contained scenario-first v1 model and the non-executing scenario-run placeholder."
 doc_version: 3
-doc_updated_at: "2026-03-10T11:59:42.074Z"
+doc_updated_at: "2026-03-10T12:00:37.355Z"
 doc_updated_by: "CODER"
 description: "Update bundled recipe examples, docs, and automated tests to match the project-local self-contained recipe architecture and scenario-first public contract."
 id_source: "generated"
@@ -70,6 +89,14 @@ Update bundled recipe examples, docs, and automated tests to match the project-l
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-10T12:00:29.566Z — VERIFY — ok
+
+By: CODER
+
+Note: Updated docs/inventory and generated CLI reference were inspected directly; bundled viewer/dokploy manifests in agentplane-recipes were validated through the runtime parser; bun typecheck, targeted recipes/scenario/help vitest suites, and package builds passed on commit 6839068e.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-10T11:59:42.074Z, excerpt_hash=sha256:fcec126fbf9eb0bbf53dc259178d151f6123937a2cdd3e59b5c85a03213cd15e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
