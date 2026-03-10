@@ -68,6 +68,83 @@ async function writeInstalledRecipes(recipes: unknown[]): Promise<void> {
   await writeFile(path.join(tempHome, "recipes.json"), JSON.stringify(payload, null, 2), "utf8");
 }
 
+function skillEntry(overrides?: Partial<Record<string, unknown>>) {
+  return {
+    id: "RECIPE_SKILL",
+    summary: "Recipe skill",
+    kind: "agent-skill",
+    file: "skills/recipe.json",
+    ...overrides,
+  };
+}
+
+function toolEntry(overrides?: Partial<Record<string, unknown>>) {
+  return {
+    id: "RECIPE_TOOL",
+    summary: "Recipe tool",
+    runtime: "node",
+    entrypoint: "tools/run.mjs",
+    ...overrides,
+  };
+}
+
+function agentEntry(overrides?: Partial<Record<string, unknown>>) {
+  return {
+    id: "RECIPE_AGENT",
+    display_name: "Recipe Agent",
+    role: "executor",
+    summary: "Recipe agent",
+    skills: ["RECIPE_SKILL"],
+    tools: ["RECIPE_TOOL"],
+    file: "agents/recipe.json",
+    ...overrides,
+  };
+}
+
+function scenarioDescriptor(overrides?: Partial<Record<string, unknown>>) {
+  return {
+    id: "RECIPE_SCENARIO",
+    name: "Recipe Scenario",
+    summary: "Recipe scenario",
+    use_when: ["Recipe scenario is appropriate"],
+    required_inputs: [],
+    outputs: [],
+    permissions: [],
+    artifacts: [],
+    agents_involved: ["RECIPE_AGENT"],
+    skills_used: ["RECIPE_SKILL"],
+    tools_used: ["RECIPE_TOOL"],
+    run_profile: { mode: "analysis" },
+    file: "scenarios/recipe.json",
+    ...overrides,
+  };
+}
+
+function baseRecipeManifest(overrides?: Partial<Record<string, unknown>>) {
+  return {
+    schema_version: "1",
+    id: "viewer",
+    version: "1.2.3",
+    name: "Viewer",
+    summary: "Preview tasks",
+    description: "Preview tasks",
+    tags: ["docs"],
+    compatibility: {
+      min_agentplane_version: "0.3.5",
+      manifest_api_version: "1",
+      scenario_api_version: "1",
+      runtime_api_version: "1",
+      platforms: ["darwin", "linux"],
+      repo_types: ["generic"],
+    },
+    skills: [skillEntry()],
+    agents: [agentEntry()],
+    tools: [toolEntry()],
+    scenarios: [scenarioDescriptor()],
+    ...overrides,
+  };
+}
+
 function baseRecipeEntry(overrides?: Partial<Record<string, unknown>>) {
   const base = {
     id: "viewer",
@@ -75,18 +152,7 @@ function baseRecipeEntry(overrides?: Partial<Record<string, unknown>>) {
     source: "local",
     installed_at: "2026-02-05T00:00:00Z",
     tags: ["docs"],
-    manifest: {
-      schema_version: "1",
-      id: "viewer",
-      version: "1.2.3",
-      name: "Viewer",
-      summary: "Preview tasks",
-      description: "Preview tasks",
-      tags: ["docs"],
-      agents: [],
-      tools: [],
-      scenarios: [],
-    },
+    manifest: baseRecipeManifest(),
   };
   if (!overrides) return base;
   return { ...base, ...overrides };
@@ -419,32 +485,52 @@ describe("commands/recipes", () => {
     await writeDefaultConfig(projectDir);
     const fixtureRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-dir-"));
     const recipeDir = path.join(fixtureRoot, "local-viewer");
+    await mkdir(path.join(recipeDir, "agents"), { recursive: true });
+    await mkdir(path.join(recipeDir, "skills"), { recursive: true });
     await mkdir(path.join(recipeDir, "scenarios"), { recursive: true });
     await mkdir(path.join(recipeDir, "tools"), { recursive: true });
     await writeFile(
       path.join(recipeDir, "manifest.json"),
       JSON.stringify(
-        {
-          schema_version: "1",
+        baseRecipeManifest({
           id: "local-viewer",
           version: "0.1.0",
           name: "Local Viewer",
           summary: "Local recipe fixture",
           description: "Local recipe fixture",
           tools: [
-            {
+            toolEntry({
               id: "noop",
               summary: "No-op tool",
               runtime: "node",
               entrypoint: "tools/noop.mjs",
               permissions: ["fs.read"],
-            },
+            }),
           ],
-          scenarios: [{ id: "fixture", summary: "Fixture scenario" }],
-        },
+          agents: [agentEntry({ tools: ["noop"] })],
+          scenarios: [
+            scenarioDescriptor({
+              id: "fixture",
+              name: "Fixture Scenario",
+              summary: "Fixture scenario",
+              tools_used: ["noop"],
+              file: "scenarios/fixture.json",
+            }),
+          ],
+        }),
         null,
         2,
       ),
+      "utf8",
+    );
+    await writeFile(
+      path.join(recipeDir, "agents", "recipe.json"),
+      JSON.stringify({ id: "RECIPE_AGENT", role: "Recipe agent" }, null, 2),
+      "utf8",
+    );
+    await writeFile(
+      path.join(recipeDir, "skills", "recipe.json"),
+      JSON.stringify({ id: "RECIPE_SKILL", kind: "agent-skill" }, null, 2),
       "utf8",
     );
     await writeFile(
@@ -535,18 +621,17 @@ describe("commands/recipes", () => {
     await writeDefaultConfig(projectDir);
     await writeInstalledRecipes([
       baseRecipeEntry({
-        manifest: {
-          schema_version: "1",
-          id: "viewer",
-          version: "1.2.3",
-          name: "Viewer",
-          summary: "Preview tasks",
-          description: "Preview tasks",
+        manifest: baseRecipeManifest({
           tags: [],
-          agents: [],
-          tools: [],
-          scenarios: [{ id: "alpha", summary: "Alpha scenario" }],
-        },
+          scenarios: [
+            scenarioDescriptor({
+              id: "alpha",
+              name: "Alpha Scenario",
+              summary: "Alpha scenario",
+              file: "scenarios/alpha.json",
+            }),
+          ],
+        }),
       }),
     ]);
     const recipeDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
@@ -756,18 +841,7 @@ describe("commands/recipes", () => {
     await writeDefaultConfig(projectDir);
     await writeInstalledRecipes([
       baseRecipeEntry({
-        manifest: {
-          schema_version: "1",
-          id: "viewer",
-          version: "1.2.3",
-          name: "Viewer",
-          summary: "Preview tasks",
-          description: "Preview tasks",
-          tags: ["docs"],
-          agents: [],
-          tools: [],
-          scenarios: [],
-        },
+        manifest: baseRecipeManifest({ tags: ["docs"] }),
       }),
     ]);
     const recipeDir = path.join(tempHome, "recipes", "viewer", "1.2.3");
@@ -832,7 +906,7 @@ describe("commands/recipes", () => {
 
     await expect(
       runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
-    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+    ).rejects.toMatchObject({ code: "E_IO" });
 
     (manifest.tools as Record<string, unknown>[])[0].runtime = "bash";
     await writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
@@ -858,26 +932,42 @@ describe("commands/recipes", () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
-    const manifest = {
-      schema_version: "1",
-      id: "viewer",
-      version: "1.2.3",
-      name: "Viewer",
-      summary: "Preview tasks",
-      description: "Preview tasks",
+    const manifest = baseRecipeManifest({
       tools: [
-        {
+        toolEntry({
           id: "AUDIT_TOOL",
           summary: "Audit tool",
           runtime: "bash",
           entrypoint: "tools/run.sh",
-        },
+        }),
       ],
-      scenarios: [{ id: "AUDIT_SCENARIO", summary: "Audit scenario" }],
-    };
+      agents: [
+        agentEntry({
+          id: "AUDIT_AGENT",
+          display_name: "Audit Agent",
+          skills: ["AUDIT_SKILL"],
+          tools: ["AUDIT_TOOL"],
+          file: "agents/audit.json",
+        }),
+      ],
+      skills: [skillEntry({ id: "AUDIT_SKILL", file: "skills/audit.json" })],
+      scenarios: [
+        scenarioDescriptor({
+          id: "AUDIT_SCENARIO",
+          name: "Audit Scenario",
+          summary: "Audit scenario",
+          agents_involved: ["AUDIT_AGENT"],
+          skills_used: ["AUDIT_SKILL"],
+          tools_used: ["AUDIT_TOOL"],
+          file: "scenarios/audit.json",
+        }),
+      ],
+    });
     const archivePath = await createRecipeArchiveWithManifest({
       manifest,
       files: {
+        "agents/audit.json": '{"id":"AUDIT_AGENT","role":"executor"}',
+        "skills/audit.json": '{"id":"AUDIT_SKILL","kind":"agent-skill"}',
         "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
         "scenarios/audit.json": JSON.stringify(
           {
@@ -941,26 +1031,42 @@ describe("commands/recipes", () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
-    const manifest = {
-      schema_version: "1",
-      id: "viewer",
-      version: "1.2.3",
-      name: "Viewer",
-      summary: "Preview tasks",
-      description: "Preview tasks",
+    const manifest = baseRecipeManifest({
       tools: [
-        {
+        toolEntry({
           id: "NO_EVIDENCE_TOOL",
           summary: "No evidence tool",
           runtime: "bash",
           entrypoint: "tools/run.sh",
-        },
+        }),
       ],
-      scenarios: [{ id: "REQ_EVIDENCE_SCENARIO", summary: "Requires evidence" }],
-    };
+      agents: [
+        agentEntry({
+          id: "REQ_EVIDENCE_AGENT",
+          display_name: "Required Evidence Agent",
+          skills: ["REQ_EVIDENCE_SKILL"],
+          tools: ["NO_EVIDENCE_TOOL"],
+          file: "agents/required-evidence.json",
+        }),
+      ],
+      skills: [skillEntry({ id: "REQ_EVIDENCE_SKILL", file: "skills/required-evidence.json" })],
+      scenarios: [
+        scenarioDescriptor({
+          id: "REQ_EVIDENCE_SCENARIO",
+          name: "Required Evidence Scenario",
+          summary: "Requires evidence",
+          agents_involved: ["REQ_EVIDENCE_AGENT"],
+          skills_used: ["REQ_EVIDENCE_SKILL"],
+          tools_used: ["NO_EVIDENCE_TOOL"],
+          file: "scenarios/required-evidence.json",
+        }),
+      ],
+    });
     const archivePath = await createRecipeArchiveWithManifest({
       manifest,
       files: {
+        "agents/required-evidence.json": '{"id":"REQ_EVIDENCE_AGENT","role":"executor"}',
+        "skills/required-evidence.json": '{"id":"REQ_EVIDENCE_SKILL","kind":"agent-skill"}',
         "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
         "scenarios/required-evidence.json": JSON.stringify(
           {
@@ -1004,26 +1110,42 @@ describe("commands/recipes", () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
-    const manifest = {
-      schema_version: "1",
-      id: "viewer",
-      version: "1.2.3",
-      name: "Viewer",
-      summary: "Preview tasks",
-      description: "Preview tasks",
+    const manifest = baseRecipeManifest({
       tools: [
-        {
+        toolEntry({
           id: "EVIDENCE_TOOL",
           summary: "Evidence writer",
           runtime: "bash",
           entrypoint: "tools/run.sh",
-        },
+        }),
       ],
-      scenarios: [{ id: "EVIDENCE_SCENARIO", summary: "Collects evidence" }],
-    };
+      agents: [
+        agentEntry({
+          id: "EVIDENCE_AGENT",
+          display_name: "Evidence Agent",
+          skills: ["EVIDENCE_SKILL"],
+          tools: ["EVIDENCE_TOOL"],
+          file: "agents/evidence.json",
+        }),
+      ],
+      skills: [skillEntry({ id: "EVIDENCE_SKILL", file: "skills/evidence.json" })],
+      scenarios: [
+        scenarioDescriptor({
+          id: "EVIDENCE_SCENARIO",
+          name: "Evidence Scenario",
+          summary: "Collects evidence",
+          agents_involved: ["EVIDENCE_AGENT"],
+          skills_used: ["EVIDENCE_SKILL"],
+          tools_used: ["EVIDENCE_TOOL"],
+          file: "scenarios/evidence.json",
+        }),
+      ],
+    });
     const archivePath = await createRecipeArchiveWithManifest({
       manifest,
       files: {
+        "agents/evidence.json": '{"id":"EVIDENCE_AGENT","role":"executor"}',
+        "skills/evidence.json": '{"id":"EVIDENCE_SKILL","kind":"agent-skill"}',
         "tools/run.sh":
           '#!/usr/bin/env bash\nprintf \'{"ok":true}\\n\' > "$AGENTPLANE_STEP_DIR/evidence.json"\nexit 0\n',
         "scenarios/evidence.json": JSON.stringify(
@@ -1071,27 +1193,43 @@ describe("commands/recipes", () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
-    const manifest = {
-      schema_version: "1",
-      id: "viewer",
-      version: "1.2.3",
-      name: "Viewer",
-      summary: "Preview tasks",
-      description: "Preview tasks",
+    const manifest = baseRecipeManifest({
       tools: [
-        {
+        toolEntry({
           id: "WARN_TOOL",
           summary: "Warn tool",
           runtime: "bash",
           entrypoint: "tools/missing.sh",
           permissions: ["read", "write"],
-        },
+        }),
       ],
-      scenarios: [{ id: "WARN_SCENARIO", summary: "Warn scenario" }],
-    };
+      agents: [
+        agentEntry({
+          id: "WARN_AGENT",
+          display_name: "Warn Agent",
+          skills: ["WARN_SKILL"],
+          tools: ["WARN_TOOL"],
+          file: "agents/warn.json",
+        }),
+      ],
+      skills: [skillEntry({ id: "WARN_SKILL", file: "skills/warn.json" })],
+      scenarios: [
+        scenarioDescriptor({
+          id: "WARN_SCENARIO",
+          name: "Warn Scenario",
+          summary: "Warn scenario",
+          agents_involved: ["WARN_AGENT"],
+          skills_used: ["WARN_SKILL"],
+          tools_used: ["WARN_TOOL"],
+          file: "scenarios/warn.json",
+        }),
+      ],
+    });
     const archivePath = await createRecipeArchiveWithManifest({
       manifest,
       files: {
+        "agents/warn.json": '{"id":"WARN_AGENT","role":"executor"}',
+        "skills/warn.json": '{"id":"WARN_SKILL","kind":"agent-skill"}',
         "scenarios/warn.json": JSON.stringify(
           {
             schema_version: "1",
@@ -1128,26 +1266,42 @@ describe("commands/recipes", () => {
     if (!tempHome) throw new Error("temp home not set");
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
-    const manifest = {
-      schema_version: "1",
-      id: "viewer",
-      version: "1.2.3",
-      name: "Viewer",
-      summary: "Preview tasks",
-      description: "Preview tasks",
+    const manifest = baseRecipeManifest({
       tools: [
-        {
+        toolEntry({
           id: "BAD_ARGS_TOOL",
           summary: "Bad args tool",
           runtime: "bash",
           entrypoint: "tools/run.sh",
-        },
+        }),
       ],
-      scenarios: [{ id: "BAD_ARGS", summary: "Bad args scenario" }],
-    };
+      agents: [
+        agentEntry({
+          id: "BAD_ARGS_AGENT",
+          display_name: "Bad Args Agent",
+          skills: ["BAD_ARGS_SKILL"],
+          tools: ["BAD_ARGS_TOOL"],
+          file: "agents/bad-args.json",
+        }),
+      ],
+      skills: [skillEntry({ id: "BAD_ARGS_SKILL", file: "skills/bad-args.json" })],
+      scenarios: [
+        scenarioDescriptor({
+          id: "BAD_ARGS",
+          name: "Bad Args Scenario",
+          summary: "Bad args scenario",
+          agents_involved: ["BAD_ARGS_AGENT"],
+          skills_used: ["BAD_ARGS_SKILL"],
+          tools_used: ["BAD_ARGS_TOOL"],
+          file: "scenarios/bad-args.json",
+        }),
+      ],
+    });
     const archivePath = await createRecipeArchiveWithManifest({
       manifest,
       files: {
+        "agents/bad-args.json": '{"id":"BAD_ARGS_AGENT","role":"executor"}',
+        "skills/bad-args.json": '{"id":"BAD_ARGS_SKILL","kind":"agent-skill"}',
         "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
         "scenarios/bad-args.json": JSON.stringify(
           {
@@ -1229,16 +1383,9 @@ describe("commands/recipes", () => {
         id: "viewer",
         tags: ["docs"],
         manifest: {
-          schema_version: "1",
-          id: "viewer",
-          version: "1.2.3",
-          name: "Viewer",
-          summary: "Preview tasks",
-          description: "Preview tasks",
-          tags: ["docs"],
-          agents: [],
-          tools: [],
-          scenarios: [],
+          ...baseRecipeManifest({
+            tags: ["docs"],
+          }),
         },
       }),
       baseRecipeEntry({
@@ -1246,16 +1393,14 @@ describe("commands/recipes", () => {
         version: "2.0.0",
         tags: ["ops"],
         manifest: {
-          schema_version: "1",
-          id: "runner",
-          version: "2.0.0",
-          name: "Runner",
-          summary: "Runs jobs",
-          description: "Runs jobs",
-          tags: ["ops"],
-          agents: [],
-          tools: [],
-          scenarios: [],
+          ...baseRecipeManifest({
+            id: "runner",
+            version: "2.0.0",
+            name: "Runner",
+            summary: "Runs jobs",
+            description: "Runs jobs",
+            tags: ["ops"],
+          }),
         },
       }),
     ]);

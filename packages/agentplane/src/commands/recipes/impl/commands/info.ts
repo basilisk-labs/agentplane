@@ -2,6 +2,7 @@ import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
+import { formatJsonBlock } from "../format.js";
 import { readInstalledRecipesFile } from "../installed-recipes.js";
 import { resolveInstalledRecipesPath } from "../paths.js";
 
@@ -29,33 +30,41 @@ export async function cmdRecipeInfoParsed(opts: {
     if (manifest.tags && manifest.tags.length > 0) {
       process.stdout.write(`Tags: ${manifest.tags.join(", ")}\n`);
     }
+    if (manifest.compatibility) {
+      const payload = formatJsonBlock(manifest.compatibility, "  ");
+      if (payload) process.stdout.write(`Compatibility:\n${payload}\n`);
+    }
 
+    const skills = manifest.skills ?? [];
     const agents = manifest.agents ?? [];
     const tools = manifest.tools ?? [];
     const scenarios = manifest.scenarios ?? [];
 
+    if (skills.length > 0) {
+      process.stdout.write("Skills:\n");
+      for (const skill of skills) {
+        process.stdout.write(`  - ${skill.id} - ${skill.summary}\n`);
+      }
+    }
     if (agents.length > 0) {
       process.stdout.write("Agents:\n");
       for (const agent of agents) {
-        const label = agent?.id ?? "unknown";
-        const summary = agent?.summary ? ` - ${agent.summary}` : "";
-        process.stdout.write(`  - ${label}${summary}\n`);
+        const label = `${agent.display_name} (${agent.id})`;
+        process.stdout.write(`  - ${label} - ${agent.summary}\n`);
       }
     }
     if (tools.length > 0) {
       process.stdout.write("Tools:\n");
       for (const tool of tools) {
-        const label = tool?.id ?? "unknown";
-        const summary = tool?.summary ? ` - ${tool.summary}` : "";
-        process.stdout.write(`  - ${label}${summary}\n`);
+        process.stdout.write(`  - ${tool.id} - ${tool.summary}\n`);
       }
     }
     if (scenarios.length > 0) {
       process.stdout.write("Scenarios:\n");
       for (const scenario of scenarios) {
-        const label = scenario?.id ?? "unknown";
-        const summary = scenario?.summary ? ` - ${scenario.summary}` : "";
-        process.stdout.write(`  - ${label}${summary}\n`);
+        process.stdout.write(
+          `  - ${scenario.name} (${scenario.id}) - ${scenario.summary} [mode=${scenario.run_profile.mode}]\n`,
+        );
       }
     }
     return 0;

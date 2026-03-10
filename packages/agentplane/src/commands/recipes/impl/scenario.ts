@@ -92,7 +92,47 @@ export async function collectRecipeScenarioDetails(
   recipeDir: string,
   manifest: RecipeManifest,
 ): Promise<RecipeScenarioDetail[]> {
+  const manifestScenarios = manifest.scenarios ?? [];
   const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
+  if (manifestScenarios.length > 0) {
+    const details = manifestScenarios.map<RecipeScenarioDetail>((scenario) => ({
+      id: scenario.id,
+      name: scenario.name,
+      summary: scenario.summary,
+      description: scenario.description,
+      use_when: scenario.use_when,
+      avoid_when: scenario.avoid_when,
+      required_inputs: scenario.required_inputs,
+      outputs: scenario.outputs,
+      permissions: scenario.permissions,
+      artifacts: scenario.artifacts,
+      agents_involved: scenario.agents_involved,
+      skills_used: scenario.skills_used,
+      tools_used: scenario.tools_used,
+      run_profile: scenario.run_profile,
+      file: scenario.file,
+      source: "manifest",
+    }));
+
+    if ((await getPathKind(scenariosDir)) === "dir") {
+      const files = await readdir(scenariosDir);
+      const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
+      for (const file of jsonFiles) {
+        const scenario = await readScenarioDefinition(path.join(scenariosDir, file));
+        const detail = details.find((entry) => entry.id === scenario.id);
+        if (!detail) continue;
+        detail.description ??= scenario.description;
+        detail.goal = scenario.goal;
+        detail.inputs = scenario.inputs;
+        detail.steps = scenario.steps;
+        detail.outputs = detail.outputs ?? scenario.outputs;
+        detail.source = "definition";
+      }
+    }
+
+    return details.toSorted((a, b) => a.id.localeCompare(b.id));
+  }
+
   if ((await getPathKind(scenariosDir)) === "dir") {
     const files = await readdir(scenariosDir);
     const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
@@ -122,18 +162,6 @@ export async function collectRecipeScenarioDetails(
         summary: scenario.summary,
         source: "index",
       }))
-      .toSorted((a, b) => a.id.localeCompare(b.id));
-  }
-
-  const manifestScenarios = manifest.scenarios ?? [];
-  if (manifestScenarios.length > 0) {
-    return manifestScenarios
-      .map<RecipeScenarioDetail>((scenario) => ({
-        id: scenario?.id ?? "",
-        summary: scenario?.summary,
-        source: "manifest",
-      }))
-      .filter((scenario) => scenario.id)
       .toSorted((a, b) => a.id.localeCompare(b.id));
   }
 

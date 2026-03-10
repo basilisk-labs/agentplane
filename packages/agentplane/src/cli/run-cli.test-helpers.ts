@@ -245,11 +245,60 @@ export async function createRecipeArchive(opts?: {
     name: opts?.name ?? "Viewer",
     summary: opts?.summary ?? "Preview task artifacts",
     description: opts?.description ?? "Provides a local viewer for task artifacts.",
-    agents: [{ id: "RECIPE_AGENT", summary: "Recipe agent", file: "agents/recipe.json" }],
+    compatibility: {
+      min_agentplane_version: "0.3.5",
+      manifest_api_version: "1",
+      scenario_api_version: "1",
+      runtime_api_version: "1",
+      platforms: ["darwin", "linux"],
+      repo_types: ["generic"],
+    },
+    skills: [
+      {
+        id: "RECIPE_SKILL",
+        summary: "Recipe analysis skill",
+        kind: "agent-skill",
+        file: "skills/analysis.json",
+      },
+    ],
+    agents: [
+      {
+        id: "RECIPE_AGENT",
+        display_name: "Recipe Agent",
+        role: "executor",
+        summary: "Recipe agent",
+        skills: ["RECIPE_SKILL"],
+        tools: ["RECIPE_TOOL"],
+        file: "agents/recipe.json",
+      },
+    ],
     tools: [
       { id: "RECIPE_TOOL", summary: "Recipe tool", runtime: "node", entrypoint: "tools/run.js" },
     ],
-    scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
+    scenarios: [
+      {
+        id: "RECIPE_SCENARIO",
+        name: "Recipe Scenario",
+        summary: "Recipe scenario",
+        use_when: ["Task artifacts need local preview"],
+        required_inputs: ["task_id"],
+        outputs: ["report"],
+        permissions: ["filesystem-write"],
+        artifacts: ["artifact.txt"],
+        agents_involved: ["RECIPE_AGENT"],
+        skills_used: ["RECIPE_SKILL"],
+        tools_used: ["RECIPE_TOOL"],
+        run_profile: {
+          mode: "analysis",
+          sandbox: "workspace-write",
+          network: false,
+          requires_human_approval: false,
+          writes_artifacts_to: ["logs/", "reports/"],
+          expected_exit_contract: "report",
+        },
+        file: "scenarios/recipe-scenario.json",
+      },
+    ],
   };
   if (normalizedTags) {
     manifest.tags = normalizedTags;
@@ -264,6 +313,21 @@ export async function createRecipeArchive(opts?: {
         id: "RECIPE_AGENT",
         role: "Recipe agent",
         description: "Example agent installed from a recipe.",
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  const skillsDir = path.join(recipeDir, "skills");
+  await mkdir(skillsDir, { recursive: true });
+  await writeFile(
+    path.join(skillsDir, "analysis.json"),
+    JSON.stringify(
+      {
+        id: "RECIPE_SKILL",
+        summary: "Recipe analysis skill",
+        kind: "agent-skill",
       },
       null,
       2,
@@ -362,11 +426,45 @@ export async function createUnsafeRecipeArchive(opts: {
     name: "Unsafe",
     summary: "Unsafe recipe",
     description: "Used for archive validation tests.",
-    agents: [{ id: "RECIPE_AGENT", summary: "Recipe agent", file: "agents/recipe.json" }],
+    skills: [
+      {
+        id: "RECIPE_SKILL",
+        summary: "Recipe skill",
+        kind: "agent-skill",
+        file: "skills/recipe.json",
+      },
+    ],
+    agents: [
+      {
+        id: "RECIPE_AGENT",
+        display_name: "Recipe Agent",
+        role: "executor",
+        summary: "Recipe agent",
+        skills: ["RECIPE_SKILL"],
+        tools: ["RECIPE_TOOL"],
+        file: "agents/recipe.json",
+      },
+    ],
     tools: [
       { id: "RECIPE_TOOL", summary: "Recipe tool", runtime: "bash", entrypoint: "tools/run.sh" },
     ],
-    scenarios: [{ id: "RECIPE_SCENARIO", summary: "Recipe scenario" }],
+    scenarios: [
+      {
+        id: "RECIPE_SCENARIO",
+        name: "Recipe Scenario",
+        summary: "Recipe scenario",
+        use_when: ["Unsafe validation fixture"],
+        required_inputs: [],
+        outputs: [],
+        permissions: [],
+        artifacts: [],
+        agents_involved: ["RECIPE_AGENT"],
+        skills_used: ["RECIPE_SKILL"],
+        tools_used: ["RECIPE_TOOL"],
+        run_profile: { mode: "analysis" },
+        file: "scenarios/recipe-scenario.json",
+      },
+    ],
   };
   await writeFile(path.join(recipeDir, "manifest.json"), JSON.stringify(manifest, null, 2), "utf8");
   const agentsDir = path.join(recipeDir, "agents");
@@ -374,6 +472,13 @@ export async function createUnsafeRecipeArchive(opts: {
   await writeFile(
     path.join(agentsDir, "recipe.json"),
     JSON.stringify({ id: "RECIPE_AGENT", role: "Recipe agent" }, null, 2),
+    "utf8",
+  );
+  const skillsDir = path.join(recipeDir, "skills");
+  await mkdir(skillsDir, { recursive: true });
+  await writeFile(
+    path.join(skillsDir, "recipe.json"),
+    JSON.stringify({ id: "RECIPE_SKILL" }),
     "utf8",
   );
   const toolsDir = path.join(recipeDir, "tools");
@@ -384,7 +489,15 @@ export async function createUnsafeRecipeArchive(opts: {
   await writeFile(
     path.join(scenariosDir, "recipe-scenario.json"),
     JSON.stringify(
-      { schema_version: "1", id: "RECIPE_SCENARIO", summary: "Recipe scenario" },
+      {
+        schema_version: "1",
+        id: "RECIPE_SCENARIO",
+        summary: "Recipe scenario",
+        goal: "Exercise unsafe archive validation.",
+        inputs: [],
+        outputs: [],
+        steps: [{ tool: "RECIPE_TOOL" }],
+      },
       null,
       2,
     ),
