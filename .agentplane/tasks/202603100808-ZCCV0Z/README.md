@@ -1,7 +1,8 @@
 ---
 id: "202603100808-ZCCV0Z"
 title: "Recipes v1: move install/runtime storage to project recipes directory"
-status: "DOING"
+result_summary: "Project-local recipes runtime storage is now the canonical install/discovery surface; install preserves runs/, validates recipe-local assets, and keeps --on-conflict as a compatibility no-op."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -17,15 +18,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: "Approved by user in chat: recipes are project-local self-contained resources and must stop exporting internals into shared project registries."
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-10T11:24:31.885Z"
+  updated_by: "CODER"
+  note: "Verified project-local recipe storage shift with: bun run typecheck; bun x vitest run packages/agentplane/src/commands/recipes.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.recipes.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000; bun x vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --hookTimeout 60000 --testTimeout 60000; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; git status --short."
+commit:
+  hash: "cb2c197f0b5efc016dbf6422033a89fdb172803d"
+  message: "♻️ recipes: move installs to project-local runtime storage"
 comments:
   -
     author: "CODER"
     body: "Start: move recipe storage semantics to project-local .agentplane/recipes, remove export into shared registries, and switch recipe discovery away from the global installed registry."
+  -
+    author: "CODER"
+    body: "Verified: recipe installs now land in project-local .agentplane/recipes, install writes recipe-local provenance, scenario/recipe discovery scans project recipes, and install no longer exports recipe internals into shared registries."
 events:
   -
     type: "status"
@@ -34,8 +40,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: move recipe storage semantics to project-local .agentplane/recipes, remove export into shared registries, and switch recipe discovery away from the global installed registry."
+  -
+    type: "verify"
+    at: "2026-03-10T11:24:31.885Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified project-local recipe storage shift with: bun run typecheck; bun x vitest run packages/agentplane/src/commands/recipes.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.recipes.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000; bun x vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --hookTimeout 60000 --testTimeout 60000; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; git status --short."
+  -
+    type: "status"
+    at: "2026-03-10T11:24:42.204Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: recipe installs now land in project-local .agentplane/recipes, install writes recipe-local provenance, scenario/recipe discovery scans project recipes, and install no longer exports recipe internals into shared registries."
 doc_version: 3
-doc_updated_at: "2026-03-10T10:49:44.516Z"
+doc_updated_at: "2026-03-10T11:24:42.204Z"
 doc_updated_by: "CODER"
 description: "Move recipe install/remove/list/info storage semantics to project-local .agentplane/recipes and stop exporting recipe internals into shared project registries."
 id_source: "generated"
@@ -74,6 +93,14 @@ Move recipe install/remove/list/info storage semantics to project-local .agentpl
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-10T11:24:31.885Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified project-local recipe storage shift with: bun run typecheck; bun x vitest run packages/agentplane/src/commands/recipes.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.recipes.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000; bun x vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --hookTimeout 60000 --testTimeout 60000; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; git status --short.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-10T10:49:44.516Z, excerpt_hash=sha256:88cc4b8b82bfa4869857f1e3af8601ebbe9c76243df72df4b6e85e3c16eeed06
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
