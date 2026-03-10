@@ -11,6 +11,13 @@ export type {
   RecipeInstallSource,
   RecipeListFlags,
   RecipeListRemoteFlags,
+  RecipeResolverCompatibility,
+  RecipeResolverCompatibilityFailure,
+  RecipeResolverContext,
+  ResolveRecipeScenarioSelectionFlags,
+  ResolvedRecipeRunProfile,
+  ResolvedRecipeScenario,
+  ResolvedRecipeScenarioSelection,
   ScenarioDefinition,
 } from "./recipes/impl/types.js";
 
@@ -38,6 +45,14 @@ export {
   readScenarioDefinition,
   readScenarioIndex,
 } from "./recipes/impl/scenario.js";
+
+export {
+  buildRecipeResolverContext,
+  listResolvedRecipeScenarios,
+  normalizeResolvedRecipeRunProfile,
+  resolveRecipeCompatibility,
+  resolveRecipeScenarioSelection,
+} from "./recipes/impl/resolver.js";
 
 export {
   cmdRecipeCachePruneParsed,
