@@ -1,7 +1,8 @@
 ---
 id: "202603100808-FKN7RT"
 title: "Recipes v1: redefine self-contained manifest contract"
-status: "DOING"
+result_summary: "Manifest v1 contract redefined for scenario-first self-contained recipes"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-10T10:41:40.538Z"
   updated_by: "REVIEWER"
   note: "Manifest v1 contract passes schema/type/test verification"
-commit: null
+commit:
+  hash: "cbccaad679d62a0a45803b7d08ebf1c4bd39374f"
+  message: "✨ recipes: redefine scenario-first manifest contract"
 comments:
   -
     author: "CODER"
     body: "Start: rework recipes manifest contract around project-local self-contained packages, scenario-first public metadata, and first-class skills without implementing scenario orchestration yet."
+  -
+    author: "INTEGRATOR"
+    body: "Verified: manifest v1 contract now models self-contained scenario-first recipes with first-class skills, compatibility metadata, and run-profile descriptors; verification passed and mirrored schema sync was recorded for the nested recipe repository."
 events:
   -
     type: "status"
@@ -39,9 +45,16 @@ events:
     author: "REVIEWER"
     state: "ok"
     note: "Manifest v1 contract passes schema/type/test verification"
+  -
+    type: "status"
+    at: "2026-03-10T10:46:02.285Z"
+    author: "INTEGRATOR"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: manifest v1 contract now models self-contained scenario-first recipes with first-class skills, compatibility metadata, and run-profile descriptors; verification passed and mirrored schema sync was recorded for the nested recipe repository."
 doc_version: 3
-doc_updated_at: "2026-03-10T10:41:40.544Z"
-doc_updated_by: "REVIEWER"
+doc_updated_at: "2026-03-10T10:46:02.285Z"
+doc_updated_by: "INTEGRATOR"
 description: "Redesign recipe manifest/types/validation around project-local self-contained recipes, scenario-first public entry points, and first-class skills without implementing orchestration runtime."
 id_source: "generated"
 ---
