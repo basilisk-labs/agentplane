@@ -126,6 +126,7 @@ export async function collectRecipeScenarioDetails(
         detail.inputs = scenario.inputs;
         detail.steps = scenario.steps;
         detail.outputs = detail.outputs ?? scenario.outputs;
+        detail.evidence = scenario.evidence;
         detail.source = "definition";
       }
     }
@@ -146,6 +147,7 @@ export async function collectRecipeScenarioDetails(
         goal: scenario.goal,
         inputs: scenario.inputs,
         outputs: scenario.outputs,
+        evidence: scenario.evidence,
         steps: scenario.steps,
         source: "definition",
       });

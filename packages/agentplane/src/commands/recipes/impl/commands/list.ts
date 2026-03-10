@@ -1,9 +1,10 @@
+import { resolveProject } from "@agentplaneorg/core";
+
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { emptyStateMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 
-import { readInstalledRecipesFile } from "../installed-recipes.js";
-import { resolveInstalledRecipesPath } from "../paths.js";
+import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
 import type { RecipeListFlags } from "../types.js";
 
 export async function cmdRecipeListParsed(opts: {
@@ -13,8 +14,11 @@ export async function cmdRecipeListParsed(opts: {
 }): Promise<number> {
   const flags = opts.flags;
   try {
-    const filePath = resolveInstalledRecipesPath();
-    const installed = await readInstalledRecipesFile(filePath);
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const installed = await readProjectInstalledRecipes(resolved);
 
     let recipes = installed.recipes;
     if (flags.tag) {

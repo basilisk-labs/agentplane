@@ -1,10 +1,11 @@
+import { resolveProject } from "@agentplaneorg/core";
+
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { formatJsonBlock } from "../format.js";
-import { readInstalledRecipesFile } from "../installed-recipes.js";
-import { resolveInstalledRecipesPath } from "../paths.js";
+import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
 
 export async function cmdRecipeInfoParsed(opts: {
   cwd: string;
@@ -12,7 +13,11 @@ export async function cmdRecipeInfoParsed(opts: {
   id: string;
 }): Promise<number> {
   try {
-    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const installed = await readProjectInstalledRecipes(resolved);
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({

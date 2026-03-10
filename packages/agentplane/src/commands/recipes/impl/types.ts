@@ -78,6 +78,16 @@ export type RecipeManifest = {
 
 export type RecipeConflictMode = "fail" | "rename" | "overwrite";
 
+export type RecipeInstallMetadata = {
+  schema_version: 1;
+  id: string;
+  version: string;
+  source: string;
+  installed_at: string;
+  tags?: string[];
+  install_mode?: "project-local";
+};
+
 export type InstalledRecipeEntry = {
   id: string;
   version: string;
@@ -125,6 +135,7 @@ export type RecipeScenarioDetail = {
   goal?: string;
   inputs?: unknown;
   outputs?: unknown;
+  evidence?: ScenarioDefinition["evidence"];
   file?: string;
   steps?: unknown[];
   source: "definition" | "index" | "manifest";

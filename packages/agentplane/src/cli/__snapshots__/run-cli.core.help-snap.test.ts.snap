@@ -146,7 +146,7 @@ Options:
   --index <path|url>  Override recipes index location (used when installing by name / auto-name).
   --refresh  Refresh remote index cache before installing. (default=false)
   --yes  Auto-approve network prompts when allowed by config. (default=false)
-  --on-conflict <fail|rename|overwrite>  How to handle conflicts when applying recipe agents. (choices=fail|rename|overwrite, default=fail)
+  --on-conflict <fail|rename|overwrite>  Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
 "
 `;
 

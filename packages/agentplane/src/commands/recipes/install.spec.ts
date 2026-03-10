@@ -73,7 +73,7 @@ export const recipesInstallSpec: CommandSpec<RecipesInstallParsed> = {
       valueHint: "<fail|rename|overwrite>",
       choices: ["fail", "rename", "overwrite"],
       default: "fail",
-      description: "How to handle conflicts when applying recipe agents.",
+      description: "Deprecated compatibility no-op; recipe installs stay self-contained.",
     },
   ],
   validateRaw: (raw) => {
@@ -144,11 +144,12 @@ export const recipesInstallSpec: CommandSpec<RecipesInstallParsed> = {
     },
     {
       cmd: "agentplane recipes install viewer --on-conflict overwrite",
-      why: "Apply recipe agents, overwriting conflicts.",
+      why: "Compatibility-only flag; ignored by self-contained recipe installs.",
     },
   ],
   notes: [
     "Auto mode resolution matches v0.1.9: URL if http(s); else PATH if file exists; else NAME (remote index).",
     "Network operations may require approval; use --yes to auto-approve when allowed by config.",
+    "--on-conflict is accepted for backward compatibility but does not change install behavior.",
   ],
 };

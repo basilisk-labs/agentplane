@@ -65,7 +65,7 @@ afterEach(() => {
 });
 
 describe("runCli recipes", () => {
-  it("recipes install renames agents on conflict when requested", async () => {
+  it("recipes install keeps --on-conflict as a compatibility no-op", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const agentsDir = path.join(root, ".agentplane", "agents");
@@ -94,10 +94,10 @@ describe("runCli recipes", () => {
       io.restore();
     }
 
-    const renamedPath = path.join(agentsDir, "viewer__RECIPE_AGENT__1.json");
-    expect(await pathExists(renamedPath)).toBe(true);
-    const renamedText = await readFile(renamedPath, "utf8");
-    expect(renamedText).toContain(`"id": "viewer__RECIPE_AGENT__1"`);
+    expect(await pathExists(path.join(agentsDir, "viewer__RECIPE_AGENT__1.json"))).toBe(false);
+    expect(
+      await pathExists(path.join(root, ".agentplane", "recipes", "viewer", "manifest.json")),
+    ).toBe(true);
   });
 
   it("recipes install accepts zip archives with a top-level folder", async () => {
@@ -119,10 +119,10 @@ describe("runCli recipes", () => {
     }
 
     const manifestPath = path.join(
-      agentplaneHomePath(),
+      root,
+      ".agentplane",
       "recipes",
       String(manifest.id),
-      String(manifest.version),
       "manifest.json",
     );
     expect(await pathExists(manifestPath)).toBe(true);
@@ -164,7 +164,7 @@ describe("runCli recipes", () => {
     await resetAgentplaneHomeRecipes();
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipes", "list"]);
+      const code = await runCli(["recipes", "list", "--root", root]);
       expect(code).toBe(0);
       expect(io.stdout).toContain("No installed recipes found.");
     } finally {
@@ -211,7 +211,21 @@ describe("runCli recipes", () => {
           },
         ],
       },
-      files: { "agents/full.json": '{"id":"FULL_AGENT"}' },
+      files: {
+        "agents/full.json": '{"id":"FULL_AGENT"}',
+        "scenarios/full.json": JSON.stringify(
+          {
+            schema_version: "1",
+            id: "FULL_SCENARIO",
+            goal: "Full scenario goal",
+            inputs: [],
+            outputs: [],
+            steps: [],
+          },
+          null,
+          2,
+        ),
+      },
     });
     await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
@@ -242,57 +256,45 @@ describe("runCli recipes", () => {
     }
   });
 
-  it("recipes list rejects invalid recipes.json entries", async () => {
+  it("recipes list rejects invalid recipe install metadata", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    await resetAgentplaneHomeRecipes();
-    const recipesPath = path.join(agentplaneHomePath(), "recipes.json");
+    const recipeDir = path.join(root, ".agentplane", "recipes", "bad");
+    await mkdir(recipeDir, { recursive: true });
     await writeFile(
-      recipesPath,
+      path.join(recipeDir, "manifest.json"),
       JSON.stringify(
         {
-          schema_version: 1,
-          updated_at: new Date().toISOString(),
-          recipes: [
+          schema_version: "1",
+          id: "bad",
+          version: "1.0.0",
+          name: "Bad",
+          summary: "Bad",
+          description: "Bad",
+          agents: [
             {
-              id: "bad",
-              version: "1.0.0",
-              source: "",
-              installed_at: "",
-              manifest: {
-                schema_version: "1",
-                id: "bad",
-                version: "1.0.0",
-                name: "Bad",
-                summary: "Bad",
-                description: "Bad",
-                agents: [
-                  {
-                    id: "BAD_AGENT",
-                    display_name: "Bad Agent",
-                    role: "executor",
-                    summary: "Bad agent",
-                    file: "agents/bad.json",
-                  },
-                ],
-                scenarios: [
-                  {
-                    id: "BAD_SCENARIO",
-                    name: "Bad Scenario",
-                    summary: "Bad scenario",
-                    use_when: ["Bad entry fixture"],
-                    required_inputs: [],
-                    outputs: [],
-                    permissions: [],
-                    artifacts: [],
-                    agents_involved: ["BAD_AGENT"],
-                    skills_used: [],
-                    tools_used: [],
-                    run_profile: { mode: "analysis" },
-                    file: "scenarios/bad.json",
-                  },
-                ],
-              },
+              id: "BAD_AGENT",
+              display_name: "Bad Agent",
+              role: "executor",
+              summary: "Bad agent",
+              file: "agents/bad.json",
+            },
+          ],
+          scenarios: [
+            {
+              id: "BAD_SCENARIO",
+              name: "Bad Scenario",
+              summary: "Bad scenario",
+              use_when: ["Bad entry fixture"],
+              required_inputs: [],
+              outputs: [],
+              permissions: [],
+              artifacts: [],
+              agents_involved: ["BAD_AGENT"],
+              skills_used: [],
+              tools_used: [],
+              run_profile: { mode: "analysis" },
+              file: "scenarios/bad.json",
             },
           ],
         },
@@ -301,13 +303,18 @@ describe("runCli recipes", () => {
       ),
       "utf8",
     );
+    await writeFile(
+      path.join(recipeDir, ".install.json"),
+      JSON.stringify({ schema_version: 1, id: "bad", version: "1.0.0" }, null, 2),
+      "utf8",
+    );
 
     const io = captureStdIO();
     try {
-      const code = await runCli(["recipes", "list"]);
+      const code = await runCli(["recipes", "list", "--root", root]);
       expect(code).toBe(4);
       expect(io.stderr).toContain(
-        "Invalid field recipes.json.recipes[]: expected id, version, source, installed_at",
+        "Invalid field recipe install metadata: expected id, version, source, installed_at",
       );
     } finally {
       io.restore();
@@ -808,12 +815,13 @@ describe("runCli recipes", () => {
     }
 
     const manifestPath = path.join(
+      root,
+      ".agentplane",
       "recipes",
       String(manifest.id),
-      String(manifest.version),
       "manifest.json",
     );
-    expect(await pathExists(path.join(agentplaneHomePath(), manifestPath))).toBe(true);
+    expect(await pathExists(manifestPath)).toBe(true);
   });
 
   it("recipes install rejects unsupported archives", async () => {

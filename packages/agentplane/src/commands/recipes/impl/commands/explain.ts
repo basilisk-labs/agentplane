@@ -1,11 +1,13 @@
+import { resolveProject } from "@agentplaneorg/core";
+
 import { mapCoreError } from "../../../../cli/error-map.js";
 import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { CliError } from "../../../../shared/errors.js";
 
 import { collectRecipeScenarioDetails } from "../scenario.js";
 import { formatJsonBlock } from "../format.js";
-import { readInstalledRecipesFile } from "../installed-recipes.js";
-import { resolveInstalledRecipeDir, resolveInstalledRecipesPath } from "../paths.js";
+import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
+import { resolveProjectInstalledRecipeDir } from "../paths.js";
 
 export async function cmdRecipeExplainParsed(opts: {
   cwd: string;
@@ -13,7 +15,11 @@ export async function cmdRecipeExplainParsed(opts: {
   id: string;
 }): Promise<number> {
   try {
-    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const installed = await readProjectInstalledRecipes(resolved);
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
@@ -24,7 +30,7 @@ export async function cmdRecipeExplainParsed(opts: {
     }
 
     const manifest = entry.manifest;
-    const recipeDir = resolveInstalledRecipeDir(entry);
+    const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
     const scenarioDetails = await collectRecipeScenarioDetails(recipeDir, manifest);
 
     process.stdout.write(`Recipe: ${manifest.id}@${manifest.version}\n`);

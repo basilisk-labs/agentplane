@@ -1,3 +1,5 @@
+import { resolveProject } from "@agentplaneorg/core";
+
 import { rm } from "node:fs/promises";
 
 import { mapCoreError } from "../../../../cli/error-map.js";
@@ -5,8 +7,8 @@ import { exitCodeForError } from "../../../../cli/exit-codes.js";
 import { successMessage } from "../../../../cli/output.js";
 import { CliError } from "../../../../shared/errors.js";
 
-import { readInstalledRecipesFile, writeInstalledRecipesFile } from "../installed-recipes.js";
-import { resolveInstalledRecipeDir, resolveInstalledRecipesPath } from "../paths.js";
+import { readProjectInstalledRecipes } from "../project-installed-recipes.js";
+import { resolveProjectInstalledRecipeDir } from "../paths.js";
 
 export async function cmdRecipeRemoveParsed(opts: {
   cwd: string;
@@ -14,8 +16,11 @@ export async function cmdRecipeRemoveParsed(opts: {
   id: string;
 }): Promise<number> {
   try {
-    const recipesPath = resolveInstalledRecipesPath();
-    const installed = await readInstalledRecipesFile(recipesPath);
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const installed = await readProjectInstalledRecipes(resolved);
     const entry = installed.recipes.find((recipe) => recipe.id === opts.id);
     if (!entry) {
       throw new CliError({
@@ -24,15 +29,8 @@ export async function cmdRecipeRemoveParsed(opts: {
         message: `Recipe not installed: ${opts.id}`,
       });
     }
-    const recipeDir = resolveInstalledRecipeDir(entry);
+    const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
     await rm(recipeDir, { recursive: true, force: true });
-
-    const updated = installed.recipes.filter((recipe) => recipe.id !== opts.id);
-    await writeInstalledRecipesFile(recipesPath, {
-      schema_version: 1,
-      updated_at: installed.updated_at,
-      recipes: updated,
-    });
 
     process.stdout.write(`${successMessage("removed recipe", `${entry.id}@${entry.version}`)}\n`);
     return 0;

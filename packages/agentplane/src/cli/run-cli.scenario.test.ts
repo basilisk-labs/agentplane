@@ -6,7 +6,6 @@ import { runCli } from "./run-cli.js";
 import {
   captureStdIO,
   createRecipeArchive,
-  getAgentplaneHome,
   mkGitRepoRoot,
   pathExists,
   registerAgentplaneHome,
@@ -17,8 +16,6 @@ import {
 } from "./run-cli.test-helpers.js";
 
 registerAgentplaneHome();
-
-const agentplaneHomePath = () => getAgentplaneHome() ?? "";
 let restoreStdIO: (() => void) | null = null;
 
 beforeEach(() => {
@@ -73,17 +70,10 @@ describe("runCli scenario", () => {
     await resetAgentplaneHomeRecipes();
     const { archivePath, manifest } = await createRecipeArchive();
     const manifestId = String(manifest.id);
-    const manifestVersion = String(manifest.version);
 
     await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
-    const scenariosDir = path.join(
-      agentplaneHomePath(),
-      "recipes",
-      manifestId,
-      manifestVersion,
-      "scenarios",
-    );
+    const scenariosDir = path.join(root, ".agentplane", "recipes", manifestId, "scenarios");
     await mkdir(scenariosDir, { recursive: true });
     const scenarioPath = path.join(scenariosDir, "recipe-scenario.json");
     if (!(await pathExists(scenarioPath))) {
@@ -133,17 +123,10 @@ describe("runCli scenario", () => {
     await resetAgentplaneHomeRecipes();
     const { archivePath, manifest } = await createRecipeArchive();
     const manifestId = String(manifest.id);
-    const manifestVersion = String(manifest.version);
 
     await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
-    const scenariosDir = path.join(
-      agentplaneHomePath(),
-      "recipes",
-      manifestId,
-      manifestVersion,
-      "scenarios",
-    );
+    const scenariosDir = path.join(root, ".agentplane", "recipes", manifestId, "scenarios");
     await mkdir(scenariosDir, { recursive: true });
     const scenarioPath = path.join(scenariosDir, "recipe-scenario.json");
     if (!(await pathExists(scenarioPath))) {

@@ -1,7 +1,7 @@
 ---
 id: "202603100808-ZCCV0Z"
 title: "Recipes v1: move install/runtime storage to project recipes directory"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -12,18 +12,30 @@ tags:
   - "storage"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-10T10:49:37.283Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved by user in chat: recipes are project-local self-contained resources and must stop exporting internals into shared project registries."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
-comments: []
+commit: null
+comments:
+  -
+    author: "CODER"
+    body: "Start: move recipe storage semantics to project-local .agentplane/recipes, remove export into shared registries, and switch recipe discovery away from the global installed registry."
+events:
+  -
+    type: "status"
+    at: "2026-03-10T10:49:44.516Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: move recipe storage semantics to project-local .agentplane/recipes, remove export into shared registries, and switch recipe discovery away from the global installed registry."
 doc_version: 3
-doc_updated_at: "2026-03-10T08:08:58.462Z"
+doc_updated_at: "2026-03-10T10:49:44.516Z"
 doc_updated_by: "CODER"
 description: "Move recipe install/remove/list/info storage semantics to project-local .agentplane/recipes and stop exporting recipe internals into shared project registries."
 id_source: "generated"
@@ -36,22 +48,28 @@ Move recipe install/remove/list/info storage semantics to project-local .agentpl
 
 ## Scope
 
-- In scope: Move recipe install/remove/list/info storage semantics to project-local .agentplane/recipes and stop exporting recipe internals into shared project registries.
-- Out of scope: unrelated refactors not required for "Recipes v1: move install/runtime storage to project recipes directory".
+- In scope: move installed recipe storage and truth source to project-local `.agentplane/recipes/<recipe-id>/`.
+- In scope: keep remote index and download cache global, but stop treating global installed registry as runtime source of truth.
+- In scope: remove recipe install-time export into shared project registries such as `.agentplane/agents` and recipe-generated scenario indexes.
+- In scope: switch `recipes list/info/explain/remove` storage semantics to project filesystem scan and recipe-local install metadata.
+- In scope: remove or neutralize install-time conflict handling that only existed for shared agent export.
+- Out of scope: scenario resolver selection logic and real orchestration runtime.
 
 ## Plan
 
-1. Implement the change for "Recipes v1: move install/runtime storage to project recipes directory".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Rework recipe path resolution so installed recipes live under the current project `.agentplane/recipes`, while remote index and archive cache remain outside the project.
+2. Remove install-time export of recipe-local agents and scenario metadata into shared project registries, along with the obsolete conflict-handling path behind that export.
+3. Switch `recipes list/info/explain/remove` to scan project-local recipe directories and recipe-local install metadata instead of global installed-registry state.
+4. Update tests and verification coverage for project-local storage semantics and record evidence.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. `bun run typecheck`
+   Expected: storage-path and install/list/remove command changes compile cleanly across recipes/scenario surfaces.
+2. `bun x vitest run packages/agentplane/src/commands/recipes.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.recipes.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts --hookTimeout 60000 --testTimeout 60000`
+   Expected: project-local recipe storage semantics and dependent scenario command flows pass.
+3. `git status --short`
+   Expected: final diff is limited to intentional storage/install/task artifacts for this task.
 
 ## Verification
 
@@ -60,7 +78,8 @@ Move recipe install/remove/list/info storage semantics to project-local .agentpl
 
 ## Rollback Plan
 
-- Revert task-related commit(s).
-- Re-run required checks to confirm rollback safety.
+- Revert project-local recipe storage and scan changes introduced by this task.
+- Re-run task verification commands to confirm the previous global-registry behavior is restored.
+- Leave resolver and scenario-placeholder follow-up tasks untouched so rollback stays limited to storage/install semantics.
 
 ## Findings

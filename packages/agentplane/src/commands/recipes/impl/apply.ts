@@ -28,6 +28,55 @@ export async function moveRecipeDir(opts: { from: string; to: string }): Promise
   }
 }
 
+async function readRecipeJsonObject(
+  recipeDir: string,
+  relativePath: string,
+  label: string,
+): Promise<void> {
+  const sourcePath = path.join(recipeDir, relativePath);
+  if (!(await fileExists(sourcePath))) {
+    throw new Error(missingFileMessage(label, relativePath));
+  }
+
+  const raw = JSON.parse(await readFile(sourcePath, "utf8")) as unknown;
+  if (!isRecord(raw)) {
+    throw new Error(invalidFieldMessage(label, "JSON object", relativePath));
+  }
+}
+
+export async function validateRecipeAssets(opts: {
+  manifest: RecipeManifest;
+  recipeDir: string;
+}): Promise<void> {
+  for (const skill of opts.manifest.skills ?? []) {
+    await readRecipeJsonObject(opts.recipeDir, skill.file, "recipe skill file");
+  }
+
+  for (const agent of opts.manifest.agents ?? []) {
+    await readRecipeJsonObject(opts.recipeDir, agent.file, "recipe agent file");
+  }
+
+  for (const tool of opts.manifest.tools ?? []) {
+    const entrypointPath = path.join(opts.recipeDir, tool.entrypoint);
+    if (!(await fileExists(entrypointPath))) {
+      throw new Error(missingFileMessage("recipe tool entrypoint", tool.entrypoint));
+    }
+  }
+
+  for (const scenario of opts.manifest.scenarios ?? []) {
+    const sourcePath = path.join(opts.recipeDir, scenario.file);
+    if (!(await fileExists(sourcePath))) {
+      throw new Error(missingFileMessage("recipe scenario file", scenario.file));
+    }
+    const definition = await readScenarioDefinition(sourcePath);
+    if (definition.id !== scenario.id) {
+      throw new Error(
+        invalidFieldMessage("recipe scenario file", `scenario.id=${scenario.id}`, scenario.file),
+      );
+    }
+  }
+}
+
 export async function applyRecipeAgents(opts: {
   manifest: RecipeManifest;
   recipeDir: string;

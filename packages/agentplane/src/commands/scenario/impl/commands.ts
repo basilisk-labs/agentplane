@@ -11,16 +11,15 @@ import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
 import { emptyStateMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 import {
+  collectRecipeScenarioDetails,
   RECIPES_DIR_NAME,
   RECIPES_SCENARIOS_DIR_NAME,
-  RECIPES_SCENARIOS_INDEX_NAME,
+  RECIPE_RUNS_DIR_NAME,
   normalizeScenarioToolStep,
-  readInstalledRecipesFile,
+  readProjectInstalledRecipes,
   readRecipeManifest,
   readScenarioDefinition,
-  readScenarioIndex,
-  resolveInstalledRecipeDir,
-  resolveInstalledRecipesPath,
+  resolveProjectInstalledRecipeDir,
   resolveProjectRecipesCacheDir,
   type ScenarioDefinition,
 } from "../../recipes.js";
@@ -61,31 +60,22 @@ export async function cmdScenarioListParsed(opts: {
   rootOverride?: string;
 }): Promise<number> {
   try {
-    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const installed = await readProjectInstalledRecipes(resolved);
     const entries: { recipeId: string; scenarioId: string; summary?: string }[] = [];
 
     for (const recipe of installed.recipes) {
-      const recipeDir = resolveInstalledRecipeDir(recipe);
-      const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
-      if ((await getPathKind(scenariosDir)) === "dir") {
-        const files = await readdir(scenariosDir);
-        const jsonFiles = files.filter((entry) => entry.toLowerCase().endsWith(".json")).toSorted();
-        for (const file of jsonFiles) {
-          const scenario = await readScenarioDefinition(path.join(scenariosDir, file));
-          entries.push({ recipeId: recipe.id, scenarioId: scenario.id, summary: scenario.summary });
-        }
-        continue;
-      }
-      const scenariosIndexPath = path.join(recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
-      if (await fileExists(scenariosIndexPath)) {
-        const index = await readScenarioIndex(scenariosIndexPath);
-        for (const scenario of index.scenarios) {
-          entries.push({
-            recipeId: recipe.id,
-            scenarioId: scenario.id,
-            summary: scenario.summary,
-          });
-        }
+      const recipeDir = resolveProjectInstalledRecipeDir(resolved, recipe.id);
+      const scenarios = await collectRecipeScenarioDetails(recipeDir, recipe.manifest);
+      for (const scenario of scenarios) {
+        entries.push({
+          recipeId: recipe.id,
+          scenarioId: scenario.id,
+          summary: scenario.summary,
+        });
       }
     }
 
@@ -121,7 +111,11 @@ export async function cmdScenarioInfoParsed(opts: {
 }): Promise<number> {
   const { recipeId, scenarioId } = opts;
   try {
-    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const resolved = await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    });
+    const installed = await readProjectInstalledRecipes(resolved);
     const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
     if (!entry) {
       throw new CliError({
@@ -130,32 +124,10 @@ export async function cmdScenarioInfoParsed(opts: {
         message: `Recipe not installed: ${recipeId}`,
       });
     }
-    const recipeDir = resolveInstalledRecipeDir(entry);
-    const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
-    let scenario: ScenarioDefinition | null = null;
-    if ((await getPathKind(scenariosDir)) === "dir") {
-      const files = await readdir(scenariosDir);
-      const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
-      for (const file of jsonFiles) {
-        const candidate = await readScenarioDefinition(path.join(scenariosDir, file));
-        if (candidate.id === scenarioId) {
-          scenario = candidate;
-          break;
-        }
-      }
-    }
-
-    let summary: string | undefined;
+    const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
+    const scenarioDetails = await collectRecipeScenarioDetails(recipeDir, entry.manifest);
+    const scenario = scenarioDetails.find((item) => item.id === scenarioId);
     if (!scenario) {
-      const scenariosIndexPath = path.join(recipeDir, RECIPES_SCENARIOS_INDEX_NAME);
-      if (await fileExists(scenariosIndexPath)) {
-        const index = await readScenarioIndex(scenariosIndexPath);
-        const entrySummary = index.scenarios.find((item) => item.id === scenarioId);
-        summary = entrySummary?.summary;
-      }
-    }
-
-    if (!scenario && !summary) {
       throw new CliError({
         exitCode: exitCodeForError("E_IO"),
         code: "E_IO",
@@ -164,17 +136,19 @@ export async function cmdScenarioInfoParsed(opts: {
     }
 
     process.stdout.write(`Scenario: ${recipeId}:${scenarioId}\n`);
-    if (summary) process.stdout.write(`Summary: ${summary}\n`);
-    if (!scenario) {
-      process.stdout.write("Details: Scenario definition not found in recipe.\n");
-      return 0;
-    }
-
     if (scenario.summary) process.stdout.write(`Summary: ${scenario.summary}\n`);
     if (scenario.description) process.stdout.write(`Description: ${scenario.description}\n`);
-    process.stdout.write(`Goal: ${scenario.goal}\n`);
-    process.stdout.write(`Inputs: ${JSON.stringify(scenario.inputs, null, 2)}\n`);
-    process.stdout.write(`Outputs: ${JSON.stringify(scenario.outputs, null, 2)}\n`);
+    if (scenario.goal) process.stdout.write(`Goal: ${scenario.goal}\n`);
+    if (scenario.inputs !== undefined) {
+      process.stdout.write(`Inputs: ${JSON.stringify(scenario.inputs, null, 2)}\n`);
+    } else if (scenario.required_inputs && scenario.required_inputs.length > 0) {
+      process.stdout.write(
+        `Required inputs: ${JSON.stringify(scenario.required_inputs, null, 2)}\n`,
+      );
+    }
+    if (scenario.outputs !== undefined) {
+      process.stdout.write(`Outputs: ${JSON.stringify(scenario.outputs, null, 2)}\n`);
+    }
     if (scenario.evidence?.required) {
       process.stdout.write(
         `Evidence: required (${normalizeExpectedEvidenceFiles(scenario.evidence.files).join(", ")})\n`,
@@ -182,12 +156,16 @@ export async function cmdScenarioInfoParsed(opts: {
     } else if (scenario.evidence?.files && scenario.evidence.files.length > 0) {
       process.stdout.write(`Evidence: optional (${scenario.evidence.files.join(", ")})\n`);
     }
-    process.stdout.write("Steps:\n");
-    let stepIndex = 1;
-    for (const step of scenario.steps) {
-      process.stdout.write(`  ${stepIndex}. ${JSON.stringify(step)}\n`);
-      stepIndex += 1;
+    if (scenario.steps && scenario.steps.length > 0) {
+      process.stdout.write("Steps:\n");
+      let stepIndex = 1;
+      for (const step of scenario.steps) {
+        process.stdout.write(`  ${stepIndex}. ${JSON.stringify(step)}\n`);
+        stepIndex += 1;
+      }
+      return 0;
     }
+    process.stdout.write("Details: Scenario definition not found in recipe.\n");
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -293,7 +271,7 @@ export async function cmdScenarioRunParsed(opts: {
     }));
   const { recipeId, scenarioId } = opts;
   try {
-    const installed = await readInstalledRecipesFile(resolveInstalledRecipesPath());
+    const installed = await readProjectInstalledRecipes(resolved);
     const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
     if (!entry) {
       throw new CliError({
@@ -302,7 +280,7 @@ export async function cmdScenarioRunParsed(opts: {
         message: `Recipe not installed: ${recipeId}`,
       });
     }
-    const recipeDir = resolveInstalledRecipeDir(entry);
+    const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
     const manifestPath = path.join(recipeDir, "manifest.json");
     const manifest = await readRecipeManifest(manifestPath);
     const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
@@ -331,7 +309,12 @@ export async function cmdScenarioRunParsed(opts: {
       });
     }
 
-    const runsRoot = path.join(resolved.agentplaneDir, RECIPES_DIR_NAME, recipeId, "runs");
+    const runsRoot = path.join(
+      resolved.agentplaneDir,
+      RECIPES_DIR_NAME,
+      recipeId,
+      RECIPE_RUNS_DIR_NAME,
+    );
     await mkdir(runsRoot, { recursive: true });
     const recipesCacheDir = resolveProjectRecipesCacheDir(resolved);
     await mkdir(recipesCacheDir, { recursive: true });
