@@ -119,11 +119,7 @@ async function main() {
   assertIncludes(fileContents.lifecycle, "**Exceptional/manual close paths**", "task lifecycle");
   assertIncludes(fileContents.lifecycle, "--no-close-commit", "task lifecycle");
 
-  for (const label of [
-    'label: "◈ Start"',
-    'label: "◉ Work on a task"',
-    'label: "◌ Upgrade & recover"',
-  ]) {
+  for (const label of ['label: "Start"', 'label: "Work on a task"', 'label: "Upgrade & recover"']) {
     assertIncludes(fileContents.sidebar, label, "sidebar");
   }
 
