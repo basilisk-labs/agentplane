@@ -210,6 +210,8 @@ function toResolvedRecipeScenarios(opts: {
       scenario_name: scenario.name,
       scenario_summary: scenario.summary,
       scenario_description: scenario.description,
+      use_when: [...scenario.use_when],
+      avoid_when: [...(scenario.avoid_when ?? [])],
       scenario_file: path.join(recipeDir, scenario.file),
       compatibility: opts.compatibility,
       run_profile: normalizeResolvedRecipeRunProfile(scenario),

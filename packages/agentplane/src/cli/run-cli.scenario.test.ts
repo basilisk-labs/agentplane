@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
+import { readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -9,7 +9,6 @@ import {
   mkGitRepoRoot,
   pathExists,
   registerAgentplaneHome,
-  resetAgentplaneHomeRecipes,
   runCliSilent,
   silenceStdIO,
   writeDefaultConfig,
@@ -28,7 +27,7 @@ afterEach(() => {
 });
 
 describe("runCli scenario", () => {
-  it("scenario list and info read installed recipe scenarios", async () => {
+  it("scenario list and info use resolver-backed manifest descriptors", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const { archivePath, manifest } = await createRecipeArchive();
@@ -41,6 +40,7 @@ describe("runCli scenario", () => {
       const code = await runCli(["scenario", "list", "--root", root]);
       expect(code).toBe(0);
       expect(ioList.stdout).toContain(`${manifestId}:RECIPE_SCENARIO`);
+      expect(ioList.stdout).toContain("[mode=analysis] [compatible]");
     } finally {
       ioList.restore();
     }
@@ -55,48 +55,34 @@ describe("runCli scenario", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(ioInfo.stdout).toContain("Goal:");
-      expect(ioInfo.stdout).toContain("Inputs:");
-      expect(ioInfo.stdout).toContain("Outputs:");
-      expect(ioInfo.stdout).toContain("Steps:");
+      expect(ioInfo.stdout).toContain("Scenario:");
+      expect(ioInfo.stdout).toContain("Run profile:");
+      expect(ioInfo.stdout).toContain("Scenario file:");
+      expect(ioInfo.stdout).toContain("Compatibility: satisfied");
+      expect(ioInfo.stdout).not.toContain("Steps:");
     } finally {
       ioInfo.restore();
     }
   });
 
-  it("scenario list rejects invalid env blocks", async () => {
+  it("scenario run validates scenario definition files", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
-    await resetAgentplaneHomeRecipes();
     const { archivePath, manifest } = await createRecipeArchive();
     const manifestId = String(manifest.id);
 
     await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
 
-    const scenariosDir = path.join(root, ".agentplane", "recipes", manifestId, "scenarios");
-    await mkdir(scenariosDir, { recursive: true });
-    const scenarioPath = path.join(scenariosDir, "recipe-scenario.json");
-    if (!(await pathExists(scenarioPath))) {
-      await writeFile(
-        scenarioPath,
-        JSON.stringify(
-          {
-            schema_version: "1",
-            id: "RECIPE_SCENARIO",
-            summary: "Recipe scenario",
-            goal: "Preview installed tasks.",
-            inputs: [{ name: "task_id", type: "string" }],
-            outputs: [{ name: "report", type: "html" }],
-            steps: [{ tool: "RECIPE_TOOL" }],
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
-    }
+    const scenarioPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      manifestId,
+      "scenarios",
+      "recipe-scenario.json",
+    );
     const scenario = JSON.parse(await readFile(scenarioPath, "utf8")) as Record<string, unknown>;
-    scenario.steps = [{ tool: "RECIPE_TOOL", env: ["bad"] }];
+    delete scenario.goal;
     await writeFile(scenarioPath, JSON.stringify(scenario, null, 2), "utf8");
 
     const io = captureStdIO();
@@ -108,69 +94,14 @@ describe("runCli scenario", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(4);
-      expect(io.stderr).toContain(
-        "Invalid field scenario step.env: expected object (viewer:RECIPE_SCENARIO)",
-      );
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("Missing required field: scenario.goal");
     } finally {
       io.restore();
     }
   });
 
-  it("scenario list rejects non-string env values", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    await resetAgentplaneHomeRecipes();
-    const { archivePath, manifest } = await createRecipeArchive();
-    const manifestId = String(manifest.id);
-
-    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
-
-    const scenariosDir = path.join(root, ".agentplane", "recipes", manifestId, "scenarios");
-    await mkdir(scenariosDir, { recursive: true });
-    const scenarioPath = path.join(scenariosDir, "recipe-scenario.json");
-    if (!(await pathExists(scenarioPath))) {
-      await writeFile(
-        scenarioPath,
-        JSON.stringify(
-          {
-            schema_version: "1",
-            id: "RECIPE_SCENARIO",
-            summary: "Recipe scenario",
-            goal: "Preview installed tasks.",
-            inputs: [{ name: "task_id", type: "string" }],
-            outputs: [{ name: "report", type: "html" }],
-            steps: [{ tool: "RECIPE_TOOL" }],
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
-    }
-    const scenario = JSON.parse(await readFile(scenarioPath, "utf8")) as Record<string, unknown>;
-    scenario.steps = [{ tool: "RECIPE_TOOL", env: { KEY: 123 } }];
-    await writeFile(scenarioPath, JSON.stringify(scenario, null, 2), "utf8");
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli([
-        "scenario",
-        "run",
-        `${manifestId}:RECIPE_SCENARIO`,
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(4);
-      expect(io.stderr).toContain(
-        "Invalid field scenario step.env: expected string map (viewer:RECIPE_SCENARIO)",
-      );
-    } finally {
-      io.restore();
-    }
-  });
-
-  it("scenario run executes tools and writes artifacts", async () => {
+  it("scenario run prints a prepared run plan without executing tools", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     const { archivePath, manifest } = await createRecipeArchive();
@@ -188,18 +119,53 @@ describe("runCli scenario", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain("Run artifacts:");
+      expect(io.stdout).toContain(`Prepared run plan: ${manifestId}:RECIPE_SCENARIO`);
+      expect(io.stdout).toContain("Selection reasons:");
+      expect(io.stdout).toContain("Status: scenario orchestration runtime is not implemented yet.");
     } finally {
       io.restore();
     }
 
     const runsRoot = path.join(root, ".agentplane", "recipes", manifestId, "runs");
-    const runs = await readdir(runsRoot);
-    expect(runs.length).toBeGreaterThan(0);
-    const runDir = path.join(runsRoot, runs[0]);
-    const artifactPath = path.join(runDir, "artifact.txt");
-    expect(await pathExists(artifactPath)).toBe(true);
-  }, 15_000);
+    expect(await pathExists(runsRoot)).toBe(false);
+    expect(
+      await pathExists(path.join(root, ".agentplane", "recipes", manifestId, "artifact.txt")),
+    ).toBe(false);
+  });
+
+  it("scenario run rejects missing scenario definition files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const { archivePath, manifest } = await createRecipeArchive();
+    const manifestId = String(manifest.id);
+
+    await runCliSilent(["recipes", "install", "--path", archivePath, "--root", root]);
+
+    const scenarioPath = path.join(
+      root,
+      ".agentplane",
+      "recipes",
+      manifestId,
+      "scenarios",
+      "recipe-scenario.json",
+    );
+    await rm(scenarioPath, { force: true });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "scenario",
+        "run",
+        `${manifestId}:RECIPE_SCENARIO`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(4);
+      expect(io.stderr).toContain("Scenario definition not found");
+    } finally {
+      io.restore();
+    }
+  });
 
   it("scenario rejects unknown subcommands", async () => {
     const root = await mkGitRepoRoot();

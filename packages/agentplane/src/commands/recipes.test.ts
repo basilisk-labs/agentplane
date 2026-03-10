@@ -35,7 +35,6 @@ import { scenarioRunSpec } from "./scenario/run.command.js";
 import {
   captureStdIO,
   createRecipeArchive,
-  createRecipeArchiveWithManifest,
   mkGitRepoRoot,
   writeDefaultConfig,
 } from "../cli/run-cli.test-helpers.js";
@@ -855,10 +854,10 @@ describe("commands/recipes", () => {
         command: "info",
       });
       expect(code).toBe(0);
-      expect(ioInfo.stdout).toContain("Goal:");
-      expect(ioInfo.stdout).toContain("Inputs:");
-      expect(ioInfo.stdout).toContain("Outputs:");
-      expect(ioInfo.stdout).toContain("Steps:");
+      expect(ioInfo.stdout).toContain("Scenario:");
+      expect(ioInfo.stdout).toContain("Use when:");
+      expect(ioInfo.stdout).toContain("Run profile:");
+      expect(ioInfo.stdout).toContain("Compatibility: satisfied");
     } finally {
       ioInfo.restore();
     }
@@ -1052,8 +1051,12 @@ describe("commands/recipes", () => {
       runScenarioTest({ cwd: projectDir, args: ["viewer:UNKNOWN"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_IO" });
 
-    const scenariosDir = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "scenarios");
-    await rm(scenariosDir, { recursive: true, force: true });
+    const scenarioPath = path.join(
+      resolveProjectRecipeDir(projectDir, "viewer"),
+      "scenarios",
+      "recipe-scenario.json",
+    );
+    await rm(scenarioPath, { force: true });
 
     await expect(
       runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
@@ -1074,7 +1077,7 @@ describe("commands/recipes", () => {
     }
   });
 
-  it("scenario info falls back to index summary when definition is missing", async () => {
+  it("scenario info remains manifest-driven when definition is missing", async () => {
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
     await writeInstalledRecipes(projectDir, [
@@ -1101,447 +1104,85 @@ describe("commands/recipes", () => {
       });
       expect(code).toBe(0);
       expect(io.stdout).toContain("Summary: Beta scenario");
-      expect(io.stdout).toContain("Scenario definition not found in recipe");
+      expect(io.stdout).toContain("Run profile:");
+      expect(io.stdout).toContain("Use when:");
+      expect(io.stdout).toContain("Scenario file:");
+      expect(io.stdout).not.toContain("Steps:");
     } finally {
       io.restore();
     }
   });
 
-  it("scenario run rejects invalid tool runtime and failing tools", async () => {
+  it("scenario run prints a prepared run plan without writing artifacts", async () => {
     const projectDir = await mkGitRepoRoot();
     await writeDefaultConfig(projectDir);
     await installRecipe({ projectDir });
 
-    const recipeDir = resolveProjectRecipeDir(projectDir, "viewer");
-    const manifestPath = path.join(recipeDir, "manifest.json");
-    const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as Record<string, unknown>;
-    (manifest.tools as Record<string, unknown>[])[0].runtime = "python";
-    await writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
-
-    await expect(
-      runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
-    ).rejects.toMatchObject({ code: "E_IO" });
-
-    (manifest.tools as Record<string, unknown>[])[0].runtime = "bash";
-    await writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
-    await writeFile(path.join(recipeDir, "tools", "run.sh"), "exit 2\n", "utf8");
-
-    await expect(
-      runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
-    ).rejects.toMatchObject({ code: "E_INTERNAL" });
-
-    const runsRoot = path.join(projectDir, ".agentplane", "recipes", "viewer", "runs");
-    const runs = await readdir(runsRoot);
-    expect(runs.length).toBeGreaterThan(0);
-    const latest = runs.toSorted().at(-1);
-    const metaPath = path.join(runsRoot, latest ?? "", "meta.json");
-    expect(await readFile(metaPath, "utf8")).toContain('"recipe"');
-    const reportPath = path.join(runsRoot, latest ?? "", "report.json");
-    const reportText = await readFile(reportPath, "utf8");
-    const report = JSON.parse(reportText) as Record<string, unknown>;
-    expect(report.status).toBe("failed");
-  });
-
-  it("scenario run writes audit report with redacted args and env keys", async () => {
-    if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkGitRepoRoot();
-    await writeDefaultConfig(projectDir);
-    const manifest = baseRecipeManifest({
-      tools: [
-        toolEntry({
-          id: "AUDIT_TOOL",
-          summary: "Audit tool",
-          runtime: "bash",
-          entrypoint: "tools/run.sh",
-        }),
-      ],
-      agents: [
-        agentEntry({
-          id: "AUDIT_AGENT",
-          display_name: "Audit Agent",
-          skills: ["AUDIT_SKILL"],
-          tools: ["AUDIT_TOOL"],
-          file: "agents/audit.json",
-        }),
-      ],
-      skills: [skillEntry({ id: "AUDIT_SKILL", file: "skills/audit.json" })],
-      scenarios: [
-        scenarioDescriptor({
-          id: "AUDIT_SCENARIO",
-          name: "Audit Scenario",
-          summary: "Audit scenario",
-          agents_involved: ["AUDIT_AGENT"],
-          skills_used: ["AUDIT_SKILL"],
-          tools_used: ["AUDIT_TOOL"],
-          file: "scenarios/audit.json",
-        }),
-      ],
-    });
-    const archivePath = await createRecipeArchiveWithManifest({
-      manifest,
-      files: {
-        "agents/audit.json": '{"id":"AUDIT_AGENT","role":"executor"}',
-        "skills/audit.json": '{"id":"AUDIT_SKILL","kind":"agent-skill"}',
-        "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
-        "scenarios/audit.json": JSON.stringify(
-          {
-            schema_version: "1",
-            id: "AUDIT_SCENARIO",
-            goal: "audit",
-            inputs: [],
-            outputs: [],
-            steps: [
-              {
-                tool: "AUDIT_TOOL",
-                args: ["--token=supersecret", "--user", "denis", "--password", "hunter2"],
-                env: { SECRET_TOKEN: "abc123", SAFE: "ok" },
-              },
-            ],
-          },
-          null,
-          2,
-        ),
-      },
-    });
-
-    await runRecipesTest({
-      cwd: projectDir,
-      args: ["--path", archivePath],
-      command: "install",
-    });
-
-    await runScenarioTest({
-      cwd: projectDir,
-      args: ["viewer:AUDIT_SCENARIO"],
-      command: "run",
-    });
-
-    const runsRoot = path.join(projectDir, ".agentplane", "recipes", "viewer", "runs");
-    const runs = await readdir(runsRoot);
-    const latest = runs.toSorted().at(-1);
-    const reportPath = path.join(runsRoot, latest ?? "", "report.json");
-    const reportText = await readFile(reportPath, "utf8");
-    expect(reportText).not.toContain("abc123");
-    expect(reportText).not.toContain("hunter2");
-    expect(reportText).not.toContain("supersecret");
-    const report = JSON.parse(reportText) as Record<string, unknown>;
-    expect(report.status).toBe("success");
-    const steps = report.steps as Record<string, unknown>[];
-    expect(steps).toHaveLength(1);
-    expect(steps[0]?.args).toEqual([
-      "--token=<redacted>",
-      "--user",
-      "denis",
-      "--password",
-      "<redacted>",
-    ]);
-    const envKeys = steps[0]?.env_keys as string[];
-    expect(envKeys).toContain("SECRET_TOKEN");
-    expect(envKeys).toContain("SAFE");
-    expect(envKeys).toContain("AGENTPLANE_RUN_DIR");
-  });
-
-  it("scenario run fails when required evidence file is missing", async () => {
-    if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkGitRepoRoot();
-    await writeDefaultConfig(projectDir);
-    const manifest = baseRecipeManifest({
-      tools: [
-        toolEntry({
-          id: "NO_EVIDENCE_TOOL",
-          summary: "No evidence tool",
-          runtime: "bash",
-          entrypoint: "tools/run.sh",
-        }),
-      ],
-      agents: [
-        agentEntry({
-          id: "REQ_EVIDENCE_AGENT",
-          display_name: "Required Evidence Agent",
-          skills: ["REQ_EVIDENCE_SKILL"],
-          tools: ["NO_EVIDENCE_TOOL"],
-          file: "agents/required-evidence.json",
-        }),
-      ],
-      skills: [skillEntry({ id: "REQ_EVIDENCE_SKILL", file: "skills/required-evidence.json" })],
-      scenarios: [
-        scenarioDescriptor({
-          id: "REQ_EVIDENCE_SCENARIO",
-          name: "Required Evidence Scenario",
-          summary: "Requires evidence",
-          agents_involved: ["REQ_EVIDENCE_AGENT"],
-          skills_used: ["REQ_EVIDENCE_SKILL"],
-          tools_used: ["NO_EVIDENCE_TOOL"],
-          file: "scenarios/required-evidence.json",
-        }),
-      ],
-    });
-    const archivePath = await createRecipeArchiveWithManifest({
-      manifest,
-      files: {
-        "agents/required-evidence.json": '{"id":"REQ_EVIDENCE_AGENT","role":"executor"}',
-        "skills/required-evidence.json": '{"id":"REQ_EVIDENCE_SKILL","kind":"agent-skill"}',
-        "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
-        "scenarios/required-evidence.json": JSON.stringify(
-          {
-            schema_version: "1",
-            id: "REQ_EVIDENCE_SCENARIO",
-            goal: "collect evidence",
-            inputs: [],
-            outputs: [],
-            evidence: { required: true, files: ["evidence.json"] },
-            steps: [{ tool: "NO_EVIDENCE_TOOL", args: [] }],
-          },
-          null,
-          2,
-        ),
-      },
-    });
-
-    await runRecipesTest({
-      cwd: projectDir,
-      args: ["--path", archivePath],
-      command: "install",
-    });
-
-    let failure: unknown;
-    try {
-      await runScenarioTest({
-        cwd: projectDir,
-        args: ["viewer:REQ_EVIDENCE_SCENARIO"],
-        command: "run",
-      });
-    } catch (error) {
-      failure = error;
-    }
-    expect(failure).toMatchObject({ code: "E_INTERNAL" });
-    expect(failure instanceof Error ? failure.message : String(failure)).toContain(
-      "missing required evidence",
-    );
-  });
-
-  it("scenario run records evidence details when required evidence is produced", async () => {
-    if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkGitRepoRoot();
-    await writeDefaultConfig(projectDir);
-    const manifest = baseRecipeManifest({
-      tools: [
-        toolEntry({
-          id: "EVIDENCE_TOOL",
-          summary: "Evidence writer",
-          runtime: "bash",
-          entrypoint: "tools/run.sh",
-        }),
-      ],
-      agents: [
-        agentEntry({
-          id: "EVIDENCE_AGENT",
-          display_name: "Evidence Agent",
-          skills: ["EVIDENCE_SKILL"],
-          tools: ["EVIDENCE_TOOL"],
-          file: "agents/evidence.json",
-        }),
-      ],
-      skills: [skillEntry({ id: "EVIDENCE_SKILL", file: "skills/evidence.json" })],
-      scenarios: [
-        scenarioDescriptor({
-          id: "EVIDENCE_SCENARIO",
-          name: "Evidence Scenario",
-          summary: "Collects evidence",
-          agents_involved: ["EVIDENCE_AGENT"],
-          skills_used: ["EVIDENCE_SKILL"],
-          tools_used: ["EVIDENCE_TOOL"],
-          file: "scenarios/evidence.json",
-        }),
-      ],
-    });
-    const archivePath = await createRecipeArchiveWithManifest({
-      manifest,
-      files: {
-        "agents/evidence.json": '{"id":"EVIDENCE_AGENT","role":"executor"}',
-        "skills/evidence.json": '{"id":"EVIDENCE_SKILL","kind":"agent-skill"}',
-        "tools/run.sh":
-          '#!/usr/bin/env bash\nprintf \'{"ok":true}\\n\' > "$AGENTPLANE_STEP_DIR/evidence.json"\nexit 0\n',
-        "scenarios/evidence.json": JSON.stringify(
-          {
-            schema_version: "1",
-            id: "EVIDENCE_SCENARIO",
-            goal: "collect evidence",
-            inputs: [],
-            outputs: [],
-            evidence: { required: true, files: ["evidence.json"] },
-            steps: [{ tool: "EVIDENCE_TOOL", args: [] }],
-          },
-          null,
-          2,
-        ),
-      },
-    });
-
-    await runRecipesTest({
-      cwd: projectDir,
-      args: ["--path", archivePath],
-      command: "install",
-    });
-
-    await runScenarioTest({
-      cwd: projectDir,
-      args: ["viewer:EVIDENCE_SCENARIO"],
-      command: "run",
-    });
-
-    const runsRoot = path.join(projectDir, ".agentplane", "recipes", "viewer", "runs");
-    const runs = await readdir(runsRoot);
-    const latest = runs.toSorted().at(-1);
-    const reportPath = path.join(runsRoot, latest ?? "", "report.json");
-    const report = JSON.parse(await readFile(reportPath, "utf8")) as Record<string, unknown>;
-    const evidence = report.evidence as Record<string, unknown>;
-    expect(evidence.required).toBe(true);
-    expect(evidence.expected_files).toEqual(["evidence.json"]);
-    expect(evidence.missing_steps).toEqual([]);
-    const steps = report.steps as Record<string, unknown>[];
-    expect(steps[0]?.evidence_files).toEqual(["evidence.json"]);
-  });
-
-  it("scenario run warns on tool permissions", async () => {
-    if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkGitRepoRoot();
-    await writeDefaultConfig(projectDir);
-    const manifest = baseRecipeManifest({
-      tools: [
-        toolEntry({
-          id: "WARN_TOOL",
-          summary: "Warn tool",
-          runtime: "bash",
-          entrypoint: "tools/warn.sh",
-          permissions: ["read", "write"],
-        }),
-      ],
-      agents: [
-        agentEntry({
-          id: "WARN_AGENT",
-          display_name: "Warn Agent",
-          skills: ["WARN_SKILL"],
-          tools: ["WARN_TOOL"],
-          file: "agents/warn.json",
-        }),
-      ],
-      skills: [skillEntry({ id: "WARN_SKILL", file: "skills/warn.json" })],
-      scenarios: [
-        scenarioDescriptor({
-          id: "WARN_SCENARIO",
-          name: "Warn Scenario",
-          summary: "Warn scenario",
-          agents_involved: ["WARN_AGENT"],
-          skills_used: ["WARN_SKILL"],
-          tools_used: ["WARN_TOOL"],
-          file: "scenarios/warn.json",
-        }),
-      ],
-    });
-    const archivePath = await createRecipeArchiveWithManifest({
-      manifest,
-      files: {
-        "agents/warn.json": '{"id":"WARN_AGENT","role":"executor"}',
-        "skills/warn.json": '{"id":"WARN_SKILL","kind":"agent-skill"}',
-        "tools/warn.sh": "#!/usr/bin/env bash\nexit 0\n",
-        "scenarios/warn.json": JSON.stringify(
-          {
-            schema_version: "1",
-            id: "WARN_SCENARIO",
-            goal: "warn",
-            inputs: [],
-            outputs: [],
-            steps: [{ tool: "WARN_TOOL" }],
-          },
-          null,
-          2,
-        ),
-      },
-    });
-
-    await runRecipesTest({
-      cwd: projectDir,
-      args: ["--path", archivePath],
-      command: "install",
-    });
-
     const io = captureStdIO();
     try {
-      await expect(
-        runScenarioTest({ cwd: projectDir, args: ["viewer:WARN_SCENARIO"], command: "run" }),
-      ).resolves.toBe(0);
-      expect(io.stdout).toContain("Warning: tool WARN_TOOL declares permissions");
+      const code = await runScenarioTest({
+        cwd: projectDir,
+        args: ["viewer:RECIPE_SCENARIO"],
+        command: "run",
+      });
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Prepared run plan: viewer:RECIPE_SCENARIO");
+      expect(io.stdout).toContain("Selection reasons:");
+      expect(io.stdout).toContain("Status: scenario orchestration runtime is not implemented yet.");
     } finally {
       io.restore();
     }
-  });
-
-  it("scenario run rejects invalid step args", async () => {
-    if (!tempHome) throw new Error("temp home not set");
-    const projectDir = await mkGitRepoRoot();
-    await writeDefaultConfig(projectDir);
-    const manifest = baseRecipeManifest({
-      tools: [
-        toolEntry({
-          id: "BAD_ARGS_TOOL",
-          summary: "Bad args tool",
-          runtime: "bash",
-          entrypoint: "tools/run.sh",
-        }),
-      ],
-      agents: [
-        agentEntry({
-          id: "BAD_ARGS_AGENT",
-          display_name: "Bad Args Agent",
-          skills: ["BAD_ARGS_SKILL"],
-          tools: ["BAD_ARGS_TOOL"],
-          file: "agents/bad-args.json",
-        }),
-      ],
-      skills: [skillEntry({ id: "BAD_ARGS_SKILL", file: "skills/bad-args.json" })],
-      scenarios: [
-        scenarioDescriptor({
-          id: "BAD_ARGS",
-          name: "Bad Args Scenario",
-          summary: "Bad args scenario",
-          agents_involved: ["BAD_ARGS_AGENT"],
-          skills_used: ["BAD_ARGS_SKILL"],
-          tools_used: ["BAD_ARGS_TOOL"],
-          file: "scenarios/bad-args.json",
-        }),
-      ],
-    });
-    const archivePath = await createRecipeArchiveWithManifest({
-      manifest,
-      files: {
-        "agents/bad-args.json": '{"id":"BAD_ARGS_AGENT","role":"executor"}',
-        "skills/bad-args.json": '{"id":"BAD_ARGS_SKILL","kind":"agent-skill"}',
-        "tools/run.sh": "#!/usr/bin/env bash\nexit 0\n",
-        "scenarios/bad-args.json": JSON.stringify(
-          {
-            schema_version: "1",
-            id: "BAD_ARGS",
-            goal: "bad args",
-            inputs: [],
-            outputs: [],
-            steps: [{ tool: "BAD_ARGS_TOOL", args: [1] }],
-          },
-          null,
-          2,
-        ),
-      },
-    });
-
-    await runRecipesTest({
-      cwd: projectDir,
-      args: ["--path", archivePath],
-      command: "install",
-    });
 
     await expect(
-      runScenarioTest({ cwd: projectDir, args: ["viewer:BAD_ARGS"], command: "run" }),
+      readdir(path.join(projectDir, ".agentplane", "recipes", "viewer", "runs")),
+    ).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
+  it("scenario run rejects incompatible runtime context", async () => {
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await installRecipe({ projectDir });
+
+    const manifestPath = path.join(resolveProjectRecipeDir(projectDir, "viewer"), "manifest.json");
+    const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as Record<string, unknown>;
+    ((manifest.compatibility as Record<string, unknown>).platforms as unknown[]) = ["win32"];
+    await writeFile(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
+
+    await expect(
+      runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
+  });
+
+  it("scenario run validates recipe-local file references", async () => {
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await installRecipe({ projectDir });
+
+    await rm(path.join(resolveProjectRecipeDir(projectDir, "viewer"), "agents", "recipe.json"), {
+      force: true,
+    });
+    await expect(
+      runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
     ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
+  it("scenario run validates scenario definition schema", async () => {
+    const projectDir = await mkGitRepoRoot();
+    await writeDefaultConfig(projectDir);
+    await installRecipe({ projectDir });
+
+    const scenarioPath = path.join(
+      resolveProjectRecipeDir(projectDir, "viewer"),
+      "scenarios",
+      "recipe-scenario.json",
+    );
+    const scenario = JSON.parse(await readFile(scenarioPath, "utf8")) as Record<string, unknown>;
+    delete scenario.goal;
+    await writeFile(scenarioPath, JSON.stringify(scenario, null, 2), "utf8");
+
+    await expect(
+      runScenarioTest({ cwd: projectDir, args: ["viewer:RECIPE_SCENARIO"], command: "run" }),
+    ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
 
   it("lists empty recipes with default hint", async () => {

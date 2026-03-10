@@ -116,6 +116,8 @@ export type ResolvedRecipeScenario = {
   scenario_name: string;
   scenario_summary: string;
   scenario_description?: string;
+  use_when: string[];
+  avoid_when: string[];
   scenario_file: string;
   compatibility: RecipeResolverCompatibility;
   run_profile: ResolvedRecipeRunProfile;

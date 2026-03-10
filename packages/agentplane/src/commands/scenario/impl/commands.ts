@@ -1,36 +1,22 @@
 import { execFile } from "node:child_process";
-import { mkdir, readdir } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import { atomicWriteFile, resolveProject } from "@agentplaneorg/core";
+import { resolveProject, type ResolvedProject } from "@agentplaneorg/core";
 
 import { mapCoreError } from "../../../cli/error-map.js";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
-import { fileExists, getPathKind } from "../../../cli/fs-utils.js";
+import { fileExists } from "../../../cli/fs-utils.js";
 import { emptyStateMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
+import { formatJsonBlock } from "../../recipes/impl/format.js";
 import {
-  collectRecipeScenarioDetails,
-  RECIPES_DIR_NAME,
-  RECIPES_SCENARIOS_DIR_NAME,
-  RECIPE_RUNS_DIR_NAME,
-  normalizeScenarioToolStep,
+  listResolvedRecipeScenarios,
   readProjectInstalledRecipes,
-  readRecipeManifest,
   readScenarioDefinition,
-  resolveProjectInstalledRecipeDir,
-  resolveProjectRecipesCacheDir,
+  resolveRecipeScenarioSelection,
   type ScenarioDefinition,
 } from "../../recipes.js";
-
-import {
-  collectScenarioEnvKeys,
-  getGitDiffSummary,
-  redactArgs,
-  writeScenarioReport,
-  type ScenarioRunReportStep,
-} from "./report.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -40,6 +26,167 @@ type RecipeToolInvocation = {
   command: string;
   args: string[];
 };
+
+type ScenarioCliSelection = Awaited<ReturnType<typeof resolveRecipeScenarioSelection>>;
+
+function printJsonSection(label: string, value: unknown): void {
+  const payload = formatJsonBlock(value, "  ");
+  if (!payload) return;
+  process.stdout.write(`${label}:\n${payload}\n`);
+}
+
+function buildScenarioNotFoundError(recipeId: string, scenarioId: string): CliError {
+  return new CliError({
+    exitCode: exitCodeForError("E_IO"),
+    code: "E_IO",
+    message: `Scenario not found: ${recipeId}:${scenarioId}`,
+  });
+}
+
+async function resolveScenarioForCli(opts: {
+  project: ResolvedProject;
+  recipeId: string;
+  scenarioId: string;
+}): Promise<{
+  entry: Awaited<ReturnType<typeof readProjectInstalledRecipes>>["recipes"][number];
+  selection: ScenarioCliSelection;
+}> {
+  const installed = await readProjectInstalledRecipes(opts.project);
+  const entry = installed.recipes.find((recipe) => recipe.id === opts.recipeId);
+  if (!entry) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message: `Recipe not installed: ${opts.recipeId}`,
+    });
+  }
+  try {
+    const selection = await resolveRecipeScenarioSelection({
+      project: opts.project,
+      flags: {
+        recipeId: opts.recipeId,
+        scenarioId: opts.scenarioId,
+        includeIncompatible: true,
+      },
+    });
+    return { entry, selection };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.startsWith("No recipe scenario matches")) {
+      throw buildScenarioNotFoundError(opts.recipeId, opts.scenarioId);
+    }
+    if (message.startsWith("Scenario selection is ambiguous")) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message,
+      });
+    }
+    throw error;
+  }
+}
+
+async function readValidatedScenarioDefinition(opts: {
+  selection: ScenarioCliSelection;
+}): Promise<ScenarioDefinition> {
+  if (!(await fileExists(opts.selection.scenario_file))) {
+    throw new CliError({
+      exitCode: exitCodeForError("E_IO"),
+      code: "E_IO",
+      message: `Scenario definition not found: ${opts.selection.scenario_file}`,
+    });
+  }
+  try {
+    const scenario = await readScenarioDefinition(opts.selection.scenario_file);
+    if (scenario.id !== opts.selection.scenario_id) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_VALIDATION"),
+        code: "E_VALIDATION",
+        message:
+          `Scenario definition id mismatch: manifest expects ${opts.selection.scenario_id}, ` +
+          `file defines ${scenario.id}`,
+      });
+    }
+    return scenario;
+  } catch (error) {
+    if (error instanceof CliError) throw error;
+    throw new CliError({
+      exitCode: exitCodeForError("E_VALIDATION"),
+      code: "E_VALIDATION",
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+async function validateScenarioRecipeFiles(opts: {
+  entry: Awaited<ReturnType<typeof readProjectInstalledRecipes>>["recipes"][number];
+  selection: ScenarioCliSelection;
+}): Promise<string[]> {
+  const checks: string[] = [];
+  const agents = opts.entry.manifest.agents ?? [];
+  const skills = opts.entry.manifest.skills ?? [];
+  const tools = opts.entry.manifest.tools ?? [];
+
+  const selectedAgents = agents.filter((agent) =>
+    opts.selection.run_profile.agents_involved.includes(agent.id),
+  );
+  const selectedSkills = skills.filter((skill) =>
+    opts.selection.run_profile.skills_used.includes(skill.id),
+  );
+  const selectedTools = tools.filter((tool) =>
+    opts.selection.run_profile.tools_used.includes(tool.id),
+  );
+
+  for (const agent of selectedAgents) {
+    const agentFile = path.join(opts.selection.recipe_dir, agent.file);
+    if (!(await fileExists(agentFile))) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_IO"),
+        code: "E_IO",
+        message: `Recipe agent file not found: ${agent.file}`,
+      });
+    }
+  }
+  checks.push(`agent files ok: ${selectedAgents.length}`);
+
+  for (const skill of selectedSkills) {
+    const skillFile = path.join(opts.selection.recipe_dir, skill.file);
+    if (!(await fileExists(skillFile))) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_IO"),
+        code: "E_IO",
+        message: `Recipe skill file not found: ${skill.file}`,
+      });
+    }
+  }
+  checks.push(`skill files ok: ${selectedSkills.length}`);
+
+  for (const tool of selectedTools) {
+    const toolEntrypoint = path.join(opts.selection.recipe_dir, tool.entrypoint);
+    if (!(await fileExists(toolEntrypoint))) {
+      throw new CliError({
+        exitCode: exitCodeForError("E_IO"),
+        code: "E_IO",
+        message: `Tool entrypoint not found: ${tool.entrypoint}`,
+      });
+    }
+  }
+  checks.push(`tool entrypoints ok: ${selectedTools.length}`);
+
+  return checks;
+}
+
+function assertScenarioCompatibility(selection: ScenarioCliSelection): void {
+  if (selection.compatibility.ok) return;
+  const reasons = selection.compatibility.failures
+    .map((failure) => `- ${failure.reason}`)
+    .join("\n");
+  throw new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message: `Scenario is not compatible with the current runtime:\n${reasons}`,
+  });
+}
 
 export function resolveRecipeToolInvocation(
   runtime: RecipeToolRuntime,
@@ -60,24 +207,14 @@ export async function cmdScenarioListParsed(opts: {
   rootOverride?: string;
 }): Promise<number> {
   try {
-    const resolved = await resolveProject({
+    const project = await resolveProject({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const installed = await readProjectInstalledRecipes(resolved);
-    const entries: { recipeId: string; scenarioId: string; summary?: string }[] = [];
-
-    for (const recipe of installed.recipes) {
-      const recipeDir = resolveProjectInstalledRecipeDir(resolved, recipe.id);
-      const scenarios = await collectRecipeScenarioDetails(recipeDir, recipe.manifest);
-      for (const scenario of scenarios) {
-        entries.push({
-          recipeId: recipe.id,
-          scenarioId: scenario.id,
-          summary: scenario.summary,
-        });
-      }
-    }
+    const entries = await listResolvedRecipeScenarios({
+      project,
+      includeIncompatible: true,
+    });
 
     if (entries.length === 0) {
       process.stdout.write(
@@ -86,14 +223,11 @@ export async function cmdScenarioListParsed(opts: {
       return 0;
     }
 
-    const sorted = entries.toSorted((a, b) => {
-      const byRecipe = a.recipeId.localeCompare(b.recipeId);
-      if (byRecipe !== 0) return byRecipe;
-      return a.scenarioId.localeCompare(b.scenarioId);
-    });
-    for (const entry of sorted) {
+    for (const entry of entries) {
+      const compatibilityLabel = entry.compatibility.ok ? "compatible" : "incompatible";
       process.stdout.write(
-        `${entry.recipeId}:${entry.scenarioId} - ${entry.summary ?? "No summary"}\n`,
+        `${entry.recipe_id}:${entry.scenario_id} - ${entry.scenario_summary} ` +
+          `[mode=${entry.run_profile.mode}] [${compatibilityLabel}]\n`,
       );
     }
     return 0;
@@ -109,63 +243,38 @@ export async function cmdScenarioInfoParsed(opts: {
   recipeId: string;
   scenarioId: string;
 }): Promise<number> {
-  const { recipeId, scenarioId } = opts;
   try {
-    const resolved = await resolveProject({
+    const project = await resolveProject({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     });
-    const installed = await readProjectInstalledRecipes(resolved);
-    const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
-    if (!entry) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_IO"),
-        code: "E_IO",
-        message: `Recipe not installed: ${recipeId}`,
-      });
-    }
-    const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
-    const scenarioDetails = await collectRecipeScenarioDetails(recipeDir, entry.manifest);
-    const scenario = scenarioDetails.find((item) => item.id === scenarioId);
-    if (!scenario) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_IO"),
-        code: "E_IO",
-        message: `Scenario not found: ${recipeId}:${scenarioId}`,
-      });
-    }
+    const { selection } = await resolveScenarioForCli({
+      project,
+      recipeId: opts.recipeId,
+      scenarioId: opts.scenarioId,
+    });
 
-    process.stdout.write(`Scenario: ${recipeId}:${scenarioId}\n`);
-    if (scenario.summary) process.stdout.write(`Summary: ${scenario.summary}\n`);
-    if (scenario.description) process.stdout.write(`Description: ${scenario.description}\n`);
-    if (scenario.goal) process.stdout.write(`Goal: ${scenario.goal}\n`);
-    if (scenario.inputs !== undefined) {
-      process.stdout.write(`Inputs: ${JSON.stringify(scenario.inputs, null, 2)}\n`);
-    } else if (scenario.required_inputs && scenario.required_inputs.length > 0) {
-      process.stdout.write(
-        `Required inputs: ${JSON.stringify(scenario.required_inputs, null, 2)}\n`,
-      );
+    process.stdout.write(`Scenario: ${selection.recipe_id}:${selection.scenario_id}\n`);
+    process.stdout.write(
+      `Recipe: ${selection.recipe_name} (${selection.recipe_id}@${selection.recipe_version})\n`,
+    );
+    process.stdout.write(`Summary: ${selection.scenario_summary}\n`);
+    if (selection.scenario_description) {
+      process.stdout.write(`Description: ${selection.scenario_description}\n`);
     }
-    if (scenario.outputs !== undefined) {
-      process.stdout.write(`Outputs: ${JSON.stringify(scenario.outputs, null, 2)}\n`);
+    printJsonSection("Use when", selection.use_when);
+    if (selection.avoid_when.length > 0) {
+      printJsonSection("Avoid when", selection.avoid_when);
     }
-    if (scenario.evidence?.required) {
-      process.stdout.write(
-        `Evidence: required (${normalizeExpectedEvidenceFiles(scenario.evidence.files).join(", ")})\n`,
-      );
-    } else if (scenario.evidence?.files && scenario.evidence.files.length > 0) {
-      process.stdout.write(`Evidence: optional (${scenario.evidence.files.join(", ")})\n`);
+    printJsonSection("Run profile", selection.run_profile);
+    process.stdout.write(
+      `Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}\n`,
+    );
+    if (selection.compatibility.ok) {
+      process.stdout.write("Compatibility: satisfied\n");
+    } else {
+      printJsonSection("Compatibility failures", selection.compatibility.failures);
     }
-    if (scenario.steps && scenario.steps.length > 0) {
-      process.stdout.write("Steps:\n");
-      let stepIndex = 1;
-      for (const step of scenario.steps) {
-        process.stdout.write(`  ${stepIndex}. ${JSON.stringify(step)}\n`);
-        stepIndex += 1;
-      }
-      return 0;
-    }
-    process.stdout.write("Details: Scenario definition not found in recipe.\n");
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -224,38 +333,6 @@ export async function executeRecipeTool(opts: {
   }
 }
 
-function sanitizeRunId(value: string): string {
-  return value.replaceAll(/[^a-zA-Z0-9._-]/g, "_");
-}
-
-function normalizeExpectedEvidenceFiles(raw: string[] | undefined): string[] {
-  if (!raw || raw.length === 0) return ["evidence.json"];
-  const unique: string[] = [];
-  for (const value of raw) {
-    const file = value.trim();
-    if (!file) continue;
-    if (unique.includes(file)) continue;
-    unique.push(file);
-  }
-  return unique.length > 0 ? unique : ["evidence.json"];
-}
-
-async function collectStepEvidenceFiles(
-  stepDir: string,
-  expectedFiles: string[],
-): Promise<{ present: string[]; missing: string[] }> {
-  const present: string[] = [];
-  const missing: string[] = [];
-  for (const file of expectedFiles) {
-    if (await fileExists(path.join(stepDir, file))) {
-      present.push(file);
-    } else {
-      missing.push(file);
-    }
-  }
-  return { present, missing };
-}
-
 export async function cmdScenarioRunParsed(opts: {
   cwd: string;
   rootOverride?: string;
@@ -263,262 +340,37 @@ export async function cmdScenarioRunParsed(opts: {
   scenarioId: string;
   resolved?: Awaited<ReturnType<typeof resolveProject>>;
 }): Promise<number> {
-  const resolved =
+  const project =
     opts.resolved ??
     (await resolveProject({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
     }));
-  const { recipeId, scenarioId } = opts;
   try {
-    const installed = await readProjectInstalledRecipes(resolved);
-    const entry = installed.recipes.find((recipe) => recipe.id === recipeId);
-    if (!entry) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_IO"),
-        code: "E_IO",
-        message: `Recipe not installed: ${recipeId}`,
-      });
-    }
-    const recipeDir = resolveProjectInstalledRecipeDir(resolved, entry.id);
-    const manifestPath = path.join(recipeDir, "manifest.json");
-    const manifest = await readRecipeManifest(manifestPath);
-    const scenariosDir = path.join(recipeDir, RECIPES_SCENARIOS_DIR_NAME);
-    if ((await getPathKind(scenariosDir)) !== "dir") {
-      throw new CliError({
-        exitCode: exitCodeForError("E_IO"),
-        code: "E_IO",
-        message: `Scenario definitions not found for recipe: ${recipeId}`,
-      });
-    }
-    let scenario: ScenarioDefinition | null = null;
-    const files = await readdir(scenariosDir);
-    const jsonFiles = files.filter((file) => file.toLowerCase().endsWith(".json")).toSorted();
-    for (const file of jsonFiles) {
-      const candidate = await readScenarioDefinition(path.join(scenariosDir, file));
-      if (candidate.id === scenarioId) {
-        scenario = candidate;
-        break;
-      }
-    }
-    if (!scenario) {
-      throw new CliError({
-        exitCode: exitCodeForError("E_IO"),
-        code: "E_IO",
-        message: `Scenario not found: ${recipeId}:${scenarioId}`,
-      });
-    }
-
-    const runsRoot = path.join(
-      resolved.agentplaneDir,
-      RECIPES_DIR_NAME,
-      recipeId,
-      RECIPE_RUNS_DIR_NAME,
-    );
-    await mkdir(runsRoot, { recursive: true });
-    const recipesCacheDir = resolveProjectRecipesCacheDir(resolved);
-    await mkdir(recipesCacheDir, { recursive: true });
-    const runStartedAt = new Date().toISOString();
-    const runId = `${new Date()
-      .toISOString()
-      .replaceAll(":", "-")
-      .replaceAll(".", "-")}-${sanitizeRunId(scenarioId)}`;
-    const runDir = path.join(runsRoot, runId);
-    await mkdir(runDir, { recursive: true });
-    const evidenceRequired = scenario.evidence?.required === true;
-    const expectedEvidenceFiles = evidenceRequired
-      ? normalizeExpectedEvidenceFiles(scenario.evidence?.files)
-      : normalizeExpectedEvidenceFiles(
-          scenario.evidence?.files && scenario.evidence.files.length > 0
-            ? scenario.evidence.files
-            : undefined,
-        );
-    const missingEvidenceSteps: number[] = [];
-
-    const stepsMeta: {
-      tool: string;
-      runtime: string;
-      entrypoint: string;
-      exitCode: number;
-      duration_ms: number;
-    }[] = [];
-    const stepsReport: ScenarioRunReportStep[] = [];
-
-    for (let index = 0; index < scenario.steps.length; index++) {
-      const step = normalizeScenarioToolStep(scenario.steps[index], `${recipeId}:${scenarioId}`);
-      const toolEntry = manifest.tools?.find((tool) => tool?.id === step.tool);
-      if (!toolEntry) {
-        throw new CliError({
-          exitCode: exitCodeForError("E_IO"),
-          code: "E_IO",
-          message: `Tool not found in recipe manifest: ${step.tool}`,
-        });
-      }
-      const runtime =
-        toolEntry.runtime === "node" || toolEntry.runtime === "bash"
-          ? (toolEntry.runtime as RecipeToolRuntime)
-          : "";
-      const entrypoint = typeof toolEntry.entrypoint === "string" ? toolEntry.entrypoint : "";
-      if (!runtime || !entrypoint) {
-        throw new CliError({
-          exitCode: 3,
-          code: "E_VALIDATION",
-          message: `Tool entry is missing runtime/entrypoint: ${step.tool}`,
-        });
-      }
-      if (Array.isArray(toolEntry.permissions) && toolEntry.permissions.length > 0) {
-        process.stdout.write(
-          `Warning: tool ${toolEntry.id} declares permissions: ${toolEntry.permissions.join(", ")}\n`,
-        );
-      }
-
-      const entrypointPath = path.join(recipeDir, entrypoint);
-      if (!(await fileExists(entrypointPath))) {
-        throw new CliError({
-          exitCode: exitCodeForError("E_IO"),
-          code: "E_IO",
-          message: `Tool entrypoint not found: ${entrypoint}`,
-        });
-      }
-
-      const stepDir = path.join(runDir, `step-${index + 1}-${sanitizeRunId(step.tool)}`);
-      await mkdir(stepDir, { recursive: true });
-
-      const stepEnvKeys = collectScenarioEnvKeys(step.env);
-      const env = {
-        ...process.env,
-        ...step.env,
-        AGENTPLANE_RUN_DIR: runDir,
-        AGENTPLANE_STEP_DIR: stepDir,
-        AGENTPLANE_RECIPES_CACHE_DIR: recipesCacheDir,
-        AGENTPLANE_RECIPE_ID: recipeId,
-        AGENTPLANE_SCENARIO_ID: scenarioId,
-        AGENTPLANE_TOOL_ID: step.tool,
-      } as Record<string, string>;
-
-      const startedAt = Date.now();
-      const result = await executeRecipeTool({
-        runtime,
-        entrypoint: entrypointPath,
-        args: step.args,
-        cwd: recipeDir,
-        env,
-      });
-      const durationMs = Date.now() - startedAt;
-      await atomicWriteFile(path.join(stepDir, "stdout.log"), result.stdout, "utf8");
-      await atomicWriteFile(path.join(stepDir, "stderr.log"), result.stderr, "utf8");
-      const stepEvidence = await collectStepEvidenceFiles(stepDir, expectedEvidenceFiles);
-      const missingRequiredEvidence = evidenceRequired ? stepEvidence.missing : [];
-      if (missingRequiredEvidence.length > 0) {
-        missingEvidenceSteps.push(index + 1);
-      }
-      stepsMeta.push({
-        tool: step.tool,
-        runtime,
-        entrypoint,
-        exitCode: result.exitCode,
-        duration_ms: durationMs,
-      });
-      stepsReport.push({
-        step: index + 1,
-        tool: step.tool,
-        runtime,
-        entrypoint,
-        args: redactArgs(step.args),
-        env_keys: stepEnvKeys,
-        evidence_files: stepEvidence.present,
-        missing_evidence_files:
-          missingRequiredEvidence.length > 0 ? missingRequiredEvidence : undefined,
-        exit_code: result.exitCode,
-        duration_ms: durationMs,
-      });
-
-      if (result.exitCode !== 0 || missingRequiredEvidence.length > 0) {
-        const gitSummary = await getGitDiffSummary(resolved.gitRoot);
-        await writeScenarioReport({
-          runDir,
-          recipeId,
-          scenarioId,
-          runId,
-          startedAt: runStartedAt,
-          status: "failed",
-          steps: stepsReport,
-          evidence: {
-            required: evidenceRequired,
-            expected_files: expectedEvidenceFiles,
-            missing_steps: missingEvidenceSteps,
-          },
-          gitSummary,
-        });
-        await atomicWriteFile(
-          path.join(runDir, "meta.json"),
-          `${JSON.stringify(
-            {
-              recipe: recipeId,
-              scenario: scenarioId,
-              run_id: runId,
-              evidence: {
-                required: evidenceRequired,
-                expected_files: expectedEvidenceFiles,
-                missing_steps: missingEvidenceSteps,
-              },
-              steps: stepsMeta,
-            },
-            null,
-            2,
-          )}\n`,
-          "utf8",
-        );
-        const reason =
-          missingRequiredEvidence.length > 0
-            ? `Scenario step missing required evidence: ${step.tool} (${missingRequiredEvidence.join(", ")})`
-            : `Scenario step failed: ${step.tool}`;
-        const stepExitCode = result.exitCode === 0 ? 1 : result.exitCode;
-        throw new CliError({
-          exitCode: stepExitCode,
-          code: "E_INTERNAL",
-          message: reason,
-        });
-      }
-    }
-
-    const gitSummary = await getGitDiffSummary(resolved.gitRoot);
-    await writeScenarioReport({
-      runDir,
-      recipeId,
-      scenarioId,
-      runId,
-      startedAt: runStartedAt,
-      status: "success",
-      steps: stepsReport,
-      evidence: {
-        required: evidenceRequired,
-        expected_files: expectedEvidenceFiles,
-        missing_steps: missingEvidenceSteps,
-      },
-      gitSummary,
+    const { entry, selection } = await resolveScenarioForCli({
+      project,
+      recipeId: opts.recipeId,
+      scenarioId: opts.scenarioId,
     });
-    await atomicWriteFile(
-      path.join(runDir, "meta.json"),
-      `${JSON.stringify(
-        {
-          recipe: recipeId,
-          scenario: scenarioId,
-          run_id: runId,
-          evidence: {
-            required: evidenceRequired,
-            expected_files: expectedEvidenceFiles,
-            missing_steps: missingEvidenceSteps,
-          },
-          steps: stepsMeta,
-        },
-        null,
-        2,
-      )}\n`,
-      "utf8",
-    );
+    assertScenarioCompatibility(selection);
+    const scenarioDefinition = await readValidatedScenarioDefinition({ selection });
+    const validationChecks = await validateScenarioRecipeFiles({ entry, selection });
 
-    process.stdout.write(`Run artifacts: ${path.relative(resolved.gitRoot, runDir)}\n`);
+    process.stdout.write(`Prepared run plan: ${selection.recipe_id}:${selection.scenario_id}\n`);
+    process.stdout.write(
+      `Recipe: ${selection.recipe_name} (${selection.recipe_id}@${selection.recipe_version})\n`,
+    );
+    process.stdout.write(`Goal: ${scenarioDefinition.goal}\n`);
+    process.stdout.write(
+      `Scenario file: ${path.relative(project.gitRoot, selection.scenario_file)}\n`,
+    );
+    printJsonSection("Run profile", selection.run_profile);
+    printJsonSection("Selection reasons", selection.selection_reasons);
+    printJsonSection("Validation", [
+      `scenario definition ok: ${path.relative(project.gitRoot, selection.scenario_file)}`,
+      ...validationChecks,
+    ]);
+    process.stdout.write("Status: scenario orchestration runtime is not implemented yet.\n");
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
