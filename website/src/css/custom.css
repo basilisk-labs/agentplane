@@ -154,11 +154,14 @@ html.nav-scrolled .navbar.navbar--fixed-top {
   background: rgb(255 255 255 / 0);
   border: 1px solid transparent;
   border-radius: 13px;
+  display: inline-flex;
+  flex: 0 0 auto;
   font-family: var(--ifm-font-family-monospace);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   line-height: 1.2;
-  padding: 0.52rem 0.76rem;
-  letter-spacing: 0.04em;
+  padding: 0.5rem 0.62rem;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
   position: relative;
   text-transform: uppercase;
   transition:
@@ -470,6 +473,13 @@ nav[aria-label="Breadcrumbs"] {
     padding-left: var(--docs-shell-outer-gutter);
     padding-right: var(--docs-shell-outer-gutter);
     width: 100%;
+  }
+
+  .navbar__items--left,
+  .navbar__items--right {
+    flex-wrap: nowrap;
+    gap: 0.1rem;
+    min-width: 0;
   }
 
   .ap-doc-layout-wrap .row > .col.col--3,
