@@ -1,7 +1,7 @@
 ---
 id: "202603100809-1EE43W"
 title: "Recipes v1: migrate examples, docs, and tests to self-contained model"
-status: "TODO"
+status: "DOING"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -15,20 +15,30 @@ tags:
   - "tests"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "approved"
+  updated_at: "2026-03-10T11:52:05.675Z"
+  updated_by: "ORCHESTRATOR"
+  note: "Approved by user in chat: finish the remaining recipes v1 migration work by syncing examples, docs, help, and reference artifacts with the self-contained scenario-first placeholder model."
 verification:
   state: "pending"
   updated_at: null
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: migrate recipe docs, inventory, command metadata, and remaining reference surfaces to the self-contained scenario-first model and the non-executing scenario-run placeholder."
+events:
+  -
+    type: "status"
+    at: "2026-03-10T11:52:14.214Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: migrate recipe docs, inventory, command metadata, and remaining reference surfaces to the self-contained scenario-first model and the non-executing scenario-run placeholder."
 doc_version: 3
-doc_updated_at: "2026-03-10T08:09:17.496Z"
+doc_updated_at: "2026-03-10T11:59:42.074Z"
 doc_updated_by: "CODER"
 description: "Update bundled recipe examples, docs, and automated tests to match the project-local self-contained recipe architecture and scenario-first public contract."
 id_source: "generated"
@@ -46,17 +56,16 @@ Update bundled recipe examples, docs, and automated tests to match the project-l
 
 ## Plan
 
-1. Implement the change for "Recipes v1: migrate examples, docs, and tests to self-contained model".
-2. Run required checks and capture verification evidence.
-3. Finalize task findings and finish with traceable commit metadata.
+1. Update recipe-facing docs and inventory artifacts so they describe project-local self-contained recipes, scenario-first public entrypoints, and the current non-executing `scenario run` placeholder behavior.
+2. Sync scenario command metadata and generated reference/help surfaces with the new resolver-backed list/info/run semantics.
+3. Adjust any remaining bundled examples or tests that still describe the old global install or step-execution model, then verify with targeted recipes/scenario/help checks.
 
 ## Verify Steps
 
-<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->
-
-1. Review the changed artifact or behavior. Expected: the requested outcome is visible and matches the approved scope.
-2. Run the most relevant validation step for this task. Expected: it succeeds without unexpected regressions in touched scope.
-3. Compare the final result against the task summary and scope. Expected: any remaining follow-up is explicit in ## Findings.
+1. Inspect the updated recipe docs/inventory and one CLI reference surface. Expected: docs describe project-local self-contained recipes, scenario-first entrypoints, and `scenario run` as a prepared-plan placeholder rather than a step executor.
+2. Run `bun run typecheck`. Expected: command metadata, docs-linked codepaths, and remaining recipe surfaces compile cleanly.
+3. Run `bun x vitest run packages/agentplane/src/commands/recipes.test.ts packages/agentplane/src/commands/scenario/impl/commands.test.ts packages/agentplane/src/cli/run-cli.recipes.test.ts packages/agentplane/src/cli/run-cli.scenario.test.ts packages/agentplane/src/cli/run-cli.core.help-snap.test.ts --hookTimeout 60000 --testTimeout 60000`. Expected: recipes/scenario behavior plus help/reference snapshots pass after the doc/metadata sync.
+4. Run `git status --short`. Expected: final diff is limited to the recipes v1 migration scope and task-artifact updates.
 
 ## Verification
 
@@ -69,3 +78,6 @@ Update bundled recipe examples, docs, and automated tests to match the project-l
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+- `scenario run` in recipes v1 is now a non-executing placeholder by design: it resolves the manifest-level scenario through the deterministic resolver, validates recipe-local files plus the scenario definition contract, prints a prepared run plan, and returns without creating `runs/` artifacts.
+- Bundled recipe examples in the nested `agentplane-recipes` repository were synchronized to the scenario-first manifest contract so docs and inventory now reference real self-contained bundles. Nested repo commit: `675fa64`.

@@ -7,9 +7,14 @@ export type ScenarioInfoParsed = { recipeId: string; scenarioId: string };
 export const scenarioInfoSpec: CommandSpec<ScenarioInfoParsed> = {
   id: ["scenario", "info"],
   group: "Scenario",
-  summary: "Show scenario details (goal/inputs/outputs/steps).",
+  summary: "Show manifest-backed scenario details and normalized run profile.",
   args: [{ name: "id", required: true, valueHint: "<recipe:scenario>" }],
-  examples: [{ cmd: "agentplane scenario info viewer:demo", why: "Show scenario details." }],
+  examples: [
+    {
+      cmd: "agentplane scenario info viewer:demo",
+      why: "Inspect resolver-backed scenario metadata before execution.",
+    },
+  ],
   parse: (raw) => {
     const id = String(raw.args.id ?? "");
     const [recipeId, scenarioId] = id.split(":", 2);

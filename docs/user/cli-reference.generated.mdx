@@ -1450,12 +1450,13 @@ Options:
 - `--index <path|url>`: Override recipes index location (used when installing by name / auto-name).
 - `--refresh`: Refresh remote index cache before installing. (default=false)
 - `--yes`: Auto-approve network prompts when allowed by config. (default=false)
-- `--on-conflict <fail|rename|overwrite>`: How to handle conflicts when applying recipe agents. (choices=fail|rename|overwrite, default=fail)
+- `--on-conflict <fail|rename|overwrite>`: Deprecated compatibility no-op; recipe installs stay self-contained. (choices=fail|rename|overwrite, default=fail)
 
 Notes:
 
 - Auto mode resolution matches v0.1.9: URL if http(s); else PATH if file exists; else NAME (remote index).
 - Network operations may require approval; use --yes to auto-approve when allowed by config.
+- --on-conflict is accepted for backward compatibility but does not change install behavior.
 
 Examples:
 
@@ -1475,7 +1476,7 @@ agentplane recipes install --name viewer --refresh
 agentplane recipes install viewer --on-conflict overwrite
 ```
 
-- Apply recipe agents, overwriting conflicts.
+- Compatibility-only flag; ignored by self-contained recipe installs.
 
 ### recipes list
 
@@ -1665,7 +1666,7 @@ agentplane scenario <subcommand> [options]
 
 ### scenario info
 
-Show scenario details (goal/inputs/outputs/steps).
+Show manifest-backed scenario details and normalized run profile.
 
 Usage:
 
@@ -1679,11 +1680,11 @@ Examples:
 agentplane scenario info viewer:demo
 ```
 
-- Show scenario details.
+- Inspect resolver-backed scenario metadata before execution.
 
 ### scenario list
 
-List scenarios available from installed recipes.
+List resolver-backed scenario descriptors from installed recipes.
 
 Usage:
 
@@ -1697,11 +1698,11 @@ Examples:
 agentplane scenario list
 ```
 
-- List scenarios.
+- List available recipe scenarios.
 
 ### scenario run
 
-Run a scenario toolchain from an installed recipe.
+Validate a scenario and print a prepared run plan (no execution).
 
 Usage:
 
@@ -1715,7 +1716,7 @@ Examples:
 agentplane scenario run viewer:demo
 ```
 
-- Run a scenario.
+- Validate a scenario and inspect the prepared run plan.
 
 ## Setup
 

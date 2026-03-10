@@ -6,9 +6,9 @@ export type ScenarioListParsed = Record<string, never>;
 export const scenarioListSpec: CommandSpec<ScenarioListParsed> = {
   id: ["scenario", "list"],
   group: "Scenario",
-  summary: "List scenarios available from installed recipes.",
+  summary: "List resolver-backed scenario descriptors from installed recipes.",
   parse: () => ({}),
-  examples: [{ cmd: "agentplane scenario list", why: "List scenarios." }],
+  examples: [{ cmd: "agentplane scenario list", why: "List available recipe scenarios." }],
 };
 
 export const runScenarioList: CommandHandler<ScenarioListParsed> = (ctx) =>

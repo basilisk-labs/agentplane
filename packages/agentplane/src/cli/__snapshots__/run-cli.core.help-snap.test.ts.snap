@@ -79,9 +79,9 @@ Commands:
     release plan  Generate an agent-assisted release plan (changes list + next patch version).
   Scenario:
     scenario  Recipe scenario commands.
-    scenario info  Show scenario details (goal/inputs/outputs/steps).
-    scenario list  List scenarios available from installed recipes.
-    scenario run  Run a scenario toolchain from an installed recipe.
+    scenario info  Show manifest-backed scenario details and normalized run profile.
+    scenario list  List resolver-backed scenario descriptors from installed recipes.
+    scenario run  Validate a scenario and print a prepared run plan (no execution).
   Setup:
     init  Initialize agentplane project files under .agentplane/.
     upgrade  Upgrade the local agentplane framework bundle in the repo.

@@ -1,6 +1,6 @@
 ---
 title: "How recipes work"
-description: "Install, inspect, and execute recipes in the current CLI runtime."
+description: "Install, inspect, and validate self-contained recipes in the current CLI runtime."
 ---
 
 This page describes runtime behavior behind `recipes` and `scenario` commands.
@@ -10,56 +10,36 @@ This page describes runtime behavior behind `recipes` and `scenario` commands.
 1. Resolve source (`--name`, `--path`, or `--url`).
 2. Download when source is remote.
 3. Extract archive and locate `manifest.json`.
-4. Validate manifest and scenario definitions.
-5. Copy recipe into global recipe store.
-6. Update installed recipes metadata.
-7. Optionally apply recipe-provided agents into `.agentplane/agents/`.
+4. Validate manifest, recipe-local file references, and scenario definitions.
+5. Copy the self-contained recipe bundle into `.agentplane/recipes/<recipe-id>/`.
+6. Write project-local install metadata and preserve existing `runs/` artifacts.
+7. Keep recipe-local `agents/`, `skills/`, `tools/`, and `scenarios/` inside the recipe directory.
 
 ## Listing and inspection
 
-- `recipes list` reads installed metadata and prints short entries.
+- `recipes list` scans project-local installed recipes and prints short entries.
 - `recipes info` and `recipes explain` read manifest-backed details.
-- `scenario list` enumerates known scenarios from installed recipes.
-- `scenario info` prints scenario details for one `<recipe:scenario>`.
+- `scenario list` enumerates resolver-backed scenario descriptors from installed recipes.
+- `scenario info` prints manifest-backed scenario details and normalized `run_profile` data for one `<recipe:scenario>`.
 
 ## Scenario run flow
 
 `scenario run`:
 
 1. Parses `<recipe:scenario>` id.
-2. Loads recipe manifest and scenario definition.
-3. Resolves referenced tools.
-4. Executes steps sequentially.
-5. Validates required evidence files (if declared by scenario).
-6. Writes per-step logs and run report artifacts.
-
-Typical run artifact path:
-
-- `.agentplane/recipes/<recipe-id>/runs/<run-id>/`
-
-Common files:
-
-- `meta.json`
-- `report.json`
-- `step-<n>-<tool>/stdout.log`
-- `step-<n>-<tool>/stderr.log`
-- `step-<n>-<tool>/evidence.json` (when produced by the tool)
-
-`report.json` includes:
-
-- step arguments (redacted for sensitive flags)
-- environment key names used by each step
-- evidence summary (`required`, expected files, missing steps)
+2. Resolves the scenario through the deterministic recipe resolver.
+3. Validates compatibility, recipe-local files, and the internal `scenario.json` contract.
+4. Prints a prepared run plan with selection reasons and normalized `run_profile`.
+5. Stops without executing tools or creating `runs/` artifacts.
 
 ## Environment behavior
 
-Recipe tools inherit process environment.
-When command runs inside a project, CLI loads `.env` (without overriding already exported vars).
-Runtime also sets recipe-specific env keys such as run dir and cache dir for tool steps.
+Install and validation flows inherit the current process environment.
+Recipe-local tool execution env is intentionally out of scope until a real orchestration runner lands.
 
 ## Caching behavior
 
-- Remote index cache is stored globally.
+- Remote index cache is stored globally, but installed recipes are project-local.
 - `recipes list-remote --refresh` forces index refresh.
 - `recipes cache prune` removes stale cached entries and supports `--dry-run`.
 
@@ -70,7 +50,8 @@ Common hard failures:
 - missing or invalid manifest
 - unsupported archive structure
 - unknown scenario id
-- missing tool referenced by a scenario step
+- missing recipe-local files referenced by manifest
+- incompatible runtime context for the selected scenario
 - network/download errors for remote sources
 
 On failure, CLI exits non-zero and reports an error with standard error code mapping.

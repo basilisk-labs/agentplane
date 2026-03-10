@@ -5,12 +5,16 @@ description: "Contract for recipe archives, manifests, and CLI behavior."
 
 Recipes are optional extensions. Core workflow must remain usable with zero installed recipes.
 
+Recipes v1 are self-contained project-local capability bundles. The only public recipe entrypoint is a
+scenario descriptor exposed through `manifest.json`.
+
 ## What a recipe contains
 
 A recipe archive (`.zip` or `.tar.gz`) must include `manifest.json` at archive root or in a single top-level directory.
 
 Optional directories:
 
+- `skills/`
 - `tools/`
 - `scenarios/`
 - `assets/`
@@ -30,7 +34,9 @@ Minimum required fields:
 - `summary`
 - `description`
 
-Optional fields include `tags`, `tools`, `scenarios`, and `agents`.
+First-class sections include `compatibility`, `skills`, `tools`, `agents`, and `scenarios`.
+Each public scenario descriptor must be sufficient for resolver-driven selection without reading internal
+files.
 
 ## CLI surface
 
@@ -58,45 +64,69 @@ Install supports three source modes:
 - `--path <archive>` from local file
 - `--url <archive-url>` from direct URL
 
-Conflict handling for recipe-provided agents:
+Legacy conflict flag for export-oriented installs:
 
 - `--on-conflict fail`
 - `--on-conflict rename`
 - `--on-conflict overwrite`
 
+The flag is retained as a compatibility no-op. Self-contained recipes are not exported into
+`.agentplane/agents`.
+
 ## Runtime storage
 
-Global recipe metadata and cache:
+Global cache only:
 
-- `~/.agentplane/recipes.json`
-- `~/.agentplane/recipes/<id>/<version>/...`
 - `~/.agentplane/recipes-index.json`
+- `~/.agentplane/recipes/<id>/<version>/...`
 
-Project-local runtime artifacts:
+Project-local install/runtime state:
 
-- `.agentplane/recipes/<id>/runs/...`
+- `.agentplane/recipes/<id>/manifest.json`
+- `.agentplane/recipes/<id>/.install.json`
+- `.agentplane/recipes/<id>/agents/...`
+- `.agentplane/recipes/<id>/skills/...`
+- `.agentplane/recipes/<id>/tools/...`
+- `.agentplane/recipes/<id>/scenarios/...`
 - `.agentplane/recipes-cache/`
 
 `AGENTPLANE_HOME` can override the global storage root.
 
-## Scenario execution contract
+## Resolver contract
 
-`scenario run` resolves a scenario definition, then executes declared steps in order.
-Each step references a tool id from manifest.
+A deterministic resolver builds runtime context from:
 
-Current runtime support:
+- active AgentPlane version
+- supported manifest/scenario/runtime API versions
+- current platform
+- detected project repo types
 
-- tool runtime `node` or `bash`
-- per-step logs in run artifact folder
-- report metadata (`meta.json`, `report.json`)
-- step-level evidence files (for example `step-<n>-<tool>/evidence.json`)
+Resolver output includes:
+
+- selected recipe/scenario
+- compatibility result with explicit reasons/failures
+- normalized `run_profile`
+- explicit selection reasons
+
+## Scenario placeholder contract
+
+`scenario run` currently resolves a scenario definition, validates recipe-local file references, and prints
+a prepared run plan. It does not execute orchestration steps yet.
+
+Current placeholder support:
+
+- manifest-level scenario selection
+- recipe-local file validation (`agents`, `skills`, `tools`, `scenarios`)
+- internal scenario definition validation (`goal`, `inputs`, `outputs`, `steps`)
+- compatibility failure reporting before execution
 
 Scenario definitions can declare evidence requirements:
 
 - `evidence.required` (boolean)
 - `evidence.files` (string array, defaults to `["evidence.json"]` when required)
 
-When evidence is required, `scenario run` fails if a step does not produce the expected evidence files.
+Evidence declarations are part of the future orchestration contract and are not executed in the current
+placeholder runtime.
 
 ## Security model
 
@@ -107,5 +137,5 @@ Treat recipes as executable code and review source and manifest before install.
 
 - Keep manifest fields backward-compatible.
 - Additive fields are preferred over breaking schema changes.
-- Avoid environment-specific assumptions in scenarios.
+- Avoid environment-specific assumptions in manifest-level scenario descriptors.
 - Document required env keys and expected outputs in recipe README.

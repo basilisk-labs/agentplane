@@ -19,17 +19,19 @@ description: "Practical workflow for authoring and validating recipes."
 3. Verify visibility:
    - `agentplane recipes list`
    - `agentplane scenario list`
-4. Execute target scenario:
+4. Inspect target scenario:
+   - `agentplane scenario info <recipe:scenario>`
+5. Validate prepared run plan:
    - `agentplane scenario run <recipe:scenario>`
-5. Inspect run artifacts under `.agentplane/recipes/<id>/runs/`.
+6. Confirm no additional execution/runtime assumptions leaked into docs or tests.
 
 ## Designing scenarios
 
-- Prefer short, composable steps.
-- Keep each step focused on one tool responsibility.
-- Explicitly define expected outputs and failure messages.
+- Keep the manifest-level descriptor self-sufficient for selection.
+- Keep internal orchestration files forward-compatible with future execution.
+- Explicitly define expected outputs, required inputs, and failure messages.
 - Do not hide required inputs behind implicit defaults.
-- For operational playbooks, set `evidence.required=true` and declare expected files.
+- Keep `use_when` descriptive, but rely on structured fields for deterministic selection.
 
 ## Designing tools
 
@@ -37,7 +39,7 @@ description: "Practical workflow for authoring and validating recipes."
 - Keep tool side effects inside project-local directories when possible.
 - Prefer stable stdout/stderr output formats for downstream automation.
 - Exit non-zero on failures and include actionable error text.
-- For evidence-required scenarios, write required artifacts into `AGENTPLANE_STEP_DIR`.
+- Do not assume tools will be invoked directly by `scenario run` until the orchestration runner exists.
 
 ## Distribution and upgrades
 
@@ -47,7 +49,7 @@ description: "Practical workflow for authoring and validating recipes."
 
 ## Integration notes
 
-- Recipe-provided agents are namespaced on install to avoid id collisions.
-- Use `--on-conflict` policy explicitly when testing collision behavior.
+- Recipe-local agents stay inside `.agentplane/recipes/<id>/agents/`; they are not installed into `.agentplane/agents`.
+- Treat `scenario` as the only public recipe capability surface.
 - Validate both local archive installs and remote index installs before release.
 - Use extension recipes for non-core integrations (for example Dokploy or custom external APIs).

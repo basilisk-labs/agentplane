@@ -7,9 +7,14 @@ export type ScenarioRunParsed = { recipeId: string; scenarioId: string };
 export const scenarioRunSpec: CommandSpec<ScenarioRunParsed> = {
   id: ["scenario", "run"],
   group: "Scenario",
-  summary: "Run a scenario toolchain from an installed recipe.",
+  summary: "Validate a scenario and print a prepared run plan (no execution).",
   args: [{ name: "id", required: true, valueHint: "<recipe:scenario>" }],
-  examples: [{ cmd: "agentplane scenario run viewer:demo", why: "Run a scenario." }],
+  examples: [
+    {
+      cmd: "agentplane scenario run viewer:demo",
+      why: "Validate a scenario and inspect the prepared run plan.",
+    },
+  ],
   parse: (raw) => {
     const id = String(raw.args.id ?? "");
     const [recipeId, scenarioId] = id.split(":", 2);
