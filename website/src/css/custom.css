@@ -39,7 +39,7 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.04);
   --content-width: 96ch;
   --site-frame-width: 1240px;
-  --docs-frame-width: 1200px;
+  --docs-frame-width: 1304px;
   --doc-sidebar-width: 280px;
   --site-gutter: 0.75rem;
   --glass-fill-strong: rgb(255 255 255 / 0.44);
@@ -49,8 +49,8 @@
   --chrome-radius: 14px;
   --chrome-radius-inner: 13px;
   --chrome-radius-control: 12px;
-  --docs-shell-column-gap: clamp(2rem, 3.4vw, 3rem);
-  --docs-shell-outer-gutter: clamp(1.25rem, 3vw, 2.5rem);
+  --docs-shell-column-gap: clamp(1.6rem, 2.6vw, 2.25rem);
+  --docs-shell-outer-gutter: clamp(1rem, 2vw, 2rem);
   --docs-navbar-clearance: calc(var(--ifm-navbar-height) + 1.45rem);
 }
 
