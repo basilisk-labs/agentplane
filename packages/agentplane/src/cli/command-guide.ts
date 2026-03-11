@@ -17,7 +17,7 @@ export type RoleProfileGuide = {
   workflow?: readonly string[];
 };
 
-const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.role}\` only for role-specific deltas.`;
+const SHARED_STARTUP_NOTE = `- Shared startup path: \`${COMMAND_SNIPPETS.core.quickstart}\` is the canonical installed bootstrap; use \`${COMMAND_SNIPPETS.core.role}\` to activate the current role before role-scoped planning or execution.`;
 
 function renderQuickstartCommandBlock(commands: readonly string[]): string[] {
   return ["```bash", ...commands, "```"];
@@ -29,6 +29,7 @@ const ROLE_GUIDES: RoleGuide[] = [
     lines: [
       SHARED_STARTUP_NOTE,
       "- Owns preflight, plan summaries, approvals, and scope checkpoints.",
+      "- Hand off implementation, verification, and other owner-scoped execution to the task owner role as soon as the owner is known.",
       "- Does not create non-executable tasks or bypass lifecycle guardrails.",
     ],
   },
@@ -188,7 +189,7 @@ export function renderQuickstart(): string {
     "",
     "## Go deeper",
     "",
-    `- \`${COMMAND_SNIPPETS.core.role}\` for role-specific deltas and mode-specific ownership rules.`,
+    `- \`${COMMAND_SNIPPETS.core.role}\` to activate ORCHESTRATOR for planning and the task owner role before owner-scoped execution.`,
     "- `agentplane help <command>` for flags, examples, and exceptional/manual flows.",
     "- Keep installed runtime guidance self-contained; do not depend on repo-only docs files.",
     "- If you need the docs site, treat it as a public reference surface rather than a required local file.",

@@ -1,8 +1,9 @@
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { writeTextIfChanged } from "../../../shared/write-if-changed.js";
 import { resolvePolicyGatewayForRepo } from "../../../shared/policy-gateway.js";
+import { renderRole, type RoleProfileGuide } from "../../command-guide.js";
 import type { CommandHandler, CommandSpec } from "../../spec/spec.js";
 import type { RunDeps } from "../command-catalog.js";
 import { wrapCommand } from "./wrap-command.js";
@@ -43,6 +44,7 @@ export async function cmdIdeSync(opts: {
     });
     const agentsPath = gateway.absPath;
     const agentsText = await readFile(agentsPath, "utf8");
+    const roleGuides = await loadInstalledRoleGuides(resolved.agentplaneDir);
 
     const header = [
       "<!--",
@@ -52,7 +54,20 @@ export async function cmdIdeSync(opts: {
       "-->",
       "",
     ].join("\n");
-    const content = `${header}${agentsText.trimEnd()}\n`;
+    const roleGuideText =
+      roleGuides.length === 0
+        ? ""
+        : [
+            "",
+            "## Synced Role Activation",
+            "",
+            "- Use `agentplane role ORCHESTRATOR` while planning and approvals are active.",
+            "- As soon as a task owner is known, switch to that owner role before owner-scoped execution.",
+            "- Do not keep implementation or verification inside ORCHESTRATOR once the task owner is established.",
+            "",
+            ...roleGuides,
+          ].join("\n");
+    const content = `${header}${agentsText.trimEnd()}${roleGuideText}\n`;
 
     const targets =
       opts.ide === "cursor"
@@ -82,4 +97,69 @@ export async function cmdIdeSync(opts: {
 
 export function makeRunIdeSyncHandler(deps: RunDeps): CommandHandler<IdeSyncParsed> {
   return (ctx, p) => cmdIdeSync({ cwd: ctx.cwd, rootOverride: ctx.rootOverride, ide: p.ide, deps });
+}
+
+type IdeAgentProfile = {
+  id?: string;
+  role?: string;
+  description?: string;
+  inputs?: unknown;
+  outputs?: unknown;
+  permissions?: unknown;
+  workflow?: unknown;
+};
+
+function toStringList(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value
+        .filter((item): item is string => typeof item === "string")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    : [];
+}
+
+function toRoleProfileGuide(opts: {
+  filename: string;
+  roleId: string;
+  profile: IdeAgentProfile;
+}): RoleProfileGuide {
+  return {
+    filename: opts.filename,
+    id: (typeof opts.profile.id === "string" ? opts.profile.id : "").trim() || opts.roleId,
+    role: (typeof opts.profile.role === "string" ? opts.profile.role : "").trim(),
+    description: (typeof opts.profile.description === "string"
+      ? opts.profile.description
+      : ""
+    ).trim(),
+    inputs: toStringList(opts.profile.inputs),
+    outputs: toStringList(opts.profile.outputs),
+    permissions: toStringList(opts.profile.permissions),
+    workflow: toStringList(opts.profile.workflow),
+  };
+}
+
+async function loadInstalledRoleGuides(agentplaneDir: string): Promise<string[]> {
+  const agentsDir = path.join(agentplaneDir, "agents");
+  let entries: string[] = [];
+  try {
+    const dirEntries = await readdir(agentsDir);
+    entries = dirEntries.filter((entry) => entry.endsWith(".json")).toSorted();
+  } catch {
+    return [];
+  }
+
+  const guides: string[] = [];
+  for (const entry of entries) {
+    const roleId = entry.replace(/\.json$/i, "");
+    const raw = JSON.parse(await readFile(path.join(agentsDir, entry), "utf8")) as IdeAgentProfile;
+    const guide = renderRole(roleId, {
+      profile: toRoleProfileGuide({
+        filename: entry,
+        roleId,
+        profile: raw,
+      }),
+    });
+    if (guide) guides.push(guide);
+  }
+  return guides;
 }

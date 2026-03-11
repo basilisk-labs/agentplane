@@ -55,6 +55,7 @@ export const BOOTSTRAP_SECTIONS: readonly BootstrapSection[] = [
       "Use one short direct-mode route: create the task, approve it, start it, verify it, and finish it.",
     commands: BOOTSTRAP_DIRECT_HAPPY_PATH_COMMANDS,
     notes: [
+      "Use `agentplane role ORCHESTRATOR` during planning, then switch to `agentplane role <OWNER>` before owner-scoped execution.",
       "Use `task doc set` to fill required README sections before approval.",
       "For dependent tasks, wait until upstream tasks are DONE before `task start-ready`.",
       "`task plan approve` and `task start-ready` must run sequentially, never in parallel.",

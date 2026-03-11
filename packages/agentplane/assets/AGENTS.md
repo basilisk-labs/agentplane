@@ -17,7 +17,7 @@ Detailed procedures live in canonical modules from `## CANONICAL DOCS`.
 - Repository type: user project initialized with `agentplane`.
 - Gateway role: keep this file compact and deterministic; move scenario-specific details to policy modules.
 - CLI rule: use `agentplane` from `PATH`; if unavailable, stop and request installation guidance (do not invent repo-local entrypoints).
-- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`, then apply `## LOAD RULES` before any mutation.
+- Startup shortcut: run `## COMMANDS -> Preflight`, then use `agentplane quickstart`; activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active owner before owner-scoped execution; then apply `## LOAD RULES` before any mutation.
 
 ---
 
@@ -83,7 +83,7 @@ node .agentplane/policy/check-routing.mjs
 ## TOOLING
 
 - Use `## COMMANDS` as the canonical command source.
-- Use `agentplane quickstart` as the canonical installed startup path and `agentplane role <ROLE>` for role-specific deltas.
+- Use `agentplane quickstart` as the canonical installed startup path and `agentplane role <ROLE>` to activate the current role before role-scoped planning or execution.
 - For policy changes, routing validation MUST pass via `node .agentplane/policy/check-routing.mjs`.
 
 ---
@@ -131,10 +131,12 @@ Routing constraints:
 - MUST create/reuse executable task IDs for any repo-state mutation.
 - MUST use `agentplane` commands for task lifecycle updates; MUST NOT manually edit `.agentplane/tasks.json`.
 - MUST run `agentplane task plan approve ...` and `agentplane task start-ready ...` sequentially (never in parallel).
+- MUST activate `agentplane role ORCHESTRATOR` for planning and `agentplane role <ROLE>` for the active task owner before owner-scoped execution or verification.
 - MUST keep repository artifacts in English by default (unless user explicitly requests another language for a specific artifact).
 - MUST NOT fabricate repository facts.
 - MUST stage/commit only intentional changes for the active task scope.
 - MUST stop and request re-approval when scope, risk, or verification criteria materially drift.
+- MUST NOT let ORCHESTRATOR perform owner-scoped implementation or verification once a task owner is known, unless the approved plan explicitly makes ORCHESTRATOR the owner.
 
 Role boundaries:
 
