@@ -1,5 +1,6 @@
 import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
+import { readFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -16,6 +17,23 @@ type TestWorkspace = {
 
 const workspaces: string[] = [];
 const execFileAsync = promisify(execFile);
+
+function readCurrentCliVersion(): string {
+  const packageJsonPath = fileURLToPath(new URL("../../package.json", import.meta.url));
+  const parsed = JSON.parse(readFileSync(packageJsonPath, "utf8")) as unknown;
+  if (
+    parsed &&
+    typeof parsed === "object" &&
+    "version" in parsed &&
+    typeof parsed.version === "string" &&
+    parsed.version.trim().length > 0
+  ) {
+    return parsed.version;
+  }
+  return "0.0.0";
+}
+
+const currentCliVersion = readCurrentCliVersion();
 
 const VALID_WORKFLOW = `---
 version: 1
@@ -876,6 +894,46 @@ describe("doctor.command", () => {
       expect(output).toContain("expects agentplane 9.9.9");
       expect(output).toContain("Run: npm i -g agentplane@9.9.9");
       expect(output).toContain("Then verify: agentplane runtime explain");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("does not emit version-match findings when the active CLI already satisfies the repository expectation", async () => {
+    const ws = await mkWorkspace();
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    await writeFile(
+      path.join(ws.root, ".agentplane", "config.json"),
+      JSON.stringify(
+        {
+          schema_version: 1,
+          workflow_mode: "direct",
+          framework: {
+            source: "https://github.com/basilisk-labs/agentplane",
+            last_update: null,
+            cli: { expected_version: currentCliVersion },
+          },
+          agents: {
+            approvals: { require_plan: false, require_verify: false, require_network: true },
+          },
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    try {
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).not.toContain("doctor findings:");
+      expect(output).not.toContain("Repository expected agentplane CLI");
     } finally {
       stderr.mockRestore();
     }
