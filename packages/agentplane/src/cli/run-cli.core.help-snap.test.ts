@@ -59,6 +59,17 @@ describe("runCli help snapshots (cli2)", () => {
     }
   });
 
+  it("help task doc set --compact snapshot", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "task", "doc", "set", "--compact"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toMatchSnapshot();
+    } finally {
+      io.restore();
+    }
+  });
+
   it("help recipes install --compact snapshot", async () => {
     const io = captureStdIO();
     try {

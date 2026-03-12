@@ -2601,6 +2601,71 @@ describe("runCli", () => {
     expect(updated).toContain("Filled scope.");
   });
 
+  it("task doc set supports an explicit --full-doc update path", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202601300002-ABCD";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+      "## Summary\n\nOld summary.\n",
+    );
+    await writeFile(path.join(taskDir, "README.md"), readme, "utf8");
+
+    const fullDoc = [
+      "## Summary",
+      "",
+      "Explicit full doc summary.",
+      "",
+      "## Scope",
+      "",
+      "Explicit full doc scope.",
+      "",
+      "## Verification",
+      "",
+      "Explicit full doc verification.",
+      "",
+      "## Rollback Plan",
+      "",
+      "Explicit full doc rollback.",
+    ].join("\n");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--full-doc",
+        "--text",
+        fullDoc,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stderr).toContain("task doc set outcome=full-doc-updated section=<full-doc>");
+    } finally {
+      io.restore();
+    }
+
+    const updated = await readFile(path.join(taskDir, "README.md"), "utf8");
+    expect(updated).toContain("Explicit full doc summary.");
+    expect(updated).toContain("Explicit full doc scope.");
+    expect(updated).toContain("Explicit full doc rollback.");
+  });
+
   it("task doc set reports a stable no-change outcome when content is unchanged", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -2734,7 +2799,7 @@ describe("runCli", () => {
     try {
       const code1 = await runCli(["task", "doc", "set", "X", "--root", root]);
       expect(code1).toBe(2);
-      expect(io1.stderr).toContain("Missing required option: --section");
+      expect(io1.stderr).toContain("Missing required option: --section (or pass --full-doc)");
     } finally {
       io1.restore();
     }
@@ -2798,6 +2863,27 @@ describe("runCli", () => {
       expect(io4.stderr).toContain("Exactly one of --text or --file is required.");
     } finally {
       io4.restore();
+    }
+
+    const io5 = captureStdIO();
+    try {
+      const code5 = await runCli([
+        "task",
+        "doc",
+        "set",
+        id,
+        "--section",
+        "Summary",
+        "--full-doc",
+        "--text",
+        "x",
+        "--root",
+        root,
+      ]);
+      expect(code5).toBe(2);
+      expect(io5.stderr).toContain("Use either --section or --full-doc");
+    } finally {
+      io5.restore();
     }
   });
 

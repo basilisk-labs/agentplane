@@ -27,10 +27,11 @@ export async function cmdTaskDocSet(opts: {
   cwd: string;
   rootOverride?: string;
   taskId: string;
-  section: string;
+  section?: string;
   text?: string;
   file?: string;
   updatedBy?: string;
+  fullDoc: boolean;
 }): Promise<number> {
   let updatedBy: string | undefined;
   if (opts.updatedBy !== undefined) {
@@ -81,15 +82,29 @@ export async function cmdTaskDocSet(opts: {
     const useStore = backendIsLocalFileBackend(ctx);
     const store = useStore ? getTaskStore(ctx) : null;
     const allowed = config.tasks.doc.sections;
-    if (!allowed.includes(opts.section)) {
+    if (!opts.fullDoc && !opts.section) {
       throw new CliError({
         exitCode: 2,
         code: "E_USAGE",
-        message: unknownEntityMessage("doc section", opts.section),
+        message: "Missing required option: --section (or pass --full-doc)",
+      });
+    }
+    if (opts.fullDoc && opts.section) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: "Use either --section or --full-doc (not both)",
+      });
+    }
+    if (!opts.fullDoc && !allowed.includes(opts.section ?? "")) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: unknownEntityMessage("doc section", opts.section ?? ""),
       });
     }
     const normalizedAllowed = new Set(allowed.map((section) => normalizeDocSectionName(section)));
-    const targetKey = normalizeDocSectionName(opts.section);
+    const targetKey = normalizeDocSectionName(opts.section ?? "");
     const headingKeys = new Set<string>();
     for (const line of text.replaceAll("\r\n", "\n").split("\n")) {
       const match = /^##\s+(.*)$/.exec(line.trim());
@@ -102,8 +117,9 @@ export async function cmdTaskDocSet(opts: {
       ? String(storeTask!.doc ?? "")
       : ((await backend.getTaskDoc(opts.taskId)) ?? "");
     const baseDoc = ensureDocSections(baseDocRaw, config.tasks.doc.required_sections);
-    const requestMode =
-      headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))
+    const requestMode = opts.fullDoc
+      ? "full-doc"
+      : headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))
         ? "full-doc"
         : "section";
     let nextDoc = baseDoc;
@@ -122,7 +138,7 @@ export async function cmdTaskDocSet(opts: {
         }
       }
       nextDoc = ensureDocSections(
-        setMarkdownSection(baseDoc, opts.section, nextText),
+        setMarkdownSection(baseDoc, opts.section ?? "", nextText),
         config.tasks.doc.required_sections,
       );
     }
@@ -144,7 +160,8 @@ export async function cmdTaskDocSet(opts: {
       : "no-change";
     const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
     process.stdout.write(`${path.join(tasksDir, opts.taskId, "README.md")}\n`);
-    const outcomeText = `task doc set outcome=${outcome} section=${opts.section}`;
+    const outcomeTarget = opts.fullDoc ? "<full-doc>" : (opts.section ?? "");
+    const outcomeText = `task doc set outcome=${outcome} section=${outcomeTarget}`;
     process.stderr.write(
       `${outcome === "no-change" ? warnMessage(outcomeText) : infoMessage(outcomeText)}\n`,
     );

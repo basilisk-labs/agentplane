@@ -12,7 +12,7 @@ export const taskDocSpec: CommandSpec<TaskDocParsed> = {
   synopsis: [
     "agentplane task doc show <task-id> [--section <name>] [--quiet]",
     "agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]",
-    "agentplane task doc set <task-id> --section Summary --file ./task-readme.md  # if payload contains multiple known ## headings, apply as full-doc update",
+    "agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]",
   ],
   args: [{ name: "subcommand", required: false, valueHint: "<show|set>" }],
   parse: (raw) => {

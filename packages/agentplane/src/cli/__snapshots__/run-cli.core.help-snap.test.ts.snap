@@ -160,6 +160,22 @@ Usage:
 "
 `;
 
+exports[`runCli help snapshots (cli2) > help task doc set --compact snapshot 1`] = `
+"task doc set - Update a task README section.
+
+Usage:
+  agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
+  agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
+
+Options:
+  --section <name>  Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
+  --full-doc  Treat the provided text/file as the full task README payload. (default=false)
+  --text <text>  Section content (mutually exclusive with --file).
+  --file <path>  Read section content from a file (mutually exclusive with --text).
+  --updated-by <id>  Optional. Override doc_updated_by metadata (must be non-empty).
+"
+`;
+
 exports[`runCli help snapshots (cli2) > help task new --compact snapshot 1`] = `
 "task new - Create a new task (prints the generated task id).
 
