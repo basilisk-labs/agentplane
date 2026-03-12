@@ -4,6 +4,7 @@ import path from "node:path";
 import {
   ensureDocSections,
   normalizeDocSectionName,
+  normalizeTaskDoc,
   parseDocSections,
   setMarkdownSection,
 } from "@agentplaneorg/core";
@@ -19,21 +20,7 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
-function normalizeOutcomeText(value: string): string {
-  return value
-    .replaceAll("\r\n", "\n")
-    .split("\n")
-    .map((line) => line.trimEnd())
-    .join("\n")
-    .trim();
-}
-
-function readSectionContent(doc: string, section: string): string {
-  const sectionKey = normalizeDocSectionName(section);
-  const { sections } = parseDocSections(doc);
-  const lines = sections.get(sectionKey)?.lines ?? [];
-  return normalizeOutcomeText(lines.join("\n"));
-}
+type TaskDocSetOutcome = "section-updated" | "full-doc-updated" | "no-change";
 
 export async function cmdTaskDocSet(opts: {
   ctx?: CommandContext;
@@ -115,20 +102,13 @@ export async function cmdTaskDocSet(opts: {
       ? String(storeTask!.doc ?? "")
       : ((await backend.getTaskDoc(opts.taskId)) ?? "");
     const baseDoc = ensureDocSections(baseDocRaw, config.tasks.doc.required_sections);
-    const baseSection = readSectionContent(baseDoc, opts.section);
     const requestMode =
       headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))
         ? "full-doc"
         : "section";
-    if (headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))) {
-      const fullDoc = ensureDocSections(text, config.tasks.doc.required_sections);
-      await (useStore
-        ? store!.update(opts.taskId, (current) => ({
-            ...current,
-            doc: fullDoc,
-            ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
-          }))
-        : backend.setTaskDoc(opts.taskId, fullDoc, updatedBy));
+    let nextDoc = baseDoc;
+    if (requestMode === "full-doc") {
+      nextDoc = ensureDocSections(text, config.tasks.doc.required_sections);
     } else {
       let nextText = text;
       if (headingKeys.size > 0 && headingKeys.has(targetKey)) {
@@ -141,43 +121,33 @@ export async function cmdTaskDocSet(opts: {
           nextText = lines.join("\n");
         }
       }
-      const nextDoc = setMarkdownSection(baseDoc, opts.section, nextText);
-      const normalized = ensureDocSections(nextDoc, config.tasks.doc.required_sections);
+      nextDoc = ensureDocSections(
+        setMarkdownSection(baseDoc, opts.section, nextText),
+        config.tasks.doc.required_sections,
+      );
+    }
+    const docChanged = normalizeTaskDoc(baseDocRaw) !== normalizeTaskDoc(nextDoc);
+    const shouldWrite = docChanged || updatedBy !== undefined;
+    if (shouldWrite) {
       await (useStore
         ? store!.update(opts.taskId, (current) => ({
             ...current,
-            doc: normalized,
+            doc: nextDoc,
             ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
           }))
-        : backend.setTaskDoc(opts.taskId, normalized, updatedBy));
+        : backend.setTaskDoc(opts.taskId, nextDoc, updatedBy));
     }
-    const updatedTask = useStore ? await store!.get(opts.taskId) : null;
-    const updatedDocRaw = useStore
-      ? String(updatedTask?.doc ?? "")
-      : ((await backend.getTaskDoc(opts.taskId)) ?? "");
-    const updatedDoc = ensureDocSections(updatedDocRaw, config.tasks.doc.required_sections);
-    const updatedSection = readSectionContent(updatedDoc, opts.section);
-    const docChanged = normalizeOutcomeText(baseDoc) !== normalizeOutcomeText(updatedDoc);
-    const sectionChanged = baseSection !== updatedSection;
+    const outcome: TaskDocSetOutcome = shouldWrite
+      ? requestMode === "full-doc"
+        ? "full-doc-updated"
+        : "section-updated"
+      : "no-change";
     const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
     process.stdout.write(`${path.join(tasksDir, opts.taskId, "README.md")}\n`);
-    if (!docChanged) {
-      process.stderr.write(
-        `${warnMessage(`task doc set wrote no effective README change for section ${opts.section}`)}\n`,
-      );
-    } else if (requestMode === "full-doc") {
-      process.stderr.write(
-        `${infoMessage(
-          `task doc set applied a full-doc update; target section ${opts.section} ${sectionChanged ? "changed" : "did not change"}`,
-        )}\n`,
-      );
-    } else {
-      process.stderr.write(
-        `${infoMessage(
-          `task doc set updated section ${opts.section}${sectionChanged ? "" : " (effective section content unchanged)"}`,
-        )}\n`,
-      );
-    }
+    const outcomeText = `task doc set outcome=${outcome} section=${opts.section}`;
+    process.stderr.write(
+      `${outcome === "no-change" ? warnMessage(outcomeText) : infoMessage(outcomeText)}\n`,
+    );
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

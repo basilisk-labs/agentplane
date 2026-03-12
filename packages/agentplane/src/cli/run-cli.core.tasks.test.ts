@@ -2090,7 +2090,7 @@ describe("runCli", () => {
       ]);
       expect(code2).toBe(0);
       expect(io2.stdout).toContain(path.join(root, ".agentplane", "tasks", id, "README.md"));
-      expect(io2.stderr).toContain("task doc set updated section Summary");
+      expect(io2.stderr).toContain("task doc set outcome=section-updated section=Summary");
     } finally {
       io2.restore();
     }
@@ -2585,6 +2585,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
+      expect(io.stderr).toContain("task doc set outcome=full-doc-updated section=Summary");
     } finally {
       io.restore();
     }
@@ -2598,6 +2599,75 @@ describe("runCli", () => {
     expect(verificationCount).toBe(1);
     expect(updated).toContain("Filled summary.");
     expect(updated).toContain("Filled scope.");
+  });
+
+  it("task doc set reports a stable no-change outcome when content is unchanged", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const taskId = "202601300003-ABCD";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+      "## Summary\n\nUnchanged summary\n",
+    );
+    const readmePath = path.join(taskDir, "README.md");
+    await writeFile(readmePath, readme, "utf8");
+
+    const ioSeed = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Summary",
+        "--text",
+        "Unchanged summary",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(ioSeed.stderr).toContain("task doc set outcome=section-updated section=Summary");
+    } finally {
+      ioSeed.restore();
+    }
+
+    const before = await readFile(readmePath, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Summary",
+        "--text",
+        "Unchanged summary",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stderr).toContain("task doc set outcome=no-change section=Summary");
+    } finally {
+      io.restore();
+    }
+
+    const after = await readFile(readmePath, "utf8");
+    expect(after).toBe(before);
   });
 
   it("task doc set fails when backend lacks doc support", async () => {
