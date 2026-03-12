@@ -1,7 +1,8 @@
 ---
 id: "202603121423-YD04ET"
 title: "Narrow stale-dist guard for test-only churn"
-status: "DOING"
+result_summary: "narrow stale-dist for test-only churn"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-12T14:49:58.030Z"
   updated_by: "CODER"
   note: "Stale-dist now ignores test-only source churn in both snapshot and legacy paths; targeted regressions, lint, and both package builds passed."
-commit: null
+commit:
+  hash: "d8eee276d7a1e9c68779abbfed51535b840cf083"
+  message: "🚧 YD04ET task: narrow stale-dist for test-only churn"
 comments:
   -
     author: "CODER"
     body: "Start: narrow stale-dist detection so test-only churn no longer blocks mutating commands."
+  -
+    author: "CODER"
+    body: "Verified: stale-dist now ignores test-only churn in both snapshot-backed and legacy manifest paths while real runtime drift still blocks."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Stale-dist now ignores test-only source churn in both snapshot and legacy paths; targeted regressions, lint, and both package builds passed."
+  -
+    type: "status"
+    at: "2026-03-12T14:50:34.358Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: stale-dist now ignores test-only churn in both snapshot-backed and legacy manifest paths while real runtime drift still blocks."
 doc_version: 3
-doc_updated_at: "2026-03-12T14:49:58.031Z"
+doc_updated_at: "2026-03-12T14:50:34.358Z"
 doc_updated_by: "CODER"
 description: "Treat test-only watched source changes as non-runtime so task-local mutators are not blocked by stale-dist when dist output itself is unaffected."
 id_source: "generated"
