@@ -121,4 +121,202 @@ describe("commands/shared/TaskStore", () => {
     const exported = snapshot.tasks.find((task) => task.id === taskId);
     expect(exported?.doc_version).toBe(3);
   });
+
+  it("rejects concurrent writes to the same README section via semantic patch preconditions", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-CONF";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    const initial = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-02-07T00:00:00Z",
+        doc_updated_by: "CODER",
+        description: "",
+      },
+      ["## Summary", "before", "", "## Plan", "plan", ""].join("\n"),
+    );
+    await writeFile(readmePath, `${initial}\n`, "utf8");
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    let didInterfere = false;
+    let expectedSummary: string | null | undefined;
+    await expect(
+      store.patch(taskId, async (current) => {
+        expectedSummary ??= /## Summary\s+before/u.test(String(current.doc ?? ""))
+          ? "before"
+          : null;
+        if (!didInterfere) {
+          didInterfere = true;
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          await writeFile(
+            readmePath,
+            `${renderTaskReadme(
+              {
+                id: taskId,
+                title: "Task",
+                status: "TODO",
+                priority: "med",
+                owner: "CODER",
+                depends_on: [],
+                tags: [],
+                verify: [],
+                plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+                verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+                comments: [],
+                doc_version: 3,
+                doc_updated_at: "2026-02-07T00:00:00Z",
+                doc_updated_by: "CODER",
+                description: "",
+              },
+              ["## Summary", "other writer", "", "## Plan", "plan", ""].join("\n"),
+            )}\n`,
+            "utf8",
+          );
+        }
+        return {
+          doc: {
+            kind: "set-section",
+            section: "Summary",
+            text: "my update",
+            requiredSections: ["Summary", "Plan"],
+            expectedCurrentText: expectedSummary,
+          },
+          docMeta: { touch: true, updatedBy: "CODER", version: 3 },
+        };
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_section_conflict", section: "Summary" },
+    });
+    expect(didInterfere).toBe(true);
+  });
+
+  it("preserves concurrent writes to other README sections when a semantic patch targets a different section", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-KEEP";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    const initial = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-02-07T00:00:00Z",
+        doc_updated_by: "CODER",
+        description: "",
+      },
+      ["## Summary", "before", "", "## Plan", "plan", ""].join("\n"),
+    );
+    await writeFile(readmePath, `${initial}\n`, "utf8");
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    let didInterfere = false;
+    let expectedSummary: string | null | undefined;
+    const result = await store.patch(taskId, async (current) => {
+      expectedSummary ??= /## Summary\s+before/u.test(String(current.doc ?? "")) ? "before" : null;
+      if (!didInterfere) {
+        didInterfere = true;
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        await writeFile(
+          readmePath,
+          `${renderTaskReadme(
+            {
+              id: taskId,
+              title: "Task",
+              status: "TODO",
+              priority: "med",
+              owner: "CODER",
+              depends_on: [],
+              tags: [],
+              verify: [],
+              plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+              verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+              comments: [],
+              doc_version: 3,
+              doc_updated_at: "2026-02-07T00:00:00Z",
+              doc_updated_by: "CODER",
+              description: "",
+            },
+            ["## Summary", "before", "", "## Plan", "concurrent plan", ""].join("\n"),
+          )}\n`,
+          "utf8",
+        );
+      }
+      return {
+        doc: {
+          kind: "set-section",
+          section: "Summary",
+          text: "my update",
+          requiredSections: ["Summary", "Plan"],
+          expectedCurrentText: expectedSummary,
+        },
+        docMeta: { touch: true, updatedBy: "CODER", version: 3 },
+      };
+    });
+
+    expect(result.changed).toBe(true);
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain("## Summary");
+    expect(final).toContain("my update");
+    expect(final).toContain("## Plan");
+    expect(final).toContain("concurrent plan");
+  });
+
+  it("merges append-safe semantic patches after concurrent retries", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-APPND";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(readmePath, baseReadme(taskId, "Task", 3), "utf8");
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    let didInterfere = false;
+    const result = await store.patch(taskId, async () => {
+      if (!didInterfere) {
+        didInterfere = true;
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        await store.update(taskId, (current) => ({
+          ...current,
+          comments: [...(current.comments ?? []), { author: "OTHER", body: "external" }],
+        }));
+      }
+      return {
+        appendComments: [{ author: "ME", body: "mine" }],
+        docMeta: { touch: true, updatedBy: "CODER", version: 3 },
+      };
+    });
+
+    expect(result.changed).toBe(true);
+    expect(result.task.comments).toEqual([
+      { author: "OTHER", body: "external" },
+      { author: "ME", body: "mine" },
+    ]);
+  });
 });
