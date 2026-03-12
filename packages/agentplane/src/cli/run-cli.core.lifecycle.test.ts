@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/consistent-type-imports */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { execFile } from "node:child_process";
 import { readFileSync } from "node:fs";
 import {
@@ -14,7 +14,7 @@ import {
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   defaultConfig,
@@ -41,41 +41,21 @@ import {
   createUpgradeBundle,
   getAgentplaneHome,
   gitBranchExists,
+  installRunCliIntegrationHarness,
   runCliSilent,
   mkGitRepoRoot,
   mkGitRepoRootWithBranch,
   mkTempDir,
   pathExists,
-  registerAgentplaneHome,
-  silenceStdIO,
   stageGitignoreIfPresent,
+  stubTaskBackend,
   writeConfig,
   writeDefaultConfig,
 } from "./run-cli.test-helpers.js";
 import { resolveUpdateCheckCachePath } from "./update-check.js";
 import * as prompts from "./prompts.js";
 
-registerAgentplaneHome();
-let restoreStdIO: (() => void) | null = null;
-
-beforeEach(() => {
-  restoreStdIO = silenceStdIO();
-});
-
-afterEach(() => {
-  restoreStdIO?.();
-  restoreStdIO = null;
-});
-
-function stubTaskBackend(overrides: Partial<taskBackend.TaskBackend>): taskBackend.TaskBackend {
-  return {
-    id: "local",
-    listTasks: vi.fn().mockResolvedValue([]),
-    getTask: vi.fn().mockResolvedValue(null),
-    writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
-    ...overrides,
-  };
-}
+installRunCliIntegrationHarness();
 
 async function approveTaskPlan(root: string, taskId: string): Promise<void> {
   const codeSet = await runCli([
