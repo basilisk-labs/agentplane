@@ -1,7 +1,8 @@
 ---
 id: "202603121125-SNMAT3"
 title: "Patch stabilization: harden close and recovery diagnostics"
-status: "DOING"
+result_summary: "Commit diagnostics now classify formatter and lint hook blockers into state-oriented recovery guidance."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-12T11:37:45.017Z"
   updated_by: "CODER"
   note: "Verified hook blocker classification in close and task commit diagnostics."
-commit: null
+commit:
+  hash: "50cbc3b19604a6534fc5ba8385b6213b8a295b97"
+  message: "🚧 SNMAT3 task: classify commit hook blockers in diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: classify formatter and lint hook blockers so close and task commit failures surface actionable likely-cause and next-action guidance instead of relying only on raw hook output."
+  -
+    author: "CODER"
+    body: "Verified: close and task commit failures now classify formatter and lint blockers into likely-cause and next-action guidance instead of relying only on raw hook output."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified hook blocker classification in close and task commit diagnostics."
+  -
+    type: "status"
+    at: "2026-03-12T11:38:32.004Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: close and task commit failures now classify formatter and lint blockers into likely-cause and next-action guidance instead of relying only on raw hook output."
 doc_version: 3
-doc_updated_at: "2026-03-12T11:37:45.018Z"
+doc_updated_at: "2026-03-12T11:38:32.004Z"
 doc_updated_by: "CODER"
 description: "Tighten remaining state-oriented diagnostics around finish close-commit and recovery paths where failures still rely too much on raw git or hook output."
 id_source: "generated"
