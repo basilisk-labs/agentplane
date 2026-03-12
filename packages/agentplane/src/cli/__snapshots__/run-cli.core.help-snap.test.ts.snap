@@ -170,7 +170,7 @@ Usage:
 Options:
   --section <name>  Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
   --full-doc  Treat the provided text/file as the full task README payload. (default=false)
-  --text <text>  Section content (mutually exclusive with --file).
+  --text <text>  Section content (mutually exclusive with --file). Literal escaped newlines (\\n) are normalized for inline text.
   --file <path>  Read section content from a file (mutually exclusive with --text).
   --updated-by <id>  Optional. Override doc_updated_by metadata (must be non-empty).
 "

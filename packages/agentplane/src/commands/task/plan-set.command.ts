@@ -21,7 +21,7 @@ export const taskPlanSetSpec: CommandSpec<TaskPlanSetParsed> = {
       kind: "string",
       name: "text",
       valueHint: "<text>",
-      description: "Plan text to write into the task README Plan section.",
+      description: String.raw`Plan text to write into the task README Plan section. Literal escaped newlines (\n) are normalized for inline text.`,
     },
     {
       kind: "string",

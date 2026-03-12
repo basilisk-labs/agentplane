@@ -121,6 +121,51 @@ describe("runCli", () => {
     expect(updated).toContain("## Verification");
   });
 
+  it("task doc set decodes escaped inline newlines from CLI arguments", async () => {
+    const root = await writeAndConfigureRoot();
+    const taskId = "202601300001-EFGH";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    await mkdir(taskDir, { recursive: true });
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        description: "",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+      },
+      "## Summary\n\nOld summary\n\n## Scope\n\nscope\n\n## Verification\n\n",
+    );
+    await writeFile(path.join(taskDir, "README.md"), readme, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Summary",
+        "--text",
+        String.raw`Line one\nLine two`,
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+    } finally {
+      io.restore();
+    }
+
+    const updated = await readFile(path.join(taskDir, "README.md"), "utf8");
+    expect(updated).toContain("Line one\nLine two");
+    expect(updated).not.toContain(String.raw`Line one\nLine two`);
+  });
+
   it("task doc set dedupes repeated section headings", async () => {
     const root = await writeAndConfigureRoot();
     const taskId = "202601300002-ABCD";

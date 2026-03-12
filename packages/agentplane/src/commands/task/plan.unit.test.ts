@@ -328,6 +328,48 @@ describe("task plan commands (unit)", () => {
     writeSpy.mockRestore();
   });
 
+  it("cmdTaskPlanSet decodes escaped inline newlines before writing the plan", async () => {
+    let currentTask = mkTask({
+      doc: [
+        "## Summary",
+        "Summary",
+        "",
+        "## Plan",
+        "Old plan",
+        "",
+        "## Verify Steps",
+        "Run checks",
+        "",
+        "## Notes",
+        "n/a",
+      ].join("\n"),
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(currentTask),
+      update: vi
+        .fn()
+        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
+          currentTask = updater(currentTask);
+          return { changed: true, task: currentTask };
+        }),
+    };
+    const ctx = mkCtx();
+    mockBackendIsLocalFileBackend.mockReturnValue(true);
+    mockGetTaskStore.mockReturnValue(store);
+
+    const { cmdTaskPlanSet } = await import("./plan.js");
+    const rc = await cmdTaskPlanSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      text: String.raw`1. Do X\n2. Verify Y`,
+    });
+
+    expect(rc).toBe(0);
+    expect(currentTask.doc).toContain("1. Do X\n2. Verify Y");
+    expect(currentTask.doc).not.toContain(String.raw`1. Do X\n2. Verify Y`);
+  });
+
   it("cmdTaskPlanSet preserves fresher README sections when store update sees newer task data", async () => {
     const writes: string[] = [];
     const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {

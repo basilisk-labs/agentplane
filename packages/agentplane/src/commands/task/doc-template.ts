@@ -1,16 +1,11 @@
 import { setMarkdownSection } from "@agentplaneorg/core";
 
+import { decodeEscapedTaskTextNewlines } from "./shared/docs.js";
+
 export const TASK_DOC_VERSION_V3 = 3;
 
 function normalizeTaskHumanText(text: string): string {
-  let next = text.replaceAll("\r\n", "\n");
-  const escapedDoubleNewline =
-    next.includes(String.raw`\n\n`) || next.includes(String.raw`\r\n\r\n`);
-  const escapedNewlineMatches = next.match(/\\n/g) ?? [];
-  if (escapedDoubleNewline || escapedNewlineMatches.length >= 2) {
-    next = next.replaceAll(String.raw`\r\n`, "\n").replaceAll(String.raw`\n`, "\n");
-  }
-  return next.trim();
+  return decodeEscapedTaskTextNewlines(text).trim();
 }
 
 function normalizeTaskHumanInlineText(text: string): string {

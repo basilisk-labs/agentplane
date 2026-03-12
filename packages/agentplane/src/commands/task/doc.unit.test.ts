@@ -136,4 +136,47 @@ describe("task doc commands (unit)", () => {
     stdoutSpy.mockRestore();
     stderrSpy.mockRestore();
   });
+
+  it("cmdTaskDocSet decodes escaped inline newlines before writing the section", async () => {
+    let currentTask = mkTask({
+      doc: [
+        "## Summary",
+        "Old summary",
+        "",
+        "## Plan",
+        "Plan stays",
+        "",
+        "## Verify Steps",
+        "Run checks",
+        "",
+        "## Findings",
+        "",
+      ].join("\n"),
+    });
+    const store = {
+      update: vi
+        .fn()
+        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
+          currentTask = updater(currentTask);
+          return { changed: true, task: currentTask };
+        }),
+    };
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    const rc = await cmdTaskDocSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      section: "Summary",
+      text: String.raw`Line one\nLine two`,
+      fullDoc: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(currentTask.doc).toContain("Line one\nLine two");
+    expect(currentTask.doc).not.toContain(String.raw`Line one\nLine two`);
+  });
 });

@@ -2073,7 +2073,7 @@ Options:
 
 - `--section <name>`: Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
 - `--full-doc`: Treat the provided text/file as the full task README payload. (default=false)
-- `--text <text>`: Section content (mutually exclusive with --file).
+- `--text <text>`: Section content (mutually exclusive with --file). Literal escaped newlines (\n) are normalized for inline text.
 - `--file <path>`: Read section content from a file (mutually exclusive with --text).
 - `--updated-by <id>`: Optional. Override doc_updated_by metadata (must be non-empty).
 
@@ -2445,7 +2445,7 @@ agentplane task plan set <task-id> [options]
 
 Options:
 
-- `--text <text>`: Plan text to write into the task README Plan section.
+- `--text <text>`: Plan text to write into the task README Plan section. Literal escaped newlines (\n) are normalized for inline text.
 - `--file <path>`: Read plan text from a file path (relative to cwd).
 - `--updated-by <id>`: Optional. Sets doc_updated_by when writing the plan.
 

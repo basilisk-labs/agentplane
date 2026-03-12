@@ -20,6 +20,8 @@ import { CliError } from "../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
+import { decodeEscapedTaskTextNewlines } from "./shared.js";
+
 type TaskDocSetOutcome = "section-updated" | "full-doc-updated" | "no-change";
 
 function buildUpdatedTaskDoc(opts: {
@@ -89,6 +91,9 @@ export async function cmdTaskDocSet(opts: {
   }
 
   let text = opts.text ?? "";
+  if (hasText) {
+    text = decodeEscapedTaskTextNewlines(text);
+  }
   if (hasFile) {
     try {
       text = await readFile(path.resolve(opts.cwd, opts.file ?? ""), "utf8");

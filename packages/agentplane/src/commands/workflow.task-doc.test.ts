@@ -182,6 +182,23 @@ describe("commands/workflow", () => {
     expect(text).toContain('state: "pending"');
   });
 
+  it("task plan set decodes escaped inline newlines", async () => {
+    const root = await makeRepo();
+    const taskId = "202602060840-P1A4";
+    await addTask(root, taskId);
+
+    await cmdTaskPlanSet({
+      cwd: root,
+      taskId,
+      text: String.raw`1. Do X\n2. Verify Y`,
+    });
+
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    const text = await readFile(readmePath, "utf8");
+    expect(text).toContain("1. Do X\n2. Verify Y");
+    expect(text).not.toContain(String.raw`1. Do X\n2. Verify Y`);
+  });
+
   it("task plan approve rejects when plan is empty", async () => {
     const root = await makeRepo();
     const taskId = "202602060840-P1A2";

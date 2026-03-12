@@ -14,6 +14,14 @@ export const VERIFICATION_RESULTS_BEGIN = "<!-- BEGIN VERIFICATION RESULTS -->";
 export const VERIFICATION_RESULTS_END = "<!-- END VERIFICATION RESULTS -->";
 export type TaskDocVersion = 2 | 3;
 
+export function decodeEscapedTaskTextNewlines(text: string): string {
+  const normalized = text.replaceAll("\r\n", "\n");
+  if (!normalized.includes(String.raw`\n`) && !normalized.includes(String.raw`\r\n`)) {
+    return normalized;
+  }
+  return normalized.replaceAll(String.raw`\r\n`, "\n").replaceAll(String.raw`\n`, "\n");
+}
+
 export function extractDocSection(doc: string, sectionName: string): string | null {
   const lines = doc.replaceAll("\r\n", "\n").split("\n");
   let capturing = false;

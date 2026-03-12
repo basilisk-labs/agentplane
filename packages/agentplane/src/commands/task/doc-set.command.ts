@@ -40,7 +40,7 @@ export const taskDocSetSpec: CommandSpec<TaskDocSetParsed> = {
       kind: "string",
       name: "text",
       valueHint: "<text>",
-      description: "Section content (mutually exclusive with --file).",
+      description: String.raw`Section content (mutually exclusive with --file). Literal escaped newlines (\n) are normalized for inline text.`,
     },
     {
       kind: "string",

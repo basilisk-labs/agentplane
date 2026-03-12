@@ -24,6 +24,7 @@ import { exportTaskProjectionSnapshot, loadCommandContext } from "../shared/task
 import {
   extractDocSection,
   extractTaskObservationSection,
+  decodeEscapedTaskTextNewlines,
   normalizeTaskDocVersion,
   normalizeVerificationSectionLayout,
   type TaskDocVersion,
@@ -92,14 +93,7 @@ function renderMarkdownSections(sections: MarkdownSection[]): string {
 
 function normalizeLiteralNewlinesInHumanSection(title: string, text: string): string {
   if (!HUMAN_TEXT_SECTIONS.has(normalizeSectionKey(title))) return text.trimEnd();
-  let next = text.replaceAll("\r\n", "\n");
-  const escapedDoubleNewline =
-    next.includes(String.raw`\n\n`) || next.includes(String.raw`\r\n\r\n`);
-  const escapedNewlineMatches = next.match(/\\n/g) ?? [];
-  if (escapedDoubleNewline || escapedNewlineMatches.length >= 2) {
-    next = next.replaceAll(String.raw`\r\n`, "\n").replaceAll(String.raw`\n`, "\n");
-  }
-  return next.trimEnd();
+  return decodeEscapedTaskTextNewlines(text).trimEnd();
 }
 
 function firstSectionText(sections: MarkdownSection[], title: string): string | null {

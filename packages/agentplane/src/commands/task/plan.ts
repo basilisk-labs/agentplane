@@ -15,6 +15,7 @@ import {
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 
 import {
+  decodeEscapedTaskTextNewlines,
   ensureAgentFilledRequiredDocSections,
   extractDocSection,
   extractTaskObservationSection,
@@ -128,6 +129,9 @@ export async function cmdTaskPlanSet(opts: {
     }
 
     let text = opts.text ?? "";
+    if (hasText) {
+      text = decodeEscapedTaskTextNewlines(text);
+    }
     if (hasFile) {
       try {
         text = await readFile(path.resolve(opts.cwd, opts.file ?? ""), "utf8");

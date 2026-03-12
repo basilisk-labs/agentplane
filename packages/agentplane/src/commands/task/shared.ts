@@ -1,6 +1,7 @@
 export { dedupeStrings } from "../../shared/strings.js";
 
 export {
+  decodeEscapedTaskTextNewlines,
   nowIso,
   normalizeTaskDocVersion,
   taskObservationSectionName,
