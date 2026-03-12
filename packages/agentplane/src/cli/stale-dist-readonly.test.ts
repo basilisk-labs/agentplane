@@ -149,6 +149,23 @@ describe("stale-dist read-only diagnostics", () => {
     expect(stderr).toContain("command: task list");
   });
 
+  it("warns but runs task doc show when watched runtime paths are dirty", async () => {
+    const { repoRoot, repoBin } = await setupFrameworkCheckout();
+
+    const { stdout, stderr } = await execFileAsync(
+      process.execPath,
+      [repoBin, "task", "doc", "show", "20260307-ABC123"],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+      },
+    );
+
+    expect(stdout).toContain("DIST");
+    expect(stdout).toContain('"args":["task","doc","show","20260307-ABC123"]');
+    expect(stderr).toContain("command: task doc show 20260307-ABC123");
+  });
+
   it("still blocks strict mutating commands when watched runtime paths are dirty", async () => {
     const { repoRoot, repoBin } = await setupFrameworkCheckout();
 

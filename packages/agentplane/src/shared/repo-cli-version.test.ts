@@ -55,7 +55,9 @@ describe("repo-cli-version", () => {
     );
     expect(expectation.state).toBe("older_than_expected");
     expect(expectation.summary).toContain("expects agentplane 0.3.3");
-    expect(expectation.recovery).toBe("Run: npm i -g agentplane@0.3.3");
+    expect(expectation.recovery).toBe(
+      "Run: npm i -g agentplane@0.3.3. Then verify: agentplane runtime explain",
+    );
   });
 
   it("uses the reinstall helper for global binaries inside a framework checkout", () => {
@@ -86,6 +88,10 @@ describe("repo-cli-version", () => {
       }),
     );
     expect(expectation.state).toBe("older_than_expected");
-    expect(expectation.recovery).toBe("Run: scripts/reinstall-global-agentplane.sh");
+    expect(expectation.recovery).toContain("Run: scripts/reinstall-global-agentplane.sh");
+    expect(expectation.recovery).toContain(
+      "Fallback: node packages/agentplane/bin/agentplane.js runtime explain",
+    );
+    expect(expectation.recovery).toContain("Then verify: agentplane runtime explain");
   });
 });

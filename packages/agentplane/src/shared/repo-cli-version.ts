@@ -27,17 +27,26 @@ export function getRepoExpectedCliVersion(config: AgentplaneConfig): string | nu
 function buildRecovery(runtime: RuntimeSourceInfo, expectedVersion: string): string {
   switch (runtime.mode) {
     case "global-installed": {
-      return `Run: npm i -g agentplane@${expectedVersion}`;
+      return `Run: npm i -g agentplane@${expectedVersion}. Then verify: agentplane runtime explain`;
     }
     case "global-in-framework":
     case "global-forced-in-framework": {
-      return "Run: scripts/reinstall-global-agentplane.sh";
+      const prefix =
+        runtime.mode === "global-forced-in-framework"
+          ? "Unset AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1 if forced global mode is not intentional. "
+          : "";
+      return (
+        `${prefix}Run: scripts/reinstall-global-agentplane.sh. ` +
+        "Fallback: node packages/agentplane/bin/agentplane.js runtime explain. " +
+        "Then verify: agentplane runtime explain"
+      );
     }
     case "repo-local":
     case "repo-local-handoff": {
       return (
         `Sync this framework checkout to agentplane ${expectedVersion} or lower ` +
-        "framework.cli.expected_version if the repository intentionally targets an older CLI."
+        "framework.cli.expected_version if the repository intentionally targets an older CLI. " +
+        "Then verify: agentplane runtime explain"
       );
     }
   }

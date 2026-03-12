@@ -21,11 +21,17 @@ function isConfigInspectionCommand(args) {
 }
 
 function isTaskInspectionCommand(args) {
-  return args[0] === "task" && ["list", "show", "verify-show"].includes(args[1] ?? "");
+  if (args[0] !== "task") return false;
+  if (["list", "show", "verify-show", "next", "search"].includes(args[1] ?? "")) return true;
+  return args[1] === "doc" && args[2] === "show";
 }
 
 function isRoleOrQuickstartCommand(args) {
   return args[0] === "quickstart" || args[0] === "role";
+}
+
+function isReadyInspectionCommand(args) {
+  return args[0] === "ready";
 }
 
 export function classifyStaleDistPolicy(argv = process.argv) {
@@ -36,7 +42,8 @@ export function classifyStaleDistPolicy(argv = process.argv) {
     isHelpOrVersionCommand(args) ||
     isRoleOrQuickstartCommand(args) ||
     isConfigInspectionCommand(args) ||
-    isTaskInspectionCommand(args)
+    isTaskInspectionCommand(args) ||
+    isReadyInspectionCommand(args)
   ) {
     return { mode: "warn_and_run", reason: "read_only_diagnostic" };
   }

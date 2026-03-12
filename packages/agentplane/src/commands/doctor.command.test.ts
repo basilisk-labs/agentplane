@@ -875,6 +875,7 @@ describe("doctor.command", () => {
       const output = stderr.mock.calls.flat().join("\n");
       expect(output).toContain("expects agentplane 9.9.9");
       expect(output).toContain("Run: npm i -g agentplane@9.9.9");
+      expect(output).toContain("Then verify: agentplane runtime explain");
     } finally {
       stderr.mockRestore();
     }
@@ -950,6 +951,7 @@ describe("doctor.command", () => {
       expect(rc).toBe(0);
       const output = stderr.mock.calls.flat().join("\n");
       expect(output).toContain("Framework checkout is forcing the global installed binary");
+      expect(output).toContain("Unset it unless that override is intentional");
       expect(output).toContain("Runtime mode: global-forced-in-framework");
     } finally {
       if (prevActiveBin === undefined) delete process.env.AGENTPLANE_RUNTIME_ACTIVE_BIN;

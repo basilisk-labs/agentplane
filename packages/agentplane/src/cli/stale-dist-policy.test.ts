@@ -30,6 +30,24 @@ describe("stale-dist command policy", () => {
       mode: "warn_and_run",
       reason: "read_only_diagnostic",
     });
+    expect(
+      classifyStaleDistPolicy(["node", "agentplane", "task", "doc", "show", "20260307-ABC123"]),
+    ).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "task", "next"])).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "task", "search", "cli"])).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "ready", "20260307-ABC123"])).toEqual({
+      mode: "warn_and_run",
+      reason: "read_only_diagnostic",
+    });
     expect(classifyStaleDistPolicy(["node", "agentplane", "config", "show"])).toEqual({
       mode: "warn_and_run",
       reason: "read_only_diagnostic",
@@ -46,6 +64,10 @@ describe("stale-dist command policy", () => {
 
   it("keeps mutating commands strict", () => {
     expect(classifyStaleDistPolicy(["node", "agentplane", "task", "doc", "set"])).toEqual({
+      mode: "strict",
+      reason: "default",
+    });
+    expect(classifyStaleDistPolicy(["node", "agentplane", "task", "plan", "set"])).toEqual({
       mode: "strict",
       reason: "default",
     });
