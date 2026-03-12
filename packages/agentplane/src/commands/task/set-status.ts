@@ -158,7 +158,45 @@ export async function cmdTaskSetStatus(opts: {
       const commitInfo = await readCommitInfo(resolved.gitRoot, opts.commit);
       next.commit = { hash: commitInfo.hash, message: commitInfo.message };
     }
-    await (useStore ? store!.update(opts.taskId, () => next) : ctx.taskBackend.writeTask(next));
+    await (useStore
+      ? store!.update(opts.taskId, (current) => {
+          const currentExistingComments = Array.isArray(current.comments)
+            ? current.comments.filter(
+                (item): item is { author: string; body: string } =>
+                  !!item && typeof item.author === "string" && typeof item.body === "string",
+              )
+            : [];
+          let currentComments = currentExistingComments;
+          let currentCommentBody: string | undefined;
+          if (opts.author && opts.body) {
+            currentCommentBody = opts.commitFromComment
+              ? formatCommentBodyForCommit(opts.body, config)
+              : opts.body;
+            currentComments = [
+              ...currentExistingComments,
+              { author: opts.author, body: currentCommentBody },
+            ];
+          }
+          const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
+          return {
+            ...current,
+            status: nextStatus,
+            comments: currentComments,
+            events: appendTaskEvent(current, {
+              type: "status",
+              at,
+              author: currentEventAuthor,
+              from: String(current.status || "TODO").toUpperCase(),
+              to: nextStatus,
+              note: currentCommentBody,
+            }),
+            doc_version: normalizeTaskDocVersion(current.doc_version),
+            doc_updated_at: at,
+            doc_updated_by: currentEventAuthor,
+            ...(opts.commit ? { commit: next.commit } : {}),
+          };
+        })
+      : ctx.taskBackend.writeTask(next));
 
     // tasks.json is export-only; generated via `agentplane task export`.
 

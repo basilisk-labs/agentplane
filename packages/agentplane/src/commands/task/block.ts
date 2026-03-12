@@ -1,4 +1,3 @@
-import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { invalidValueMessage, successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
@@ -97,25 +96,51 @@ export async function cmdBlock(opts: {
       : [];
     const commentsValue = [...existingComments, { author: opts.author, body: commentBody }];
     const at = nowIso();
-    const nextTask: TaskData = {
-      ...task,
-      status: "BLOCKED",
-      comments: commentsValue,
-      events: appendTaskEvent(task, {
-        type: "status",
-        at,
-        author: opts.author,
-        from: currentStatus,
-        to: "BLOCKED",
-        note: commentBody,
-      }),
-      doc_version: normalizeTaskDocVersion(task.doc_version),
-      doc_updated_at: at,
-      doc_updated_by: opts.author,
-    };
     await (useStore
-      ? store!.update(opts.taskId, () => nextTask)
-      : ctx.taskBackend.writeTask(nextTask));
+      ? store!.update(opts.taskId, (current) => {
+          const currentExistingComments = Array.isArray(current.comments)
+            ? current.comments.filter(
+                (item): item is { author: string; body: string } =>
+                  !!item && typeof item.author === "string" && typeof item.body === "string",
+              )
+            : [];
+          const currentCommentsValue = [
+            ...currentExistingComments,
+            { author: opts.author, body: commentBody },
+          ];
+          return {
+            ...current,
+            status: "BLOCKED",
+            comments: currentCommentsValue,
+            events: appendTaskEvent(current, {
+              type: "status",
+              at,
+              author: opts.author,
+              from: String(current.status || "TODO").toUpperCase(),
+              to: "BLOCKED",
+              note: commentBody,
+            }),
+            doc_version: normalizeTaskDocVersion(current.doc_version),
+            doc_updated_at: at,
+            doc_updated_by: opts.author,
+          };
+        })
+      : ctx.taskBackend.writeTask({
+          ...task,
+          status: "BLOCKED",
+          comments: commentsValue,
+          events: appendTaskEvent(task, {
+            type: "status",
+            at,
+            author: opts.author,
+            from: currentStatus,
+            to: "BLOCKED",
+            note: commentBody,
+          }),
+          doc_version: normalizeTaskDocVersion(task.doc_version),
+          doc_updated_at: at,
+          doc_updated_by: opts.author,
+        }));
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {

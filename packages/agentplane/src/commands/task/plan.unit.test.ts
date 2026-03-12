@@ -327,4 +327,77 @@ describe("task plan commands (unit)", () => {
 
     writeSpy.mockRestore();
   });
+
+  it("cmdTaskPlanSet preserves fresher README sections when store update sees newer task data", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const staleTask = mkTask({
+      doc: [
+        "## Summary",
+        "Stale summary",
+        "",
+        "## Plan",
+        "Old plan",
+        "",
+        "## Verify Steps",
+        "Old verify steps",
+        "",
+        "## Notes",
+        "Stale notes",
+      ].join("\n"),
+    });
+    let currentTask = mkTask({
+      doc: [
+        "## Summary",
+        "Concurrent summary",
+        "",
+        "## Plan",
+        "Old plan",
+        "",
+        "## Verify Steps",
+        "Concurrent verify steps",
+        "",
+        "## Notes",
+        "Concurrent notes",
+      ].join("\n"),
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      update: vi
+        .fn()
+        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
+          currentTask = updater(currentTask);
+          return { changed: true, task: currentTask };
+        }),
+    };
+    const ctx = mkCtx();
+    mockBackendIsLocalFileBackend.mockReturnValue(true);
+    mockGetTaskStore.mockReturnValue(store);
+
+    const { cmdTaskPlanSet } = await import("./plan.js");
+    const rc = await cmdTaskPlanSet({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      text: "New plan text",
+      updatedBy: "ME",
+    });
+
+    expect(rc).toBe(0);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
+    expect(currentTask.plan_approval?.state).toBe("pending");
+    expect(currentTask.doc_updated_by).toBe("ME");
+    expect(currentTask.doc).toMatch(/## Summary\s+Concurrent summary/);
+    expect(currentTask.doc).toMatch(/## Plan\s+New plan text/);
+    expect(currentTask.doc).toMatch(/## Verify Steps\s+Concurrent verify steps/);
+    expect(currentTask.doc).toMatch(/## Notes\s+Concurrent notes/);
+    expect(writes.join("")).toContain("/repo/.agentplane/tasks/T-1/README.md");
+
+    writeSpy.mockRestore();
+  });
 });

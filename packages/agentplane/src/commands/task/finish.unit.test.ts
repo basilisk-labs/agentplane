@@ -284,10 +284,12 @@ describe("task finish (unit)", () => {
     const task = mkTask({ id: "T-1", tags: ["meta"] });
     const store = {
       get: vi.fn().mockResolvedValue(task),
-      update: vi.fn().mockImplementation((_taskId: string, updater: () => TaskData) => {
-        updater();
-        return Promise.resolve();
-      }),
+      update: vi
+        .fn()
+        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
+          updater(task);
+          return Promise.resolve();
+        }),
     };
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
@@ -386,10 +388,12 @@ describe("task finish (unit)", () => {
     const task = mkTask({ id: "T-1", tags: ["meta"] });
     const store = {
       get: vi.fn().mockResolvedValue(task),
-      update: vi.fn().mockImplementation((_taskId: string, updater: () => TaskData) => {
-        updater();
-        return Promise.resolve();
-      }),
+      update: vi
+        .fn()
+        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
+          updater(task);
+          return Promise.resolve();
+        }),
     };
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
@@ -426,10 +430,12 @@ describe("task finish (unit)", () => {
     const task = mkTask({ id: "T-1", tags: ["meta"] });
     const store = {
       get: vi.fn().mockResolvedValue(task),
-      update: vi.fn().mockImplementation((_taskId: string, updater: () => TaskData) => {
-        updater();
-        return Promise.resolve();
-      }),
+      update: vi
+        .fn()
+        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
+          updater(task);
+          return Promise.resolve();
+        }),
     };
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
@@ -892,6 +898,108 @@ describe("task finish (unit)", () => {
     expect(writes.join("")).toContain("finished");
 
     writeSpy.mockRestore();
+  });
+
+  it("preserves fresher README content and comments when store update sees newer task data", async () => {
+    const staleTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      comments: [{ author: "OLD", body: "stale comment" }],
+      doc: [
+        "## Summary",
+        "Stale summary",
+        "",
+        "## Scope",
+        "scope",
+        "",
+        "## Plan",
+        "plan",
+        "",
+        "## Risks",
+        "Low",
+        "",
+        "## Verification",
+        "done",
+        "",
+        "## Rollback Plan",
+        "rollback",
+      ].join("\n"),
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      comments: [{ author: "CURRENT", body: "fresh comment" }],
+      doc: [
+        "## Summary",
+        "Concurrent summary",
+        "",
+        "## Scope",
+        "scope",
+        "",
+        "## Plan",
+        "plan",
+        "",
+        "## Risks",
+        "Low",
+        "",
+        "## Verification",
+        "done",
+        "",
+        "## Rollback Plan",
+        "rollback",
+      ].join("\n"),
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      update: vi
+        .fn()
+        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
+          currentTask = updater(currentTask);
+          return { changed: true, task: currentTask };
+        }),
+    };
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "done",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
+    expect(currentTask.status).toBe("DONE");
+    expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
+    expect(currentTask.comments).toEqual([
+      { author: "CURRENT", body: "fresh comment" },
+      { author: "A", body: "Verified: this is long enough" },
+    ]);
+    expect(currentTask.comments).not.toEqual(
+      expect.arrayContaining([{ author: "OLD", body: "stale comment" }]),
+    );
   });
 
   it("propagates E_VALIDATION when require_verify=true and task is not verified", async () => {

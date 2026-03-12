@@ -66,6 +66,25 @@ function normalizeForComparison(text: string): string {
   return text.replaceAll("\r\n", "\n").trim();
 }
 
+function buildPlanDocUpdate(opts: {
+  currentDocRaw: string;
+  text: string;
+  requiredSections: string[];
+}): { planChanged: boolean; docChanged: boolean; nextDoc: string } {
+  const baseDoc = ensureDocSections(opts.currentDocRaw ?? "", opts.requiredSections);
+  const currentPlan = extractDocSection(baseDoc, "Plan") ?? "";
+  const planChanged = normalizeForComparison(currentPlan) !== normalizeForComparison(opts.text);
+  const nextDoc = ensureDocSections(
+    setMarkdownSection(baseDoc, "Plan", opts.text),
+    opts.requiredSections,
+  );
+  return {
+    planChanged,
+    docChanged: nextDoc !== baseDoc,
+    nextDoc,
+  };
+}
+
 export async function cmdTaskPlanSet(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -117,33 +136,48 @@ export async function cmdTaskPlanSet(opts: {
       }
     }
 
-    const existingDoc = useStore
-      ? String(task.doc ?? "")
-      : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-    const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-    const currentPlan = extractDocSection(baseDoc, "Plan") ?? "";
-    const planChanged = normalizeForComparison(currentPlan) !== normalizeForComparison(text);
-    const nextDoc = ensureDocSections(
-      setMarkdownSection(baseDoc, "Plan", text),
-      config.tasks.doc.required_sections,
-    );
-    const docChanged = nextDoc !== baseDoc;
-
     const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");
-    if (!planChanged && !docChanged && !updatedBy) {
-      process.stdout.write(`${readmePath}\n`);
-      return 0;
+    if (useStore) {
+      await store!.update(opts.taskId, (current) => {
+        const { planChanged, docChanged, nextDoc } = buildPlanDocUpdate({
+          currentDocRaw: String(current.doc ?? ""),
+          text,
+          requiredSections: config.tasks.doc.required_sections,
+        });
+        if (!planChanged && !docChanged && !updatedBy) return current;
+        return {
+          ...current,
+          doc: nextDoc,
+          ...(planChanged
+            ? {
+                plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+              }
+            : {}),
+          ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
+        };
+      });
+    } else {
+      const existingDoc =
+        (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+      const { planChanged, docChanged, nextDoc } = buildPlanDocUpdate({
+        currentDocRaw: existingDoc,
+        text,
+        requiredSections: config.tasks.doc.required_sections,
+      });
+      if (!planChanged && !docChanged && !updatedBy) {
+        process.stdout.write(`${readmePath}\n`);
+        return 0;
+      }
+      const nextTask: TaskData = {
+        ...task,
+        doc: nextDoc,
+        ...(planChanged
+          ? { plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null } }
+          : {}),
+        ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
+      };
+      await backend.writeTask(nextTask);
     }
-
-    const nextTask: TaskData = {
-      ...task,
-      doc: nextDoc,
-      ...(planChanged
-        ? { plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null } }
-        : {}),
-      ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
-    };
-    await (useStore ? store!.update(opts.taskId, () => nextTask) : backend.writeTask(nextTask));
 
     process.stdout.write(`${readmePath}\n`);
     return 0;
@@ -237,16 +271,26 @@ export async function cmdTaskPlanApprove(opts: {
       }
     }
 
-    const nextTask: TaskData = {
-      ...task,
-      plan_approval: {
-        state: "approved" as PlanApprovalState,
-        updated_at: nowIso(),
-        updated_by: by,
-        note: note || null,
-      },
-    };
-    await (useStore ? store!.update(opts.taskId, () => nextTask) : backend.writeTask(nextTask));
+    const approvedAt = nowIso();
+    await (useStore
+      ? store!.update(opts.taskId, (current) => ({
+          ...current,
+          plan_approval: {
+            state: "approved" as PlanApprovalState,
+            updated_at: approvedAt,
+            updated_by: by,
+            note: note || null,
+          },
+        }))
+      : backend.writeTask({
+          ...task,
+          plan_approval: {
+            state: "approved" as PlanApprovalState,
+            updated_at: approvedAt,
+            updated_by: by,
+            note: note || null,
+          },
+        }));
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -301,16 +345,26 @@ export async function cmdTaskPlanReject(opts: {
       });
     }
 
-    const nextTask: TaskData = {
-      ...task,
-      plan_approval: {
-        state: "rejected" as PlanApprovalState,
-        updated_at: nowIso(),
-        updated_by: by,
-        note: note || null,
-      },
-    };
-    await (useStore ? store!.update(opts.taskId, () => nextTask) : backend.writeTask(nextTask));
+    const rejectedAt = nowIso();
+    await (useStore
+      ? store!.update(opts.taskId, (current) => ({
+          ...current,
+          plan_approval: {
+            state: "rejected" as PlanApprovalState,
+            updated_at: rejectedAt,
+            updated_by: by,
+            note: note || null,
+          },
+        }))
+      : backend.writeTask({
+          ...task,
+          plan_approval: {
+            state: "rejected" as PlanApprovalState,
+            updated_at: rejectedAt,
+            updated_by: by,
+            note: note || null,
+          },
+        }));
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

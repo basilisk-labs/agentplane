@@ -253,38 +253,75 @@ export async function cmdFinish(opts: {
         }
       }
 
-      const existingComments = Array.isArray(task.comments)
-        ? task.comments.filter(
-            (item): item is { author: string; body: string } =>
-              !!item && typeof item.author === "string" && typeof item.body === "string",
-          )
-        : [];
-      const commentsValue = [...existingComments, { author: opts.author, body: opts.body }];
       const at = nowIso();
-      const nextTask: TaskData = {
-        ...task,
-        status: "DONE",
-        commit: { hash: commitInfo.hash, message: commitInfo.message },
-        comments: commentsValue,
-        events: appendTaskEvent(task, {
-          type: "status",
-          at,
-          author: opts.author,
-          from: String(task.status || "TODO").toUpperCase(),
-          to: "DONE",
-          note: opts.body,
-        }),
-        result_summary:
-          taskId === metaTaskId && resultSummary ? resultSummary : task.result_summary,
-        risk_level: taskId === metaTaskId && riskLevel ? riskLevel : task.risk_level,
-        breaking: taskId === metaTaskId && breaking ? true : task.breaking,
-        doc_version: normalizeTaskDocVersion(task.doc_version),
-        doc_updated_at: at,
-        doc_updated_by: opts.author,
-      };
-      await (useStore
-        ? store!.update(taskId, () => nextTask)
-        : ctx.taskBackend.writeTask(nextTask));
+      if (useStore) {
+        await store!.update(taskId, (current) => {
+          const currentStatus = String(current.status || "TODO").toUpperCase();
+          if (!opts.force && currentStatus === "DONE") {
+            throw new CliError({
+              exitCode: 2,
+              code: "E_USAGE",
+              message: `Task is already DONE: ${current.id} (use --force to override)`,
+            });
+          }
+          const existingComments = Array.isArray(current.comments)
+            ? current.comments.filter(
+                (item): item is { author: string; body: string } =>
+                  !!item && typeof item.author === "string" && typeof item.body === "string",
+              )
+            : [];
+          return {
+            ...current,
+            status: "DONE",
+            commit: { hash: commitInfo.hash, message: commitInfo.message },
+            comments: [...existingComments, { author: opts.author, body: opts.body }],
+            events: appendTaskEvent(current, {
+              type: "status",
+              at,
+              author: opts.author,
+              from: currentStatus,
+              to: "DONE",
+              note: opts.body,
+            }),
+            result_summary:
+              taskId === metaTaskId && resultSummary ? resultSummary : current.result_summary,
+            risk_level: taskId === metaTaskId && riskLevel ? riskLevel : current.risk_level,
+            breaking: taskId === metaTaskId && breaking ? true : current.breaking,
+            doc_version: normalizeTaskDocVersion(current.doc_version),
+            doc_updated_at: at,
+            doc_updated_by: opts.author,
+          };
+        });
+      } else {
+        const existingComments = Array.isArray(task.comments)
+          ? task.comments.filter(
+              (item): item is { author: string; body: string } =>
+                !!item && typeof item.author === "string" && typeof item.body === "string",
+            )
+          : [];
+        const nextTask: TaskData = {
+          ...task,
+          status: "DONE",
+          commit: { hash: commitInfo.hash, message: commitInfo.message },
+          comments: [...existingComments, { author: opts.author, body: opts.body }],
+          events: appendTaskEvent(task, {
+            type: "status",
+            at,
+            author: opts.author,
+            from: String(task.status || "TODO").toUpperCase(),
+            to: "DONE",
+            note: opts.body,
+          }),
+          result_summary:
+            taskId === metaTaskId && resultSummary ? resultSummary : task.result_summary,
+          risk_level: taskId === metaTaskId && riskLevel ? riskLevel : task.risk_level,
+          breaking: taskId === metaTaskId && breaking ? true : task.breaking,
+          doc_version: normalizeTaskDocVersion(task.doc_version),
+          doc_updated_at: at,
+          doc_updated_by: opts.author,
+        };
+        await ctx.taskBackend.writeTask(nextTask);
+      }
     }
 
     if (opts.commitFromComment || statusCommitRequested) {
@@ -352,19 +389,25 @@ export async function cmdFinish(opts: {
       // commitFromComment creates the git commit and returns the actual head hash/subject.
       // Refresh task commit metadata to this hash and amend the same commit in local mode so
       // "task done" metadata does not require a manual follow-up close commit.
-      const taskAfterCommit = useStore
-        ? await store!.get(primaryTaskId)
-        : await loadTaskFromContext({ ctx, taskId: primaryTaskId });
-      const updatedAfterCommit: TaskData = {
-        ...taskAfterCommit,
-        commit: { hash: committed.hash, message: committed.message },
-        doc_version: normalizeTaskDocVersion(taskAfterCommit.doc_version),
-        doc_updated_at: nowIso(),
-        doc_updated_by: opts.author,
-      };
       await (useStore
-        ? store!.update(primaryTaskId, () => updatedAfterCommit)
-        : ctx.taskBackend.writeTask(updatedAfterCommit));
+        ? store!.update(primaryTaskId, (current) => ({
+            ...current,
+            commit: { hash: committed.hash, message: committed.message },
+            doc_version: normalizeTaskDocVersion(current.doc_version),
+            doc_updated_at: nowIso(),
+            doc_updated_by: opts.author,
+          }))
+        : (async () => {
+            const taskAfterCommit = await loadTaskFromContext({ ctx, taskId: primaryTaskId });
+            const updatedAfterCommit: TaskData = {
+              ...taskAfterCommit,
+              commit: { hash: committed.hash, message: committed.message },
+              doc_version: normalizeTaskDocVersion(taskAfterCommit.doc_version),
+              doc_updated_at: nowIso(),
+              doc_updated_by: opts.author,
+            };
+            await ctx.taskBackend.writeTask(updatedAfterCommit);
+          })());
 
       if (backendWritesTaskReadmes) {
         const workflowReadmeRelPath = path.join(

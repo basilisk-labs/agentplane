@@ -116,58 +116,107 @@ async function recordVerificationResult(opts: {
   const task = useStore
     ? await store!.get(opts.taskId)
     : await loadTaskFromContext({ ctx, taskId: opts.taskId });
-  const existingDoc = useStore
-    ? String(task.doc ?? "")
-    : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-  const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-  const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
-  const verifySteps = extractDocSection(baseDoc, "Verify Steps");
-  const verifyStepsHash = verifySteps
-    ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
-    : null;
-  const docVersion = normalizeTaskDocVersion(task.doc_version);
-  const verifyStepsRef = [
-    `doc_version=${String(docVersion)}`,
-    `doc_updated_at=${String(task.doc_updated_at ?? "missing")}`,
-    `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
-  ].join(", ");
-
   const at = nowIso();
-  const entry = renderVerificationEntry({
-    at,
-    state: opts.state,
-    by: opts.by,
-    note: opts.note,
-    details: opts.details ?? null,
-    verifyStepsRef,
-  });
-  const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
-  const nextDoc = ensureDocSections(
-    setMarkdownSection(baseDoc, "Verification", nextVerification),
-    config.tasks.doc.required_sections,
-  );
+  if (useStore) {
+    await store!.update(opts.taskId, (current) => {
+      const existingDoc = String(current.doc ?? "");
+      const baseDoc = ensureDocSections(existingDoc, config.tasks.doc.required_sections);
+      const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
+      const verifySteps = extractDocSection(baseDoc, "Verify Steps");
+      const verifyStepsHash = verifySteps
+        ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
+        : null;
+      const docVersion = normalizeTaskDocVersion(current.doc_version);
+      const verifyStepsRef = [
+        `doc_version=${String(docVersion)}`,
+        `doc_updated_at=${String(current.doc_updated_at ?? "missing")}`,
+        `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
+      ].join(", ");
+      const entry = renderVerificationEntry({
+        at,
+        state: opts.state,
+        by: opts.by,
+        note: opts.note,
+        details: opts.details ?? null,
+        verifyStepsRef,
+      });
+      const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
+      const nextDoc = ensureDocSections(
+        setMarkdownSection(baseDoc, "Verification", nextVerification),
+        config.tasks.doc.required_sections,
+      );
 
-  const nextTask = {
-    ...task,
-    status: opts.state === "needs_rework" ? "DOING" : task.status,
-    commit: opts.state === "needs_rework" ? null : (task.commit ?? null),
-    doc: nextDoc,
-    doc_updated_by: opts.by,
-    events: appendTaskEvent(task, {
-      type: "verify",
+      return {
+        ...current,
+        status: opts.state === "needs_rework" ? "DOING" : current.status,
+        commit: opts.state === "needs_rework" ? null : (current.commit ?? null),
+        doc: nextDoc,
+        doc_updated_by: opts.by,
+        events: appendTaskEvent(current, {
+          type: "verify",
+          at,
+          author: opts.by,
+          state: opts.state,
+          note: opts.note,
+        }),
+        verification: {
+          state: opts.state,
+          updated_at: at,
+          updated_by: opts.by,
+          note: opts.note,
+        },
+      };
+    });
+  } else {
+    const existingDoc =
+      (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+    const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+    const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
+    const verifySteps = extractDocSection(baseDoc, "Verify Steps");
+    const verifyStepsHash = verifySteps
+      ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
+      : null;
+    const docVersion = normalizeTaskDocVersion(task.doc_version);
+    const verifyStepsRef = [
+      `doc_version=${String(docVersion)}`,
+      `doc_updated_at=${String(task.doc_updated_at ?? "missing")}`,
+      `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
+    ].join(", ");
+    const entry = renderVerificationEntry({
       at,
-      author: opts.by,
       state: opts.state,
+      by: opts.by,
       note: opts.note,
-    }),
-    verification: {
-      state: opts.state,
-      updated_at: at,
-      updated_by: opts.by,
-      note: opts.note,
-    },
-  };
-  await (useStore ? store!.update(opts.taskId, () => nextTask) : backend.writeTask(nextTask));
+      details: opts.details ?? null,
+      verifyStepsRef,
+    });
+    const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
+    const nextDoc = ensureDocSections(
+      setMarkdownSection(baseDoc, "Verification", nextVerification),
+      config.tasks.doc.required_sections,
+    );
+
+    await backend.writeTask({
+      ...task,
+      status: opts.state === "needs_rework" ? "DOING" : task.status,
+      commit: opts.state === "needs_rework" ? null : (task.commit ?? null),
+      doc: nextDoc,
+      doc_updated_by: opts.by,
+      events: appendTaskEvent(task, {
+        type: "verify",
+        at,
+        author: opts.by,
+        state: opts.state,
+        note: opts.note,
+      }),
+      verification: {
+        state: opts.state,
+        updated_at: at,
+        updated_by: opts.by,
+        note: opts.note,
+      },
+    });
+  }
 
   if (!opts.quiet) {
     const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");

@@ -32,32 +32,53 @@ export async function recordVerifiedNoopClosure(opts: {
   requireStructuredComment(opts.body, verifiedCfg.prefix, verifiedCfg.min_chars);
 
   const at = nowIso();
-  const next: TaskData = {
-    ...opts.task,
-    status: "DONE",
-    comments: [
-      ...(Array.isArray(opts.task.comments) ? opts.task.comments : []),
-      { author: opts.author, body: opts.body },
-    ],
-    events: appendTaskEvent(opts.task, {
-      type: "status",
-      at,
-      author: opts.author,
-      from: String(opts.task.status || "TODO").toUpperCase(),
-      to: "DONE",
-      note: opts.body,
-    }),
-    result_summary: opts.resultSummary,
-    risk_level: "low",
-    breaking: false,
-    doc_version: normalizeTaskDocVersion(opts.task.doc_version),
-    doc_updated_at: at,
-    doc_updated_by: opts.author,
-  };
-
   const useStore = backendIsLocalFileBackend(opts.ctx);
   const store = useStore ? getTaskStore(opts.ctx) : null;
-  await (useStore ? store!.update(opts.taskId, () => next) : opts.ctx.taskBackend.writeTask(next));
+  await (useStore
+    ? store!.update(opts.taskId, (current) => ({
+        ...current,
+        status: "DONE",
+        comments: [
+          ...(Array.isArray(current.comments) ? current.comments : []),
+          { author: opts.author, body: opts.body },
+        ],
+        events: appendTaskEvent(current, {
+          type: "status",
+          at,
+          author: opts.author,
+          from: String(current.status || "TODO").toUpperCase(),
+          to: "DONE",
+          note: opts.body,
+        }),
+        result_summary: opts.resultSummary,
+        risk_level: "low",
+        breaking: false,
+        doc_version: normalizeTaskDocVersion(current.doc_version),
+        doc_updated_at: at,
+        doc_updated_by: opts.author,
+      }))
+    : opts.ctx.taskBackend.writeTask({
+        ...opts.task,
+        status: "DONE",
+        comments: [
+          ...(Array.isArray(opts.task.comments) ? opts.task.comments : []),
+          { author: opts.author, body: opts.body },
+        ],
+        events: appendTaskEvent(opts.task, {
+          type: "status",
+          at,
+          author: opts.author,
+          from: String(opts.task.status || "TODO").toUpperCase(),
+          to: "DONE",
+          note: opts.body,
+        }),
+        result_summary: opts.resultSummary,
+        risk_level: "low",
+        breaking: false,
+        doc_version: normalizeTaskDocVersion(opts.task.doc_version),
+        doc_updated_at: at,
+        doc_updated_by: opts.author,
+      }));
 
   if (!opts.quiet) {
     process.stdout.write(`${opts.successMessage}\n`);

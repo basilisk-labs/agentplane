@@ -518,4 +518,69 @@ describe("task verify record (unit)", () => {
       }),
     ).rejects.toMatchObject({ code: "E_VALIDATION" });
   });
+
+  it("cmdTaskVerifyOk preserves fresher README content when store update sees newer task data", async () => {
+    const staleTask = mkTask({
+      status: "DONE",
+      doc_version: 3,
+      doc_updated_at: "2026-02-01T00:00:00.000Z",
+      doc: [
+        "## Summary",
+        "Stale summary",
+        "",
+        "## Verify Steps",
+        "Stale verify steps",
+        "",
+        "## Verification",
+        "",
+      ].join("\n"),
+    });
+    let currentTask = mkTask({
+      status: "DONE",
+      doc_version: 3,
+      doc_updated_at: "2026-02-07T00:00:00.000Z",
+      doc: [
+        "## Summary",
+        "Concurrent summary",
+        "",
+        "## Verify Steps",
+        "Concurrent verify steps",
+        "",
+        "## Verification",
+        "",
+      ].join("\n"),
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      update: vi
+        .fn()
+        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
+          currentTask = updater(currentTask);
+          return { changed: true, task: currentTask };
+        }),
+    };
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskVerifyOk } = await import("./verify-record.js");
+    const rc = await cmdTaskVerifyOk({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      by: "TESTER",
+      note: "ok",
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.update).toHaveBeenCalledTimes(1);
+    expect(currentTask.verification?.state).toBe("ok");
+    expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
+    expect(currentTask.doc).toContain("## Verify Steps\nConcurrent verify steps");
+    expect(currentTask.doc).toContain("#### 2026-02-09T00:00:00.000Z — VERIFY — ok");
+    expect(currentTask.doc).toContain("VerifyStepsRef: doc_version=3");
+    expect(currentTask.doc_updated_by).toBe("TESTER");
+  });
 });

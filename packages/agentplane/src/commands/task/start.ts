@@ -1,4 +1,3 @@
-import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage, invalidValueMessage, successMessage, warnMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
@@ -170,25 +169,51 @@ export async function cmdStart(opts: {
     ];
 
     const at = nowIso();
-    const nextTask: TaskData = {
-      ...task,
-      status: "DOING",
-      comments: commentsValue,
-      events: appendTaskEvent(task, {
-        type: "status",
-        at,
-        author: opts.author,
-        from: currentStatus,
-        to: "DOING",
-        note: commentBody,
-      }),
-      doc_version: normalizeTaskDocVersion(task.doc_version),
-      doc_updated_at: at,
-      doc_updated_by: opts.author,
-    };
     await (useStore
-      ? store!.update(opts.taskId, () => nextTask)
-      : ctx.taskBackend.writeTask(nextTask));
+      ? store!.update(opts.taskId, (current) => {
+          const currentExistingComments = Array.isArray(current.comments)
+            ? current.comments.filter(
+                (item): item is { author: string; body: string } =>
+                  !!item && typeof item.author === "string" && typeof item.body === "string",
+              )
+            : [];
+          const currentCommentsValue: { author: string; body: string }[] = [
+            ...currentExistingComments,
+            { author: opts.author, body: commentBody },
+          ];
+          return {
+            ...current,
+            status: "DOING",
+            comments: currentCommentsValue,
+            events: appendTaskEvent(current, {
+              type: "status",
+              at,
+              author: opts.author,
+              from: String(current.status || "TODO").toUpperCase(),
+              to: "DOING",
+              note: commentBody,
+            }),
+            doc_version: normalizeTaskDocVersion(current.doc_version),
+            doc_updated_at: at,
+            doc_updated_by: opts.author,
+          };
+        })
+      : ctx.taskBackend.writeTask({
+          ...task,
+          status: "DOING",
+          comments: commentsValue,
+          events: appendTaskEvent(task, {
+            type: "status",
+            at,
+            author: opts.author,
+            from: currentStatus,
+            to: "DOING",
+            note: commentBody,
+          }),
+          doc_version: normalizeTaskDocVersion(task.doc_version),
+          doc_updated_at: at,
+          doc_updated_by: opts.author,
+        }));
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {

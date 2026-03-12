@@ -22,6 +22,38 @@ import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js
 
 type TaskDocSetOutcome = "section-updated" | "full-doc-updated" | "no-change";
 
+function buildUpdatedTaskDoc(opts: {
+  baseDocRaw: string;
+  section?: string;
+  text: string;
+  requestMode: "full-doc" | "section";
+  requiredSections: string[];
+  headingKeys: Set<string>;
+  targetKey: string;
+}): string {
+  const baseDoc = ensureDocSections(opts.baseDocRaw, opts.requiredSections);
+  if (opts.requestMode === "full-doc") {
+    return ensureDocSections(opts.text, opts.requiredSections);
+  }
+
+  let nextText = opts.text;
+  if (opts.headingKeys.size > 0 && opts.headingKeys.has(opts.targetKey)) {
+    const lines = nextText.replaceAll("\r\n", "\n").split("\n");
+    let firstContent = 0;
+    while (firstContent < lines.length && lines[firstContent]?.trim() === "") firstContent++;
+    if ((lines[firstContent]?.trim() ?? "") === `## ${opts.section}`) {
+      lines.splice(firstContent, 1);
+      if (lines[firstContent]?.trim() === "") lines.splice(firstContent, 1);
+      nextText = lines.join("\n");
+    }
+  }
+
+  return ensureDocSections(
+    setMarkdownSection(baseDoc, opts.section ?? "", nextText),
+    opts.requiredSections,
+  );
+}
+
 export async function cmdTaskDocSet(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -112,48 +144,53 @@ export async function cmdTaskDocSet(opts: {
       const key = normalizeDocSectionName(match[1] ?? "");
       if (key && normalizedAllowed.has(key)) headingKeys.add(key);
     }
-    const storeTask = useStore ? await store!.get(opts.taskId) : null;
-    const baseDocRaw = useStore
-      ? String(storeTask!.doc ?? "")
-      : ((await backend.getTaskDoc(opts.taskId)) ?? "");
-    const baseDoc = ensureDocSections(baseDocRaw, config.tasks.doc.required_sections);
     const requestMode = opts.fullDoc
       ? "full-doc"
       : headingKeys.size > 0 && (headingKeys.size > 1 || !headingKeys.has(targetKey))
         ? "full-doc"
         : "section";
-    let nextDoc = baseDoc;
-    if (requestMode === "full-doc") {
-      nextDoc = ensureDocSections(text, config.tasks.doc.required_sections);
+    let changed = false;
+    if (useStore) {
+      const result = await store!.update(opts.taskId, (current) => {
+        const currentDocRaw = String(current.doc ?? "");
+        const nextDoc = buildUpdatedTaskDoc({
+          baseDocRaw: currentDocRaw,
+          section: opts.section,
+          text,
+          requestMode,
+          requiredSections: config.tasks.doc.required_sections,
+          headingKeys,
+          targetKey,
+        });
+        const docChanged = normalizeTaskDoc(currentDocRaw) !== normalizeTaskDoc(nextDoc);
+        const shouldWrite = docChanged || updatedBy !== undefined;
+        if (!shouldWrite) return current;
+        return {
+          ...current,
+          doc: nextDoc,
+          ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
+        };
+      });
+      changed = result.changed;
     } else {
-      let nextText = text;
-      if (headingKeys.size > 0 && headingKeys.has(targetKey)) {
-        const lines = nextText.replaceAll("\r\n", "\n").split("\n");
-        let firstContent = 0;
-        while (firstContent < lines.length && lines[firstContent]?.trim() === "") firstContent++;
-        if ((lines[firstContent]?.trim() ?? "") === `## ${opts.section}`) {
-          lines.splice(firstContent, 1);
-          if (lines[firstContent]?.trim() === "") lines.splice(firstContent, 1);
-          nextText = lines.join("\n");
-        }
+      const baseDocRaw = (await backend.getTaskDoc(opts.taskId)) ?? "";
+      const nextDoc = buildUpdatedTaskDoc({
+        baseDocRaw,
+        section: opts.section,
+        text,
+        requestMode,
+        requiredSections: config.tasks.doc.required_sections,
+        headingKeys,
+        targetKey,
+      });
+      const docChanged = normalizeTaskDoc(baseDocRaw) !== normalizeTaskDoc(nextDoc);
+      const shouldWrite = docChanged || updatedBy !== undefined;
+      if (shouldWrite) {
+        await backend.setTaskDoc(opts.taskId, nextDoc, updatedBy);
       }
-      nextDoc = ensureDocSections(
-        setMarkdownSection(baseDoc, opts.section ?? "", nextText),
-        config.tasks.doc.required_sections,
-      );
+      changed = shouldWrite;
     }
-    const docChanged = normalizeTaskDoc(baseDocRaw) !== normalizeTaskDoc(nextDoc);
-    const shouldWrite = docChanged || updatedBy !== undefined;
-    if (shouldWrite) {
-      await (useStore
-        ? store!.update(opts.taskId, (current) => ({
-            ...current,
-            doc: nextDoc,
-            ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
-          }))
-        : backend.setTaskDoc(opts.taskId, nextDoc, updatedBy));
-    }
-    const outcome: TaskDocSetOutcome = shouldWrite
+    const outcome: TaskDocSetOutcome = changed
       ? requestMode === "full-doc"
         ? "full-doc-updated"
         : "section-updated"
