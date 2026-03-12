@@ -478,6 +478,102 @@ describe("runCli", () => {
     },
   );
 
+  it(
+    "finish promotes formatter hook blockers into close-commit next-action guidance",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
+      await configureGitUser(root);
+
+      await writeFile(path.join(root, "file.txt"), "content", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "feat: seed commit"], { cwd: root });
+      const { stdout: implHash } = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: root });
+
+      const ioNew = captureStdIO();
+      let taskId = "";
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Finish close commit formatter guidance",
+          "--description",
+          "Finish should surface formatter guidance when the close commit is blocked",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "docs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioNew.stdout.trim();
+      } finally {
+        ioNew.restore();
+      }
+
+      await runCliSilent([
+        "verify",
+        taskId,
+        "--ok",
+        "--by",
+        "TESTER",
+        "--note",
+        "Ok to finish with formatter close-commit blocker coverage.",
+        "--quiet",
+        "--root",
+        root,
+      ]);
+
+      const hookPath = path.join(root, ".git", "hooks", "pre-commit");
+      const preCommit = [
+        "#!/bin/sh",
+        'echo "Code style issues found. Run Prettier with --write." 1>&2',
+        "exit 1",
+        "",
+      ].join("\n");
+      await writeFile(hookPath, preCommit, "utf8");
+      await chmod(hookPath, 0o755);
+
+      const io = captureStdIO();
+      try {
+        const code = await runCli([
+          "finish",
+          taskId,
+          "--author",
+          "CODER",
+          "--body",
+          "Verified: finish should surface formatter guidance when the close commit is blocked.",
+          "--result",
+          "finish close commit formatter guidance",
+          "--commit",
+          implHash.trim(),
+          "--close-commit",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(5);
+        expect(io.stderr).toContain("state: git rejected the generated close commit");
+        expect(io.stderr).toContain(
+          "likely_cause: a formatting check in the pre-commit path rejected the deterministic close commit after the task README was staged",
+        );
+        expect(io.stderr).toContain(
+          "next_action: bun run format (apply formatter fixes before retrying the commit flow)",
+        );
+        expect(io.stderr).toContain(
+          "reason_code: git_pre_commit_format [git] a formatting check in the pre-commit path blocked the commit",
+        );
+      } finally {
+        io.restore();
+      }
+    },
+  );
+
   it("finish persists result_summary/risk_level/breaking in task README frontmatter", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

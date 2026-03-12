@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { exitCodeForError } from "../../../cli/exit-codes.js";
+import { readDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 
 const mocks = vi.hoisted(() => ({
@@ -395,6 +396,67 @@ describe("guard/impl/commands", () => {
     expect((err as CliError).code).toBe("E_GIT");
     expect((err as CliError).message).toContain("ESLint found 2 problems (2 errors, 0 warnings)");
     expect((err as CliError).message).not.toContain("\u001B[31m");
+    expect(readDiagnosticContext((err as CliError).context)).toMatchObject({
+      state: "git rejected the requested task-scoped commit",
+      likelyCause: "a lint check in the pre-commit path rejected the staged task-scoped commit",
+      nextAction: {
+        command: "bun run lint:core",
+        reasonCode: "git_pre_commit_lint",
+      },
+    });
+  });
+
+  it("cmdCommit close path promotes formatter blockers into close-commit guidance", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-8" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-8/README.md");
+    ctx.git.commit.mockRejectedValue(
+      Object.assign(new Error("hook failed"), {
+        cmd: "git commit -m ✅ ABC123 close: done",
+        code: 1,
+        stderr: [
+          "Checking formatting...",
+          "Code style issues found. Run Prettier with --write.",
+        ].join("\n"),
+      }),
+    );
+
+    const err = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-8",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    }).catch((error: unknown) => error);
+
+    expect(err).toBeInstanceOf(CliError);
+    expect((err as CliError).message).toContain(
+      "Code style issues found. Run Prettier with --write.",
+    );
+    expect(readDiagnosticContext((err as CliError).context)).toMatchObject({
+      state: "git rejected the generated close commit",
+      likelyCause:
+        "a formatting check in the pre-commit path rejected the deterministic close commit after the task README was staged",
+      nextAction: {
+        command: "bun run format",
+        reasonCode: "git_pre_commit_format",
+      },
+    });
   });
 
   it("cmdCommit non-close auto-allow rejects when ctx is absent", async () => {

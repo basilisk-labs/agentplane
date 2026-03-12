@@ -21,6 +21,7 @@ type ExecFileLikeError = Error & {
 };
 
 type CommitFailurePhase = "task_commit" | "close_commit";
+type CommitFailureSignal = "formatter" | "eslint" | null;
 const COMMIT_FAILURE_SIGNAL_PATTERNS = [
   /Code style issues found/i,
   /Run Prettier with --write/i,
@@ -30,6 +31,11 @@ const COMMIT_FAILURE_SIGNAL_PATTERNS = [
   /\bfailed\b/i,
   /✖/,
 ] as const;
+const FORMATTER_SIGNAL_PATTERNS = [
+  /Code style issues found/i,
+  /Run Prettier with --write/i,
+] as const;
+const ESLINT_SIGNAL_PATTERNS = [/\bESLint\b/i, /\b[0-9]+\s+problems?\b/i] as const;
 
 function readText(value: unknown): string {
   if (typeof value === "string") return value;
@@ -74,7 +80,20 @@ function summarizeOutput(raw: string): string[] {
   return summary;
 }
 
-function commitFailureDiagnostic(phase: CommitFailurePhase): {
+function detectCommitFailureSignal(output: string): CommitFailureSignal {
+  if (FORMATTER_SIGNAL_PATTERNS.some((pattern) => pattern.test(output))) {
+    return "formatter";
+  }
+  if (ESLINT_SIGNAL_PATTERNS.some((pattern) => pattern.test(output))) {
+    return "eslint";
+  }
+  return null;
+}
+
+function commitFailureDiagnostic(
+  phase: CommitFailurePhase,
+  output: string,
+): {
   state: string;
   likelyCause: string;
   nextAction?: {
@@ -83,6 +102,41 @@ function commitFailureDiagnostic(phase: CommitFailurePhase): {
     reasonCode?: string;
   };
 } {
+  const signal = detectCommitFailureSignal(output);
+  if (signal === "formatter") {
+    return {
+      state:
+        phase === "close_commit"
+          ? "git rejected the generated close commit"
+          : "git rejected the requested task-scoped commit",
+      likelyCause:
+        phase === "close_commit"
+          ? "a formatting check in the pre-commit path rejected the deterministic close commit after the task README was staged"
+          : "a formatting check in the pre-commit path rejected the staged task-scoped commit",
+      nextAction: {
+        command: "bun run format",
+        reason: "apply formatter fixes before retrying the commit flow",
+        reasonCode: "git_pre_commit_format",
+      },
+    };
+  }
+  if (signal === "eslint") {
+    return {
+      state:
+        phase === "close_commit"
+          ? "git rejected the generated close commit"
+          : "git rejected the requested task-scoped commit",
+      likelyCause:
+        phase === "close_commit"
+          ? "a lint check in the pre-commit path rejected the deterministic close commit after the task README was staged"
+          : "a lint check in the pre-commit path rejected the staged task-scoped commit",
+      nextAction: {
+        command: "bun run lint:core",
+        reason: "rerun lint and fix the reported error before retrying the commit flow",
+        reasonCode: "git_pre_commit_lint",
+      },
+    };
+  }
   if (phase === "close_commit") {
     return {
       state: "git rejected the generated close commit",
@@ -98,6 +152,11 @@ function commitFailureDiagnostic(phase: CommitFailurePhase): {
   return {
     state: "git rejected the requested task-scoped commit",
     likelyCause: "a hook or commit policy blocked the staged changes after guard validation passed",
+    nextAction: {
+      command: "git status --short --untracked-files=no",
+      reason: "inspect the staged task-scoped payload before fixing the hook or policy failure",
+      reasonCode: "git_task_commit_blocked",
+    },
   };
 }
 
@@ -126,7 +185,10 @@ function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliError | nu
         exitCode: 5,
         code: "E_GIT",
         message: lines.join("\n"),
-        context: withDiagnosticContext({ command: "commit" }, commitFailureDiagnostic(phase)),
+        context: withDiagnosticContext(
+          { command: "commit" },
+          commitFailureDiagnostic(phase, output),
+        ),
       });
     }
     return null;
