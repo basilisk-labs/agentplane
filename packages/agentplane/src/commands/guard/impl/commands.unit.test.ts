@@ -7,6 +7,8 @@ import { CliError } from "../../../shared/errors.js";
 const mocks = vi.hoisted(() => ({
   mapCoreError: vi.fn(),
   ensureReconciledBeforeMutation: vi.fn(),
+  execFileAsync: vi.fn(),
+  gitEnv: vi.fn(),
   loadCommandContext: vi.fn(),
   loadTaskFromContext: vi.fn(),
   buildCloseCommitMessage: vi.fn(),
@@ -22,6 +24,10 @@ vi.mock("../../shared/task-backend.js", () => ({
 }));
 vi.mock("../../shared/reconcile-check.js", () => ({
   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
+}));
+vi.mock("../../shared/git.js", () => ({
+  execFileAsync: mocks.execFileAsync,
+  gitEnv: mocks.gitEnv,
 }));
 vi.mock("./close-message.js", () => ({
   buildCloseCommitMessage: mocks.buildCloseCommitMessage,
@@ -48,6 +54,8 @@ describe("guard/impl/commands", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.ensureReconciledBeforeMutation.mockResolvedValue();
+    mocks.execFileAsync.mockResolvedValue({ stdout: "", stderr: "" });
+    mocks.gitEnv.mockReturnValue({});
   });
 
   it("cmdGuardClean maps non-Cli errors with mapCoreError", async () => {
@@ -255,6 +263,136 @@ describe("guard/impl/commands", () => {
     expect(mocks.ensureReconciledBeforeMutation).not.toHaveBeenCalled();
   });
 
+  it("cmdCommit close rejects a dirty index unless --unstage-others is set", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+
+    await expect(
+      cmdCommit({
+        ctx: ctx as never,
+        cwd: "/repo",
+        taskId: "T-2",
+        message: "",
+        close: true,
+        allow: [],
+        autoAllow: false,
+        allowTasks: false,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: false,
+        quiet: true,
+        closeCheckOnly: false,
+        closeUnstageOthers: false,
+      }),
+    ).rejects.toMatchObject<CliError>({ code: "E_GIT" });
+    expect(mocks.loadTaskFromContext).not.toHaveBeenCalled();
+    expect(mocks.execFileAsync).not.toHaveBeenCalled();
+  });
+
+  it("cmdCommit close --check-only reports the unstage suffix when it would clear the index", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts", "docs/readme.md"]);
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-2" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-2/README.md");
+
+    try {
+      const rc = await cmdCommit({
+        ctx: ctx as never,
+        cwd: "/repo",
+        taskId: "T-2",
+        message: "",
+        close: true,
+        allow: [],
+        autoAllow: false,
+        allowTasks: false,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: false,
+        quiet: false,
+        closeCheckOnly: true,
+        closeUnstageOthers: true,
+      });
+      expect(rc).toBe(0);
+      expect(
+        stdout.mock.calls.some(([text]) => String(text).includes("would unstage 2 path(s)")),
+      ).toBe(true);
+      expect(mocks.execFileAsync).not.toHaveBeenCalled();
+    } finally {
+      stdout.mockRestore();
+    }
+  });
+
+  it("cmdCommit close --unstage-others clears the index before committing", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    ctx.git.statusStagedPaths.mockResolvedValueOnce(["src/app.ts"]).mockResolvedValueOnce([]);
+    ctx.git.headHashSubject.mockResolvedValue({
+      hash: "fedcba9876543210",
+      subject: "✅ ABC123 close: done",
+    });
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-2" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-2/README.md");
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-2" });
+
+    try {
+      const rc = await cmdCommit({
+        ctx: ctx as never,
+        cwd: "/repo",
+        taskId: "T-2",
+        message: "",
+        close: true,
+        allow: [],
+        autoAllow: false,
+        allowTasks: false,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: false,
+        quiet: false,
+        closeCheckOnly: false,
+        closeUnstageOthers: true,
+      });
+      expect(rc).toBe(0);
+      expect(mocks.execFileAsync).toHaveBeenCalledWith(
+        "git",
+        ["restore", "--staged", "--", "."],
+        expect.objectContaining({ cwd: "/repo", env: {} }),
+      );
+      expect(ctx.git.commit).toHaveBeenCalledWith({
+        message: "✅ ABC123 close: done",
+        body: "body",
+        env: { AGENTPLANE_TASK_ID: "T-2" },
+      });
+      expect(
+        stdout.mock.calls.some(([text]) =>
+          String(text).includes("fedcba987654 ✅ ABC123 close: done"),
+        ),
+      ).toBe(true);
+    } finally {
+      stdout.mockRestore();
+    }
+  });
+
   it("cmdCommit rejects auto-allow mode", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();
@@ -314,6 +452,84 @@ describe("guard/impl/commands", () => {
       message: "✅ ABC123 task: message",
       env: { AGENTPLANE_TASK_ID: "T-6" },
     });
+  });
+
+  it("cmdCommit non-close rejects an empty index when no explicit scope is provided", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue([]);
+
+    await expect(
+      cmdCommit({
+        ctx: ctx as never,
+        cwd: "/repo",
+        taskId: "T-9",
+        message: "✅ ABC123 task: message",
+        close: false,
+        allow: [],
+        autoAllow: false,
+        allowTasks: false,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: false,
+        quiet: true,
+      }),
+    ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
+    expect(ctx.git.commit).not.toHaveBeenCalled();
+  });
+
+  it("cmdCommit non-close prints auto-stage details and success output when allowTasks provides the scope", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    const stdout = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
+    ctx.git.statusStagedPaths.mockResolvedValue([]);
+    ctx.git.statusChangedPaths.mockResolvedValue([
+      ".agentplane/tasks/T-10/README.md",
+      "docs/readme.md",
+    ]);
+    ctx.git.headHashSubject.mockResolvedValue({
+      hash: "1122334455667788",
+      subject: "✅ ABC123 task: message",
+    });
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-10" });
+
+    try {
+      const rc = await cmdCommit({
+        ctx: ctx as never,
+        cwd: "/repo",
+        taskId: "T-10",
+        message: "✅ ABC123 task: message",
+        close: false,
+        allow: [],
+        autoAllow: false,
+        allowTasks: true,
+        allowBase: false,
+        allowPolicy: false,
+        allowConfig: false,
+        allowHooks: false,
+        allowCI: false,
+        requireClean: false,
+        quiet: false,
+      });
+
+      expect(rc).toBe(0);
+      expect(ctx.git.stage).toHaveBeenCalledWith([".agentplane/tasks/T-10/README.md"]);
+      expect(
+        stdout.mock.calls.some(([text]) =>
+          String(text).includes("commit auto-staged 1 path(s) from allowlist"),
+        ),
+      ).toBe(true);
+      expect(
+        stdout.mock.calls.some(([text]) =>
+          String(text).includes("staged=.agentplane/tasks/T-10/README.md"),
+        ),
+      ).toBe(true);
+    } finally {
+      stdout.mockRestore();
+    }
   });
 
   it("cmdCommit maps unknown errors via mapCoreError when not git-commit shaped", async () => {
@@ -455,6 +671,53 @@ describe("guard/impl/commands", () => {
       nextAction: {
         command: "bun run format",
         reasonCode: "git_pre_commit_format",
+      },
+    });
+  });
+
+  it("cmdCommit maps generic close-commit hook failures and keeps buffer output readable", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue({ id: "T-11" });
+    mocks.buildCloseCommitMessage.mockResolvedValue({
+      subject: "✅ ABC123 close: done",
+      body: "body",
+    });
+    mocks.taskReadmePathForTask.mockReturnValue("/repo/.agentplane/tasks/T-11/README.md");
+    ctx.git.commit.mockRejectedValue(
+      Object.assign(new Error("hook failed"), {
+        cmd: "git commit -m ✅ ABC123 close: done",
+        stderr: Buffer.from(["first line", "", "X".repeat(220), "last line"].join("\n"), "utf8"),
+      }),
+    );
+
+    const err = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-11",
+      message: "",
+      close: true,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    }).catch((error: unknown) => error);
+
+    expect(err).toBeInstanceOf(CliError);
+    expect((err as CliError).message).toContain("[truncated]");
+    expect(readDiagnosticContext((err as CliError).context)).toMatchObject({
+      state: "git rejected the generated close commit",
+      likelyCause:
+        "a hook or commit policy blocked the deterministic task close commit after the task README was staged",
+      nextAction: {
+        command: "git status --short --untracked-files=no",
+        reasonCode: "git_close_commit_blocked",
       },
     });
   });
