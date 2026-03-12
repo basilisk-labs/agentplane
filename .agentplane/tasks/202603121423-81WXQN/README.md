@@ -1,7 +1,8 @@
 ---
 id: "202603121423-81WXQN"
 title: "Harden task README write retries"
-status: "DOING"
+result_summary: "preserve task README writes on retry"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-12T14:43:01.629Z"
   updated_by: "CODER"
   note: "Store-backed task writes now rebase on the freshest README state; unit, CLI, lint, and build checks passed."
-commit: null
+commit:
+  hash: "774eef88e00bb784c9e97eabc2d6153c410802cb"
+  message: "🚧 81WXQN task: preserve README writes across task-store retries"
 comments:
   -
     author: "CODER"
     body: "Start: moving task doc and plan write transforms onto fresh TaskStore state so concurrent retries preserve neighboring README edits instead of replaying stale precomputed payloads."
+  -
+    author: "CODER"
+    body: "Verified: store-backed task writes now compute next state from the freshest README and preserve concurrent section updates."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Store-backed task writes now rebase on the freshest README state; unit, CLI, lint, and build checks passed."
+  -
+    type: "status"
+    at: "2026-03-12T14:43:54.483Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: store-backed task writes now compute next state from the freshest README and preserve concurrent section updates."
 doc_version: 3
-doc_updated_at: "2026-03-12T14:43:01.631Z"
+doc_updated_at: "2026-03-12T14:43:54.483Z"
 doc_updated_by: "CODER"
 description: "Fix stale precomputed doc/task payloads so concurrent task doc/plan/verify writes preserve each other's changes instead of clobbering the README."
 id_source: "generated"
