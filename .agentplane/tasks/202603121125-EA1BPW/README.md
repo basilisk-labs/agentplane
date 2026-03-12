@@ -1,7 +1,8 @@
 ---
 id: "202603121125-EA1BPW"
 title: "Patch stabilization: narrow fast-CI contours after split suites"
-status: "DOING"
+result_summary: "Targeted fast-CI selection now covers split CLI docs, lifecycle, and guard suites."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-12T11:30:49.856Z"
   updated_by: "CODER"
   note: "Verified targeted fast-CI bucket routing for split CLI suites."
-commit: null
+commit:
+  hash: "e82956c7a71870665a5cc3af5c4581cbae5c8a7f"
+  message: "🚧 EA1BPW task: route split CLI suites to targeted fast-CI buckets"
 comments:
   -
     author: "CODER"
     body: "Start: update local CI bucket selection so split lifecycle and guard suites route to targeted contours instead of broad fallback buckets."
+  -
+    author: "CODER"
+    body: "Verified: split CLI docs, lifecycle, and guard suites now resolve to targeted fast-CI buckets, and selector regressions plus lint/build checks passed."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified targeted fast-CI bucket routing for split CLI suites."
+  -
+    type: "status"
+    at: "2026-03-12T11:31:44.073Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split CLI docs, lifecycle, and guard suites now resolve to targeted fast-CI buckets, and selector regressions plus lint/build checks passed."
 doc_version: 3
-doc_updated_at: "2026-03-12T11:30:49.858Z"
+doc_updated_at: "2026-03-12T11:31:44.073Z"
 doc_updated_by: "CODER"
 description: "Update local CI selection so new split CLI integration suites hit targeted buckets instead of broad full-fast fallbacks."
 id_source: "generated"
