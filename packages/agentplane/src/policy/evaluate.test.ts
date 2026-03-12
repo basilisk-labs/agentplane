@@ -90,12 +90,12 @@ describe("policy/evaluatePolicy", () => {
     expect(res.errors.map((e) => e.message).join("\n")).toContain("commits are allowed only on");
   });
 
-  it("allows the active task README when --allow-tasks is set", () => {
+  it("allows a non-README artifact under the active task subtree when --allow-tasks is set", () => {
     const taskId = "202602071329-TEST01";
     const res = evaluatePolicy(
       makeCtx({
         taskId,
-        git: { stagedPaths: [`.agentplane/tasks/${taskId}/README.md`] },
+        git: { stagedPaths: [`.agentplane/tasks/${taskId}/evidence.json`] },
         allow: { prefixes: ["packages/agentplane/src"], allowTasks: true },
       }),
     );
@@ -108,7 +108,7 @@ describe("policy/evaluatePolicy", () => {
     const res = evaluatePolicy(
       makeCtx({
         taskId,
-        git: { stagedPaths: [`.agentplane/tasks/${otherTaskId}/README.md`] },
+        git: { stagedPaths: [`.agentplane/tasks/${otherTaskId}/evidence.json`] },
         allow: { prefixes: ["packages/agentplane/src"], allowTasks: true },
       }),
     );

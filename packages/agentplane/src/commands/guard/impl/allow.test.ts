@@ -204,8 +204,8 @@ describe("guard/impl/allow", () => {
         statusChangedPaths: vi
           .fn()
           .mockResolvedValue([
-            ".agentplane/tasks/202601010101-ABCDEF/README.md",
-            ".agentplane/tasks/202601010101-OTHER01/README.md",
+            ".agentplane/tasks/202601010101-ABCDEF/evidence.txt",
+            ".agentplane/tasks/202601010101-OTHER01/evidence.txt",
             "src/app.ts",
           ]),
         stage: vi.fn().mockResolvedValue(),
@@ -221,9 +221,9 @@ describe("guard/impl/allow", () => {
       taskId: "202601010101-ABCDEF",
     });
 
-    expect(staged).toEqual([".agentplane/tasks/202601010101-ABCDEF/README.md", "src/app.ts"]);
+    expect(staged).toEqual([".agentplane/tasks/202601010101-ABCDEF/evidence.txt", "src/app.ts"]);
     expect(ctx.git.stage).toHaveBeenCalledWith([
-      ".agentplane/tasks/202601010101-ABCDEF/README.md",
+      ".agentplane/tasks/202601010101-ABCDEF/evidence.txt",
       "src/app.ts",
     ]);
   });
