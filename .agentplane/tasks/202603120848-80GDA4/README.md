@@ -1,7 +1,8 @@
 ---
 id: "202603120848-80GDA4"
 title: "Clarify reconcile failures for invalid task README frontmatter"
-status: "DOING"
+result_summary: "reconcile preflight now names malformed task README frontmatter as the concrete cause and points to strict-read recovery"
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-12T09:04:47.822Z"
+  updated_by: "CODER"
+  note: "Verified: bun x vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000"
+commit:
+  hash: "9133b24cea6052d463762a404cfad5c092747f88"
+  message: "🩺 80GDA4 cli: clarify reconcile readme failures"
 comments:
   -
     author: "CODER"
     body: "Start: make reconcile preflight errors explicitly name invalid task README frontmatter and point users to the minimal strict-read recovery path."
+  -
+    author: "CODER"
+    body: "Verified: bun x vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000"
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: make reconcile preflight errors explicitly name invalid task README frontmatter and point users to the minimal strict-read recovery path."
+  -
+    type: "verify"
+    at: "2026-03-12T09:04:47.822Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun x vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000"
+  -
+    type: "status"
+    at: "2026-03-12T09:05:10.265Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun x vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000"
 doc_version: 3
-doc_updated_at: "2026-03-12T08:57:16.281Z"
+doc_updated_at: "2026-03-12T09:05:10.265Z"
 doc_updated_by: "CODER"
 description: "Make mutation preflight diagnostics explicitly explain when reconcile failed because an active task README could not be parsed, and point the user to the minimal recovery command."
 id_source: "generated"
@@ -62,6 +81,14 @@ Make mutation preflight diagnostics explicitly explain when reconcile failed bec
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-12T09:04:47.822Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun x vitest run packages/agentplane/src/commands/shared/reconcile-check.test.ts packages/agentplane/src/cli/run-cli.core.guard.test.ts --hookTimeout 60000 --testTimeout 60000
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-12T08:57:16.281Z, excerpt_hash=sha256:9c1ca0360c2922fd6b52e52a9278af44d5745c4e1c70eed785d5ea6029e24ee6
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
