@@ -17,6 +17,7 @@ import { taskListSpec } from "../../commands/task/list.spec.js";
 import { taskNextSpec } from "../../commands/task/next.spec.js";
 import { taskSearchSpec } from "../../commands/task/search.spec.js";
 import { taskShowSpec } from "../../commands/task/show.spec.js";
+import { taskSpec } from "../../commands/task/task.command.js";
 import { taskAddSpec } from "../../commands/task/add.command.js";
 import { taskUpdateSpec } from "../../commands/task/update.command.js";
 import { taskCommentSpec } from "../../commands/task/comment.command.js";
@@ -35,6 +36,7 @@ import { taskDeriveSpec } from "../../commands/task/derive.command.js";
 import { taskCloseDuplicateSpec } from "../../commands/task/close-duplicate.command.js";
 import { taskCloseNoopSpec } from "../../commands/task/close-noop.command.js";
 import { taskStartReadySpec } from "../../commands/task/start-ready.command.js";
+import { taskPlanSpec } from "../../commands/task/plan.command.js";
 import { taskPlanSetSpec } from "../../commands/task/plan-set.command.js";
 import { taskPlanApproveSpec } from "../../commands/task/plan-approve.command.js";
 import { taskPlanRejectSpec } from "../../commands/task/plan-reject.command.js";
@@ -337,6 +339,11 @@ export const COMMANDS = [
     },
   ),
 
+  entry(taskSpec, () => import("../../commands/task/task.command.js").then((m) => m.runTask), {
+    needsProject: false,
+    needsConfig: false,
+    needsTaskContext: false,
+  }),
   entry(taskListSpec, (deps) =>
     import("../../commands/task/list.run.js").then((m) => m.makeRunTaskListHandler(deps.getCtx)),
   ),
@@ -437,6 +444,15 @@ export const COMMANDS = [
   ),
   entry(taskMigrateDocSpec, () =>
     import("../../commands/task/migrate-doc.command.js").then((m) => m.runTaskMigrateDoc),
+  ),
+  entry(
+    taskPlanSpec,
+    () => import("../../commands/task/plan.command.js").then((m) => m.runTaskPlan),
+    {
+      needsProject: false,
+      needsConfig: false,
+      needsTaskContext: false,
+    },
   ),
   entry(taskPlanSetSpec, (deps) =>
     import("../../commands/task/plan-set.command.js").then((m) =>

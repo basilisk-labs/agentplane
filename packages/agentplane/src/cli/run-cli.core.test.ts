@@ -537,6 +537,46 @@ describe("runCli", () => {
     }
   });
 
+  it("renders task namespace help instead of treating task as an unknown command", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "task"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("task - Task lifecycle and task-store commands.");
+      expect(io.stdout).toContain("agentplane task <subcommand> [args] [options]");
+      expect(io.stdout).toContain("agentplane task plan set <task-id> --text");
+      expect(io.stdout).toContain("agentplane finish ...");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("returns usage help for task root command", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Missing subcommand.");
+      expect(io.stderr).toContain("agentplane help task --compact");
+      expect(io.stderr).not.toContain("Unknown command: task");
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("returns usage help for task plan namespace", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["task", "plan"]);
+      expect(code).toBe(2);
+      expect(io.stderr).toContain("Missing subcommand.");
+      expect(io.stderr).toContain("agentplane help task plan --compact");
+      expect(io.stderr).not.toContain("Unknown command: task plan");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("returns usage error when --root is missing a value", async () => {
     const io = captureStdIO();
     try {

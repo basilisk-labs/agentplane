@@ -87,6 +87,7 @@ Commands:
     upgrade  Upgrade the local agentplane framework bundle in the repo.
   Task:
     ready  Report dependency readiness details for a task.
+    task  Task lifecycle and task-store commands.
     task add  Create one or more tasks with explicit ids (prints the created task ids).
     task close-duplicate  Close a task as a duplicate of another task with no-op bookkeeping metadata.
     task close-noop  Close a task as a verified no-op in one command.
@@ -103,6 +104,7 @@ Commands:
     task new  Create a new task (prints the generated task id).
     task next  List ready tasks (default status=TODO) with optional filters.
     task normalize  Normalize tasks in the configured backend (stable ordering and formatting).
+    task plan  Task plan commands (set/approve/reject).
     task plan approve  Approve the current task plan (enforces Verify Steps gating when configured).
     task plan reject  Reject the current task plan (requires a note).
     task plan set  Set a task plan (writes the Plan section and resets plan approval to pending).
@@ -150,6 +152,14 @@ Options:
 "
 `;
 
+exports[`runCli help snapshots (cli2) > help task --compact snapshot 1`] = `
+"task - Task lifecycle and task-store commands.
+
+Usage:
+  agentplane task <subcommand> [args] [options]
+"
+`;
+
 exports[`runCli help snapshots (cli2) > help task new --compact snapshot 1`] = `
 "task new - Create a new task (prints the generated task id).
 
@@ -164,6 +174,14 @@ Options:
   --tag <tag>  Repeatable. Adds a tag (must provide at least one). (repeatable, min=1)
   --depends-on <task-id>  Repeatable. Adds a dependency. Special-case: '[]' is treated as empty. (repeatable)
   --verify <command>  Repeatable. Verification commands/checks to run for this task. (repeatable)
+"
+`;
+
+exports[`runCli help snapshots (cli2) > help task plan --compact snapshot 1`] = `
+"task plan - Task plan commands (set/approve/reject).
+
+Usage:
+  agentplane task plan <set|approve|reject> [args] [options]
 "
 `;
 
