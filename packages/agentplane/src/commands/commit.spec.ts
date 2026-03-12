@@ -26,7 +26,8 @@ export type CommitParsed = {
 export const commitSpec: CommandSpec<CommitParsed> = {
   id: ["commit"],
   group: "Guard",
-  summary: "Create a git commit after validating policy and allowlist against staged changes.",
+  summary:
+    "Create a git commit after validating policy and allowlist; if the index is empty, stage matching allowlist paths first.",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
   options: [
     {

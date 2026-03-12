@@ -86,6 +86,9 @@ export async function stageAllowlist(opts: {
   tasksPath: string;
   workflowDir?: string;
   taskId?: string;
+  allowTaskOnly?: boolean;
+  emptyAllowMessage?: string;
+  noMatchMessage?: string;
 }): Promise<string[]> {
   const changed = await opts.ctx.git.statusChangedPaths();
   if (changed.length === 0) {
@@ -97,13 +100,6 @@ export async function stageAllowlist(opts: {
   }
 
   const allow = normalizeAllowPrefixes(opts.allow);
-  if (allow.length === 0) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Provide at least one allowed prefix",
-    });
-  }
   if (allow.includes(".")) {
     throw new CliError({
       exitCode: 2,
@@ -118,6 +114,13 @@ export async function stageAllowlist(opts: {
     taskId: opts.taskId,
   });
   const effectiveAllow = normalizeAllowPrefixes(opts.allowTasks ? [...allow, ...taskAllow] : allow);
+  if (effectiveAllow.length === 0 || (allow.length === 0 && opts.allowTaskOnly !== true)) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: opts.emptyAllowMessage ?? "Provide at least one allowed prefix",
+    });
+  }
   const denied = opts.allowTasks ? [] : taskAllow;
 
   const staged: string[] = [];
@@ -133,7 +136,7 @@ export async function stageAllowlist(opts: {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",
-      message: "No changes matched allowed prefixes (update --commit-allow)",
+      message: opts.noMatchMessage ?? "No changes matched allowed prefixes (update --commit-allow)",
     });
   }
 

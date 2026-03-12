@@ -102,6 +102,18 @@ describe("policy/evaluatePolicy", () => {
     expect(res.ok).toBe(true);
   });
 
+  it("allows task-only commit scope when --allow-tasks is set without explicit prefixes", () => {
+    const taskId = "202602071329-TEST01";
+    const res = evaluatePolicy(
+      makeCtx({
+        taskId,
+        git: { stagedPaths: [`.agentplane/tasks/${taskId}/README.md`] },
+        allow: { prefixes: [], allowTasks: true },
+      }),
+    );
+    expect(res.ok).toBe(true);
+  });
+
   it("does not silently allow unrelated task README files", () => {
     const taskId = "202602071329-TEST01";
     const otherTaskId = "202602071329-OTHER1";

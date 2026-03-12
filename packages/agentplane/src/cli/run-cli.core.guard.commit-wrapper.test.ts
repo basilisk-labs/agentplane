@@ -107,6 +107,88 @@ describe("runCli", () => {
     expect(stdout.trim()).toBe("✨ ABCDEF commit: wrapper command");
   });
 
+  it("commit wrapper auto-stages allowlist-scoped changes when the index is empty", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await mkdir(path.join(root, "src"), { recursive: true });
+    await writeFile(path.join(root, "src", "app.ts"), "export const x = 1;\n", "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit: auto stage allowlist",
+        "--allow",
+        "src",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("commit auto-staged 1 path(s) from allowlist");
+      expect(io.stdout).toContain("staged=src/app.ts");
+    } finally {
+      io.restore();
+    }
+
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+    expect(stdout.trim()).toBe("✨ ABCDEF commit: auto stage allowlist");
+  });
+
+  it("commit wrapper auto-stages active task artifacts with --allow-tasks even without explicit --allow", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    const taskId = "202601010101-ABCDEF";
+    const readme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Auto-stage active task artifact commit",
+        result_summary: "",
+        description: "desc",
+        status: "DOING",
+        priority: "medium",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["cli", "code"],
+        verify: [],
+        verification: null,
+        commit: null,
+        doc_version: 2,
+        doc_updated_at: "2026-03-12T00:00:00.000Z",
+        doc_updated_by: "CODER",
+      },
+      "## Summary\n\nUpdated\n",
+    );
+    await mkdir(path.join(root, ".agentplane", "tasks", taskId), { recursive: true });
+    await writeFile(path.join(root, ".agentplane", "tasks", taskId, "README.md"), readme, "utf8");
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        taskId,
+        "-m",
+        "✨ ABCDEF commit: auto stage active task artifact",
+        "--allow-tasks",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("commit auto-staged 1 path(s) from allowlist");
+      expect(io.stdout).toContain(`staged=.agentplane/tasks/${taskId}/README.md`);
+    } finally {
+      io.restore();
+    }
+
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+    expect(stdout.trim()).toBe("✨ ABCDEF commit: auto stage active task artifact");
+  });
+
   it("commit wrapper blocks AGENTS.md without allow-policy", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

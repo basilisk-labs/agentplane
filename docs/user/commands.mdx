@@ -165,6 +165,8 @@ agentplane finish <task-id> --author CODER --body "Verified: ..." --result "..."
 For any commit-capable command (`commit`, `guard commit`, `start/block/finish ... --commit-from-comment`):
 
 - Always pass explicit allowlist prefixes (`--allow` / `--commit-allow` / `--status-commit-allow`).
+- Top-level `agentplane commit` can auto-stage changed paths that match the provided allowlist when the git index starts empty.
+- `agentplane guard commit` remains staged-only; it validates the current index and never stages files for you.
 - Repo-wide prefix `.` is rejected by policy.
 - Fast path to build safe prefixes from current index:
 

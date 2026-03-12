@@ -227,4 +227,29 @@ describe("guard/impl/allow", () => {
       "src/app.ts",
     ]);
   });
+
+  it("stageAllowlist can admit task-only changes when allowTaskOnly=true", async () => {
+    const { stageAllowlist } = await import("./allow.js");
+    const ctx = {
+      git: {
+        statusChangedPaths: vi
+          .fn()
+          .mockResolvedValue([".agentplane/tasks/202601010101-ABCDEF/README.md"]),
+        stage: vi.fn().mockResolvedValue(),
+      },
+    };
+
+    const staged = await stageAllowlist({
+      ctx: ctx as never,
+      allow: [],
+      allowTasks: true,
+      allowTaskOnly: true,
+      tasksPath: ".agentplane/tasks.json",
+      workflowDir: ".agentplane/tasks",
+      taskId: "202601010101-ABCDEF",
+    });
+
+    expect(staged).toEqual([".agentplane/tasks/202601010101-ABCDEF/README.md"]);
+    expect(ctx.git.stage).toHaveBeenCalledWith([".agentplane/tasks/202601010101-ABCDEF/README.md"]);
+  });
 });

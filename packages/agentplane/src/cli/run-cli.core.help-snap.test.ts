@@ -76,6 +76,9 @@ describe("runCli help snapshots (cli2)", () => {
       const code = await runCli(["help", "commit", "--compact"]);
       expect(code).toBe(0);
       expect(io.stdout).toContain(
+        "Create a git commit after validating policy and allowlist; if the index is empty, stage matching allowlist paths first.",
+      );
+      expect(io.stdout).toContain(
         "Allow the tasks export snapshot plus artifacts under the active task subtree.",
       );
       expect(io.stdout).not.toContain(

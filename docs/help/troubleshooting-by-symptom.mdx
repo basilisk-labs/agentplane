@@ -27,6 +27,8 @@ description: "Common problems and how to fix them quickly."
   - `--allow <path-prefix>`
   - `--commit-allow <path-prefix>`
   - `--status-commit-allow <path-prefix>`
+- If top-level `agentplane commit` starts from an empty index, it auto-stages changed paths that match `--allow` / `--allow-tasks`.
+- `guard commit` and comment-driven lifecycle commits still use their existing staged/commit-specific flows.
 - Do not use repo-wide `.` prefix; it is blocked by policy.
 - Generate candidate prefixes from staged files:
   - `agentplane guard suggest-allow --format args`

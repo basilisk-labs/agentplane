@@ -32,8 +32,9 @@ vi.mock("./policy.js", () => ({ guardCommitCheck: mocks.guardCommitCheck }));
 function mkCtx() {
   return {
     resolvedProject: { gitRoot: "/repo" },
-    config: { paths: { workflow_dir: ".agentplane/tasks" } },
+    config: { paths: { tasks_path: ".agentplane/tasks.json", workflow_dir: ".agentplane/tasks" } },
     git: {
+      statusChangedPaths: vi.fn().mockResolvedValue([]),
       statusStagedPaths: vi.fn().mockResolvedValue([]),
       stage: vi.fn().mockResolvedValue(),
       commit: vi.fn().mockResolvedValue(),
@@ -155,6 +156,7 @@ describe("guard/impl/commands", () => {
   it("cmdCommit non-close path commits with env and provided ctx", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-1" });
     const rc = await cmdCommit({
       ctx: ctx as never,
@@ -276,9 +278,47 @@ describe("guard/impl/commands", () => {
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
   });
 
+  it("cmdCommit non-close auto-stages allowlist paths when the index is empty", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusChangedPaths.mockResolvedValue(["src/app.ts", "docs/readme.md"]);
+    ctx.git.headHashSubject.mockResolvedValue({
+      hash: "abcdef1234567890",
+      subject: "✅ ABC123 task: message",
+    });
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-6" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-6",
+      message: "✅ ABC123 task: message",
+      close: false,
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(ctx.git.stage).toHaveBeenCalledWith(["src/app.ts"]);
+    expect(mocks.guardCommitCheck).toHaveBeenCalledTimes(1);
+    expect(ctx.git.commit).toHaveBeenCalledWith({
+      message: "✅ ABC123 task: message",
+      env: { AGENTPLANE_TASK_ID: "T-6" },
+    });
+  });
+
   it("cmdCommit maps unknown errors via mapCoreError when not git-commit shaped", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
     const mapped = new CliError({
       exitCode: exitCodeForError("E_IO"),
       code: "E_IO",

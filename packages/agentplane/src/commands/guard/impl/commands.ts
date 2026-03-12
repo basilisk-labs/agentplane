@@ -1,5 +1,5 @@
 import { mapCoreError } from "../../../cli/error-map.js";
-import { successMessage } from "../../../cli/output.js";
+import { infoMessage, successMessage } from "../../../cli/output.js";
 import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
@@ -7,7 +7,7 @@ import { loadTaskFromContext } from "../../shared/task-backend.js";
 import { execFileAsync, gitEnv } from "../../shared/git.js";
 import { ensureReconciledBeforeMutation } from "../../shared/reconcile-check.js";
 
-import { suggestAllowPrefixes } from "./allow.js";
+import { stageAllowlist, suggestAllowPrefixes } from "./allow.js";
 import { buildCloseCommitMessage, taskReadmePathForTask } from "./close-message.js";
 import { buildGitCommitEnv } from "./env.js";
 import { guardCommitCheck, type GuardCommitOptions } from "./policy.js";
@@ -66,6 +66,10 @@ function commitFailureDiagnostic(phase: CommitFailurePhase): {
     state: "git rejected the requested task-scoped commit",
     likelyCause: "a hook or commit policy blocked the staged changes after guard validation passed",
   };
+}
+
+function hasExplicitCommitScope(opts: { allow: string[]; allowTasks: boolean }): boolean {
+  return opts.allow.some((prefix) => prefix.trim().length > 0) || opts.allowTasks;
 }
 
 function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliError | null {
@@ -309,6 +313,37 @@ export async function cmdCommit(opts: {
 
     await ensureReconciledBeforeMutation({ ctx, command: "commit" });
 
+    let autoStaged: string[] = [];
+    const staged = await ctx.git.statusStagedPaths();
+    if (staged.length === 0) {
+      if (!hasExplicitCommitScope(opts)) {
+        throw new CliError({
+          exitCode: 2,
+          code: "E_USAGE",
+          message:
+            "No staged files and no commit allowlist. Pass --allow <path-prefix>, use --allow-tasks for active task artifacts, or stage files manually.",
+        });
+      }
+      autoStaged = await stageAllowlist({
+        ctx,
+        allow: opts.allow,
+        allowTasks: opts.allowTasks,
+        tasksPath: ctx.config.paths.tasks_path,
+        workflowDir: ctx.config.paths.workflow_dir,
+        taskId: opts.taskId,
+        allowTaskOnly: true,
+        emptyAllowMessage:
+          "No staged files and no commit allowlist. Pass --allow <path-prefix>, use --allow-tasks for active task artifacts, or stage files manually.",
+        noMatchMessage:
+          "No changed files matched the commit allowlist (adjust --allow / --allow-tasks or stage files manually).",
+      });
+      if (!opts.quiet) {
+        process.stdout.write(
+          `${infoMessage(`commit auto-staged ${autoStaged.length} path(s) from allowlist`)}\n`,
+        );
+      }
+    }
+
     await guardCommitCheck({
       ctx,
       cwd: opts.cwd,
@@ -340,7 +375,11 @@ export async function cmdCommit(opts: {
     if (!opts.quiet) {
       const { hash, subject } = await ctx.git.headHashSubject();
       process.stdout.write(
-        `${successMessage("committed", `${hash?.slice(0, 12) ?? ""} ${subject ?? ""}`.trim())}\n`,
+        `${successMessage(
+          "committed",
+          `${hash?.slice(0, 12) ?? ""} ${subject ?? ""}`.trim(),
+          autoStaged.length > 0 ? `staged=${autoStaged.join(", ")}` : undefined,
+        )}\n`,
       );
     }
     return 0;

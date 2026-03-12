@@ -7,11 +7,21 @@ import type { PolicyContext, PolicyResult } from "../types.js";
 export function allowlistRule(ctx: PolicyContext): PolicyResult {
   const allowRaw = ctx.allow?.prefixes ?? [];
   const staged = ctx.git.stagedPaths ?? [];
+  const allow = allowRaw.map((p) => normalizeGitPathPrefix(p));
+  const taskAllow =
+    ctx.allow?.allowTasks === true
+      ? taskArtifactPrefixes({
+          tasksPath: ctx.config.paths.tasks_path,
+          workflowDir: ctx.config.paths.workflow_dir,
+          taskId: ctx.taskId,
+        })
+      : [];
+  const effectiveAllow = [...new Set([...allow, ...taskAllow])];
 
   if (staged.length === 0) {
     return { ok: false, errors: [gitError("No staged files (git index empty)")], warnings: [] };
   }
-  if (allowRaw.length === 0) {
+  if (effectiveAllow.length === 0) {
     const message =
       ctx.action === "guard_commit" || ctx.action === "commit"
         ? "Provide at least one --allow <path> prefix"
@@ -23,16 +33,6 @@ export function allowlistRule(ctx: PolicyContext): PolicyResult {
     };
   }
 
-  const allow = allowRaw.map((p) => normalizeGitPathPrefix(p));
-  const taskAllow =
-    ctx.allow?.allowTasks === true
-      ? taskArtifactPrefixes({
-          tasksPath: ctx.config.paths.tasks_path,
-          workflowDir: ctx.config.paths.workflow_dir,
-          taskId: ctx.taskId,
-        })
-      : [];
-  const effectiveAllow = [...new Set([...allow, ...taskAllow])];
   if (effectiveAllow.includes(".")) {
     return {
       ok: false,
