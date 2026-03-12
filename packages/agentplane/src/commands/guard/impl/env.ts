@@ -2,6 +2,7 @@ export function buildGitCommitEnv(opts: {
   taskId: string;
   agentId?: string;
   statusTo?: string;
+  taskEmoji?: string;
   allowTasks: boolean;
   allowBase: boolean;
   allowPolicy: boolean;
@@ -14,6 +15,7 @@ export function buildGitCommitEnv(opts: {
     AGENTPLANE_TASK_ID: opts.taskId,
     ...(opts.agentId ? { AGENTPLANE_AGENT_ID: opts.agentId } : null),
     ...(opts.statusTo ? { AGENTPLANE_STATUS_TO: opts.statusTo } : null),
+    ...(opts.taskEmoji ? { AGENTPLANE_TASK_EMOJI: opts.taskEmoji } : null),
     AGENTPLANE_ALLOW_TASKS: opts.allowTasks ? "1" : "0",
     AGENTPLANE_ALLOW_BASE: opts.allowBase ? "1" : "0",
     AGENTPLANE_ALLOW_POLICY: opts.allowPolicy ? "1" : "0",

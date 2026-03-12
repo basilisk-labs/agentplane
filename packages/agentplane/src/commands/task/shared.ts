@@ -49,7 +49,7 @@ export {
   readHeadCommit,
   readCommitInfo,
   defaultCommitEmojiForStatus,
-  defaultCommitEmojiForAgentId,
+  defaultCommitEmojiForTask,
 } from "./shared/transitions.js";
 export {
   type TaskListFilters,

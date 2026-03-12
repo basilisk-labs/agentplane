@@ -21,7 +21,7 @@ import {
   ensureCommentCommitAllowed,
   ensureStatusTransitionAllowed,
   extractTaskObservationSection,
-  defaultCommitEmojiForAgentId,
+  defaultCommitEmojiForTask,
   extractDocSection,
   isVerifyStepsFilled,
   normalizeTaskDocVersion,
@@ -234,7 +234,7 @@ export async function cmdStart(opts: {
         if (lockAgent) executorAgent = lockAgent;
       }
 
-      const expectedEmoji = await defaultCommitEmojiForAgentId(ctx, executorAgent);
+      const expectedEmoji = defaultCommitEmojiForTask(task);
       if (typeof opts.commitEmoji === "string" && opts.commitEmoji.trim() !== expectedEmoji) {
         throw new CliError({
           exitCode: 2,
@@ -242,7 +242,7 @@ export async function cmdStart(opts: {
           message: invalidValueMessage(
             "--commit-emoji",
             opts.commitEmoji,
-            `${expectedEmoji} (executor agent=${executorAgent})`,
+            `${expectedEmoji} (semantic task emoji for ${opts.taskId})`,
           ),
         });
       }
@@ -260,6 +260,7 @@ export async function cmdStart(opts: {
         commentBody: opts.body,
         formattedComment,
         emoji: opts.commitEmoji ?? expectedEmoji,
+        taskEmoji: expectedEmoji,
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,

@@ -7,6 +7,7 @@ import {
   VERIFY_STEPS_PLACEHOLDER,
   appendTaskEvent,
   buildDependencyState,
+  defaultCommitEmojiForTask,
   defaultCommitEmojiForStatus,
   enforceStatusCommitPolicy,
   ensurePlanApprovedIfRequired,
@@ -441,6 +442,24 @@ describe("task shared helpers", () => {
     expect(defaultCommitEmojiForStatus("done")).toBe("✅");
     expect(defaultCommitEmojiForStatus("blocked")).toBe("⛔");
     expect(defaultCommitEmojiForStatus("todo")).toBe("🧩");
+  });
+
+  it("defaultCommitEmojiForTask derives a stable semantic emoji from task meaning", () => {
+    const docsTask = mkTask({
+      id: "202603121545-ABC123",
+      title: "Update docs README summary",
+      description: "Refresh help text and documentation examples for the CLI.",
+      tags: ["cli", "docs"],
+    });
+    const testTask = mkTask({
+      id: "202603121545-XYZ789",
+      title: "Add regression tests for hook validation",
+      description: "Cover commit-msg and lifecycle regressions.",
+      tags: ["test", "hooks"],
+    });
+    expect(defaultCommitEmojiForTask(docsTask)).toBe("📝");
+    expect(defaultCommitEmojiForTask(testTask)).toBe("🧪");
+    expect(defaultCommitEmojiForTask(testTask)).toBe(defaultCommitEmojiForTask(testTask));
   });
 
   it("parseTaskListFilters parses flags and rejects invalid inputs", () => {

@@ -150,6 +150,7 @@ describe("commitFromComment", () => {
       commentBody: "Start: implement commit from comment",
       formattedComment: "Start: implement commit from comment",
       emoji: "🚧",
+      taskEmoji: "🚧",
       allow: ["src"],
       autoAllow: false,
       allowTasks: false,
@@ -166,6 +167,7 @@ describe("commitFromComment", () => {
     expect(commitCall?.body).toContain("Primary: code");
     expect(commitCall?.body).toContain("Status: DOING");
     expect(commitCall?.body).toContain("Comment: Start: implement commit from comment");
+    expect(commitCall?.env?.AGENTPLANE_TASK_EMOJI).toBe("🚧");
     expect(result.hash).toBe("1234567890abcdef");
     expect(result.message).toContain("2S7HGD code:");
     expect(result.staged).toEqual(["src/app.ts"]);

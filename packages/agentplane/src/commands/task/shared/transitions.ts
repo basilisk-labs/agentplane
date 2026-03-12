@@ -1,15 +1,13 @@
 import { execFile } from "node:child_process";
-import path from "node:path";
 import { promisify } from "node:util";
 
 import type { AgentplaneConfig } from "@agentplaneorg/core";
 
 import { warnMessage } from "../../../cli/output.js";
-import { resolveCommitEmojiForAgent } from "../../../shared/agent-emoji.js";
 import { CliError } from "../../../shared/errors.js";
 import { parseGitLogHashSubject } from "../../../shared/git-log.js";
+import { resolveCommitEmojiForTask } from "../../../shared/agent-emoji.js";
 import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
-import type { CommandContext } from "../../shared/task-backend.js";
 import { requiresVerificationByPrimary, toStringArray } from "./tags.js";
 
 const execFileAsync = promisify(execFile);
@@ -215,10 +213,13 @@ export function defaultCommitEmojiForStatus(status: string): string {
   return "🧩";
 }
 
-export async function defaultCommitEmojiForAgentId(
-  ctx: CommandContext,
-  agentId: string,
-): Promise<string> {
-  const agentsDir = path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.agents_dir);
-  return await resolveCommitEmojiForAgent({ agentsDirAbs: agentsDir, agentId });
+export function defaultCommitEmojiForTask(
+  task: Pick<TaskData, "id" | "title" | "description" | "tags">,
+): string {
+  return resolveCommitEmojiForTask({
+    taskId: task.id,
+    title: task.title,
+    description: task.description,
+    tags: toStringArray(task.tags),
+  });
 }
