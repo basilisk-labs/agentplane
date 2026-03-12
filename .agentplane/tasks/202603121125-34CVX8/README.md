@@ -1,7 +1,8 @@
 ---
 id: "202603121125-34CVX8"
 title: "Patch stabilization: sync ledger and prose docs to current runtime"
-status: "DOING"
+result_summary: "Ledger and prose docs now describe the shipped patch behavior and current remaining gaps accurately."
+status: "DONE"
 priority: "med"
 owner: "DOCS"
 depends_on:
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-12T11:57:32.142Z"
   updated_by: "DOCS"
   note: "Verified ledger and prose docs against current patch behavior."
-commit: null
+commit:
+  hash: "35551b3248819f74c1d05941f1b413d4b0277804"
+  message: "📝 34CVX8 docs: sync patch ledger and troubleshooting prose"
 comments:
   -
     author: "DOCS"
     body: "Start: refresh the bug ledger and remaining prose docs so they describe the shipped patch behavior, the current remaining gaps, and the now-narrowed fast-CI and commit diagnostics story accurately."
+  -
+    author: "DOCS"
+    body: "Verified: the bug ledger and command/troubleshooting prose now match the shipped patch behavior for commit allowlists, formatter/lint hook diagnostics, and fast-CI bucket routing."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "DOCS"
     state: "ok"
     note: "Verified ledger and prose docs against current patch behavior."
+  -
+    type: "status"
+    at: "2026-03-12T11:58:18.686Z"
+    author: "DOCS"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the bug ledger and command/troubleshooting prose now match the shipped patch behavior for commit allowlists, formatter/lint hook diagnostics, and fast-CI bucket routing."
 doc_version: 3
-doc_updated_at: "2026-03-12T11:57:32.143Z"
+doc_updated_at: "2026-03-12T11:58:18.686Z"
 doc_updated_by: "DOCS"
 description: "Refresh the developer bug ledger and remaining release-facing prose docs so they match the actual CLI behavior shipped after the latest stabilization fixes."
 id_source: "generated"
