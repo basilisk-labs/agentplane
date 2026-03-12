@@ -1,0 +1,94 @@
+---
+slug: release-0-3-5-readme-v3-docs-shell-and-backend-projection
+title: "AgentPlane 0.3.5: README v3 settles in, docs shell tightens up, backends go projection-first"
+description: "What changed in AgentPlane 0.3.5, in plain language: README v3 became the active contract, docs pages got calmer on wide layouts, and Redmine-backed repos stopped hiding network reads inside ordinary task commands."
+authors: [team]
+tags: [release, docs, backend]
+---
+
+AgentPlane `0.3.5` is the release where a few important surfaces stop behaving like half-finished transitions.
+
+That matters because `0.3.x` has been doing two kinds of work at once: tightening the repository workflow contract, and making the public product behave like an installed tool instead of a framework-internal script bundle. In `0.3.5`, several of those moving parts finally line up.
+
+<!-- truncate -->
+
+## README v3 is no longer “the new shape.” It is the shape.
+
+The first practical change in `0.3.5` is that README v3 stops being one task-document format among several partially live ones.
+
+The repository config, schema defaults, templates, migration tooling, and task-facing docs now point at the same active structure:
+
+- `Summary`
+- `Scope`
+- `Plan`
+- `Verify Steps`
+- `Verification`
+- `Rollback Plan`
+- `Findings`
+
+That sounds procedural. It is also important operational cleanup. A workflow tool should not make users guess which task-document contract is current.
+
+`0.3.5` closes the last mixed-contract gaps and makes migration behave more predictably for repositories that still carry legacy README v2 task records.
+
+## The docs shell stops fighting the page
+
+Another visible improvement in `0.3.5` is the documentation frame itself.
+
+This release hardens the docs shell so it depends on repo-owned hooks and stable wrappers instead of brittle theme-generated selectors. That sounds technical, but it shows up in user-facing ways:
+
+- wider reading gutters on large layouts,
+- less decorative chrome around the docs frame,
+- no right-side subsection map competing for attention,
+- a sidebar that stays aligned under the navbar instead of drifting underneath it.
+
+This is the right kind of docs work for a patch release. Not a redesign. Just fewer layout oddities and less theme-fragile CSS.
+
+## Projection-first backends become real product behavior
+
+The backend story also gets noticeably cleaner in `0.3.5`.
+
+Before this release, external backends were still too easy to think about as “network-backed task commands with some local caching around them.” That is the wrong model for an install-first tool.
+
+`0.3.5` makes the intended contract more explicit:
+
+- the backend owns a canonical source,
+- the repo keeps a local projection,
+- ordinary task reads happen from that projection,
+- explicit sync is the network boundary,
+- `.agentplane/tasks.json` is an export snapshot, not the canonical task source.
+
+In practical terms, Redmine-backed repos stop performing hidden refreshes during ordinary `task list`, `task show`, and `doctor` flows. Reads stay local until the operator explicitly runs a backend sync.
+
+That is calmer, cheaper, and easier to reason about.
+
+## Doctor and migration are less misleading now
+
+Two smaller fixes in this release matter more than they sound.
+
+First, `doctor` now evaluates migration state from the right backend-aware projection path instead of trusting a possibly stale export snapshot.
+
+Second, `task migrate-doc` now keeps the exported task snapshot synchronized through the active backend flow instead of depending on a `local`-only special case.
+
+Together, those changes reduce a class of “everything looks clean, but the repo is actually out of sync” problems that are disproportionately annoying in patch-level workflow tooling.
+
+## The practical shift
+
+`0.3.5` is not a feature-spike release. It is a convergence release.
+
+It makes three things truer than they were before:
+
+- README v3 is the actual active contract,
+- docs pages are less fragile and easier to read,
+- external backends behave like projection-first runtime surfaces instead of implicit network clients.
+
+That is exactly the kind of tightening a patch line should deliver.
+
+## Upgrade note
+
+There is no breaking workflow-mode change in `0.3.5`.
+
+Repositories already on README v3 do not need a new manual migration step. Repositories that still carry legacy README v2 task docs can continue to use `agentplane task migrate-doc --all`, and the migration flow now keeps the projection snapshot synchronized through the active backend path.
+
+If you use Redmine, the intended boundary is now sharper: ordinary reads stay local, while `agentplane backend sync redmine --direction pull` remains the explicit refresh path.
+
+The formal source record remains the release notes at [`/docs/releases/v0.3.5`](/docs/releases/v0.3.5).

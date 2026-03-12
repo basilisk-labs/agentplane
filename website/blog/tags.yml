@@ -12,3 +12,13 @@ operations:
   label: Operations
   permalink: /operations
   description: CI, deployment, and reliability guidance.
+
+docs:
+  label: Docs
+  permalink: /docs
+  description: Documentation surface, information architecture, and public content changes.
+
+backend:
+  label: Backend
+  permalink: /backend
+  description: Backend projection, sync behavior, and external task-source integration.

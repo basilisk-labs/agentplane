@@ -51,7 +51,7 @@
   --chrome-radius-control: 12px;
   --docs-shell-column-gap: 0px;
   --docs-shell-outer-gutter: 0px;
-  --docs-sidebar-top-offset: 6rem;
+  --docs-sidebar-top-offset: 5.25rem;
   --docs-navbar-clearance: calc(var(--ifm-navbar-height) + 1.45rem);
 }
 
@@ -508,12 +508,15 @@ nav[aria-label="Breadcrumbs"] {
   .ap-doc-layout-wrap .row > .col:first-child {
     display: block;
     flex: 1 1 auto;
+    padding-left: 1.35rem;
     width: 100%;
   }
 
   .theme-doc-markdown.markdown {
     margin-inline: auto;
     max-width: var(--content-width);
+    padding-left: 0;
+    padding-right: 0;
     width: 100%;
   }
 

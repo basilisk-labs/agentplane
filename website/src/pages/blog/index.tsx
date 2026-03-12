@@ -4,6 +4,14 @@ import styles from "./index.module.css";
 
 const releaseLineEntries = [
   {
+    href: "/blog/release-0-3-5-readme-v3-docs-shell-and-backend-projection",
+    title:
+      "AgentPlane 0.3.5: README v3 settles in, docs shell tightens up, backends go projection-first",
+    excerpt:
+      "Why README v3 is now the actual task-doc contract, why docs pages feel calmer on wide layouts, and why Redmine-backed repos stopped hiding network reads inside ordinary task commands.",
+    meta: "Release journal • 6 min read",
+  },
+  {
     href: "/blog/release-0-3-4-install-first-startup-and-upgrade-repair",
     title: "AgentPlane 0.3.4: install-first startup, upgrade repair, cleaner role surfaces",
     excerpt:
