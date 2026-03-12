@@ -1,7 +1,8 @@
 ---
 id: "202603111910-SHZ4ZD"
 title: "Restyle init welcome dialog with OpenClaw framing"
-status: "DOING"
+result_summary: "Init welcome UI now renders an OpenClaw-style framed rail block after the ASCII art."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-11T19:16:13.201Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts; Result: pass; Evidence: 2 tests passed. Scope: init UI renderer/tests. Command: bun --eval renderInitWelcome/renderInitSection sanity-check; Result: pass; Evidence: rendered framed rail layout matched the intended style. Scope: terminal presentation sanity-check."
-commit: null
+commit:
+  hash: "25b0dcad31b6354a5bbfdfb04c05ed3cd816a391"
+  message: "🛠️ SHZ4ZD cli: restyle init welcome dialog"
 comments:
   -
     author: "CODER"
     body: "Start: implement the OpenClaw-style framed welcome block for init UI."
+  -
+    author: "CODER"
+    body: "Verified: init welcome dialog now uses framed rail styling and the targeted UI tests passed."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli/commands/init/ui.test.ts; Result: pass; Evidence: 2 tests passed. Scope: init UI renderer/tests. Command: bun --eval renderInitWelcome/renderInitSection sanity-check; Result: pass; Evidence: rendered framed rail layout matched the intended style. Scope: terminal presentation sanity-check."
+  -
+    type: "status"
+    at: "2026-03-12T06:18:30.674Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: init welcome dialog now uses framed rail styling and the targeted UI tests passed."
 doc_version: 3
-doc_updated_at: "2026-03-11T19:16:13.203Z"
+doc_updated_at: "2026-03-12T06:18:30.674Z"
 doc_updated_by: "CODER"
 description: "Update the interactive init welcome screen to add a framed, left-rail terminal callout after the ASCII art."
 id_source: "generated"
