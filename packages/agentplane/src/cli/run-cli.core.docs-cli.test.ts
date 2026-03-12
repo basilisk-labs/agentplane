@@ -57,6 +57,10 @@ describe("runCli docs cli", () => {
       expect(text).toContain("# CLI Reference (Generated)");
       expect(text).toContain("## Task");
       expect(text).toContain("### task new");
+      expect(text).toContain(
+        "Allow the tasks export snapshot plus artifacts under the active task subtree.",
+      );
+      expect(text).not.toContain("Allow task workflow artifacts (tasks/ and .agentplane/tasks/).");
 
       await runBunx(["prettier", "--write", outPath], root);
       const formatted = await readFile(outPath, "utf8");

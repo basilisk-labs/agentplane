@@ -97,7 +97,8 @@ export const taskSetStatusSpec: CommandSpec<TaskSetStatusParsed> = {
       kind: "boolean",
       name: "commit-allow-tasks",
       default: true,
-      description: "Allow committing under .agentplane/tasks when commit-from-comment is used.",
+      description:
+        "Allow the tasks export snapshot plus artifacts under the active task subtree when commit-from-comment is used.",
     },
     {
       kind: "boolean",

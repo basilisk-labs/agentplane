@@ -70,6 +70,38 @@ describe("runCli help snapshots (cli2)", () => {
     }
   });
 
+  it("help commit --compact reflects active-task allow-tasks semantics", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "commit", "--compact"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(
+        "Allow the tasks export snapshot plus artifacts under the active task subtree.",
+      );
+      expect(io.stdout).not.toContain(
+        "Allow task workflow artifacts (tasks/ and .agentplane/tasks/).",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("help guard commit --compact reflects active-task allow-tasks semantics", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "guard", "commit", "--compact"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain(
+        "Allow the tasks export snapshot plus artifacts under the active task subtree.",
+      );
+      expect(io.stdout).not.toContain(
+        "Allow task workflow artifacts (tasks/ and .agentplane/tasks/).",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("help recipes install --compact snapshot", async () => {
     const io = captureStdIO();
     try {

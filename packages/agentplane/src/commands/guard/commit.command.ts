@@ -57,7 +57,7 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
       kind: "boolean",
       name: "allow-tasks",
       default: false,
-      description: "Allow task workflow artifacts (tasks/ and .agentplane/tasks/).",
+      description: "Allow the tasks export snapshot plus artifacts under the active task subtree.",
     },
     {
       kind: "boolean",
