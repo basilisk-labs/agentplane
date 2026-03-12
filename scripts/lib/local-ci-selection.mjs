@@ -1,3 +1,7 @@
+import { readdirSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
 const DOCS_ONLY_PATTERNS = [
   /^docs\//,
   /^website\//,
@@ -52,11 +56,20 @@ const CLI_HELP_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/spec\//,
   /^packages\/agentplane\/src\/cli\/shared\//,
 ];
+const CLI_HELP_DISCOVERY_PATTERNS = [
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:docs-cli|help-contract|help-snap)\.test\.ts$/,
+];
 
 const CLI_CORE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\/(?!commands\/init\/)/,
   /^packages\/agentplane\/src\/cli\/run-cli\.test-helpers\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta|misc|pr-flow)\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
+];
+const CLI_CORE_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta|misc|pr-flow)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
@@ -91,6 +104,10 @@ const UPGRADE_BUCKET_PATTERNS = [
 
 const GUARD_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/guard\//,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.guard(?:\..+)?\.test\.ts$/,
+];
+const GUARD_DISCOVERY_PATTERNS = [
+  /^packages\/agentplane\/src\/commands\/guard\/.+\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.guard(?:\..+)?\.test\.ts$/,
 ];
 
@@ -134,6 +151,46 @@ const HOOKS_TEST_FILES = [
   "packages/agentplane/src/cli/pre-commit-staged-files.test.ts",
 ];
 const WORKFLOW_TEST_FILES = [];
+const SELECTOR_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+
+function normalizeRepoPath(value) {
+  return value.split(path.sep).join("/");
+}
+
+function listRepoFiles(relativeDir) {
+  const root = path.join(SELECTOR_ROOT, relativeDir);
+  const files = [];
+  const pending = [root];
+
+  while (pending.length > 0) {
+    const current = pending.pop();
+    if (!current) continue;
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const absolute = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        pending.push(absolute);
+        continue;
+      }
+      if (!entry.isFile()) continue;
+      files.push(normalizeRepoPath(path.relative(SELECTOR_ROOT, absolute)));
+    }
+  }
+
+  return files.toSorted((a, b) => a.localeCompare(b));
+}
+
+function discoverTestFiles(relativeDirs, patterns) {
+  const matches = new Set();
+  for (const relativeDir of relativeDirs) {
+    for (const filePath of listRepoFiles(relativeDir)) {
+      if (patterns.some((pattern) => pattern.test(filePath))) {
+        matches.add(filePath);
+      }
+    }
+  }
+  return [...matches].toSorted((a, b) => a.localeCompare(b));
+}
+
 const CLI_HELP_TEST_FILES = [
   "packages/agentplane/src/cli/command-guide.test.ts",
   "packages/agentplane/src/cli/cli-contract.test.ts",
@@ -146,23 +203,10 @@ const CLI_HELP_TEST_FILES = [
   "packages/agentplane/src/cli/spec/registry.test.ts",
   "packages/agentplane/src/cli/spec/suggest.test.ts",
   "packages/agentplane/src/cli/shared/ansi.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
+  ...discoverTestFiles(["packages/agentplane/src/cli"], CLI_HELP_DISCOVERY_PATTERNS),
 ];
 const CLI_CORE_TEST_FILES = [
-  "packages/agentplane/src/cli/run-cli.core.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.boot.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.misc.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.tasks.export.test.ts",
+  ...discoverTestFiles(["packages/agentplane/src/cli"], CLI_CORE_DISCOVERY_PATTERNS),
   "packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts",
 ];
 const CLI_RUNTIME_TEST_FILES = [
@@ -193,16 +237,10 @@ const UPGRADE_TEST_FILES = [
   "packages/agentplane/src/commands/upgrade.tarball-url.unit.test.ts",
   "packages/agentplane/src/commands/upgrade.unit.test.ts",
 ];
-const GUARD_TEST_FILES = [
-  "packages/agentplane/src/commands/guard/index.test.ts",
-  "packages/agentplane/src/commands/guard/impl/allow.test.ts",
-  "packages/agentplane/src/commands/guard/impl/comment-commit.test.ts",
-  "packages/agentplane/src/commands/guard/impl/commands.unit.test.ts",
-  "packages/agentplane/src/commands/guard/impl/policy.test.ts",
-  "packages/agentplane/src/commands/guard/impl/close-message.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.guard.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
-];
+const GUARD_TEST_FILES = discoverTestFiles(
+  ["packages/agentplane/src/commands/guard", "packages/agentplane/src/cli"],
+  GUARD_DISCOVERY_PATTERNS,
+);
 const CLI_DOCS_RELEVANT_PATTERNS = [
   /^packages\/agentplane\/src\/cli\//,
   /^packages\/agentplane\/src\/commands\/.+(?:command|spec)\.ts$/,
