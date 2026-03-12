@@ -1,7 +1,8 @@
 ---
 id: "202603121302-8FQYFN"
 title: "Cleanup phase: deduplicate no-op and duplicate task close paths"
-status: "DOING"
+result_summary: "Extracted a shared no-op closure helper for close-noop and close-duplicate, removing duplicated DONE/comment/event/result update logic without changing command contracts."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-12T13:39:50.199Z"
+  updated_by: "CODER"
+  note: "Deduplicated the close-noop and close-duplicate write path behind a shared helper, reran targeted close-path CLI tests (3 assertions in run-cli.core.tasks), linted the touched command files, and rebuilt @agentplaneorg/core plus agentplane."
+commit:
+  hash: "286b21f594923c9cb3b51cf2ebc82c0a5ec26e89"
+  message: "🚧 8FQYFN task: dedupe close no-op paths"
 comments:
   -
     author: "CODER"
     body: "Start: deduplicate close-noop and close-duplicate behind a shared internal helper while preserving their separate CLI behavior and task side effects."
+  -
+    author: "CODER"
+    body: "Verified: close-noop and close-duplicate now share one internal verified-closure write path while their CLI behavior and outputs remain unchanged."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: deduplicate close-noop and close-duplicate behind a shared internal helper while preserving their separate CLI behavior and task side effects."
+  -
+    type: "verify"
+    at: "2026-03-12T13:39:50.199Z"
+    author: "CODER"
+    state: "ok"
+    note: "Deduplicated the close-noop and close-duplicate write path behind a shared helper, reran targeted close-path CLI tests (3 assertions in run-cli.core.tasks), linted the touched command files, and rebuilt @agentplaneorg/core plus agentplane."
+  -
+    type: "status"
+    at: "2026-03-12T13:40:00.951Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: close-noop and close-duplicate now share one internal verified-closure write path while their CLI behavior and outputs remain unchanged."
 doc_version: 3
-doc_updated_at: "2026-03-12T13:37:17.522Z"
+doc_updated_at: "2026-03-12T13:40:00.951Z"
 doc_updated_by: "CODER"
 description: "Extract a shared helper for task close-noop and close-duplicate so the no-op close flows share approval, status guard, event append, and write semantics without changing their CLI contract."
 id_source: "generated"
@@ -65,6 +84,14 @@ Extract a shared helper for task close-noop and close-duplicate so the no-op clo
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-12T13:39:50.199Z — VERIFY — ok
+
+By: CODER
+
+Note: Deduplicated the close-noop and close-duplicate write path behind a shared helper, reran targeted close-path CLI tests (3 assertions in run-cli.core.tasks), linted the touched command files, and rebuilt @agentplaneorg/core plus agentplane.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-12T13:37:17.522Z, excerpt_hash=sha256:cd7a4632794990e88cf241a6ef0474d5ab465e1ace7c8c2659c483702f850179
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
