@@ -1,7 +1,8 @@
 ---
 id: "202603121423-S03JVX"
 title: "Normalize escaped multiline task text"
-status: "DOING"
+result_summary: "normalize escaped multiline task text"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-12T14:58:27.185Z"
   updated_by: "CODER"
   note: "Inline task text now decodes escaped newlines consistently across doc and plan writes; unit, command, CLI, help, docs, lint, and both builds passed."
-commit: null
+commit:
+  hash: "e73886e5a6574c3a50f37b5adff987497013b656"
+  message: "🚧 S03JVX task: normalize escaped multiline task text"
 comments:
   -
     author: "CODER"
     body: "Start: normalize escaped multiline inline text for task doc and plan commands."
+  -
+    author: "CODER"
+    body: "Verified: inline task text now decodes escaped newlines consistently across task doc and task plan writes, and help/docs describe the contract explicitly."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Inline task text now decodes escaped newlines consistently across doc and plan writes; unit, command, CLI, help, docs, lint, and both builds passed."
+  -
+    type: "status"
+    at: "2026-03-12T14:58:55.401Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: inline task text now decodes escaped newlines consistently across task doc and task plan writes, and help/docs describe the contract explicitly."
 doc_version: 3
-doc_updated_at: "2026-03-12T14:58:27.186Z"
+doc_updated_at: "2026-03-12T14:58:55.401Z"
 doc_updated_by: "CODER"
 description: "Unify inline --text handling for task doc/plan commands so literal \\n sequences follow the documented multiline contract instead of being written verbatim."
 id_source: "generated"
