@@ -24,6 +24,12 @@ import { decodeEscapedTaskTextNewlines } from "./shared.js";
 
 type TaskDocSetOutcome = "section-updated" | "full-doc-updated" | "no-change";
 
+function extractSectionTextForPatch(doc: string, section: string): string | null {
+  const { sections } = parseDocSections(doc);
+  const entry = sections.get(normalizeDocSectionName(section));
+  return entry ? entry.lines.join("\n").trimEnd() : null;
+}
+
 function buildUpdatedTaskDoc(opts: {
   baseDocRaw: string;
   section?: string;
@@ -156,7 +162,9 @@ export async function cmdTaskDocSet(opts: {
         : "section";
     let changed = false;
     if (useStore) {
-      const result = await store!.update(opts.taskId, (current) => {
+      let expectedCurrentDoc: string | undefined;
+      let expectedCurrentSectionText: string | null | undefined;
+      const result = await store!.patch(opts.taskId, (current) => {
         const currentDocRaw = String(current.doc ?? "");
         const nextDoc = buildUpdatedTaskDoc({
           baseDocRaw: currentDocRaw,
@@ -169,11 +177,39 @@ export async function cmdTaskDocSet(opts: {
         });
         const docChanged = normalizeTaskDoc(currentDocRaw) !== normalizeTaskDoc(nextDoc);
         const shouldWrite = docChanged || updatedBy !== undefined;
-        if (!shouldWrite) return current;
+        if (!shouldWrite) return null;
+        if (!docChanged) {
+          return {
+            docMeta: {
+              touch: true,
+              ...(updatedBy ? { updatedBy } : {}),
+            },
+          };
+        }
+        if (requestMode === "full-doc") {
+          expectedCurrentDoc ??= currentDocRaw;
+          return {
+            doc: {
+              kind: "replace-doc",
+              doc: nextDoc,
+              expectedCurrentDoc,
+            },
+            ...(updatedBy ? { docMeta: { updatedBy } } : {}),
+          };
+        }
+        expectedCurrentSectionText ??= extractSectionTextForPatch(
+          currentDocRaw,
+          opts.section ?? "",
+        );
         return {
-          ...current,
-          doc: nextDoc,
-          ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
+          doc: {
+            kind: "set-section",
+            section: opts.section ?? "",
+            text: extractSectionTextForPatch(nextDoc, opts.section ?? "") ?? "",
+            requiredSections: config.tasks.doc.required_sections,
+            expectedCurrentText: expectedCurrentSectionText,
+          },
+          ...(updatedBy ? { docMeta: { updatedBy } } : {}),
         };
       });
       changed = result.changed;

@@ -35,28 +35,39 @@ export async function recordVerifiedNoopClosure(opts: {
   const useStore = backendIsLocalFileBackend(opts.ctx);
   const store = useStore ? getTaskStore(opts.ctx) : null;
   await (useStore
-    ? store!.update(opts.taskId, (current) => ({
-        ...current,
-        status: "DONE",
-        comments: [
-          ...(Array.isArray(current.comments) ? current.comments : []),
-          { author: opts.author, body: opts.body },
-        ],
-        events: appendTaskEvent(current, {
-          type: "status",
-          at,
-          author: opts.author,
-          from: String(current.status || "TODO").toUpperCase(),
-          to: "DONE",
-          note: opts.body,
-        }),
-        result_summary: opts.resultSummary,
-        risk_level: "low",
-        breaking: false,
-        doc_version: normalizeTaskDocVersion(current.doc_version),
-        doc_updated_at: at,
-        doc_updated_by: opts.author,
-      }))
+    ? store!.patch(opts.taskId, (current) => {
+        if (!opts.force && String(current.status || "TODO").toUpperCase() === "DONE") {
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: `Task is already DONE: ${opts.taskId} (use --force to override)`,
+          });
+        }
+        return {
+          task: {
+            status: "DONE",
+            result_summary: opts.resultSummary,
+            risk_level: "low",
+            breaking: false,
+          },
+          appendComments: [{ author: opts.author, body: opts.body }],
+          appendEvents: [
+            {
+              type: "status",
+              at,
+              author: opts.author,
+              from: String(current.status || "TODO").toUpperCase(),
+              to: "DONE",
+              note: opts.body,
+            },
+          ],
+          docMeta: {
+            touch: true,
+            updatedBy: opts.author,
+            version: normalizeTaskDocVersion(current.doc_version),
+          },
+        };
+      })
     : opts.ctx.taskBackend.writeTask({
         ...opts.task,
         status: "DONE",

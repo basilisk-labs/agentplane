@@ -2,6 +2,7 @@ import { mapBackendError } from "../../cli/error-map.js";
 import { infoMessage, invalidValueMessage, successMessage, warnMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
+import type { TaskData } from "../../backends/task-backend.js";
 
 import { commitFromComment } from "../guard/index.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
@@ -32,6 +33,47 @@ import {
   taskObservationSectionName,
   toStringArray,
 } from "./shared.js";
+
+function assertStartDocRequirements(task: TaskData, config: CommandContext["config"]): void {
+  if (config.agents?.approvals?.require_plan === true) return;
+
+  const enforce = config.tasks.verify.enforce_on_start_when_no_plan !== false;
+  if (!enforce) return;
+
+  const tags = toStringArray(task.tags);
+  const spikeTag = (config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+  const verifyRequired = requiresVerifyStepsByPrimary(tags, config);
+  const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
+  const doc = typeof task.doc === "string" ? task.doc : "";
+
+  if (verifyRequired || isSpike) {
+    const verifySteps = extractDocSection(doc, "Verify Steps");
+    if (!isVerifyStepsFilled(verifySteps)) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message:
+          `${task.id}: cannot start work: ## Verify Steps section is missing/empty/unfilled ` +
+          "(fill it before starting work when plan approval is disabled)",
+      });
+    }
+  }
+
+  if (!isSpike) return;
+
+  const docVersion = normalizeTaskDocVersion(task.doc_version);
+  const observationSection = taskObservationSectionName(docVersion);
+  const observation = extractTaskObservationSection(doc, docVersion);
+  if (!observation || observation.trim().length === 0) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        `${task.id}: cannot start spike: ## ${observationSection} section is missing or empty ` +
+        "(include Findings/Decision/Next Steps)",
+    });
+  }
+}
 
 export async function cmdStart(opts: {
   ctx?: CommandContext;
@@ -73,46 +115,7 @@ export async function cmdStart(opts: {
     const task = useStore
       ? await store!.get(opts.taskId)
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
-
-    if (ctx.config.agents?.approvals?.require_plan !== true) {
-      const enforce = ctx.config.tasks.verify.enforce_on_start_when_no_plan !== false;
-      if (enforce) {
-        const tags = toStringArray(task.tags);
-        const spikeTag = (ctx.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
-        const verifyRequired = requiresVerifyStepsByPrimary(tags, ctx.config);
-        const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
-        const doc = typeof task.doc === "string" ? task.doc : "";
-
-        if (verifyRequired || isSpike) {
-          const verifySteps = extractDocSection(doc, "Verify Steps");
-          if (!isVerifyStepsFilled(verifySteps)) {
-            throw new CliError({
-              exitCode: 3,
-              code: "E_VALIDATION",
-              message:
-                `${task.id}: cannot start work: ## Verify Steps section is missing/empty/unfilled ` +
-                "(fill it before starting work when plan approval is disabled)",
-            });
-          }
-        }
-
-        if (isSpike) {
-          const docVersion = normalizeTaskDocVersion(task.doc_version);
-          const observationSection = taskObservationSectionName(docVersion);
-          const observation = extractTaskObservationSection(doc, docVersion);
-          if (!observation || observation.trim().length === 0) {
-            throw new CliError({
-              exitCode: 3,
-              code: "E_VALIDATION",
-              message:
-                `${task.id}: cannot start spike: ## ${observationSection} section is missing or empty ` +
-                "(include Findings/Decision/Next Steps)",
-            });
-          }
-        }
-      }
-    }
-
+    assertStartDocRequirements(task, ctx.config);
     ensurePlanApprovedIfRequired(task, ctx.config);
 
     const currentStatus = String(task.status || "TODO").toUpperCase();
@@ -170,32 +173,33 @@ export async function cmdStart(opts: {
 
     const at = nowIso();
     await (useStore
-      ? store!.update(opts.taskId, (current) => {
-          const currentExistingComments = Array.isArray(current.comments)
-            ? current.comments.filter(
-                (item): item is { author: string; body: string } =>
-                  !!item && typeof item.author === "string" && typeof item.body === "string",
-              )
-            : [];
-          const currentCommentsValue: { author: string; body: string }[] = [
-            ...currentExistingComments,
-            { author: opts.author, body: commentBody },
-          ];
+      ? store!.patch(opts.taskId, (current) => {
+          assertStartDocRequirements(current, ctx.config);
+          ensurePlanApprovedIfRequired(current, ctx.config);
+          const currentStatus = String(current.status || "TODO").toUpperCase();
+          ensureStatusTransitionAllowed({
+            currentStatus,
+            nextStatus: "DOING",
+            force: opts.force,
+          });
           return {
-            ...current,
-            status: "DOING",
-            comments: currentCommentsValue,
-            events: appendTaskEvent(current, {
-              type: "status",
-              at,
-              author: opts.author,
-              from: String(current.status || "TODO").toUpperCase(),
-              to: "DOING",
-              note: commentBody,
-            }),
-            doc_version: normalizeTaskDocVersion(current.doc_version),
-            doc_updated_at: at,
-            doc_updated_by: opts.author,
+            task: { status: "DOING" },
+            appendComments: [{ author: opts.author, body: commentBody }],
+            appendEvents: [
+              {
+                type: "status",
+                at,
+                author: opts.author,
+                from: currentStatus,
+                to: "DOING",
+                note: commentBody,
+              },
+            ],
+            docMeta: {
+              touch: true,
+              updatedBy: opts.author,
+              version: normalizeTaskDocVersion(current.doc_version),
+            },
           };
         })
       : ctx.taskBackend.writeTask({

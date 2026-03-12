@@ -28,27 +28,22 @@ export async function cmdTaskComment(opts: {
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const at = nowIso();
     await (useStore
-      ? store!.update(opts.taskId, (current) => {
-          const existing = Array.isArray(current.comments)
-            ? current.comments.filter(
-                (item): item is { author: string; body: string } =>
-                  !!item && typeof item.author === "string" && typeof item.body === "string",
-              )
-            : [];
-          return {
-            ...current,
-            comments: [...existing, { author: opts.author, body: opts.body }],
-            events: appendTaskEvent(current, {
+      ? store!.patch(opts.taskId, () => ({
+          appendComments: [{ author: opts.author, body: opts.body }],
+          appendEvents: [
+            {
               type: "comment",
               at,
               author: opts.author,
               body: opts.body,
-            }),
-            doc_version: normalizeTaskDocVersion(current.doc_version),
-            doc_updated_at: at,
-            doc_updated_by: opts.author,
-          };
-        })
+            },
+          ],
+          docMeta: {
+            touch: true,
+            updatedBy: opts.author,
+            version: normalizeTaskDocVersion(task.doc_version),
+          },
+        }))
       : ctx.taskBackend.writeTask({
           ...task,
           comments: [

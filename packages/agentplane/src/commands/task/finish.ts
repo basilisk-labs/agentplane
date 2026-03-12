@@ -51,6 +51,57 @@ async function clearDirectWorkLockIfMatches(opts: {
   }
 }
 
+function assertTaskCanFinish(opts: {
+  task: TaskData;
+  config: CommandContext["config"];
+  taskCount: number;
+  isMetaTask: boolean;
+  resultProvided: boolean;
+  resultSummary: string;
+  force: boolean;
+}): void {
+  if (!opts.force && String(opts.task.status || "TODO").toUpperCase() === "DONE") {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: `Task is already DONE: ${opts.task.id} (use --force to override)`,
+    });
+  }
+
+  ensureVerificationSatisfiedIfRequired(opts.task, opts.config);
+  const normalizedDoc = ensureDocSections(
+    typeof opts.task.doc === "string" ? opts.task.doc : "",
+    opts.config.tasks.doc.required_sections,
+  );
+  ensureAgentFilledRequiredDocSections({
+    task: opts.task,
+    config: opts.config,
+    doc: normalizedDoc,
+    action: "finish task",
+  });
+
+  if (!opts.isMetaTask) return;
+
+  const tags = Array.isArray(opts.task.tags)
+    ? opts.task.tags.filter((t): t is string => typeof t === "string")
+    : [];
+  const isSpike = tags.includes("spike");
+  if (!isSpike && opts.taskCount === 1 && !opts.resultSummary) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Missing required --result for non-spike tasks.",
+    });
+  }
+  if (opts.resultProvided && !opts.resultSummary) {
+    throw new CliError({
+      exitCode: 2,
+      code: "E_USAGE",
+      message: "Invalid value for --result: empty.",
+    });
+  }
+}
+
 export async function cmdFinish(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -184,6 +235,7 @@ export async function cmdFinish(opts: {
     const metaTaskId = opts.taskIds.length === 1 ? (opts.taskIds[0] ?? "") : "";
     const wantMeta =
       typeof opts.result === "string" || typeof opts.risk === "string" || opts.breaking === true;
+    const resultProvided = typeof opts.result === "string";
     if (wantMeta && opts.taskIds.length !== 1) {
       throw new CliError({
         exitCode: 2,
@@ -199,17 +251,15 @@ export async function cmdFinish(opts: {
     let primaryTag: string | null = null;
     for (const taskId of opts.taskIds) {
       const task = useStore ? await store!.get(taskId) : await loadTaskFromContext({ ctx, taskId });
-
-      if (!opts.force) {
-        const currentStatus = String(task.status || "TODO").toUpperCase();
-        if (currentStatus === "DONE") {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: `Task is already DONE: ${task.id} (use --force to override)`,
-          });
-        }
-      }
+      assertTaskCanFinish({
+        task,
+        config: ctx.config,
+        taskCount: opts.taskIds.length,
+        isMetaTask: taskId === metaTaskId,
+        resultProvided,
+        resultSummary,
+        force: opts.force,
+      });
 
       if (
         taskId === primaryTaskId &&
@@ -220,76 +270,43 @@ export async function cmdFinish(opts: {
         primaryTag = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
       }
 
-      ensureVerificationSatisfiedIfRequired(task, ctx.config);
-      const normalizedDoc = ensureDocSections(
-        typeof task.doc === "string" ? task.doc : "",
-        ctx.config.tasks.doc.required_sections,
-      );
-      ensureAgentFilledRequiredDocSections({
-        task,
-        config: ctx.config,
-        doc: normalizedDoc,
-        action: "finish task",
-      });
-
-      if (taskId === metaTaskId) {
-        const tags = Array.isArray(task.tags)
-          ? task.tags.filter((t): t is string => typeof t === "string")
-          : [];
-        const isSpike = tags.includes("spike");
-        if (!isSpike && opts.taskIds.length === 1 && !resultSummary) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: "Missing required --result for non-spike tasks.",
-          });
-        }
-        if (typeof opts.result === "string" && !resultSummary) {
-          throw new CliError({
-            exitCode: 2,
-            code: "E_USAGE",
-            message: "Invalid value for --result: empty.",
-          });
-        }
-      }
-
       const at = nowIso();
       if (useStore) {
-        await store!.update(taskId, (current) => {
+        await store!.patch(taskId, (current) => {
+          assertTaskCanFinish({
+            task: current,
+            config: ctx.config,
+            taskCount: opts.taskIds.length,
+            isMetaTask: taskId === metaTaskId,
+            resultProvided,
+            resultSummary,
+            force: opts.force,
+          });
           const currentStatus = String(current.status || "TODO").toUpperCase();
-          if (!opts.force && currentStatus === "DONE") {
-            throw new CliError({
-              exitCode: 2,
-              code: "E_USAGE",
-              message: `Task is already DONE: ${current.id} (use --force to override)`,
-            });
-          }
-          const existingComments = Array.isArray(current.comments)
-            ? current.comments.filter(
-                (item): item is { author: string; body: string } =>
-                  !!item && typeof item.author === "string" && typeof item.body === "string",
-              )
-            : [];
           return {
-            ...current,
-            status: "DONE",
-            commit: { hash: commitInfo.hash, message: commitInfo.message },
-            comments: [...existingComments, { author: opts.author, body: opts.body }],
-            events: appendTaskEvent(current, {
-              type: "status",
-              at,
-              author: opts.author,
-              from: currentStatus,
-              to: "DONE",
-              note: opts.body,
-            }),
-            result_summary:
-              taskId === metaTaskId && resultSummary ? resultSummary : current.result_summary,
-            risk_level: taskId === metaTaskId && riskLevel ? riskLevel : current.risk_level,
-            breaking: taskId === metaTaskId && breaking ? true : current.breaking,
-            doc_version: normalizeTaskDocVersion(current.doc_version),
-            doc_updated_at: at,
-            doc_updated_by: opts.author,
+            task: {
+              status: "DONE",
+              commit: { hash: commitInfo.hash, message: commitInfo.message },
+              ...(taskId === metaTaskId && resultSummary ? { result_summary: resultSummary } : {}),
+              ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
+              ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
+            },
+            appendComments: [{ author: opts.author, body: opts.body }],
+            appendEvents: [
+              {
+                type: "status",
+                at,
+                author: opts.author,
+                from: currentStatus,
+                to: "DONE",
+                note: opts.body,
+              },
+            ],
+            docMeta: {
+              touch: true,
+              updatedBy: opts.author,
+              version: normalizeTaskDocVersion(current.doc_version),
+            },
           };
         });
       } else {
@@ -390,12 +407,15 @@ export async function cmdFinish(opts: {
       // Refresh task commit metadata to this hash and amend the same commit in local mode so
       // "task done" metadata does not require a manual follow-up close commit.
       await (useStore
-        ? store!.update(primaryTaskId, (current) => ({
-            ...current,
-            commit: { hash: committed.hash, message: committed.message },
-            doc_version: normalizeTaskDocVersion(current.doc_version),
-            doc_updated_at: nowIso(),
-            doc_updated_by: opts.author,
+        ? store!.patch(primaryTaskId, (current) => ({
+            task: {
+              commit: { hash: committed.hash, message: committed.message },
+            },
+            docMeta: {
+              touch: true,
+              updatedBy: opts.author,
+              version: normalizeTaskDocVersion(current.doc_version),
+            },
           }))
         : (async () => {
             const taskAfterCommit = await loadTaskFromContext({ ctx, taskId: primaryTaskId });

@@ -71,7 +71,13 @@ function buildPlanDocUpdate(opts: {
   currentDocRaw: string;
   text: string;
   requiredSections: string[];
-}): { planChanged: boolean; docChanged: boolean; nextDoc: string } {
+}): {
+  currentPlan: string;
+  nextPlan: string;
+  planChanged: boolean;
+  docChanged: boolean;
+  nextDoc: string;
+} {
   const baseDoc = ensureDocSections(opts.currentDocRaw ?? "", opts.requiredSections);
   const currentPlan = extractDocSection(baseDoc, "Plan") ?? "";
   const planChanged = normalizeForComparison(currentPlan) !== normalizeForComparison(opts.text);
@@ -80,10 +86,75 @@ function buildPlanDocUpdate(opts: {
     opts.requiredSections,
   );
   return {
+    currentPlan,
+    nextPlan: extractDocSection(nextDoc, "Plan") ?? "",
     planChanged,
     docChanged: nextDoc !== baseDoc,
     nextDoc,
   };
+}
+
+function assertPlanSectionPresent(taskId: string, doc: string, action: "approve" | "reject"): void {
+  const plan = extractDocSection(doc, "Plan");
+  if (!plan || plan.trim().length === 0) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message: `${taskId}: cannot ${action} plan: ## Plan section is missing or empty`,
+    });
+  }
+}
+
+function assertPlanCanBeApproved(opts: {
+  task: TaskData;
+  config: CommandContext["config"];
+  doc: string;
+}): void {
+  assertPlanSectionPresent(opts.task.id, opts.doc, "approve");
+  ensureAgentFilledRequiredDocSections({
+    task: opts.task,
+    config: opts.config,
+    doc: opts.doc,
+    action: "approve plan",
+  });
+
+  const enforceVerifySteps = opts.config.tasks.verify.enforce_on_plan_approve !== false;
+  if (!enforceVerifySteps) return;
+
+  const tags = toStringArray(opts.task.tags);
+  const spikeTag = (opts.config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
+  const verifyRequired = requiresVerifyStepsByPrimary(tags, opts.config);
+  const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
+  if (verifyRequired || isSpike) {
+    const verifySteps = extractDocSection(opts.doc, "Verify Steps");
+    if (!isVerifyStepsFilled(verifySteps)) {
+      throw new CliError({
+        exitCode: 3,
+        code: "E_VALIDATION",
+        message:
+          `${opts.task.id}: cannot approve plan: ## Verify Steps section is missing/empty/unfilled ` +
+          "(fill it before approving plan)",
+      });
+    }
+  }
+  if (!isSpike) return;
+
+  const observationSection = taskObservationSectionName(
+    normalizeTaskDocVersion(opts.task.doc_version),
+  );
+  const observation = extractTaskObservationSection(
+    opts.doc,
+    normalizeTaskDocVersion(opts.task.doc_version),
+  );
+  if (!observation || observation.trim().length === 0) {
+    throw new CliError({
+      exitCode: 3,
+      code: "E_VALIDATION",
+      message:
+        `${opts.task.id}: cannot approve plan for spike: ## ${observationSection} section is missing or empty ` +
+        "(include Findings/Decision/Next Steps)",
+    });
+  }
 }
 
 export async function cmdTaskPlanSet(opts: {
@@ -142,22 +213,53 @@ export async function cmdTaskPlanSet(opts: {
 
     const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");
     if (useStore) {
-      await store!.update(opts.taskId, (current) => {
-        const { planChanged, docChanged, nextDoc } = buildPlanDocUpdate({
+      let expectedCurrentPlan: string | undefined;
+      await store!.patch(opts.taskId, (current) => {
+        const { currentPlan, nextPlan, planChanged, docChanged } = buildPlanDocUpdate({
           currentDocRaw: String(current.doc ?? ""),
           text,
           requiredSections: config.tasks.doc.required_sections,
         });
-        if (!planChanged && !docChanged && !updatedBy) return current;
+        if (!planChanged && !docChanged && !updatedBy) return null;
+        if (!docChanged) {
+          return {
+            ...(planChanged
+              ? {
+                  task: {
+                    plan_approval: {
+                      state: "pending",
+                      updated_at: null,
+                      updated_by: null,
+                      note: null,
+                    },
+                  },
+                }
+              : {}),
+            ...(updatedBy ? { docMeta: { touch: true, updatedBy } } : {}),
+          };
+        }
+        expectedCurrentPlan ??= currentPlan;
         return {
-          ...current,
-          doc: nextDoc,
+          doc: {
+            kind: "set-section",
+            section: "Plan",
+            text: nextPlan,
+            requiredSections: config.tasks.doc.required_sections,
+            expectedCurrentText: expectedCurrentPlan,
+          },
           ...(planChanged
             ? {
-                plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+                task: {
+                  plan_approval: {
+                    state: "pending",
+                    updated_at: null,
+                    updated_by: null,
+                    note: null,
+                  },
+                },
               }
             : {}),
-          ...(updatedBy ? { doc_updated_by: updatedBy } : {}),
+          ...(updatedBy ? { docMeta: { updatedBy } } : {}),
         };
       });
     } else {
@@ -222,70 +324,27 @@ export async function cmdTaskPlanApprove(opts: {
       ? String(task.doc ?? "")
       : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
     const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-    const plan = extractDocSection(baseDoc, "Plan");
-    if (!plan || plan.trim().length === 0) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: `${task.id}: cannot approve plan: ## Plan section is missing or empty`,
-      });
-    }
-    ensureAgentFilledRequiredDocSections({
-      task,
-      config,
-      doc: baseDoc,
-      action: "approve plan",
-    });
-
-    const enforceVerifySteps = config.tasks.verify.enforce_on_plan_approve !== false;
-    if (enforceVerifySteps) {
-      const tags = toStringArray(task.tags);
-      const spikeTag = (config.tasks.verify.spike_tag ?? "spike").trim().toLowerCase();
-      const verifyRequired = requiresVerifyStepsByPrimary(tags, config);
-      const isSpike = tags.some((tag) => tag.trim().toLowerCase() === spikeTag);
-      if (verifyRequired || isSpike) {
-        const verifySteps = extractDocSection(baseDoc, "Verify Steps");
-        if (!isVerifyStepsFilled(verifySteps)) {
-          throw new CliError({
-            exitCode: 3,
-            code: "E_VALIDATION",
-            message:
-              `${task.id}: cannot approve plan: ## Verify Steps section is missing/empty/unfilled ` +
-              "(fill it before approving plan)",
-          });
-        }
-      }
-      if (isSpike) {
-        const observationSection = taskObservationSectionName(
-          normalizeTaskDocVersion(task.doc_version),
-        );
-        const observation = extractTaskObservationSection(
-          baseDoc,
-          normalizeTaskDocVersion(task.doc_version),
-        );
-        if (!observation || observation.trim().length === 0) {
-          throw new CliError({
-            exitCode: 3,
-            code: "E_VALIDATION",
-            message:
-              `${task.id}: cannot approve plan for spike: ## ${observationSection} section is missing or empty ` +
-              "(include Findings/Decision/Next Steps)",
-          });
-        }
-      }
-    }
+    assertPlanCanBeApproved({ task, config, doc: baseDoc });
 
     const approvedAt = nowIso();
     await (useStore
-      ? store!.update(opts.taskId, (current) => ({
-          ...current,
-          plan_approval: {
-            state: "approved" as PlanApprovalState,
-            updated_at: approvedAt,
-            updated_by: by,
-            note: note || null,
-          },
-        }))
+      ? store!.patch(opts.taskId, (current) => {
+          const currentDoc = ensureDocSections(
+            String(current.doc ?? ""),
+            config.tasks.doc.required_sections,
+          );
+          assertPlanCanBeApproved({ task: current, config, doc: currentDoc });
+          return {
+            task: {
+              plan_approval: {
+                state: "approved" as PlanApprovalState,
+                updated_at: approvedAt,
+                updated_by: by,
+                note: note || null,
+              },
+            },
+          };
+        })
       : backend.writeTask({
           ...task,
           plan_approval: {
@@ -340,26 +399,27 @@ export async function cmdTaskPlanReject(opts: {
       ? String(task.doc ?? "")
       : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
     const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-    const plan = extractDocSection(baseDoc, "Plan");
-    if (!plan || plan.trim().length === 0) {
-      throw new CliError({
-        exitCode: 3,
-        code: "E_VALIDATION",
-        message: `${task.id}: cannot reject plan: ## Plan section is missing or empty`,
-      });
-    }
+    assertPlanSectionPresent(task.id, baseDoc, "reject");
 
     const rejectedAt = nowIso();
     await (useStore
-      ? store!.update(opts.taskId, (current) => ({
-          ...current,
-          plan_approval: {
-            state: "rejected" as PlanApprovalState,
-            updated_at: rejectedAt,
-            updated_by: by,
-            note: note || null,
-          },
-        }))
+      ? store!.patch(opts.taskId, (current) => {
+          const currentDoc = ensureDocSections(
+            String(current.doc ?? ""),
+            config.tasks.doc.required_sections,
+          );
+          assertPlanSectionPresent(current.id, currentDoc, "reject");
+          return {
+            task: {
+              plan_approval: {
+                state: "rejected" as PlanApprovalState,
+                updated_at: rejectedAt,
+                updated_by: by,
+                note: note || null,
+              },
+            },
+          };
+        })
       : backend.writeTask({
           ...task,
           plan_approval: {

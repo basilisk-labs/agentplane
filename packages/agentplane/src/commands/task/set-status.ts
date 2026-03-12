@@ -138,6 +138,10 @@ export async function cmdTaskSetStatus(opts: {
 
     const at = nowIso();
     const eventAuthor = resolveDocUpdatedBy(task, opts.author);
+    const commitInfo = opts.commit ? await readCommitInfo(resolved.gitRoot, opts.commit) : null;
+    const nextCommit = opts.commit
+      ? { hash: commitInfo!.hash, message: commitInfo!.message }
+      : undefined;
     const next: TaskData = {
       ...task,
       status: nextStatus,
@@ -155,45 +159,40 @@ export async function cmdTaskSetStatus(opts: {
       doc_updated_by: eventAuthor,
     };
     if (opts.commit) {
-      const commitInfo = await readCommitInfo(resolved.gitRoot, opts.commit);
-      next.commit = { hash: commitInfo.hash, message: commitInfo.message };
+      next.commit = nextCommit;
     }
     await (useStore
-      ? store!.update(opts.taskId, (current) => {
-          const currentExistingComments = Array.isArray(current.comments)
-            ? current.comments.filter(
-                (item): item is { author: string; body: string } =>
-                  !!item && typeof item.author === "string" && typeof item.body === "string",
-              )
-            : [];
-          let currentComments = currentExistingComments;
-          let currentCommentBody: string | undefined;
-          if (opts.author && opts.body) {
-            currentCommentBody = opts.commitFromComment
-              ? formatCommentBodyForCommit(opts.body, config)
-              : opts.body;
-            currentComments = [
-              ...currentExistingComments,
-              { author: opts.author, body: currentCommentBody },
-            ];
-          }
+      ? store!.patch(opts.taskId, (current) => {
+          const currentStatus = String(current.status || "TODO").toUpperCase();
+          ensureStatusTransitionAllowed({
+            currentStatus,
+            nextStatus,
+            force: opts.force,
+          });
           const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
           return {
-            ...current,
-            status: nextStatus,
-            comments: currentComments,
-            events: appendTaskEvent(current, {
-              type: "status",
-              at,
-              author: currentEventAuthor,
-              from: String(current.status || "TODO").toUpperCase(),
-              to: nextStatus,
-              note: currentCommentBody,
-            }),
-            doc_version: normalizeTaskDocVersion(current.doc_version),
-            doc_updated_at: at,
-            doc_updated_by: currentEventAuthor,
-            ...(opts.commit ? { commit: next.commit } : {}),
+            task: {
+              status: nextStatus,
+              ...(nextCommit ? { commit: nextCommit } : {}),
+            },
+            ...(commentBody
+              ? { appendComments: [{ author: opts.author!, body: commentBody }] }
+              : {}),
+            appendEvents: [
+              {
+                type: "status",
+                at,
+                author: currentEventAuthor,
+                from: currentStatus,
+                to: nextStatus,
+                note: commentBody,
+              },
+            ],
+            docMeta: {
+              touch: true,
+              updatedBy: currentEventAuthor,
+              version: normalizeTaskDocVersion(current.doc_version),
+            },
           };
         })
       : ctx.taskBackend.writeTask(next));

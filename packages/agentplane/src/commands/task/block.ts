@@ -97,32 +97,31 @@ export async function cmdBlock(opts: {
     const commentsValue = [...existingComments, { author: opts.author, body: commentBody }];
     const at = nowIso();
     await (useStore
-      ? store!.update(opts.taskId, (current) => {
-          const currentExistingComments = Array.isArray(current.comments)
-            ? current.comments.filter(
-                (item): item is { author: string; body: string } =>
-                  !!item && typeof item.author === "string" && typeof item.body === "string",
-              )
-            : [];
-          const currentCommentsValue = [
-            ...currentExistingComments,
-            { author: opts.author, body: commentBody },
-          ];
+      ? store!.patch(opts.taskId, (current) => {
+          const currentStatus = String(current.status || "TODO").toUpperCase();
+          ensureStatusTransitionAllowed({
+            currentStatus,
+            nextStatus: "BLOCKED",
+            force: opts.force,
+          });
           return {
-            ...current,
-            status: "BLOCKED",
-            comments: currentCommentsValue,
-            events: appendTaskEvent(current, {
-              type: "status",
-              at,
-              author: opts.author,
-              from: String(current.status || "TODO").toUpperCase(),
-              to: "BLOCKED",
-              note: commentBody,
-            }),
-            doc_version: normalizeTaskDocVersion(current.doc_version),
-            doc_updated_at: at,
-            doc_updated_by: opts.author,
+            task: { status: "BLOCKED" },
+            appendComments: [{ author: opts.author, body: commentBody }],
+            appendEvents: [
+              {
+                type: "status",
+                at,
+                author: opts.author,
+                from: currentStatus,
+                to: "BLOCKED",
+                note: commentBody,
+              },
+            ],
+            docMeta: {
+              touch: true,
+              updatedBy: opts.author,
+              version: normalizeTaskDocVersion(current.doc_version),
+            },
           };
         })
       : ctx.taskBackend.writeTask({

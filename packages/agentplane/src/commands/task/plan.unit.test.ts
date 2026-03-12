@@ -1,9 +1,15 @@
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
+import {
+  defaultConfig,
+  ensureDocSections,
+  setMarkdownSection,
+  type ResolvedProject,
+} from "@agentplaneorg/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "../shared/git-context.js";
+import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mockLoadTaskFromContext =
   vi.fn<(opts: { ctx: CommandContext; taskId: string }) => Promise<TaskData>>();
@@ -69,6 +75,28 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     backend,
   };
   return { ...ctx, ...overrides };
+}
+
+function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
+  if (!patch) return current;
+  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
+  if (patch.doc) {
+    if (patch.doc.kind === "replace-doc") {
+      next.doc = patch.doc.doc;
+    } else {
+      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
+      next.doc = ensureDocSections(
+        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
+        patch.doc.requiredSections,
+      );
+    }
+  }
+  if (patch.doc || patch.docMeta?.touch === true) {
+    next.doc_version = patch.docMeta?.version ?? next.doc_version;
+    next.doc_updated_at = new Date().toISOString();
+    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
+  }
+  return next;
 }
 
 describe("task plan commands (unit)", () => {
@@ -346,12 +374,14 @@ describe("task plan commands (unit)", () => {
     });
     const store = {
       get: vi.fn().mockResolvedValue(currentTask),
-      update: vi
+      patch: vi
         .fn()
-        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
-          currentTask = updater(currentTask);
-          return { changed: true, task: currentTask };
-        }),
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
     };
     const ctx = mkCtx();
     mockBackendIsLocalFileBackend.mockReturnValue(true);
@@ -409,12 +439,14 @@ describe("task plan commands (unit)", () => {
     });
     const store = {
       get: vi.fn().mockResolvedValue(staleTask),
-      update: vi
+      patch: vi
         .fn()
-        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
-          currentTask = updater(currentTask);
-          return { changed: true, task: currentTask };
-        }),
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
     };
     const ctx = mkCtx();
     mockBackendIsLocalFileBackend.mockReturnValue(true);
@@ -431,7 +463,7 @@ describe("task plan commands (unit)", () => {
 
     expect(rc).toBe(0);
     expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.update).toHaveBeenCalledTimes(1);
+    expect(store.patch).toHaveBeenCalledTimes(1);
     expect(currentTask.plan_approval?.state).toBe("pending");
     expect(currentTask.doc_updated_by).toBe("ME");
     expect(currentTask.doc).toMatch(/## Summary\s+Concurrent summary/);

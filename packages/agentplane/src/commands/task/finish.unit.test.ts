@@ -1,4 +1,9 @@
-import { defaultConfig, type ResolvedProject } from "@agentplaneorg/core";
+import {
+  defaultConfig,
+  ensureDocSections,
+  setMarkdownSection,
+  type ResolvedProject,
+} from "@agentplaneorg/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
@@ -6,6 +11,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "../shared/git-context.js";
+import type { TaskStorePatch } from "../shared/task-store.js";
 
 const mocks = vi.hoisted(() => ({
   commitFromComment: vi.fn(),
@@ -129,6 +135,37 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
     backend,
   };
   return { ...ctx, ...overrides };
+}
+
+function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
+  if (!patch) return current;
+  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
+  if (patch.appendComments && patch.appendComments.length > 0) {
+    next.comments = [
+      ...(Array.isArray(current.comments) ? current.comments : []),
+      ...patch.appendComments,
+    ];
+  }
+  if (patch.appendEvents && patch.appendEvents.length > 0) {
+    next.events = [...(Array.isArray(current.events) ? current.events : []), ...patch.appendEvents];
+  }
+  if (patch.doc) {
+    if (patch.doc.kind === "replace-doc") {
+      next.doc = patch.doc.doc;
+    } else {
+      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
+      next.doc = ensureDocSections(
+        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
+        patch.doc.requiredSections,
+      );
+    }
+  }
+  if (patch.doc || patch.docMeta?.touch === true) {
+    next.doc_version = patch.docMeta?.version ?? next.doc_version;
+    next.doc_updated_at = new Date().toISOString();
+    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
+  }
+  return next;
 }
 
 describe("task finish (unit)", () => {
@@ -284,12 +321,14 @@ describe("task finish (unit)", () => {
     const task = mkTask({ id: "T-1", tags: ["meta"] });
     const store = {
       get: vi.fn().mockResolvedValue(task),
-      update: vi
+      patch: vi
         .fn()
-        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
-          updater(task);
-          return Promise.resolve();
-        }),
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            applyStorePatch(task, await builder(task));
+            return { changed: true, task };
+          },
+        ),
     };
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
@@ -388,12 +427,14 @@ describe("task finish (unit)", () => {
     const task = mkTask({ id: "T-1", tags: ["meta"] });
     const store = {
       get: vi.fn().mockResolvedValue(task),
-      update: vi
+      patch: vi
         .fn()
-        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
-          updater(task);
-          return Promise.resolve();
-        }),
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            applyStorePatch(task, await builder(task));
+            return { changed: true, task };
+          },
+        ),
     };
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
@@ -430,12 +471,14 @@ describe("task finish (unit)", () => {
     const task = mkTask({ id: "T-1", tags: ["meta"] });
     const store = {
       get: vi.fn().mockResolvedValue(task),
-      update: vi
+      patch: vi
         .fn()
-        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
-          updater(task);
-          return Promise.resolve();
-        }),
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            applyStorePatch(task, await builder(task));
+            return { changed: true, task };
+          },
+        ),
     };
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
@@ -653,10 +696,12 @@ describe("task finish (unit)", () => {
       currentTask = { ...t };
       return Promise.resolve();
     });
-    const storeUpdate = vi.fn((_taskId: string, updater: (task: TaskData) => TaskData) => {
-      currentTask = updater(currentTask);
-      return currentTask;
-    });
+    const storePatch = vi.fn(
+      async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => {
+        currentTask = applyStorePatch(currentTask, await builder(currentTask));
+        return { changed: true, task: currentTask };
+      },
+    );
     const storeGet = vi.fn(() => currentTask);
     const ctx = mkCtx({
       taskBackend: {
@@ -682,7 +727,7 @@ describe("task finish (unit)", () => {
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue({
       get: storeGet,
-      update: storeUpdate,
+      patch: storePatch,
     });
     const stageSpy = vi.spyOn(ctx.git, "stage").mockResolvedValue();
     const amendSpy = vi.spyOn(ctx.git, "commitAmendNoEdit").mockResolvedValue();
@@ -712,7 +757,7 @@ describe("task finish (unit)", () => {
       quiet: false,
     });
     expect(rc).toBe(0);
-    expect(storeUpdate).toHaveBeenCalledTimes(2);
+    expect(storePatch).toHaveBeenCalledTimes(2);
     expect(currentTask.status).toBe("DONE");
     expect(currentTask.commit).toEqual({ hash: "new-hash", message: "✅ T-1 task: verified" });
     expect(currentTask.comments?.at(-1)).toEqual({
@@ -722,7 +767,7 @@ describe("task finish (unit)", () => {
     expect(currentTask.result_summary).toBe("done");
     expect(currentTask.risk_level).toBe("high");
     expect(currentTask.breaking).toBe(true);
-    expect(currentTask.doc_updated_at).toBe("2026-02-09T00:00:00.000Z");
+    expect(typeof currentTask.doc_updated_at).toBe("string");
 
     expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
     const call = mocks.commitFromComment.mock.calls[0]?.[0] as { emoji?: string; taskId?: string };
@@ -863,8 +908,14 @@ describe("task finish (unit)", () => {
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue({
       get: vi.fn(() => mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
-      update: vi.fn((_taskId: string, updater: (task: TaskData) => TaskData) =>
-        updater(mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+      patch: vi.fn(
+        async (_taskId: string, builder: (task: TaskData) => Promise<TaskStorePatch>) => ({
+          changed: true,
+          task: applyStorePatch(
+            mkTask({ id: "T-1", status: "DOING", tags: ["docs"] }),
+            await builder(mkTask({ id: "T-1", status: "DOING", tags: ["docs"] })),
+          ),
+        }),
       ),
     });
 
@@ -953,12 +1004,14 @@ describe("task finish (unit)", () => {
     });
     const store = {
       get: vi.fn().mockResolvedValue(staleTask),
-      update: vi
+      patch: vi
         .fn()
-        .mockImplementation((_taskId: string, updater: (current: TaskData) => TaskData) => {
-          currentTask = updater(currentTask);
-          return { changed: true, task: currentTask };
-        }),
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
     };
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
@@ -990,7 +1043,7 @@ describe("task finish (unit)", () => {
 
     expect(rc).toBe(0);
     expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.update).toHaveBeenCalledTimes(1);
+    expect(store.patch).toHaveBeenCalledTimes(1);
     expect(currentTask.status).toBe("DONE");
     expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
     expect(currentTask.comments).toEqual([

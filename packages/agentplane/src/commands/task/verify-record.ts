@@ -118,7 +118,7 @@ async function recordVerificationResult(opts: {
     : await loadTaskFromContext({ ctx, taskId: opts.taskId });
   const at = nowIso();
   if (useStore) {
-    await store!.update(opts.taskId, (current) => {
+    await store!.patch(opts.taskId, (current) => {
       const existingDoc = String(current.doc ?? "");
       const baseDoc = ensureDocSections(existingDoc, config.tasks.doc.required_sections);
       const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
@@ -141,30 +141,34 @@ async function recordVerificationResult(opts: {
         verifyStepsRef,
       });
       const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
-      const nextDoc = ensureDocSections(
-        setMarkdownSection(baseDoc, "Verification", nextVerification),
-        config.tasks.doc.required_sections,
-      );
 
       return {
-        ...current,
-        status: opts.state === "needs_rework" ? "DOING" : current.status,
-        commit: opts.state === "needs_rework" ? null : (current.commit ?? null),
-        doc: nextDoc,
-        doc_updated_by: opts.by,
-        events: appendTaskEvent(current, {
-          type: "verify",
-          at,
-          author: opts.by,
-          state: opts.state,
-          note: opts.note,
-        }),
-        verification: {
-          state: opts.state,
-          updated_at: at,
-          updated_by: opts.by,
-          note: opts.note,
+        task: {
+          status: opts.state === "needs_rework" ? "DOING" : current.status,
+          commit: opts.state === "needs_rework" ? null : (current.commit ?? null),
+          verification: {
+            state: opts.state,
+            updated_at: at,
+            updated_by: opts.by,
+            note: opts.note,
+          },
         },
+        doc: {
+          kind: "set-section",
+          section: "Verification",
+          text: nextVerification,
+          requiredSections: config.tasks.doc.required_sections,
+        },
+        appendEvents: [
+          {
+            type: "verify",
+            at,
+            author: opts.by,
+            state: opts.state,
+            note: opts.note,
+          },
+        ],
+        docMeta: { updatedBy: opts.by },
       };
     });
   } else {
