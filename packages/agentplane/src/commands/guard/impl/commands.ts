@@ -1,5 +1,6 @@
 import { mapCoreError } from "../../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../../cli/output.js";
+import { stripAnsi } from "../../../cli/shared/ansi.js";
 import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
@@ -20,6 +21,15 @@ type ExecFileLikeError = Error & {
 };
 
 type CommitFailurePhase = "task_commit" | "close_commit";
+const COMMIT_FAILURE_SIGNAL_PATTERNS = [
+  /Code style issues found/i,
+  /Run Prettier with --write/i,
+  /\bESLint\b/i,
+  /\b[0-9]+\s+problems?\b/i,
+  /\berror\b/i,
+  /\bfailed\b/i,
+  /✖/,
+] as const;
 
 function readText(value: unknown): string {
   if (typeof value === "string") return value;
@@ -31,14 +41,37 @@ function summarizeOutput(raw: string): string[] {
   const lines = raw
     .replaceAll("\r\n", "\n")
     .split("\n")
-    .map((line) => line.trimEnd())
+    .map((line) => stripAnsi(line).trimEnd())
     .filter((line) => line.trim().length > 0)
     .map((line) => (line.length > 180 ? `${line.slice(0, 180)} [truncated]` : line));
 
   if (lines.length <= 12) return lines;
-  const head = lines.slice(0, 6);
-  const tail = lines.slice(-6);
-  return [...head, `[${lines.length - 12} lines omitted]`, ...tail];
+
+  const selected = new Set<number>();
+  for (let index = 0; index < Math.min(6, lines.length); index += 1) {
+    selected.add(index);
+  }
+  for (let index = Math.max(lines.length - 6, 0); index < lines.length; index += 1) {
+    selected.add(index);
+  }
+  for (const [index, line] of lines.entries()) {
+    if (selected.has(index)) continue;
+    if (COMMIT_FAILURE_SIGNAL_PATTERNS.some((pattern) => pattern.test(line))) {
+      selected.add(index);
+    }
+  }
+
+  const ordered = [...selected].toSorted((a, b) => a - b);
+  const summary: string[] = [];
+  let previous = -1;
+  for (const index of ordered) {
+    if (previous >= 0 && index - previous > 1) {
+      summary.push(`[${index - previous - 1} lines omitted]`);
+    }
+    summary.push(lines[index] ?? "");
+    previous = index;
+  }
+  return summary;
 }
 
 function commitFailureDiagnostic(phase: CommitFailurePhase): {

@@ -1,7 +1,7 @@
 ---
 id: "202603121055-QR782R"
 title: "Preserve formatter and linter signal in commit hook summaries"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -11,9 +11,9 @@ tags:
   - "cli"
 verify: []
 plan_approval:
-  state: "pending"
-  updated_at: null
-  updated_by: null
+  state: "approved"
+  updated_at: "2026-03-12T11:08:49.549Z"
+  updated_by: "ORCHESTRATOR"
   note: null
 verification:
   state: "pending"
@@ -21,11 +21,21 @@ verification:
   updated_by: null
   note: null
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: keep decisive formatter and linter failure lines visible in compressed commit hook summaries without changing hook scripts or phase labeling."
+events:
+  -
+    type: "status"
+    at: "2026-03-12T11:09:03.407Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: keep decisive formatter and linter failure lines visible in compressed commit hook summaries without changing hook scripts or phase labeling."
 doc_version: 3
-doc_updated_at: "2026-03-12T10:56:41.915Z"
-doc_updated_by: "PLANNER"
+doc_updated_at: "2026-03-12T11:09:03.407Z"
+doc_updated_by: "CODER"
 description: "Keep decisive pre-commit failure lines in commit wrapper diagnostics so formatter and linter failures remain visible after output compression."
 id_source: "generated"
 ---

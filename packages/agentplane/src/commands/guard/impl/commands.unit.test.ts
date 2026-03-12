@@ -347,6 +347,56 @@ describe("guard/impl/commands", () => {
     ).rejects.toBe(mapped);
   });
 
+  it("cmdCommit preserves salient linter failure lines in git-commit-shaped errors", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue(["src/app.ts"]);
+    ctx.git.commit.mockRejectedValue(
+      Object.assign(new Error("hook failed"), {
+        cmd: "git commit -m ✅ ABC123 task: message",
+        code: 1,
+        stderr: [
+          "HOOK_LINE_01",
+          "HOOK_LINE_02",
+          "HOOK_LINE_03",
+          "HOOK_LINE_04",
+          "HOOK_LINE_05",
+          "HOOK_LINE_06",
+          "\u001B[31mESLint found 2 problems (2 errors, 0 warnings)\u001B[0m",
+          "HOOK_LINE_08",
+          "HOOK_LINE_09",
+          "HOOK_LINE_10",
+          "HOOK_LINE_11",
+          "HOOK_LINE_12",
+          "HOOK_LINE_13",
+        ].join("\n"),
+      }),
+    );
+
+    const err = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-7",
+      message: "✅ ABC123 task: message",
+      close: false,
+      allow: ["src"],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: false,
+      requireClean: false,
+      quiet: true,
+    }).catch((error: unknown) => error);
+
+    expect(err).toBeInstanceOf(CliError);
+    expect((err as CliError).code).toBe("E_GIT");
+    expect((err as CliError).message).toContain("ESLint found 2 problems (2 errors, 0 warnings)");
+    expect((err as CliError).message).not.toContain("\u001B[31m");
+  });
+
   it("cmdCommit non-close auto-allow rejects when ctx is absent", async () => {
     const { cmdCommit } = await import("./commands.js");
     mocks.loadCommandContext.mockResolvedValue(mkCtx());

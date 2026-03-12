@@ -365,9 +365,10 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     await execFileAsync("git", ["add", "file.txt"], { cwd: root });
 
-    const hookLines = Array.from(
-      { length: 40 },
-      (_, i) => `HOOK_LINE_${String(i + 1).padStart(2, "0")}`,
+    const hookLines = Array.from({ length: 40 }, (_, i) =>
+      i === 19
+        ? "\u001B[33mCode style issues found in the above file. Run Prettier with --write to fix.\u001B[0m"
+        : `HOOK_LINE_${String(i + 1).padStart(2, "0")}`,
     );
     const preCommit = [
       "#!/bin/sh",
@@ -400,9 +401,13 @@ describe("runCli", () => {
       );
       expect(io.stderr).toContain("output_summary:");
       expect(io.stderr).toContain("HOOK_LINE_01");
+      expect(io.stderr).toContain(
+        "Code style issues found in the above file. Run Prettier with --write to fix.",
+      );
       expect(io.stderr).toContain("HOOK_LINE_40");
       expect(io.stderr).toContain("lines omitted");
       expect(io.stderr).not.toContain("HOOK_LINE_20");
+      expect(io.stderr).not.toContain("\u001B[33m");
       expect(io.stderr).not.toContain("generated close commit");
     } finally {
       io.restore();
