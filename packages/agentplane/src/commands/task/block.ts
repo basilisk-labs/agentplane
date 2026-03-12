@@ -1,5 +1,5 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { invalidValueMessage, successMessage } from "../../cli/output.js";
+import { successMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -16,7 +16,7 @@ import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
 import {
   appendTaskEvent,
-  defaultCommitEmojiForTask,
+  defaultCommitEmojiForStatus,
   ensureCommentCommitAllowed,
   ensureStatusTransitionAllowed,
   normalizeTaskDocVersion,
@@ -151,19 +151,6 @@ export async function cmdBlock(opts: {
         if (lockAgent) executorAgent = lockAgent;
       }
 
-      const expectedEmoji = defaultCommitEmojiForTask(task);
-      if (typeof opts.commitEmoji === "string" && opts.commitEmoji.trim() !== expectedEmoji) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: invalidValueMessage(
-            "--commit-emoji",
-            opts.commitEmoji,
-            `${expectedEmoji} (semantic task emoji for ${opts.taskId})`,
-          ),
-        });
-      }
-
       commitInfo = await commitFromComment({
         ctx,
         cwd: opts.cwd,
@@ -176,8 +163,7 @@ export async function cmdBlock(opts: {
         statusTo: "BLOCKED",
         commentBody: opts.body,
         formattedComment,
-        emoji: opts.commitEmoji ?? expectedEmoji,
-        taskEmoji: expectedEmoji,
+        emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("BLOCKED"),
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,

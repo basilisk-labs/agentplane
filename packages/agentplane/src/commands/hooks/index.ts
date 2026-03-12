@@ -227,32 +227,17 @@ export async function cmdHooksRun(opts: {
 
       const taskId = (process.env.AGENTPLANE_TASK_ID ?? "").trim();
       const statusTo = (process.env.AGENTPLANE_STATUS_TO ?? "").trim().toUpperCase();
-      const taskEmoji = (process.env.AGENTPLANE_TASK_EMOJI ?? "").trim();
 
       const emoji = subject.split(/\s+/).find(Boolean) ?? "";
-      if (taskId) {
-        if (statusTo === "DONE") {
-          if (emoji !== "✅") {
-            throw new CliError({
-              exitCode: 5,
-              code: "E_GIT",
-              message:
-                "Finish commits must use a checkmark emoji.\n" +
-                "Expected:\n" +
-                "  ✅ <TASK_SUFFIX> <scope>: <summary>",
-            });
-          }
-        } else if (taskEmoji && emoji !== taskEmoji) {
-          throw new CliError({
-            exitCode: 5,
-            code: "E_GIT",
-            message:
-              "Commit emoji does not match the semantic task emoji.\n" +
-              `task_id=${taskId}\n` +
-              "Expected:\n" +
-              `  ${taskEmoji} <TASK_SUFFIX> <scope>: <summary>`,
-          });
-        }
+      if (taskId && statusTo === "DONE" && emoji !== "✅") {
+        throw new CliError({
+          exitCode: 5,
+          code: "E_GIT",
+          message:
+            "Finish commits must use a checkmark emoji.\n" +
+            "Expected:\n" +
+            "  ✅ <TASK_SUFFIX> <scope>: <summary>",
+        });
       }
 
       const res = evaluatePolicy({

@@ -6,7 +6,6 @@ import type { AgentplaneConfig } from "@agentplaneorg/core";
 import { warnMessage } from "../../../cli/output.js";
 import { CliError } from "../../../shared/errors.js";
 import { parseGitLogHashSubject } from "../../../shared/git-log.js";
-import { resolveCommitEmojiForTask } from "../../../shared/agent-emoji.js";
 import type { TaskData, TaskEvent } from "../../../backends/task-backend.js";
 import { requiresVerificationByPrimary, toStringArray } from "./tags.js";
 
@@ -211,15 +210,4 @@ export function defaultCommitEmojiForStatus(status: string): string {
   if (normalized === "DONE") return "✅";
   if (normalized === "BLOCKED") return "⛔";
   return "🧩";
-}
-
-export function defaultCommitEmojiForTask(
-  task: Pick<TaskData, "id" | "title" | "description" | "tags">,
-): string {
-  return resolveCommitEmojiForTask({
-    taskId: task.id,
-    title: task.title,
-    description: task.description,
-    tags: toStringArray(task.tags),
-  });
 }

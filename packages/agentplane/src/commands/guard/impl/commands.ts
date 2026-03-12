@@ -1,7 +1,6 @@
 import { mapCoreError } from "../../../cli/error-map.js";
 import { infoMessage, successMessage } from "../../../cli/output.js";
 import { stripAnsi } from "../../../cli/shared/ansi.js";
-import { resolveCommitEmojiForTask } from "../../../shared/agent-emoji.js";
 import { withDiagnosticContext } from "../../../shared/diagnostics.js";
 import { CliError } from "../../../shared/errors.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
@@ -457,24 +456,8 @@ export async function cmdCommit(opts: {
       quiet: opts.quiet,
     });
 
-    let taskEmoji: string | undefined;
-    try {
-      const task = await loadTaskFromContext({ ctx, taskId: opts.taskId });
-      taskEmoji = resolveCommitEmojiForTask({
-        taskId: task.id,
-        title: task.title,
-        description: task.description,
-        tags: Array.isArray(task.tags)
-          ? task.tags.filter((tag): tag is string => typeof tag === "string")
-          : [],
-      });
-    } catch {
-      // Keep manual commit semantics intact when task context cannot be loaded.
-    }
-
     const env = buildGitCommitEnv({
       taskId: opts.taskId,
-      ...(taskEmoji ? { taskEmoji } : {}),
       allowTasks: opts.allowTasks,
       allowBase: opts.allowBase,
       allowPolicy: opts.allowPolicy,

@@ -245,31 +245,6 @@ describe("runCli", () => {
     }
   });
 
-  it("hooks run commit-msg rejects a task-scoped emoji that does not match the semantic task emoji env", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
-    const messagePath = path.join(root, "COMMIT_EDITMSG");
-    await writeFile(messagePath, "🧪 ABCDEF guard: add checks\n", "utf8");
-    const prevTaskId = process.env.AGENTPLANE_TASK_ID;
-    const prevTaskEmoji = process.env.AGENTPLANE_TASK_EMOJI;
-    process.env.AGENTPLANE_TASK_ID = "202601010101-ABCDEF";
-    process.env.AGENTPLANE_TASK_EMOJI = "📝";
-
-    const io = captureStdIO();
-    try {
-      const code = await runCli(["hooks", "run", "commit-msg", messagePath, "--root", root]);
-      expect(code).toBe(5);
-      expect(io.stderr).toContain("semantic task emoji");
-      expect(io.stderr).toContain("📝");
-    } finally {
-      io.restore();
-      if (prevTaskId === undefined) delete process.env.AGENTPLANE_TASK_ID;
-      else process.env.AGENTPLANE_TASK_ID = prevTaskId;
-      if (prevTaskEmoji === undefined) delete process.env.AGENTPLANE_TASK_EMOJI;
-      else process.env.AGENTPLANE_TASK_EMOJI = prevTaskEmoji;
-    }
-  });
-
   it("hooks run rejects unknown hook", async () => {
     const root = await mkGitRepoRoot();
     const io = captureStdIO();

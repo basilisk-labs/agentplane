@@ -1,5 +1,5 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { infoMessage, invalidValueMessage, successMessage, warnMessage } from "../../cli/output.js";
+import { infoMessage, successMessage, warnMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 import type { TaskData } from "../../backends/task-backend.js";
@@ -21,7 +21,7 @@ import {
   ensureCommentCommitAllowed,
   ensureStatusTransitionAllowed,
   extractTaskObservationSection,
-  defaultCommitEmojiForTask,
+  defaultCommitEmojiForStatus,
   extractDocSection,
   isVerifyStepsFilled,
   normalizeTaskDocVersion,
@@ -234,19 +234,6 @@ export async function cmdStart(opts: {
         if (lockAgent) executorAgent = lockAgent;
       }
 
-      const expectedEmoji = defaultCommitEmojiForTask(task);
-      if (typeof opts.commitEmoji === "string" && opts.commitEmoji.trim() !== expectedEmoji) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: invalidValueMessage(
-            "--commit-emoji",
-            opts.commitEmoji,
-            `${expectedEmoji} (semantic task emoji for ${opts.taskId})`,
-          ),
-        });
-      }
-
       commitInfo = await commitFromComment({
         ctx,
         cwd: opts.cwd,
@@ -259,8 +246,7 @@ export async function cmdStart(opts: {
         statusTo: "DOING",
         commentBody: opts.body,
         formattedComment,
-        emoji: opts.commitEmoji ?? expectedEmoji,
-        taskEmoji: expectedEmoji,
+        emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus("DOING"),
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,

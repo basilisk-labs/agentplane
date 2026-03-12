@@ -31,7 +31,6 @@ import {
   loadAgentTemplates,
   loadAgentsTemplate,
 } from "../agents/agents-template.js";
-import { resolveCommitEmojiForTask } from "../shared/agent-emoji.js";
 import * as taskBackend from "../backends/task-backend.js";
 import {
   captureStdIO,
@@ -133,18 +132,6 @@ async function startDirectWork(root: string, taskId: string, agentId = "CODER"):
   } finally {
     io.restore();
   }
-}
-
-async function expectedTaskEmoji(root: string, taskId: string): Promise<string> {
-  const task = await readTask({ cwd: root, rootOverride: root, taskId });
-  return resolveCommitEmojiForTask({
-    taskId,
-    title: task.frontmatter.title,
-    description: task.frontmatter.description,
-    tags: Array.isArray(task.frontmatter.tags)
-      ? task.frontmatter.tags.filter((tag): tag is string => typeof tag === "string")
-      : [],
-  });
 }
 
 describe("runCli", () => {
@@ -719,8 +706,7 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
-    const emoji = await expectedTaskEmoji(root, taskId);
-    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
+    expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
 
     const { stdout: body } = await execFileAsync("git", ["log", "-1", "--pretty=%b"], {
       cwd: root,
@@ -1241,8 +1227,7 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
-    const emoji = await expectedTaskEmoji(root, taskId);
-    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
+    expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
   });
 
   it("start commit-from-comment formats -- separators and supports --quiet", async () => {
@@ -1303,8 +1288,7 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
-    const emoji = await expectedTaskEmoji(root, taskId);
-    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
+    expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
   });
 
   it("start rejects comments that are too short", async () => {
@@ -1470,11 +1454,10 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
-    const emoji = await expectedTaskEmoji(root, taskId);
-    expect(stdout.trim()).toBe(`${emoji} ${suffix} meta: doing`);
+    expect(stdout.trim()).toBe(`🚧 ${suffix} meta: doing`);
   });
 
-  it("start commit-from-comment accepts --commit-emoji when it matches the semantic task emoji", async () => {
+  it("start commit-from-comment accepts any explicit --commit-emoji provided by the agent", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
@@ -1506,8 +1489,6 @@ describe("runCli", () => {
     }
     await approveTaskPlan(root, taskId);
     await startDirectWork(root, taskId, "CODER");
-    const expectedEmoji = await expectedTaskEmoji(root, taskId);
-
     const io = captureStdIO();
     try {
       const code = await runCli([
@@ -1519,7 +1500,7 @@ describe("runCli", () => {
         "Start: custom emoji commit path for start command coverage and validation",
         "--commit-from-comment",
         "--commit-emoji",
-        expectedEmoji,
+        "🦞",
         "--commit-allow",
         ".agentplane/tasks",
         "--commit-allow-tasks",
@@ -1535,7 +1516,7 @@ describe("runCli", () => {
     const execFileAsync = promisify(execFile);
     const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
     const suffix = extractTaskSuffix(taskId);
-    expect(stdout.trim()).toBe(`${expectedEmoji} ${suffix} meta: doing`);
+    expect(stdout.trim()).toBe(`🦞 ${suffix} meta: doing`);
   });
 
   it("start commit-from-comment still commits the active task README when allow prefixes do not match non-task changes", async () => {

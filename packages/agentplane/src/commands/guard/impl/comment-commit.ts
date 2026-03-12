@@ -84,7 +84,6 @@ export async function commitFromComment(opts: {
   commentBody: string;
   formattedComment: string | null;
   emoji: string;
-  taskEmoji?: string;
   allow: string[];
   autoAllow: boolean;
   allowTasks: boolean;
@@ -162,7 +161,6 @@ export async function commitFromComment(opts: {
     taskId: opts.taskId,
     agentId: opts.executorAgent,
     statusTo: opts.statusTo,
-    taskEmoji: opts.statusTo?.trim().toUpperCase() === "DONE" ? undefined : opts.taskEmoji,
     allowTasks: opts.allowTasks,
     allowBase: false,
     allowPolicy: false,

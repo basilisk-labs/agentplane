@@ -1,6 +1,6 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import { invalidValueMessage, successMessage, warnMessage } from "../../cli/output.js";
+import { successMessage, warnMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -16,7 +16,7 @@ import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js
 
 import {
   appendTaskEvent,
-  defaultCommitEmojiForTask,
+  defaultCommitEmojiForStatus,
   ensureCommentCommitAllowed,
   ensureStatusTransitionAllowed,
   normalizeTaskDocVersion,
@@ -207,22 +207,6 @@ export async function cmdTaskSetStatus(opts: {
           message: "--body is required when using --commit-from-comment",
         });
       }
-      const expectedTaskEmoji = nextStatus === "DONE" ? undefined : defaultCommitEmojiForTask(task);
-      if (
-        expectedTaskEmoji &&
-        typeof opts.commitEmoji === "string" &&
-        opts.commitEmoji.trim() !== expectedTaskEmoji
-      ) {
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: invalidValueMessage(
-            "--commit-emoji",
-            opts.commitEmoji,
-            `${expectedTaskEmoji} (semantic task emoji for ${opts.taskId})`,
-          ),
-        });
-      }
       await commitFromComment({
         ctx,
         cwd: opts.cwd,
@@ -234,8 +218,7 @@ export async function cmdTaskSetStatus(opts: {
         statusTo: nextStatus,
         commentBody: opts.body,
         formattedComment: formatCommentBodyForCommit(opts.body, config),
-        emoji: opts.commitEmoji ?? (nextStatus === "DONE" ? "✅" : expectedTaskEmoji!),
-        ...(expectedTaskEmoji ? { taskEmoji: expectedTaskEmoji } : {}),
+        emoji: opts.commitEmoji ?? defaultCommitEmojiForStatus(nextStatus),
         allow: opts.commitAllow,
         autoAllow: opts.commitAutoAllow || opts.commitAllow.length === 0,
         allowTasks: opts.commitAllowTasks,
