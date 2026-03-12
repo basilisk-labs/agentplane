@@ -1,7 +1,8 @@
 ---
 id: "202603121504-WMQ876"
 title: "Adopt semantic patch operations across task commands"
-status: "DOING"
+result_summary: "Migrated task lifecycle commands onto TaskStore.patch() with semantic section and append semantics."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-12T15:36:47.325Z"
   updated_by: "CODER"
   note: "Semantic patch command migration checks passed."
-commit: null
+commit:
+  hash: "34e281f2c4fc1ef38c4a9543eb974c62324eac30"
+  message: "🚧 WMQ876 task: migrate task commands to semantic patch operations"
 comments:
   -
     author: "CODER"
     body: "Start: migrate task lifecycle commands onto semantic TaskStore patch operations."
+  -
+    author: "CODER"
+    body: "Verified: semantic patch migration across task lifecycle commands passed unit, workflow, and CLI lifecycle regressions."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Semantic patch command migration checks passed."
+  -
+    type: "status"
+    at: "2026-03-12T15:37:16.110Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: semantic patch migration across task lifecycle commands passed unit, workflow, and CLI lifecycle regressions."
 doc_version: 3
-doc_updated_at: "2026-03-12T15:36:47.327Z"
+doc_updated_at: "2026-03-12T15:37:16.110Z"
 doc_updated_by: "CODER"
 description: "Migrate task doc/plan/verify/comment/start/block/set-status/finish/close flows to the TaskStore semantic patch API so append-safe operations merge cleanly and section writes stop building ad-hoc full task payloads."
 id_source: "generated"
