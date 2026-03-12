@@ -1,7 +1,8 @@
 ---
 id: "202603121125-RZ4HDW"
 title: "Patch stabilization: split task CLI integration bucket"
-status: "DOING"
+result_summary: "Task CLI integration coverage now runs through smaller split suites with matching fast-CI routing."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-12T11:53:07.976Z"
   updated_by: "CODER"
   note: "Verified split task CLI suites and updated fast-CI routing."
-commit: null
+commit:
+  hash: "b7f403efa4714ea54a8a2446fb1bd12648df9c2d"
+  message: "🚧 RZ4HDW task: split task CLI suites and route them in fast-CI"
 comments:
   -
     author: "CODER"
     body: "Start: split the oversized task CLI integration bucket into smaller suites grouped by task lifecycle, task docs, and task inventory behavior while preserving existing coverage."
+  -
+    author: "CODER"
+    body: "Verified: the oversized task CLI bucket is now split into query, doc-write, and export suites, and fast-CI still routes task split files through the targeted cli-core contour."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified split task CLI suites and updated fast-CI routing."
+  -
+    type: "status"
+    at: "2026-03-12T11:53:59.794Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the oversized task CLI bucket is now split into query, doc-write, and export suites, and fast-CI still routes task split files through the targeted cli-core contour."
 doc_version: 3
-doc_updated_at: "2026-03-12T11:53:07.978Z"
+doc_updated_at: "2026-03-12T11:53:59.794Z"
 doc_updated_by: "CODER"
 description: "Decompose the oversized run-cli task integration test bucket into smaller suites with preserved coverage and lower regression-localization cost."
 id_source: "generated"
