@@ -72,6 +72,7 @@ const CLI_RUNTIME_BUCKET_PATTERNS = [
 
 const RELEASE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/release\//,
+  /^packages\/agentplane\/src\/cli\/release-recovery-script\.test\.ts$/,
   /^scripts\/check-release-(?:parity|version)\.mjs$/,
   /^scripts\/release-check\.mjs$/,
   /^scripts\/check-npm-version-availability\.mjs$/,
@@ -169,6 +170,7 @@ const RELEASE_TEST_FILES = [
   "packages/agentplane/src/commands/release/check-release-parity-script.test.ts",
   "packages/agentplane/src/commands/release/check-release-version-script.test.ts",
   "packages/agentplane/src/commands/release/apply.test.ts",
+  "packages/agentplane/src/cli/release-recovery-script.test.ts",
 ];
 const UPGRADE_TEST_FILES = [
   "packages/agentplane/src/commands/upgrade.agent-mode.test.ts",

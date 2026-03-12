@@ -149,6 +149,14 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain("packages/agentplane/src/commands/release/apply.test.ts");
   });
 
+  it("routes isolated release recovery test paths to the release bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/release-recovery-script.test.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("release");
+    expect(plan.reason).toBe("release_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/release-recovery-script.test.ts");
+  });
+
   it("routes isolated upgrade paths to the upgrade bucket", () => {
     const plan = selectFastCiPlan(["packages/agentplane/src/commands/upgrade.ts"]);
     expect(plan.kind).toBe("targeted");
