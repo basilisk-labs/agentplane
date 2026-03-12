@@ -17,10 +17,7 @@ function renderCliVersionFacts(expectation: RepoCliVersionExpectation): string[]
       ...(expectation.recovery ? [`[WARN] Recovery: ${expectation.recovery}`] : []),
     ];
   }
-  return [
-    `[INFO] Repository expected agentplane CLI: ${expectation.expectedVersion}`,
-    ...(expectation.summary ? [`[INFO] ${expectation.summary}`] : []),
-  ];
+  return [];
 }
 
 export function checkRuntimeSourceFacts(cwd: string, config?: AgentplaneConfig): string[] {
