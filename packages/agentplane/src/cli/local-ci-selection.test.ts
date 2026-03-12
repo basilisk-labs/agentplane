@@ -147,6 +147,23 @@ describe("local CI fast selection", () => {
     );
   });
 
+  it("routes split pr-flow suites to the cli-core bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("cli-core");
+    expect(plan.reason).toBe("cli_core_execution_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.pr-flow.pr.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.integrate.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts",
+    );
+  });
+
   it("routes split task suites to the cli-core bucket", () => {
     const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts"]);
     expect(plan.kind).toBe("targeted");
