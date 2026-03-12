@@ -1,7 +1,8 @@
 ---
 id: "202603121055-JXSY64"
 title: "Improve commit empty-index auto-stage ergonomics"
-status: "DOING"
+result_summary: "Enabled empty-index auto-stage for top-level commit and aligned allow-tasks policy/help/docs contracts."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-12T11:08:02.461Z"
+  updated_by: "CODER"
+  note: "Verified empty-index commit auto-stage and contract sync: vitest run-cli.core.guard.commit-wrapper/run-cli.core.guard/guard impl allow/guard impl commands.unit/policy evaluate; vitest run-cli.core.help-snap/run-cli.core.docs-cli; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; agentplane docs cli --out docs/user/cli-reference.generated.mdx; dogfood agentplane commit without manual git add passed."
+commit:
+  hash: "c24f8d0c36055fc68d605450f388865e8ca900ee"
+  message: "🚧 JXSY64 cli: auto-stage empty-index commit scope"
 comments:
   -
     author: "CODER"
     body: "Start: teach top-level commit to auto-stage allowlist-scoped changes when the index is empty while preserving guard commit staged-only semantics and syncing help/tests."
+  -
+    author: "CODER"
+    body: "Verified: top-level commit now auto-stages allowlist-scoped changes from an empty index, keeps guard commit staged-only, and synchronizes help/docs/tests."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: teach top-level commit to auto-stage allowlist-scoped changes when the index is empty while preserving guard commit staged-only semantics and syncing help/tests."
+  -
+    type: "verify"
+    at: "2026-03-12T11:08:02.461Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified empty-index commit auto-stage and contract sync: vitest run-cli.core.guard.commit-wrapper/run-cli.core.guard/guard impl allow/guard impl commands.unit/policy evaluate; vitest run-cli.core.help-snap/run-cli.core.docs-cli; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; agentplane docs cli --out docs/user/cli-reference.generated.mdx; dogfood agentplane commit without manual git add passed."
+  -
+    type: "status"
+    at: "2026-03-12T11:08:02.638Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: top-level commit now auto-stages allowlist-scoped changes from an empty index, keeps guard commit staged-only, and synchronizes help/docs/tests."
 doc_version: 3
-doc_updated_at: "2026-03-12T10:57:44.020Z"
+doc_updated_at: "2026-03-12T11:08:02.638Z"
 doc_updated_by: "CODER"
 description: "Teach top-level commit to stage allowlist-scoped changes when the git index is empty, and align help/docs/tests with the new contract."
 id_source: "generated"
@@ -63,6 +82,14 @@ Make top-level `agentplane commit` usable when the git index is empty by staging
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-12T11:08:02.461Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified empty-index commit auto-stage and contract sync: vitest run-cli.core.guard.commit-wrapper/run-cli.core.guard/guard impl allow/guard impl commands.unit/policy evaluate; vitest run-cli.core.help-snap/run-cli.core.docs-cli; bun run --filter=@agentplaneorg/core build; bun run --filter=agentplane build; agentplane docs cli --out docs/user/cli-reference.generated.mdx; dogfood agentplane commit without manual git add passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-12T10:57:44.020Z, excerpt_hash=sha256:5f531a6f98f9cea58bca3c6b1558b746c82db04995203aeac19eeec238daa7e4
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
