@@ -1,7 +1,11 @@
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { readFile, stat } from "node:fs/promises";
-import { collectWatchedRuntimeSnapshot, compareWatchedRuntimeSnapshots } from "./runtime-watch.js";
+import {
+  collectWatchedRuntimeSnapshot,
+  compareWatchedRuntimeSnapshots,
+  isRuntimeRelevantWatchedFile,
+} from "./runtime-watch.js";
 
 async function exists(p) {
   try {
@@ -63,14 +67,20 @@ function workingTreeChangedPaths(cwd, watchedPaths) {
         const normalized = String(line ?? "");
         return normalized.length > 3 ? normalized.slice(3).trim() : "";
       })
-      .filter(Boolean),
+      .filter((filePath) => Boolean(filePath) && isRuntimeRelevantWatchedFile(filePath)),
   );
 }
 
 function committedChangedPathsSince(cwd, fromGitHead, watchedPaths) {
   if (!fromGitHead) return [];
   return uniqueSorted(
-    listGitPaths(cwd, ["diff", "--name-only", `${fromGitHead}..HEAD`, "--", ...watchedPaths]),
+    listGitPaths(cwd, [
+      "diff",
+      "--name-only",
+      `${fromGitHead}..HEAD`,
+      "--",
+      ...watchedPaths,
+    ]).filter((filePath) => isRuntimeRelevantWatchedFile(filePath)),
   );
 }
 

@@ -15,6 +15,7 @@ export type WatchedRuntimeSnapshotComparison = {
   changedPaths: string[];
 };
 
+export function isRuntimeRelevantWatchedFile(filePath: string): boolean;
 export function getWatchedRuntimePathsForPackage(packageName: string): string[];
 export function collectWatchedRuntimeSnapshot(
   packageDir: string,

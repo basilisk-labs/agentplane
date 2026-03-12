@@ -17,6 +17,15 @@ function normalizePath(value) {
   return value.split(path.sep).join("/");
 }
 
+export function isRuntimeRelevantWatchedFile(filePath) {
+  const normalized = normalizePath(filePath);
+  const inSourceTree = normalized.startsWith("src/") || normalized.includes("/src/");
+  if (!inSourceTree) return true;
+  if (normalized.includes("/__snapshots__/")) return false;
+  const baseName = path.posix.basename(normalized);
+  return !/\.(?:test)\.[cm]?[jt]sx?$/u.test(baseName);
+}
+
 async function exists(targetPath) {
   try {
     await stat(targetPath);
@@ -76,9 +85,11 @@ export async function collectWatchedRuntimeSnapshot(packageDir, watchedPaths) {
   const uniqueAbsoluteFiles = [...new Set(absoluteFiles)].toSorted((a, b) => a.localeCompare(b));
   const files = [];
   for (const absolutePath of uniqueAbsoluteFiles) {
+    const relativePath = normalizePath(path.relative(packageDir, absolutePath));
+    if (!isRuntimeRelevantWatchedFile(relativePath)) continue;
     const content = await readFile(absolutePath);
     files.push({
-      path: normalizePath(path.relative(packageDir, absolutePath)),
+      path: relativePath,
       sha256: fileHash(content),
       size_bytes: content.byteLength,
     });
@@ -96,15 +107,21 @@ function snapshotFileMap(snapshot) {
 }
 
 export function compareWatchedRuntimeSnapshots(recordedSnapshot, currentSnapshot) {
+  const recordedFiles = recordedSnapshot.files.filter((file) =>
+    isRuntimeRelevantWatchedFile(file.path),
+  );
+  const currentFiles = currentSnapshot.files.filter((file) =>
+    isRuntimeRelevantWatchedFile(file.path),
+  );
   if (
-    recordedSnapshot.snapshotHash === currentSnapshot.snapshotHash &&
-    recordedSnapshot.files.length === currentSnapshot.files.length
+    snapshotHash(recordedFiles) === snapshotHash(currentFiles) &&
+    recordedFiles.length === currentFiles.length
   ) {
     return { ok: true, changedPaths: [] };
   }
 
-  const recordedMap = snapshotFileMap(recordedSnapshot);
-  const currentMap = snapshotFileMap(currentSnapshot);
+  const recordedMap = snapshotFileMap({ ...recordedSnapshot, files: recordedFiles });
+  const currentMap = snapshotFileMap({ ...currentSnapshot, files: currentFiles });
   const changedPaths = [...new Set([...recordedMap.keys(), ...currentMap.keys()])]
     .filter((filePath) => recordedMap.get(filePath) !== currentMap.get(filePath))
     .toSorted((a, b) => a.localeCompare(b));

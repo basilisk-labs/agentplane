@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   collectWatchedRuntimeSnapshot,
   getWatchedRuntimePathsForPackage,
+  isRuntimeRelevantWatchedFile,
 } from "../../bin/runtime-watch.js";
 import type { WatchedRuntimeSnapshotFile } from "../../bin/runtime-watch.js";
 
@@ -107,6 +108,38 @@ describe("runtime-watch", () => {
     ]);
     expect(snapshot.files.every((file) => file.sha256.length === 64)).toBe(true);
     expect(snapshot.snapshotHash.length).toBe(64);
+  });
+
+  it("ignores test-only source files and snapshots when collecting runtime snapshots", async () => {
+    const { packageDir } = await setupPackageFixture("agentplane");
+    await mkdir(path.join(packageDir, "src", "__snapshots__"), { recursive: true });
+    await writeFile(
+      path.join(packageDir, "src", "cli.test.ts"),
+      "export const runtimeWatchTest = true;\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(packageDir, "src", "__snapshots__", "runtime-watch.snap"),
+      "snapshot\n",
+      "utf8",
+    );
+
+    const snapshot = await collectWatchedRuntimeSnapshot(
+      packageDir,
+      getWatchedRuntimePathsForPackage("agentplane"),
+    );
+
+    expect(snapshot.files.map((file) => file.path)).not.toContain("src/cli.test.ts");
+    expect(snapshot.files.map((file) => file.path)).not.toContain(
+      "src/__snapshots__/runtime-watch.snap",
+    );
+  });
+
+  it("classifies runtime-relevant watched files conservatively", () => {
+    expect(isRuntimeRelevantWatchedFile("src/cli.ts")).toBe(true);
+    expect(isRuntimeRelevantWatchedFile("src/cli.test.ts")).toBe(false);
+    expect(isRuntimeRelevantWatchedFile("src/__snapshots__/help.snap")).toBe(false);
+    expect(isRuntimeRelevantWatchedFile("bin/stale-dist-policy.js")).toBe(true);
   });
 
   it("writes watched runtime snapshots into build manifests for agentplane", async () => {
