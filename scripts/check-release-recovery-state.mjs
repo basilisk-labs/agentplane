@@ -164,6 +164,91 @@ function pushFinding(report, finding) {
   report.findings.push(finding);
 }
 
+function deriveRecoverySummary(report, args) {
+  if (report.current.registry.checked && report.current.registry.status === "blocked") {
+    return {
+      state: "release_npm_version_burned",
+      likelyCause:
+        "the target npm version is already unavailable for publish, so the prepared release plan cannot complete safely",
+      nextAction:
+        "Pick a new patch version, rerun `agentplane release plan`, and regenerate release notes for the new target tag before retrying publish.",
+    };
+  }
+
+  if (
+    report.current.localTagPresent &&
+    report.current.remote.configured &&
+    !report.current.remote.tagPresent
+  ) {
+    return {
+      state: "release_committed_locally_not_pushed",
+      likelyCause:
+        "the release commit and local tag were created, but the push step did not complete against the configured remote",
+      nextAction: `If this release is correct, run: git push ${args.remote} HEAD && git push ${args.remote} ${report.target.nextTag}`,
+    };
+  }
+
+  if (report.current.localTagPresent && !report.current.remote.configured) {
+    return {
+      state: "release_created_locally_without_remote",
+      likelyCause:
+        "release apply completed local mutation, but there is no configured remote to receive the release refs",
+      nextAction: `Configure ${args.remote}, then push HEAD and ${report.target.nextTag} intentionally once the remote target is confirmed.`,
+    };
+  }
+
+  if (report.current.coreVersion === report.target.nextVersion && !report.current.localTagPresent) {
+    return {
+      state: "release_versions_bumped_without_local_tag",
+      likelyCause:
+        "version files were bumped to the target release, but the local tag creation step never completed",
+      nextAction: `Inspect the recent release commit, then either create ${report.target.nextTag} intentionally or rerun \`agentplane release plan\` from the current repo state.`,
+    };
+  }
+
+  if (
+    report.current.coreVersion !== report.target.prevVersion &&
+    report.current.coreVersion !== report.target.nextVersion
+  ) {
+    return {
+      state: "release_plan_drifted",
+      likelyCause:
+        "the repository version moved away from both the release-plan baseline and target, so the current plan is no longer authoritative",
+      nextAction:
+        "Run `agentplane release plan` again and use the new plan as the only recovery baseline.",
+    };
+  }
+
+  if (
+    report.current.agentplaneVersion !== report.current.coreVersion ||
+    report.current.coreDependencyVersion !== report.current.coreVersion
+  ) {
+    return {
+      state: "release_version_parity_drift",
+      likelyCause:
+        "release-related package versions no longer agree, which usually means a partial local mutation or manual edit interrupted parity",
+      nextAction:
+        "Restore package version parity first, then rerun `agentplane release plan` before any publish or push step.",
+    };
+  }
+
+  if (!report.current.notesPresent) {
+    return {
+      state: "release_notes_missing",
+      likelyCause:
+        "the release plan exists, but the release notes artifact for the target tag was never written into docs/releases",
+      nextAction: `Write ${path.relative(report.repoRoot, report.current.notesPath)} before retrying release apply or push recovery.`,
+    };
+  }
+
+  return {
+    state: "release_recovery_clean",
+    likelyCause: "no partial release state was detected for the latest release plan",
+    nextAction:
+      "Continue with the normal release flow or inspect the latest apply report if recovery is still needed.",
+  };
+}
+
 async function buildReport(repoRoot, args) {
   const planDir = args.plan ?? (await findLatestPlanDir(repoRoot));
   const versionJson = await readJson(path.join(planDir, "version.json"));
@@ -319,12 +404,17 @@ async function buildReport(repoRoot, args) {
     });
   }
 
+  report.summary = deriveRecoverySummary(report, args);
   return report;
 }
 
 function renderText(report) {
   const lines = [
     "Release recovery report",
+    `State: ${report.summary.state}`,
+    `Likely cause: ${report.summary.likelyCause}`,
+    `Next safe action: ${report.summary.nextAction}`,
+    "",
     `Plan dir: ${path.relative(report.repoRoot, report.planDir) || "."}`,
     `Target: ${report.target.nextTag} / ${report.target.nextVersion} (prev: ${report.target.prevTag ?? "none"} / ${report.target.prevVersion})`,
     `Current versions: core=${report.current.coreVersion}, agentplane=${report.current.agentplaneVersion}, dependency=${report.current.coreDependencyVersion || "missing"}`,

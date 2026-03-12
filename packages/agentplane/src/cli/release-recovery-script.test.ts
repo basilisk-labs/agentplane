@@ -104,10 +104,14 @@ describe("release recovery script", () => {
 
     const { stdout } = await runScript(root, ["--json"]);
     const payload = JSON.parse(stdout) as {
+      summary: { state: string; likelyCause: string; nextAction: string };
       current: { localTagPresent: boolean; remote: { tagPresent: boolean } };
       findings: { code: string; nextAction?: string }[];
     };
 
+    expect(payload.summary.state).toBe("release_committed_locally_not_pushed");
+    expect(payload.summary.likelyCause).toContain("release commit and local tag were created");
+    expect(payload.summary.nextAction).toContain("git push origin HEAD");
     expect(payload.current.localTagPresent).toBe(true);
     expect(payload.current.remote.tagPresent).toBe(false);
     expect(
@@ -117,6 +121,27 @@ describe("release recovery script", () => {
       payload.findings.find((finding) => finding.code === "release_local_tag_not_pushed")
         ?.nextAction,
     ).toContain("git push origin HEAD");
+  }, 60_000);
+
+  it("prints the synthesized recovery state in text mode", async () => {
+    const root = await initReleaseRepo();
+    const remoteRoot = path.join(root, "remote.git");
+    await execFileAsync("git", ["init", "--bare", remoteRoot], { cwd: root });
+    await execFileAsync("git", ["remote", "add", "origin", remoteRoot], { cwd: root });
+    await execFileAsync("git", ["push", "-u", "origin", "main"], { cwd: root });
+    await writeFile(
+      path.join(root, "docs", "releases", "v0.2.7.md"),
+      "# Release Notes\n\n- A\n",
+      "utf8",
+    );
+    await execFileAsync("git", ["tag", "v0.2.7"], { cwd: root });
+
+    const { stdout } = await runScript(root);
+    expect(stdout).toContain("State: release_committed_locally_not_pushed");
+    expect(stdout).toContain("Likely cause:");
+    expect(stdout).toContain(
+      "Next safe action: If this release is correct, run: git push origin HEAD",
+    );
   }, 60_000);
 
   it("reports release-note drift and locally bumped versions without a local tag", async () => {
@@ -138,9 +163,13 @@ describe("release recovery script", () => {
 
     const { stdout } = await runScript(root, ["--json"]);
     const payload = JSON.parse(stdout) as {
+      summary: { state: string; likelyCause: string; nextAction: string };
       findings: { code: string }[];
     };
 
+    expect(payload.summary.state).toBe("release_versions_bumped_without_local_tag");
+    expect(payload.summary.likelyCause).toContain("version files were bumped");
+    expect(payload.summary.nextAction).toContain("create v0.2.7 intentionally or rerun");
     expect(payload.findings.some((finding) => finding.code === "release_notes_missing")).toBe(true);
     expect(
       payload.findings.some(
@@ -164,10 +193,14 @@ describe("release recovery script", () => {
 
     const { stdout } = await runScript(root, ["--json", "--check-registry"]);
     const payload = JSON.parse(stdout) as {
+      summary: { state: string; likelyCause: string; nextAction: string };
       current: { registry: { checked: boolean; status: string; detail: string } };
       findings: { code: string }[];
     };
 
+    expect(payload.summary.state).toBe("release_npm_version_burned");
+    expect(payload.summary.likelyCause).toContain("target npm version is already unavailable");
+    expect(payload.summary.nextAction).toContain("rerun `agentplane release plan`");
     expect(payload.current.registry.checked).toBe(true);
     expect(payload.current.registry.status).toBe("blocked");
     expect(payload.current.registry.detail).toContain("Version already published");
