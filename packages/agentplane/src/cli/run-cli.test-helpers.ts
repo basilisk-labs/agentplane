@@ -6,10 +6,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { gzipSync } from "node:zlib";
-import { afterAll, afterEach, beforeAll } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, vi } from "vitest";
 
 import { defaultConfig } from "@agentplaneorg/core";
 
+import type { TaskBackend } from "../backends/task-backend.js";
 import { runCli } from "./run-cli.js";
 
 const execFileAsync = promisify(execFile);
@@ -106,6 +107,20 @@ export function registerAgentplaneHome(): void {
   });
 }
 
+export function installRunCliIntegrationHarness(): void {
+  registerAgentplaneHome();
+  let restoreStdIO: (() => void) | null = null;
+
+  beforeEach(() => {
+    restoreStdIO = silenceStdIO();
+  });
+
+  afterEach(() => {
+    restoreStdIO?.();
+    restoreStdIO = null;
+  });
+}
+
 export function getAgentplaneHome(): string | null {
   return agentplaneHome;
 }
@@ -161,6 +176,27 @@ export function silenceStdIO(): () => void {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (process.stderr.write as any) = originalStderrWrite;
     }
+  };
+}
+
+export function stubTaskBackend(overrides: Partial<TaskBackend> = {}): TaskBackend {
+  return {
+    id: "local",
+    capabilities: {
+      canonical_source: "local",
+      projection: "canonical",
+      reads_from_projection_by_default: false,
+      writes_task_readmes: true,
+      may_access_network_on_read: false,
+      may_access_network_on_write: false,
+      supports_projection_refresh: false,
+      supports_push_sync: false,
+      supports_snapshot_export: false,
+    },
+    listTasks: vi.fn().mockResolvedValue([]),
+    getTask: vi.fn().mockResolvedValue(null),
+    writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
+    ...overrides,
   };
 }
 
