@@ -1,7 +1,8 @@
 ---
 id: "202603121545-6SZZDM"
 title: "Stop doctor from counting satisfied CLI version facts as informational findings"
-status: "DOING"
+result_summary: "Doctor now treats a satisfied repository CLI version expectation as clean state instead of an informational finding, so clean runs no longer show misleading info counts."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-12T16:04:58.161Z"
   updated_by: "CODER"
   note: "Verified: doctor no longer emits informational findings when the active CLI already satisfies the repository expectation, mismatch warnings remain actionable, and targeted doctor regressions plus lint/build passed."
-commit: null
+commit:
+  hash: "8c903df498d25245f2f364c300001101079f4adb"
+  message: "⚙️ 6SZZDM test: cover clean doctor version expectations"
 comments:
   -
     author: "CODER"
     body: "Start: stop counting satisfied CLI version expectations as doctor findings while preserving actionable mismatch warnings."
+  -
+    author: "CODER"
+    body: "Verified: doctor no longer emits informational findings for satisfied CLI version expectations, mismatch warnings remain actionable, and targeted doctor regressions plus lint/build checks passed."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: doctor no longer emits informational findings when the active CLI already satisfies the repository expectation, mismatch warnings remain actionable, and targeted doctor regressions plus lint/build passed."
+  -
+    type: "status"
+    at: "2026-03-12T16:07:41.852Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor no longer emits informational findings for satisfied CLI version expectations, mismatch warnings remain actionable, and targeted doctor regressions plus lint/build checks passed."
 doc_version: 3
-doc_updated_at: "2026-03-12T16:04:58.162Z"
+doc_updated_at: "2026-03-12T16:07:41.853Z"
 doc_updated_by: "CODER"
 description: "Make doctor stop inflating the findings summary when the active CLI already satisfies the repository expectation, so clean runs do not show misleading INFO counts from version-match facts."
 id_source: "generated"
