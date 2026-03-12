@@ -1,7 +1,8 @@
 ---
 id: "202603121611-18K2JC"
 title: "Let agents choose task commit emojis freely"
-status: "DOING"
+result_summary: "Task-scoped commit subjects no longer enforce system-derived non-DONE emojis; agents may choose any emoji while DONE commits still require ✅."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-12T16:18:06.128Z"
   updated_by: "CODER"
   note: "Verified: non-DONE task commits no longer enforce a system-derived emoji, comment-driven lifecycle commits accept any explicit --commit-emoji, hook regressions/lifecycle regressions passed, and both package builds succeeded."
-commit: null
+commit:
+  hash: "5634988b552738266ea7e6570bed7c0d1fbbbbb1"
+  message: "🦞 18K2JC cli: let agents choose task commit emoji freely"
 comments:
   -
     author: "CODER"
     body: "Start: remove system-derived non-DONE task emoji enforcement so agents may choose commit emojis freely while DONE keeps its checkmark rule."
+  -
+    author: "CODER"
+    body: "Verified: non-DONE task commits now allow any agent-chosen emoji, lifecycle comment-commit paths no longer enforce a system-derived task emoji, and focused lint/test/build checks passed."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: non-DONE task commits no longer enforce a system-derived emoji, comment-driven lifecycle commits accept any explicit --commit-emoji, hook regressions/lifecycle regressions passed, and both package builds succeeded."
+  -
+    type: "status"
+    at: "2026-03-12T16:18:45.245Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: non-DONE task commits now allow any agent-chosen emoji, lifecycle comment-commit paths no longer enforce a system-derived task emoji, and focused lint/test/build checks passed."
 doc_version: 3
-doc_updated_at: "2026-03-12T16:18:06.129Z"
+doc_updated_at: "2026-03-12T16:18:45.246Z"
 doc_updated_by: "CODER"
 description: "Stop enforcing a system-derived emoji for non-DONE task commits so agents can choose any emoji in task-scoped commit messages, while preserving the commit subject format and DONE checkmark rule."
 id_source: "generated"
