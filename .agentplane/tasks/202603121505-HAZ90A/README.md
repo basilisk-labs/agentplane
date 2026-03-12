@@ -1,7 +1,8 @@
 ---
 id: "202603121505-HAZ90A"
 title: "Cover semantic patch conflicts and merge behavior"
-status: "DOING"
+result_summary: "Added full-doc conflict and command-level semantic conflict regressions for the patch layer."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on:
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-12T15:40:47.577Z"
   updated_by: "CODER"
   note: "Semantic patch regression coverage checks passed."
-commit: null
+commit:
+  hash: "24f12b1fd447ef821d6717365eeca34d783ddb82"
+  message: "🚧 HAZ90A task: add semantic patch conflict regressions"
 comments:
   -
     author: "CODER"
     body: "Start: add targeted semantic patch conflict and merge regressions for task commands."
+  -
+    author: "CODER"
+    body: "Verified: semantic patch conflict and merge regressions passed with store, unit, and lifecycle coverage."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Semantic patch regression coverage checks passed."
+  -
+    type: "status"
+    at: "2026-03-12T15:41:16.321Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: semantic patch conflict and merge regressions passed with store, unit, and lifecycle coverage."
 doc_version: 3
-doc_updated_at: "2026-03-12T15:40:47.579Z"
+doc_updated_at: "2026-03-12T15:41:16.322Z"
 doc_updated_by: "CODER"
 description: "Add regression coverage and documentation sync for the TaskStore semantic patch layer, including same-section conflicts, append-safe merges, lifecycle behavior, and user-facing help/reference updates."
 id_source: "generated"
