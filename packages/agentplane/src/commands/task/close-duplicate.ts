@@ -1,15 +1,9 @@
-import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { loadTaskFromContext, type CommandContext } from "../shared/task-backend.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
-import {
-  appendTaskEvent,
-  normalizeTaskDocVersion,
-  nowIso,
-  requireStructuredComment,
-} from "./shared.js";
+import { recordVerifiedNoopClosure } from "./close-shared.js";
 
 export async function cmdTaskCloseDuplicate(opts: {
   ctx: CommandContext;
@@ -56,51 +50,23 @@ export async function cmdTaskCloseDuplicate(opts: {
       ? await store!.get(sourceId)
       : await loadTaskFromContext({ ctx: opts.ctx, taskId: sourceId });
 
-    if (!opts.force && String(task.status || "TODO").toUpperCase() === "DONE") {
-      throw new CliError({
-        exitCode: 2,
-        code: "E_USAGE",
-        message: `Task is already DONE: ${sourceId} (use --force to override)`,
-      });
-    }
-
     const reason = opts.note?.trim();
     const canonicalTitle = canonical.title?.trim() ? ` (${canonical.title.trim()})` : "";
     const baseBody =
       `Verified: ${sourceId} is a bookkeeping duplicate of ${duplicateOf}${canonicalTitle}; ` +
       "no code/config changes are expected in this task and closure is recorded as no-op.";
     const body = reason ? `${baseBody}\n\nReason: ${reason}` : baseBody;
-    const verifiedCfg = opts.ctx.config.tasks.comments.verified;
-    requireStructuredComment(body, verifiedCfg.prefix, verifiedCfg.min_chars);
-
-    const at = nowIso();
-    const next: TaskData = {
-      ...task,
-      status: "DONE",
-      comments: [
-        ...(Array.isArray(task.comments) ? task.comments : []),
-        { author: opts.author, body },
-      ],
-      events: appendTaskEvent(task, {
-        type: "status",
-        at,
-        author: opts.author,
-        from: String(task.status || "TODO").toUpperCase(),
-        to: "DONE",
-        note: body,
-      }),
-      result_summary: `Closed as duplicate of ${duplicateOf}.`,
-      risk_level: "low",
-      breaking: false,
-      doc_version: normalizeTaskDocVersion(task.doc_version),
-      doc_updated_at: at,
-      doc_updated_by: opts.author,
-    };
-    await (useStore ? store!.update(sourceId, () => next) : opts.ctx.taskBackend.writeTask(next));
-
-    if (!opts.quiet) {
-      process.stdout.write(`task.done: ${sourceId} (duplicate of ${duplicateOf})\n`);
-    }
+    await recordVerifiedNoopClosure({
+      ctx: opts.ctx,
+      task,
+      taskId: sourceId,
+      author: opts.author,
+      body,
+      resultSummary: `Closed as duplicate of ${duplicateOf}.`,
+      quiet: opts.quiet,
+      successMessage: `task.done: ${sourceId} (duplicate of ${duplicateOf})`,
+      force: opts.force,
+    });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;

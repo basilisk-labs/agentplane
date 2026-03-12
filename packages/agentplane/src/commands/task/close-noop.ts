@@ -3,12 +3,7 @@ import { CliError } from "../../shared/errors.js";
 import { ensureActionApproved } from "../shared/approval-requirements.js";
 import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
 import { loadCommandContext, type CommandContext } from "../shared/task-backend.js";
-import {
-  appendTaskEvent,
-  normalizeTaskDocVersion,
-  nowIso,
-  requireStructuredComment,
-} from "./shared.js";
+import { recordVerifiedNoopClosure } from "./close-shared.js";
 
 export async function cmdTaskCloseNoop(opts: {
   ctx?: CommandContext;
@@ -56,35 +51,17 @@ export async function cmdTaskCloseNoop(opts: {
     const baseBody =
       "Verified: no implementation changes were required; closure is recorded as no-op bookkeeping.";
     const body = normalizedNote ? `${baseBody}\n\nNote: ${normalizedNote}` : baseBody;
-    const verifiedCfg = ctx.config.tasks.comments.verified;
-    requireStructuredComment(body, verifiedCfg.prefix, verifiedCfg.min_chars);
-    const at = nowIso();
-    const next = {
-      ...task,
-      status: "DONE",
-      comments: [
-        ...(Array.isArray(task.comments) ? task.comments : []),
-        { author: opts.author, body },
-      ],
-      events: appendTaskEvent(task, {
-        type: "status",
-        at,
-        author: opts.author,
-        from: String(task.status || "TODO").toUpperCase(),
-        to: "DONE",
-        note: body,
-      }),
-      result_summary: "No-op closure recorded.",
-      risk_level: "low" as const,
-      breaking: false,
-      doc_version: normalizeTaskDocVersion(task.doc_version),
-      doc_updated_at: at,
-      doc_updated_by: opts.author,
-    };
-    await (useStore ? store!.update(opts.taskId, () => next) : ctx.taskBackend.writeTask(next));
-    if (!opts.quiet) {
-      process.stdout.write(`task.done: ${opts.taskId} (no-op)\n`);
-    }
+    await recordVerifiedNoopClosure({
+      ctx,
+      task,
+      taskId: opts.taskId,
+      author: opts.author,
+      body,
+      resultSummary: "No-op closure recorded.",
+      quiet: opts.quiet,
+      successMessage: `task.done: ${opts.taskId} (no-op)`,
+      force: opts.force,
+    });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
