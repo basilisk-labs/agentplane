@@ -169,6 +169,27 @@ describe("local CI fast selection", () => {
     );
   });
 
+  it("routes split branch-meta suites to the cli-core bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("cli-core");
+    expect(plan.reason).toBe("cli_core_execution_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.branch-meta.readiness.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.branch-meta.workflow-profile.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.branch-meta.sync-maintenance.test.ts",
+    );
+  });
+
   it("routes split task suites to the cli-core bucket", () => {
     const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts"]);
     expect(plan.kind).toBe("targeted");

@@ -68,13 +68,13 @@ const CLI_CORE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\/(?!commands\/init\/)/,
   /^packages\/agentplane\/src\/cli\/run-cli\.test-helpers\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta|misc|pr-flow(?:\..+)?)\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
 ];
 const CLI_CORE_DISCOVERY_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta|misc|pr-flow(?:\..+)?)\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta(?:\..+)?|misc|pr-flow(?:\..+)?)\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
 ];
