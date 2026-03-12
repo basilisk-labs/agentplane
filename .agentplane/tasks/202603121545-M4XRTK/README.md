@@ -1,7 +1,8 @@
 ---
 id: "202603121545-M4XRTK"
 title: "Replace agent-based task commit emoji with semantic task-derived selection"
-status: "DOING"
+result_summary: "Task-scoped commit emojis now derive from task meaning instead of agent-id mappings, while DONE commits keep the checkmark rule."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-12T16:04:58.161Z"
   updated_by: "CODER"
   note: "Verified: semantic task emoji selection now derives from title/description/tags, comment-driven and task-scoped commit envs carry the expected emoji, hook validation matches it, and targeted unit/CLI suites plus lint/build passed."
-commit: null
+commit:
+  hash: "22890dd7de2a48c2143861cb810ed9fc1be71a29"
+  message: "🗂️ M4XRTK cli: derive task commit emoji from task meaning"
 comments:
   -
     author: "CODER"
     body: "Start: replace agent-based task commit emoji selection with semantic task-derived resolution and aligned enforcement."
+  -
+    author: "CODER"
+    body: "Verified: semantic task emoji selection is task-derived, hook enforcement matches the expected emoji, and targeted lint/test/build checks passed."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: semantic task emoji selection now derives from title/description/tags, comment-driven and task-scoped commit envs carry the expected emoji, hook validation matches it, and targeted unit/CLI suites plus lint/build passed."
+  -
+    type: "status"
+    at: "2026-03-12T16:07:27.327Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: semantic task emoji selection is task-derived, hook enforcement matches the expected emoji, and targeted lint/test/build checks passed."
 doc_version: 3
-doc_updated_at: "2026-03-12T16:04:58.162Z"
+doc_updated_at: "2026-03-12T16:07:27.328Z"
 doc_updated_by: "CODER"
 description: "Choose the main task commit emoji from task meaning (title/description/tags and task context) instead of the current fixed agent-id mapping, and keep hook enforcement aligned with the new rule."
 id_source: "generated"
