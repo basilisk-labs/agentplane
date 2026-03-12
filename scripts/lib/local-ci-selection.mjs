@@ -22,6 +22,7 @@ const BACKEND_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/backend(?:\/|\.|$)/,
   /^packages\/agentplane\/src\/commands\/shared\/task-backend(?:\.test)?\.ts$/,
   /^packages\/agentplane\/src\/commands\/task\/(?:export|migrate-doc)(?:\.test|\.unit\.test)?\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.backend-sync\.test\.ts$/,
 ];
 
 const HOOKS_BUCKET_PATTERNS = [
@@ -99,6 +100,7 @@ const RELEASE_BUCKET_PATTERNS = [
 
 const UPGRADE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/upgrade(?:\/|\.|$)/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.upgrade\.test\.ts$/,
   /^scripts\/check-upgrade-preview-fresh\.mjs$/,
 ];
 
@@ -142,7 +144,7 @@ const BACKEND_TEST_FILES = [
   "packages/agentplane/src/commands/task/export.unit.test.ts",
   "packages/agentplane/src/commands/task/migrate-doc.test.ts",
   "packages/agentplane/src/commands/doctor.fast.test.ts",
-  "packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
   "packages/agentplane/src/cli/run-cli.core.tasks.test.ts",
 ];
 const HOOKS_TEST_FILES = [
@@ -236,6 +238,7 @@ const UPGRADE_TEST_FILES = [
   "packages/agentplane/src/commands/upgrade.spec-parse.test.ts",
   "packages/agentplane/src/commands/upgrade.tarball-url.unit.test.ts",
   "packages/agentplane/src/commands/upgrade.unit.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.upgrade.test.ts",
 ];
 const GUARD_TEST_FILES = discoverTestFiles(
   ["packages/agentplane/src/commands/guard", "packages/agentplane/src/cli"],

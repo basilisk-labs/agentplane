@@ -106,7 +106,7 @@ bun run test:critical:symlink-root
 
 bun run test:platform-critical:pr-meta
 bun run test:platform-critical:scenario
-bun run test:platform-critical:init-upgrade-backend
+bun run test:platform-critical:init-upgrade
 
 bun run test:backend-critical
 bun run test:backend:redmine-live
@@ -156,8 +156,8 @@ bun run test:cli:smoke
 ```
 
 To run the compact release-only smoke layer that checks install-first init/upgrade and
-README migration recovery without pulling the full `run-cli.core.init-upgrade-backend`
-regression file into `release:ci-check`:
+README migration recovery without pulling the split `run-cli.core.init`, `run-cli.core.upgrade`,
+and `run-cli.core.backend-sync` regressions into `release:ci-check`:
 
 ```bash
 bun run test:release:smoke
@@ -173,7 +173,8 @@ bun run test:release:critical
 Where:
 
 - `test:release:ci-base` is the broad release validation sweep with the slow non-release-specific
-  `cli-smoke`, `release-recovery-script`, and `run-cli.core.init-upgrade-backend` files excluded.
+  `cli-smoke`, `release-recovery-script`, `run-cli.core.init`, `run-cli.core.upgrade`, and
+  `run-cli.core.backend-sync` files excluded.
 - `test:release:critical` reruns the truly release-critical slow paths explicitly:
   `test:release:recovery`, `test:release:smoke`, and `test:cli:smoke`.
 
@@ -248,8 +249,7 @@ By default, hooks run:
   - `cli-runtime`: repo-local handoff, runtime-watch, stale-dist, and global-install verification paths
 
   The following still stay on the broad fallback by design:
-  - docs-generation stability paths such as `run-cli.core.docs-cli.test.ts`
-  - init/upgrade integration paths such as `run-cli.core.init-upgrade-backend.test.ts`
+  - bootstrap/init integration paths such as `run-cli.core.init.test.ts`
   - any mixed CLI change that crosses help, runtime, hooks, guard, or broader infra-sensitive boundaries
 
   Set `AGENTPLANE_HOOKS_FULL=1` to force `bun run ci:local:full`, which adds docs-site, workflows lint, platform-critical Windows tests, and the significant-file coverage guard. For release-tag pushes (or when `AGENTPLANE_HOOKS_RELEASE=1`/`AGENTPLANE_HOOKS_FULL=1`), it additionally runs release notes validation and `bun run release:prepublish`.

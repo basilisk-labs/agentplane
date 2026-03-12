@@ -84,7 +84,7 @@ describe("local CI fast selection", () => {
     expect(plan.vitestPool).toBe("forks");
     expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.test.ts");
     expect(plan.testFiles).toContain(
-      "packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts",
+      "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
     );
   });
 
@@ -174,9 +174,7 @@ describe("local CI fast selection", () => {
   });
 
   it("keeps residual runtime-sensitive CLI paths on the broad fallback", () => {
-    const plan = selectFastCiPlan([
-      "packages/agentplane/src/cli/run-cli.core.init-upgrade-backend.test.ts",
-    ]);
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.core.init.test.ts"]);
     expect(plan.kind).toBe("full-fast");
     expect(plan.reason).toBe("broad_or_infra_sensitive_change");
   });
@@ -203,6 +201,27 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("upgrade");
     expect(plan.reason).toBe("upgrade_paths_only");
     expect(plan.testFiles).toContain("packages/agentplane/src/commands/upgrade.merge.test.ts");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.upgrade.test.ts");
+  });
+
+  it("routes the split backend-sync regression suite to the backend bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("backend");
+    expect(plan.reason).toBe("backend_projection_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
+    );
+  });
+
+  it("routes the split upgrade regression suite to the upgrade bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.core.upgrade.test.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("upgrade");
+    expect(plan.reason).toBe("upgrade_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.upgrade.test.ts");
   });
 
   it("routes isolated guard paths to the guard bucket", () => {
