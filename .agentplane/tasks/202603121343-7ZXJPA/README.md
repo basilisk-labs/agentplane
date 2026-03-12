@@ -1,7 +1,8 @@
 ---
 id: "202603121343-7ZXJPA"
 title: "Cleanup phase: split task doc-write CLI integration suite"
-status: "DOING"
+result_summary: "Reduced the mixed task doc-write regression bucket by moving scaffold/derive and normalize/migrate coverage into dedicated suites and keeping fast-CI expectations aligned with the split."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-12T14:16:12.442Z"
+  updated_by: "CODER"
+  note: "OK: split task doc-write coverage into doc-write, scaffold-derive, and normalize-migrate suites; local-ci-selection expectations updated; eslint on split files passed; vitest passed for 48 task-suite tests; bun run --filter=@agentplaneorg/core build and bun run --filter=agentplane build passed."
+commit:
+  hash: "5b0d618bfaf4cf75087b1a2e6b6e9dc980f73c01"
+  message: "🚧 7ZXJPA task: split task doc-write CLI integration suite"
 comments:
   -
     author: "CODER"
     body: "Start: splitting the mixed task doc-write CLI suite into focused doc-set, scaffold/derive, and normalize/migrate buckets while keeping fast-CI expectations aligned."
+  -
+    author: "CODER"
+    body: "Verified: split the former mixed task doc-write CLI suite into focused doc-set, scaffold/derive, and normalize/migrate buckets; lint, targeted vitest, and both package builds all passed."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: splitting the mixed task doc-write CLI suite into focused doc-set, scaffold/derive, and normalize/migrate buckets while keeping fast-CI expectations aligned."
+  -
+    type: "verify"
+    at: "2026-03-12T14:16:12.442Z"
+    author: "CODER"
+    state: "ok"
+    note: "OK: split task doc-write coverage into doc-write, scaffold-derive, and normalize-migrate suites; local-ci-selection expectations updated; eslint on split files passed; vitest passed for 48 task-suite tests; bun run --filter=@agentplaneorg/core build and bun run --filter=agentplane build passed."
+  -
+    type: "status"
+    at: "2026-03-12T14:16:27.741Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split the former mixed task doc-write CLI suite into focused doc-set, scaffold/derive, and normalize/migrate buckets; lint, targeted vitest, and both package builds all passed."
 doc_version: 3
-doc_updated_at: "2026-03-12T14:15:27.542Z"
+doc_updated_at: "2026-03-12T14:16:27.741Z"
 doc_updated_by: "CODER"
 description: "Split run-cli.core.tasks.doc-write.test.ts into focused task-doc-set and task-scaffold/derive/normalize/migrate suites while preserving current task CLI assertions."
 id_source: "generated"
@@ -62,6 +81,14 @@ Split run-cli.core.tasks.doc-write.test.ts into focused task-doc-set and task-sc
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-12T14:16:12.442Z — VERIFY — ok
+
+By: CODER
+
+Note: OK: split task doc-write coverage into doc-write, scaffold-derive, and normalize-migrate suites; local-ci-selection expectations updated; eslint on split files passed; vitest passed for 48 task-suite tests; bun run --filter=@agentplaneorg/core build and bun run --filter=agentplane build passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-12T14:15:27.542Z, excerpt_hash=sha256:00d07f2259562d056054c45bf9a0c62efeb361ec5dc0ef99b0907a5bb5703f96
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
