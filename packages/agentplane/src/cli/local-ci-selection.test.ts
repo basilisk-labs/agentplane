@@ -113,6 +113,14 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.help-snap.test.ts");
   });
 
+  it("routes the CLI docs regression split suite to the cli-help bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("cli-help");
+    expect(plan.reason).toBe("cli_help_and_spec_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts");
+  });
+
   it("routes isolated run-cli execution paths to the cli-core bucket", () => {
     const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli/globals.ts"]);
     expect(plan.kind).toBe("targeted");
@@ -121,6 +129,21 @@ describe("local CI fast selection", () => {
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.boot.test.ts");
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts",
+    );
+  });
+
+  it("routes split lifecycle suites to the cli-core bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("cli-core");
+    expect(plan.reason).toBe("cli_core_execution_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
     );
   });
 
@@ -171,6 +194,18 @@ describe("local CI fast selection", () => {
     expect(plan.bucket).toBe("guard");
     expect(plan.reason).toBe("guard_paths_only");
     expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.guard.test.ts");
+  });
+
+  it("routes the split guard commit-wrapper suite to the guard bucket", () => {
+    const plan = selectFastCiPlan([
+      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
+    ]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("guard");
+    expect(plan.reason).toBe("guard_paths_only");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
+    );
   });
 
   it("falls back to full fast for broader infra-sensitive changes", () => {

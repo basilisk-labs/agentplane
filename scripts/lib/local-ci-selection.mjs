@@ -48,6 +48,7 @@ const CLI_HELP_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/cli-contract\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/help\.all-commands\.contract\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\.core\.help-(?:contract|snap)\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.docs-cli\.test\.ts$/,
   /^packages\/agentplane\/src\/cli\/spec\//,
   /^packages\/agentplane\/src\/cli\/shared\//,
 ];
@@ -56,7 +57,10 @@ const CLI_CORE_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/cli\/run-cli\.ts$/,
   /^packages\/agentplane\/src\/cli\/run-cli\/(?!commands\/init\/)/,
   /^packages\/agentplane\/src\/cli\/run-cli\.test-helpers\.ts$/,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core(?:\.(?:boot|branch-meta|lifecycle|misc|pr-flow|tasks))?\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.(?:boot|branch-meta|misc|pr-flow)\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.lifecycle(?:\..+)?\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.tasks(?:\..+)?\.test\.ts$/,
 ];
 
 const CLI_RUNTIME_BUCKET_PATTERNS = [
@@ -87,7 +91,7 @@ const UPGRADE_BUCKET_PATTERNS = [
 
 const GUARD_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/commands\/guard\//,
-  /^packages\/agentplane\/src\/cli\/run-cli\.core\.guard\.test\.ts$/,
+  /^packages\/agentplane\/src\/cli\/run-cli\.core\.guard(?:\..+)?\.test\.ts$/,
 ];
 
 const BROAD_FALLBACK_PATTERNS = [
@@ -142,6 +146,7 @@ const CLI_HELP_TEST_FILES = [
   "packages/agentplane/src/cli/spec/registry.test.ts",
   "packages/agentplane/src/cli/spec/suggest.test.ts",
   "packages/agentplane/src/cli/shared/ansi.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts",
   "packages/agentplane/src/cli/run-cli.core.help-contract.test.ts",
   "packages/agentplane/src/cli/run-cli.core.help-snap.test.ts",
 ];
@@ -150,6 +155,8 @@ const CLI_CORE_TEST_FILES = [
   "packages/agentplane/src/cli/run-cli.core.boot.test.ts",
   "packages/agentplane/src/cli/run-cli.core.branch-meta.test.ts",
   "packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.lifecycle.block-finish.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.lifecycle.verify.test.ts",
   "packages/agentplane/src/cli/run-cli.core.misc.test.ts",
   "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
   "packages/agentplane/src/cli/run-cli.core.tasks.test.ts",
@@ -191,6 +198,7 @@ const GUARD_TEST_FILES = [
   "packages/agentplane/src/commands/guard/impl/policy.test.ts",
   "packages/agentplane/src/commands/guard/impl/close-message.test.ts",
   "packages/agentplane/src/cli/run-cli.core.guard.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.guard.commit-wrapper.test.ts",
 ];
 const CLI_DOCS_RELEVANT_PATTERNS = [
   /^packages\/agentplane\/src\/cli\//,
