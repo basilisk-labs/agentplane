@@ -1,7 +1,8 @@
 ---
 id: "202603121504-QCBVJX"
 title: "Introduce semantic task-store patch layer"
-status: "DOING"
+result_summary: "Added TaskStore.patch() with section conflict detection and append-safe retry semantics."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-12T15:16:31.235Z"
   updated_by: "CODER"
   note: "TaskStore semantic patch layer checks passed."
-commit: null
+commit:
+  hash: "74bc75ffb2bb92ec52c03ec3ea57ad16a48212c6"
+  message: "🚧 QCBVJX task: add semantic task-store patch layer"
 comments:
   -
     author: "CODER"
     body: "Start: implement TaskStore semantic patch operations with section-level conflict detection."
+  -
+    author: "CODER"
+    body: "Verified: semantic TaskStore patch layer landed; focused tests, lint, and both builds passed cleanly."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "TaskStore semantic patch layer checks passed."
+  -
+    type: "status"
+    at: "2026-03-12T15:17:12.621Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: semantic TaskStore patch layer landed; focused tests, lint, and both builds passed cleanly."
 doc_version: 3
-doc_updated_at: "2026-03-12T15:16:31.236Z"
+doc_updated_at: "2026-03-12T15:17:12.621Z"
 doc_updated_by: "CODER"
 description: "Add a semantic patch API in TaskStore so task README mutations apply structured section/append/status operations against the freshest parsed state with explicit same-section conflict detection."
 id_source: "generated"
