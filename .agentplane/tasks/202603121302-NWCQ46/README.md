@@ -1,7 +1,8 @@
 ---
 id: "202603121302-NWCQ46"
 title: "Cleanup phase: extract shared CLI integration test harness"
-status: "DOING"
+result_summary: "Removed duplicated AGENTPLANE_HOME/stdIO/task-backend-stub boilerplate from six large CLI suites by extending run-cli.test-helpers with a shared integration harness and contract-aligned backend stub defaults."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-12T13:14:47.961Z"
+  updated_by: "CODER"
+  note: "Passed eslint on the shared helper + migrated suites, reran 6 targeted CLI integration suites (173 tests), and rebuilt @agentplaneorg/core plus agentplane after the shared harness refactor."
+commit:
+  hash: "2132bfb916ef9b4326d001fe5f3f9ee520e51757"
+  message: "🚧 NWCQ46 task: share run-cli integration harness"
 comments:
   -
     author: "CODER"
     body: "Start: extract a shared run-cli integration harness from existing helpers and migrate the highest-churn CLI suites without changing behavior."
+  -
+    author: "CODER"
+    body: "Verified: shared run-cli integration harness extracted; six high-churn suites now reuse common setup and backend stubs with no behavior change."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: extract a shared run-cli integration harness from existing helpers and migrate the highest-churn CLI suites without changing behavior."
+  -
+    type: "verify"
+    at: "2026-03-12T13:14:47.961Z"
+    author: "CODER"
+    state: "ok"
+    note: "Passed eslint on the shared helper + migrated suites, reran 6 targeted CLI integration suites (173 tests), and rebuilt @agentplaneorg/core plus agentplane after the shared harness refactor."
+  -
+    type: "status"
+    at: "2026-03-12T13:14:55.985Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: shared run-cli integration harness extracted; six high-churn suites now reuse common setup and backend stubs with no behavior change."
 doc_version: 3
-doc_updated_at: "2026-03-12T13:05:06.081Z"
+doc_updated_at: "2026-03-12T13:14:55.985Z"
 doc_updated_by: "CODER"
 description: "Introduce a shared helper for run-cli integration suites to remove repeated registerAgentplaneHome/stdIO/task-backend stub boilerplate and migrate the highest-churn CLI test buckets to it without changing behavior."
 id_source: "generated"
@@ -65,6 +84,14 @@ Introduce a shared helper for run-cli integration suites to remove repeated regi
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-12T13:14:47.961Z — VERIFY — ok
+
+By: CODER
+
+Note: Passed eslint on the shared helper + migrated suites, reran 6 targeted CLI integration suites (173 tests), and rebuilt @agentplaneorg/core plus agentplane after the shared harness refactor.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-12T13:14:33.153Z, excerpt_hash=sha256:bf4c7b22f9ddcd1e5ef20624259b6f9f704cc26202cfb628cf72ca8af01ced0e
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
@@ -73,3 +100,5 @@ Introduce a shared helper for run-cli integration suites to remove repeated regi
 - Re-run required checks to confirm rollback safety.
 
 ## Findings
+
+1. The shared stub helper now provides default TaskBackend capabilities, which keeps CLI integration tests aligned with the current backend contract instead of relying on weaker ad-hoc local stubs.
