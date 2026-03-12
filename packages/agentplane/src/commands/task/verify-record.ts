@@ -26,6 +26,12 @@ import {
 } from "./shared.js";
 
 type VerifyState = "ok" | "needs_rework";
+type VerifyCommandName = "task verify ok" | "task verify rework" | "verify";
+type ResolvedVerifyRecordInput = {
+  by: string;
+  note: string;
+  details: string | null;
+};
 
 function appendBetweenMarkers(sectionText: string, entryText: string, version: 2 | 3): string {
   const ensured = normalizeVerificationSectionLayout(sectionText, version);
@@ -172,17 +178,14 @@ async function recordVerificationResult(opts: {
   }
 }
 
-export async function cmdTaskVerifyOk(opts: {
-  ctx?: CommandContext;
+async function resolveVerifyRecordInput(opts: {
   cwd: string;
-  rootOverride?: string;
-  taskId: string;
   by: string;
   note: string;
   details?: string;
   file?: string;
-  quiet: boolean;
-}): Promise<number> {
+  command: VerifyCommandName;
+}): Promise<ResolvedVerifyRecordInput> {
   const by = String(opts.by ?? "").trim();
   const note = String(opts.note ?? "").trim();
   if (!by || !note) {
@@ -205,9 +208,27 @@ export async function cmdTaskVerifyOk(opts: {
     try {
       details = await readFile(path.resolve(opts.cwd, opts.file), "utf8");
     } catch (err) {
-      throw mapCoreError(err, { command: "task verify ok", filePath: opts.file });
+      throw mapCoreError(err, { command: opts.command, filePath: opts.file });
     }
   }
+
+  return { by, note, details };
+}
+
+async function executeVerifyRecordCommand(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  state: VerifyState;
+  by: string;
+  note: string;
+  details?: string;
+  file?: string;
+  quiet: boolean;
+  command: VerifyCommandName;
+}): Promise<number> {
+  const input = await resolveVerifyRecordInput(opts);
 
   try {
     await recordVerificationResult({
@@ -215,17 +236,31 @@ export async function cmdTaskVerifyOk(opts: {
       cwd: opts.cwd,
       rootOverride: opts.rootOverride,
       taskId: opts.taskId,
-      state: "ok",
-      by,
-      note,
-      details,
+      state: opts.state,
+      by: input.by,
+      note: input.note,
+      details: input.details,
       quiet: opts.quiet,
     });
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    throw mapBackendError(err, { command: "task verify ok", root: opts.rootOverride ?? null });
+    throw mapBackendError(err, { command: opts.command, root: opts.rootOverride ?? null });
   }
+}
+
+export async function cmdTaskVerifyOk(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  taskId: string;
+  by: string;
+  note: string;
+  details?: string;
+  file?: string;
+  quiet: boolean;
+}): Promise<number> {
+  return await executeVerifyRecordCommand({ ...opts, state: "ok", command: "task verify ok" });
 }
 
 export async function cmdTaskVerifyRework(opts: {
@@ -239,49 +274,11 @@ export async function cmdTaskVerifyRework(opts: {
   file?: string;
   quiet: boolean;
 }): Promise<number> {
-  const by = String(opts.by ?? "").trim();
-  const note = String(opts.note ?? "").trim();
-  if (!by || !note) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Missing required inputs: --by and --note.",
-    });
-  }
-  if (typeof opts.details === "string" && typeof opts.file === "string") {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Options --details and --file are mutually exclusive.",
-    });
-  }
-
-  let details: string | null = typeof opts.details === "string" ? opts.details : null;
-  if (typeof opts.file === "string") {
-    try {
-      details = await readFile(path.resolve(opts.cwd, opts.file), "utf8");
-    } catch (err) {
-      throw mapCoreError(err, { command: "task verify rework", filePath: opts.file });
-    }
-  }
-
-  try {
-    await recordVerificationResult({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
-      state: "needs_rework",
-      by,
-      note,
-      details,
-      quiet: opts.quiet,
-    });
-    return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapBackendError(err, { command: "task verify rework", root: opts.rootOverride ?? null });
-  }
+  return await executeVerifyRecordCommand({
+    ...opts,
+    state: "needs_rework",
+    command: "task verify rework",
+  });
 }
 
 export async function cmdVerifyParsed(opts: {
@@ -296,47 +293,5 @@ export async function cmdVerifyParsed(opts: {
   file?: string;
   quiet: boolean;
 }): Promise<number> {
-  const by = String(opts.by ?? "").trim();
-  const note = String(opts.note ?? "").trim();
-  if (!by || !note) {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Missing required inputs: --by and --note.",
-    });
-  }
-  if (typeof opts.details === "string" && typeof opts.file === "string") {
-    throw new CliError({
-      exitCode: 2,
-      code: "E_USAGE",
-      message: "Options --details and --file are mutually exclusive.",
-    });
-  }
-
-  let details: string | null = typeof opts.details === "string" ? opts.details : null;
-  if (typeof opts.file === "string") {
-    try {
-      details = await readFile(path.resolve(opts.cwd, opts.file), "utf8");
-    } catch (err) {
-      throw mapCoreError(err, { command: "verify", filePath: opts.file });
-    }
-  }
-
-  try {
-    await recordVerificationResult({
-      ctx: opts.ctx,
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride,
-      taskId: opts.taskId,
-      state: opts.state,
-      by,
-      note,
-      details,
-      quiet: opts.quiet,
-    });
-    return 0;
-  } catch (err) {
-    if (err instanceof CliError) throw err;
-    throw mapBackendError(err, { command: "verify", root: opts.rootOverride ?? null });
-  }
+  return await executeVerifyRecordCommand({ ...opts, command: "verify" });
 }

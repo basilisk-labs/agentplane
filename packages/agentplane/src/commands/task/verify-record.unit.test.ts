@@ -143,6 +143,21 @@ describe("task verify record (unit)", () => {
     ).rejects.toMatchObject({ code: "E_IO" });
   });
 
+  it("cmdTaskVerifyRework maps readFile errors when --file is provided", async () => {
+    mocks.readFile.mockRejectedValue(new Error("ENOENT: nope"));
+    const { cmdTaskVerifyRework } = await import("./verify-record.js");
+    await expect(
+      cmdTaskVerifyRework({
+        cwd: "/repo",
+        taskId: "T-1",
+        by: "A",
+        note: "x",
+        file: "missing.txt",
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
   it("cmdTaskVerifyOk errors when backend does not support docs", async () => {
     const ctx = mkCtx({
       taskBackend: {
@@ -442,6 +457,43 @@ describe("task verify record (unit)", () => {
         quiet: true,
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
+  it("cmdVerifyParsed validates required inputs and mutually exclusive details/file", async () => {
+    const { cmdVerifyParsed } = await import("./verify-record.js");
+
+    await expect(
+      cmdVerifyParsed({
+        cwd: "/repo",
+        taskId: "T-1",
+        state: "ok",
+        by: "",
+        note: "x",
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+    await expect(
+      cmdVerifyParsed({
+        cwd: "/repo",
+        taskId: "T-1",
+        state: "ok",
+        by: "TESTER",
+        note: "",
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
+    await expect(
+      cmdVerifyParsed({
+        cwd: "/repo",
+        taskId: "T-1",
+        state: "ok",
+        by: "TESTER",
+        note: "x",
+        details: "d",
+        file: "f.txt",
+        quiet: true,
+      }),
+    ).rejects.toMatchObject({ code: "E_USAGE" });
   });
 
   it("cmdVerifyParsed fails early when reconcile guard blocks mutation", async () => {

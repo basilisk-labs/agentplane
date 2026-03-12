@@ -1,16 +1,17 @@
 import type { CommandCtx, CommandSpec } from "../../cli/spec/spec.js";
-import { usageError } from "../../cli/spec/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 
 import { cmdTaskVerifyOk } from "./verify-record.js";
+import {
+  parseVerifyCommonOptions,
+  validateVerifyDetailsFileExclusive,
+  validateVerifyNonEmptyInput,
+  verifyCommonOptions,
+  type VerifyCommonParsed,
+} from "./verify-command-shared.js";
 
-export type TaskVerifyOkParsed = {
+export type TaskVerifyOkParsed = VerifyCommonParsed & {
   taskId: string;
-  by: string;
-  note: string;
-  details?: string;
-  file?: string;
-  quiet: boolean;
 };
 
 export const taskVerifyOkSpec: CommandSpec<TaskVerifyOkParsed> = {
@@ -18,34 +19,7 @@ export const taskVerifyOkSpec: CommandSpec<TaskVerifyOkParsed> = {
   group: "Task",
   summary: "Record verification as OK (updates Verification section and verification frontmatter).",
   args: [{ name: "task-id", required: true, valueHint: "<task-id>" }],
-  options: [
-    { kind: "string", name: "by", valueHint: "<id>", required: true, description: "Verifier id." },
-    {
-      kind: "string",
-      name: "note",
-      valueHint: "<text>",
-      required: true,
-      description: "Short verification note.",
-    },
-    {
-      kind: "string",
-      name: "details",
-      valueHint: "<text>",
-      description: "Optional details text (mutually exclusive with --file).",
-    },
-    {
-      kind: "string",
-      name: "file",
-      valueHint: "<path>",
-      description: "Optional details file path (mutually exclusive with --details).",
-    },
-    {
-      kind: "boolean",
-      name: "quiet",
-      default: false,
-      description: "Suppress normal output (still prints errors).",
-    },
-  ],
+  options: verifyCommonOptions,
   examples: [
     {
       cmd: 'agentplane task verify ok 202602030608-F1Q8AB --by REVIEWER --note "Looks good"',
@@ -53,30 +27,15 @@ export const taskVerifyOkSpec: CommandSpec<TaskVerifyOkParsed> = {
     },
   ],
   validateRaw: (raw) => {
-    const details = raw.opts.details;
-    const file = raw.opts.file;
-    if (typeof details === "string" && typeof file === "string") {
-      throw usageError({
-        spec: taskVerifyOkSpec,
-        message: "Provide at most one of --details or --file.",
-      });
-    }
-    const by = raw.opts.by;
-    if (typeof by === "string" && by.trim().length === 0) {
-      throw usageError({ spec: taskVerifyOkSpec, message: "Invalid value for --by: empty." });
-    }
-    const note = raw.opts.note;
-    if (typeof note === "string" && note.trim().length === 0) {
-      throw usageError({ spec: taskVerifyOkSpec, message: "Invalid value for --note: empty." });
-    }
+    validateVerifyDetailsFileExclusive(raw, taskVerifyOkSpec, {
+      message: "Provide at most one of --details or --file.",
+    });
+    validateVerifyNonEmptyInput(raw, taskVerifyOkSpec, "by");
+    validateVerifyNonEmptyInput(raw, taskVerifyOkSpec, "note");
   },
   parse: (raw) => ({
     taskId: String(raw.args["task-id"]),
-    by: String(raw.opts.by),
-    note: String(raw.opts.note),
-    details: typeof raw.opts.details === "string" ? raw.opts.details : undefined,
-    file: typeof raw.opts.file === "string" ? raw.opts.file : undefined,
-    quiet: raw.opts.quiet === true,
+    ...parseVerifyCommonOptions(raw),
   }),
 };
 

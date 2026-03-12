@@ -1,5 +1,9 @@
 import type { CommandSpec } from "../cli/spec/spec.js";
 import { usageError } from "../cli/spec/errors.js";
+import {
+  parseVerifyCommonOptions,
+  validateVerifyDetailsFileExclusive,
+} from "./task/verify-command-shared.js";
 
 type VerifyState = "ok" | "needs_rework";
 
@@ -86,13 +90,7 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
         message: "Exactly one of --ok or --rework must be provided.",
       });
     }
-    if (typeof raw.opts.details === "string" && typeof raw.opts.file === "string") {
-      throw usageError({
-        spec: verifySpec,
-        command: "verify",
-        message: "Options --details and --file are mutually exclusive.",
-      });
-    }
+    validateVerifyDetailsFileExclusive(raw, verifySpec, { command: "verify" });
   },
   parse: (raw) => {
     const ok = raw.opts.ok === true;
@@ -100,11 +98,7 @@ export const verifySpec: CommandSpec<VerifyParsed> = {
     return {
       taskId: typeof raw.args["task-id"] === "string" ? raw.args["task-id"] : "",
       state,
-      by: raw.opts.by as string,
-      note: raw.opts.note as string,
-      details: raw.opts.details as string | undefined,
-      file: raw.opts.file as string | undefined,
-      quiet: raw.opts.quiet === true,
+      ...parseVerifyCommonOptions(raw),
     };
   },
 };
