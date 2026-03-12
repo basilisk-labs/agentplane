@@ -18,6 +18,8 @@ const DOCTOR_BUCKET_PATTERNS = [/^packages\/agentplane\/src\/commands\/doctor(?:
 
 const BACKEND_BUCKET_PATTERNS = [
   /^packages\/agentplane\/src\/backends\/task-backend\//,
+  /^packages\/agentplane\/src\/backends\/task-backend(?:\..+)?\.test\.ts$/,
+  /^packages\/agentplane\/src\/backends\/task-backend\.test-helpers\.ts$/,
   /^packages\/agentplane\/src\/backends\/task-index\.ts$/,
   /^packages\/agentplane\/src\/commands\/backend(?:\/|\.|$)/,
   /^packages\/agentplane\/src\/commands\/shared\/task-backend(?:\.test)?\.ts$/,
@@ -138,6 +140,9 @@ const TASK_TEST_FILES = [
 const DOCTOR_TEST_FILES = ["packages/agentplane/src/commands/doctor.fast.test.ts"];
 const BACKEND_TEST_FILES = [
   "packages/agentplane/src/backends/task-backend.test.ts",
+  "packages/agentplane/src/backends/task-backend.local.test.ts",
+  "packages/agentplane/src/backends/task-backend.redmine.test.ts",
+  "packages/agentplane/src/backends/task-backend.load.test.ts",
   "packages/agentplane/src/backends/task-backend/redmine/env.test.ts",
   "packages/agentplane/src/commands/backend.test.ts",
   "packages/agentplane/src/commands/shared/task-backend.test.ts",

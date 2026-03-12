@@ -83,6 +83,11 @@ describe("local CI fast selection", () => {
     expect(plan.reason).toBe("backend_projection_paths_only");
     expect(plan.vitestPool).toBe("forks");
     expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.test.ts");
+    expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.local.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/backends/task-backend.redmine.test.ts",
+    );
+    expect(plan.testFiles).toContain("packages/agentplane/src/backends/task-backend.load.test.ts");
     expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.backend-sync.test.ts",
     );
