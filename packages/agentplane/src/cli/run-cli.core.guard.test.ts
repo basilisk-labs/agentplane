@@ -787,11 +787,16 @@ describe("runCli", () => {
       expect(code).toBe(5);
       expect(io.stderr).toContain("error [E_GIT]");
       expect(io.stderr).toContain("git commit failed");
+      expect(io.stderr).toContain("state: git rejected the requested task-scoped commit");
+      expect(io.stderr).toContain(
+        "likely_cause: a hook or commit policy blocked the staged changes after guard validation passed",
+      );
       expect(io.stderr).toContain("output_summary:");
       expect(io.stderr).toContain("HOOK_LINE_01");
       expect(io.stderr).toContain("HOOK_LINE_40");
       expect(io.stderr).toContain("lines omitted");
       expect(io.stderr).not.toContain("HOOK_LINE_20");
+      expect(io.stderr).not.toContain("generated close commit");
     } finally {
       io.restore();
     }

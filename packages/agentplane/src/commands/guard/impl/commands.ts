@@ -19,6 +19,8 @@ type ExecFileLikeError = Error & {
   stderr?: unknown;
 };
 
+type CommitFailurePhase = "task_commit" | "close_commit";
+
 function readText(value: unknown): string {
   if (typeof value === "string") return value;
   if (Buffer.isBuffer(value)) return value.toString("utf8");
@@ -39,7 +41,34 @@ function summarizeOutput(raw: string): string[] {
   return [...head, `[${lines.length - 12} lines omitted]`, ...tail];
 }
 
-function asCommitFailure(err: unknown): CliError | null {
+function commitFailureDiagnostic(phase: CommitFailurePhase): {
+  state: string;
+  likelyCause: string;
+  nextAction?: {
+    command: string;
+    reason: string;
+    reasonCode?: string;
+  };
+} {
+  if (phase === "close_commit") {
+    return {
+      state: "git rejected the generated close commit",
+      likelyCause:
+        "a hook or commit policy blocked the deterministic task close commit after the task README was staged",
+      nextAction: {
+        command: "git status --short --untracked-files=no",
+        reason: "inspect the staged close-commit payload before fixing the hook or policy failure",
+        reasonCode: "git_close_commit_blocked",
+      },
+    };
+  }
+  return {
+    state: "git rejected the requested task-scoped commit",
+    likelyCause: "a hook or commit policy blocked the staged changes after guard validation passed",
+  };
+}
+
+function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliError | null {
   if (err instanceof Error) {
     const e = err as ExecFileLikeError;
     const cmd = typeof e.cmd === "string" ? e.cmd : "";
@@ -60,20 +89,7 @@ function asCommitFailure(err: unknown): CliError | null {
         exitCode: 5,
         code: "E_GIT",
         message: lines.join("\n"),
-        context: withDiagnosticContext(
-          { command: "commit" },
-          {
-            state: "git rejected the generated close commit",
-            likelyCause:
-              "a hook or commit policy blocked the deterministic task close commit after the task README was staged",
-            nextAction: {
-              command: "git status --short --untracked-files=no",
-              reason:
-                "inspect the staged close-commit payload before fixing the hook or policy failure",
-              reasonCode: "git_close_commit_blocked",
-            },
-          },
-        ),
+        context: withDiagnosticContext({ command: "commit" }, commitFailureDiagnostic(phase)),
       });
     }
     return null;
@@ -330,7 +346,7 @@ export async function cmdCommit(opts: {
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
-    const commitFailure = asCommitFailure(err);
+    const commitFailure = asCommitFailure(err, opts.close ? "close_commit" : "task_commit");
     if (commitFailure) throw commitFailure;
     throw mapCoreError(err, { command: "commit", root: opts.rootOverride ?? null });
   }
