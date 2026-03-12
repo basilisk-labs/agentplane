@@ -147,6 +147,23 @@ describe("local CI fast selection", () => {
     );
   });
 
+  it("routes split task suites to the cli-core bucket", () => {
+    const plan = selectFastCiPlan(["packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts"]);
+    expect(plan.kind).toBe("targeted");
+    expect(plan.bucket).toBe("cli-core");
+    expect(plan.reason).toBe("cli_core_execution_paths_only");
+    expect(plan.testFiles).toContain("packages/agentplane/src/cli/run-cli.core.tasks.test.ts");
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.tasks.export.test.ts",
+    );
+  });
+
   it("routes isolated runtime freshness and handoff paths to the cli-runtime bucket", () => {
     const plan = selectFastCiPlan(["packages/agentplane/bin/runtime-context.js"]);
     expect(plan.kind).toBe("targeted");

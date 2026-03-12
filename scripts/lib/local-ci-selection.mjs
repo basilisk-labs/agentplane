@@ -160,6 +160,9 @@ const CLI_CORE_TEST_FILES = [
   "packages/agentplane/src/cli/run-cli.core.misc.test.ts",
   "packages/agentplane/src/cli/run-cli.core.pr-flow.test.ts",
   "packages/agentplane/src/cli/run-cli.core.tasks.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.query.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
+  "packages/agentplane/src/cli/run-cli.core.tasks.export.test.ts",
   "packages/agentplane/src/cli/run-cli/commands/core.unit.test.ts",
 ];
 const CLI_RUNTIME_TEST_FILES = [
