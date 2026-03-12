@@ -15,7 +15,8 @@ distinguishes shipped fixes from still-open gaps.
   output did not expose that phase boundary.
 - **Root cause:** weak observability between the `DONE` transition and the close-commit phase.
 - **Shipped fix:** `finish` now emits an explicit progress line before the deterministic close
-  commit.
+  commit, and other long-running lifecycle paths now expose their own phase boundaries instead of
+  collapsing into one opaque tail phase.
 - **Evidence:** task `202603081315-NV76YZ`, `packages/agentplane/src/commands/task/finish.ts`.
 - **Remaining gap:** if a hook blocks the close commit, the command still depends on git/hook
   output for the final diagnosis; that is now visible, but still not fully state-oriented.
@@ -85,7 +86,8 @@ distinguishes shipped fixes from still-open gaps.
   source against that snapshot, and read-only diagnostics are allowed to warn-and-run.
 - **Evidence:** tasks `202603072032-2M0V8V`, `202603072032-1BC7VQ`, `202603072032-V9VGT2`, `202603072032-4D9ASG`; `packages/agentplane/bin/dist-guard.js`, `packages/agentplane/bin/runtime-watch.js`.
 - **Remaining gap:** strict commands still require a fresh build, which is correct, but the
-  framework-dev loop can still feel heavy on broad runtime changes.
+  framework-dev loop can still feel heavy on broad runtime changes even after expanding the
+  warning-only read path for more safe inspection commands.
 
 ## 7. Framework development could run the wrong binary from `PATH`
 
@@ -98,8 +100,9 @@ distinguishes shipped fixes from still-open gaps.
 - **Shipped fix:** the wrapper now detects framework checkout context and hands off to the repo-local
   binary by default, with an explicit opt-out.
 - **Evidence:** tasks `202603071647-M0Q79C`, `202603071647-Y4BZ1T`, `202603071647-25WS52`; `packages/agentplane/bin/agentplane.js`, `packages/agentplane/bin/runtime-context.js`.
-- **Remaining gap:** if a contributor’s global install is itself outdated, the repo-local handoff
-  fix only helps after that global wrapper is reinstalled or updated.
+- **Remaining gap:** truly outdated global wrappers still need a reinstall before they can hand off,
+  but `runtime explain` and `doctor` now point directly to the reinstall helper, direct repo-local
+  fallback, and follow-up verification command.
 
 ## 8. `task doc set` lost updates under concurrent writes
 
@@ -127,8 +130,8 @@ distinguishes shipped fixes from still-open gaps.
   updated, full-doc update applied, or no effective README change.
 - **Evidence:** task `202603081422-5XXATM`, `packages/agentplane/src/commands/task/doc.ts`,
   `packages/agentplane/src/cli/run-cli.core.tasks.test.ts`.
-- **Remaining gap:** the feedback is clearer now, but the task-doc surface still exposes more write
-  modes than the happy path ideally needs.
+- **Remaining gap:** the feedback is clearer now, and `--full-doc` gives the happy path an explicit
+  route, but the legacy multi-heading auto-detect path still exists for compatibility.
 
 ## Remaining open gaps before the next patch release
 
@@ -136,14 +139,14 @@ distinguishes shipped fixes from still-open gaps.
    The repository can now declare the expected CLI version, but automatic global mutation is still a
    safety-sensitive feature. If it ever lands, it should stay opt-in and explicitly approved.
 
-2. **Keep long-running lifecycle commands phase-visible.**
-   The `finish` progress fix closed the most visible case, but the broader rule should be:
-   state transition boundaries must be user-visible when the command still has follow-up phases.
+2. **Keep close-commit failures state-oriented after hooks reject them.**
+   Phase visibility is now much better, but the final close-commit failure diagnosis still leans on
+   raw git/hook output once the task has already crossed into the close phase.
 
 3. **Keep broad `pre-push` paths under control.**
    Narrow buckets already reduced a lot of latency, but broad runtime-sensitive changes still carry
    a heavy local loop cost.
 
-4. **Keep task-doc writes outcome-oriented.**
-   Concurrency safety and explicit outcome reporting closed the major correctness and UX failures,
-   but task-doc editing still carries more mode complexity than the default happy path should need.
+4. **Retire overloaded `task doc set` compatibility paths carefully.**
+   The explicit `--full-doc` route removes the main happy-path ambiguity, but the old multi-heading
+   auto-detect behavior still remains and should only be removed once callers have migrated.

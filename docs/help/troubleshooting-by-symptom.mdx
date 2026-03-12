@@ -11,6 +11,9 @@ description: "Common problems and how to fix them quickly."
 
 - Run `agentplane --help` to confirm the correct syntax.
 - Check whether a subcommand is missing required flags.
+- For task lifecycle namespaces, use:
+  - `agentplane help task`
+  - `agentplane help task plan`
 - For machine-readable output, use `--json-errors` before the command, for example:
   - `agentplane --json-errors task show 202602120734-3M598S`
 
@@ -35,6 +38,8 @@ description: "Common problems and how to fix them quickly."
 **Fix:**
 
 - Use `agentplane task doc set <task-id>` instead of editing README by hand.
+- For whole README replacements, use:
+  - `agentplane task doc set <task-id> --full-doc --file ./task-readme.md`
 - Ensure required sections exist for the active doc contract.
   - Legacy `doc_version=2`: `Summary`, `Scope`, `Risks`, `Verify Steps`, `Rollback Plan`, `Notes`
   - Target `doc_version=3`: `Summary`, `Scope`, `Plan`, `Verify Steps`, `Verification`, `Rollback Plan`, `Findings`

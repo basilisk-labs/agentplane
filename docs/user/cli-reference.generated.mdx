@@ -86,6 +86,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [upgrade](#upgrade)
 - Task
   - [ready](#ready)
+  - [task](#task)
   - [task add](#task-add)
   - [task close-duplicate](#task-close-duplicate)
   - [task close-noop](#task-close-noop)
@@ -102,6 +103,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
   - [task new](#task-new)
   - [task next](#task-next)
   - [task normalize](#task-normalize)
+  - [task plan](#task-plan)
   - [task plan approve](#task-plan-approve)
   - [task plan reject](#task-plan-reject)
   - [task plan set](#task-plan-set)
@@ -1863,6 +1865,48 @@ agentplane ready 202602030608-F1Q8AB
 
 - Print readiness details.
 
+### task
+
+Task lifecycle and task-store commands.
+
+Usage:
+
+```text
+agentplane task <subcommand> [args] [options]
+```
+
+Notes:
+
+- Direct task route: task new -&gt; task plan set -&gt; task plan approve -&gt; task start-ready -&gt; task verify-show -&gt; verify -&gt; finish.
+- Use \`agentplane help task plan\`, \`agentplane help task doc\`, and \`agentplane help task verify\` to inspect task sub-areas.
+- Verification recording and closure stay top-level lifecycle commands: \`agentplane verify ...\` and \`agentplane finish ...\`.
+
+Examples:
+
+```sh
+agentplane task new --title "..." --description "..." --owner CODER --tag code
+```
+
+- Create a task.
+
+```sh
+agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
+```
+
+- Write the execution plan.
+
+```sh
+agentplane task start-ready <task-id> --author CODER --body "Start: ..."
+```
+
+- Start the task after approval.
+
+```sh
+agentplane task verify-show <task-id>
+```
+
+- Show Verify Steps before running checks.
+
 ### task add
 
 Create one or more tasks with explicit ids (prints the created task ids).
@@ -2011,7 +2055,7 @@ Usage:
 ```text
 agentplane task doc show <task-id> [--section <name>] [--quiet]
 agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
-agentplane task doc set <task-id> --section Summary --file ./task-readme.md  # if payload contains multiple known ## headings, apply as full-doc update
+agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
 ```
 
 ### task doc set
@@ -2021,12 +2065,14 @@ Update a task README section.
 Usage:
 
 ```text
-agentplane task doc set <task-id> --section <name> [options]
+agentplane task doc set <task-id> --section <name> (--text <text> | --file <path>) [--updated-by <id>]
+agentplane task doc set <task-id> --full-doc (--text <text> | --file <path>) [--updated-by <id>]
 ```
 
 Options:
 
-- `--section <name>`: Target section heading (must be one of config.tasks.doc.sections). (required)
+- `--section <name>`: Target section heading (must be one of config.tasks.doc.sections). Required unless --full-doc is set.
+- `--full-doc`: Treat the provided text/file as the full task README payload. (default=false)
 - `--text <text>`: Section content (mutually exclusive with --file).
 - `--file <path>`: Read section content from a file (mutually exclusive with --text).
 - `--updated-by <id>`: Optional. Override doc_updated_by metadata (must be non-empty).
@@ -2044,6 +2090,12 @@ agentplane task doc set 202602030608-F1Q8AB --section Plan --file ./plan.md
 ```
 
 - Update one section using a file.
+
+```sh
+agentplane task doc set 202602030608-F1Q8AB --full-doc --file ./task-readme.md
+```
+
+- Replace the full task README payload explicitly.
 
 ### task doc show
 
@@ -2304,6 +2356,36 @@ agentplane task normalize --quiet
 ```
 
 - Normalize tasks without printing output.
+
+### task plan
+
+Task plan commands (set/approve/reject).
+
+Usage:
+
+```text
+agentplane task plan <set|approve|reject> [args] [options]
+```
+
+Examples:
+
+```sh
+agentplane task plan set <task-id> --text "..." --updated-by ORCHESTRATOR
+```
+
+- Write or replace the task plan.
+
+```sh
+agentplane task plan approve <task-id> --by ORCHESTRATOR
+```
+
+- Approve the current task plan.
+
+```sh
+agentplane task plan reject <task-id> --by ORCHESTRATOR --note "..."
+```
+
+- Reject the current task plan with a note.
 
 ### task plan approve
 

@@ -34,10 +34,11 @@ bun run --filter=agentplane build
 - After a rebuild, strict commands should run again even if the watched runtime tree is still dirty
   relative to git, as long as the rebuilt `dist/` snapshot matches the current runtime source.
 - Safe inspection commands such as `agentplane doctor`, `agentplane runtime explain`,
-  `agentplane task list`, `agentplane task show`, `agentplane task verify-show`,
-  `agentplane config show`, `agentplane quickstart`, and `agentplane role <ROLE>` warn and
-  continue even while stale-build blocking is still active for stricter commands inside the
-  framework checkout.
+  `agentplane task list`, `agentplane task show`, `agentplane task doc show`,
+  `agentplane task next`, `agentplane task search`, `agentplane task verify-show`,
+  `agentplane ready`, `agentplane config show`, `agentplane quickstart`, and
+  `agentplane role <ROLE>` warn and continue even while stale-build blocking is still active for
+  stricter commands inside the framework checkout.
 - Retry the original command after the rebuild.
 - Run `agentplane runtime explain` if you need to confirm which binary handed off and which package
   roots are active before retrying.
@@ -59,10 +60,10 @@ agentplane runtime explain
 
 - Read the reported `Mode`, `Active binary`, `Resolved agentplane`, and
   `Resolved @agentplaneorg/core` lines first.
-- If mode is `global-in-framework`, update or reinstall the global CLI so the wrapper can hand off
-  to the repo-local binary.
+- If mode is `global-in-framework`, run `scripts/reinstall-global-agentplane.sh`, then verify again
+  with `agentplane runtime explain`.
 - If mode is `global-forced-in-framework`, unset `AGENTPLANE_USE_GLOBAL_IN_FRAMEWORK=1` unless you
-  intentionally want the global runtime.
+  intentionally want the global runtime, then verify again with `agentplane runtime explain`.
 
 ## working tree is dirty before commit or finish
 

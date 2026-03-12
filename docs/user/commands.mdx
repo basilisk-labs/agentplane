@@ -7,6 +7,9 @@ description: "A practical CLI guide for common workflows."
 
 ```bash
 agentplane --help
+agentplane help task
+agentplane help task plan
+agentplane help task doc set --compact
 agentplane --version
 ```
 
@@ -89,6 +92,9 @@ Inside the Agent Plane framework checkout, the same command now acts as the cano
 framework-dev workflow surface: it prints rebuild steps, the reinstall helper, the follow-up
 runtime check, and the optional force-global override in one place.
 
+If the repository expects a newer CLI than the active runtime, `runtime explain` and `doctor` now
+print a concrete recovery path and a follow-up `agentplane runtime explain` verification step.
+
 If watched runtime paths are dirty inside the framework checkout, `agentplane runtime explain` and
 `agentplane doctor` warn and continue as read-only diagnostics; stricter commands still keep the
 stale-build hard-fail.
@@ -97,9 +103,12 @@ stale-build hard-fail.
 
 ```bash
 agentplane task list
+agentplane help task
+agentplane help task plan
 agentplane task show <task-id>
 agentplane task new --title "..." --description "..." --priority med --owner CODER --tag nodejs
 agentplane task doc set <task-id> --section Summary --text "..."
+agentplane task doc set <task-id> --full-doc --file ./task-readme.md
 ```
 
 ## Task export (optional)
