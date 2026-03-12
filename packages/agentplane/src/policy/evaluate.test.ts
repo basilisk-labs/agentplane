@@ -89,4 +89,30 @@ describe("policy/evaluatePolicy", () => {
     expect(res.ok).toBe(false);
     expect(res.errors.map((e) => e.message).join("\n")).toContain("commits are allowed only on");
   });
+
+  it("allows the active task README when --allow-tasks is set", () => {
+    const taskId = "202602071329-TEST01";
+    const res = evaluatePolicy(
+      makeCtx({
+        taskId,
+        git: { stagedPaths: [`.agentplane/tasks/${taskId}/README.md`] },
+        allow: { prefixes: ["packages/agentplane/src"], allowTasks: true },
+      }),
+    );
+    expect(res.ok).toBe(true);
+  });
+
+  it("does not silently allow unrelated task README files", () => {
+    const taskId = "202602071329-TEST01";
+    const otherTaskId = "202602071329-OTHER1";
+    const res = evaluatePolicy(
+      makeCtx({
+        taskId,
+        git: { stagedPaths: [`.agentplane/tasks/${otherTaskId}/README.md`] },
+        allow: { prefixes: ["packages/agentplane/src"], allowTasks: true },
+      }),
+    );
+    expect(res.ok).toBe(false);
+    expect(res.errors.map((e) => e.message).join("\n")).toContain("outside allowlist");
+  });
 });

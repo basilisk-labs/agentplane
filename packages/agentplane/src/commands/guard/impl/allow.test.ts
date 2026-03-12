@@ -110,6 +110,8 @@ describe("guard/impl/allow", () => {
         allow: [],
         allowTasks: false,
         tasksPath: ".agentplane/tasks.json",
+        workflowDir: ".agentplane/tasks",
+        taskId: "202601010101-ABCDEF",
       }),
     ).rejects.toMatchObject<CliError>({
       code: "E_USAGE",
@@ -121,6 +123,8 @@ describe("guard/impl/allow", () => {
         allow: ["."],
         allowTasks: false,
         tasksPath: ".agentplane/tasks.json",
+        workflowDir: ".agentplane/tasks",
+        taskId: "202601010101-ABCDEF",
       }),
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
     await expect(
@@ -129,6 +133,8 @@ describe("guard/impl/allow", () => {
         allow: ["."],
         allowTasks: false,
         tasksPath: ".agentplane/tasks.json",
+        workflowDir: ".agentplane/tasks",
+        taskId: "202601010101-ABCDEF",
       }),
     ).rejects.toThrow("Repo-wide allowlist");
 
@@ -138,6 +144,8 @@ describe("guard/impl/allow", () => {
         allow: ["src"],
         allowTasks: false,
         tasksPath: ".agentplane/tasks.json",
+        workflowDir: ".agentplane/tasks",
+        taskId: "202601010101-ABCDEF",
       }),
     ).rejects.toMatchObject<CliError>({
       code: "E_USAGE",
@@ -156,6 +164,8 @@ describe("guard/impl/allow", () => {
         allow: [".agentplane/tasks.json"],
         allowTasks: false,
         tasksPath: ".agentplane/tasks.json",
+        workflowDir: ".agentplane/tasks",
+        taskId: "202601010101-ABCDEF",
       }),
     ).rejects.toMatchObject<CliError>({ code: "E_USAGE" });
     await expect(
@@ -164,6 +174,8 @@ describe("guard/impl/allow", () => {
         allow: [".agentplane/tasks.json"],
         allowTasks: false,
         tasksPath: ".agentplane/tasks.json",
+        workflowDir: ".agentplane/tasks",
+        taskId: "202601010101-ABCDEF",
       }),
     ).rejects.toThrow("No changes matched allowed prefixes");
 
@@ -178,8 +190,41 @@ describe("guard/impl/allow", () => {
       allow: ["src", "./src", "src/a.ts", "src//"],
       allowTasks: false,
       tasksPath: ".agentplane/tasks.json",
+      workflowDir: ".agentplane/tasks",
+      taskId: "202601010101-ABCDEF",
     });
     expect(staged).toEqual(["src/a.ts", "src/b.ts"]);
     expect(ctxOk.git.stage).toHaveBeenCalledWith(["src/a.ts", "src/b.ts"]);
+  });
+
+  it("stageAllowlist auto-admits only the active task artifact prefixes when allowTasks=true", async () => {
+    const { stageAllowlist } = await import("./allow.js");
+    const ctx = {
+      git: {
+        statusChangedPaths: vi
+          .fn()
+          .mockResolvedValue([
+            ".agentplane/tasks/202601010101-ABCDEF/README.md",
+            ".agentplane/tasks/202601010101-OTHER01/README.md",
+            "src/app.ts",
+          ]),
+        stage: vi.fn().mockResolvedValue(),
+      },
+    };
+
+    const staged = await stageAllowlist({
+      ctx: ctx as never,
+      allow: ["src"],
+      allowTasks: true,
+      tasksPath: ".agentplane/tasks.json",
+      workflowDir: ".agentplane/tasks",
+      taskId: "202601010101-ABCDEF",
+    });
+
+    expect(staged).toEqual([".agentplane/tasks/202601010101-ABCDEF/README.md", "src/app.ts"]);
+    expect(ctx.git.stage).toHaveBeenCalledWith([
+      ".agentplane/tasks/202601010101-ABCDEF/README.md",
+      "src/app.ts",
+    ]);
   });
 });

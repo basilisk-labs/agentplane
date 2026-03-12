@@ -1,3 +1,5 @@
+import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "./git-path.js";
+
 export type ProtectedPathKind = "tasks" | "policy" | "config" | "hooks" | "ci";
 
 export type ProtectedPathOverride = {
@@ -6,10 +8,27 @@ export type ProtectedPathOverride = {
   envVar: string;
 };
 
-function pathIsUnder(candidate: string, prefix: string): boolean {
-  if (prefix === "." || prefix === "") return true;
-  if (candidate === prefix) return true;
-  return candidate.startsWith(`${prefix}/`);
+function taskWorkflowPrefix(
+  workflowDir: string | undefined,
+  taskId: string | undefined,
+): string | null {
+  const dir = normalizeGitPathPrefix(workflowDir ?? "");
+  const id = (taskId ?? "").trim();
+  if (!dir || !id) return null;
+  return normalizeGitPathPrefix(`${dir}/${id}`);
+}
+
+export function taskArtifactPrefixes(opts: {
+  tasksPath: string;
+  workflowDir?: string;
+  taskId?: string;
+}): string[] {
+  const out = new Set<string>();
+  const tasksPath = normalizeGitPathPrefix(opts.tasksPath);
+  if (tasksPath) out.add(tasksPath);
+  const workflowPrefix = taskWorkflowPrefix(opts.workflowDir, opts.taskId);
+  if (workflowPrefix) out.add(workflowPrefix);
+  return [...out].toSorted((a, b) => a.localeCompare(b));
 }
 
 export function getProtectedPathOverride(kind: ProtectedPathKind): ProtectedPathOverride {
@@ -35,24 +54,34 @@ export function getProtectedPathOverride(kind: ProtectedPathKind): ProtectedPath
 export function protectedPathKindForFile(opts: {
   filePath: string;
   tasksPath: string;
+  workflowDir?: string;
+  taskId?: string;
 }): ProtectedPathKind | null {
   const p = opts.filePath;
   if (!p) return null;
 
-  if (p === opts.tasksPath) return "tasks";
+  if (
+    taskArtifactPrefixes({
+      tasksPath: opts.tasksPath,
+      workflowDir: opts.workflowDir,
+      taskId: opts.taskId,
+    }).some((prefix) => gitPathIsUnderPrefix(p, prefix))
+  ) {
+    return "tasks";
+  }
 
   // "Rules of the game": authoring/agent policies and registry.
   if (
     p === "AGENTS.md" ||
     p === "CLAUDE.md" ||
     p === "packages/agentplane/assets/AGENTS.md" ||
-    pathIsUnder(p, ".agentplane/agents")
+    gitPathIsUnderPrefix(p, ".agentplane/agents")
   ) {
     return "policy";
   }
 
   // Framework config and task backend config determine enforcement behavior.
-  if (p === ".agentplane/config.json" || pathIsUnder(p, ".agentplane/backends")) {
+  if (p === ".agentplane/config.json" || gitPathIsUnderPrefix(p, ".agentplane/backends")) {
     return "config";
   }
 
@@ -60,7 +89,7 @@ export function protectedPathKindForFile(opts: {
   if (p === "lefthook.yml") return "hooks";
 
   // CI workflows are "remote hooks" for quality gates.
-  if (pathIsUnder(p, ".github/workflows") || pathIsUnder(p, ".github/actions")) {
+  if (gitPathIsUnderPrefix(p, ".github/workflows") || gitPathIsUnderPrefix(p, ".github/actions")) {
     return "ci";
   }
 

@@ -3,6 +3,7 @@ import { resolveProject } from "@agentplaneorg/core";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../../shared/git-path.js";
 import { CliError } from "../../../shared/errors.js";
+import { taskArtifactPrefixes } from "../../../shared/protected-paths.js";
 import { GitContext } from "../../shared/git-context.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 
@@ -83,6 +84,8 @@ export async function stageAllowlist(opts: {
   allow: string[];
   allowTasks: boolean;
   tasksPath: string;
+  workflowDir?: string;
+  taskId?: string;
 }): Promise<string[]> {
   const changed = await opts.ctx.git.statusChangedPaths();
   if (changed.length === 0) {
@@ -109,13 +112,18 @@ export async function stageAllowlist(opts: {
         "Repo-wide allowlist ('.') is not allowed; choose minimal prefixes (tip: `agentplane guard suggest-allow --format args`).",
     });
   }
-  const denied = new Set<string>();
-  if (!opts.allowTasks) denied.add(opts.tasksPath);
+  const taskAllow = taskArtifactPrefixes({
+    tasksPath: opts.tasksPath,
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+  });
+  const effectiveAllow = normalizeAllowPrefixes(opts.allowTasks ? [...allow, ...taskAllow] : allow);
+  const denied = opts.allowTasks ? [] : taskAllow;
 
   const staged: string[] = [];
   for (const filePath of changed) {
-    if (denied.has(filePath)) continue;
-    if (allow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) {
+    if (denied.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) continue;
+    if (effectiveAllow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) {
       staged.push(filePath);
     }
   }

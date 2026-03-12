@@ -115,6 +115,8 @@ export async function commitFromComment(opts: {
     allow: allowPrefixes,
     allowTasks: opts.allowTasks,
     tasksPath: opts.config.paths.tasks_path,
+    workflowDir: opts.config.paths.workflow_dir,
+    taskId: opts.taskId,
   });
 
   const message = deriveCommitMessageFromComment({

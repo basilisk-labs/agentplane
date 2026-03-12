@@ -32,7 +32,12 @@ export function protectedPathsRule(ctx: PolicyContext): PolicyResult {
   const errors: string[] = [];
 
   for (const filePath of staged) {
-    const kind = protectedPathKindForFile({ filePath, tasksPath });
+    const kind = protectedPathKindForFile({
+      filePath,
+      tasksPath,
+      workflowDir: ctx.config.paths.workflow_dir,
+      taskId: ctx.taskId,
+    });
     if (!kind) continue;
 
     if (kind === "tasks" && !allowTasks) {

@@ -1,4 +1,5 @@
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
+import { taskArtifactPrefixes } from "../../shared/protected-paths.js";
 
 import { gitError, okResult } from "../result.js";
 import type { PolicyContext, PolicyResult } from "../types.js";
@@ -23,7 +24,16 @@ export function allowlistRule(ctx: PolicyContext): PolicyResult {
   }
 
   const allow = allowRaw.map((p) => normalizeGitPathPrefix(p));
-  if (allow.includes(".")) {
+  const taskAllow =
+    ctx.allow?.allowTasks === true
+      ? taskArtifactPrefixes({
+          tasksPath: ctx.config.paths.tasks_path,
+          workflowDir: ctx.config.paths.workflow_dir,
+          taskId: ctx.taskId,
+        })
+      : [];
+  const effectiveAllow = [...new Set([...allow, ...taskAllow])];
+  if (effectiveAllow.includes(".")) {
     return {
       ok: false,
       errors: [
@@ -37,7 +47,7 @@ export function allowlistRule(ctx: PolicyContext): PolicyResult {
 
   const errors: string[] = [];
   for (const filePath of staged) {
-    if (!allow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) {
+    if (!effectiveAllow.some((prefix) => gitPathIsUnderPrefix(filePath, prefix))) {
       errors.push(`Staged file is outside allowlist: ${filePath}`);
     }
   }
