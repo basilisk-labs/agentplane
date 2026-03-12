@@ -1,5 +1,5 @@
 import { execFile } from "node:child_process";
-import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
@@ -7,6 +7,7 @@ import { promisify } from "node:util";
 import { describe, expect, it } from "vitest";
 
 import { runCli } from "./run-cli.js";
+import { createRecipeArchive } from "./run-cli.test-helpers.js";
 
 const execFileAsync = promisify(execFile);
 
@@ -62,33 +63,6 @@ async function initGitRepo(root: string): Promise<void> {
   await writeFile(path.join(root, "README.md"), "smoke\n", "utf8");
   await execFileAsync("git", ["add", "."], { cwd: root });
   await execFileAsync("git", ["commit", "-m", "init"], { cwd: root });
-}
-
-async function makeRecipeArchive(): Promise<{ archivePath: string; cleanup: () => Promise<void> }> {
-  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "agentplane-recipe-"));
-  const recipeRoot = path.join(tempRoot, "viewer");
-  await mkdir(recipeRoot, { recursive: true });
-  const manifest = {
-    schema_version: "1",
-    id: "viewer",
-    version: "0.0.0",
-    name: "Viewer",
-    summary: "Local viewer recipe for smoke tests.",
-    description: "Minimal recipe archive used by smoke tests.",
-  };
-  await writeFile(
-    path.join(recipeRoot, "manifest.json"),
-    `${JSON.stringify(manifest, null, 2)}\n`,
-    "utf8",
-  );
-  const archivePath = path.join(tempRoot, "viewer-0.0.0.tar.gz");
-  await execFileAsync("tar", ["-czf", archivePath, "-C", recipeRoot, "."]);
-  return {
-    archivePath,
-    cleanup: async () => {
-      await rm(tempRoot, { recursive: true, force: true });
-    },
-  };
 }
 
 describe("agentplane CLI smoke", () => {
@@ -188,18 +162,18 @@ describe("agentplane CLI smoke", () => {
       ]);
       expect(finish.code).toBe(0);
 
-      const recipe = await makeRecipeArchive();
-      try {
-        const install = await runCliWithOutput(root, [
-          "recipes",
-          "install",
-          recipe.archivePath,
-          "--yes",
-        ]);
-        expect(install.code).toBe(0);
-      } finally {
-        await recipe.cleanup();
-      }
+      const recipe = await createRecipeArchive({
+        version: "0.0.0",
+        summary: "Local viewer recipe for smoke tests.",
+        description: "Recipe archive used by CLI smoke tests.",
+      });
+      const install = await runCliWithOutput(root, [
+        "recipes",
+        "install",
+        recipe.archivePath,
+        "--yes",
+      ]);
+      expect(install.code).toBe(0);
 
       const list = await runCliWithOutput(root, ["recipes", "list"]);
       expect(list.code).toBe(0);
