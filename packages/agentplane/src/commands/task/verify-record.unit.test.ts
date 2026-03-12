@@ -235,7 +235,9 @@ describe("task verify record (unit)", () => {
     expect(next?.doc).toContain("#### 2026-02-09T00:00:00.000Z — VERIFY — ok");
     expect(next?.doc).toContain("By: TESTER");
     expect(next?.doc).toContain("Note: ok");
-    expect(writes.join("")).toContain("/repo/.agentplane/tasks/T-1/README.md");
+    expect(writes.join("")).toContain(
+      "✅ verified T-1 (state=ok readme=.agentplane/tasks/T-1/README.md)",
+    );
 
     writeSpy.mockRestore();
   });
@@ -348,6 +350,59 @@ describe("task verify record (unit)", () => {
     expect(next?.status).toBe("DOING");
     expect(next?.commit).toBeNull();
     expect(writeSpy).not.toHaveBeenCalled();
+
+    writeSpy.mockRestore();
+  });
+
+  it("cmdTaskVerifyRework prints a status summary when quiet=false", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const writeTask = vi.fn<(t: TaskData) => Promise<void>>(() => Promise.resolve());
+    const backend: TaskBackend = {
+      id: "mock",
+      listTasks: () => Promise.resolve([]),
+      getTask: () => Promise.resolve(null),
+      writeTask,
+      getTaskDoc: () =>
+        Promise.resolve(
+          [
+            "## Summary",
+            "x",
+            "",
+            "## Verify Steps",
+            "step",
+            "",
+            "## Verification",
+            "<!-- BEGIN VERIFICATION RESULTS -->",
+            "<!-- END VERIFICATION RESULTS -->",
+          ].join("\n"),
+        ),
+    };
+    const ctx = mkCtx({ taskBackend: backend, backend });
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({
+        status: "DONE",
+        commit: { hash: "abc", message: "msg" },
+      }),
+    );
+
+    const { cmdTaskVerifyRework } = await import("./verify-record.js");
+    const rc = await cmdTaskVerifyRework({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      by: "TESTER",
+      note: "rework",
+      quiet: false,
+    });
+    expect(rc).toBe(0);
+    expect(writes.join("")).toContain(
+      "✅ verified T-1 (state=needs_rework readme=.agentplane/tasks/T-1/README.md)",
+    );
 
     writeSpy.mockRestore();
   });

@@ -5,7 +5,7 @@ import path from "node:path";
 import { ensureDocSections, setMarkdownSection } from "@agentplaneorg/core";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
-import { backendNotSupportedMessage } from "../../cli/output.js";
+import { backendNotSupportedMessage, successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
 import { ensureReconciledBeforeMutation } from "../shared/reconcile-check.js";
 import {
@@ -165,7 +165,10 @@ async function recordVerificationResult(opts: {
 
   if (!opts.quiet) {
     const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");
-    process.stdout.write(`${readmePath}\n`);
+    const relReadmePath = path.relative(resolved.gitRoot, readmePath);
+    process.stdout.write(
+      `${successMessage("verified", task.id, `state=${opts.state} readme=${relReadmePath}`)}\n`,
+    );
   }
 }
 

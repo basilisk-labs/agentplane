@@ -1558,7 +1558,7 @@ describe("runCli", () => {
     expect(stdout.trim()).toBe(`✨ ${suffix} meta: doing`);
   });
 
-  it("start commit-from-comment fails when allow prefixes do not match changes", async () => {
+  it("start commit-from-comment still commits the active task README when allow prefixes do not match non-task changes", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
     await configureGitUser(root);
@@ -1607,8 +1607,8 @@ describe("runCli", () => {
         "--root",
         root,
       ]);
-      expect(code).toBe(2);
-      expect(io.stderr).toContain("No changes matched allowed prefixes");
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("committed");
     } finally {
       io.restore();
     }
@@ -2585,7 +2585,7 @@ describe("runCli", () => {
     }
   });
 
-  it("verify records ok result and prints README path", async () => {
+  it("verify records ok result and prints a status summary", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -2626,7 +2626,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(path.join(root, ".agentplane", "tasks", taskId, "README.md"));
+      expect(io.stdout).toContain(`✅ verified ${taskId} (state=ok`);
+      expect(io.stdout).toContain(`readme=.agentplane/tasks/${taskId}/README.md`);
     } finally {
       io.restore();
     }
@@ -2779,7 +2780,8 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
-      expect(io.stdout).toContain(path.join(root, ".agentplane", "tasks", taskId, "README.md"));
+      expect(io.stdout).toContain(`✅ verified ${taskId} (state=ok`);
+      expect(io.stdout).toContain(`readme=.agentplane/tasks/${taskId}/README.md`);
     } finally {
       io.restore();
     }
