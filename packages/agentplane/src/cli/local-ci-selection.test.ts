@@ -203,6 +203,12 @@ describe("local CI fast selection", () => {
       "packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts",
     );
     expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.tasks.scaffold-derive.test.ts",
+    );
+    expect(plan.testFiles).toContain(
+      "packages/agentplane/src/cli/run-cli.core.tasks.normalize-migrate.test.ts",
+    );
+    expect(plan.testFiles).toContain(
       "packages/agentplane/src/cli/run-cli.core.tasks.export.test.ts",
     );
   });
