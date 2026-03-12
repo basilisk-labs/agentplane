@@ -166,7 +166,9 @@ For any commit-capable command (`commit`, `guard commit`, `start/block/finish ..
 
 - Always pass explicit allowlist prefixes (`--allow` / `--commit-allow` / `--status-commit-allow`).
 - Top-level `agentplane commit` can auto-stage changed paths that match the provided allowlist when the git index starts empty.
+- `--allow-tasks` is intentionally task-scoped: it covers the exported `.agentplane/tasks.json` snapshot plus artifacts under the active task subtree, not unrelated `.agentplane/tasks/**` directories.
 - `agentplane guard commit` remains staged-only; it validates the current index and never stages files for you.
+- If commit stderr reports `git_pre_commit_format` or `git_pre_commit_lint`, run `bun run format` or `bun run lint:core` respectively, then retry the original `commit` / `finish` command.
 - Repo-wide prefix `.` is rejected by policy.
 - Fast path to build safe prefixes from current index:
 

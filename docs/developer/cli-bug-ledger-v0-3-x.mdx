@@ -18,8 +18,9 @@ distinguishes shipped fixes from still-open gaps.
   commit, and other long-running lifecycle paths now expose their own phase boundaries instead of
   collapsing into one opaque tail phase.
 - **Evidence:** task `202603081315-NV76YZ`, `packages/agentplane/src/commands/task/finish.ts`.
-- **Remaining gap:** if a hook blocks the close commit, the command still depends on git/hook
-  output for the final diagnosis; that is now visible, but still not fully state-oriented.
+- **Remaining gap:** common formatter/lint hook blockers now classify into reason-coded next
+  actions, but uncommon hook output still falls back to summarized raw lines for the final
+  diagnosis.
 
 ## 2. Task README files rendered literal `\\n` instead of newlines
 
@@ -133,20 +134,59 @@ distinguishes shipped fixes from still-open gaps.
 - **Remaining gap:** the feedback is clearer now, and `--full-doc` gives the happy path an explicit
   route, but the legacy multi-heading auto-detect path still exists for compatibility.
 
+## 10. `commit` could look broken from an empty index or active task artifacts
+
+- **Symptom:** contributors started with an obvious top-level `agentplane commit ... --allow ...`
+  or `--allow-tasks` intent, but still hit `No staged files` or had to manually spell
+  `.agentplane/tasks/<task-id>` even for the active task README.
+- **Hidden premise:** top-level `commit` was expected to act as the ergonomic wrapper over
+  allowlisted changed paths, not as a strict staged-only command like `guard commit`.
+- **Root cause:** the wrapper still depended on a non-empty git index, and `--allow-tasks`
+  classified only the export snapshot instead of the active task subtree.
+- **Shipped fix:** top-level `commit` now auto-stages changed paths that match its explicit
+  allowlist when the index is empty; `--allow-tasks` now covers the export snapshot plus the active
+  task subtree, and help/docs now describe that narrow contract explicitly.
+- **Evidence:** tasks `202603121055-JXSY64`, `202603120833-7Z9X0K`, `202603120848-ZZD1G5`;
+  `packages/agentplane/src/commands/guard/impl/commands.ts`,
+  `packages/agentplane/src/commands/guard/impl/allow.ts`,
+  `packages/agentplane/src/policy/rules/allowlist.ts`.
+- **Remaining gap:** comment-driven and `guard commit` paths intentionally remain staged-only and
+  still require their own explicit allowlists.
+
+## 11. Fast-CI bucket routing drifted after split-suite refactors
+
+- **Symptom:** isolated edits to newly split `run-cli` lifecycle, guard, or task suites could fall
+  back to the broad fast local loop even though a safe targeted contour already existed.
+- **Hidden premise:** once a suite was split for maintainability, the fast-CI bucket registry would
+  stay aligned automatically.
+- **Root cause:** selector regexes and targeted test-file lists still tracked the old monolithic
+  suite names.
+- **Shipped fix:** the selector now recognizes split lifecycle, guard, docs, and task suites, and
+  targeted CLI-core / guard / cli-help test-file lists include the new suite files.
+- **Evidence:** tasks `202603121125-EA1BPW`, `202603121125-RZ4HDW`; `scripts/lib/local-ci-selection.mjs`,
+  `packages/agentplane/src/cli/local-ci-selection.test.ts`.
+- **Remaining gap:** the selector registry is still hand-maintained, so future suite splits need
+  corresponding selector updates unless that mapping becomes generated.
+
 ## Remaining open gaps before the next patch release
 
 1. **Do not auto-update the global CLI by default.**
    The repository can now declare the expected CLI version, but automatic global mutation is still a
    safety-sensitive feature. If it ever lands, it should stay opt-in and explicitly approved.
 
-2. **Keep close-commit failures state-oriented after hooks reject them.**
-   Phase visibility is now much better, but the final close-commit failure diagnosis still leans on
-   raw git/hook output once the task has already crossed into the close phase.
+2. **Keep uncommon commit-hook blockers state-oriented after `commit` / `finish` failures.**
+   Common formatter/lint cases now classify into explicit next actions, but rare hook output still
+   falls back to summarized raw lines.
 
 3. **Keep broad `pre-push` paths under control.**
    Narrow buckets already reduced a lot of latency, but broad runtime-sensitive changes still carry
-   a heavy local loop cost.
+   a heavy local loop cost, and the selector registry still needs manual synchronization after suite
+   topology changes.
 
 4. **Retire overloaded `task doc set` compatibility paths carefully.**
    The explicit `--full-doc` route removes the main happy-path ambiguity, but the old multi-heading
    auto-detect behavior still remains and should only be removed once callers have migrated.
+
+5. **Keep release recovery ergonomics moving toward a mainstream flow.**
+   The recovery summary is much better than before, but partial-release cleanup still assumes a
+   relatively specialist operator.

@@ -28,10 +28,26 @@ description: "Common problems and how to fix them quickly."
   - `--commit-allow <path-prefix>`
   - `--status-commit-allow <path-prefix>`
 - If top-level `agentplane commit` starts from an empty index, it auto-stages changed paths that match `--allow` / `--allow-tasks`.
+- `--allow-tasks` is intentionally narrow: it covers `.agentplane/tasks.json` plus artifacts under the active task subtree, not every `.agentplane/tasks/**` directory.
 - `guard commit` and comment-driven lifecycle commits still use their existing staged/commit-specific flows.
 - Do not use repo-wide `.` prefix; it is blocked by policy.
 - Generate candidate prefixes from staged files:
   - `agentplane guard suggest-allow --format args`
+
+## Commit or finish is blocked by formatter/lint hooks
+
+**Symptom:** `agentplane commit` or `agentplane finish` fails after the hook output mentions
+formatting or lint problems.
+
+**Fix:**
+
+- If stderr shows `reason_code: git_pre_commit_format`, run:
+  - `bun run format`
+- If stderr shows `reason_code: git_pre_commit_lint`, run:
+  - `bun run lint:core`
+- Re-stage or re-run the original `agentplane commit` / `agentplane finish` command after the fix.
+- For uncommon hook output that does not classify into one of those reason codes yet, inspect the
+  summarized hook lines in stderr and then retry.
 
 ## Task doc changes rejected
 
