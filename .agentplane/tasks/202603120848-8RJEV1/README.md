@@ -1,7 +1,8 @@
 ---
 id: "202603120848-8RJEV1"
 title: "Cover non-README active task artifacts in commit regressions"
-status: "DOING"
+result_summary: "allow-tasks regressions now prove non-README files under the active task subtree commit successfully without extra explicit prefixes"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-12T08:56:49.099Z"
+  updated_by: "CODER"
+  note: "Verified: bun x vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts --hookTimeout 60000 --testTimeout 60000"
+commit:
+  hash: "cc2e898b8c941e2e6bcbb88341c7b4fdf7c88a86"
+  message: "🧪 8RJEV1 test: cover non-README active task artifacts"
 comments:
   -
     author: "CODER"
     body: "Start: add regression coverage for non-README files under the active task subtree so allow-tasks semantics are proven beyond task README commits."
+  -
+    author: "CODER"
+    body: "Verified: bun x vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts --hookTimeout 60000 --testTimeout 60000"
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: add regression coverage for non-README files under the active task subtree so allow-tasks semantics are proven beyond task README commits."
+  -
+    type: "verify"
+    at: "2026-03-12T08:56:49.099Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: bun x vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts --hookTimeout 60000 --testTimeout 60000"
+  -
+    type: "status"
+    at: "2026-03-12T08:56:55.747Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: bun x vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts --hookTimeout 60000 --testTimeout 60000"
 doc_version: 3
-doc_updated_at: "2026-03-12T08:54:57.552Z"
+doc_updated_at: "2026-03-12T08:56:55.747Z"
 doc_updated_by: "CODER"
 description: "Add regression coverage proving that --allow-tasks admits non-README files under the active task subtree without admitting unrelated task artifacts."
 id_source: "generated"
@@ -62,6 +81,14 @@ Add regression coverage proving that --allow-tasks admits non-README files under
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-12T08:56:49.099Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: bun x vitest run packages/agentplane/src/cli/run-cli.core.guard.test.ts packages/agentplane/src/commands/guard/impl/allow.test.ts packages/agentplane/src/policy/evaluate.test.ts --hookTimeout 60000 --testTimeout 60000
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-12T08:54:57.552Z, excerpt_hash=sha256:0d1012de32526242e7d079b0469cd8439c8782eed53d180f47b397e2181f4ead
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
