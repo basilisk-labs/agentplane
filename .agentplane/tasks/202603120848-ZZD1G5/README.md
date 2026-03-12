@@ -1,7 +1,8 @@
 ---
 id: "202603120848-ZZD1G5"
 title: "Narrow allow-tasks help to active-task semantics"
-status: "DOING"
+result_summary: "help and generated docs now describe allow-tasks as active-task subtree plus export snapshot semantics"
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-12T08:54:23.612Z"
+  updated_by: "CODER"
+  note: "Verified: agentplane help commit --compact; agentplane help guard commit --compact; bun x vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts --hookTimeout 60000 --testTimeout 60000; agentplane docs cli --out docs/user/cli-reference.generated.mdx"
+commit:
+  hash: "d8e823318619222067c58844c6bd706098df8de7"
+  message: "📝 ZZD1G5 docs: narrow allow-tasks help contract"
 comments:
   -
     author: "CODER"
     body: "Start: narrow allow-tasks wording in help and generated CLI docs so the contract matches the implemented active-task subtree semantics."
+  -
+    author: "CODER"
+    body: "Verified: agentplane help commit --compact; agentplane help guard commit --compact; bun x vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts --hookTimeout 60000 --testTimeout 60000; agentplane docs cli --out docs/user/cli-reference.generated.mdx"
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: narrow allow-tasks wording in help and generated CLI docs so the contract matches the implemented active-task subtree semantics."
+  -
+    type: "verify"
+    at: "2026-03-12T08:54:23.612Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified: agentplane help commit --compact; agentplane help guard commit --compact; bun x vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts --hookTimeout 60000 --testTimeout 60000; agentplane docs cli --out docs/user/cli-reference.generated.mdx"
+  -
+    type: "status"
+    at: "2026-03-12T08:54:29.215Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: agentplane help commit --compact; agentplane help guard commit --compact; bun x vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts --hookTimeout 60000 --testTimeout 60000; agentplane docs cli --out docs/user/cli-reference.generated.mdx"
 doc_version: 3
-doc_updated_at: "2026-03-12T08:51:43.011Z"
+doc_updated_at: "2026-03-12T08:54:29.215Z"
 doc_updated_by: "CODER"
 description: "Update command help text and generated CLI reference so --allow-tasks matches the implemented active-task artifact scope instead of implying blanket .agentplane/tasks coverage."
 id_source: "generated"
@@ -62,6 +81,14 @@ Update command help text and generated CLI reference so --allow-tasks matches th
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-12T08:54:23.612Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified: agentplane help commit --compact; agentplane help guard commit --compact; bun x vitest run packages/agentplane/src/cli/run-cli.core.help-snap.test.ts packages/agentplane/src/cli/run-cli.core.docs-cli.test.ts --hookTimeout 60000 --testTimeout 60000; agentplane docs cli --out docs/user/cli-reference.generated.mdx
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-12T08:51:43.011Z, excerpt_hash=sha256:02667861ba476774afa4418ffcde0dd9958c7c57f7bc48a1015892c0ecb85b3a
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
