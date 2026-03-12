@@ -1,7 +1,8 @@
 ---
 id: "202603121208-JV141V"
 title: "Patch stabilization: split init/upgrade/backend CLI suite and narrow fast-CI residual fallback"
-status: "DOING"
+result_summary: "Replaced the mixed init/upgrade/backend CLI regression file with split suites, narrowed backend and upgrade fast-CI routing, and synced package scripts plus testing docs to the new residual-fallback contract."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -15,15 +16,20 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
-commit: null
+  state: "ok"
+  updated_at: "2026-03-12T12:22:01.220Z"
+  updated_by: "CODER"
+  note: "Targeted verification passed: split init, upgrade, backend-sync CLI suites stayed green; local fast-CI selector now routes isolated upgrade/backend suites to focused buckets while keeping init on full-fast; lint, builds, and the updated platform/backend package scripts all passed."
+commit:
+  hash: "262f50604f60477d8faadf6bdb89129ea0ea1070"
+  message: "🚧 JV141V cli: split init upgrade backend suites"
 comments:
   -
     author: "CODER"
     body: "Start: splitting the mixed init/upgrade/backend CLI suite so fast-CI can narrow isolated upgrade and backend paths while leaving init on the broad fallback by design."
+  -
+    author: "CODER"
+    body: "Verified: split init, upgrade, and backend-sync CLI suites now carry the old mixed coverage without regressions, and fast-CI narrows only the proven-safe upgrade/backend paths while init remains the explicit broad fallback."
 events:
   -
     type: "status"
@@ -32,8 +38,21 @@ events:
     from: "TODO"
     to: "DOING"
     note: "Start: splitting the mixed init/upgrade/backend CLI suite so fast-CI can narrow isolated upgrade and backend paths while leaving init on the broad fallback by design."
+  -
+    type: "verify"
+    at: "2026-03-12T12:22:01.220Z"
+    author: "CODER"
+    state: "ok"
+    note: "Targeted verification passed: split init, upgrade, backend-sync CLI suites stayed green; local fast-CI selector now routes isolated upgrade/backend suites to focused buckets while keeping init on full-fast; lint, builds, and the updated platform/backend package scripts all passed."
+  -
+    type: "status"
+    at: "2026-03-12T12:22:10.718Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: split init, upgrade, and backend-sync CLI suites now carry the old mixed coverage without regressions, and fast-CI narrows only the proven-safe upgrade/backend paths while init remains the explicit broad fallback."
 doc_version: 3
-doc_updated_at: "2026-03-12T12:08:58.975Z"
+doc_updated_at: "2026-03-12T12:22:10.718Z"
 doc_updated_by: "CODER"
 description: "Split the mixed run-cli init/upgrade/backend integration suite, keep init on broad fallback, route isolated upgrade and backend-sync test paths to focused fast-CI buckets, and sync docs/tests to the new selector contract."
 id_source: "generated"
@@ -78,6 +97,14 @@ Split the mixed run-cli init/upgrade/backend integration suite, keep init on bro
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-12T12:22:01.220Z — VERIFY — ok
+
+By: CODER
+
+Note: Targeted verification passed: split init, upgrade, backend-sync CLI suites stayed green; local fast-CI selector now routes isolated upgrade/backend suites to focused buckets while keeping init on full-fast; lint, builds, and the updated platform/backend package scripts all passed.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-12T12:08:58.975Z, excerpt_hash=sha256:3179d918ddb345e3bb526a4a57e2615cf3b4230095e3838bb77051ef8f42da72
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
