@@ -722,6 +722,7 @@ describe("runCli", () => {
         root,
       ]);
       expect(code).toBe(0);
+      expect(io.stdout).toContain("creating commit from start comment");
       expect(io.stdout).toContain("✅ started");
     } finally {
       io.restore();

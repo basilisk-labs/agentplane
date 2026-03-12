@@ -724,10 +724,55 @@ describe("task finish (unit)", () => {
     expect(call.emoji).toBe("✅");
     expect(stageSpy).toHaveBeenCalledWith([".agentplane/tasks/T-1/README.md"]);
     expect(amendSpy).toHaveBeenCalledTimes(1);
+    expect(writes.join("")).toContain("creating commit from verification comment");
     expect(writes.join("")).toContain("finished");
 
     stageSpy.mockRestore();
     amendSpy.mockRestore();
+    writeSpy.mockRestore();
+  });
+
+  it("prints status-commit progress before the finish status commit runs", async () => {
+    const writes: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const ctx = mkCtx();
+    mocks.loadTaskFromContext.mockResolvedValue(
+      mkTask({ id: "T-1", status: "DOING", tags: ["docs"] }),
+    );
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: status commit progress should be visible in stdout.",
+      result: "finish-status-commit-progress",
+      commit: "abc123",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: true,
+      statusCommitAllow: ["packages/agentplane"],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
+    expect(writes.join("")).toContain("creating status commit");
+    expect(writes.join("")).toContain("finished");
+
     writeSpy.mockRestore();
   });
 

@@ -312,6 +312,11 @@ export async function cmdFinish(opts: {
     }
 
     if (opts.commitFromComment) {
+      if (!opts.quiet) {
+        process.stdout.write(
+          `${infoMessage("task marked DONE; creating commit from verification comment")}\n`,
+        );
+      }
       if (typeof opts.commitEmoji === "string" && opts.commitEmoji.trim() !== "✅") {
         throw new CliError({
           exitCode: 2,
@@ -384,6 +389,9 @@ export async function cmdFinish(opts: {
     }
 
     if (statusCommitRequested) {
+      if (!opts.quiet) {
+        process.stdout.write(`${infoMessage("task marked DONE; creating status commit")}\n`);
+      }
       if (typeof opts.statusCommitEmoji === "string" && opts.statusCommitEmoji.trim() !== "✅") {
         throw new CliError({
           exitCode: 2,

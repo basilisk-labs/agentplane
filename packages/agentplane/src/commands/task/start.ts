@@ -1,6 +1,6 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
-import { invalidValueMessage, successMessage, warnMessage } from "../../cli/output.js";
+import { infoMessage, invalidValueMessage, successMessage, warnMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -192,6 +192,11 @@ export async function cmdStart(opts: {
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {
+      if (!opts.quiet) {
+        process.stdout.write(
+          `${infoMessage("task marked DOING; creating commit from start comment")}\n`,
+        );
+      }
       const mode = ctx.config.workflow_mode;
       let executorAgent = opts.author;
       if (mode === "direct") {
