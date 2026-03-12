@@ -87,6 +87,9 @@ describe("commands/shared/reconcile-check", () => {
         command: "commit",
         reason_code: "reconcile_task_scan_incomplete",
         warning_count: 2,
+        diagnostic_state: "mutation preflight cannot reconcile task artifacts",
+        diagnostic_likely_cause:
+          "task README for T-1 has invalid frontmatter, so reconcile skipped it before the mutating command could run",
       },
     });
   });
