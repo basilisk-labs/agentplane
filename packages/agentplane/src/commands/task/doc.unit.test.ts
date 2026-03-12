@@ -7,6 +7,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "../shared/git-context.js";
 import type { TaskStorePatch } from "../shared/task-store.js";
@@ -219,5 +220,35 @@ describe("task doc commands (unit)", () => {
     expect(rc).toBe(0);
     expect(currentTask.doc).toContain("Line one\nLine two");
     expect(currentTask.doc).not.toContain(String.raw`Line one\nLine two`);
+  });
+
+  it("cmdTaskDocSet surfaces semantic section conflicts from the task store", async () => {
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      patch: vi.fn().mockRejectedValue(
+        new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: "Task README section changed concurrently: T-1 ## Summary",
+          context: { reason_code: "task_readme_section_conflict", section: "Summary" },
+        }),
+      ),
+    });
+
+    const { cmdTaskDocSet } = await import("./doc.js");
+    await expect(
+      cmdTaskDocSet({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        section: "Summary",
+        text: "Replacement summary",
+        fullDoc: false,
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_section_conflict", section: "Summary" },
+    });
   });
 });

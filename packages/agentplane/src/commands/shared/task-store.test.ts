@@ -205,6 +205,85 @@ describe("commands/shared/TaskStore", () => {
     expect(didInterfere).toBe(true);
   });
 
+  it("rejects concurrent full-doc replacements via semantic patch preconditions", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-FULL";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    const initial = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Task",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-02-07T00:00:00Z",
+        doc_updated_by: "CODER",
+        description: "",
+      },
+      ["## Summary", "before", "", "## Plan", "plan", ""].join("\n"),
+    );
+    await writeFile(readmePath, `${initial}\n`, "utf8");
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    let didInterfere = false;
+    let expectedDoc: string | undefined;
+    await expect(
+      store.patch(taskId, async (current) => {
+        expectedDoc ??= String(current.doc ?? "");
+        if (!didInterfere) {
+          didInterfere = true;
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          await writeFile(
+            readmePath,
+            `${renderTaskReadme(
+              {
+                id: taskId,
+                title: "Task",
+                status: "TODO",
+                priority: "med",
+                owner: "CODER",
+                depends_on: [],
+                tags: [],
+                verify: [],
+                plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+                verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+                comments: [],
+                doc_version: 3,
+                doc_updated_at: "2026-02-07T00:00:00Z",
+                doc_updated_by: "CODER",
+                description: "",
+              },
+              ["## Summary", "other writer", "", "## Plan", "plan", ""].join("\n"),
+            )}\n`,
+            "utf8",
+          );
+        }
+        return {
+          doc: {
+            kind: "replace-doc",
+            doc: ["## Summary", "my replacement", "", "## Plan", "plan", ""].join("\n"),
+            expectedCurrentDoc: expectedDoc,
+          },
+          docMeta: { touch: true, updatedBy: "CODER", version: 3 },
+        };
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_conflict" },
+    });
+    expect(didInterfere).toBe(true);
+  });
+
   it("preserves concurrent writes to other README sections when a semantic patch targets a different section", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
     const taskId = "202602070000-KEEP";

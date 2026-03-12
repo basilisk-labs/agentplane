@@ -7,6 +7,7 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { TaskBackend, TaskData } from "../../backends/task-backend.js";
+import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "../shared/git-context.js";
 import type { TaskStorePatch } from "../shared/task-store.js";
@@ -473,5 +474,50 @@ describe("task plan commands (unit)", () => {
     expect(writes.join("")).toContain("/repo/.agentplane/tasks/T-1/README.md");
 
     writeSpy.mockRestore();
+  });
+
+  it("cmdTaskPlanSet surfaces semantic plan conflicts from the task store", async () => {
+    const currentTask = mkTask({
+      doc: [
+        "## Summary",
+        "Summary",
+        "",
+        "## Plan",
+        "Old plan",
+        "",
+        "## Verify Steps",
+        "Run checks",
+        "",
+        "## Notes",
+        "n/a",
+      ].join("\n"),
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(currentTask),
+      patch: vi.fn().mockRejectedValue(
+        new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: "Task README section changed concurrently: T-1 ## Plan",
+          context: { reason_code: "task_readme_section_conflict", section: "Plan" },
+        }),
+      ),
+    };
+    const ctx = mkCtx();
+    mockBackendIsLocalFileBackend.mockReturnValue(true);
+    mockGetTaskStore.mockReturnValue(store);
+
+    const { cmdTaskPlanSet } = await import("./plan.js");
+    await expect(
+      cmdTaskPlanSet({
+        ctx,
+        cwd: "/repo",
+        taskId: "T-1",
+        text: "New plan text",
+      }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: { reason_code: "task_readme_section_conflict", section: "Plan" },
+    });
   });
 });
