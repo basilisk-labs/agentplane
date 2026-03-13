@@ -1,7 +1,8 @@
 ---
 id: "202603130653-67CKCG"
 title: "Emit publish-result artifact from publish workflow"
-status: "DOING"
+result_summary: "Publish workflow now emits a canonical publish-result artifact."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T06:59:21.942Z"
   updated_by: "CODER"
   note: "Publish workflow now emits a canonical publish-result artifact."
-commit: null
+commit:
+  hash: "68fce5e0c861fc5a750c00ab199c746aa7e160db"
+  message: "🚧 67CKCG task: emit publish-result artifact from publish workflow"
 comments:
   -
     author: "CODER"
     body: "Start: emit a canonical publish-result artifact from the publish workflow so post-publish recovery can read final outcome data instead of inferring from workflow symptoms."
+  -
+    author: "CODER"
+    body: "Verified: the publish workflow now writes a machine-readable publish-result artifact on every publish run, including partial failures, so post-publish diagnostics can read a final outcome record."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Publish workflow now emits a canonical publish-result artifact."
+  -
+    type: "status"
+    at: "2026-03-13T06:59:26.600Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the publish workflow now writes a machine-readable publish-result artifact on every publish run, including partial failures, so post-publish diagnostics can read a final outcome record."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:59:21.943Z"
+doc_updated_at: "2026-03-13T06:59:26.601Z"
 doc_updated_by: "CODER"
 description: "Record canonical post-publish outcome as a machine-readable artifact so release recovery can read a final publish fact instead of inferring from workflow status and npm symptoms."
 id_source: "generated"
