@@ -1,7 +1,7 @@
 ---
 id: "202603130626-MZV4NG"
 title: "Add Core CI release-ready contract test"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -14,16 +14,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-13T06:31:39.544Z"
+  updated_by: "CODER"
+  note: "Core CI release-ready workflow contract is now regression-tested."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: add a contract test for the Core CI release-ready job so future workflow edits cannot silently break publish readiness."
+events:
+  -
+    type: "status"
+    at: "2026-03-13T06:30:37.461Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: add a contract test for the Core CI release-ready job so future workflow edits cannot silently break publish readiness."
+  -
+    type: "verify"
+    at: "2026-03-13T06:31:39.544Z"
+    author: "CODER"
+    state: "ok"
+    note: "Core CI release-ready workflow contract is now regression-tested."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:27:16.766Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-03-13T06:31:39.546Z"
+doc_updated_by: "CODER"
 description: "Protect ci.yml release-ready job shape with a workflow contract test so future edits cannot silently break artifact publishing."
 id_source: "generated"
 ---
@@ -53,6 +69,31 @@ Protect ci.yml release-ready job shape with a workflow contract test so future e
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-13T06:31:39.544Z — VERIFY — ok
+
+By: CODER
+
+Note: Core CI release-ready workflow contract is now regression-tested.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-13T06:30:37.462Z, excerpt_hash=sha256:07f1ff62405548e7c7f17cccc7da7d91511ff18d9f5afdcaebc3141a3adbc389
+
+Details:
+
+Command: bun x vitest run packages/agentplane/src/commands/release/ci-workflow-contract.test.ts --hookTimeout 60000 --testTimeout 60000
+Result: pass
+Evidence: 1 file, 1 test passed; the Core CI release-ready job contract is covered.
+Scope: release-ready job wiring in .github/workflows/ci.yml.
+
+Command: bun run workflows:lint
+Result: pass
+Evidence: workflow lint and workflow command contract both returned OK.
+Scope: GitHub Actions workflow syntax and command wiring.
+
+Command: ./node_modules/.bin/prettier --check packages/agentplane/src/commands/release/ci-workflow-contract.test.ts
+Result: pass
+Evidence: the new workflow contract test file matches Prettier style.
+Scope: formatting of the new release workflow contract test.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
