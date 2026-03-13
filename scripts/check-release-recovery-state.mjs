@@ -1,5 +1,6 @@
 import { execFile } from "node:child_process";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, stat } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
 
@@ -172,6 +173,128 @@ async function gitProbe(repoRoot, args) {
   }
 }
 
+async function findFileByName(root, fileName) {
+  const entries = await readdir(root, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(root, entry.name);
+    if (entry.isDirectory()) {
+      const nested = await findFileByName(fullPath, fileName);
+      if (nested) return nested;
+      continue;
+    }
+    if (entry.isFile() && entry.name === fileName) {
+      return fullPath;
+    }
+  }
+  return null;
+}
+
+async function ghIsAvailable(repoRoot) {
+  try {
+    await execFileAsync("gh", ["--version"], {
+      cwd: repoRoot,
+      env: process.env,
+      maxBuffer: 20 * 1024 * 1024,
+    });
+    return true;
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
+      return false;
+    }
+    throw error;
+  }
+}
+
+async function readPublishResultArtifact({ repoRoot, repo, runId, token }) {
+  const fixturePath =
+    typeof process.env.AGENTPLANE_TEST_PUBLISH_RESULT_PATH === "string"
+      ? process.env.AGENTPLANE_TEST_PUBLISH_RESULT_PATH.trim()
+      : "";
+  if (fixturePath) {
+    return {
+      state: "available",
+      detail: null,
+      payload: await readJson(fixturePath),
+    };
+  }
+
+  if (!runId) {
+    return {
+      state: "missing",
+      detail: "publish workflow run id is unavailable",
+      payload: null,
+    };
+  }
+
+  if (!(await ghIsAvailable(repoRoot))) {
+    return {
+      state: "gh_unavailable",
+      detail: "gh CLI is not installed locally",
+      payload: null,
+    };
+  }
+
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), "agentplane-publish-result-"));
+  try {
+    await execFileAsync(
+      "gh",
+      [
+        "run",
+        "download",
+        String(runId),
+        "--repo",
+        repo,
+        "--name",
+        "publish-result",
+        "--dir",
+        tempDir,
+      ],
+      {
+        cwd: repoRoot,
+        env: {
+          ...process.env,
+          GITHUB_TOKEN: token,
+          GH_TOKEN: token,
+        },
+        maxBuffer: 20 * 1024 * 1024,
+      },
+    );
+
+    const publishResultPath = await findFileByName(tempDir, "publish-result.json");
+    if (!publishResultPath) {
+      return {
+        state: "artifact_missing",
+        detail: "publish-result.json was not found in the downloaded artifact",
+        payload: null,
+      };
+    }
+
+    return {
+      state: "available",
+      detail: null,
+      payload: await readJson(publishResultPath),
+    };
+  } catch (error) {
+    const detail = `${String(error?.stderr ?? "").trim()}\n${String(error?.stdout ?? "").trim()}`
+      .trim()
+      .replaceAll(/\n+/gu, "\n");
+    if (/no artifact matches any of the names or patterns provided/iu.test(detail)) {
+      return {
+        state: "artifact_missing",
+        detail,
+        payload: null,
+      };
+    }
+    return {
+      state: "download_failed",
+      detail: detail || "gh run download failed unexpectedly",
+      payload: null,
+    };
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
+  }
+}
+
 async function checkRegistryAvailability(repoRoot, version) {
   const scriptPath = path.join(repoRoot, "scripts", "check-npm-version-availability.mjs");
   if (!(await fileExists(scriptPath))) {
@@ -225,6 +348,36 @@ async function readLatestApplyReport(repoRoot) {
 }
 
 function deriveRecoverySummary(report, args) {
+  if (
+    report.current.github.checked &&
+    report.current.github.publishResult.state === "available" &&
+    report.current.github.publishResult.success === true &&
+    report.current.github.coreCi.state === "completed_not_success"
+  ) {
+    return {
+      state: "release_already_published_with_red_core_ci",
+      likelyCause:
+        "the canonical publish-result artifact confirms publish success for the release SHA, but sibling Core CI completed red on the same commit",
+      nextAction:
+        "Do not rerun publish for this version. Fix the failing Core CI issue on a follow-up commit, then use workflow_dispatch publish only if a newer recovery SHA still needs publication.",
+    };
+  }
+
+  if (
+    report.current.github.checked &&
+    report.current.github.publishResult.state === "available" &&
+    report.current.github.publishResult.success === false
+  ) {
+    return {
+      state: "release_publish_workflow_failed",
+      likelyCause:
+        "the canonical publish-result artifact reports an incomplete publish outcome for the release SHA",
+      nextAction:
+        report.current.github.publishResult.nextAction ||
+        "Inspect the publish-result artifact and publish workflow logs before retrying npm publication for any recovery SHA.",
+    };
+  }
+
   if (
     report.current.github.checked &&
     report.current.github.publish.state === "success" &&
@@ -472,6 +625,14 @@ async function buildReport(repoRoot, args) {
           conclusion: null,
           url: null,
         },
+        publishResult: {
+          state: "skipped",
+          success: null,
+          reasonCode: null,
+          nextAction: null,
+          detail: null,
+          artifactName: "publish-result",
+        },
       },
     },
     findings: [],
@@ -595,6 +756,18 @@ async function buildReport(repoRoot, args) {
           token,
         }),
       ]);
+      const publishResult = publish.run?.id
+        ? await readPublishResultArtifact({
+            repoRoot,
+            repo,
+            runId: publish.run.id,
+            token,
+          })
+        : {
+            state: "missing",
+            detail: "publish workflow run id is unavailable",
+            payload: null,
+          };
 
       report.current.github.releaseReady = {
         state: releaseReady.state,
@@ -613,6 +786,29 @@ async function buildReport(repoRoot, args) {
         status: publish.run?.status ?? null,
         conclusion: publish.run?.conclusion ?? null,
         url: publish.run?.url ?? null,
+      };
+      report.current.github.publishResult = {
+        state: publishResult.state,
+        success:
+          publishResult.payload &&
+          typeof publishResult.payload === "object" &&
+          typeof publishResult.payload.success === "boolean"
+            ? publishResult.payload.success
+            : null,
+        reasonCode:
+          publishResult.payload &&
+          typeof publishResult.payload === "object" &&
+          typeof publishResult.payload.reasonCode === "string"
+            ? publishResult.payload.reasonCode
+            : null,
+        nextAction:
+          publishResult.payload &&
+          typeof publishResult.payload === "object" &&
+          typeof publishResult.payload.nextAction === "string"
+            ? publishResult.payload.nextAction
+            : null,
+        detail: publishResult.detail,
+        artifactName: "publish-result",
       };
 
       switch (releaseReady.state) {
@@ -688,6 +884,61 @@ async function buildReport(repoRoot, args) {
             message: `No GitHub workflow ${args.publishWorkflow} run was found for ${releaseSha}.`,
             nextAction:
               "Confirm the release SHA and inspect the Actions history before assuming publish failed.",
+          });
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+
+      switch (publishResult.state) {
+        case "available": {
+          pushFinding(report, {
+            level: report.current.github.publishResult.success === true ? "info" : "warn",
+            code:
+              report.current.github.publishResult.success === true
+                ? "release_publish_result_available"
+                : "release_publish_result_incomplete",
+            message:
+              report.current.github.publishResult.success === true
+                ? `Publish-result artifact confirms publish success for ${releaseSha}.`
+                : `Publish-result artifact reports an incomplete publish outcome for ${releaseSha} (reason=${report.current.github.publishResult.reasonCode ?? "unknown"}).`,
+            nextAction:
+              report.current.github.publishResult.nextAction ||
+              "Use the publish-result artifact as the canonical post-publish record for this SHA.",
+          });
+          break;
+        }
+        case "artifact_missing": {
+          pushFinding(report, {
+            level: "info",
+            code: "release_publish_result_missing",
+            message: `No publish-result artifact was available for ${releaseSha}; recovery is falling back to workflow-state inference.`,
+            nextAction:
+              "Inspect the publish workflow run directly if you need canonical post-publish details for this SHA.",
+          });
+          break;
+        }
+        case "gh_unavailable": {
+          pushFinding(report, {
+            level: "info",
+            code: "release_publish_result_gh_unavailable",
+            message:
+              "GitHub CLI is not installed locally, so publish-result artifact download was skipped and recovery is using workflow-state inference.",
+            nextAction:
+              "Install gh if you want release recovery to read the canonical publish-result artifact locally.",
+          });
+          break;
+        }
+        case "download_failed": {
+          pushFinding(report, {
+            level: "warn",
+            code: "release_publish_result_download_failed",
+            message: `Publish-result artifact download failed for ${releaseSha}.`,
+            nextAction:
+              report.current.github.publishResult.detail ||
+              "Inspect the publish workflow run or retry with a working gh + GitHub auth setup.",
           });
           break;
         }
@@ -790,6 +1041,7 @@ function renderText(report) {
     `GitHub release-ready run id: ${report.current.github.releaseReady.runId ?? "unknown"}`,
     `GitHub Core CI (${report.current.github.coreWorkflow}): ${formatWorkflowStatus(report.current.github.coreCi)}`,
     `GitHub Publish (${report.current.github.publishWorkflow}): ${formatWorkflowStatus(report.current.github.publish)}`,
+    `GitHub publish-result: ${report.current.github.publishResult.state}${report.current.github.publishResult.reasonCode ? ` (reason=${report.current.github.publishResult.reasonCode})` : ""}`,
     "",
     "Findings:",
   ];

@@ -1,7 +1,7 @@
 ---
 id: "202603130653-XHH0FZ"
 title: "Teach release recovery to read publish-result artifact"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -14,16 +14,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-13T07:15:45.371Z"
+  updated_by: "CODER"
+  note: "Verified publish-result-aware release recovery: release-recovery-script suite, release-critical, eslint, and prettier all pass."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: teach release recovery to read publish-result artifact contents first and only fall back to workflow-state inference when that canonical output artifact is missing."
+events:
+  -
+    type: "status"
+    at: "2026-03-13T07:00:00.064Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: teach release recovery to read publish-result artifact contents first and only fall back to workflow-state inference when that canonical output artifact is missing."
+  -
+    type: "verify"
+    at: "2026-03-13T07:15:45.371Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified publish-result-aware release recovery: release-recovery-script suite, release-critical, eslint, and prettier all pass."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:55:23.558Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-03-13T07:15:45.373Z"
+doc_updated_by: "CODER"
 description: "Consume the publish-result artifact when present so release recovery reports published outcomes from canonical data before falling back to inference."
 id_source: "generated"
 ---
@@ -53,6 +69,14 @@ Consume the publish-result artifact when present so release recovery reports pub
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-13T07:15:45.371Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified publish-result-aware release recovery: release-recovery-script suite, release-critical, eslint, and prettier all pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-13T07:00:00.065Z, excerpt_hash=sha256:40fc4055d4fbe4a602f1138814c8039a5a39c11de58003be13007cb6e59bc339
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan

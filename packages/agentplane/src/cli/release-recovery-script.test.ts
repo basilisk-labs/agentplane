@@ -67,6 +67,61 @@ async function initReleaseRepo(): Promise<string> {
   return root;
 }
 
+async function writeExecutable(root: string, relativePath: string, content: string) {
+  const target = path.join(root, relativePath);
+  await mkdir(path.dirname(target), { recursive: true });
+  await writeFile(target, `${content}\n`, { encoding: "utf8", mode: 0o755 });
+  return target;
+}
+
+async function installGhStub(root: string): Promise<string> {
+  const binDir = path.join(root, "bin");
+  await mkdir(binDir, { recursive: true });
+  await writeExecutable(
+    root,
+    "bin/gh",
+    [
+      "#!/usr/bin/env bash",
+      "set -euo pipefail",
+      'if [[ "$1" == "--version" ]]; then',
+      "  echo 'gh version test'",
+      "  exit 0",
+      "fi",
+      'if [[ "$1" != "run" || "$2" != "download" ]]; then',
+      "  echo 'unexpected gh invocation' >&2",
+      "  exit 1",
+      "fi",
+      "dest=''",
+      "for ((i=1; i<=$#; i++)); do",
+      '  if [[ "${!i}" == "--dir" ]]; then',
+      "    next=$((i+1))",
+      '    dest="${!next}"',
+      "  fi",
+      "done",
+      'if [[ -z "$dest" ]]; then',
+      "  echo 'missing --dir' >&2",
+      "  exit 1",
+      "fi",
+      'if [[ -z "${AGENTPLANE_TEST_PUBLISH_RESULT_PATH:-}" ]]; then',
+      "  echo 'missing AGENTPLANE_TEST_PUBLISH_RESULT_PATH' >&2",
+      "  exit 1",
+      "fi",
+      'mkdir -p "$dest"',
+      'cp "${AGENTPLANE_TEST_PUBLISH_RESULT_PATH}" "$dest/publish-result.json"',
+    ].join("\n"),
+  );
+  return binDir;
+}
+
+async function writePublishResultFixture(
+  root: string,
+  payload: Record<string, unknown>,
+): Promise<string> {
+  const fixturePath = path.join(root, "publish-result-fixture.json");
+  await writeFile(fixturePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  return fixturePath;
+}
+
 async function runScript(
   root: string,
   args: string[] = [],
@@ -314,8 +369,8 @@ describe("release recovery script", () => {
 
     await withGithubServer(
       (pathname, searchParams) => {
-        expect(searchParams.get("head_sha")).toBe("release-sha-123");
         if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          expect(searchParams.get("head_sha")).toBe("release-sha-123");
           return {
             body: {
               workflow_runs: [
@@ -378,6 +433,180 @@ describe("release recovery script", () => {
           payload.findings.some(
             (finding) => finding.code === "release_core_ci_failed_after_publish",
           ),
+        ).toBe(true);
+      },
+    );
+  }, 60_000);
+
+  it("reads the canonical publish-result artifact when publish succeeded", async () => {
+    const root = await initReleaseRepo();
+    const publishResultPath = await writePublishResultFixture(root, {
+      success: true,
+      reasonCode: "publish_succeeded",
+      nextAction: "Use the publish-result artifact as the canonical post-publish outcome.",
+    });
+    const binDir = await installGhStub(root);
+    await writeApplyReport(root, "release-sha-123");
+
+    await withGithubServer(
+      (pathname, searchParams) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          expect(searchParams.get("head_sha")).toBe("release-sha-123");
+          return {
+            body: {
+              workflow_runs: [
+                makeWorkflowRun({
+                  status: "completed",
+                  conclusion: "failure",
+                  url: "https://github.com/example/repo/actions/runs/ci-1",
+                }),
+              ],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/workflows/publish.yml/runs")) {
+          expect(searchParams.get("head_sha")).toBe("release-sha-123");
+          return {
+            body: {
+              workflow_runs: [
+                makeWorkflowRun({
+                  status: "completed",
+                  conclusion: "success",
+                  url: "https://github.com/example/repo/actions/runs/publish-1",
+                }),
+              ],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl) => {
+        const { stdout } = await runScript(
+          root,
+          ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
+          {
+            PATH: `${binDir}:${process.env.PATH ?? ""}`,
+            GITHUB_TOKEN: "test-token",
+            AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+            AGENTPLANE_TEST_PUBLISH_RESULT_PATH: publishResultPath,
+          },
+        );
+        const payload = JSON.parse(stdout) as {
+          summary: { state: string; likelyCause: string };
+          current: {
+            github: {
+              publishResult: { state: string; success: boolean | null; reasonCode: string | null };
+            };
+          };
+          findings: { code: string }[];
+        };
+
+        expect(payload.summary.state).toBe("release_already_published_with_red_core_ci");
+        expect(payload.summary.likelyCause).toContain(
+          "canonical publish-result artifact confirms publish success",
+        );
+        expect(payload.current.github.publishResult.state).toBe("available");
+        expect(payload.current.github.publishResult.success).toBe(true);
+        expect(payload.current.github.publishResult.reasonCode).toBe("publish_succeeded");
+        expect(
+          payload.findings.some((finding) => finding.code === "release_publish_result_available"),
+        ).toBe(true);
+      },
+    );
+  }, 60_000);
+
+  it("prefers an incomplete publish-result artifact over workflow-state success inference", async () => {
+    const root = await initReleaseRepo();
+    const publishResultPath = await writePublishResultFixture(root, {
+      success: false,
+      reasonCode: "publish_incomplete",
+      nextAction: "Inspect the publish-result artifact before retrying recovery.",
+    });
+    const binDir = await installGhStub(root);
+    await writeApplyReport(root, "release-sha-123");
+
+    await withGithubServer(
+      (pathname, searchParams) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          expect(searchParams.get("head_sha")).toBe("release-sha-123");
+          return {
+            body: {
+              workflow_runs: [
+                makeWorkflowRun({
+                  status: "completed",
+                  conclusion: "success",
+                  url: "https://github.com/example/repo/actions/runs/ci-1",
+                }),
+              ],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/runs/123/artifacts")) {
+          return {
+            body: {
+              artifacts: [
+                {
+                  id: 321,
+                  name: "release-ready",
+                  size_in_bytes: 256,
+                  expired: false,
+                  created_at: "2026-03-13T00:00:00Z",
+                  archive_download_url:
+                    "https://api.github.com/repos/example/repo/actions/artifacts/321/zip",
+                },
+              ],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/workflows/publish.yml/runs")) {
+          expect(searchParams.get("head_sha")).toBe("release-sha-123");
+          return {
+            body: {
+              workflow_runs: [
+                makeWorkflowRun({
+                  status: "completed",
+                  conclusion: "success",
+                  url: "https://github.com/example/repo/actions/runs/publish-1",
+                }),
+              ],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl) => {
+        const { stdout } = await runScript(
+          root,
+          ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
+          {
+            PATH: `${binDir}:${process.env.PATH ?? ""}`,
+            GITHUB_TOKEN: "test-token",
+            AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+            AGENTPLANE_TEST_PUBLISH_RESULT_PATH: publishResultPath,
+          },
+        );
+        const payload = JSON.parse(stdout) as {
+          summary: { state: string; likelyCause: string; nextAction: string };
+          current: {
+            github: {
+              publish: { state: string };
+              publishResult: { state: string; success: boolean | null; reasonCode: string | null };
+            };
+          };
+          findings: { code: string }[];
+        };
+
+        expect(payload.current.github.publish.state).toBe("success");
+        expect(payload.current.github.publishResult.state).toBe("available");
+        expect(payload.current.github.publishResult.success).toBe(false);
+        expect(payload.current.github.publishResult.reasonCode).toBe("publish_incomplete");
+        expect(payload.summary.state).toBe("release_publish_workflow_failed");
+        expect(payload.summary.likelyCause).toContain(
+          "canonical publish-result artifact reports an incomplete publish outcome",
+        );
+        expect(payload.summary.nextAction).toContain("publish-result artifact");
+        expect(
+          payload.findings.some((finding) => finding.code === "release_publish_result_incomplete"),
         ).toBe(true);
       },
     );
