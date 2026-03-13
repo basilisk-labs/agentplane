@@ -28,6 +28,7 @@ type CachedTask = {
   readmePath: string;
   mtimeMs: number;
   parsed: ParsedTaskReadme;
+  rawText: string;
 };
 
 type TaskComment = NonNullable<TaskData["comments"]>[number];
@@ -65,12 +66,24 @@ export type TaskStorePatch = {
   };
 };
 
+export type TaskStoreMutationOptions = {
+  expectedRevision?: number;
+};
+
 function taskReadmePath(ctx: CommandContext, taskId: string): string {
   return path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir, taskId, "README.md");
 }
 
 function normalizeTaskDocVersion(value: unknown, fallback: 2 | 3 = 2): 2 | 3 {
   return value === 3 ? 3 : value === 2 ? 2 : fallback;
+}
+
+function normalizeTaskRevision(value: unknown, fallback = 1): number {
+  return Number.isInteger(value) && Number(value) > 0 ? Number(value) : fallback;
+}
+
+function readStoredTaskRevision(value: unknown): number | null {
+  return Number.isInteger(value) && Number(value) > 0 ? Number(value) : null;
 }
 
 function normalizeDocComparison(text: string | null | undefined): string {
@@ -156,6 +169,26 @@ function throwTaskDocConflict(opts: { taskId: string }): never {
   });
 }
 
+function throwTaskRevisionConflict(opts: {
+  taskId: string;
+  expectedRevision: number;
+  currentRevision: number;
+}): never {
+  throw new CliError({
+    exitCode: exitCodeForError("E_VALIDATION"),
+    code: "E_VALIDATION",
+    message:
+      `Task revision changed concurrently: ${opts.taskId} ` +
+      `(expected revision ${opts.expectedRevision}, current revision ${opts.currentRevision})`,
+    context: {
+      task_id: opts.taskId,
+      expected_revision: opts.expectedRevision,
+      current_revision: opts.currentRevision,
+      reason_code: "task_revision_conflict",
+    },
+  });
+}
+
 function applyTaskDocPatch(opts: {
   taskId: string;
   currentDocRaw: string;
@@ -217,7 +250,7 @@ async function readTaskReadmeCached(opts: {
     body: parsed.body,
     readmePath,
   });
-  return { task, readmePath, mtimeMs: st.mtimeMs, parsed };
+  return { task, readmePath, mtimeMs: st.mtimeMs, parsed, rawText: text };
 }
 
 async function ensureUnchangedOnDisk(opts: {
@@ -286,8 +319,9 @@ export class TaskStore {
   async update(
     taskId: string,
     updater: (current: TaskData) => Promise<TaskData> | TaskData,
+    opts: TaskStoreMutationOptions = {},
   ): Promise<{ changed: boolean; task: TaskData }> {
-    return await this.runWithRetry(taskId, async (entry) => {
+    return await this.runWithRetry(taskId, opts, async (entry) => {
       return await updater({ ...entry.task });
     });
   }
@@ -297,8 +331,9 @@ export class TaskStore {
     builder: (
       current: TaskData,
     ) => Promise<TaskStorePatch | null | undefined> | TaskStorePatch | null | undefined,
+    opts: TaskStoreMutationOptions = {},
   ): Promise<{ changed: boolean; task: TaskData }> {
-    return await this.runWithRetry(taskId, async (entry) => {
+    return await this.runWithRetry(taskId, opts, async (entry) => {
       const patch = await builder({ ...entry.task });
       if (!patch) return { ...entry.task };
 
@@ -336,10 +371,18 @@ export class TaskStore {
 
   private async runWithRetry(
     taskId: string,
+    opts: TaskStoreMutationOptions,
     computeNext: (entry: CachedTask) => Promise<TaskData> | TaskData,
   ): Promise<{ changed: boolean; task: TaskData }> {
     for (let attempt = 0; attempt < 2; attempt++) {
       const entry = await this.getCached(taskId);
+      if (opts.expectedRevision !== undefined) {
+        const expectedRevision = normalizeTaskRevision(opts.expectedRevision);
+        const currentRevision = normalizeTaskRevision(entry.task.revision);
+        if (currentRevision !== expectedRevision) {
+          throwTaskRevisionConflict({ taskId, expectedRevision, currentRevision });
+        }
+      }
       let next: TaskData;
       try {
         next = await computeNext(entry);
@@ -413,13 +456,21 @@ export class TaskStore {
       frontmatter.doc_updated_by = resolveDocUpdatedBy(next);
     }
 
-    const rendered = renderTaskReadme(frontmatter, body);
+    const storedRevision = readStoredTaskRevision(entry.parsed.frontmatter.revision);
+    frontmatter.revision = storedRevision ?? 1;
+    let nextText = renderTaskReadme(frontmatter, body);
+    nextText = nextText.endsWith("\n") ? nextText : `${nextText}\n`;
+    if (storedRevision !== null && nextText !== entry.rawText) {
+      frontmatter.revision = storedRevision + 1;
+      nextText = renderTaskReadme(frontmatter, body);
+      nextText = nextText.endsWith("\n") ? nextText : `${nextText}\n`;
+    }
+
     await ensureUnchangedOnDisk({
       readmePath: entry.readmePath,
       expectedMtimeMs: entry.mtimeMs,
     });
 
-    const nextText = rendered.endsWith("\n") ? rendered : `${rendered}\n`;
     const changed = await writeTextIfChanged(entry.readmePath, nextText);
 
     // Refresh cache with latest content on disk.

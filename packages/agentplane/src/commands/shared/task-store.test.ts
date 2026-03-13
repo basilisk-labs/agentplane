@@ -270,6 +270,208 @@ describe("commands/shared/TaskStore", () => {
     expect(final).toContain("legacy summary");
   });
 
+  it("increments revision on successful task-store writes once a task already has canonical revision", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-REV1";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "before",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          revision: 1,
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-02-07T00:00:00Z",
+          doc_updated_by: "CODER",
+          description: "",
+          sections: {
+            Summary: "summary",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nsummary\n",
+      ),
+      "utf8",
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+    const result = await store.update(taskId, (current) => ({ ...current, status: "DOING" }));
+
+    expect(result.changed).toBe(true);
+    expect(result.task.revision).toBe(2);
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain("revision: 2");
+  });
+
+  it("rejects stale expectedRevision on update with explicit conflict context", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-RCON";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "before",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          revision: 2,
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-02-07T00:00:00Z",
+          doc_updated_by: "CODER",
+          description: "",
+          sections: {
+            Summary: "summary",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nsummary\n",
+      ),
+      "utf8",
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+    await expect(
+      store.update(taskId, (current) => ({ ...current, status: "DOING" }), { expectedRevision: 1 }),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "task_revision_conflict",
+        expected_revision: 1,
+        current_revision: 2,
+      },
+    });
+  });
+
+  it("rejects stale expectedRevision on semantic patch writes", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-RPAT";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Task",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          revision: 2,
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-02-07T00:00:00Z",
+          doc_updated_by: "CODER",
+          description: "",
+          sections: {
+            Summary: "before",
+            Plan: "plan",
+          },
+        },
+        ["## Summary", "before", "", "## Plan", "plan", ""].join("\n"),
+      ),
+      "utf8",
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+    await expect(
+      store.patch(
+        taskId,
+        () => ({
+          doc: {
+            kind: "set-section",
+            section: "Summary",
+            text: "my update",
+            requiredSections: ["Summary", "Plan"],
+          },
+          docMeta: { touch: true, updatedBy: "CODER", version: 3 },
+        }),
+        { expectedRevision: 1 },
+      ),
+    ).rejects.toMatchObject({
+      code: "E_VALIDATION",
+      context: {
+        reason_code: "task_revision_conflict",
+        expected_revision: 1,
+        current_revision: 2,
+      },
+    });
+  });
+
+  it("keeps revision stable for no-op semantic patches", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-RNOP";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "Task",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          revision: 2,
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          commit: null,
+          comments: [],
+          events: [],
+          doc_version: 3,
+          doc_updated_at: "2026-02-07T00:00:00Z",
+          doc_updated_by: "CODER",
+          description: "",
+          sections: {
+            Summary: "before",
+            Findings: "",
+          },
+        },
+        ["## Summary", "", "before", "", "## Findings", ""].join("\n"),
+      ) + "\n",
+      "utf8",
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+    const result = await store.patch(taskId, () => null, { expectedRevision: 2 });
+
+    expect(result.changed).toBe(false);
+    expect(result.task.revision).toBe(2);
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain("revision: 2");
+  });
+
   it("regenerates stale task body from canonical sections during metadata-only task-store writes", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
     const taskId = "202602070000-PROJ";
