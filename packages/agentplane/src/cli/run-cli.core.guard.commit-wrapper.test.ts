@@ -169,6 +169,40 @@ describe("runCli", () => {
     expect(stdout.trim()).toBe("✨ ABCDEF commit: auto stage active task artifact");
   });
 
+  it("commit wrapper auto-stages CI-only changes with --allow-ci even without explicit --allow", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    await configureGitUser(root);
+    await mkdir(path.join(root, ".github", "workflows"), { recursive: true });
+    await writeFile(
+      path.join(root, ".github", "workflows", "publish.yml"),
+      "name: publish\n",
+      "utf8",
+    );
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF commit: auto stage ci artifact",
+        "--allow-ci",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("commit auto-staged 1 path(s) from allowlist");
+      expect(io.stdout).toContain("staged=.github/workflows/publish.yml");
+    } finally {
+      io.restore();
+    }
+
+    const execFileAsync = promisify(execFile);
+    const { stdout } = await execFileAsync("git", ["log", "-1", "--pretty=%s"], { cwd: root });
+    expect(stdout.trim()).toBe("✨ ABCDEF commit: auto stage ci artifact");
+  });
+
   it("commit wrapper blocks AGENTS.md without allow-policy", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

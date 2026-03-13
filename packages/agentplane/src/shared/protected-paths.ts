@@ -31,6 +31,45 @@ export function taskArtifactPrefixes(opts: {
   return [...out].toSorted((a, b) => a.localeCompare(b));
 }
 
+const POLICY_PATH_PREFIXES = [
+  "AGENTS.md",
+  "CLAUDE.md",
+  "packages/agentplane/assets/AGENTS.md",
+  ".agentplane/agents",
+] as const;
+const CONFIG_PATH_PREFIXES = [".agentplane/config.json", ".agentplane/backends"] as const;
+const HOOK_PATH_PREFIXES = ["lefthook.yml"] as const;
+const CI_PATH_PREFIXES = [".github/workflows", ".github/actions"] as const;
+
+export function protectedPathAllowPrefixes(opts: {
+  tasksPath: string;
+  workflowDir?: string;
+  taskId?: string;
+  allowTasks?: boolean;
+  allowPolicy?: boolean;
+  allowConfig?: boolean;
+  allowHooks?: boolean;
+  allowCI?: boolean;
+}): string[] {
+  const out = new Set<string>();
+  if (opts.allowTasks) {
+    for (const prefix of taskArtifactPrefixes(opts)) out.add(prefix);
+  }
+  if (opts.allowPolicy) {
+    for (const prefix of POLICY_PATH_PREFIXES) out.add(prefix);
+  }
+  if (opts.allowConfig) {
+    for (const prefix of CONFIG_PATH_PREFIXES) out.add(prefix);
+  }
+  if (opts.allowHooks) {
+    for (const prefix of HOOK_PATH_PREFIXES) out.add(prefix);
+  }
+  if (opts.allowCI) {
+    for (const prefix of CI_PATH_PREFIXES) out.add(prefix);
+  }
+  return [...out].toSorted((a, b) => a.localeCompare(b));
+}
+
 export function getProtectedPathOverride(kind: ProtectedPathKind): ProtectedPathOverride {
   switch (kind) {
     case "tasks": {

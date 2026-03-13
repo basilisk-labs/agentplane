@@ -114,6 +114,16 @@ describe("policy/evaluatePolicy", () => {
     expect(res.ok).toBe(true);
   });
 
+  it("allows CI-only commit scope when --allow-ci is set without explicit prefixes", () => {
+    const res = evaluatePolicy(
+      makeCtx({
+        git: { stagedPaths: [".github/workflows/publish.yml"] },
+        allow: { prefixes: [], allowCI: true },
+      }),
+    );
+    expect(res.ok).toBe(true);
+  });
+
   it("does not silently allow unrelated task README files", () => {
     const taskId = "202602071329-TEST01";
     const otherTaskId = "202602071329-OTHER1";

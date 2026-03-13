@@ -3,7 +3,10 @@ import { resolveProject } from "@agentplaneorg/core";
 import { exitCodeForError } from "../../../cli/exit-codes.js";
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../../shared/git-path.js";
 import { CliError } from "../../../shared/errors.js";
-import { taskArtifactPrefixes } from "../../../shared/protected-paths.js";
+import {
+  protectedPathAllowPrefixes,
+  taskArtifactPrefixes,
+} from "../../../shared/protected-paths.js";
 import { GitContext } from "../../shared/git-context.js";
 import { loadCommandContext, type CommandContext } from "../../shared/task-backend.js";
 
@@ -83,6 +86,10 @@ export async function stageAllowlist(opts: {
   ctx: CommandContext;
   allow: string[];
   allowTasks: boolean;
+  allowPolicy?: boolean;
+  allowConfig?: boolean;
+  allowHooks?: boolean;
+  allowCI?: boolean;
   tasksPath: string;
   workflowDir?: string;
   taskId?: string;
@@ -113,8 +120,21 @@ export async function stageAllowlist(opts: {
     workflowDir: opts.workflowDir,
     taskId: opts.taskId,
   });
-  const effectiveAllow = normalizeAllowPrefixes(opts.allowTasks ? [...allow, ...taskAllow] : allow);
-  if (effectiveAllow.length === 0 || (allow.length === 0 && opts.allowTaskOnly !== true)) {
+  const protectedAllow = protectedPathAllowPrefixes({
+    tasksPath: opts.tasksPath,
+    workflowDir: opts.workflowDir,
+    taskId: opts.taskId,
+    allowTasks: opts.allowTasks,
+    allowPolicy: opts.allowPolicy,
+    allowConfig: opts.allowConfig,
+    allowHooks: opts.allowHooks,
+    allowCI: opts.allowCI,
+  });
+  const effectiveAllow = normalizeAllowPrefixes([...allow, ...protectedAllow]);
+  if (
+    effectiveAllow.length === 0 ||
+    (allow.length === 0 && protectedAllow.length === 0 && opts.allowTaskOnly !== true)
+  ) {
     throw new CliError({
       exitCode: 2,
       code: "E_USAGE",

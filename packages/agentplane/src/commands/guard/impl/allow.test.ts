@@ -252,4 +252,29 @@ describe("guard/impl/allow", () => {
     expect(staged).toEqual([".agentplane/tasks/202601010101-ABCDEF/README.md"]);
     expect(ctx.git.stage).toHaveBeenCalledWith([".agentplane/tasks/202601010101-ABCDEF/README.md"]);
   });
+
+  it("stageAllowlist can admit CI-only changes when allowCI=true", async () => {
+    const { stageAllowlist } = await import("./allow.js");
+    const ctx = {
+      git: {
+        statusChangedPaths: vi
+          .fn()
+          .mockResolvedValue([".github/workflows/publish.yml", "src/app.ts"]),
+        stage: vi.fn().mockResolvedValue(),
+      },
+    };
+
+    const staged = await stageAllowlist({
+      ctx: ctx as never,
+      allow: [],
+      allowTasks: false,
+      allowCI: true,
+      tasksPath: ".agentplane/tasks.json",
+      workflowDir: ".agentplane/tasks",
+      taskId: "202601010101-ABCDEF",
+    });
+
+    expect(staged).toEqual([".github/workflows/publish.yml"]);
+    expect(ctx.git.stage).toHaveBeenCalledWith([".github/workflows/publish.yml"]);
+  });
 });

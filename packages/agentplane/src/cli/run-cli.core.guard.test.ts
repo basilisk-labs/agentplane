@@ -345,6 +345,36 @@ describe("runCli", () => {
     }
   });
 
+  it("guard commit allows CI-only scope with --allow-ci and no explicit --allow", async () => {
+    const root = await mkGitRepoRoot();
+    await mkdir(path.join(root, ".github", "workflows"), { recursive: true });
+    await writeFile(
+      path.join(root, ".github", "workflows", "publish.yml"),
+      "name: publish\n",
+      "utf8",
+    );
+    const execFileAsync = promisify(execFile);
+    await execFileAsync("git", ["add", ".github/workflows/publish.yml"], { cwd: root });
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli([
+        "guard",
+        "commit",
+        "202601010101-ABCDEF",
+        "-m",
+        "✨ ABCDEF guard: allow ci-only scope",
+        "--allow-ci",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      expect(io.stdout.trim()).toBe("OK");
+    } finally {
+      io.restore();
+    }
+  });
+
   it("guard commit fails when AGENTS.md is staged without allow-policy", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "AGENTS.md"), "# policy\n", "utf8");

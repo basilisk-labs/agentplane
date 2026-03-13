@@ -1,5 +1,5 @@
 import { gitPathIsUnderPrefix, normalizeGitPathPrefix } from "../../shared/git-path.js";
-import { taskArtifactPrefixes } from "../../shared/protected-paths.js";
+import { protectedPathAllowPrefixes } from "../../shared/protected-paths.js";
 
 import { gitError, okResult } from "../result.js";
 import type { PolicyContext, PolicyResult } from "../types.js";
@@ -8,15 +8,17 @@ export function allowlistRule(ctx: PolicyContext): PolicyResult {
   const allowRaw = ctx.allow?.prefixes ?? [];
   const staged = ctx.git.stagedPaths ?? [];
   const allow = allowRaw.map((p) => normalizeGitPathPrefix(p));
-  const taskAllow =
-    ctx.allow?.allowTasks === true
-      ? taskArtifactPrefixes({
-          tasksPath: ctx.config.paths.tasks_path,
-          workflowDir: ctx.config.paths.workflow_dir,
-          taskId: ctx.taskId,
-        })
-      : [];
-  const effectiveAllow = [...new Set([...allow, ...taskAllow])];
+  const protectedAllow = protectedPathAllowPrefixes({
+    tasksPath: ctx.config.paths.tasks_path,
+    workflowDir: ctx.config.paths.workflow_dir,
+    taskId: ctx.taskId,
+    allowTasks: ctx.allow?.allowTasks === true,
+    allowPolicy: ctx.allow?.allowPolicy === true,
+    allowConfig: ctx.allow?.allowConfig === true,
+    allowHooks: ctx.allow?.allowHooks === true,
+    allowCI: ctx.allow?.allowCI === true,
+  });
+  const effectiveAllow = [...new Set([...allow, ...protectedAllow])];
 
   if (staged.length === 0) {
     return { ok: false, errors: [gitError("No staged files (git index empty)")], warnings: [] };

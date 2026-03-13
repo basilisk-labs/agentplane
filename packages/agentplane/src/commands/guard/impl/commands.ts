@@ -160,8 +160,22 @@ function commitFailureDiagnostic(
   };
 }
 
-function hasExplicitCommitScope(opts: { allow: string[]; allowTasks: boolean }): boolean {
-  return opts.allow.some((prefix) => prefix.trim().length > 0) || opts.allowTasks;
+function hasExplicitCommitScope(opts: {
+  allow: string[];
+  allowTasks: boolean;
+  allowPolicy: boolean;
+  allowConfig: boolean;
+  allowHooks: boolean;
+  allowCI: boolean;
+}): boolean {
+  return (
+    opts.allow.some((prefix) => prefix.trim().length > 0) ||
+    opts.allowTasks ||
+    opts.allowPolicy ||
+    opts.allowConfig ||
+    opts.allowHooks ||
+    opts.allowCI
+  );
 }
 
 function asCommitFailure(err: unknown, phase: CommitFailurePhase): CliError | null {
@@ -423,6 +437,10 @@ export async function cmdCommit(opts: {
         ctx,
         allow: opts.allow,
         allowTasks: opts.allowTasks,
+        allowPolicy: opts.allowPolicy,
+        allowConfig: opts.allowConfig,
+        allowHooks: opts.allowHooks,
+        allowCI: opts.allowCI,
         tasksPath: ctx.config.paths.tasks_path,
         workflowDir: ctx.config.paths.workflow_dir,
         taskId: opts.taskId,
@@ -430,7 +448,7 @@ export async function cmdCommit(opts: {
         emptyAllowMessage:
           "No staged files and no commit allowlist. Pass --allow <path-prefix>, use --allow-tasks for active task artifacts, or stage files manually.",
         noMatchMessage:
-          "No changed files matched the commit allowlist (adjust --allow / --allow-tasks or stage files manually).",
+          "No changed files matched the commit allowlist (adjust --allow, protected allow flags, or --allow-tasks; otherwise stage files manually).",
       });
       if (!opts.quiet) {
         process.stdout.write(

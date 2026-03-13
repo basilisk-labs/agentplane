@@ -532,6 +532,50 @@ describe("guard/impl/commands", () => {
     }
   });
 
+  it("cmdCommit non-close auto-stages CI changes when --allow-ci provides the scope", async () => {
+    const { cmdCommit } = await import("./commands.js");
+    const ctx = mkCtx();
+    ctx.git.statusStagedPaths.mockResolvedValue([]);
+    ctx.git.statusChangedPaths.mockResolvedValue([
+      ".github/workflows/publish.yml",
+      "docs/releases/v0.3.6.md",
+    ]);
+    mocks.buildGitCommitEnv.mockReturnValue({ AGENTPLANE_TASK_ID: "T-CI" });
+
+    const rc = await cmdCommit({
+      ctx: ctx as never,
+      cwd: "/repo",
+      taskId: "T-CI",
+      message: "✅ ABC123 task: message",
+      close: false,
+      allow: [],
+      autoAllow: false,
+      allowTasks: false,
+      allowBase: false,
+      allowPolicy: false,
+      allowConfig: false,
+      allowHooks: false,
+      allowCI: true,
+      requireClean: false,
+      quiet: true,
+      closeUnstageOthers: false,
+      closeCheckOnly: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(ctx.git.stage).toHaveBeenCalledWith([".github/workflows/publish.yml"]);
+    expect(mocks.guardCommitCheck).toHaveBeenCalledWith(
+      expect.objectContaining({
+        allow: [],
+        allowCI: true,
+      }),
+    );
+    expect(ctx.git.commit).toHaveBeenCalledWith({
+      message: "✅ ABC123 task: message",
+      env: { AGENTPLANE_TASK_ID: "T-CI" },
+    });
+  });
+
   it("cmdCommit maps unknown errors via mapCoreError when not git-commit shaped", async () => {
     const { cmdCommit } = await import("./commands.js");
     const ctx = mkCtx();
