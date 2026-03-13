@@ -1,7 +1,8 @@
 ---
 id: "202603131032-299AMX"
 title: "Fix Verify Steps plan-approve race"
-status: "DOING"
+result_summary: "Local plan approval now validates against the current README state instead of a stale pre-patch snapshot; Verify Steps doc writes are covered by CLI regression and live sequential check."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T10:41:36.978Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 37/37 tests passed. Scope: TaskStore retry, plan approve stale-read path, Verify Steps doc write CLI contract. Command: ./node_modules/.bin/eslint packages/agentplane/src/commands/shared/task-store.ts packages/agentplane/src/commands/task/plan.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts; Result: pass; Evidence: no lint errors. Scope: touched runtime and test files. Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; Result: pass; Evidence: both builds exited 0. Scope: repo-local CLI runtime build surfaces."
-commit: null
+commit:
+  hash: "1d739aa178415fa11c6fb175db5acc144130c2b2"
+  message: "🩹 299AMX task: fix Verify Steps approval race"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the Verify Steps approval race, add regression coverage, and fix the minimal stale-read path if it is real."
+  -
+    author: "CODER"
+    body: "Verified: fixed stale Verify Steps approval gate, added TaskStore retry coverage, and confirmed Verify Steps doc writes sequentially."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 37/37 tests passed. Scope: TaskStore retry, plan approve stale-read path, Verify Steps doc write CLI contract. Command: ./node_modules/.bin/eslint packages/agentplane/src/commands/shared/task-store.ts packages/agentplane/src/commands/task/plan.ts packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts; Result: pass; Evidence: no lint errors. Scope: touched runtime and test files. Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; Result: pass; Evidence: both builds exited 0. Scope: repo-local CLI runtime build surfaces."
+  -
+    type: "status"
+    at: "2026-03-13T10:42:43.334Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: fixed stale Verify Steps approval gate, added TaskStore retry coverage, and confirmed Verify Steps doc writes sequentially."
 doc_version: 3
-doc_updated_at: "2026-03-13T10:41:36.980Z"
+doc_updated_at: "2026-03-13T10:42:43.336Z"
 doc_updated_by: "CODER"
 description: "Find and fix intermittent false failure where task plan approve reports missing Verify Steps after task doc set, and verify task doc set behavior for Verify Steps."
 id_source: "generated"
