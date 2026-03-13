@@ -99,6 +99,30 @@ export function selectLatestRun(runs) {
   );
 }
 
+export function classifyWorkflowState(run) {
+  if (!run) return "missing";
+  if (run.status === "completed") {
+    return run.conclusion === "success" ? "success" : "completed_not_success";
+  }
+  const status = typeof run.status === "string" ? run.status.trim() : "";
+  return status || "missing";
+}
+
+export async function readLatestWorkflowStatus({ apiBase, repo, workflow, headSha, token }) {
+  const runs = await listWorkflowRuns({
+    apiBase,
+    repo,
+    workflow,
+    headSha,
+    token,
+  });
+  const latestRun = selectLatestRun(runs);
+  return {
+    state: classifyWorkflowState(latestRun),
+    run: latestRun,
+  };
+}
+
 export async function waitForWorkflowConclusion({
   apiBase,
   repo,
@@ -112,19 +136,18 @@ export async function waitForWorkflowConclusion({
   let lastRun = null;
 
   while (Date.now() <= deadline) {
-    const runs = await listWorkflowRuns({
+    const { state, run: latestRun } = await readLatestWorkflowStatus({
       apiBase,
       repo,
       workflow,
       headSha,
       token,
     });
-    const latestRun = selectLatestRun(runs);
     lastRun = latestRun ?? lastRun;
 
-    if (latestRun && latestRun.status === "completed") {
+    if (state === "success" || state === "completed_not_success") {
       return {
-        state: latestRun.conclusion === "success" ? "success" : "completed_not_success",
+        state,
         run: latestRun,
       };
     }

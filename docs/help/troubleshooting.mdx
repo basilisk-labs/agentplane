@@ -105,6 +105,8 @@ agentplane runtime explain
 - What to do:
 - Run `bun run release:prepublish`.
 - Run `bun run release:recover` to classify tag/version/notes drift before retrying.
+- If GitHub shows mixed workflow results, run `bun run release:recover -- --check-github` to see
+  whether publish already succeeded and only a sibling `Core CI` run failed.
 - If npm history may already contain the target version, run `bun run release:recover -- --check-registry`.
 - Fix reported errors first, then run `agentplane release apply --push` again.
 

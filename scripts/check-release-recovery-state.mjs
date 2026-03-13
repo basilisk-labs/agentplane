@@ -3,6 +3,13 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
+import {
+  readLatestWorkflowStatus,
+  resolveGithubApiBase,
+  resolveGithubRepo,
+  resolveGithubToken,
+} from "./lib/github-actions-workflow-status.mjs";
+
 const execFileAsync = promisify(execFile);
 
 function usage() {
@@ -16,6 +23,11 @@ function usage() {
     "  --plan <path>          Use a specific release plan directory",
     "  --remote <name>        Git remote to inspect for release tag state (default: origin)",
     "  --check-registry       Run the npm version availability check for the target version",
+    "  --check-github         Inspect GitHub workflow state for the release SHA",
+    "  --github-repo <slug>   GitHub repository slug (default: $GITHUB_REPOSITORY)",
+    "  --github-sha <sha>     Override the release SHA used for GitHub workflow inspection",
+    "  --core-workflow <id>   Core CI workflow file or ID (default: ci.yml)",
+    "  --publish-workflow <id> Publish workflow file or ID (default: publish.yml)",
     "  --json                 Emit a machine-readable report",
     "  --help, -h            Show this help text",
   ].join("\n");
@@ -26,6 +38,11 @@ function parseArgs(argv) {
     plan: null,
     remote: "origin",
     checkRegistry: false,
+    checkGithub: false,
+    githubRepo: process.env.GITHUB_REPOSITORY ?? null,
+    githubSha: null,
+    coreWorkflow: "ci.yml",
+    publishWorkflow: "publish.yml",
     json: false,
     help: false,
   };
@@ -44,6 +61,30 @@ function parseArgs(argv) {
     }
     if (arg === "--check-registry") {
       out.checkRegistry = true;
+      continue;
+    }
+    if (arg === "--check-github") {
+      out.checkGithub = true;
+      continue;
+    }
+    if (arg === "--github-repo") {
+      out.githubRepo = argv[index + 1] ?? out.githubRepo;
+      index += 1;
+      continue;
+    }
+    if (arg === "--github-sha") {
+      out.githubSha = argv[index + 1] ?? out.githubSha;
+      index += 1;
+      continue;
+    }
+    if (arg === "--core-workflow") {
+      out.coreWorkflow = argv[index + 1] ?? out.coreWorkflow;
+      index += 1;
+      continue;
+    }
+    if (arg === "--publish-workflow") {
+      out.publishWorkflow = argv[index + 1] ?? out.publishWorkflow;
+      index += 1;
       continue;
     }
     if (arg === "--json") {
@@ -164,7 +205,62 @@ function pushFinding(report, finding) {
   report.findings.push(finding);
 }
 
+async function readLatestApplyReport(repoRoot) {
+  const latestPath = path.join(repoRoot, ".agentplane", ".release", "apply", "latest.json");
+  if (!(await fileExists(latestPath))) return null;
+
+  const raw = await readJson(latestPath);
+  if (!raw || typeof raw !== "object") return null;
+  return {
+    path: latestPath,
+    planDir: typeof raw.plan_dir === "string" ? raw.plan_dir : "",
+    nextTag: typeof raw.next_tag === "string" ? raw.next_tag : "",
+    nextVersion: typeof raw.next_version === "string" ? raw.next_version : "",
+    commitHash:
+      raw.commit && typeof raw.commit === "object" && typeof raw.commit.hash === "string"
+        ? raw.commit.hash.trim()
+        : "",
+  };
+}
+
 function deriveRecoverySummary(report, args) {
+  if (
+    report.current.github.checked &&
+    report.current.github.publish.state === "success" &&
+    report.current.github.coreCi.state === "completed_not_success"
+  ) {
+    return {
+      state: "release_already_published_with_red_core_ci",
+      likelyCause:
+        "the GitHub publish workflow already succeeded for the release SHA, but sibling Core CI completed red on the same commit",
+      nextAction:
+        "Do not rerun publish for this version. Fix the failing Core CI issue on a follow-up commit, then use workflow_dispatch publish only if a newer recovery SHA still needs publication.",
+    };
+  }
+
+  if (report.current.github.checked && report.current.github.publish.state === "success") {
+    return {
+      state: "release_publish_already_succeeded",
+      likelyCause:
+        "the GitHub publish workflow already completed successfully for the release SHA, so this is not an unpublished-release state",
+      nextAction:
+        "Do not rerun publish unless registry checks prove the target version is still missing from npm.",
+    };
+  }
+
+  if (
+    report.current.github.checked &&
+    report.current.github.publish.state === "completed_not_success"
+  ) {
+    return {
+      state: "release_publish_workflow_failed",
+      likelyCause:
+        "the GitHub publish workflow for the release SHA completed without success, so release recovery should inspect that workflow directly",
+      nextAction:
+        "Inspect the failed publish workflow run, fix the blocking issue, and retry publish only after Core CI is green for the intended recovery SHA.",
+    };
+  }
+
   if (report.current.registry.checked && report.current.registry.status === "blocked") {
     return {
       state: "release_npm_version_burned",
@@ -273,10 +369,22 @@ async function buildReport(repoRoot, args) {
     "--verify",
     `refs/tags/${plan.nextTag}`,
   ]);
+  const localTagCommit = localTag.ok
+    ? await gitProbe(repoRoot, ["rev-list", "-n", "1", `refs/tags/${plan.nextTag}`])
+    : { ok: false, stdout: "", stderr: "local tag is missing" };
   const remoteExists = await gitProbe(repoRoot, ["remote", "get-url", args.remote]);
   const remoteTag = remoteExists.ok
     ? await gitProbe(repoRoot, ["ls-remote", "--tags", args.remote, `refs/tags/${plan.nextTag}`])
     : { ok: false, stdout: "", stderr: "remote is not configured" };
+  const applyReport = await readLatestApplyReport(repoRoot);
+  const applyMatchesPlan =
+    Boolean(applyReport) &&
+    applyReport.nextTag === plan.nextTag &&
+    applyReport.nextVersion === plan.nextVersion;
+  const githubSha =
+    (typeof args.githubSha === "string" ? args.githubSha.trim() : "") ||
+    (applyMatchesPlan ? (applyReport?.commitHash ?? "") : "") ||
+    (localTagCommit.ok ? localTagCommit.stdout.trim() : "");
 
   const report = {
     repoRoot,
@@ -295,15 +403,41 @@ async function buildReport(repoRoot, args) {
       notesPath,
       notesPresent: await fileExists(notesPath),
       localTagPresent: localTag.ok,
+      localTagCommit: localTagCommit.ok ? localTagCommit.stdout.trim() : null,
       remote: {
         name: args.remote,
         configured: remoteExists.ok,
         tagPresent: remoteExists.ok ? remoteTag.stdout.length > 0 : false,
       },
+      apply: {
+        present: Boolean(applyReport),
+        path: applyReport ? path.relative(repoRoot, applyReport.path) : null,
+        matchesPlan: applyMatchesPlan,
+        commitHash: applyReport?.commitHash || null,
+      },
       registry: {
         checked: false,
         status: "skipped",
         detail: "registry check was not requested",
+      },
+      github: {
+        checked: false,
+        repo: typeof args.githubRepo === "string" ? args.githubRepo.trim() || null : null,
+        releaseSha: githubSha || null,
+        coreWorkflow: args.coreWorkflow,
+        publishWorkflow: args.publishWorkflow,
+        coreCi: {
+          state: "skipped",
+          status: null,
+          conclusion: null,
+          url: null,
+        },
+        publish: {
+          state: "skipped",
+          status: null,
+          conclusion: null,
+          url: null,
+        },
       },
     },
     findings: [],
@@ -394,6 +528,125 @@ async function buildReport(repoRoot, args) {
     });
   }
 
+  if (args.checkGithub) {
+    const repo = resolveGithubRepo(args.githubRepo);
+    const token = resolveGithubToken();
+    const apiBase = resolveGithubApiBase();
+    const releaseSha = report.current.github.releaseSha;
+    report.current.github.checked = true;
+    report.current.github.repo = repo;
+
+    if (releaseSha) {
+      const [coreCi, publish] = await Promise.all([
+        readLatestWorkflowStatus({
+          apiBase,
+          repo,
+          workflow: args.coreWorkflow,
+          headSha: releaseSha,
+          token,
+        }),
+        readLatestWorkflowStatus({
+          apiBase,
+          repo,
+          workflow: args.publishWorkflow,
+          headSha: releaseSha,
+          token,
+        }),
+      ]);
+
+      report.current.github.coreCi = {
+        state: coreCi.state,
+        status: coreCi.run?.status ?? null,
+        conclusion: coreCi.run?.conclusion ?? null,
+        url: coreCi.run?.url ?? null,
+      };
+      report.current.github.publish = {
+        state: publish.state,
+        status: publish.run?.status ?? null,
+        conclusion: publish.run?.conclusion ?? null,
+        url: publish.run?.url ?? null,
+      };
+
+      switch (publish.state) {
+        case "success": {
+          pushFinding(report, {
+            level: "info",
+            code: "release_publish_workflow_succeeded",
+            message: `GitHub workflow ${args.publishWorkflow} succeeded for ${releaseSha}.`,
+            nextAction:
+              "Treat this release as already published unless registry evidence proves otherwise.",
+          });
+          break;
+        }
+        case "completed_not_success": {
+          pushFinding(report, {
+            level: "warn",
+            code: "release_publish_workflow_failed",
+            message: `GitHub workflow ${args.publishWorkflow} completed with conclusion=${publish.run?.conclusion ?? "unknown"} for ${releaseSha}.`,
+            nextAction:
+              "Inspect the publish workflow failure before retrying npm publication for any recovery SHA.",
+          });
+          break;
+        }
+        case "missing": {
+          pushFinding(report, {
+            level: "warn",
+            code: "release_publish_workflow_missing",
+            message: `No GitHub workflow ${args.publishWorkflow} run was found for ${releaseSha}.`,
+            nextAction:
+              "Confirm the release SHA and inspect the Actions history before assuming publish failed.",
+          });
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+
+      if (publish.state === "success" && coreCi.state === "completed_not_success") {
+        pushFinding(report, {
+          level: "warn",
+          code: "release_core_ci_failed_after_publish",
+          message: `GitHub workflow ${args.coreWorkflow} completed with conclusion=${coreCi.run?.conclusion ?? "unknown"} after publish already succeeded for ${releaseSha}.`,
+          nextAction:
+            "Fix the failing Core CI issue separately; do not rerun publish for the same released version.",
+        });
+      } else if (coreCi.state === "completed_not_success") {
+        pushFinding(report, {
+          level: "warn",
+          code: "release_core_ci_failed",
+          message: `GitHub workflow ${args.coreWorkflow} completed with conclusion=${coreCi.run?.conclusion ?? "unknown"} for ${releaseSha}.`,
+          nextAction: "Repair Core CI before relying on this SHA as a release recovery baseline.",
+        });
+      } else if (coreCi.state === "missing") {
+        pushFinding(report, {
+          level: "info",
+          code: "release_core_ci_missing",
+          message: `No GitHub workflow ${args.coreWorkflow} run was found for ${releaseSha}.`,
+          nextAction:
+            "Ensure the release SHA actually ran through Core CI before using it as a publish candidate.",
+        });
+      }
+    } else {
+      pushFinding(report, {
+        level: "warn",
+        code: "release_github_sha_unresolved",
+        message:
+          "GitHub workflow inspection was requested, but the release SHA could not be derived from the apply report, local tag, or explicit --github-sha.",
+        nextAction:
+          "Pass --github-sha <commit> or restore the release apply report before retrying GitHub recovery diagnostics.",
+      });
+    }
+  } else {
+    pushFinding(report, {
+      level: "info",
+      code: "release_github_check_skipped",
+      message:
+        "GitHub workflow check skipped; pass --check-github to distinguish publish success from sibling CI failures.",
+      nextAction: "Run: bun run release:recover -- --check-github",
+    });
+  }
+
   if (report.findings.length === 0) {
     pushFinding(report, {
       level: "info",
@@ -408,6 +661,16 @@ async function buildReport(repoRoot, args) {
   return report;
 }
 
+function formatWorkflowStatus(result) {
+  if (result.state === "skipped") return "skipped";
+  if (result.state === "missing") return "missing";
+  if (result.state === "completed_not_success") {
+    return `completed_not_success (conclusion=${result.conclusion ?? "unknown"})`;
+  }
+  if (result.state === "success") return "success";
+  return result.status ? `${result.state} (status=${result.status})` : result.state;
+}
+
 function renderText(report) {
   const lines = [
     "Release recovery report",
@@ -420,12 +683,28 @@ function renderText(report) {
     `Current versions: core=${report.current.coreVersion}, agentplane=${report.current.agentplaneVersion}, dependency=${report.current.coreDependencyVersion || "missing"}`,
     `Release notes: ${report.current.notesPresent ? "present" : "missing"} (${path.relative(report.repoRoot, report.current.notesPath)})`,
     `Local tag ${report.target.nextTag}: ${report.current.localTagPresent ? "present" : "missing"}`,
+    `Local tag commit: ${report.current.localTagCommit ?? "unknown"}`,
     `Remote ${report.current.remote.name}: ${report.current.remote.configured ? "configured" : "missing"}`,
     `Remote tag ${report.current.remote.name}/${report.target.nextTag}: ${report.current.remote.tagPresent ? "present" : "missing"}`,
+    `Apply report: ${report.current.apply.present ? `present (${report.current.apply.path})` : "missing"}`,
+    `Apply report matches plan: ${report.current.apply.matchesPlan ? "yes" : "no"}`,
+    `Apply report commit: ${report.current.apply.commitHash ?? "unknown"}`,
     `Registry check: ${report.current.registry.checked ? report.current.registry.status : "skipped"}`,
+    `GitHub check: ${report.current.github.checked ? "enabled" : "skipped"}`,
+    `GitHub repo: ${report.current.github.repo ?? "unknown"}`,
+    `GitHub release SHA: ${report.current.github.releaseSha ?? "unknown"}`,
+    `GitHub Core CI (${report.current.github.coreWorkflow}): ${formatWorkflowStatus(report.current.github.coreCi)}`,
+    `GitHub Publish (${report.current.github.publishWorkflow}): ${formatWorkflowStatus(report.current.github.publish)}`,
     "",
     "Findings:",
   ];
+
+  if (report.current.github.coreCi.url) {
+    lines.push(`Core CI URL: ${report.current.github.coreCi.url}`);
+  }
+  if (report.current.github.publish.url) {
+    lines.push(`Publish URL: ${report.current.github.publish.url}`);
+  }
 
   for (const finding of report.findings) {
     lines.push(`- [${finding.level.toUpperCase()}] ${finding.code}: ${finding.message}`);
