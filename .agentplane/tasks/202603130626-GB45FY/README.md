@@ -14,16 +14,22 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-13T06:37:19.878Z"
+  updated_by: "CODER"
+  note: "GitHub Actions workflows now target Node 24 and the runtime pin is regression-tested."
 commit: null
 comments: []
-events: []
+events:
+  -
+    type: "verify"
+    at: "2026-03-13T06:37:19.878Z"
+    author: "CODER"
+    state: "ok"
+    note: "GitHub Actions workflows now target Node 24 and the runtime pin is regression-tested."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:27:17.681Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-03-13T06:37:19.879Z"
+doc_updated_by: "CODER"
 description: "Reduce future CI breakage by validating and updating GitHub Actions Node runtime assumptions before the Node 20 hosted transition deadline."
 id_source: "generated"
 ---
@@ -53,6 +59,46 @@ Reduce future CI breakage by validating and updating GitHub Actions Node runtime
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-13T06:37:19.878Z — VERIFY — ok
+
+By: CODER
+
+Note: GitHub Actions workflows now target Node 24 and the runtime pin is regression-tested.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-13T06:27:17.681Z, excerpt_hash=sha256:d51e715207096c49453eb0385b19f03396dd8c68dc92b0346375b9a9c02e2907
+
+Details:
+
+Command: bun x vitest run packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts --hookTimeout 60000 --testTimeout 60000
+Result: pass
+Evidence: 1 file, 1 test passed; all repository workflows that use actions/setup-node are pinned to Node 24.
+Scope: workflow Node runtime contract.
+
+Command: bun run workflows:lint
+Result: pass
+Evidence: workflow lint and workflow command contract both returned OK.
+Scope: GitHub Actions YAML syntax and command wiring.
+
+Command: bun run test:release:critical
+Result: pass
+Evidence: release recovery, release smoke, and CLI smoke suites all passed after the workflow Node runtime bump.
+Scope: release-critical and CLI release paths.
+
+Command: bun run docs:site:typecheck && bun run docs:site:build
+Result: pass
+Evidence: website typecheck and production build completed successfully; only the existing webpack critical dependency warning remained.
+Scope: docs CI and pages deployment build paths touched by workflow changes.
+
+Command: ./node_modules/.bin/eslint packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts
+Result: pass
+Evidence: new workflow contract test passes ESLint.
+Scope: workflow Node runtime contract test file.
+
+Command: ./node_modules/.bin/prettier --check .github/workflows/ci.yml .github/workflows/docs-ci.yml .github/workflows/pages-deploy.yml .github/workflows/prepublish.yml .github/workflows/publish.yml .github/workflows/workflows-lint.yml packages/agentplane/src/commands/release/workflow-node-version-contract.test.ts
+Result: pass
+Evidence: all touched workflow files and the new contract test match Prettier.
+Scope: formatting of workflow Node runtime changes.
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
