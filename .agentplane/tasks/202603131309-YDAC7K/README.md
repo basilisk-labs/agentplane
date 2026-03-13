@@ -1,10 +1,11 @@
 ---
 id: "202603131309-YDAC7K"
 title: "Add CAS revision contract to TaskStore"
-status: "DOING"
+result_summary: "Local TaskStore mutation paths now have revision-aware CAS semantics for canonical task writes."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 2
+revision: 3
 depends_on:
   - "202603131309-HSRN23"
 tags:
@@ -23,11 +24,16 @@ verification:
   note: |-
     Command: bun x vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts --hookTimeout 60000 --testTimeout 60000 && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && node --input-type=module <CAS-check>
     Result: TaskStore now enforces expectedRevision, increments revision only on successful writes, and rejects stale writes with reason_code=task_revision_conflict.
-commit: null
+commit:
+  hash: "231fad53cd0cb0ea6f613d5926d0daeaad8bebe8"
+  message: "🧱 YDAC7K task: Add CAS revision contract to TaskStore"
 comments:
   -
     author: "CODER"
     body: "Start: add revision-aware CAS semantics to local TaskStore mutation paths with typed stale-write conflicts."
+  -
+    author: "CODER"
+    body: "Verified: TaskStore now enforces expectedRevision, increments revision only on successful writes, and returns typed task_revision_conflict context on stale writes."
 events:
   -
     type: "status"
@@ -44,8 +50,15 @@ events:
     note: |-
       Command: bun x vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts --hookTimeout 60000 --testTimeout 60000 && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && node --input-type=module <CAS-check>
       Result: TaskStore now enforces expectedRevision, increments revision only on successful writes, and rejects stale writes with reason_code=task_revision_conflict.
+  -
+    type: "status"
+    at: "2026-03-13T15:22:31.930Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: TaskStore now enforces expectedRevision, increments revision only on successful writes, and returns typed task_revision_conflict context on stale writes."
 doc_version: 3
-doc_updated_at: "2026-03-13T15:22:14.110Z"
+doc_updated_at: "2026-03-13T15:22:31.931Z"
 doc_updated_by: "CODER"
 description: "Add revision and expectedRevision semantics to local one-file task writes so task mutations can fail or retry on typed canonical-state conflicts instead of markdown-body drift."
 sections:
