@@ -1,7 +1,8 @@
 ---
 id: "202603130626-GB45FY"
 title: "Prepare GitHub Actions for Node 24"
-status: "TODO"
+result_summary: "GitHub Actions workflows are now pinned and tested for Node 24."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,8 +19,13 @@ verification:
   updated_at: "2026-03-13T06:37:19.878Z"
   updated_by: "CODER"
   note: "GitHub Actions workflows now target Node 24 and the runtime pin is regression-tested."
-commit: null
-comments: []
+commit:
+  hash: "bd988d301c3ff9891932ee5fbaf3f2b6f6fc7d05"
+  message: "🚧 GB45FY task: prepare GitHub Actions for Node 24"
+comments:
+  -
+    author: "CODER"
+    body: "Verified: GitHub Actions workflows now pin setup-node to Node 24 and the contract is covered by tests plus release/docs smoke checks."
 events:
   -
     type: "verify"
@@ -27,8 +33,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "GitHub Actions workflows now target Node 24 and the runtime pin is regression-tested."
+  -
+    type: "status"
+    at: "2026-03-13T06:37:24.452Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DONE"
+    note: "Verified: GitHub Actions workflows now pin setup-node to Node 24 and the contract is covered by tests plus release/docs smoke checks."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:37:19.879Z"
+doc_updated_at: "2026-03-13T06:37:24.453Z"
 doc_updated_by: "CODER"
 description: "Reduce future CI breakage by validating and updating GitHub Actions Node runtime assumptions before the Node 20 hosted transition deadline."
 id_source: "generated"
