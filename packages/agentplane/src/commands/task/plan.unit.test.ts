@@ -198,6 +198,64 @@ describe("task plan commands (unit)", () => {
     });
   });
 
+  it("cmdTaskPlanApprove uses the current local README state instead of a stale initial snapshot", async () => {
+    const ctx = mkCtx();
+    const staleTask = mkTask({
+      tags: ["code"],
+      doc: [
+        "## Summary",
+        "x",
+        "",
+        "## Plan",
+        "do stuff",
+        "",
+        "## Verify Steps",
+        "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
+        "",
+        "## Notes",
+        "n/a",
+      ].join("\n"),
+    });
+    let currentTask = mkTask({
+      tags: ["code"],
+      doc: [
+        "## Summary",
+        "x",
+        "",
+        "## Plan",
+        "do stuff",
+        "",
+        "## Verify Steps",
+        "Run bun run test:cli:core",
+        "",
+        "## Notes",
+        "n/a",
+      ].join("\n"),
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    mockBackendIsLocalFileBackend.mockReturnValue(true);
+    mockGetTaskStore.mockReturnValue(store);
+
+    const { cmdTaskPlanApprove } = await import("./plan.js");
+    const rc = await cmdTaskPlanApprove({ ctx, cwd: "/repo", taskId: "T-1", by: "A" });
+
+    expect(rc).toBe(0);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(currentTask.plan_approval?.state).toBe("approved");
+    expect(currentTask.plan_approval?.updated_by).toBe("A");
+  });
+
   it("cmdTaskPlanApprove enforces Notes for spike tasks", async () => {
     const ctx = mkCtx();
     mockLoadTaskFromContext.mockResolvedValue(

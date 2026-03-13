@@ -73,6 +73,98 @@ describe("runCli", () => {
     expect(readme).toContain('doc_updated_by: "DOCS"');
   });
 
+  it("task doc set updates Verify Steps and immediately unblocks plan approval", async () => {
+    const root = await writeAndConfigureRoot();
+
+    const ioNew = captureStdIO();
+    let taskId = "";
+    try {
+      const code = await runCli([
+        "task",
+        "new",
+        "--title",
+        "Verify Steps task",
+        "--description",
+        "Exercise Verify Steps doc writes",
+        "--priority",
+        "med",
+        "--owner",
+        "CODER",
+        "--tag",
+        "code",
+        "--root",
+        root,
+      ]);
+      expect(code).toBe(0);
+      taskId = ioNew.stdout.trim();
+    } finally {
+      ioNew.restore();
+    }
+
+    const codePlan = await runCli([
+      "task",
+      "plan",
+      "set",
+      taskId,
+      "--text",
+      "1. Update Verify Steps.\n2. Approve the plan.",
+      "--updated-by",
+      "ORCHESTRATOR",
+      "--root",
+      root,
+    ]);
+    expect(codePlan).toBe(0);
+
+    const ioDoc = captureStdIO();
+    try {
+      const codeDoc = await runCli([
+        "task",
+        "doc",
+        "set",
+        taskId,
+        "--section",
+        "Verify Steps",
+        "--text",
+        "1. Run bun run test:cli:core.\n2. Expect exit code 0.",
+        "--updated-by",
+        "ORCHESTRATOR",
+        "--root",
+        root,
+      ]);
+      expect(codeDoc).toBe(0);
+      expect(ioDoc.stderr).toContain("task doc set outcome=section-updated section=Verify Steps");
+    } finally {
+      ioDoc.restore();
+    }
+
+    const readme = await readFile(
+      path.join(root, ".agentplane", "tasks", taskId, "README.md"),
+      "utf8",
+    );
+    expect(readme).toContain("## Verify Steps");
+    expect(readme).toContain("1. Run bun run test:cli:core.");
+    expect(readme).toContain("2. Expect exit code 0.");
+
+    const ioApprove = captureStdIO();
+    try {
+      const codeApprove = await runCli([
+        "task",
+        "plan",
+        "approve",
+        taskId,
+        "--by",
+        "ORCHESTRATOR",
+        "--note",
+        "Verify Steps populated",
+        "--root",
+        root,
+      ]);
+      expect(codeApprove).toBe(0);
+    } finally {
+      ioApprove.restore();
+    }
+  });
+
   it("task doc set appends required sections when missing", async () => {
     const root = await writeAndConfigureRoot();
     const taskId = "202601300000-ABCD";

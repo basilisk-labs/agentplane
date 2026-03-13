@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { defaultConfig, renderTaskReadme, writeTasksExport } from "@agentplaneorg/core";
 
 import { LocalBackend } from "../../backends/task-backend.js";
+import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "./task-backend.js";
 import { TaskStore } from "./task-store.js";
 
@@ -95,6 +96,106 @@ describe("commands/shared/TaskStore", () => {
         return { ...current, title: "after" };
       }),
     ).rejects.toMatchObject({ code: "E_IO" });
+  });
+
+  it("retries validation failures when the README changed after the cached read", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-VALD";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    const initial = renderTaskReadme(
+      {
+        id: taskId,
+        title: "before",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-02-07T00:00:00Z",
+        doc_updated_by: "CODER",
+        description: "",
+      },
+      [
+        "## Summary",
+        "x",
+        "",
+        "## Plan",
+        "do work",
+        "",
+        "## Verify Steps",
+        "<!-- TODO: REPLACE WITH TASK-SPECIFIC ACCEPTANCE STEPS -->",
+        "",
+        "## Findings",
+        "n/a",
+      ].join("\n"),
+    );
+    await writeFile(readmePath, `${initial}\n`, "utf8");
+
+    const refreshed = renderTaskReadme(
+      {
+        id: taskId,
+        title: "before",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        depends_on: [],
+        tags: ["code"],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-02-07T00:00:00Z",
+        doc_updated_by: "CODER",
+        description: "",
+      },
+      [
+        "## Summary",
+        "x",
+        "",
+        "## Plan",
+        "do work",
+        "",
+        "## Verify Steps",
+        "Run bun run test:cli:core",
+        "",
+        "## Findings",
+        "n/a",
+      ].join("\n"),
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    let didInterfere = false;
+    const result = await store.update(taskId, async (current) => {
+      if (!String(current.doc ?? "").includes("Run bun run test:cli:core")) {
+        if (!didInterfere) {
+          didInterfere = true;
+          await new Promise((resolve) => setTimeout(resolve, 10));
+          await writeFile(readmePath, `${refreshed}\n`, "utf8");
+        }
+        throw new CliError({
+          exitCode: 3,
+          code: "E_VALIDATION",
+          message: "Verify Steps still missing",
+        });
+      }
+      return { ...current, title: "after" };
+    });
+
+    expect(didInterfere).toBe(true);
+    expect(result.changed).toBe(true);
+    expect(result.task.title).toBe("after");
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain("Run bun run test:cli:core");
+    expect(final).toContain('title: "after"');
   });
 
   it("preserves doc_version=3 across task-store updates and task export", async () => {

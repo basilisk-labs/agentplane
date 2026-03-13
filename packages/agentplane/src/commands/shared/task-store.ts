@@ -234,6 +234,20 @@ async function ensureUnchangedOnDisk(opts: {
   }
 }
 
+async function didReadmeChangeOnDisk(opts: {
+  readmePath: string;
+  expectedMtimeMs: number;
+}): Promise<boolean> {
+  try {
+    const st = await stat(opts.readmePath);
+    return st.mtimeMs !== opts.expectedMtimeMs;
+  } catch (err) {
+    const code = (err as { code?: string } | null)?.code;
+    if (code === "ENOENT") return true;
+    throw err;
+  }
+}
+
 export class TaskStore {
   private ctx: CommandContext;
   private cache = new Map<string, Promise<CachedTask>>();
@@ -326,7 +340,24 @@ export class TaskStore {
   ): Promise<{ changed: boolean; task: TaskData }> {
     for (let attempt = 0; attempt < 2; attempt++) {
       const entry = await this.getCached(taskId);
-      const next = await computeNext(entry);
+      let next: TaskData;
+      try {
+        next = await computeNext(entry);
+      } catch (err) {
+        if (
+          attempt === 0 &&
+          err instanceof CliError &&
+          err.code === "E_VALIDATION" &&
+          (await didReadmeChangeOnDisk({
+            readmePath: entry.readmePath,
+            expectedMtimeMs: entry.mtimeMs,
+          }))
+        ) {
+          this.cache.delete(taskId);
+          continue;
+        }
+        throw err;
+      }
 
       try {
         return await this.writeNextTask(taskId, entry, next);

@@ -320,12 +320,6 @@ export async function cmdTaskPlanApprove(opts: {
     }
     const note = typeof opts.note === "string" ? opts.note.trim() : "";
 
-    const existingDoc = useStore
-      ? String(task.doc ?? "")
-      : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-    const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-    assertPlanCanBeApproved({ task, config, doc: baseDoc });
-
     const approvedAt = nowIso();
     await (useStore
       ? store!.patch(opts.taskId, (current) => {
@@ -345,15 +339,21 @@ export async function cmdTaskPlanApprove(opts: {
             },
           };
         })
-      : backend.writeTask({
-          ...task,
-          plan_approval: {
-            state: "approved" as PlanApprovalState,
-            updated_at: approvedAt,
-            updated_by: by,
-            note: note || null,
-          },
-        }));
+      : (async () => {
+          const existingDoc =
+            (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+          const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+          assertPlanCanBeApproved({ task, config, doc: baseDoc });
+          await backend.writeTask({
+            ...task,
+            plan_approval: {
+              state: "approved" as PlanApprovalState,
+              updated_at: approvedAt,
+              updated_by: by,
+              note: note || null,
+            },
+          });
+        })());
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
@@ -395,12 +395,6 @@ export async function cmdTaskPlanReject(opts: {
       });
     }
 
-    const existingDoc = useStore
-      ? String(task.doc ?? "")
-      : (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
-    const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
-    assertPlanSectionPresent(task.id, baseDoc, "reject");
-
     const rejectedAt = nowIso();
     await (useStore
       ? store!.patch(opts.taskId, (current) => {
@@ -420,15 +414,21 @@ export async function cmdTaskPlanReject(opts: {
             },
           };
         })
-      : backend.writeTask({
-          ...task,
-          plan_approval: {
-            state: "rejected" as PlanApprovalState,
-            updated_at: rejectedAt,
-            updated_by: by,
-            note: note || null,
-          },
-        }));
+      : (async () => {
+          const existingDoc =
+            (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+          const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
+          assertPlanSectionPresent(task.id, baseDoc, "reject");
+          await backend.writeTask({
+            ...task,
+            plan_approval: {
+              state: "rejected" as PlanApprovalState,
+              updated_at: rejectedAt,
+              updated_by: by,
+              note: note || null,
+            },
+          });
+        })());
     return 0;
   } catch (err) {
     if (err instanceof CliError) throw err;
