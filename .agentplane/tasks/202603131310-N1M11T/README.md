@@ -1,10 +1,11 @@
 ---
 id: "202603131310-N1M11T"
 title: "Harden retry side effects in task mutations"
-status: "DOING"
+result_summary: "Retry-capable local task mutations now keep warning side effects outside builder retries, preserving single-shot human output without changing non-local behavior."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on:
   - "202603131310-0KBWXJ"
 tags:
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-13T17:32:28.640Z"
   updated_by: "CODER"
   note: "Buffered warning side effects out of local retry-capable mutation callbacks: block/set-status now resolve policy warnings without printing inside builders, dependency warnings in local set-status emit once from the outer path, and start/block/set-status unit suites plus run-cli.core.lifecycle and both builds are green."
-commit: null
+commit:
+  hash: "1d834b55adc12ca1d2405ec8af93c85c5737acc4"
+  message: "🚧 N1M11T task: buffer retry-side warning output"
 comments:
   -
     author: "CODER"
     body: "Start: remove warning side effects from retry-capable local mutation callbacks so retries stay idempotent and stderr is emitted exactly once from the final outcome path."
+  -
+    author: "CODER"
+    body: "Verified: local retry-capable mutation callbacks no longer print policy/dependency warnings from inside builders; warnings now emit once from the outer path and the touched unit/lifecycle/build checks all passed."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Buffered warning side effects out of local retry-capable mutation callbacks: block/set-status now resolve policy warnings without printing inside builders, dependency warnings in local set-status emit once from the outer path, and start/block/set-status unit suites plus run-cli.core.lifecycle and both builds are green."
+  -
+    type: "status"
+    at: "2026-03-13T17:32:56.789Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: local retry-capable mutation callbacks no longer print policy/dependency warnings from inside builders; warnings now emit once from the outer path and the touched unit/lifecycle/build checks all passed."
 doc_version: 3
-doc_updated_at: "2026-03-13T17:32:28.642Z"
+doc_updated_at: "2026-03-13T17:32:56.790Z"
 doc_updated_by: "CODER"
 description: "Buffer or defer warnings and other side effects so retries in task mutation paths remain idempotent and do not duplicate human-facing output."
 sections:
