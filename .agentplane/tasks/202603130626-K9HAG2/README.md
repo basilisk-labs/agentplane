@@ -1,7 +1,8 @@
 ---
 id: "202603130626-K9HAG2"
 title: "Add explicit publish workflow sha input"
-status: "DOING"
+result_summary: "Publish workflow dispatch now supports exact sha recovery."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T06:29:49.297Z"
   updated_by: "CODER"
   note: "Release workflow manual recovery now prefers exact sha input."
-commit: null
+commit:
+  hash: "e47a4af49981b0945daca62c8a595b4719c7eb92"
+  message: "🚧 K9HAG2 task: add explicit publish workflow sha input"
 comments:
   -
     author: "CODER"
     body: "Start: add explicit publish workflow sha input and wire manual recovery to exact commit selection."
+  -
+    author: "CODER"
+    body: "Verified: manual publish recovery now prefers an explicit sha input and keeps the release-ready artifact contract unchanged."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release workflow manual recovery now prefers exact sha input."
+  -
+    type: "status"
+    at: "2026-03-13T06:30:17.150Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: manual publish recovery now prefers an explicit sha input and keeps the release-ready artifact contract unchanged."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:29:49.298Z"
+doc_updated_at: "2026-03-13T06:30:17.151Z"
 doc_updated_by: "CODER"
 description: "Harden manual release recovery by making workflow_dispatch resolve a fixed SHA instead of a mutable ref."
 id_source: "generated"
