@@ -1,7 +1,8 @@
 ---
 id: "202603130527-NJQPEF"
 title: "Align release prepublish gate with Core CI coverage guards"
-status: "DOING"
+result_summary: "Release prepublish parity now covers the same release-relevant Linux coverage guards that triggered the 0.3.6 Core CI failure, with docs and contract tests kept in sync."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-13T05:36:08.912Z"
   updated_by: "CODER"
   note: "Command: bun run test:workflow-coverage; Result: pass; Evidence: workflow/harness branch thresholds remained green. Scope: release parity coverage guards. Command: bun run test:significant-coverage; Result: pass; Evidence: guard commands.ts stayed at 85.51% branch and comment-commit.ts at 75.00%. Scope: significant release-safe coverage gate. Command: bun run release:prepublish; Result: pass; Evidence: full release ci-check plus release pack path completed with the new workflow/significant coverage steps included in the live command string. Scope: release prepublish parity with Core CI coverage guards."
-commit: null
+commit:
+  hash: "b4223cef03524fee4731186a4e7889c8b3b056bb"
+  message: "🧪 NJQPEF release: align prepublish coverage parity"
 comments:
   -
     author: "CODER"
     body: "Start: align release prepublish with the coverage guards that actually broke on the 0.3.6 release SHA, then sync the release docs to the resulting contract before touching publish gating."
+  -
+    author: "CODER"
+    body: "Verified: release:ci-check and release:prepublish now include the workflow and significant coverage guards that previously only lived in Core CI; the contract is documented and protected by a script-contract regression test."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun run test:workflow-coverage; Result: pass; Evidence: workflow/harness branch thresholds remained green. Scope: release parity coverage guards. Command: bun run test:significant-coverage; Result: pass; Evidence: guard commands.ts stayed at 85.51% branch and comment-commit.ts at 75.00%. Scope: significant release-safe coverage gate. Command: bun run release:prepublish; Result: pass; Evidence: full release ci-check plus release pack path completed with the new workflow/significant coverage steps included in the live command string. Scope: release prepublish parity with Core CI coverage guards."
+  -
+    type: "status"
+    at: "2026-03-13T05:36:29.433Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release:ci-check and release:prepublish now include the workflow and significant coverage guards that previously only lived in Core CI; the contract is documented and protected by a script-contract regression test."
 doc_version: 3
-doc_updated_at: "2026-03-13T05:36:08.913Z"
+doc_updated_at: "2026-03-13T05:36:29.434Z"
 doc_updated_by: "CODER"
 description: "Make release:prepublish and publish prerequisites include the same significant/workflow coverage guards that currently fail only in Core CI, then sync release docs to that contract."
 id_source: "generated"
