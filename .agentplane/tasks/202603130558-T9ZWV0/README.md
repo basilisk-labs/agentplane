@@ -1,7 +1,8 @@
 ---
 id: "202603130558-T9ZWV0"
 title: "Emit release-ready manifest from successful Core CI"
-status: "DOING"
+result_summary: "Added a release-ready manifest generator, covered its contract with targeted tests, and wired a new Core CI artifact job for downstream publish and recovery flows."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-13T06:03:11.711Z"
   updated_by: "CODER"
   note: "Verified release-ready manifest generation: targeted script regressions, workflow lint, prettier, and eslint passed; Core CI now emits a single release-ready artifact only after the release-relevant gates pass and only when the checkout is actually release-ready."
-commit: null
+commit:
+  hash: "7863f1f0d2ee9d1f943b4c2b6a73f5b4a721b0ad"
+  message: "📦 T9ZWV0 release: emit core-ci release-ready manifest"
 comments:
   -
     author: "CODER"
     body: "Start: add a deterministic release-ready manifest producer to Core CI so successful release SHAs emit one canonical publish artifact for downstream workflows and recovery tooling."
+  -
+    author: "CODER"
+    body: "Verified: Core CI now writes one deterministic release-ready manifest for exact release SHAs, uploads it only when the checkout is actually release-ready, and leaves normal non-release pushes green without publishing metadata artifacts."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified release-ready manifest generation: targeted script regressions, workflow lint, prettier, and eslint passed; Core CI now emits a single release-ready artifact only after the release-relevant gates pass and only when the checkout is actually release-ready."
+  -
+    type: "status"
+    at: "2026-03-13T06:03:25.005Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Core CI now writes one deterministic release-ready manifest for exact release SHAs, uploads it only when the checkout is actually release-ready, and leaves normal non-release pushes green without publishing metadata artifacts."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:03:11.712Z"
+doc_updated_at: "2026-03-13T06:03:25.006Z"
 doc_updated_by: "CODER"
 description: "Add a release-ready artifact/job in Core CI that records the exact publishable SHA, version, tag, notes path, and published-state metadata only after the release-relevant gates pass."
 id_source: "generated"
