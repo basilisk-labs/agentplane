@@ -115,15 +115,19 @@ export async function cmdStart(opts: {
     const task = useStore
       ? await store!.get(opts.taskId)
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
-    assertStartDocRequirements(task, ctx.config);
-    ensurePlanApprovedIfRequired(task, ctx.config);
+    if (!useStore) {
+      assertStartDocRequirements(task, ctx.config);
+      ensurePlanApprovedIfRequired(task, ctx.config);
+    }
 
     const currentStatus = String(task.status || "TODO").toUpperCase();
-    ensureStatusTransitionAllowed({
-      currentStatus,
-      nextStatus: "DOING",
-      force: opts.force,
-    });
+    if (!useStore) {
+      ensureStatusTransitionAllowed({
+        currentStatus,
+        nextStatus: "DOING",
+        force: opts.force,
+      });
+    }
     ensureCommentCommitAllowed({
       enabled: opts.commitFromComment,
       config: ctx.config,
@@ -172,11 +176,15 @@ export async function cmdStart(opts: {
     ];
 
     const at = nowIso();
+    let currentStatusForCommit = currentStatus;
+    let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
     await (useStore
       ? store!.patch(opts.taskId, (current) => {
           assertStartDocRequirements(current, ctx.config);
           ensurePlanApprovedIfRequired(current, ctx.config);
           const currentStatus = String(current.status || "TODO").toUpperCase();
+          currentStatusForCommit = currentStatus;
+          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
           ensureStatusTransitionAllowed({
             currentStatus,
             nextStatus: "DOING",
@@ -239,10 +247,10 @@ export async function cmdStart(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
-        primaryTag: resolvePrimaryTag(toStringArray(task.tags), ctx).primary,
+        primaryTag: primaryTagForCommit,
         executorAgent,
         author: opts.author,
-        statusFrom: currentStatus,
+        statusFrom: currentStatusForCommit,
         statusTo: "DOING",
         commentBody: opts.body,
         formattedComment,
