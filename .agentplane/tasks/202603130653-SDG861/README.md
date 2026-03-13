@@ -1,7 +1,8 @@
 ---
 id: "202603130653-SDG861"
 title: "Tighten publish workflow concurrency to release identity"
-status: "DOING"
+result_summary: "Publish workflow now serializes by release SHA or explicit dispatch identity, allowing queued duplicate runs to re-run detect against fresh registry state instead of canceling an active release."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T07:19:12.454Z"
   updated_by: "CODER"
   note: "Verified release-identity publish concurrency: publish workflow contract, workflows lint, and prettier all pass."
-commit: null
+commit:
+  hash: "b79905bfcfea020e1cadf3991b72b4cb35c088e5"
+  message: "🧭 SDG861 task: apply release-identity publish concurrency"
 comments:
   -
     author: "CODER"
     body: "Start: tighten publish workflow concurrency so manual dispatches and workflow_run publishes serialize by release identity instead of branch ref, without broadening the workflow contract."
+  -
+    author: "CODER"
+    body: "Verified: publish workflow concurrency is now keyed to release identity instead of branch ref, duplicate runs queue rather than canceling an in-flight release, and the workflow contract/docs reflect the new behavior."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified release-identity publish concurrency: publish workflow contract, workflows lint, and prettier all pass."
+  -
+    type: "status"
+    at: "2026-03-13T07:20:08.026Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: publish workflow concurrency is now keyed to release identity instead of branch ref, duplicate runs queue rather than canceling an in-flight release, and the workflow contract/docs reflect the new behavior."
 doc_version: 3
-doc_updated_at: "2026-03-13T07:19:12.457Z"
+doc_updated_at: "2026-03-13T07:20:08.027Z"
 doc_updated_by: "CODER"
 description: "Avoid unrelated publish cancellations by keying concurrency to the release SHA or tag instead of a mutable branch ref."
 id_source: "generated"
