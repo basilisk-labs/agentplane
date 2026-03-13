@@ -10,7 +10,15 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import {
+  appendTaskCommentIntent,
+  appendTaskEventIntent,
+  backendIsLocalFileBackend,
+  getTaskStore,
+  mutateTaskStore,
+  setTaskFieldsIntent,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 
 import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
@@ -101,7 +109,7 @@ export async function cmdBlock(opts: {
     let currentStatusForCommit = currentStatus;
     let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
     await (useStore
-      ? store!.patch(opts.taskId, (current) => {
+      ? mutateTaskStore(store!, opts.taskId, (current) => {
           const currentStatus = String(current.status || "TODO").toUpperCase();
           currentStatusForCommit = currentStatus;
           primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
@@ -119,25 +127,22 @@ export async function cmdBlock(opts: {
             statusFrom: currentStatus,
             statusTo: "BLOCKED",
           });
-          return {
-            task: { status: "BLOCKED" },
-            appendComments: [{ author: opts.author, body: commentBody }],
-            appendEvents: [
-              {
-                type: "status",
-                at,
-                author: opts.author,
-                from: currentStatus,
-                to: "BLOCKED",
-                note: commentBody,
-              },
-            ],
-            docMeta: {
-              touch: true,
+          return [
+            setTaskFieldsIntent({ status: "BLOCKED" }),
+            appendTaskCommentIntent({ author: opts.author, body: commentBody }),
+            appendTaskEventIntent({
+              type: "status",
+              at,
+              author: opts.author,
+              from: currentStatus,
+              to: "BLOCKED",
+              note: commentBody,
+            }),
+            touchTaskDocMetaIntent({
               updatedBy: opts.author,
               version: normalizeTaskDocVersion(current.doc_version),
-            },
-          };
+            }),
+          ];
         })
       : ctx.taskBackend.writeTask({
           ...task,

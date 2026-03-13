@@ -12,7 +12,15 @@ import {
   resolveDocUpdatedBy,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import {
+  appendTaskCommentIntent,
+  appendTaskEventIntent,
+  backendIsLocalFileBackend,
+  getTaskStore,
+  mutateTaskStore,
+  setTaskFieldsIntent,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 
 import {
   appendTaskEvent,
@@ -166,7 +174,7 @@ export async function cmdTaskSetStatus(opts: {
       next.commit = nextCommit;
     }
     await (useStore
-      ? store!.patch(opts.taskId, async (current) => {
+      ? mutateTaskStore(store!, opts.taskId, async (current) => {
           const currentStatus = String(current.status || "TODO").toUpperCase();
           currentStatusForCommit = currentStatus;
           primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
@@ -207,30 +215,32 @@ export async function cmdTaskSetStatus(opts: {
             statusTo: nextStatus,
           });
           const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
-          return {
-            task: {
+          const intents = [
+            setTaskFieldsIntent({
               status: nextStatus,
               ...(nextCommit ? { commit: nextCommit } : {}),
-            },
-            ...(commentBody
-              ? { appendComments: [{ author: opts.author!, body: commentBody }] }
-              : {}),
-            appendEvents: [
-              {
-                type: "status",
-                at,
-                author: currentEventAuthor,
-                from: currentStatus,
-                to: nextStatus,
-                note: commentBody,
-              },
-            ],
-            docMeta: {
-              touch: true,
+            }),
+            appendTaskEventIntent({
+              type: "status",
+              at,
+              author: currentEventAuthor,
+              from: currentStatus,
+              to: nextStatus,
+              note: commentBody,
+            }),
+            touchTaskDocMetaIntent({
               updatedBy: currentEventAuthor,
               version: normalizeTaskDocVersion(current.doc_version),
-            },
-          };
+            }),
+          ];
+          if (commentBody) {
+            intents.splice(
+              1,
+              0,
+              appendTaskCommentIntent({ author: opts.author!, body: commentBody }),
+            );
+          }
+          return intents;
         })
       : ctx.taskBackend.writeTask(next));
 

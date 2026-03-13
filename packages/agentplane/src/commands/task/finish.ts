@@ -15,7 +15,15 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import {
+  appendTaskCommentIntent,
+  appendTaskEventIntent,
+  backendIsLocalFileBackend,
+  getTaskStore,
+  mutateTaskStore,
+  setTaskFieldsIntent,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 
 import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
@@ -270,7 +278,7 @@ export async function cmdFinish(opts: {
 
       const at = nowIso();
       if (useStore) {
-        await store!.patch(taskId, (current) => {
+        await mutateTaskStore(store!, taskId, (current) => {
           assertTaskCanFinish({
             task: current,
             config: ctx.config,
@@ -285,31 +293,28 @@ export async function cmdFinish(opts: {
             primaryStatusFrom = currentStatus;
             primaryTag = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
           }
-          return {
-            task: {
+          return [
+            setTaskFieldsIntent({
               status: "DONE",
               commit: { hash: commitInfo.hash, message: commitInfo.message },
               ...(taskId === metaTaskId && resultSummary ? { result_summary: resultSummary } : {}),
               ...(taskId === metaTaskId && riskLevel ? { risk_level: riskLevel } : {}),
               ...(taskId === metaTaskId && breaking ? { breaking: true } : {}),
-            },
-            appendComments: [{ author: opts.author, body: opts.body }],
-            appendEvents: [
-              {
-                type: "status",
-                at,
-                author: opts.author,
-                from: currentStatus,
-                to: "DONE",
-                note: opts.body,
-              },
-            ],
-            docMeta: {
-              touch: true,
+            }),
+            appendTaskCommentIntent({ author: opts.author, body: opts.body }),
+            appendTaskEventIntent({
+              type: "status",
+              at,
+              author: opts.author,
+              from: currentStatus,
+              to: "DONE",
+              note: opts.body,
+            }),
+            touchTaskDocMetaIntent({
               updatedBy: opts.author,
               version: normalizeTaskDocVersion(current.doc_version),
-            },
-          };
+            }),
+          ];
         });
       } else {
         const existingComments = Array.isArray(task.comments)
@@ -409,16 +414,15 @@ export async function cmdFinish(opts: {
       // Refresh task commit metadata to this hash and amend the same commit in local mode so
       // "task done" metadata does not require a manual follow-up close commit.
       await (useStore
-        ? store!.patch(primaryTaskId, (current) => ({
-            task: {
+        ? mutateTaskStore(store!, primaryTaskId, (current) => [
+            setTaskFieldsIntent({
               commit: { hash: committed.hash, message: committed.message },
-            },
-            docMeta: {
-              touch: true,
+            }),
+            touchTaskDocMetaIntent({
               updatedBy: opts.author,
               version: normalizeTaskDocVersion(current.doc_version),
-            },
-          }))
+            }),
+          ])
         : (async () => {
             const taskAfterCommit = await loadTaskFromContext({ ctx, taskId: primaryTaskId });
             const updatedAfterCommit: TaskData = {

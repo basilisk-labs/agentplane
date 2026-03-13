@@ -17,10 +17,18 @@ vi.mock("../shared/task-backend.js", () => ({
   loadCommandContext: mockLoadCommandContext,
   loadTaskFromContext: mockLoadTaskFromContext,
 }));
-vi.mock("../shared/task-store.js", () => ({
-  backendIsLocalFileBackend: mockBackendIsLocalFileBackend,
-  getTaskStore: mockGetTaskStore,
-}));
+vi.mock("../shared/task-store.js", async (importOriginal) => {
+  const actualUnknown: unknown = await importOriginal();
+  const actual =
+    actualUnknown && typeof actualUnknown === "object"
+      ? (actualUnknown as Record<string, unknown>)
+      : {};
+  return {
+    ...actual,
+    backendIsLocalFileBackend: mockBackendIsLocalFileBackend,
+    getTaskStore: mockGetTaskStore,
+  };
+});
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
   return {

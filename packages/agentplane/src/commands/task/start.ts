@@ -11,7 +11,15 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import {
+  appendTaskCommentIntent,
+  appendTaskEventIntent,
+  backendIsLocalFileBackend,
+  getTaskStore,
+  mutateTaskStore,
+  setTaskFieldsIntent,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 
 import { readDirectWorkLock } from "../../shared/direct-work-lock.js";
 
@@ -179,7 +187,7 @@ export async function cmdStart(opts: {
     let currentStatusForCommit = currentStatus;
     let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
     await (useStore
-      ? store!.patch(opts.taskId, (current) => {
+      ? mutateTaskStore(store!, opts.taskId, (current) => {
           assertStartDocRequirements(current, ctx.config);
           ensurePlanApprovedIfRequired(current, ctx.config);
           const currentStatus = String(current.status || "TODO").toUpperCase();
@@ -190,25 +198,22 @@ export async function cmdStart(opts: {
             nextStatus: "DOING",
             force: opts.force,
           });
-          return {
-            task: { status: "DOING" },
-            appendComments: [{ author: opts.author, body: commentBody }],
-            appendEvents: [
-              {
-                type: "status",
-                at,
-                author: opts.author,
-                from: currentStatus,
-                to: "DOING",
-                note: commentBody,
-              },
-            ],
-            docMeta: {
-              touch: true,
+          return [
+            setTaskFieldsIntent({ status: "DOING" }),
+            appendTaskCommentIntent({ author: opts.author, body: commentBody }),
+            appendTaskEventIntent({
+              type: "status",
+              at,
+              author: opts.author,
+              from: currentStatus,
+              to: "DOING",
+              note: commentBody,
+            }),
+            touchTaskDocMetaIntent({
               updatedBy: opts.author,
               version: normalizeTaskDocVersion(current.doc_version),
-            },
-          };
+            }),
+          ];
         })
       : ctx.taskBackend.writeTask({
           ...task,

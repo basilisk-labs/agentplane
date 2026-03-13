@@ -103,6 +103,10 @@ export type TaskStoreMutationOptions = {
   expectedRevision?: number;
 };
 
+export type TaskStoreLike = Pick<TaskStore, "patch"> & {
+  mutate?: TaskStore["mutate"];
+};
+
 export function setTaskFieldsIntent(task: TaskStoreTaskPatch): TaskStoreIntent {
   return { kind: "set-task-fields", task };
 }
@@ -323,6 +327,89 @@ function patchToIntents(patch: TaskStorePatch | null | undefined): TaskStoreInte
     );
   }
   return intents;
+}
+
+export function taskStorePatchFromIntents(
+  intents: TaskStoreIntentResult,
+): TaskStorePatch | null | undefined {
+  const normalized = normalizeTaskStoreIntents(intents);
+  if (normalized.length === 0) return null;
+
+  const patch: TaskStorePatch = {};
+  for (const intent of normalized) {
+    switch (intent.kind) {
+      case "set-task-fields": {
+        patch.task = patch.task ? { ...patch.task, ...intent.task } : { ...intent.task };
+        break;
+      }
+      case "append-comments": {
+        if (intent.comments.length > 0) {
+          patch.appendComments = [...(patch.appendComments ?? []), ...intent.comments];
+        }
+        break;
+      }
+      case "append-events": {
+        if (intent.events.length > 0) {
+          patch.appendEvents = [...(patch.appendEvents ?? []), ...intent.events];
+        }
+        break;
+      }
+      case "replace-doc": {
+        const docPatch: TaskStorePatch["doc"] = {
+          kind: "replace-doc",
+          doc: intent.doc,
+        };
+        if (intent.expectedCurrentDoc === undefined) {
+          patch.doc = docPatch;
+          break;
+        }
+        docPatch.expectedCurrentDoc = intent.expectedCurrentDoc;
+        patch.doc = docPatch;
+        break;
+      }
+      case "set-section": {
+        const sectionPatch: TaskStorePatch["doc"] = {
+          kind: "set-section",
+          section: intent.section,
+          text: intent.text,
+          requiredSections: [...intent.requiredSections],
+        };
+        if (intent.expectedCurrentText === undefined) {
+          patch.doc = sectionPatch;
+          break;
+        }
+        sectionPatch.expectedCurrentText = intent.expectedCurrentText;
+        patch.doc = sectionPatch;
+        break;
+      }
+      case "touch-doc-meta": {
+        patch.docMeta = {
+          touch: true,
+          updatedBy: intent.updatedBy ?? patch.docMeta?.updatedBy,
+          version: intent.version ?? patch.docMeta?.version,
+        };
+        break;
+      }
+    }
+  }
+
+  return patch;
+}
+
+export async function mutateTaskStore(
+  store: TaskStoreLike,
+  taskId: string,
+  builder: (current: TaskData) => Promise<TaskStoreIntentResult> | TaskStoreIntentResult,
+  opts: TaskStoreMutationOptions = {},
+): Promise<{ changed: boolean; task: TaskData }> {
+  if (typeof store.mutate === "function") {
+    return await store.mutate(taskId, builder, opts);
+  }
+  return await store.patch(
+    taskId,
+    async (current) => taskStorePatchFromIntents(await builder(current)),
+    opts,
+  );
 }
 
 function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): TaskData {
