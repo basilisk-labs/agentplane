@@ -1,7 +1,8 @@
 ---
 id: "202603130626-MZV4NG"
 title: "Add Core CI release-ready contract test"
-status: "DOING"
+result_summary: "Core CI release-ready job contract is now protected by tests."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T06:31:39.544Z"
   updated_by: "CODER"
   note: "Core CI release-ready workflow contract is now regression-tested."
-commit: null
+commit:
+  hash: "1a2a2d20cee24776f072ea6a47c22396f4a2e56b"
+  message: "🚧 MZV4NG task: add Core CI release-ready contract test"
 comments:
   -
     author: "CODER"
     body: "Start: add a contract test for the Core CI release-ready job so future workflow edits cannot silently break publish readiness."
+  -
+    author: "CODER"
+    body: "Verified: the Core CI release-ready manifest job now has an explicit workflow contract test guarding dependencies, readiness gating, and artifact upload."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Core CI release-ready workflow contract is now regression-tested."
+  -
+    type: "status"
+    at: "2026-03-13T06:31:49.155Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the Core CI release-ready manifest job now has an explicit workflow contract test guarding dependencies, readiness gating, and artifact upload."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:31:39.546Z"
+doc_updated_at: "2026-03-13T06:31:49.156Z"
 doc_updated_by: "CODER"
 description: "Protect ci.yml release-ready job shape with a workflow contract test so future edits cannot silently break artifact publishing."
 id_source: "generated"
