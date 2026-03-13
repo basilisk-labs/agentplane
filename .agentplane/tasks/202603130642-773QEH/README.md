@@ -1,7 +1,8 @@
 ---
 id: "202603130642-773QEH"
 title: "Add local release E2E harness"
-status: "DOING"
+result_summary: "Local release E2E harness added for exact-SHA GitHub artifact validation."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T06:49:00.955Z"
   updated_by: "CODER"
   note: "Local release E2E harness now validates exact-SHA readiness against the canonical GitHub artifact."
-commit: null
+commit:
+  hash: "ad252cfc89a468091a4f4205fe9249471f8a6169"
+  message: "🚧 773QEH task: add local release E2E harness"
 comments:
   -
     author: "CODER"
     body: "Start: add a local release E2E harness that checks the exact release SHA against GitHub release-ready metadata and validates the downloaded artifact."
+  -
+    author: "CODER"
+    body: "Verified: a local release E2E harness now checks the exact checkout SHA, runs the local release gate, resolves the canonical Core CI artifact, downloads it, and validates manifest parity."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Local release E2E harness now validates exact-SHA readiness against the canonical GitHub artifact."
+  -
+    type: "status"
+    at: "2026-03-13T06:49:05.539Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: a local release E2E harness now checks the exact checkout SHA, runs the local release gate, resolves the canonical Core CI artifact, downloads it, and validates manifest parity."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:49:00.956Z"
+doc_updated_at: "2026-03-13T06:49:05.540Z"
 doc_updated_by: "CODER"
 description: "Provide a local release:e2e:local script that validates exact-SHA release readiness against real GitHub Core CI metadata and downloads the canonical release-ready artifact for comparison."
 id_source: "generated"
