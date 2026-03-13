@@ -84,42 +84,44 @@ export async function cmdTaskSetStatus(opts: {
       ? await store!.get(opts.taskId)
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const currentStatus = String(task.status || "TODO").toUpperCase();
-    ensureStatusTransitionAllowed({
-      currentStatus,
-      nextStatus,
-      force: opts.force,
-    });
+    if (!useStore) {
+      ensureStatusTransitionAllowed({
+        currentStatus,
+        nextStatus,
+        force: opts.force,
+      });
 
-    if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
-      const dep = await resolveTaskDependencyState(task, ctx.taskBackend);
-      if (dep.missing.length > 0 || dep.incomplete.length > 0) {
-        if (!opts.quiet) {
-          if (dep.missing.length > 0) {
-            process.stderr.write(`${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`);
+      if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
+        const dep = await resolveTaskDependencyState(task, ctx.taskBackend);
+        if (dep.missing.length > 0 || dep.incomplete.length > 0) {
+          if (!opts.quiet) {
+            if (dep.missing.length > 0) {
+              process.stderr.write(`${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`);
+            }
+            if (dep.incomplete.length > 0) {
+              process.stderr.write(
+                `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
+              );
+            }
           }
-          if (dep.incomplete.length > 0) {
-            process.stderr.write(
-              `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
-            );
-          }
+          throw new CliError({
+            exitCode: 2,
+            code: "E_USAGE",
+            message: `Task is not ready: ${task.id} (use --force to override)`,
+          });
         }
-        throw new CliError({
-          exitCode: 2,
-          code: "E_USAGE",
-          message: `Task is not ready: ${task.id} (use --force to override)`,
-        });
       }
-    }
 
-    ensureCommentCommitAllowed({
-      enabled: opts.commitFromComment,
-      config,
-      action: "task set-status",
-      confirmed: opts.confirmStatusCommit,
-      quiet: opts.quiet,
-      statusFrom: currentStatus,
-      statusTo: nextStatus,
-    });
+      ensureCommentCommitAllowed({
+        enabled: opts.commitFromComment,
+        config,
+        action: "task set-status",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+        statusFrom: currentStatus,
+        statusTo: nextStatus,
+      });
+    }
 
     const existingComments = Array.isArray(task.comments)
       ? task.comments.filter(
@@ -142,6 +144,8 @@ export async function cmdTaskSetStatus(opts: {
     const nextCommit = opts.commit
       ? { hash: commitInfo!.hash, message: commitInfo!.message }
       : undefined;
+    let currentStatusForCommit = currentStatus;
+    let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
     const next: TaskData = {
       ...task,
       status: nextStatus,
@@ -162,12 +166,45 @@ export async function cmdTaskSetStatus(opts: {
       next.commit = nextCommit;
     }
     await (useStore
-      ? store!.patch(opts.taskId, (current) => {
+      ? store!.patch(opts.taskId, async (current) => {
           const currentStatus = String(current.status || "TODO").toUpperCase();
+          currentStatusForCommit = currentStatus;
+          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
           ensureStatusTransitionAllowed({
             currentStatus,
             nextStatus,
             force: opts.force,
+          });
+          if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
+            const dep = await resolveTaskDependencyState(current, ctx.taskBackend);
+            if (dep.missing.length > 0 || dep.incomplete.length > 0) {
+              if (!opts.quiet) {
+                if (dep.missing.length > 0) {
+                  process.stderr.write(
+                    `${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`,
+                  );
+                }
+                if (dep.incomplete.length > 0) {
+                  process.stderr.write(
+                    `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
+                  );
+                }
+              }
+              throw new CliError({
+                exitCode: 2,
+                code: "E_USAGE",
+                message: `Task is not ready: ${current.id} (use --force to override)`,
+              });
+            }
+          }
+          ensureCommentCommitAllowed({
+            enabled: opts.commitFromComment,
+            config,
+            action: "task set-status",
+            confirmed: opts.confirmStatusCommit,
+            quiet: opts.quiet,
+            statusFrom: currentStatus,
+            statusTo: nextStatus,
           });
           const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
           return {
@@ -212,9 +249,9 @@ export async function cmdTaskSetStatus(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
-        primaryTag: resolvePrimaryTag(toStringArray(task.tags), ctx).primary,
+        primaryTag: primaryTagForCommit,
         author: opts.author,
-        statusFrom: currentStatus,
+        statusFrom: currentStatusForCommit,
         statusTo: nextStatus,
         commentBody: opts.body,
         formattedComment: formatCommentBodyForCommit(opts.body, config),

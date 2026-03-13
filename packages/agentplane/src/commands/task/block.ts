@@ -68,20 +68,22 @@ export async function cmdBlock(opts: {
       : await loadTaskFromContext({ ctx, taskId: opts.taskId });
 
     const currentStatus = String(task.status || "TODO").toUpperCase();
-    ensureStatusTransitionAllowed({
-      currentStatus,
-      nextStatus: "BLOCKED",
-      force: opts.force,
-    });
-    ensureCommentCommitAllowed({
-      enabled: opts.commitFromComment,
-      config: ctx.config,
-      action: "block",
-      confirmed: opts.confirmStatusCommit,
-      quiet: opts.quiet,
-      statusFrom: currentStatus,
-      statusTo: "BLOCKED",
-    });
+    if (!useStore) {
+      ensureStatusTransitionAllowed({
+        currentStatus,
+        nextStatus: "BLOCKED",
+        force: opts.force,
+      });
+      ensureCommentCommitAllowed({
+        enabled: opts.commitFromComment,
+        config: ctx.config,
+        action: "block",
+        confirmed: opts.confirmStatusCommit,
+        quiet: opts.quiet,
+        statusFrom: currentStatus,
+        statusTo: "BLOCKED",
+      });
+    }
 
     const formattedComment = opts.commitFromComment
       ? formatCommentBodyForCommit(opts.body, ctx.config)
@@ -96,13 +98,26 @@ export async function cmdBlock(opts: {
       : [];
     const commentsValue = [...existingComments, { author: opts.author, body: commentBody }];
     const at = nowIso();
+    let currentStatusForCommit = currentStatus;
+    let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
     await (useStore
       ? store!.patch(opts.taskId, (current) => {
           const currentStatus = String(current.status || "TODO").toUpperCase();
+          currentStatusForCommit = currentStatus;
+          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
           ensureStatusTransitionAllowed({
             currentStatus,
             nextStatus: "BLOCKED",
             force: opts.force,
+          });
+          ensureCommentCommitAllowed({
+            enabled: opts.commitFromComment,
+            config: ctx.config,
+            action: "block",
+            confirmed: opts.confirmStatusCommit,
+            quiet: opts.quiet,
+            statusFrom: currentStatus,
+            statusTo: "BLOCKED",
           });
           return {
             task: { status: "BLOCKED" },
@@ -156,10 +171,10 @@ export async function cmdBlock(opts: {
         cwd: opts.cwd,
         rootOverride: opts.rootOverride,
         taskId: opts.taskId,
-        primaryTag: resolvePrimaryTag(toStringArray(task.tags), ctx).primary,
+        primaryTag: primaryTagForCommit,
         executorAgent,
         author: opts.author,
-        statusFrom: currentStatus,
+        statusFrom: currentStatusForCommit,
         statusTo: "BLOCKED",
         commentBody: opts.body,
         formattedComment,

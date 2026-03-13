@@ -1015,6 +1015,8 @@ describe("task finish (unit)", () => {
     };
     const ctx = mkCtx();
     ctx.config.workflow_mode = "branch_pr";
+    ctx.taskBackend.capabilities.writes_task_readmes = false;
+    ctx.backend.capabilities.writes_task_readmes = false;
     mocks.backendIsLocalFileBackend.mockReturnValue(true);
     mocks.getTaskStore.mockReturnValue(store);
 
@@ -1053,6 +1055,134 @@ describe("task finish (unit)", () => {
     expect(currentTask.comments).not.toEqual(
       expect.arrayContaining([{ author: "OLD", body: "stale comment" }]),
     );
+  });
+
+  it("cmdFinish validates the current local task state instead of a stale initial snapshot", async () => {
+    const staleTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+      verification: {
+        state: "ok",
+        updated_at: "2026-02-09T00:00:00.000Z",
+        updated_by: "TESTER",
+        note: "ok",
+      },
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    ctx.config.agents = {
+      approvals: { require_plan: false, require_network: true, require_verify: true },
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "ok",
+      breaking: false,
+      force: false,
+      commitFromComment: false,
+      commitAllow: [],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(store.get).toHaveBeenCalledTimes(1);
+    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(currentTask.status).toBe("DONE");
+  });
+
+  it("cmdFinish derives status-commit metadata from the current local task state", async () => {
+    const staleTask = mkTask({
+      id: "T-1",
+      status: "TODO",
+      tags: ["meta"],
+    });
+    let currentTask = mkTask({
+      id: "T-1",
+      status: "DOING",
+      tags: ["code"],
+    });
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      patch: vi
+        .fn()
+        .mockImplementation(
+          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+            return { changed: true, task: currentTask };
+          },
+        ),
+    };
+    const ctx = mkCtx();
+    ctx.config.workflow_mode = "branch_pr";
+    ctx.taskBackend.capabilities.writes_task_readmes = false;
+    ctx.backend.capabilities.writes_task_readmes = false;
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdFinish } = await import("./finish.js");
+    const rc = await cmdFinish({
+      ctx,
+      cwd: "/repo",
+      taskIds: ["T-1"],
+      author: "A",
+      body: "Verified: this is long enough",
+      result: "ok",
+      breaking: false,
+      force: false,
+      commitFromComment: true,
+      commitEmoji: "✅",
+      commitAllow: ["packages/agentplane"],
+      commitAutoAllow: false,
+      commitAllowTasks: true,
+      commitRequireClean: false,
+      statusCommit: false,
+      statusCommitAllow: [],
+      statusCommitAutoAllow: false,
+      statusCommitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: true,
+    });
+
+    expect(rc).toBe(0);
+    expect(mocks.commitFromComment).toHaveBeenCalledTimes(1);
+    expect(mocks.commitFromComment.mock.calls.at(-1)?.[0]).toMatchObject({
+      taskId: "T-1",
+      primaryTag: "code",
+      statusFrom: "DOING",
+      statusTo: "DONE",
+    });
   });
 
   it("propagates E_VALIDATION when require_verify=true and task is not verified", async () => {

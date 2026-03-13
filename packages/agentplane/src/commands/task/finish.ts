@@ -251,23 +251,21 @@ export async function cmdFinish(opts: {
     let primaryTag: string | null = null;
     for (const taskId of opts.taskIds) {
       const task = useStore ? await store!.get(taskId) : await loadTaskFromContext({ ctx, taskId });
-      assertTaskCanFinish({
-        task,
-        config: ctx.config,
-        taskCount: opts.taskIds.length,
-        isMetaTask: taskId === metaTaskId,
-        resultProvided,
-        resultSummary,
-        force: opts.force,
-      });
+      if (!useStore) {
+        assertTaskCanFinish({
+          task,
+          config: ctx.config,
+          taskCount: opts.taskIds.length,
+          isMetaTask: taskId === metaTaskId,
+          resultProvided,
+          resultSummary,
+          force: opts.force,
+        });
 
-      if (
-        taskId === primaryTaskId &&
-        (opts.commitFromComment || statusCommitRequested) &&
-        primaryStatusFrom === null
-      ) {
-        primaryStatusFrom = String(task.status || "TODO").toUpperCase();
-        primaryTag = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
+        if (taskId === primaryTaskId && (opts.commitFromComment || statusCommitRequested)) {
+          primaryStatusFrom = String(task.status || "TODO").toUpperCase();
+          primaryTag = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
+        }
       }
 
       const at = nowIso();
@@ -283,6 +281,10 @@ export async function cmdFinish(opts: {
             force: opts.force,
           });
           const currentStatus = String(current.status || "TODO").toUpperCase();
+          if (taskId === primaryTaskId && (opts.commitFromComment || statusCommitRequested)) {
+            primaryStatusFrom = currentStatus;
+            primaryTag = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
+          }
           return {
             task: {
               status: "DONE",
