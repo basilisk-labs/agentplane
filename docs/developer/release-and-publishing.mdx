@@ -67,10 +67,16 @@ agentplane release apply --push --yes
 - agent template sync check
 - build
 - lint
-- full test suite
+- release-focused Linux test base
+- workflow/harness coverage guard
+- significant-file coverage guard
+- release-critical smoke/recovery checks
 - `release:check`:
 - package builds
 - npm dry-run pack for both packages
+
+This is intentionally narrower than every workflow in the repository, but it should match the
+release-relevant Linux gate that can block or invalidate a publishable SHA.
 
 ## Publishing policy
 
