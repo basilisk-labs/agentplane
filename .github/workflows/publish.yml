@@ -245,6 +245,7 @@ jobs:
           sha256sum agentplane-upgrade.tar.gz > agentplane-upgrade.tar.gz.sha256
       - run: printf "registry=https://registry.npmjs.org/\n" > "$NPM_CONFIG_USERCONFIG"
       - name: Publish @agentplaneorg/core
+        id: publish_core
         if: needs.detect.outputs.core_published != 'true'
         working-directory: packages/core
         shell: bash
@@ -252,6 +253,7 @@ jobs:
           set -euo pipefail
           npm publish --provenance --access public --tag latest
       - name: Publish agentplane
+        id: publish_cli
         if: needs.detect.outputs.cli_published != 'true'
         working-directory: packages/agentplane
         shell: bash
@@ -259,8 +261,10 @@ jobs:
           set -euo pipefail
           npm publish --provenance --access public --tag latest
       - name: Post-publish npm smoke
+        id: post_publish_smoke
         run: bun run release:smoke:published
       - name: Push release tag
+        id: push_tag
         if: steps.tag_state.outputs.tag_exists != 'true'
         shell: bash
         run: |
@@ -270,6 +274,7 @@ jobs:
           git tag "${{ needs.detect.outputs.tag }}"
           git push origin "refs/tags/${{ needs.detect.outputs.tag }}"
       - name: Create GitHub Release
+        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.detect.outputs.tag }}
@@ -277,3 +282,33 @@ jobs:
           files: |
             agentplane-upgrade.tar.gz
             agentplane-upgrade.tar.gz.sha256
+      - name: Write publish-result manifest
+        if: always()
+        shell: bash
+        env:
+          AGENTPLANE_PUBLISH_JOB_STATUS: ${{ job.status }}
+        run: |
+          set -euo pipefail
+          node scripts/write-publish-result-manifest.mjs \
+            --out .agentplane/.release/publish/publish-result.json \
+            --sha "${{ needs.detect.outputs.sha }}" \
+            --version "${{ needs.detect.outputs.version }}" \
+            --tag "${{ needs.detect.outputs.tag }}" \
+            --release-ready-run-id "${{ needs.detect.outputs.release_ready_run_id }}" \
+            --job-status "${{ job.status }}" \
+            --core-prepublished "${{ needs.detect.outputs.core_published }}" \
+            --cli-prepublished "${{ needs.detect.outputs.cli_published }}" \
+            --core-outcome "${{ steps.publish_core.outcome }}" \
+            --cli-outcome "${{ steps.publish_cli.outcome }}" \
+            --smoke-outcome "${{ steps.post_publish_smoke.outcome }}" \
+            --tag-exists "${{ steps.tag_state.outputs.tag_exists || 'false' }}" \
+            --tag-outcome "${{ steps.push_tag.outcome }}" \
+            --release-outcome "${{ steps.create_release.outcome }}"
+          node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/publish/publish-result.json','utf8')); console.log(payload.message);"
+      - name: Upload publish-result artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: publish-result
+          path: .agentplane/.release/publish/publish-result.json
+          if-no-files-found: error

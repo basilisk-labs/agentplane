@@ -91,6 +91,7 @@ GitHub workflow `Publish to npm`:
 - uses OIDC trusted publishing
 - sets provenance
 - consumes the `release-ready` artifact from the exact `Core CI` run as the only readiness source
+- emits a `publish-result` artifact from the publish job as the canonical post-publish outcome record
 - validates the exact publish ref with `bun run release:prepublish` inside the workflow itself
 - validates notes and version/tag parity
 - validates workspace parity (`core`, `agentplane`, and `@agentplaneorg/core` dependency)
@@ -147,6 +148,10 @@ bun run release:recover -- --check-github
 This uses the latest apply report commit hash when available and treats the `release-ready` artifact
 from `Core CI` as the canonical readiness source. For local use, provide GitHub auth and repo context
 via `GITHUB_TOKEN` plus `GITHUB_REPOSITORY` or `--github-repo`.
+
+The publish workflow now also writes `publish-result.json` as a separate artifact so post-publish
+diagnostics can distinguish a completed release from a partially failed publish run without relying
+only on workflow status inference.
 
 ## Local release E2E harness
 

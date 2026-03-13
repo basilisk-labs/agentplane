@@ -16,6 +16,10 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("name: release-ready");
     expect(workflow).toContain("run-id: ${{ needs.detect.outputs.release_ready_run_id }}");
     expect(workflow).toContain("node scripts/resolve-release-ready-source.mjs");
+    expect(workflow).toContain("node scripts/write-publish-result-manifest.mjs");
+    expect(workflow).toContain("name: publish-result");
+    expect(workflow).toContain("path: .agentplane/.release/publish/publish-result.json");
+    expect(workflow).toContain("if: always()");
   });
 
   it("prefers an explicit workflow_dispatch sha over a mutable ref", async () => {
