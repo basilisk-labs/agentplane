@@ -1,7 +1,8 @@
 ---
 id: "202603130729-VXD8D9"
 title: "Clarify protected allow flag semantics in commit help"
-status: "DOING"
+result_summary: "Commit help/docs now distinguish standalone protected path scopes from branch-only --allow-base and show protected-scope examples explicitly."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T07:32:16.062Z"
   updated_by: "CODER"
   note: "Verified commit help/docs semantics: help snapshot and docs-cli contract pass, generated CLI reference is refreshed, and wording now distinguishes standalone protected path scopes from branch-only --allow-base."
-commit: null
+commit:
+  hash: "24d207da7b37731f9b97239aaf95056c4e7dd2b3"
+  message: "📝 VXD8D9 task: clarify protected allow help semantics"
 comments:
   -
     author: "CODER"
     body: "Start: clarify commit help so path-scoped protected allow flags are documented as standalone scopes, while --allow-base remains branch-only and non-path-based."
+  -
+    author: "CODER"
+    body: "Verified: commit and guard-commit help now state which protected flags are standalone path scopes, examples show CI-only usage without redundant prefixes, and the generated CLI reference matches the updated command specs."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified commit help/docs semantics: help snapshot and docs-cli contract pass, generated CLI reference is refreshed, and wording now distinguishes standalone protected path scopes from branch-only --allow-base."
+  -
+    type: "status"
+    at: "2026-03-13T07:32:45.906Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: commit and guard-commit help now state which protected flags are standalone path scopes, examples show CI-only usage without redundant prefixes, and the generated CLI reference matches the updated command specs."
 doc_version: 3
-doc_updated_at: "2026-03-13T07:32:16.064Z"
+doc_updated_at: "2026-03-13T07:32:45.908Z"
 doc_updated_by: "CODER"
 description: "Update commit/guard help and docs so path-scoped protected flags are documented as standalone scope selectors, while --allow-base remains branch-only and not a path allowlist."
 id_source: "generated"
