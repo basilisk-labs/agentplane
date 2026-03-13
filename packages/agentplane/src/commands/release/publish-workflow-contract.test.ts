@@ -17,4 +17,19 @@ describe("publish workflow contract", () => {
     expect(workflow).toContain("run-id: ${{ needs.detect.outputs.release_ready_run_id }}");
     expect(workflow).toContain("node scripts/resolve-release-ready-source.mjs");
   });
+
+  it("prefers an explicit workflow_dispatch sha over a mutable ref", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain("workflow_dispatch:");
+    expect(workflow).toContain("sha:");
+    expect(workflow).toContain(
+      'description: "Exact Git commit SHA to publish or recover from (preferred over ref)"',
+    );
+    expect(workflow).toContain('if [ -n "${{ github.event.inputs.sha }}" ]; then');
+    expect(workflow).toContain('echo "ref=${{ github.event.inputs.sha }}" >> "$GITHUB_OUTPUT"');
+    expect(workflow).toContain(
+      'description: "Git ref to evaluate only when sha is omitted (default: main)"',
+    );
+  });
 });

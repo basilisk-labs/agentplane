@@ -87,6 +87,7 @@ GitHub workflow `Publish to npm`:
 
 - auto-publishes only from successful `Core CI` `workflow_run` events on `main`
 - `workflow_dispatch` recovery remains available for explicit reruns
+- manual recovery should pass an exact `sha` input; `ref` is only a fallback when `sha` is omitted
 - uses OIDC trusted publishing
 - sets provenance
 - consumes the `release-ready` artifact from the exact `Core CI` run as the only readiness source
@@ -119,6 +120,9 @@ Trusted publishing must be configured in npm for repository workflow identity.
 - bump to next patch and regenerate notes
 - Publish workflow fails after partial publish:
 - rerun workflow, idempotent checks should skip already-published packages
+- Manual publish/recovery needs an exact commit:
+- prefer `workflow_dispatch` with `sha=<release commit>` so the workflow resolves a fixed `release-ready`
+  artifact source instead of following a moving branch ref
 
 ## Recovery tool
 

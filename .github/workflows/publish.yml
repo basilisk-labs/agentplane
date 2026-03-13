@@ -10,8 +10,11 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      sha:
+        description: "Exact Git commit SHA to publish or recover from (preferred over ref)"
+        required: false
       ref:
-        description: "Git ref to evaluate for release (default: main)"
+        description: "Git ref to evaluate only when sha is omitted (default: main)"
         required: false
         default: "main"
 
@@ -40,12 +43,16 @@ jobs:
       release_ready_run_id: ${{ steps.source.outputs.release_ready_run_id }}
       release_ready_state: ${{ steps.source.outputs.release_ready_state }}
     steps:
-      - name: Resolve ref
+      - name: Resolve publish target
         id: ref
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "ref=${{ github.event.inputs.ref }}" >> "$GITHUB_OUTPUT"
+            if [ -n "${{ github.event.inputs.sha }}" ]; then
+              echo "ref=${{ github.event.inputs.sha }}" >> "$GITHUB_OUTPUT"
+            else
+              echo "ref=${{ github.event.inputs.ref }}" >> "$GITHUB_OUTPUT"
+            fi
           else
             echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi

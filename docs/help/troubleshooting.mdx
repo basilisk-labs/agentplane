@@ -108,6 +108,8 @@ agentplane runtime explain
 - If GitHub shows mixed workflow results, run `bun run release:recover -- --check-github` to see
   whether the release SHA is missing its `release-ready` artifact, is ready but unpublished, or was
   already published and only a sibling `Core CI` run failed.
+- If you rerun `Publish to npm` manually, pass the exact release commit as the workflow `sha` input;
+  use `ref` only as a fallback when the exact commit is unknown.
 - If npm history may already contain the target version, run `bun run release:recover -- --check-registry`.
 - Fix reported errors first, then run `agentplane release apply --push` again.
 
