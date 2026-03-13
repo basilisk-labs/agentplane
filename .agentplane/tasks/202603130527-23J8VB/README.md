@@ -1,7 +1,8 @@
 ---
 id: "202603130527-23J8VB"
 title: "Block auto-publish when Core CI is red on release SHA"
-status: "DOING"
+result_summary: "Added an explicit GitHub Actions status gate to publish.yml, documented the contract, and covered the helper/script path with targeted tests."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-13T05:43:36.277Z"
   updated_by: "CODER"
   note: "Verified workflow gate: publish.yml now waits for green Core CI on the exact release SHA; targeted status-gate tests, workflow lint, eslint, and prettier checks passed."
-commit: null
+commit:
+  hash: "5e5ed913a417196023e5c25b987d7b3ee0c5df01"
+  message: "🛡️ 23J8VB release: gate publish on green core-ci"
 comments:
   -
     author: "CODER"
     body: "Start: add an explicit Core CI status gate ahead of auto-publish for release SHAs, keep workflow_dispatch recovery usable, and back the new check with deterministic tests instead of workflow-only shell glue."
+  -
+    author: "CODER"
+    body: "Verified: publish workflow now blocks on a non-green Core CI run for the exact release SHA before npm steps can execute."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified workflow gate: publish.yml now waits for green Core CI on the exact release SHA; targeted status-gate tests, workflow lint, eslint, and prettier checks passed."
+  -
+    type: "status"
+    at: "2026-03-13T05:43:58.604Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: publish workflow now blocks on a non-green Core CI run for the exact release SHA before npm steps can execute."
 doc_version: 3
-doc_updated_at: "2026-03-13T05:43:36.278Z"
+doc_updated_at: "2026-03-13T05:43:58.604Z"
 doc_updated_by: "CODER"
 description: "Prevent npm publication for a release commit unless the corresponding Core CI run for that exact SHA completed successfully; keep workflow_dispatch recovery available."
 id_source: "generated"
