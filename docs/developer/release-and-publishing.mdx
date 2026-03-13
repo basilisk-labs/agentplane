@@ -88,6 +88,7 @@ GitHub workflow `Publish to npm`:
 - auto-publishes only from successful `Core CI` `workflow_run` events on `main`
 - `workflow_dispatch` recovery remains available for explicit reruns
 - manual recovery should pass an exact `sha` input; `ref` is only a fallback when `sha` is omitted
+- serializes publish runs by release identity (`workflow_run.head_sha` or explicit dispatch `sha`) instead of branch ref, and queues duplicates instead of canceling an in-flight release
 - uses OIDC trusted publishing
 - sets provenance
 - consumes the `release-ready` artifact from the exact `Core CI` run as the only readiness source

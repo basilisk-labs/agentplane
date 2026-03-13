@@ -36,4 +36,14 @@ describe("publish workflow contract", () => {
       'description: "Git ref to evaluate only when sha is omitted (default: main)"',
     );
   });
+
+  it("serializes publish runs by release identity instead of branch ref", async () => {
+    const workflow = await readFile(PUBLISH_WORKFLOW_PATH, "utf8");
+
+    expect(workflow).toContain("concurrency:");
+    expect(workflow).toContain("github.event.workflow_run.head_sha");
+    expect(workflow).toContain("github.event.inputs.sha");
+    expect(workflow).toContain("cancel-in-progress: false");
+    expect(workflow).not.toContain("${{ github.workflow }}-${{ github.ref }}");
+  });
 });

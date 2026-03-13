@@ -1,7 +1,7 @@
 ---
 id: "202603130653-SDG861"
 title: "Tighten publish workflow concurrency to release identity"
-status: "TODO"
+status: "DOING"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -14,16 +14,32 @@ plan_approval:
   updated_by: "ORCHESTRATOR"
   note: null
 verification:
-  state: "pending"
-  updated_at: null
-  updated_by: null
-  note: null
+  state: "ok"
+  updated_at: "2026-03-13T07:19:12.454Z"
+  updated_by: "CODER"
+  note: "Verified release-identity publish concurrency: publish workflow contract, workflows lint, and prettier all pass."
 commit: null
-comments: []
-events: []
+comments:
+  -
+    author: "CODER"
+    body: "Start: tighten publish workflow concurrency so manual dispatches and workflow_run publishes serialize by release identity instead of branch ref, without broadening the workflow contract."
+events:
+  -
+    type: "status"
+    at: "2026-03-13T07:17:11.496Z"
+    author: "CODER"
+    from: "TODO"
+    to: "DOING"
+    note: "Start: tighten publish workflow concurrency so manual dispatches and workflow_run publishes serialize by release identity instead of branch ref, without broadening the workflow contract."
+  -
+    type: "verify"
+    at: "2026-03-13T07:19:12.454Z"
+    author: "CODER"
+    state: "ok"
+    note: "Verified release-identity publish concurrency: publish workflow contract, workflows lint, and prettier all pass."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:55:24.005Z"
-doc_updated_by: "ORCHESTRATOR"
+doc_updated_at: "2026-03-13T07:19:12.457Z"
+doc_updated_by: "CODER"
 description: "Avoid unrelated publish cancellations by keying concurrency to the release SHA or tag instead of a mutable branch ref."
 id_source: "generated"
 ---
@@ -53,6 +69,14 @@ Avoid unrelated publish cancellations by keying concurrency to the release SHA o
 ## Verification
 
 <!-- BEGIN VERIFICATION RESULTS -->
+#### 2026-03-13T07:19:12.454Z — VERIFY — ok
+
+By: CODER
+
+Note: Verified release-identity publish concurrency: publish workflow contract, workflows lint, and prettier all pass.
+
+VerifyStepsRef: doc_version=3, doc_updated_at=2026-03-13T07:17:11.497Z, excerpt_hash=sha256:ef637f85aef23ed8da10711e9ea8f996901673d1d0ad277a36e4f4ab3519e27b
+
 <!-- END VERIFICATION RESULTS -->
 
 ## Rollback Plan
