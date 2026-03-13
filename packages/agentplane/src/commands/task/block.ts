@@ -1,5 +1,5 @@
 import { mapBackendError } from "../../cli/error-map.js";
-import { successMessage } from "../../cli/output.js";
+import { successMessage, warnMessage } from "../../cli/output.js";
 import { formatCommentBodyForCommit } from "../../shared/comment-format.js";
 import { CliError } from "../../shared/errors.js";
 
@@ -26,6 +26,7 @@ import {
   appendTaskEvent,
   defaultCommitEmojiForStatus,
   ensureCommentCommitAllowed,
+  resolveCommentCommitWarning,
   ensureStatusTransitionAllowed,
   normalizeTaskDocVersion,
   nowIso,
@@ -108,8 +109,10 @@ export async function cmdBlock(opts: {
     const at = nowIso();
     let currentStatusForCommit = currentStatus;
     let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
+    let deferredWarnings: string[] = [];
     await (useStore
       ? mutateTaskStore(store!, opts.taskId, (current) => {
+          deferredWarnings = [];
           const currentStatus = String(current.status || "TODO").toUpperCase();
           currentStatusForCommit = currentStatus;
           primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
@@ -118,7 +121,7 @@ export async function cmdBlock(opts: {
             nextStatus: "BLOCKED",
             force: opts.force,
           });
-          ensureCommentCommitAllowed({
+          const commitWarning = resolveCommentCommitWarning({
             enabled: opts.commitFromComment,
             config: ctx.config,
             action: "block",
@@ -127,6 +130,7 @@ export async function cmdBlock(opts: {
             statusFrom: currentStatus,
             statusTo: "BLOCKED",
           });
+          if (commitWarning) deferredWarnings.push(commitWarning);
           return [
             setTaskFieldsIntent({ status: "BLOCKED" }),
             appendTaskCommentIntent({ author: opts.author, body: commentBody }),
@@ -160,6 +164,12 @@ export async function cmdBlock(opts: {
           doc_updated_at: at,
           doc_updated_by: opts.author,
         }));
+
+    if (!opts.quiet) {
+      for (const warning of new Set(deferredWarnings)) {
+        process.stderr.write(`${warnMessage(warning)}\n`);
+      }
+    }
 
     let commitInfo: { hash: string; message: string } | null = null;
     if (opts.commitFromComment) {

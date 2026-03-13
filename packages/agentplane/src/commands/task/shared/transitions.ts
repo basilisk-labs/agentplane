@@ -97,7 +97,22 @@ export function ensureCommentCommitAllowed(opts: {
   statusFrom: string;
   statusTo: string;
 }): void {
-  if (!opts.enabled) return;
+  const warning = resolveCommentCommitWarning(opts);
+  if (warning) {
+    process.stderr.write(`${warnMessage(warning)}\n`);
+  }
+}
+
+export function resolveCommentCommitWarning(opts: {
+  enabled: boolean;
+  config: AgentplaneConfig;
+  action: string;
+  confirmed: boolean;
+  quiet: boolean;
+  statusFrom: string;
+  statusTo: string;
+}): string | null {
+  if (!opts.enabled) return null;
   if (opts.config.commit_automation === "finish_only") {
     throw new CliError({
       exitCode: 2,
@@ -107,7 +122,7 @@ export function ensureCommentCommitAllowed(opts: {
         "(allowed only in finish).",
     });
   }
-  enforceStatusCommitPolicy({
+  return resolveStatusCommitPolicyWarning({
     policy: opts.config.status_commit_policy,
     action: opts.action,
     confirmed: opts.confirmed,
@@ -149,6 +164,20 @@ export function enforceStatusCommitPolicy(opts: {
   statusFrom: string;
   statusTo: string;
 }): void {
+  const warning = resolveStatusCommitPolicyWarning(opts);
+  if (warning) {
+    process.stderr.write(`${warnMessage(warning)}\n`);
+  }
+}
+
+export function resolveStatusCommitPolicyWarning(opts: {
+  policy: AgentplaneConfig["status_commit_policy"];
+  action: string;
+  confirmed: boolean;
+  quiet: boolean;
+  statusFrom: string;
+  statusTo: string;
+}): string | null {
   if (!isMajorStatusCommitTransition(opts.statusFrom, opts.statusTo)) {
     throw new CliError({
       exitCode: 2,
@@ -158,16 +187,12 @@ export function enforceStatusCommitPolicy(opts: {
         `(got ${opts.statusFrom.toUpperCase()} -> ${opts.statusTo.toUpperCase()})`,
     });
   }
-  if (opts.policy === "off") return;
+  if (opts.policy === "off") return null;
   if (opts.policy === "warn") {
-    if (!opts.quiet && !opts.confirmed) {
-      process.stderr.write(
-        `${warnMessage(
-          `${opts.action}: status/comment-driven commit requested; policy=warn (pass --confirm-status-commit to acknowledge)`,
-        )}\n`,
-      );
-    }
-    return;
+    return opts.quiet || opts.confirmed
+      ? null
+      : `${opts.action}: status/comment-driven commit requested; policy=warn ` +
+          "(pass --confirm-status-commit to acknowledge)";
   }
   if (opts.policy === "confirm" && !opts.confirmed) {
     throw new CliError({
@@ -178,6 +203,7 @@ export function enforceStatusCommitPolicy(opts: {
         "(pass --confirm-status-commit to proceed)",
     });
   }
+  return null;
 }
 
 const MAJOR_STATUS_COMMIT_TRANSITIONS = new Set([

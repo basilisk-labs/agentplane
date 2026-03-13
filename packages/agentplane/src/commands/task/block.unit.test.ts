@@ -183,4 +183,54 @@ describe("task block command (unit)", () => {
       statusTo: "BLOCKED",
     });
   });
+
+  it("emits status_commit_policy=warn only once when local mutate retries the builder", async () => {
+    const ctx = mkCtx();
+    ctx.config.status_commit_policy = "warn";
+    const staleTask = mkTask({ status: "TODO", tags: ["meta"] });
+    let currentTask = mkTask({ status: "DOING", tags: ["code"] });
+    const stderrWrite = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      mutate: vi
+        .fn()
+        .mockImplementation(async (_taskId: string, builder: (current: TaskData) => unknown) => {
+          const { taskStorePatchFromIntents } = await import("../shared/task-store.js");
+          await builder(currentTask);
+          currentTask = applyStorePatch(
+            currentTask,
+            taskStorePatchFromIntents(await builder(currentTask)),
+          );
+          return { changed: true, task: currentTask };
+        }),
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdBlock } = await import("./block.js");
+    const rc = await cmdBlock({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      author: "CODER",
+      body: "Blocked: this comment is long enough to satisfy the min_chars rule.",
+      commitFromComment: true,
+      commitAllow: ["packages/agentplane"],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      confirmStatusCommit: false,
+      force: false,
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(store.mutate).toHaveBeenCalledTimes(1);
+    expect(currentTask.status).toBe("BLOCKED");
+    const policyWarnings = stderrWrite.mock.calls
+      .map((call) => String(call[0] ?? ""))
+      .filter((line) => line.includes("policy=warn"));
+    expect(policyWarnings).toHaveLength(1);
+    stderrWrite.mockRestore();
+  });
 });

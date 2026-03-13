@@ -198,7 +198,7 @@ describe("task set-status command (unit)", () => {
       commitAllowTasks: false,
       commitRequireClean: false,
       confirmStatusCommit: false,
-      quiet: true,
+      quiet: false,
     });
 
     expect(rc).toBe(0);
@@ -255,15 +255,67 @@ describe("task set-status command (unit)", () => {
     });
   });
 
+  it("emits status_commit_policy=warn only once when local mutate retries the builder", async () => {
+    const ctx = mkCtx();
+    ctx.config.status_commit_policy = "warn";
+    const staleTask = mkTask({ status: "TODO", tags: ["meta"] });
+    let currentTask = mkTask({ status: "BLOCKED", tags: ["code"] });
+    const stderrWrite = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
+    const store = {
+      get: vi.fn().mockResolvedValue(staleTask),
+      mutate: vi
+        .fn()
+        .mockImplementation(async (_taskId: string, builder: (current: TaskData) => unknown) => {
+          const { taskStorePatchFromIntents } = await import("../shared/task-store.js");
+          await builder(currentTask);
+          currentTask = applyStorePatch(
+            currentTask,
+            taskStorePatchFromIntents(await builder(currentTask)),
+          );
+          return { changed: true, task: currentTask };
+        }),
+    };
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue(store);
+
+    const { cmdTaskSetStatus } = await import("./set-status.js");
+    const rc = await cmdTaskSetStatus({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      status: "DOING",
+      author: "CODER",
+      body: "Start: this comment is long enough to satisfy the min_chars requirement.",
+      force: false,
+      yes: false,
+      commitFromComment: true,
+      commitAllow: ["packages/agentplane"],
+      commitAutoAllow: false,
+      commitAllowTasks: false,
+      commitRequireClean: false,
+      confirmStatusCommit: false,
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(store.mutate).toHaveBeenCalledTimes(1);
+    const policyWarnings = stderrWrite.mock.calls
+      .map((call) => String(call[0] ?? ""))
+      .filter((line) => line.includes("policy=warn"));
+    expect(policyWarnings).toHaveLength(1);
+    stderrWrite.mockRestore();
+  });
+
   it("still fails when the current local task state is not ready", async () => {
     const ctx = mkCtx();
     let currentTask = mkTask({ depends_on: ["DEP-1"] });
+    const stderrWrite = vi.spyOn(process.stderr, "write").mockImplementation(() => true);
     const store = {
       get: vi.fn().mockResolvedValue(currentTask),
-      patch: vi
+      mutate: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
+          async (_taskId: string, builder: (current: TaskData) => Promise<unknown>) => {
             await builder(currentTask);
             throw new CliError({ exitCode: 2, code: "E_USAGE", message: "unreachable" });
           },
@@ -287,11 +339,16 @@ describe("task set-status command (unit)", () => {
         commitAllowTasks: false,
         commitRequireClean: false,
         confirmStatusCommit: false,
-        quiet: true,
+        quiet: false,
       }),
     ).rejects.toMatchObject({
       code: "E_USAGE",
       message: "Task is not ready: T-1 (use --force to override)",
     });
+    const warnings = stderrWrite.mock.calls
+      .map((call) => String(call[0] ?? ""))
+      .filter((line) => line.includes("missing deps: DEP-1"));
+    expect(warnings).toHaveLength(1);
+    stderrWrite.mockRestore();
   });
 });

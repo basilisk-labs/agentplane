@@ -24,8 +24,10 @@ import {
 
 import {
   appendTaskEvent,
+  dependencyWarningMessages,
   defaultCommitEmojiForStatus,
   ensureCommentCommitAllowed,
+  resolveCommentCommitWarning,
   ensureStatusTransitionAllowed,
   normalizeTaskDocVersion,
   normalizeTaskStatus,
@@ -154,6 +156,7 @@ export async function cmdTaskSetStatus(opts: {
       : undefined;
     let currentStatusForCommit = currentStatus;
     let primaryTagForCommit = resolvePrimaryTag(toStringArray(task.tags), ctx).primary;
+    let deferredWarnings: string[] = [];
     const next: TaskData = {
       ...task,
       status: nextStatus,
@@ -173,76 +176,82 @@ export async function cmdTaskSetStatus(opts: {
     if (opts.commit) {
       next.commit = nextCommit;
     }
-    await (useStore
-      ? mutateTaskStore(store!, opts.taskId, async (current) => {
-          const currentStatus = String(current.status || "TODO").toUpperCase();
-          currentStatusForCommit = currentStatus;
-          primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
-          ensureStatusTransitionAllowed({
-            currentStatus,
-            nextStatus,
-            force: opts.force,
-          });
-          if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
-            const dep = await resolveTaskDependencyState(current, ctx.taskBackend);
-            if (dep.missing.length > 0 || dep.incomplete.length > 0) {
-              if (!opts.quiet) {
-                if (dep.missing.length > 0) {
-                  process.stderr.write(
-                    `${warnMessage(`missing deps: ${dep.missing.join(", ")}`)}\n`,
-                  );
-                }
-                if (dep.incomplete.length > 0) {
-                  process.stderr.write(
-                    `${warnMessage(`incomplete deps: ${dep.incomplete.join(", ")}`)}\n`,
-                  );
-                }
+    try {
+      await (useStore
+        ? mutateTaskStore(store!, opts.taskId, async (current) => {
+            deferredWarnings = [];
+            const currentStatus = String(current.status || "TODO").toUpperCase();
+            currentStatusForCommit = currentStatus;
+            primaryTagForCommit = resolvePrimaryTag(toStringArray(current.tags), ctx).primary;
+            ensureStatusTransitionAllowed({
+              currentStatus,
+              nextStatus,
+              force: opts.force,
+            });
+            if (!opts.force && (nextStatus === "DOING" || nextStatus === "DONE")) {
+              const dep = await resolveTaskDependencyState(current, ctx.taskBackend);
+              deferredWarnings = [...deferredWarnings, ...dependencyWarningMessages(dep)];
+              if (dep.missing.length > 0 || dep.incomplete.length > 0) {
+                throw new CliError({
+                  exitCode: 2,
+                  code: "E_USAGE",
+                  message: `Task is not ready: ${current.id} (use --force to override)`,
+                });
               }
-              throw new CliError({
-                exitCode: 2,
-                code: "E_USAGE",
-                message: `Task is not ready: ${current.id} (use --force to override)`,
-              });
             }
-          }
-          ensureCommentCommitAllowed({
-            enabled: opts.commitFromComment,
-            config,
-            action: "task set-status",
-            confirmed: opts.confirmStatusCommit,
-            quiet: opts.quiet,
-            statusFrom: currentStatus,
-            statusTo: nextStatus,
-          });
-          const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
-          const intents = [
-            setTaskFieldsIntent({
-              status: nextStatus,
-              ...(nextCommit ? { commit: nextCommit } : {}),
-            }),
-            appendTaskEventIntent({
-              type: "status",
-              at,
-              author: currentEventAuthor,
-              from: currentStatus,
-              to: nextStatus,
-              note: commentBody,
-            }),
-            touchTaskDocMetaIntent({
-              updatedBy: currentEventAuthor,
-              version: normalizeTaskDocVersion(current.doc_version),
-            }),
-          ];
-          if (commentBody) {
-            intents.splice(
-              1,
-              0,
-              appendTaskCommentIntent({ author: opts.author!, body: commentBody }),
-            );
-          }
-          return intents;
-        })
-      : ctx.taskBackend.writeTask(next));
+            const commitWarning = resolveCommentCommitWarning({
+              enabled: opts.commitFromComment,
+              config,
+              action: "task set-status",
+              confirmed: opts.confirmStatusCommit,
+              quiet: opts.quiet,
+              statusFrom: currentStatus,
+              statusTo: nextStatus,
+            });
+            if (commitWarning) deferredWarnings.push(commitWarning);
+            const currentEventAuthor = resolveDocUpdatedBy(current, opts.author);
+            const intents = [
+              setTaskFieldsIntent({
+                status: nextStatus,
+                ...(nextCommit ? { commit: nextCommit } : {}),
+              }),
+              appendTaskEventIntent({
+                type: "status",
+                at,
+                author: currentEventAuthor,
+                from: currentStatus,
+                to: nextStatus,
+                note: commentBody,
+              }),
+              touchTaskDocMetaIntent({
+                updatedBy: currentEventAuthor,
+                version: normalizeTaskDocVersion(current.doc_version),
+              }),
+            ];
+            if (commentBody) {
+              intents.splice(
+                1,
+                0,
+                appendTaskCommentIntent({ author: opts.author!, body: commentBody }),
+              );
+            }
+            return intents;
+          })
+        : ctx.taskBackend.writeTask(next));
+    } catch (err) {
+      if (err instanceof CliError && !opts.quiet) {
+        for (const warning of new Set(deferredWarnings)) {
+          process.stderr.write(`${warnMessage(warning)}\n`);
+        }
+      }
+      throw err;
+    }
+
+    if (!opts.quiet) {
+      for (const warning of new Set(deferredWarnings)) {
+        process.stderr.write(`${warnMessage(warning)}\n`);
+      }
+    }
 
     // tasks.json is export-only; generated via `agentplane task export`.
 

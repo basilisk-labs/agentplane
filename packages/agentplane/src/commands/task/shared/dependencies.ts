@@ -102,6 +102,17 @@ export async function resolveTaskDependencyState(
   return { dependsOn, missing, incomplete };
 }
 
+export function dependencyWarningMessages(dep: DependencyState): string[] {
+  const warnings: string[] = [];
+  if (dep.missing.length > 0) {
+    warnings.push(`missing deps: ${dep.missing.join(", ")}`);
+  }
+  if (dep.incomplete.length > 0) {
+    warnings.push(`incomplete deps: ${dep.incomplete.join(", ")}`);
+  }
+  return warnings;
+}
+
 export function buildDependencyState(tasks: TaskData[]): Map<string, DependencyState> {
   const byId = new Map(tasks.map((task) => [task.id, task]));
   const state = new Map<string, DependencyState>();

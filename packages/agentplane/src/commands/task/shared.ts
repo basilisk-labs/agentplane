@@ -31,6 +31,7 @@ export {
 } from "./shared/tags.js";
 export {
   type DependencyState,
+  dependencyWarningMessages,
   ensureTaskDependsOnGraphIsAcyclic,
   resolveTaskDependencyState,
   buildDependencyState,
@@ -43,8 +44,10 @@ export {
   isTransitionAllowed,
   ensureStatusTransitionAllowed,
   ensureCommentCommitAllowed,
+  resolveCommentCommitWarning,
   requireStructuredComment,
   enforceStatusCommitPolicy,
+  resolveStatusCommitPolicyWarning,
   isMajorStatusCommitTransition,
   readHeadCommit,
   readCommitInfo,
