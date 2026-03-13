@@ -1,10 +1,11 @@
 ---
 id: "202603131310-0KBWXJ"
 title: "Introduce intent-based task mutation API"
-status: "DOING"
+result_summary: "Intent-based task mutations now exist as a first-class TaskStore API and power the first store-backed comment, verify, and verified-close flows."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on:
   - "202603131309-HSRN23"
   - "202603131309-YDAC7K"
@@ -24,11 +25,16 @@ verification:
   note: |-
     Command: bun x vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts --hookTimeout 60000 --testTimeout 60000 && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && node --input-type=module <intent-runtime-check>
     Result: TaskStore now exposes mutate(intents), patch delegates through the same apply path, migrated local consumers use explicit intents, and built-runtime intent writes preserve revision-aware CAS conflicts.
-commit: null
+commit:
+  hash: "d7f2f891c064d8b46b27c83a44ac2bdf8e823c96"
+  message: "🧩 0KBWXJ task: Introduce intent-based task mutation API"
 comments:
   -
     author: "CODER"
     body: "Start: add an explicit TaskStore intent layer, keep patch as a compatibility wrapper, and move the first simple store-backed consumers onto named intents."
+  -
+    author: "CODER"
+    body: "Verified: TaskStore now exposes mutate(intents), patch routes through the same apply path, and the first local consumers use named intents without regressing CAS behavior."
 events:
   -
     type: "status"
@@ -45,8 +51,15 @@ events:
     note: |-
       Command: bun x vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/comment.unit.test.ts packages/agentplane/src/commands/task/verify-record.unit.test.ts packages/agentplane/src/commands/task/close-shared.unit.test.ts --hookTimeout 60000 --testTimeout 60000 && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && node --input-type=module <intent-runtime-check>
       Result: TaskStore now exposes mutate(intents), patch delegates through the same apply path, migrated local consumers use explicit intents, and built-runtime intent writes preserve revision-aware CAS conflicts.
+  -
+    type: "status"
+    at: "2026-03-13T15:35:18.409Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: TaskStore now exposes mutate(intents), patch routes through the same apply path, and the first local consumers use named intents without regressing CAS behavior."
 doc_version: 3
-doc_updated_at: "2026-03-13T15:34:56.444Z"
+doc_updated_at: "2026-03-13T15:35:18.410Z"
 doc_updated_by: "CODER"
 description: "Replace ad hoc nextTask assembly with explicit task intents like set_section, append_comment, append_event, set_status, approve_plan, and record_verification."
 sections:
