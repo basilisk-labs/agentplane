@@ -1,10 +1,11 @@
 ---
 id: "202603131310-QV5BQM"
 title: "Add doctor and normalize support for projection drift"
-status: "DOING"
+result_summary: "Projection drift between canonical one-file task state and rendered task bodies is now visible to doctor and repairable through the existing normalize flow."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 4
+revision: 5
 depends_on:
   - "202603131309-JYPPQS"
   - "202603131310-0KHGZD"
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-13T17:40:46.495Z"
   updated_by: "CODER"
   note: "Doctor now reports task README projection drift when canonical frontmatter sections and rendered body diverge, local backend normalizeTasks repairs that drift deterministically, and doctor/local-backend/workflow-maintenance suites plus both builds are green."
-commit: null
+commit:
+  hash: "7410573da592f49248023cd22a3350de01313980"
+  message: "🚧 QV5BQM task: detect and repair task projection drift"
 comments:
   -
     author: "CODER"
     body: "Start: teach doctor and local task normalization to detect and repair projection drift between canonical frontmatter sections and the generated one-file task body."
+  -
+    author: "CODER"
+    body: "Verified: doctor now reports projection drift for canonical sections vs stale task body, local normalize repairs it, and the doctor/local-backend/maintenance checks plus both builds all passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Doctor now reports task README projection drift when canonical frontmatter sections and rendered body diverge, local backend normalizeTasks repairs that drift deterministically, and doctor/local-backend/workflow-maintenance suites plus both builds are green."
+  -
+    type: "status"
+    at: "2026-03-13T17:41:04.264Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doctor now reports projection drift for canonical sections vs stale task body, local normalize repairs it, and the doctor/local-backend/maintenance checks plus both builds all passed."
 doc_version: 3
-doc_updated_at: "2026-03-13T17:40:46.497Z"
+doc_updated_at: "2026-03-13T17:41:04.265Z"
 doc_updated_by: "CODER"
 description: "Detect and repair drift between canonical one-file task state and generated task body via doctor and normalize flows."
 sections:
