@@ -1,10 +1,11 @@
 ---
 id: "202603131310-0KHGZD"
 title: "Migrate lifecycle commands to canonical task state"
-status: "DOING"
+result_summary: "Remaining local lifecycle writes now update canonical one-file task state through intents with patch-compatible fallback for legacy unit stores."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on:
   - "202603131310-0KBWXJ"
   - "202603131310-ABPXYY"
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-13T17:20:51.823Z"
   updated_by: "CODER"
   note: "Remaining local lifecycle writes now run through TaskStore intents; start/block/set-status/finish suites and run-cli.core.lifecycle are green, and a built-runtime smoke confirmed revision 1->2 plus stale task_revision_conflict."
-commit: null
+commit:
+  hash: "35fa792cd5f9bea2afed3e32abd2dbd6bc1686dc"
+  message: "🚧 0KHGZD task: migrate remaining lifecycle writes to TaskStore intents"
 comments:
   -
     author: "CODER"
     body: "Start: move the remaining lifecycle writes onto TaskStore intents so status/comment/event/doc-meta updates all flow through canonical one-file task state."
+  -
+    author: "CODER"
+    body: "Verified: moved start, block, set-status, and finish onto TaskStore intents; lifecycle suites, builds, and a built-runtime CAS smoke all passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Remaining local lifecycle writes now run through TaskStore intents; start/block/set-status/finish suites and run-cli.core.lifecycle are green, and a built-runtime smoke confirmed revision 1->2 plus stale task_revision_conflict."
+  -
+    type: "status"
+    at: "2026-03-13T17:21:44.188Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: moved start, block, set-status, and finish onto TaskStore intents; lifecycle suites, builds, and a built-runtime CAS smoke all passed."
 doc_version: 3
-doc_updated_at: "2026-03-13T17:20:51.826Z"
+doc_updated_at: "2026-03-13T17:21:44.189Z"
 doc_updated_by: "CODER"
 description: "Move start, block, set-status, verify, comment, and finish to the canonical one-file task state and intent-based mutation layer."
 sections:
