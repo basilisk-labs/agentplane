@@ -1,14 +1,13 @@
 name: Publish to npm
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - Core CI
+    types:
+      - completed
     branches:
       - main
-    paths:
-      - "packages/core/package.json"
-      - "packages/agentplane/package.json"
-      - "docs/releases/**"
-      - ".github/workflows/publish.yml"
   workflow_dispatch:
     inputs:
       ref:
@@ -28,15 +27,18 @@ concurrency:
 jobs:
   detect:
     name: Detect release candidate
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     outputs:
       should_publish: ${{ steps.detect.outputs.should_publish }}
       version: ${{ steps.detect.outputs.version }}
       tag: ${{ steps.detect.outputs.tag }}
       ref: ${{ steps.ref.outputs.ref }}
-      sha: ${{ steps.detect.outputs.sha }}
+      sha: ${{ steps.source.outputs.sha }}
       core_published: ${{ steps.detect.outputs.core_published }}
       cli_published: ${{ steps.detect.outputs.cli_published }}
+      release_ready_run_id: ${{ steps.source.outputs.release_ready_run_id }}
+      release_ready_state: ${{ steps.source.outputs.release_ready_state }}
     steps:
       - name: Resolve ref
         id: ref
@@ -45,7 +47,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "ref=${{ github.event.inputs.ref }}" >> "$GITHUB_OUTPUT"
           else
-            echo "ref=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "ref=${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
           fi
       - uses: actions/checkout@v4
         with:
@@ -53,6 +55,44 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Resolve release-ready source
+        id: source
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .agentplane/.release/ready
+          SHA="$(git rev-parse HEAD)"
+          SOURCE_STATUS=0
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            if node scripts/resolve-release-ready-source.mjs \
+              --workflow ci.yml \
+              --sha "${SHA}" \
+              --run-id "${{ github.event.workflow_run.id }}" \
+              --json > .agentplane/.release/ready/source.json; then
+              SOURCE_STATUS=0
+            else
+              SOURCE_STATUS=$?
+            fi
+          else
+            node scripts/resolve-release-ready-source.mjs \
+              --workflow ci.yml \
+              --sha "${SHA}" \
+              --json > .agentplane/.release/ready/source.json
+          fi
+          if [ ! -f .agentplane/.release/ready/source.json ]; then
+            exit "${SOURCE_STATUS}"
+          fi
+          RELEASE_READY_OK="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(payload.ok ? 'true' : 'false');")"
+          RELEASE_READY_STATE="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(String(payload.state || 'unknown'));")"
+          RELEASE_READY_RUN_ID="$(node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); process.stdout.write(String(payload.run?.id || ''));")"
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "release_ready_ok=${RELEASE_READY_OK}" >> "$GITHUB_OUTPUT"
+          echo "release_ready_state=${RELEASE_READY_STATE}" >> "$GITHUB_OUTPUT"
+          echo "release_ready_run_id=${RELEASE_READY_RUN_ID}" >> "$GITHUB_OUTPUT"
+          node -e "const fs=require('node:fs'); const payload=JSON.parse(fs.readFileSync('.agentplane/.release/ready/source.json','utf8')); console.log(payload.message); if (payload.nextAction) console.log(`Next action: ${payload.nextAction}`);"
       - name: Detect publish target
         id: detect
         shell: bash
@@ -66,7 +106,7 @@ jobs:
             exit 1
           fi
 
-          SHA=$(git rev-parse HEAD)
+          SHA="${{ steps.source.outputs.sha }}"
           VERSION="$VERSION_CLI"
           TAG="v${VERSION}"
           NOTES="docs/releases/${TAG}.md"
@@ -81,7 +121,9 @@ jobs:
           if npm view "agentplane@${VERSION}" version >/dev/null 2>&1; then CLI_PUBLISHED=true; fi
 
           {
-            if [ "$CORE_PUBLISHED" = "true" ] && [ "$CLI_PUBLISHED" = "true" ]; then
+            if [ "${{ steps.source.outputs.release_ready_ok }}" != "true" ]; then
+              echo "should_publish=false"
+            elif [ "$CORE_PUBLISHED" = "true" ] && [ "$CLI_PUBLISHED" = "true" ]; then
               echo "should_publish=false"
             else
               echo "should_publish=true"
@@ -115,14 +157,40 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - name: Require green Core CI for publish SHA
+      - name: Download release-ready artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-ready
+          path: .agentplane/.release/ready
+          github-token: ${{ github.token }}
+          repository: ${{ github.repository }}
+          run-id: ${{ needs.detect.outputs.release_ready_run_id }}
+      - name: Validate release-ready manifest
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ github.token }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-        run: >-
-          node scripts/check-core-ci-status.mjs
-          --workflow ci.yml
-          --sha "${{ needs.detect.outputs.sha }}"
+          EXPECTED_SHA: ${{ needs.detect.outputs.sha }}
+          EXPECTED_VERSION: ${{ needs.detect.outputs.version }}
+          EXPECTED_TAG: ${{ needs.detect.outputs.tag }}
+        run: |
+          set -euo pipefail
+          node - <<'EOF'
+          const fs = require("node:fs");
+          const payload = JSON.parse(
+            fs.readFileSync(".agentplane/.release/ready/release-ready.json", "utf8"),
+          );
+          if (!payload.ready) {
+            throw new Error(`release-ready artifact is not ready (reason=${payload.reasonCode ?? "unknown"})`);
+          }
+          if (payload.sha !== process.env.EXPECTED_SHA) {
+            throw new Error(`release-ready sha mismatch: ${payload.sha} !== ${process.env.EXPECTED_SHA}`);
+          }
+          if (payload.version !== process.env.EXPECTED_VERSION) {
+            throw new Error(`release-ready version mismatch: ${payload.version} !== ${process.env.EXPECTED_VERSION}`);
+          }
+          if (payload.tag !== process.env.EXPECTED_TAG) {
+            throw new Error(`release-ready tag mismatch: ${payload.tag} !== ${process.env.EXPECTED_TAG}`);
+          }
+          EOF
       - run: npm i -g npm@11.5.1
       - name: Cache Bun artifacts
         uses: actions/cache@v4

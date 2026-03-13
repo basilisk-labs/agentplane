@@ -8,7 +8,7 @@ import { promisify } from "node:util";
 import { afterEach, describe, expect, it } from "vitest";
 
 const execFileAsync = promisify(execFile);
-const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/check-core-ci-status.mjs");
+const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/resolve-release-ready-source.mjs");
 
 const temps: string[] = [];
 
@@ -35,14 +35,33 @@ function makeRun({
   };
 }
 
+function makeArtifact({
+  name = "release-ready",
+  url = "https://api.github.com/repos/example/repo/actions/artifacts/123/zip",
+}: {
+  name?: string;
+  url?: string;
+}) {
+  return {
+    id: 321,
+    name,
+    size_in_bytes: 256,
+    expired: false,
+    created_at: "2026-03-13T00:00:00Z",
+    archive_download_url: url,
+  };
+}
+
 async function withServer(
-  responder: (requestCount: number) => { status?: number; body: unknown },
+  responder: (
+    pathname: string,
+    searchParams: URLSearchParams,
+  ) => { status?: number; body: unknown },
   fn: (baseUrl: string) => Promise<void>,
 ) {
-  let requestCount = 0;
   const server = createServer((req, res) => {
-    requestCount += 1;
-    const payload = responder(requestCount);
+    const parsed = new URL(req.url ?? "/", "http://127.0.0.1");
+    const payload = responder(parsed.pathname, parsed.searchParams);
     res.statusCode = payload.status ?? 200;
     res.setHeader("content-type", "application/json");
     res.end(JSON.stringify(payload.body));
@@ -53,6 +72,7 @@ async function withServer(
   if (!address || typeof address === "string") {
     throw new Error("failed to bind test server");
   }
+
   try {
     await fn(`http://127.0.0.1:${address.port}`);
   } finally {
@@ -63,7 +83,7 @@ async function withServer(
 }
 
 async function runScript(baseUrl: string, args: string[] = []) {
-  const cwd = await mkdtemp(path.join(tmpdir(), "agentplane-core-ci-check-"));
+  const cwd = await mkdtemp(path.join(tmpdir(), "agentplane-release-ready-source-"));
   temps.push(cwd);
   return execFileAsync("node", [SCRIPT_PATH, "--repo", "basilisk-labs/agentplane", ...args], {
     cwd,
@@ -83,95 +103,63 @@ afterEach(async () => {
   }
 });
 
-describe("check-core-ci-status script", () => {
-  it("passes when Core CI already completed successfully", async () => {
+describe("resolve-release-ready-source script", () => {
+  it("passes when a successful Core CI run has the release-ready artifact", async () => {
     await withServer(
-      () => ({
-        body: {
-          workflow_runs: [makeRun({ status: "completed", conclusion: "success" })],
-        },
-      }),
+      (pathname) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          return {
+            body: {
+              workflow_runs: [makeRun({ status: "completed", conclusion: "success" })],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/runs/123/artifacts")) {
+          return {
+            body: {
+              artifacts: [makeArtifact({})],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
       async (baseUrl) => {
         const result = await runScript(baseUrl, ["--sha", "abc123", "--json"]);
-        const payload = JSON.parse(String(result.stdout ?? "")) as { ok: boolean; state: string };
+        const payload = JSON.parse(String(result.stdout ?? "")) as {
+          ok: boolean;
+          state: string;
+          run: { id: number };
+          artifact: { name: string };
+        };
         expect(payload.ok).toBe(true);
-        expect(payload.state).toBe("success");
+        expect(payload.state).toBe("ready_artifact_available");
+        expect(payload.run.id).toBe(123);
+        expect(payload.artifact.name).toBe("release-ready");
       },
     );
   });
 
-  it("fails when Core CI completed with a non-success conclusion", async () => {
+  it("fails when the successful run is missing the release-ready artifact", async () => {
     await withServer(
-      () => ({
-        body: {
-          workflow_runs: [makeRun({ status: "completed", conclusion: "failure" })],
-        },
-      }),
+      (pathname) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          return {
+            body: {
+              workflow_runs: [makeRun({ status: "completed", conclusion: "success" })],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/runs/123/artifacts")) {
+          return {
+            body: {
+              artifacts: [],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
       async (baseUrl) => {
         const result = await runScript(baseUrl, ["--sha", "abc123"]).then(
-          () => ({ ok: true as const, stdout: "", stderr: "" }),
-          (error: unknown) => {
-            const stdout =
-              typeof error === "object" &&
-              error !== null &&
-              "stdout" in error &&
-              typeof (error as { stdout?: unknown }).stdout === "string"
-                ? (error as { stdout: string }).stdout
-                : "";
-            return { ok: false as const, stdout };
-          },
-        );
-        expect(result.ok).toBe(false);
-        expect(result.stdout).toContain("conclusion=failure");
-        expect(result.stdout).toContain("Next action:");
-      },
-    );
-  });
-
-  it("waits for an in-progress Core CI run to finish", async () => {
-    await withServer(
-      (requestCount) => ({
-        body: {
-          workflow_runs: [
-            requestCount === 1
-              ? makeRun({ status: "in_progress", conclusion: null })
-              : makeRun({ status: "completed", conclusion: "success" }),
-          ],
-        },
-      }),
-      async (baseUrl) => {
-        const result = await runScript(baseUrl, [
-          "--sha",
-          "abc123",
-          "--poll-ms",
-          "1",
-          "--timeout-ms",
-          "1000",
-          "--json",
-        ]);
-        const payload = JSON.parse(String(result.stdout ?? "")) as { ok: boolean; state: string };
-        expect(payload.ok).toBe(true);
-        expect(payload.state).toBe("success");
-      },
-    );
-  });
-
-  it("fails when no Core CI run appears before timeout", async () => {
-    await withServer(
-      () => ({
-        body: {
-          workflow_runs: [],
-        },
-      }),
-      async (baseUrl) => {
-        const result = await runScript(baseUrl, [
-          "--sha",
-          "abc123",
-          "--poll-ms",
-          "1",
-          "--timeout-ms",
-          "5",
-        ]).then(
           () => ({ ok: true as const, stdout: "" }),
           (error: unknown) => {
             const stdout =
@@ -185,7 +173,39 @@ describe("check-core-ci-status script", () => {
           },
         );
         expect(result.ok).toBe(false);
-        expect(result.stdout).toContain("No workflow ci.yml run was found");
+        expect(result.stdout).toContain("artifact release-ready is missing");
+      },
+    );
+  });
+
+  it("fails when Core CI is not successful for the requested SHA", async () => {
+    await withServer(
+      (pathname) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          return {
+            body: {
+              workflow_runs: [makeRun({ status: "completed", conclusion: "failure" })],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl) => {
+        const result = await runScript(baseUrl, ["--sha", "abc123"]).then(
+          () => ({ ok: true as const, stdout: "" }),
+          (error: unknown) => {
+            const stdout =
+              typeof error === "object" &&
+              error !== null &&
+              "stdout" in error &&
+              typeof (error as { stdout?: unknown }).stdout === "string"
+                ? (error as { stdout: string }).stdout
+                : "";
+            return { ok: false as const, stdout };
+          },
+        );
+        expect(result.ok).toBe(false);
+        expect(result.stdout).toContain("Workflow ci.yml is not successfully completed");
       },
     );
   });

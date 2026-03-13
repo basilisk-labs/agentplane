@@ -61,10 +61,6 @@ function requestJson(url, token) {
   });
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export async function listWorkflowRuns({
   apiBase = resolveGithubApiBase(),
   repo = resolveGithubRepo(),
@@ -86,6 +82,26 @@ export async function listWorkflowRuns({
     headSha: typeof run.head_sha === "string" ? run.head_sha : "",
     event: typeof run.event === "string" ? run.event : "",
     createdAt: typeof run.created_at === "string" ? run.created_at : "",
+  }));
+}
+
+export async function listWorkflowRunArtifacts({
+  apiBase = resolveGithubApiBase(),
+  repo = resolveGithubRepo(),
+  runId,
+  token = resolveGithubToken(),
+}) {
+  const id = assertNonEmpty(String(runId ?? ""), "workflow run id");
+  const url = `${apiBase}/repos/${repo}/actions/runs/${encodeURIComponent(id)}/artifacts?per_page=100`;
+  const payload = await requestJson(url, token);
+  const artifacts = Array.isArray(payload?.artifacts) ? payload.artifacts : [];
+  return artifacts.map((artifact) => ({
+    id: artifact.id,
+    name: typeof artifact.name === "string" ? artifact.name : "",
+    sizeInBytes: typeof artifact.size_in_bytes === "number" ? artifact.size_in_bytes : 0,
+    expired: Boolean(artifact.expired),
+    createdAt: typeof artifact.created_at === "string" ? artifact.created_at : "",
+    url: typeof artifact.archive_download_url === "string" ? artifact.archive_download_url : "",
   }));
 }
 
@@ -120,44 +136,5 @@ export async function readLatestWorkflowStatus({ apiBase, repo, workflow, headSh
   return {
     state: classifyWorkflowState(latestRun),
     run: latestRun,
-  };
-}
-
-export async function waitForWorkflowConclusion({
-  apiBase,
-  repo,
-  workflow,
-  headSha,
-  token,
-  timeoutMs = 30 * 60 * 1000,
-  pollMs = 5000,
-}) {
-  const deadline = Date.now() + timeoutMs;
-  let lastRun = null;
-
-  while (Date.now() <= deadline) {
-    const { state, run: latestRun } = await readLatestWorkflowStatus({
-      apiBase,
-      repo,
-      workflow,
-      headSha,
-      token,
-    });
-    lastRun = latestRun ?? lastRun;
-
-    if (state === "success" || state === "completed_not_success") {
-      return {
-        state,
-        run: latestRun,
-      };
-    }
-
-    if (Date.now() > deadline - pollMs) break;
-    await sleep(pollMs);
-  }
-
-  return {
-    state: lastRun ? "timeout" : "missing",
-    run: lastRun,
   };
 }
