@@ -1,7 +1,8 @@
 ---
 id: "202603131047-Q916G7"
 title: "Fix start Verify Steps stale-read path"
-status: "DOING"
+result_summary: "Local start no longer fails on stale Verify Steps or stale plan-approval state before entering the store-backed mutation path."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T10:51:03.107Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 26/26 tests passed. Scope: start stale-read regression and lifecycle contract when plan approval is disabled. Command: ./node_modules/.bin/eslint packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts; Result: pass; Evidence: no lint errors. Scope: touched runtime and test files. Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; Result: pass; Evidence: both builds exited 0. Scope: repo-local CLI runtime build surfaces."
-commit: null
+commit:
+  hash: "31d893c854f10fa60f283fcf1cea1f80d2f5a737"
+  message: "🩹 Q916G7 task: fix start Verify Steps stale-read path"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce and fix the stale Verify Steps gate in start when plan approval is disabled."
+  -
+    author: "CODER"
+    body: "Verified: start now rechecks Verify Steps readiness against the current local task state and the stale snapshot regression is covered."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 26/26 tests passed. Scope: start stale-read regression and lifecycle contract when plan approval is disabled. Command: ./node_modules/.bin/eslint packages/agentplane/src/commands/task/start.ts packages/agentplane/src/commands/task/start.unit.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts; Result: pass; Evidence: no lint errors. Scope: touched runtime and test files. Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; Result: pass; Evidence: both builds exited 0. Scope: repo-local CLI runtime build surfaces."
+  -
+    type: "status"
+    at: "2026-03-13T10:51:18.698Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: start now rechecks Verify Steps readiness against the current local task state and the stale snapshot regression is covered."
 doc_version: 3
-doc_updated_at: "2026-03-13T10:51:03.108Z"
+doc_updated_at: "2026-03-13T10:51:18.699Z"
 doc_updated_by: "CODER"
 description: "Make start use the current README state for Verify Steps gating when plan approval is disabled, and add regression coverage."
 id_source: "generated"
