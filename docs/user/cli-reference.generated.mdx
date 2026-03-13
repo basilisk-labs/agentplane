@@ -769,6 +769,12 @@ Options:
 - `--require-clean`: Fail if tracked files have unstaged changes (untracked is ignored). (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
+Notes:
+
+- Protected path-scoped overrides can stand alone without a duplicate explicit prefix: \`--allow-tasks\`, \`--allow-policy\`, \`--allow-config\`, \`--allow-hooks\`, and \`--allow-ci\` each admit their own path family.
+- Top-level \`agentplane commit\` can auto-stage those protected path scopes when the git index starts empty.
+- \`--allow-base\` is different: it only overrides base-branch protection and never selects file paths by itself.
+
 Examples:
 
 ```sh
@@ -844,6 +850,12 @@ Options:
 - `--allow-ci`: Allow CI workflow edits; standalone path scope. (default=false)
 - `--require-clean`: Fail if tracked files have unstaged changes (untracked is ignored). (default=false)
 - `--quiet`: Reduce output noise. (default=false)
+
+Notes:
+
+- Protected path-scoped overrides can stand alone without a duplicate explicit prefix: \`--allow-tasks\`, \`--allow-policy\`, \`--allow-config\`, \`--allow-hooks\`, and \`--allow-ci\` each admit their own path family.
+- \`agentplane guard commit\` remains staged-only: it validates the current index and never auto-stages files for you.
+- \`--allow-base\` is different: it only overrides base-branch protection and never selects file paths by itself.
 
 Examples:
 

@@ -63,6 +63,10 @@ describe("runCli docs cli", () => {
       expect(text).toContain(
         "Allow base branch edits; branch override only, not a path allowlist.",
       );
+      expect(text).toContain("Notes:");
+      expect(text).toContain(
+        "Protected path-scoped overrides can stand alone without a duplicate explicit prefix",
+      );
       expect(text).not.toContain("Allow task workflow artifacts (tasks/ and .agentplane/tasks/).");
 
       await runBunx(["prettier", "--write", outPath], root);

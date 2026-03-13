@@ -108,6 +108,11 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
       why: "Validate already staged CI-only changes without a redundant explicit workflow path prefix.",
     },
   ],
+  notes: [
+    "Protected path-scoped overrides can stand alone without a duplicate explicit prefix: `--allow-tasks`, `--allow-policy`, `--allow-config`, `--allow-hooks`, and `--allow-ci` each admit their own path family.",
+    "`agentplane guard commit` remains staged-only: it validates the current index and never auto-stages files for you.",
+    "`--allow-base` is different: it only overrides base-branch protection and never selects file paths by itself.",
+  ],
   validateRaw: (raw) => {
     const msg = typeof raw.opts.message === "string" ? raw.opts.message.trim() : "";
     if (raw.opts.message !== undefined && !msg) {

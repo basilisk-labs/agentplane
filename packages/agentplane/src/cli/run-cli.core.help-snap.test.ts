@@ -113,6 +113,46 @@ describe("runCli help snapshots (cli2)", () => {
     }
   });
 
+  it("help commit shows Notes for standalone protected path scopes", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "commit"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Notes:");
+      expect(io.stdout).toContain(
+        "Protected path-scoped overrides can stand alone without a duplicate explicit prefix",
+      );
+      expect(io.stdout).toContain(
+        "Top-level `agentplane commit` can auto-stage those protected path scopes when the git index starts empty.",
+      );
+      expect(io.stdout).toContain(
+        "`--allow-base` is different: it only overrides base-branch protection and never selects file paths by itself.",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
+  it("help guard commit shows Notes for staged-only protected path scopes", async () => {
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["help", "guard", "commit"]);
+      expect(code).toBe(0);
+      expect(io.stdout).toContain("Notes:");
+      expect(io.stdout).toContain(
+        "Protected path-scoped overrides can stand alone without a duplicate explicit prefix",
+      );
+      expect(io.stdout).toContain(
+        "`agentplane guard commit` remains staged-only: it validates the current index and never auto-stages files for you.",
+      );
+      expect(io.stdout).toContain(
+        "`--allow-base` is different: it only overrides base-branch protection and never selects file paths by itself.",
+      );
+    } finally {
+      io.restore();
+    }
+  });
+
   it("help recipes install --compact snapshot", async () => {
     const io = captureStdIO();
     try {
