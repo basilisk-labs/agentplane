@@ -92,6 +92,7 @@ GitHub workflow `Publish to npm`:
 - uses OIDC trusted publishing
 - sets provenance
 - validates the exact publish ref with `bun run release:prepublish` inside the workflow itself
+- waits for a successful `Core CI` result on the exact release SHA before npm publish proceeds
 - validates notes and version/tag parity
 - validates workspace parity (`core`, `agentplane`, and `@agentplaneorg/core` dependency)
 - runs release-specific checks (`release:check`, release notes/version validation, origin tag existence)

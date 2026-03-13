@@ -17,6 +17,7 @@ on:
         default: "main"
 
 permissions:
+  actions: read
   contents: write
   id-token: write
 
@@ -114,6 +115,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - name: Require green Core CI for publish SHA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: >-
+          node scripts/check-core-ci-status.mjs
+          --workflow ci.yml
+          --sha "${{ needs.detect.outputs.sha }}"
       - run: npm i -g npm@11.5.1
       - name: Cache Bun artifacts
         uses: actions/cache@v4
