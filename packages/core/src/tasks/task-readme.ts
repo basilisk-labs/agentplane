@@ -1,7 +1,19 @@
 import { parse as parseYaml } from "yaml";
+import { renderTaskDocFromSections } from "./task-doc.js";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizeCanonicalSections(value: unknown): Record<string, string> | null {
+  if (!isRecord(value)) return null;
+  const out: Record<string, string> = {};
+  for (const [title, text] of Object.entries(value)) {
+    const normalizedTitle = title.trim();
+    if (!normalizedTitle || typeof text !== "string") continue;
+    out[normalizedTitle] = text.replaceAll("\r\n", "\n").trimEnd();
+  }
+  return Object.keys(out).length > 0 ? out : null;
 }
 
 function orderedKeys(
@@ -239,5 +251,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
 }
 
 export function renderTaskReadme(frontmatter: Record<string, unknown>, body: string): string {
-  return `${renderTaskFrontmatter(frontmatter)}${body}`;
+  const canonicalSections = normalizeCanonicalSections(frontmatter.sections);
+  const effectiveBody = canonicalSections ? renderTaskDocFromSections(canonicalSections) : body;
+  return `${renderTaskFrontmatter(frontmatter)}${effectiveBody}`;
 }

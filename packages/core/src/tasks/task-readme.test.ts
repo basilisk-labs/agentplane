@@ -199,4 +199,36 @@ Hello world.
       Findings: "Note",
     });
   });
+
+  it("renders body from canonical sections instead of preserving stale body text", () => {
+    const rendered = renderTaskReadme(
+      {
+        id: "202603130000-TEST",
+        title: "Schema sample",
+        status: "TODO",
+        priority: "med",
+        owner: "CODER",
+        revision: 1,
+        depends_on: [],
+        tags: [],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-03-13T00:00:00.000Z",
+        doc_updated_by: "CODER",
+        description: "sample",
+        sections: {
+          Summary: "Canonical summary",
+          Findings: "Canonical finding",
+        },
+      },
+      "## Summary\n\nstale body\n",
+    );
+
+    expect(rendered).toContain("## Summary\n\nCanonical summary");
+    expect(rendered).toContain("## Findings\n\nCanonical finding");
+    expect(rendered).not.toContain("stale body");
+  });
 });

@@ -58,11 +58,11 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
   const revision =
     Number.isInteger(task.revision) && Number(task.revision) > 0 ? Number(task.revision) : 1;
   const sections =
-    task.sections && Object.keys(task.sections).length > 0
-      ? task.sections
-      : task.doc
-        ? taskDocToSectionMap(task.doc)
-        : undefined;
+    task.doc === undefined
+      ? task.sections && Object.keys(task.sections).length > 0
+        ? task.sections
+        : undefined
+      : taskDocToSectionMap(task.doc);
   return {
     id: task.id,
     title: task.title,

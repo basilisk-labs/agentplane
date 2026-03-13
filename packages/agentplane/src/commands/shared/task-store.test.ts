@@ -270,6 +270,51 @@ describe("commands/shared/TaskStore", () => {
     expect(final).toContain("legacy summary");
   });
 
+  it("regenerates stale task body from canonical sections during metadata-only task-store writes", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-PROJ";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "before",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          revision: 1,
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-02-07T00:00:00Z",
+          doc_updated_by: "CODER",
+          description: "",
+          sections: {
+            Summary: "canonical summary",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nstale body\n",
+      ),
+      "utf8",
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+    const result = await store.update(taskId, (current) => ({ ...current, status: "DOING" }));
+
+    expect(result.changed).toBe(true);
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain("## Summary\n\ncanonical summary");
+    expect(final).not.toContain("stale body");
+  });
+
   it("rejects concurrent writes to the same README section via semantic patch preconditions", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
     const taskId = "202602070000-CONF";

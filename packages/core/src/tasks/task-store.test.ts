@@ -8,6 +8,7 @@ import {
   createTask,
   listTasks,
   readTask,
+  renderTaskReadme,
   saveConfig,
   setTaskDocSection,
   validateTaskDocMetadata,
@@ -227,6 +228,56 @@ describe("task-store", () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it("setTaskDocSection repairs stale rendered body from canonical sections", async () => {
+    const root = await mkGitRepoRoot();
+    const taskId = "202603130000-REND";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "My task",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          revision: 1,
+          depends_on: [],
+          tags: ["nodejs"],
+          verify: [],
+          plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-01-01T00:00:00.000Z",
+          doc_updated_by: "CODER",
+          description: "Why it matters",
+          sections: {
+            Summary: "Canonical summary",
+            Findings: "",
+          },
+        },
+        "## Summary\n\nstale body\n",
+      ),
+      "utf8",
+    );
+
+    await setTaskDocSection({
+      cwd: root,
+      rootOverride: root,
+      taskId,
+      section: "Findings",
+      text: "Canonical finding",
+      updatedBy: "CODER",
+    });
+
+    const updated = await readFile(readmePath, "utf8");
+    expect(updated).toContain("## Summary\n\nCanonical summary");
+    expect(updated).toContain("## Findings\n\nCanonical finding");
+    expect(updated).not.toContain("stale body");
   });
 
   it("setTaskDocSection preserves both concurrent section updates", async () => {

@@ -305,13 +305,15 @@ export class LocalBackend implements TaskBackend {
     }
 
     const existingDocVersion = normalizeDocVersion(existingFrontmatter.doc_version);
-    const effectiveDoc = task.doc === undefined ? existingDoc : String(task.doc ?? "");
+    const effectiveDoc = task.doc === undefined ? null : String(task.doc ?? "");
     const nextSections =
-      task.sections && Object.keys(task.sections).length > 0
-        ? task.sections
-        : effectiveDoc
-          ? taskDocToSectionMap(effectiveDoc)
-          : undefined;
+      effectiveDoc === null
+        ? task.sections && Object.keys(task.sections).length > 0
+          ? task.sections
+          : existingDoc
+            ? taskDocToSectionMap(existingDoc)
+            : undefined
+        : taskDocToSectionMap(effectiveDoc);
     if (nextSections && Object.keys(nextSections).length > 0) {
       payload.sections = nextSections;
     }
@@ -374,7 +376,10 @@ export class LocalBackend implements TaskBackend {
       updatedBy,
       this.updatedBy,
     );
-    frontmatter.sections = taskDocToSectionMap(extractTaskDoc(parsed.body));
+    frontmatter.sections =
+      isRecord(frontmatter.sections) && Object.keys(frontmatter.sections).length > 0
+        ? frontmatter.sections
+        : taskDocToSectionMap(extractTaskDoc(parsed.body));
     const next = renderTaskReadme(frontmatter, parsed.body || "");
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
