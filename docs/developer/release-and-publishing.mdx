@@ -148,6 +148,27 @@ This uses the latest apply report commit hash when available and treats the `rel
 from `Core CI` as the canonical readiness source. For local use, provide GitHub auth and repo context
 via `GITHUB_TOKEN` plus `GITHUB_REPOSITORY` or `--github-repo`.
 
+## Local release E2E harness
+
+For a local end-to-end validation of the exact release SHA against the real GitHub `release-ready`
+artifact, use:
+
+```bash
+GITHUB_TOKEN=... \
+GITHUB_REPOSITORY=basilisk-labs/agentplane \
+bun run release:e2e:local -- --sha "$(git rev-parse HEAD)"
+```
+
+Contract:
+
+- run it from a checkout that is already at the exact release SHA
+- keep `gh` installed locally; the harness uses `gh run download` to fetch the canonical artifact
+- by default it runs `bun run release:prepublish`, generates a local `release-ready` manifest,
+  resolves the matching successful `Core CI` run, downloads the `release-ready` artifact, and
+  validates `ready/sha/version/tag` parity
+- use `--skip-prepublish` only when you intentionally want to debug the GitHub artifact path
+  without rerunning the local gate
+
 - optional burned-version checks when you explicitly opt in:
 
 ```bash
