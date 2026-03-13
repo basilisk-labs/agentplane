@@ -1,7 +1,8 @@
 ---
 id: "202603130626-VQGHMB"
 title: "Harden release-ready run-id verification"
-status: "DOING"
+result_summary: "Manual release recovery now rejects mismatched or failed run-id inputs."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T06:34:20.105Z"
   updated_by: "CODER"
   note: "Release-ready run-id inputs are now verified against real workflow metadata."
-commit: null
+commit:
+  hash: "739f4b9a3754c0c48bc4aa800add01a89b25cd9f"
+  message: "🚧 VQGHMB task: harden release-ready run-id verification"
 comments:
   -
     author: "CODER"
     body: "Start: validate explicit release-ready run-id inputs against actual GitHub workflow metadata before accepting them for publish recovery."
+  -
+    author: "CODER"
+    body: "Verified: explicit release-ready run-id inputs are now checked against real GitHub workflow metadata before publish recovery can trust them."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Release-ready run-id inputs are now verified against real workflow metadata."
+  -
+    type: "status"
+    at: "2026-03-13T06:34:24.883Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: explicit release-ready run-id inputs are now checked against real GitHub workflow metadata before publish recovery can trust them."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:34:20.106Z"
+doc_updated_at: "2026-03-13T06:34:24.883Z"
 doc_updated_by: "CODER"
 description: "Verify that a manually supplied workflow run-id belongs to the expected SHA and completed successfully before using its artifact for publish recovery."
 id_source: "generated"
