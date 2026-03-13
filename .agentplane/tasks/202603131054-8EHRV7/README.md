@@ -1,7 +1,8 @@
 ---
 id: "202603131054-8EHRV7"
 title: "Fix remaining lifecycle stale-snapshot races"
-status: "DOING"
+result_summary: "The remaining local-file lifecycle stale-snapshot class is closed for block, task set-status, finish, plan approve, and start."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T11:06:23.284Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 75/75 tests passed. Scope: remaining lifecycle stale-snapshot regressions across block, set-status, finish, workflow, and CLI lifecycle paths. Command: ./node_modules/.bin/eslint packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts; Result: pass; Evidence: no lint errors. Scope: touched runtime and regression files. Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; Result: pass; Evidence: both builds exited 0. Scope: repo-local CLI runtime build surfaces."
-commit: null
+commit:
+  hash: "1578877d8202bb2aead62ff79b53185b6849298c"
+  message: "🩹 8EHRV7 task: fix remaining lifecycle stale-snapshot races"
 comments:
   -
     author: "CODER"
     body: "Start: audit and fix the remaining lifecycle stale-snapshot races in local-file task commands."
+  -
+    author: "CODER"
+    body: "Verified: block, set-status, and finish now derive lifecycle validation and commit metadata from the current local task state instead of stale initial snapshots."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts --hookTimeout 60000 --testTimeout 60000; Result: pass; Evidence: 75/75 tests passed. Scope: remaining lifecycle stale-snapshot regressions across block, set-status, finish, workflow, and CLI lifecycle paths. Command: ./node_modules/.bin/eslint packages/agentplane/src/commands/task/block.ts packages/agentplane/src/commands/task/set-status.ts packages/agentplane/src/commands/task/finish.ts packages/agentplane/src/commands/task/block.unit.test.ts packages/agentplane/src/commands/task/set-status.unit.test.ts packages/agentplane/src/commands/task/finish.unit.test.ts packages/agentplane/src/commands/workflow.test.ts packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts; Result: pass; Evidence: no lint errors. Scope: touched runtime and regression files. Command: bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build; Result: pass; Evidence: both builds exited 0. Scope: repo-local CLI runtime build surfaces."
+  -
+    type: "status"
+    at: "2026-03-13T11:06:42.587Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: block, set-status, and finish now derive lifecycle validation and commit metadata from the current local task state instead of stale initial snapshots."
 doc_version: 3
-doc_updated_at: "2026-03-13T11:06:23.285Z"
+doc_updated_at: "2026-03-13T11:06:42.588Z"
 doc_updated_by: "CODER"
 description: "Audit and fix remaining local-file task lifecycle commands that still derive validation or status-commit metadata from stale initial snapshots before store-backed mutations."
 id_source: "generated"
