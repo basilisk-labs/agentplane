@@ -1,10 +1,11 @@
 ---
 id: "202603131310-ABPXYY"
 title: "Migrate doc commands to canonical sections"
-status: "DOING"
+result_summary: "Canonical sections are now the write/read source for local doc command flows while README body stays generated from the same one-file task artifact."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on:
   - "202603131309-HSRN23"
   - "202603131309-JYPPQS"
@@ -25,11 +26,16 @@ verification:
   note: |-
     Command: bun x vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts --hookTimeout 60000 --testTimeout 60000 && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && node --input-type=module <canonical-section-runtime-check>
     Result: local doc and plan paths now persist canonical frontmatter sections, task doc show/verify-show read from canonical sections when available, and rendered README body matches the stored section map.
-commit: null
+commit:
+  hash: "20057778c5d08acec9dc6765f6e6f3bce778621e"
+  message: "🧩 ABPXYY task: Migrate doc commands to canonical sections"
 comments:
   -
     author: "CODER"
     body: "Start: move doc and plan commands to canonical frontmatter sections so body generation becomes a pure projection, not the write surface."
+  -
+    author: "CODER"
+    body: "Verified: doc and plan write paths now persist canonical frontmatter sections, and doc show/verify-show read the canonical section map instead of treating body markdown as the source of truth."
 events:
   -
     type: "status"
@@ -46,8 +52,15 @@ events:
     note: |-
       Command: bun x vitest run packages/agentplane/src/commands/shared/task-store.test.ts packages/agentplane/src/commands/task/doc.unit.test.ts packages/agentplane/src/commands/task/plan.unit.test.ts packages/agentplane/src/cli/run-cli.core.tasks.doc-write.test.ts --hookTimeout 60000 --testTimeout 60000 && bun run --filter=@agentplaneorg/core build && bun run --filter=agentplane build && node --input-type=module <canonical-section-runtime-check>
       Result: local doc and plan paths now persist canonical frontmatter sections, task doc show/verify-show read from canonical sections when available, and rendered README body matches the stored section map.
+  -
+    type: "status"
+    at: "2026-03-13T17:09:34.569Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: doc and plan write paths now persist canonical frontmatter sections, and doc show/verify-show read the canonical section map instead of treating body markdown as the source of truth."
 doc_version: 3
-doc_updated_at: "2026-03-13T17:09:18.046Z"
+doc_updated_at: "2026-03-13T17:09:34.571Z"
 doc_updated_by: "CODER"
 description: "Move task doc set/show, verify-show, and plan/doc write paths to canonical section storage in frontmatter while preserving one-file task artifacts."
 sections:
