@@ -1,7 +1,8 @@
 ---
 id: "202603130558-VQWTGD"
 title: "Switch auto-publish to workflow_run manifest-driven flow"
-status: "DOING"
+result_summary: "Moved publish to a manifest-driven workflow_run model, added explicit release-ready source resolution for recovery dispatches, and removed the old polling-based Core CI gate and its test surface."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 depends_on: []
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-13T06:13:29.339Z"
   updated_by: "CODER"
   note: "Verified manifest-driven publish flow: workflow lint, prettier, eslint, the release-ready source resolver regressions, and the publish workflow contract test all passed. Auto-publish now starts from successful Core CI workflow_run only, consumes the release-ready artifact, and no longer uses the old polling gate."
-commit: null
+commit:
+  hash: "8f41eb83e54cc8f50dd98ad895cdc067b5b10fa3"
+  message: "🚀 VQWTGD release: switch publish to workflow-run manifest flow"
 comments:
   -
     author: "CODER"
     body: "Start: switch automatic publish from push-triggered detection to workflow_run after successful Core CI, and make both auto and manual publish paths consume the same release-ready artifact contract."
+  -
+    author: "CODER"
+    body: "Verified: automatic publish now hangs off successful Core CI workflow_run events, resolves the same release-ready artifact for both auto and manual paths, and no longer decides Core CI readiness inside publish itself."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified manifest-driven publish flow: workflow lint, prettier, eslint, the release-ready source resolver regressions, and the publish workflow contract test all passed. Auto-publish now starts from successful Core CI workflow_run only, consumes the release-ready artifact, and no longer uses the old polling gate."
+  -
+    type: "status"
+    at: "2026-03-13T06:13:51.818Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: automatic publish now hangs off successful Core CI workflow_run events, resolves the same release-ready artifact for both auto and manual paths, and no longer decides Core CI readiness inside publish itself."
 doc_version: 3
-doc_updated_at: "2026-03-13T06:13:29.340Z"
+doc_updated_at: "2026-03-13T06:13:51.819Z"
 doc_updated_by: "CODER"
 description: "Move automatic npm publish off direct push triggers to workflow_run after successful Core CI, consume the release-ready artifact, and keep workflow_dispatch recovery on the same manifest contract."
 id_source: "generated"
