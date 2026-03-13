@@ -1,7 +1,8 @@
 ---
 id: "202603130722-0MT45C"
 title: "Fix protected allow flags in commit auto-stage"
-status: "DOING"
+result_summary: "Commit guard and auto-stage now treat --allow-ci and sibling path-based protected overrides as standalone scopes, with CLI regressions covering staged and unstaged paths."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T07:27:44.227Z"
   updated_by: "CODER"
   note: "Verified protected allow-flag auto-stage semantics: unit, policy, CLI guard, commit wrapper regressions, eslint, prettier, and both package builds all pass; --allow-ci now works without redundant explicit path prefixes."
-commit: null
+commit:
+  hash: "12d8e308088961ed5b9675d84b310385036e6e65"
+  message: "🧩 0MT45C task: unify protected allow auto-stage semantics"
 comments:
   -
     author: "CODER"
     body: "Start: unify path-scoped protected allow flags so commit auto-stage and staged allowlist semantics treat --allow-ci and sibling overrides as real path scopes instead of requiring redundant explicit prefixes."
+  -
+    author: "CODER"
+    body: "Verified: path-scoped protected overrides now contribute real allowlist prefixes for policy checks and commit auto-stage, so CI-only changes no longer require redundant explicit --allow prefixes."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified protected allow-flag auto-stage semantics: unit, policy, CLI guard, commit wrapper regressions, eslint, prettier, and both package builds all pass; --allow-ci now works without redundant explicit path prefixes."
+  -
+    type: "status"
+    at: "2026-03-13T07:28:03.045Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: path-scoped protected overrides now contribute real allowlist prefixes for policy checks and commit auto-stage, so CI-only changes no longer require redundant explicit --allow prefixes."
 doc_version: 3
-doc_updated_at: "2026-03-13T07:27:44.229Z"
+doc_updated_at: "2026-03-13T07:28:03.047Z"
 doc_updated_by: "CODER"
 description: "Make path-based protected overrides like --allow-ci expand commit auto-stage and staged allowlist semantics without requiring redundant explicit --allow prefixes."
 id_source: "generated"
