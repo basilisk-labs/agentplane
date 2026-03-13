@@ -334,6 +334,67 @@ describe("doctor.command", () => {
     }
   });
 
+  it("warns when task README bodies drift from canonical frontmatter sections", async () => {
+    const ws = await mkWorkspace();
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      const taskId = "202603140040-DRIFT1";
+      const taskDir = path.join(ws.root, ".agentplane", "tasks", taskId);
+      await mkdir(taskDir, { recursive: true });
+      const canonicalReadme = renderTaskReadme(
+        {
+          id: taskId,
+          title: "Projection drift",
+          description: "Doctor should report drift",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: ["code"],
+          verify: [],
+          plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          events: [],
+          revision: 1,
+          doc_version: 3,
+          doc_updated_at: "2026-03-14T00:00:00.000Z",
+          doc_updated_by: "CODER",
+          sections: {
+            Summary: "Canonical summary",
+            Scope: "- In scope: detect drift.",
+            Plan: "1. Run doctor.",
+            "Verify Steps":
+              "1. Run agentplane doctor. Expected: warning mentions projection drift.",
+            Verification: "<!-- BEGIN VERIFICATION RESULTS -->\n<!-- END VERIFICATION RESULTS -->",
+            "Rollback Plan": "- Revert.",
+            Findings: "",
+          },
+        },
+        "",
+      );
+      await writeFile(
+        path.join(taskDir, "README.md"),
+        canonicalReadme.replace(/\n## Summary[\s\S]*$/u, "\n## Summary\n\nstale body\n"),
+        "utf8",
+      );
+
+      const rc = await runDoctor(
+        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+        { fix: false, dev: false },
+      );
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("task README projection drift detected");
+      expect(output).toContain("agentplane task normalize");
+      expect(output).toContain(taskId);
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
   it("prefers live task projection over a stale exported snapshot for README migration checks", async () => {
     const ws = await mkWorkspace();
     const stderr = vi.spyOn(console, "error").mockImplementation(() => {

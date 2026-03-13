@@ -150,38 +150,81 @@ describe("LocalBackend", () => {
     const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
     const taskId = "202601300010-ABCD";
     await mkdir(path.join(tempDir, taskId), { recursive: true });
+    const canonicalReadme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Title",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        revision: 1,
+        depends_on: [],
+        tags: ["tag"],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-01-30T00:00:00Z",
+        doc_updated_by: "tester",
+        sections: {
+          Summary: "Canonical summary",
+          Findings: "",
+        },
+      },
+      "",
+    );
     await writeFile(
       path.join(tempDir, taskId, "README.md"),
-      renderTaskReadme(
-        {
-          id: taskId,
-          title: "Title",
-          description: "Desc",
-          status: "TODO",
-          priority: "med",
-          owner: "tester",
-          revision: 1,
-          depends_on: [],
-          tags: ["tag"],
-          verify: [],
-          plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
-          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
-          comments: [],
-          doc_version: 3,
-          doc_updated_at: "2026-01-30T00:00:00Z",
-          doc_updated_by: "tester",
-          sections: {
-            Summary: "Canonical summary",
-            Findings: "",
-          },
-        },
-        "## Summary\n\nstale body\n",
-      ),
+      canonicalReadme.replace(/\n## Summary[\s\S]*$/u, "\n## Summary\n\nstale body\n"),
       "utf8",
     );
 
     await backend.touchTaskDocMetadata(taskId, "touch");
     const repaired = await readFile(path.join(tempDir, taskId, "README.md"), "utf8");
+    expect(repaired).toContain("## Summary\n\nCanonical summary");
+    expect(repaired).not.toContain("stale body");
+  });
+
+  it("repairs projection drift through normalizeTasks", async () => {
+    const backend = new LocalBackend({ dir: tempDir, updatedBy: "tester" });
+    const taskId = "202601300011-ABCD";
+    await mkdir(path.join(tempDir, taskId), { recursive: true });
+    const canonicalReadme = renderTaskReadme(
+      {
+        id: taskId,
+        title: "Title",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        revision: 1,
+        depends_on: [],
+        tags: ["tag"],
+        verify: [],
+        plan_approval: { state: "pending", updated_at: null, updated_by: null, note: null },
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        comments: [],
+        doc_version: 3,
+        doc_updated_at: "2026-01-30T00:00:00Z",
+        doc_updated_by: "tester",
+        sections: {
+          Summary: "Canonical summary",
+          Findings: "",
+        },
+      },
+      "",
+    );
+    await writeFile(
+      path.join(tempDir, taskId, "README.md"),
+      canonicalReadme.replace(/\n## Summary[\s\S]*$/u, "\n## Summary\n\nstale body\n"),
+      "utf8",
+    );
+
+    const result = await backend.normalizeTasks();
+    const repaired = await readFile(path.join(tempDir, taskId, "README.md"), "utf8");
+    expect(result).toEqual({ scanned: 1, changed: 1 });
     expect(repaired).toContain("## Summary\n\nCanonical summary");
     expect(repaired).not.toContain("stale body");
   });

@@ -201,6 +201,32 @@ describe("commands/workflow", () => {
     }
   });
 
+  it("task normalize prefers backend normalizeTasks output when available", async () => {
+    const root = await makeRepo();
+    const normalizeTasks = vi.fn().mockResolvedValue({ scanned: 2, changed: 1 });
+    const backend = baseTaskBackend({
+      normalizeTasks,
+      writeTask: vi.fn().mockImplementation(() => Promise.resolve()),
+    });
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue({
+      backendId: "local",
+      backend,
+      resolved: { gitRoot: root, agentplaneDir: path.join(root, ".agentplane") },
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "local", "backend.json"),
+    });
+    const io = captureStdIO();
+    try {
+      const code = await cmdTaskNormalize({ cwd: root, quiet: false, force: false });
+      expect(code).toBe(0);
+      expect(normalizeTasks).toHaveBeenCalledOnce();
+      expect(io.stdout).toContain("scanned=2 changed=1");
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("task migrate validates flags and JSON payloads", async () => {
     const root = await makeRepo();
     const tasksPath = path.join(root, "tasks.json");

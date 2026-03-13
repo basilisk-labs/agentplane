@@ -2,6 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { parseTaskReadme, renderTaskDocFromSections } from "@agentplaneorg/core";
+
 import type { TaskData } from "../../backends/task-backend.js";
 import { renderDiagnosticFinding } from "../../shared/diagnostics.js";
 import { resolvePolicyGatewayForRepo } from "../../shared/policy-gateway.js";
@@ -227,6 +229,93 @@ async function checkDoneTaskReadmeArchiveDrift(
   ];
 }
 
+function normalizeTaskBodyForComparison(text: string): string {
+  return text.replaceAll("\r\n", "\n").trim();
+}
+
+function normalizeCanonicalSections(value: unknown): Record<string, string> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const sections: Record<string, string> = {};
+  for (const [key, entry] of Object.entries(value)) {
+    const title = key.trim();
+    if (!title || typeof entry !== "string") continue;
+    sections[title] = entry;
+  }
+  return Object.keys(sections).length > 0 ? sections : null;
+}
+
+async function checkTaskProjectionDrift(repoRoot: string, ctx?: CommandContext): Promise<string[]> {
+  const workflowDir = path.join(repoRoot, ctx?.config.paths.workflow_dir ?? ".agentplane/tasks");
+  let entries;
+  try {
+    entries = await fs.readdir(workflowDir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+
+  const drifted: { id: string; status: string }[] = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const readmePath = path.join(workflowDir, entry.name, "README.md");
+    let text = "";
+    try {
+      text = await fs.readFile(readmePath, "utf8");
+    } catch {
+      continue;
+    }
+
+    let parsed;
+    try {
+      parsed = parseTaskReadme(text);
+    } catch {
+      continue;
+    }
+
+    const sections = normalizeCanonicalSections(parsed.frontmatter.sections);
+    if (!sections) continue;
+
+    const renderedBody = renderTaskDocFromSections(sections);
+    if (
+      normalizeTaskBodyForComparison(parsed.body) === normalizeTaskBodyForComparison(renderedBody)
+    ) {
+      continue;
+    }
+
+    const taskId =
+      typeof parsed.frontmatter.id === "string" && parsed.frontmatter.id.trim()
+        ? parsed.frontmatter.id.trim()
+        : entry.name;
+    const status =
+      typeof parsed.frontmatter.status === "string" && parsed.frontmatter.status.trim()
+        ? parsed.frontmatter.status.trim().toUpperCase()
+        : "UNKNOWN";
+    drifted.push({ id: taskId, status });
+  }
+
+  if (drifted.length === 0) return [];
+
+  const activeCount = drifted.filter((task) => task.status !== "DONE").length;
+  const examples = drifted
+    .slice(0, 5)
+    .map((task) => `${task.id}[${task.status}]`)
+    .join(", ");
+  return [
+    renderDiagnosticFinding({
+      severity: "WARN",
+      state: "task README projection drift detected",
+      likelyCause: "canonical frontmatter.sections no longer match the rendered task body on disk",
+      nextAction: {
+        command: "agentplane task normalize",
+        reason: "re-render task README bodies from canonical one-file task state",
+      },
+      details: [
+        `Drifted task READMEs: ${drifted.length}; active drifted tasks: ${activeCount}`,
+        examples ? `Examples: ${examples}` : "Examples unavailable.",
+      ],
+    }),
+  ];
+}
+
 export async function checkWorkspace(
   repoRoot: string,
   opts?: { ctx?: CommandContext },
@@ -285,6 +374,7 @@ export async function checkWorkspace(
   problems.push(
     ...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)),
     ...(await checkDoneTaskReadmeArchiveDrift(repoRoot, opts?.ctx)),
+    ...(await checkTaskProjectionDrift(repoRoot, opts?.ctx)),
   );
   return problems;
 }
