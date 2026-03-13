@@ -5,6 +5,7 @@ import {
   docChanged,
   parseTaskReadme,
   renderTaskReadme,
+  taskDocToSectionMap,
   taskReadmePath,
   type TaskRecord,
 } from "@agentplaneorg/core";
@@ -266,6 +267,18 @@ export class LocalBackend implements TaskBackend {
 
     const payload: Record<string, unknown> = { ...task };
     delete payload.doc;
+    if (
+      !Number.isInteger(payload.revision) ||
+      typeof payload.revision !== "number" ||
+      payload.revision <= 0
+    ) {
+      payload.revision =
+        Number.isInteger(existingFrontmatter.revision) &&
+        typeof existingFrontmatter.revision === "number" &&
+        existingFrontmatter.revision > 0
+          ? existingFrontmatter.revision
+          : 1;
+    }
 
     for (const [key, value] of Object.entries(payload)) {
       if (value === undefined) delete payload[key];
@@ -292,6 +305,16 @@ export class LocalBackend implements TaskBackend {
     }
 
     const existingDocVersion = normalizeDocVersion(existingFrontmatter.doc_version);
+    const effectiveDoc = task.doc === undefined ? existingDoc : String(task.doc ?? "");
+    const nextSections =
+      task.sections && Object.keys(task.sections).length > 0
+        ? task.sections
+        : effectiveDoc
+          ? taskDocToSectionMap(effectiveDoc)
+          : undefined;
+    if (nextSections && Object.keys(nextSections).length > 0) {
+      payload.sections = nextSections;
+    }
 
     if (task.doc !== undefined) {
       const docText = String(task.doc ?? "");
@@ -333,6 +356,7 @@ export class LocalBackend implements TaskBackend {
         this.updatedBy,
       );
     }
+    frontmatter.sections = taskDocToSectionMap(docText);
     frontmatter.doc_version = normalizeDocVersion(frontmatter.doc_version, currentDocVersion);
     const next = renderTaskReadme(frontmatter, body);
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
@@ -350,6 +374,7 @@ export class LocalBackend implements TaskBackend {
       updatedBy,
       this.updatedBy,
     );
+    frontmatter.sections = taskDocToSectionMap(extractTaskDoc(parsed.body));
     const next = renderTaskReadme(frontmatter, parsed.body || "");
     await writeTextIfChanged(readme, next.endsWith("\n") ? next : `${next}\n`);
   }
@@ -404,6 +429,16 @@ export class LocalBackend implements TaskBackend {
         // rendered output is identical (prevents mtime churn and diff-noise).
         const payload: Record<string, unknown> = { ...task };
         delete payload.doc;
+        if (
+          !Number.isInteger(payload.revision) ||
+          typeof payload.revision !== "number" ||
+          payload.revision <= 0
+        ) {
+          payload.revision =
+            Number.isInteger(fm.revision) && typeof fm.revision === "number" && fm.revision > 0
+              ? fm.revision
+              : 1;
+        }
         for (const [key, value] of Object.entries(payload)) {
           if (value === undefined) delete payload[key];
         }
@@ -428,6 +463,9 @@ export class LocalBackend implements TaskBackend {
         }
         if (payload.doc_updated_by === undefined || payload.doc_updated_by === "") {
           payload.doc_updated_by = resolveDocUpdatedByFromTask(task, this.updatedBy);
+        }
+        if (!payload.sections && task.doc) {
+          payload.sections = taskDocToSectionMap(task.doc);
         }
 
         const next = renderTaskReadme(payload, parsed.body || "");

@@ -6,7 +6,7 @@ import { atomicWriteFile } from "../fs/atomic-write.js";
 import { resolveProject } from "../project/project-root.js";
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
 import { updateTaskReadmeAtomic } from "./task-readme-io.js";
-import { ensureDocSections, setMarkdownSection } from "./task-doc.js";
+import { ensureDocSections, setMarkdownSection, taskDocToSectionMap } from "./task-doc.js";
 import { generateTaskId } from "./task-id.js";
 
 export type TaskStatus = "TODO" | "DOING" | "DONE" | "BLOCKED";
@@ -29,6 +29,7 @@ export type TaskFrontmatter = {
   status: TaskStatus;
   priority: TaskPriority;
   owner: string;
+  revision?: number;
   depends_on: string[];
   tags: string[];
   verify: string[];
@@ -50,6 +51,7 @@ export type TaskFrontmatter = {
   doc_updated_at: string;
   doc_updated_by: string;
   description: string;
+  sections?: Record<string, string>;
   commit?: { hash: string; message: string } | null;
 };
 
@@ -226,6 +228,7 @@ export async function createTask(opts: {
     status: "TODO",
     priority: opts.priority,
     owner: opts.owner,
+    revision: 1,
     depends_on: opts.dependsOn,
     tags: opts.tags,
     verify: opts.verify,
@@ -250,6 +253,7 @@ export async function createTask(opts: {
   };
 
   const body = defaultTaskBody();
+  frontmatter.sections = taskDocToSectionMap(body);
   const text = renderTaskReadme(frontmatter as unknown as Record<string, unknown>, body);
   await atomicWriteFile(readmePath, text, "utf8");
   return { id, readmePath };
@@ -286,6 +290,7 @@ export async function setTaskDocSection(opts: {
       setMarkdownSection(baseDoc, opts.section, opts.text),
       loaded.config.tasks.doc.required_sections,
     );
+    nextFrontmatter.sections = taskDocToSectionMap(nextBody);
     return { frontmatter: nextFrontmatter, body: nextBody };
   });
   return { readmePath };

@@ -11,6 +11,22 @@ import {
 } from "./normalize.js";
 import { toStringArray } from "./strings.js";
 import type { TaskData } from "./types.js";
+import { renderTaskDocFromSections, taskDocToSectionMap } from "@agentplaneorg/core";
+
+function normalizeRevision(value: unknown): number | undefined {
+  return Number.isInteger(value) && Number(value) > 0 ? Number(value) : undefined;
+}
+
+function normalizeCanonicalSections(value: unknown): Record<string, string> | undefined {
+  if (!isRecord(value)) return undefined;
+  const out: Record<string, string> = {};
+  for (const [title, text] of Object.entries(value)) {
+    const normalizedTitle = title.trim();
+    if (!normalizedTitle || typeof text !== "string") continue;
+    out[normalizedTitle] = text.replaceAll("\r\n", "\n").trimEnd();
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
 
 export function taskRecordToData(record: TaskRecord): TaskData {
   const fm = record.frontmatter as unknown as Record<string, unknown>;
@@ -34,6 +50,8 @@ export function taskRecordToData(record: TaskRecord): TaskData {
   const events = normalizeEvents(fm.events);
   const planApproval = normalizePlanApproval(fm.plan_approval);
   const verification = normalizeVerificationResult(fm.verification);
+  const sections = normalizeCanonicalSections(fm.sections);
+  const doc = sections ? renderTaskDocFromSections(sections) : extractTaskDoc(record.body);
 
   const baseId = typeof fm.id === "string" ? fm.id : typeof record.id === "string" ? record.id : "";
   const task: TaskData = {
@@ -49,6 +67,7 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     status: typeof fm.status === "string" ? fm.status : "TODO",
     priority: typeof fm.priority === "string" || typeof fm.priority === "number" ? fm.priority : "",
     owner: typeof fm.owner === "string" ? fm.owner : "",
+    revision: normalizeRevision(fm.revision) ?? 1,
     depends_on: normalizeDependsOn(fm.depends_on),
     tags: toStringArray(fm.tags),
     verify: toStringArray(fm.verify),
@@ -64,8 +83,8 @@ export function taskRecordToData(record: TaskRecord): TaskData {
     id_source: typeof fm.id_source === "string" ? fm.id_source : undefined,
   };
 
-  const doc = extractTaskDoc(record.body);
   if (doc) task.doc = doc;
+  task.sections = sections ?? (doc ? taskDocToSectionMap(doc) : undefined);
 
   return task;
 }

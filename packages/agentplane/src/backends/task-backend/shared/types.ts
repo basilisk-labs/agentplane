@@ -36,6 +36,7 @@ export type TaskData = {
   status: string;
   priority: string | number;
   owner: string;
+  revision?: number;
   depends_on: string[];
   tags: string[];
   verify: string[];
@@ -45,6 +46,7 @@ export type TaskData = {
   comments?: { author: string; body: string }[];
   events?: TaskEvent[];
   doc?: string;
+  sections?: Record<string, string>;
   doc_version?: number;
   doc_updated_at?: string;
   doc_updated_by?: string;

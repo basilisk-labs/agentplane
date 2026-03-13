@@ -227,6 +227,58 @@ describe("task-backend helpers", () => {
     expect(data.dirty).toBe(true);
   });
 
+  it("taskRecordToData prefers canonical frontmatter sections over README body", () => {
+    const record = {
+      id: "202601300000-CANON",
+      frontmatter: {
+        id: "202601300000-CANON",
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+        revision: 1,
+        sections: {
+          Summary: "Canonical summary",
+          Plan: "Canonical plan",
+        },
+      },
+      body: "## Summary\n\nLegacy summary\n",
+    } as unknown as TaskRecord;
+
+    const data = taskRecordToData(record);
+    expect(data.revision).toBe(1);
+    expect(data.doc).toBe("## Summary\n\nCanonical summary\n\n## Plan\n\nCanonical plan");
+    expect(data.sections).toEqual({
+      Summary: "Canonical summary",
+      Plan: "Canonical plan",
+    });
+  });
+
+  it("taskRecordToData derives canonical sections from legacy README body", () => {
+    const record = {
+      id: "202601300000-LEGACY",
+      frontmatter: {
+        id: "202601300000-LEGACY",
+        title: "Task",
+        description: "Desc",
+        status: "TODO",
+        priority: "med",
+        owner: "tester",
+      },
+      body: ["## Summary", "", "Legacy summary", "", "## Findings", "", "Legacy finding"].join(
+        "\n",
+      ),
+    } as unknown as TaskRecord;
+
+    const data = taskRecordToData(record);
+    expect(data.revision).toBe(1);
+    expect(data.sections).toEqual({
+      Summary: "Legacy summary",
+      Findings: "Legacy finding",
+    });
+  });
+
   it("taskRecordToData defaults missing or invalid fields", () => {
     const record = {
       id: 123,

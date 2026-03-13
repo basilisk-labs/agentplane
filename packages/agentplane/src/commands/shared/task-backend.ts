@@ -1,5 +1,9 @@
 import path from "node:path";
-import type { AgentplaneConfig, ResolvedProject } from "@agentplaneorg/core";
+import {
+  taskDocToSectionMap,
+  type AgentplaneConfig,
+  type ResolvedProject,
+} from "@agentplaneorg/core";
 
 import { CliError } from "../../shared/errors.js";
 import { loadTaskBackend, type TaskData } from "../../backends/task-backend.js";
@@ -51,6 +55,14 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
   const verification =
     task.verification ??
     ({ state: "pending", updated_at: null, updated_by: null, note: null } as const);
+  const revision =
+    Number.isInteger(task.revision) && Number(task.revision) > 0 ? Number(task.revision) : 1;
+  const sections =
+    task.sections && Object.keys(task.sections).length > 0
+      ? task.sections
+      : task.doc
+        ? taskDocToSectionMap(task.doc)
+        : undefined;
   return {
     id: task.id,
     title: task.title,
@@ -60,6 +72,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     status: task.status,
     priority: task.priority,
     owner: task.owner,
+    revision,
     depends_on: task.depends_on ?? [],
     tags: task.tags ?? [],
     verify: task.verify ?? [],
@@ -72,6 +85,7 @@ export function taskDataToFrontmatter(task: TaskData): Record<string, unknown> {
     doc_updated_at: task.doc_updated_at,
     doc_updated_by: task.doc_updated_by,
     description: task.description ?? "",
+    sections,
     id_source: task.id_source,
     dirty: task.dirty,
   };

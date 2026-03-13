@@ -1,6 +1,17 @@
 const DOC_SECTION_HEADER = "## Summary";
 const DOC_SECTION_HEADER_RE = /^##\s+Summary(?:\s|$|#)/;
 const AUTO_SUMMARY_HEADER = "## Changes Summary (auto)";
+const PREFERRED_TASK_SECTION_ORDER = [
+  "Summary",
+  "Scope",
+  "Plan",
+  "Risks",
+  "Verify Steps",
+  "Verification",
+  "Rollback Plan",
+  "Notes",
+  "Findings",
+] as const;
 
 export function normalizeDocSectionName(section: string): string {
   return section.trim().replaceAll(/\s+/g, " ").toLowerCase();
@@ -345,4 +356,43 @@ export function parseDocSections(doc: string): {
     }
   }
   return { sections, order };
+}
+
+function orderedTaskSectionTitles(sections: Record<string, string>): string[] {
+  const all = Object.keys(sections).filter((title) => title.trim().length > 0);
+  const preferred = PREFERRED_TASK_SECTION_ORDER.filter((title) => title in sections);
+  const remaining = all
+    .filter((title) => !preferred.includes(title as (typeof PREFERRED_TASK_SECTION_ORDER)[number]))
+    .toSorted((a, b) => a.localeCompare(b));
+  return [...preferred, ...remaining];
+}
+
+export function taskDocToSectionMap(doc: string): Record<string, string> {
+  const normalized = normalizeTaskDoc(doc);
+  if (!normalized) return {};
+
+  const parsed = parseDocSections(normalized);
+  const out: Record<string, string> = {};
+  for (const key of parsed.order) {
+    const entry = parsed.sections.get(key);
+    if (!entry) continue;
+    out[entry.title] = normalizeSectionLines(entry.lines).join("\n").trimEnd();
+  }
+  return out;
+}
+
+export function renderTaskDocFromSections(sections: Record<string, string>): string {
+  const titles = orderedTaskSectionTitles(sections);
+  if (titles.length === 0) return "";
+
+  const lines: string[] = [];
+  for (const title of titles) {
+    const text = String(sections[title] ?? "")
+      .replaceAll("\r\n", "\n")
+      .trimEnd();
+    lines.push(`## ${title}`, "");
+    if (text) lines.push(...text.split("\n"));
+    lines.push("");
+  }
+  return normalizeTaskDoc(lines.join("\n"));
 }

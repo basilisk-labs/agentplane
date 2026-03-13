@@ -142,6 +142,7 @@ export function buildTaskIndexEntry(
     ...task,
     // Keep the index payload lean for list/search/next paths.
     doc: undefined,
+    sections: undefined,
     comments: undefined,
     events: undefined,
   };

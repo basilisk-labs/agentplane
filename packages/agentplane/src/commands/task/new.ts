@@ -1,4 +1,4 @@
-import { setMarkdownSection } from "@agentplaneorg/core";
+import { setMarkdownSection, taskDocToSectionMap } from "@agentplaneorg/core";
 
 import { type TaskData } from "../../backends/task-backend.js";
 import { mapBackendError } from "../../cli/error-map.js";
@@ -104,6 +104,7 @@ export async function runTaskNewParsed(opts: {
       status: "TODO",
       priority: p.priority,
       owner: p.owner,
+      revision: 1,
       tags: p.tags,
       depends_on: p.dependsOn,
       verify: p.verify,
@@ -155,6 +156,8 @@ export async function runTaskNewParsed(opts: {
         )}\n`,
       );
     }
+
+    task.sections = taskDocToSectionMap(task.doc ?? "");
 
     await ctx.taskBackend.writeTask(task);
     process.stdout.write(`${taskId}\n`);

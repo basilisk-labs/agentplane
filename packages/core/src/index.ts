@@ -46,8 +46,10 @@ export {
   normalizeDocSectionName,
   normalizeTaskDoc,
   parseDocSections,
+  renderTaskDocFromSections,
   setMarkdownSection,
   splitCombinedHeadingLines,
+  taskDocToSectionMap,
 } from "./tasks/task-doc.js";
 
 export { atomicWriteFile } from "./fs/atomic-write.js";

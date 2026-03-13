@@ -174,7 +174,19 @@ function renderValueLines(key: string, value: unknown, indent: string): string[]
             ? (["state", "updated_at", "updated_by", "note"] as const)
             : key === "commit"
               ? (["hash", "message"] as const)
-              : null;
+              : key === "sections"
+                ? ([
+                    "Summary",
+                    "Scope",
+                    "Plan",
+                    "Risks",
+                    "Verify Steps",
+                    "Verification",
+                    "Rollback Plan",
+                    "Notes",
+                    "Findings",
+                  ] as const)
+                : null;
     const inner = renderMapLines(value, `${indent}  `, preferred);
     if (inner.length === 0) return [`${indent}${key}: {}`];
     return [`${indent}${key}:`, ...inner];
@@ -193,6 +205,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
     "status",
     "priority",
     "owner",
+    "revision",
     "created_at",
     "created_by",
     "origin",
@@ -208,6 +221,7 @@ export function renderTaskFrontmatter(frontmatter: Record<string, unknown>): str
     "doc_updated_at",
     "doc_updated_by",
     "description",
+    "sections",
     "id_source",
     "dirty",
   ] as const;

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { renderTaskDocFromSections, taskDocToSectionMap } from "./task-doc.js";
 import { parseTaskReadme, renderTaskReadme } from "./task-readme.js";
 
 describe("task README frontmatter", () => {
@@ -142,5 +143,60 @@ Hello world.
     expect((roundtrip.verification as Record<string, unknown>).note).toBe(
       "First line\nSecond line\nThird line",
     );
+  });
+
+  it("renders canonical sections in task-doc order and roundtrips them", () => {
+    const parsed = parseTaskReadme(sample);
+    const withCanonicalSections = {
+      ...parsed.frontmatter,
+      revision: 1,
+      sections: {
+        Findings: "Track residual risk.",
+        Summary: "Top level summary.",
+        "Verify Steps": "1. Run focused checks.",
+        Plan: "1. Ship schema v1.",
+      },
+    };
+
+    const rendered = renderTaskReadme(
+      withCanonicalSections as Record<string, unknown>,
+      parsed.body,
+    );
+    expect(rendered).toContain("revision: 1");
+    expect(rendered).toContain("sections:");
+    expect(rendered.indexOf('Summary: "Top level summary."')).toBeLessThan(
+      rendered.indexOf('Plan: "1. Ship schema v1."'),
+    );
+    expect(rendered.indexOf('Plan: "1. Ship schema v1."')).toBeLessThan(
+      rendered.indexOf('Verify Steps: "1. Run focused checks."'),
+    );
+
+    const roundtrip = parseTaskReadme(rendered).frontmatter;
+    expect((roundtrip.sections as Record<string, unknown>).Summary).toBe("Top level summary.");
+    expect(renderTaskDocFromSections(roundtrip.sections as Record<string, string>)).toContain(
+      "## Verify Steps",
+    );
+  });
+
+  it("converts markdown task docs into canonical section maps", () => {
+    const doc = [
+      "## Summary",
+      "",
+      "One",
+      "",
+      "## Verify Steps",
+      "",
+      "1. Run",
+      "",
+      "## Findings",
+      "",
+      "Note",
+    ].join("\n");
+
+    expect(taskDocToSectionMap(doc)).toEqual({
+      Summary: "One",
+      "Verify Steps": "1. Run",
+      Findings: "Note",
+    });
   });
 });

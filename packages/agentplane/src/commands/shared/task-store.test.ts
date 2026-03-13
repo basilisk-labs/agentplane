@@ -223,6 +223,53 @@ describe("commands/shared/TaskStore", () => {
     expect(exported?.doc_version).toBe(3);
   });
 
+  it("writes canonical revision and sections to legacy task README on the next task-store update", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-SCHM";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      renderTaskReadme(
+        {
+          id: taskId,
+          title: "before",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-02-07T00:00:00Z",
+          doc_updated_by: "CODER",
+          description: "",
+        },
+        ["## Summary", "", "legacy summary", "", "## Findings", "", "legacy finding"].join("\n"),
+      ),
+      "utf8",
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+    const result = await store.update(taskId, (current) => ({ ...current, status: "DOING" }));
+
+    expect(result.task.revision).toBe(1);
+    expect(result.task.sections).toEqual({
+      Summary: "legacy summary",
+      Findings: "legacy finding",
+    });
+
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain("revision: 1");
+    expect(final).toContain("sections:");
+    expect(final).toContain('Summary: "legacy summary"');
+    expect(final).toContain("legacy summary");
+  });
+
   it("rejects concurrent writes to the same README section via semantic patch preconditions", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
     const taskId = "202602070000-CONF";
