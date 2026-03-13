@@ -1,7 +1,8 @@
 ---
 id: "202603130653-XHH0FZ"
 title: "Teach release recovery to read publish-result artifact"
-status: "DOING"
+result_summary: "Release recovery now reads publish-result when available and falls back to workflow-state inference only when the artifact is missing or unavailable."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T07:15:45.371Z"
   updated_by: "CODER"
   note: "Verified publish-result-aware release recovery: release-recovery-script suite, release-critical, eslint, and prettier all pass."
-commit: null
+commit:
+  hash: "d008bb6b3c1d65363e7835b61fdc816055d8840a"
+  message: "🧾 XHH0FZ task: prefer publish-result in release recovery"
 comments:
   -
     author: "CODER"
     body: "Start: teach release recovery to read publish-result artifact contents first and only fall back to workflow-state inference when that canonical output artifact is missing."
+  -
+    author: "CODER"
+    body: "Verified: publish-result-aware recovery now prefers the canonical artifact over workflow-state inference, distinguishes incomplete publish outcomes, and reports explicit post-publish state in release recovery."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified publish-result-aware release recovery: release-recovery-script suite, release-critical, eslint, and prettier all pass."
+  -
+    type: "status"
+    at: "2026-03-13T07:16:49.864Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: publish-result-aware recovery now prefers the canonical artifact over workflow-state inference, distinguishes incomplete publish outcomes, and reports explicit post-publish state in release recovery."
 doc_version: 3
-doc_updated_at: "2026-03-13T07:15:45.373Z"
+doc_updated_at: "2026-03-13T07:16:49.866Z"
 doc_updated_by: "CODER"
 description: "Consume the publish-result artifact when present so release recovery reports published outcomes from canonical data before falling back to inference."
 id_source: "generated"
