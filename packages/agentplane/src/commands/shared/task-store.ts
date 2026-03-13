@@ -66,9 +66,87 @@ export type TaskStorePatch = {
   };
 };
 
+export type TaskStoreIntent =
+  | {
+      kind: "set-task-fields";
+      task: TaskStoreTaskPatch;
+    }
+  | {
+      kind: "append-comments";
+      comments: TaskComment[];
+    }
+  | {
+      kind: "append-events";
+      events: TaskEvent[];
+    }
+  | {
+      kind: "replace-doc";
+      doc: string;
+      expectedCurrentDoc?: string | null;
+    }
+  | {
+      kind: "set-section";
+      section: string;
+      text: string;
+      requiredSections: string[];
+      expectedCurrentText?: string | null;
+    }
+  | {
+      kind: "touch-doc-meta";
+      updatedBy?: string;
+      version?: 2 | 3;
+    };
+
+type TaskStoreIntentResult = TaskStoreIntent | readonly TaskStoreIntent[] | null | undefined;
+
 export type TaskStoreMutationOptions = {
   expectedRevision?: number;
 };
+
+export function setTaskFieldsIntent(task: TaskStoreTaskPatch): TaskStoreIntent {
+  return { kind: "set-task-fields", task };
+}
+
+export function appendTaskCommentsIntent(comments: TaskComment[]): TaskStoreIntent {
+  return { kind: "append-comments", comments };
+}
+
+export function appendTaskCommentIntent(comment: TaskComment): TaskStoreIntent {
+  return appendTaskCommentsIntent([comment]);
+}
+
+export function appendTaskEventsIntent(events: TaskEvent[]): TaskStoreIntent {
+  return { kind: "append-events", events };
+}
+
+export function appendTaskEventIntent(event: TaskEvent): TaskStoreIntent {
+  return appendTaskEventsIntent([event]);
+}
+
+export function replaceTaskDocIntent(opts: {
+  doc: string;
+  expectedCurrentDoc?: string | null;
+}): TaskStoreIntent {
+  return { kind: "replace-doc", ...opts };
+}
+
+export function setTaskSectionIntent(opts: {
+  section: string;
+  text: string;
+  requiredSections: string[];
+  expectedCurrentText?: string | null;
+}): TaskStoreIntent {
+  return { kind: "set-section", ...opts };
+}
+
+export function touchTaskDocMetaIntent(
+  opts: {
+    updatedBy?: string;
+    version?: 2 | 3;
+  } = {},
+): TaskStoreIntent {
+  return { kind: "touch-doc-meta", ...opts };
+}
 
 function taskReadmePath(ctx: CommandContext, taskId: string): string {
   return path.join(ctx.resolvedProject.gitRoot, ctx.config.paths.workflow_dir, taskId, "README.md");
@@ -222,6 +300,133 @@ function applyTaskDocPatch(opts: {
   );
 }
 
+function normalizeTaskStoreIntents(intents: TaskStoreIntentResult): TaskStoreIntent[] {
+  if (!intents) return [];
+  if (Array.isArray(intents)) {
+    return intents.filter((intent): intent is TaskStoreIntent => intent != null);
+  }
+  return [intents as TaskStoreIntent];
+}
+
+function patchToIntents(patch: TaskStorePatch | null | undefined): TaskStoreIntent[] {
+  if (!patch) return [];
+  const intents: TaskStoreIntent[] = [];
+  if (patch.task) {
+    intents.push(setTaskFieldsIntent(patch.task));
+  }
+  if (patch.appendComments && patch.appendComments.length > 0) {
+    intents.push(appendTaskCommentsIntent(patch.appendComments));
+  }
+  if (patch.appendEvents && patch.appendEvents.length > 0) {
+    intents.push(appendTaskEventsIntent(patch.appendEvents));
+  }
+  if (patch.doc) {
+    intents.push(
+      patch.doc.kind === "replace-doc"
+        ? replaceTaskDocIntent({
+            doc: patch.doc.doc,
+            expectedCurrentDoc: patch.doc.expectedCurrentDoc,
+          })
+        : setTaskSectionIntent({
+            section: patch.doc.section,
+            text: patch.doc.text,
+            requiredSections: patch.doc.requiredSections,
+            expectedCurrentText: patch.doc.expectedCurrentText,
+          }),
+    );
+  }
+  if (patch.docMeta && (patch.doc !== undefined || patch.docMeta.touch === true)) {
+    intents.push(
+      touchTaskDocMetaIntent({
+        updatedBy: patch.docMeta.updatedBy,
+        version: patch.docMeta.version,
+      }),
+    );
+  }
+  return intents;
+}
+
+function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): TaskData {
+  if (intents.length === 0) return { ...entry.task };
+
+  const current = entry.task;
+  const next: TaskData = { ...current };
+  let touchDoc = false;
+  let docMetaUpdatedBy: string | undefined;
+  let docMetaVersion: 2 | 3 | undefined;
+
+  for (const intent of intents) {
+    switch (intent.kind) {
+      case "set-task-fields": {
+        Object.assign(next, intent.task);
+        break;
+      }
+      case "append-comments": {
+        if (intent.comments.length > 0) {
+          next.comments = [...normalizeComments(next), ...intent.comments];
+        }
+        break;
+      }
+      case "append-events": {
+        if (intent.events.length > 0) {
+          next.events = [...normalizeEvents(next), ...intent.events];
+        }
+        break;
+      }
+      case "replace-doc": {
+        next.doc = applyTaskDocPatch({
+          taskId: current.id,
+          currentDocRaw: String(next.doc ?? ""),
+          patch: {
+            kind: "replace-doc",
+            doc: intent.doc,
+            expectedCurrentDoc: intent.expectedCurrentDoc,
+          },
+        });
+        touchDoc = true;
+        break;
+      }
+      case "set-section": {
+        next.doc = applyTaskDocPatch({
+          taskId: current.id,
+          currentDocRaw: String(next.doc ?? ""),
+          patch: {
+            kind: "set-section",
+            section: intent.section,
+            text: intent.text,
+            requiredSections: intent.requiredSections,
+            expectedCurrentText: intent.expectedCurrentText,
+          },
+        });
+        touchDoc = true;
+        break;
+      }
+      case "touch-doc-meta": {
+        touchDoc = true;
+        if (intent.updatedBy !== undefined) {
+          docMetaUpdatedBy = intent.updatedBy;
+        }
+        if (intent.version !== undefined) {
+          docMetaVersion = intent.version;
+        }
+        break;
+      }
+    }
+  }
+
+  if (touchDoc) {
+    const currentDocVersion = normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version);
+    next.doc_version = normalizeTaskDocVersion(
+      docMetaVersion ?? next.doc_version,
+      currentDocVersion,
+    );
+    next.doc_updated_at = new Date().toISOString();
+    next.doc_updated_by = docMetaUpdatedBy ?? resolveDocUpdatedBy(next);
+  }
+
+  return next;
+}
+
 async function readTaskReadmeCached(opts: {
   ctx: CommandContext;
   taskId: string;
@@ -333,39 +538,21 @@ export class TaskStore {
     ) => Promise<TaskStorePatch | null | undefined> | TaskStorePatch | null | undefined,
     opts: TaskStoreMutationOptions = {},
   ): Promise<{ changed: boolean; task: TaskData }> {
+    return await this.mutate(
+      taskId,
+      async (current) => patchToIntents(await builder(current)),
+      opts,
+    );
+  }
+
+  async mutate(
+    taskId: string,
+    builder: (current: TaskData) => Promise<TaskStoreIntentResult> | TaskStoreIntentResult,
+    opts: TaskStoreMutationOptions = {},
+  ): Promise<{ changed: boolean; task: TaskData }> {
     return await this.runWithRetry(taskId, opts, async (entry) => {
-      const patch = await builder({ ...entry.task });
-      if (!patch) return { ...entry.task };
-
-      const current = entry.task;
-      const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
-
-      if (patch.appendComments && patch.appendComments.length > 0) {
-        next.comments = [...normalizeComments(current), ...patch.appendComments];
-      }
-      if (patch.appendEvents && patch.appendEvents.length > 0) {
-        next.events = [...normalizeEvents(current), ...patch.appendEvents];
-      }
-      if (patch.doc) {
-        next.doc = applyTaskDocPatch({
-          taskId: current.id,
-          currentDocRaw: String(current.doc ?? ""),
-          patch: patch.doc,
-        });
-      }
-
-      const touchDoc = patch.doc !== undefined || patch.docMeta?.touch === true;
-      if (touchDoc) {
-        const currentDocVersion = normalizeTaskDocVersion(entry.parsed.frontmatter.doc_version);
-        next.doc_version = normalizeTaskDocVersion(
-          patch.docMeta?.version ?? current.doc_version,
-          currentDocVersion,
-        );
-        next.doc_updated_at = new Date().toISOString();
-        next.doc_updated_by = patch.docMeta?.updatedBy ?? resolveDocUpdatedBy(next);
-      }
-
-      return next;
+      const intents = normalizeTaskStoreIntents(await builder({ ...entry.task }));
+      return applyTaskStoreIntents(entry, intents);
     });
   }
 

@@ -8,7 +8,13 @@ import { defaultConfig, renderTaskReadme, writeTasksExport } from "@agentplaneor
 import { LocalBackend } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "./task-backend.js";
-import { TaskStore } from "./task-store.js";
+import {
+  appendTaskCommentIntent,
+  appendTaskEventIntent,
+  setTaskFieldsIntent,
+  TaskStore,
+  touchTaskDocMetaIntent,
+} from "./task-store.js";
 
 function makeCtx(root: string): CommandContext {
   const config = defaultConfig();
@@ -792,5 +798,46 @@ describe("commands/shared/TaskStore", () => {
       { author: "OTHER", body: "external" },
       { author: "ME", body: "mine" },
     ]);
+  });
+
+  it("applies explicit TaskStore intents through mutate", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-MTTE";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(readmePath, baseReadme(taskId, "Task", 3), "utf8");
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+
+    const result = await store.mutate(taskId, () => [
+      setTaskFieldsIntent({ status: "DOING" }),
+      appendTaskCommentIntent({ author: "CODER", body: "Start: comment" }),
+      appendTaskEventIntent({
+        type: "comment",
+        at: "2026-02-07T01:00:00.000Z",
+        author: "CODER",
+        body: "Start: comment",
+      }),
+      touchTaskDocMetaIntent({ updatedBy: "CODER", version: 3 }),
+    ]);
+
+    expect(result.changed).toBe(true);
+    expect(result.task.status).toBe("DOING");
+    expect(result.task.comments).toEqual([{ author: "CODER", body: "Start: comment" }]);
+    expect(result.task.events).toEqual([
+      {
+        type: "comment",
+        at: "2026-02-07T01:00:00.000Z",
+        author: "CODER",
+        body: "Start: comment",
+      },
+    ]);
+    expect(result.task.doc_version).toBe(3);
+    expect(result.task.revision).toBe(1);
+
+    const final = await readFile(readmePath, "utf8");
+    expect(final).toContain("revision: 1");
+    expect(final).toContain('status: "DOING"');
   });
 });

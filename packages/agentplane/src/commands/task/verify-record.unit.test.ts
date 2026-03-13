@@ -11,7 +11,7 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { CliError } from "../../shared/errors.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import { GitContext } from "../shared/git-context.js";
-import type { TaskStorePatch } from "../shared/task-store.js";
+import type { TaskStoreIntent } from "../shared/task-store.js";
 
 const mocks = vi.hoisted(() => ({
   readFile: vi.fn<(p: string, enc: string) => Promise<string>>(),
@@ -40,8 +40,18 @@ vi.mock("../shared/reconcile-check.js", () => ({
   ensureReconciledBeforeMutation: mocks.ensureReconciledBeforeMutation,
 }));
 vi.mock("../shared/task-store.js", () => ({
+  appendTaskEventIntent: (event: Record<string, unknown>) => ({
+    kind: "append-events",
+    events: [event],
+  }),
   backendIsLocalFileBackend: mocks.backendIsLocalFileBackend,
   getTaskStore: mocks.getTaskStore,
+  setTaskFieldsIntent: (task: Record<string, unknown>) => ({ kind: "set-task-fields", task }),
+  setTaskSectionIntent: (opts: Record<string, unknown>) => ({ kind: "set-section", ...opts }),
+  touchTaskDocMetaIntent: (opts: Record<string, unknown>) => ({
+    kind: "touch-doc-meta",
+    ...opts,
+  }),
 }));
 
 function mkTask(overrides: Partial<TaskData>): TaskData {
@@ -92,28 +102,54 @@ function mkCtx(overrides?: Partial<CommandContext>): CommandContext {
   return { ...ctx, ...overrides };
 }
 
-function applyStorePatch(current: TaskData, patch: TaskStorePatch | null | undefined): TaskData {
-  if (!patch) return current;
-  const next: TaskData = patch.task ? { ...current, ...patch.task } : { ...current };
-  if (patch.appendEvents && patch.appendEvents.length > 0) {
-    next.events = [...(Array.isArray(current.events) ? current.events : []), ...patch.appendEvents];
-  }
-  if (patch.doc) {
-    if (patch.doc.kind === "replace-doc") {
-      next.doc = patch.doc.doc;
-    } else {
-      const baseDoc = ensureDocSections(String(current.doc ?? ""), patch.doc.requiredSections);
-      next.doc = ensureDocSections(
-        setMarkdownSection(baseDoc, patch.doc.section, patch.doc.text),
-        patch.doc.requiredSections,
-      );
+function applyStoreIntents(current: TaskData, intents: readonly TaskStoreIntent[]): TaskData {
+  const next: TaskData = { ...current };
+  let touchDoc = false;
+  let updatedBy: string | undefined;
+  let version: 2 | 3 | undefined;
+
+  for (const intent of intents) {
+    switch (intent.kind) {
+      case "set-task-fields": {
+        Object.assign(next, intent.task);
+        break;
+      }
+      case "append-events": {
+        next.events = [...(Array.isArray(next.events) ? next.events : []), ...intent.events];
+        break;
+      }
+      case "replace-doc": {
+        next.doc = intent.doc;
+        touchDoc = true;
+        break;
+      }
+      case "set-section": {
+        const baseDoc = ensureDocSections(String(next.doc ?? ""), intent.requiredSections);
+        next.doc = ensureDocSections(
+          setMarkdownSection(baseDoc, intent.section, intent.text),
+          intent.requiredSections,
+        );
+        touchDoc = true;
+        break;
+      }
+      case "touch-doc-meta": {
+        touchDoc = true;
+        updatedBy = intent.updatedBy ?? updatedBy;
+        version = intent.version ?? version;
+        break;
+      }
+      case "append-comments": {
+        break;
+      }
     }
   }
-  if (patch.doc || patch.docMeta?.touch === true) {
-    next.doc_version = patch.docMeta?.version ?? next.doc_version;
+
+  if (touchDoc) {
+    next.doc_version = version ?? next.doc_version;
     next.doc_updated_at = new Date().toISOString();
-    next.doc_updated_by = patch.docMeta?.updatedBy ?? next.doc_updated_by;
+    next.doc_updated_by = updatedBy ?? next.doc_updated_by;
   }
+
   return next;
 }
 
@@ -583,11 +619,14 @@ describe("task verify record (unit)", () => {
     });
     const store = {
       get: vi.fn().mockResolvedValue(staleTask),
-      patch: vi
+      mutate: vi
         .fn()
         .mockImplementation(
-          async (_taskId: string, builder: (current: TaskData) => Promise<TaskStorePatch>) => {
-            currentTask = applyStorePatch(currentTask, await builder(currentTask));
+          async (
+            _taskId: string,
+            builder: (current: TaskData) => Promise<readonly TaskStoreIntent[]>,
+          ) => {
+            currentTask = applyStoreIntents(currentTask, await builder(currentTask));
             return { changed: true, task: currentTask };
           },
         ),
@@ -607,8 +646,8 @@ describe("task verify record (unit)", () => {
     });
 
     expect(rc).toBe(0);
-    expect(store.get).toHaveBeenCalledTimes(1);
-    expect(store.patch).toHaveBeenCalledTimes(1);
+    expect(store.get).toHaveBeenCalledTimes(0);
+    expect(store.mutate).toHaveBeenCalledTimes(1);
     expect(currentTask.verification?.state).toBe("ok");
     expect(currentTask.doc).toContain("## Summary\nConcurrent summary");
     expect(currentTask.doc).toContain("## Verify Steps\nConcurrent verify steps");

@@ -13,7 +13,14 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import {
+  appendTaskEventIntent,
+  backendIsLocalFileBackend,
+  getTaskStore,
+  setTaskFieldsIntent,
+  setTaskSectionIntent,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 
 import {
   appendTaskEvent,
@@ -113,12 +120,10 @@ async function recordVerificationResult(opts: {
 
   const useStore = backendIsLocalFileBackend(ctx);
   const store = useStore ? getTaskStore(ctx) : null;
-  const task = useStore
-    ? await store!.get(opts.taskId)
-    : await loadTaskFromContext({ ctx, taskId: opts.taskId });
+  const task = useStore ? null : await loadTaskFromContext({ ctx, taskId: opts.taskId });
   const at = nowIso();
   if (useStore) {
-    await store!.patch(opts.taskId, (current) => {
+    await store!.mutate(opts.taskId, (current) => {
       const existingDoc = String(current.doc ?? "");
       const baseDoc = ensureDocSections(existingDoc, config.tasks.doc.required_sections);
       const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
@@ -142,8 +147,8 @@ async function recordVerificationResult(opts: {
       });
       const nextVerification = appendBetweenMarkers(verificationSection, entry, docVersion);
 
-      return {
-        task: {
+      return [
+        setTaskFieldsIntent({
           status: opts.state === "needs_rework" ? "DOING" : current.status,
           commit: opts.state === "needs_rework" ? null : (current.commit ?? null),
           verification: {
@@ -152,38 +157,37 @@ async function recordVerificationResult(opts: {
             updated_by: opts.by,
             note: opts.note,
           },
-        },
-        doc: {
-          kind: "set-section",
+        }),
+        setTaskSectionIntent({
           section: "Verification",
           text: nextVerification,
           requiredSections: config.tasks.doc.required_sections,
-        },
-        appendEvents: [
-          {
-            type: "verify",
-            at,
-            author: opts.by,
-            state: opts.state,
-            note: opts.note,
-          },
-        ],
-        docMeta: { updatedBy: opts.by },
-      };
+        }),
+        appendTaskEventIntent({
+          type: "verify",
+          at,
+          author: opts.by,
+          state: opts.state,
+          note: opts.note,
+        }),
+        touchTaskDocMetaIntent({ updatedBy: opts.by }),
+      ];
     });
   } else {
+    const remoteTask = task!;
     const existingDoc =
-      (typeof task.doc === "string" ? task.doc : "") || (await backend.getTaskDoc(task.id));
+      (typeof remoteTask.doc === "string" ? remoteTask.doc : "") ||
+      (await backend.getTaskDoc(remoteTask.id));
     const baseDoc = ensureDocSections(existingDoc ?? "", config.tasks.doc.required_sections);
     const verificationSection = extractDocSection(baseDoc, "Verification") ?? "";
     const verifySteps = extractDocSection(baseDoc, "Verify Steps");
     const verifyStepsHash = verifySteps
       ? sha256Hex(verifySteps.replaceAll("\r\n", "\n").trim())
       : null;
-    const docVersion = normalizeTaskDocVersion(task.doc_version);
+    const docVersion = normalizeTaskDocVersion(remoteTask.doc_version);
     const verifyStepsRef = [
       `doc_version=${String(docVersion)}`,
-      `doc_updated_at=${String(task.doc_updated_at ?? "missing")}`,
+      `doc_updated_at=${String(remoteTask.doc_updated_at ?? "missing")}`,
       `excerpt_hash=sha256:${verifyStepsHash ?? "missing"}`,
     ].join(", ");
     const entry = renderVerificationEntry({
@@ -201,12 +205,12 @@ async function recordVerificationResult(opts: {
     );
 
     await backend.writeTask({
-      ...task,
-      status: opts.state === "needs_rework" ? "DOING" : task.status,
-      commit: opts.state === "needs_rework" ? null : (task.commit ?? null),
+      ...remoteTask,
+      status: opts.state === "needs_rework" ? "DOING" : remoteTask.status,
+      commit: opts.state === "needs_rework" ? null : (remoteTask.commit ?? null),
       doc: nextDoc,
       doc_updated_by: opts.by,
-      events: appendTaskEvent(task, {
+      events: appendTaskEvent(remoteTask, {
         type: "verify",
         at,
         author: opts.by,
@@ -223,10 +227,15 @@ async function recordVerificationResult(opts: {
   }
 
   if (!opts.quiet) {
-    const readmePath = path.join(resolved.gitRoot, config.paths.workflow_dir, task.id, "README.md");
+    const readmePath = path.join(
+      resolved.gitRoot,
+      config.paths.workflow_dir,
+      opts.taskId,
+      "README.md",
+    );
     const relReadmePath = path.relative(resolved.gitRoot, readmePath);
     process.stdout.write(
-      `${successMessage("verified", task.id, `state=${opts.state} readme=${relReadmePath}`)}\n`,
+      `${successMessage("verified", opts.taskId, `state=${opts.state} readme=${relReadmePath}`)}\n`,
     );
   }
 }

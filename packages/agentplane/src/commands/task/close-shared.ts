@@ -1,7 +1,14 @@
 import { type TaskData } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
 import { type CommandContext } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import {
+  appendTaskCommentIntent,
+  appendTaskEventIntent,
+  backendIsLocalFileBackend,
+  getTaskStore,
+  setTaskFieldsIntent,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 import {
   appendTaskEvent,
   normalizeTaskDocVersion,
@@ -35,7 +42,7 @@ export async function recordVerifiedNoopClosure(opts: {
   const useStore = backendIsLocalFileBackend(opts.ctx);
   const store = useStore ? getTaskStore(opts.ctx) : null;
   await (useStore
-    ? store!.patch(opts.taskId, (current) => {
+    ? store!.mutate(opts.taskId, (current) => {
         if (!opts.force && String(current.status || "TODO").toUpperCase() === "DONE") {
           throw new CliError({
             exitCode: 2,
@@ -43,30 +50,27 @@ export async function recordVerifiedNoopClosure(opts: {
             message: `Task is already DONE: ${opts.taskId} (use --force to override)`,
           });
         }
-        return {
-          task: {
+        return [
+          setTaskFieldsIntent({
             status: "DONE",
             result_summary: opts.resultSummary,
             risk_level: "low",
             breaking: false,
-          },
-          appendComments: [{ author: opts.author, body: opts.body }],
-          appendEvents: [
-            {
-              type: "status",
-              at,
-              author: opts.author,
-              from: String(current.status || "TODO").toUpperCase(),
-              to: "DONE",
-              note: opts.body,
-            },
-          ],
-          docMeta: {
-            touch: true,
+          }),
+          appendTaskCommentIntent({ author: opts.author, body: opts.body }),
+          appendTaskEventIntent({
+            type: "status",
+            at,
+            author: opts.author,
+            from: String(current.status || "TODO").toUpperCase(),
+            to: "DONE",
+            note: opts.body,
+          }),
+          touchTaskDocMetaIntent({
             updatedBy: opts.author,
             version: normalizeTaskDocVersion(current.doc_version),
-          },
-        };
+          }),
+        ];
       })
     : opts.ctx.taskBackend.writeTask({
         ...opts.task,

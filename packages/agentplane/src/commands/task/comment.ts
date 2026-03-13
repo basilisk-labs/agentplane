@@ -6,7 +6,13 @@ import {
   loadTaskFromContext,
   type CommandContext,
 } from "../shared/task-backend.js";
-import { backendIsLocalFileBackend, getTaskStore } from "../shared/task-store.js";
+import {
+  appendTaskCommentIntent,
+  appendTaskEventIntent,
+  backendIsLocalFileBackend,
+  getTaskStore,
+  touchTaskDocMetaIntent,
+} from "../shared/task-store.js";
 import { appendTaskEvent, normalizeTaskDocVersion, nowIso } from "./shared.js";
 
 export async function cmdTaskComment(opts: {
@@ -23,45 +29,40 @@ export async function cmdTaskComment(opts: {
       (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
     const useStore = backendIsLocalFileBackend(ctx);
     const store = useStore ? getTaskStore(ctx) : null;
-    const task = useStore
-      ? await store!.get(opts.taskId)
-      : await loadTaskFromContext({ ctx, taskId: opts.taskId });
+    const task = useStore ? null : await loadTaskFromContext({ ctx, taskId: opts.taskId });
     const at = nowIso();
     await (useStore
-      ? store!.patch(opts.taskId, () => ({
-          appendComments: [{ author: opts.author, body: opts.body }],
-          appendEvents: [
-            {
-              type: "comment",
-              at,
-              author: opts.author,
-              body: opts.body,
-            },
-          ],
-          docMeta: {
-            touch: true,
+      ? store!.mutate(opts.taskId, (current) => [
+          appendTaskCommentIntent({ author: opts.author, body: opts.body }),
+          appendTaskEventIntent({
+            type: "comment",
+            at,
+            author: opts.author,
+            body: opts.body,
+          }),
+          touchTaskDocMetaIntent({
             updatedBy: opts.author,
-            version: normalizeTaskDocVersion(task.doc_version),
-          },
-        }))
+            version: normalizeTaskDocVersion(current.doc_version),
+          }),
+        ])
       : ctx.taskBackend.writeTask({
-          ...task,
+          ...task!,
           comments: [
-            ...(Array.isArray(task.comments)
-              ? task.comments.filter(
+            ...(Array.isArray(task!.comments)
+              ? task!.comments.filter(
                   (item): item is { author: string; body: string } =>
                     !!item && typeof item.author === "string" && typeof item.body === "string",
                 )
               : []),
             { author: opts.author, body: opts.body },
           ],
-          events: appendTaskEvent(task, {
+          events: appendTaskEvent(task!, {
             type: "comment",
             at,
             author: opts.author,
             body: opts.body,
           }),
-          doc_version: normalizeTaskDocVersion(task.doc_version),
+          doc_version: normalizeTaskDocVersion(task!.doc_version),
           doc_updated_at: at,
           doc_updated_by: opts.author,
         }));
