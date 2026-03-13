@@ -1,7 +1,8 @@
 ---
 id: "202603130527-3MJSDK"
 title: "Add GitHub-aware release recovery status diagnostics"
-status: "DOING"
+result_summary: "Added GitHub-aware release recovery diagnostics keyed to the apply-report SHA, covered them with script-level regressions, and documented the new --check-github recovery path."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -19,11 +20,16 @@ verification:
   updated_at: "2026-03-13T05:54:17.647Z"
   updated_by: "CODER"
   note: "Verified GitHub-aware release recovery diagnostics: the recovery script now distinguishes publish-success from sibling Core CI failure for the same release SHA, the text-mode command output is explicit, and the release/troubleshooting docs document --check-github."
-commit: null
+commit:
+  hash: "de34565072fff51578be4472e466b6b9ca8a40cb"
+  message: "🧭 3MJSDK release: add github-aware recovery diagnostics"
 comments:
   -
     author: "CODER"
     body: "Start: add GitHub-aware release recovery diagnostics keyed to the release apply SHA so publish-success and sibling Core CI failure are reported as distinct states."
+  -
+    author: "CODER"
+    body: "Verified: release recovery now reports GitHub publish/Core CI state for the exact release SHA and clearly distinguishes already-published releases from sibling CI failures."
 events:
   -
     type: "status"
@@ -38,8 +44,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified GitHub-aware release recovery diagnostics: the recovery script now distinguishes publish-success from sibling Core CI failure for the same release SHA, the text-mode command output is explicit, and the release/troubleshooting docs document --check-github."
+  -
+    type: "status"
+    at: "2026-03-13T05:54:39.825Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: release recovery now reports GitHub publish/Core CI state for the exact release SHA and clearly distinguishes already-published releases from sibling CI failures."
 doc_version: 3
-doc_updated_at: "2026-03-13T05:54:17.648Z"
+doc_updated_at: "2026-03-13T05:54:39.826Z"
 doc_updated_by: "CODER"
 description: "Teach release recovery/status tooling and docs to distinguish publish success from sibling CI failure on the same release SHA so operators do not rerun publish unnecessarily."
 id_source: "generated"
