@@ -760,12 +760,12 @@ Options:
 - `--check-only`: With --close: run preflight checks and print the planned close commit subject without creating a commit. (default=false)
 - `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
 - `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
-- `--allow-tasks`: Allow the tasks export snapshot plus artifacts under the active task subtree. (default=false)
-- `--allow-base`: Allow base branch edits. (default=false)
-- `--allow-policy`: Allow policy edits (e.g. AGENTS.md). (default=false)
-- `--allow-config`: Allow config edits. (default=false)
-- `--allow-hooks`: Allow hooks edits. (default=false)
-- `--allow-ci`: Allow CI workflow edits. (default=false)
+- `--allow-tasks`: Allow the tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
+- `--allow-base`: Allow base branch edits; branch override only, not a path allowlist. (default=false)
+- `--allow-policy`: Allow policy edits (e.g. AGENTS.md); standalone path scope. (default=false)
+- `--allow-config`: Allow config edits; standalone path scope. (default=false)
+- `--allow-hooks`: Allow hooks edits; standalone path scope. (default=false)
+- `--allow-ci`: Allow CI workflow edits; standalone path scope. (default=false)
 - `--require-clean`: Fail if tracked files have unstaged changes (untracked is ignored). (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
@@ -776,6 +776,12 @@ agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist g
 ```
 
 - Create a commit after validating allowlist and subject policy.
+
+```sh
+agentplane commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: update publish workflow" --allow-ci
+```
+
+- Commit CI-only changes without a redundant explicit workflow path prefix.
 
 ```sh
 agentplane commit 202602030608-F1Q8AB --close
@@ -830,12 +836,12 @@ Options:
 - `-m, --message <message>`: Commit subject (must follow policy). (required)
 - `--allow <path-prefix>`: Repeatable. Allowed path prefix (git-path). Use minimal prefixes; repo-wide '.' is rejected (tip: \`agentplane guard suggest-allow --format args\`). (repeatable)
 - `--auto-allow`: Deprecated. Disabled for safety; pass explicit --allow prefixes. (default=false, deprecated=disabled)
-- `--allow-tasks`: Allow the tasks export snapshot plus artifacts under the active task subtree. (default=false)
-- `--allow-base`: Allow base branch edits. (default=false)
-- `--allow-policy`: Allow policy edits (e.g. AGENTS.md). (default=false)
-- `--allow-config`: Allow config edits. (default=false)
-- `--allow-hooks`: Allow hooks edits. (default=false)
-- `--allow-ci`: Allow CI workflow edits. (default=false)
+- `--allow-tasks`: Allow the tasks export snapshot plus artifacts under the active task subtree; standalone path scope. (default=false)
+- `--allow-base`: Allow base branch edits; branch override only, not a path allowlist. (default=false)
+- `--allow-policy`: Allow policy edits (e.g. AGENTS.md); standalone path scope. (default=false)
+- `--allow-config`: Allow config edits; standalone path scope. (default=false)
+- `--allow-hooks`: Allow hooks edits; standalone path scope. (default=false)
+- `--allow-ci`: Allow CI workflow edits; standalone path scope. (default=false)
 - `--require-clean`: Fail if tracked files have unstaged changes (untracked is ignored). (default=false)
 - `--quiet`: Reduce output noise. (default=false)
 
@@ -846,6 +852,12 @@ agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allow
 ```
 
 - Validate staged changes are covered by allowlist and policy.
+
+```sh
+agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: update publish workflow" --allow-ci
+```
+
+- Validate already staged CI-only changes without a redundant explicit workflow path prefix.
 
 ### guard suggest-allow
 

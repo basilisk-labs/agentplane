@@ -57,23 +57,39 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
       kind: "boolean",
       name: "allow-tasks",
       default: false,
-      description: "Allow the tasks export snapshot plus artifacts under the active task subtree.",
+      description:
+        "Allow the tasks export snapshot plus artifacts under the active task subtree; standalone path scope.",
     },
     {
       kind: "boolean",
       name: "allow-base",
       default: false,
-      description: "Allow base branch edits.",
+      description: "Allow base branch edits; branch override only, not a path allowlist.",
     },
     {
       kind: "boolean",
       name: "allow-policy",
       default: false,
-      description: "Allow policy edits (e.g. AGENTS.md).",
+      description: "Allow policy edits (e.g. AGENTS.md); standalone path scope.",
     },
-    { kind: "boolean", name: "allow-config", default: false, description: "Allow config edits." },
-    { kind: "boolean", name: "allow-hooks", default: false, description: "Allow hooks edits." },
-    { kind: "boolean", name: "allow-ci", default: false, description: "Allow CI workflow edits." },
+    {
+      kind: "boolean",
+      name: "allow-config",
+      default: false,
+      description: "Allow config edits; standalone path scope.",
+    },
+    {
+      kind: "boolean",
+      name: "allow-hooks",
+      default: false,
+      description: "Allow hooks edits; standalone path scope.",
+    },
+    {
+      kind: "boolean",
+      name: "allow-ci",
+      default: false,
+      description: "Allow CI workflow edits; standalone path scope.",
+    },
     {
       kind: "boolean",
       name: "require-clean",
@@ -86,6 +102,10 @@ export const guardCommitSpec: CommandSpec<GuardCommitParsed> = {
     {
       cmd: 'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: implement allowlist guard" --allow packages/agentplane',
       why: "Validate staged changes are covered by allowlist and policy.",
+    },
+    {
+      cmd: 'agentplane guard commit 202602030608-F1Q8AB -m "✨ F1Q8AB task: update publish workflow" --allow-ci',
+      why: "Validate already staged CI-only changes without a redundant explicit workflow path prefix.",
     },
   ],
   validateRaw: (raw) => {
