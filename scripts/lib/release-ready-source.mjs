@@ -2,6 +2,7 @@ import {
   classifyWorkflowState,
   listWorkflowRunArtifacts,
   listWorkflowRuns,
+  readWorkflowRun,
   selectLatestRun,
 } from "./github-actions-workflow-status.mjs";
 
@@ -38,6 +39,17 @@ function buildOutcome({ state, workflow, headSha, artifactName, repo, run, artif
         artifact: null,
       };
     }
+    case "workflow_run_sha_mismatch": {
+      return {
+        ok: false,
+        state,
+        message: `Workflow ${workflow} run ${run?.id ?? "unknown"} belongs to ${run?.headSha ?? "unknown"}, not requested ${headSha}.`,
+        nextAction:
+          "Use a successful Core CI run id for the exact release SHA, or omit --run-id and resolve the release-ready artifact by SHA.",
+        run,
+        artifact: null,
+      };
+    }
     default: {
       return {
         ok: false,
@@ -54,15 +66,30 @@ function buildOutcome({ state, workflow, headSha, artifactName, repo, run, artif
 
 async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
   if (runId) {
+    const run = await readWorkflowRun({
+      apiBase,
+      repo,
+      runId,
+      token,
+    });
+    if (run.headSha !== headSha) {
+      return {
+        state: "workflow_run_sha_mismatch",
+        run,
+      };
+    }
+
+    const state = classifyWorkflowState(run);
+    if (state !== "success") {
+      return {
+        state: "workflow_not_success",
+        run,
+      };
+    }
+
     return {
       state: "success",
-      run: {
-        id: Number.parseInt(String(runId), 10),
-        status: "completed",
-        conclusion: "success",
-        url: "",
-        headSha,
-      },
+      run,
     };
   }
 

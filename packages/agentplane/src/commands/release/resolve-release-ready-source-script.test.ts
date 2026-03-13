@@ -13,23 +13,27 @@ const SCRIPT_PATH = path.resolve(process.cwd(), "scripts/resolve-release-ready-s
 const temps: string[] = [];
 
 function makeRun({
+  id = 123,
   status,
   conclusion,
+  headSha = "abc123",
   url = "https://github.com/example/repo/actions/runs/123",
   createdAt = "2026-03-13T00:00:00Z",
 }: {
+  id?: number;
   status: string;
   conclusion: string | null;
+  headSha?: string;
   url?: string;
   createdAt?: string;
 }) {
   return {
-    id: 123,
+    id,
     name: "Core CI",
     status,
     conclusion,
     html_url: url,
-    head_sha: "abc123",
+    head_sha: headSha,
     event: "push",
     created_at: createdAt,
   };
@@ -192,6 +196,105 @@ describe("resolve-release-ready-source script", () => {
       },
       async (baseUrl) => {
         const result = await runScript(baseUrl, ["--sha", "abc123"]).then(
+          () => ({ ok: true as const, stdout: "" }),
+          (error: unknown) => {
+            const stdout =
+              typeof error === "object" &&
+              error !== null &&
+              "stdout" in error &&
+              typeof (error as { stdout?: unknown }).stdout === "string"
+                ? (error as { stdout: string }).stdout
+                : "";
+            return { ok: false as const, stdout };
+          },
+        );
+        expect(result.ok).toBe(false);
+        expect(result.stdout).toContain("Workflow ci.yml is not successfully completed");
+      },
+    );
+  });
+
+  it("passes when an explicit run-id belongs to the requested SHA and succeeded", async () => {
+    await withServer(
+      (pathname) => {
+        if (pathname.endsWith("/actions/runs/789")) {
+          return {
+            body: makeRun({ id: 789, status: "completed", conclusion: "success" }),
+          };
+        }
+        if (pathname.endsWith("/actions/runs/789/artifacts")) {
+          return {
+            body: {
+              artifacts: [makeArtifact({})],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl) => {
+        const result = await runScript(baseUrl, ["--sha", "abc123", "--run-id", "789", "--json"]);
+        const payload = JSON.parse(String(result.stdout ?? "")) as {
+          ok: boolean;
+          state: string;
+          run: { id: number; headSha: string };
+          artifact: { name: string };
+        };
+        expect(payload.ok).toBe(true);
+        expect(payload.state).toBe("ready_artifact_available");
+        expect(payload.run.id).toBe(789);
+        expect(payload.run.headSha).toBe("abc123");
+        expect(payload.artifact.name).toBe("release-ready");
+      },
+    );
+  });
+
+  it("fails when an explicit run-id belongs to a different SHA", async () => {
+    await withServer(
+      (pathname) => {
+        if (pathname.endsWith("/actions/runs/789")) {
+          return {
+            body: makeRun({
+              id: 789,
+              status: "completed",
+              conclusion: "success",
+              headSha: "def456",
+            }),
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl) => {
+        const result = await runScript(baseUrl, ["--sha", "abc123", "--run-id", "789"]).then(
+          () => ({ ok: true as const, stdout: "" }),
+          (error: unknown) => {
+            const stdout =
+              typeof error === "object" &&
+              error !== null &&
+              "stdout" in error &&
+              typeof (error as { stdout?: unknown }).stdout === "string"
+                ? (error as { stdout: string }).stdout
+                : "";
+            return { ok: false as const, stdout };
+          },
+        );
+        expect(result.ok).toBe(false);
+        expect(result.stdout).toContain("run 789 belongs to def456, not requested abc123");
+      },
+    );
+  });
+
+  it("fails when an explicit run-id is not successful", async () => {
+    await withServer(
+      (pathname) => {
+        if (pathname.endsWith("/actions/runs/789")) {
+          return {
+            body: makeRun({ id: 789, status: "completed", conclusion: "failure" }),
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl) => {
+        const result = await runScript(baseUrl, ["--sha", "abc123", "--run-id", "789"]).then(
           () => ({ ok: true as const, stdout: "" }),
           (error: unknown) => {
             const stdout =

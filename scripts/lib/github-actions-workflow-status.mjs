@@ -9,6 +9,20 @@ function assertNonEmpty(value, label) {
   return text;
 }
 
+function normalizeWorkflowRun(run) {
+  return {
+    id: run.id,
+    name: typeof run.name === "string" ? run.name : "",
+    status: typeof run.status === "string" ? run.status : "",
+    conclusion: typeof run.conclusion === "string" ? run.conclusion : null,
+    url: typeof run.html_url === "string" ? run.html_url : "",
+    headSha: typeof run.head_sha === "string" ? run.head_sha : "",
+    event: typeof run.event === "string" ? run.event : "",
+    createdAt: typeof run.created_at === "string" ? run.created_at : "",
+    workflowPath: typeof run.path === "string" ? run.path : "",
+  };
+}
+
 export function resolveGithubApiBase() {
   return (process.env.AGENTPLANE_GITHUB_API_BASE_URL ?? "https://api.github.com").replace(
     /\/+$/u,
@@ -73,16 +87,19 @@ export async function listWorkflowRuns({
   const url = `${apiBase}/repos/${repo}/actions/workflows/${workflowId}/runs?head_sha=${sha}&per_page=20`;
   const payload = await requestJson(url, token);
   const runs = Array.isArray(payload?.workflow_runs) ? payload.workflow_runs : [];
-  return runs.map((run) => ({
-    id: run.id,
-    name: typeof run.name === "string" ? run.name : "",
-    status: typeof run.status === "string" ? run.status : "",
-    conclusion: typeof run.conclusion === "string" ? run.conclusion : null,
-    url: typeof run.html_url === "string" ? run.html_url : "",
-    headSha: typeof run.head_sha === "string" ? run.head_sha : "",
-    event: typeof run.event === "string" ? run.event : "",
-    createdAt: typeof run.created_at === "string" ? run.created_at : "",
-  }));
+  return runs.map((run) => normalizeWorkflowRun(run));
+}
+
+export async function readWorkflowRun({
+  apiBase = resolveGithubApiBase(),
+  repo = resolveGithubRepo(),
+  runId,
+  token = resolveGithubToken(),
+}) {
+  const id = assertNonEmpty(String(runId ?? ""), "workflow run id");
+  const url = `${apiBase}/repos/${repo}/actions/runs/${encodeURIComponent(id)}`;
+  const payload = await requestJson(url, token);
+  return normalizeWorkflowRun(payload ?? {});
 }
 
 export async function listWorkflowRunArtifacts({
