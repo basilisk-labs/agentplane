@@ -1,7 +1,8 @@
 ---
 id: "202603131309-JYPPQS"
 title: "Generate task body from canonical state"
-status: "DOING"
+result_summary: "Made one-file task README body a generated projection of canonical sections with legacy passthrough only when sections are absent."
+status: "DONE"
 priority: "high"
 owner: "CODER"
 revision: 1
@@ -38,11 +39,16 @@ verification:
     Result: pass
     Evidence: rendered sample dropped stale body text and regenerated the visible README body from canonical frontmatter sections.
     Scope: runtime projection behavior when canonical sections exist.
-commit: null
+commit:
+  hash: "bb2c9592e4971b6a70ea8c182146133de910a0f0"
+  message: "🧱 JYPPQS task: Generate task body from canonical state"
 comments:
   -
     author: "CODER"
     body: "Start: make README body a generated projection of canonical frontmatter sections with legacy passthrough only when sections are absent."
+  -
+    author: "CODER"
+    body: "Verified: README body is now regenerated from canonical frontmatter sections, and local writer paths no longer preserve stale body text when canonical sections exist."
 events:
   -
     type: "status"
@@ -74,8 +80,15 @@ events:
       Result: pass
       Evidence: rendered sample dropped stale body text and regenerated the visible README body from canonical frontmatter sections.
       Scope: runtime projection behavior when canonical sections exist.
+  -
+    type: "status"
+    at: "2026-03-13T15:13:39.620Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: README body is now regenerated from canonical frontmatter sections, and local writer paths no longer preserve stale body text when canonical sections exist."
 doc_version: 3
-doc_updated_at: "2026-03-13T15:12:12.751Z"
+doc_updated_at: "2026-03-13T15:13:39.621Z"
 doc_updated_by: "CODER"
 description: "Add deterministic renderer that rebuilds README body from canonical frontmatter state so the body becomes a generated projection, not a write surface."
 sections:
