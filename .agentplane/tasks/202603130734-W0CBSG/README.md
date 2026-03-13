@@ -1,7 +1,8 @@
 ---
 id: "202603130734-W0CBSG"
 title: "Add Notes block to commit help"
-status: "DOING"
+result_summary: "Commit help now surfaces protected scope semantics in a dedicated Notes block and the generated CLI reference mirrors that guidance."
+status: "DONE"
 priority: "med"
 owner: "CODER"
 depends_on: []
@@ -18,11 +19,16 @@ verification:
   updated_at: "2026-03-13T07:38:23.133Z"
   updated_by: "CODER"
   note: "Verified Notes-block help surface: full help shows standalone protected-scope guidance, generated CLI reference is refreshed, and focused help/docs tests plus prettier checks all pass."
-commit: null
+commit:
+  hash: "15037fe0600335776b2fa57e7b2813b5830ffe9d"
+  message: "📝 W0CBSG task: add Notes to commit help"
 comments:
   -
     author: "CODER"
     body: "Start: add explicit Notes blocks to commit and guard-commit help so protected path-scope semantics are discoverable without scanning individual option descriptions."
+  -
+    author: "CODER"
+    body: "Verified: commit and guard-commit help now include explicit Notes blocks that explain standalone protected path scopes, staged-only guard behavior, and branch-only --allow-base semantics without requiring users to infer that model from option descriptions alone."
 events:
   -
     type: "status"
@@ -37,8 +43,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified Notes-block help surface: full help shows standalone protected-scope guidance, generated CLI reference is refreshed, and focused help/docs tests plus prettier checks all pass."
+  -
+    type: "status"
+    at: "2026-03-13T07:38:58.121Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: commit and guard-commit help now include explicit Notes blocks that explain standalone protected path scopes, staged-only guard behavior, and branch-only --allow-base semantics without requiring users to infer that model from option descriptions alone."
 doc_version: 3
-doc_updated_at: "2026-03-13T07:38:23.136Z"
+doc_updated_at: "2026-03-13T07:38:58.122Z"
 doc_updated_by: "CODER"
 description: "Add explicit Notes sections to commit and guard commit help so standalone protected path scopes and branch-only allow-base semantics are visible without reading option descriptions line by line."
 id_source: "generated"
