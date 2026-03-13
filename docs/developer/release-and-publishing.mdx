@@ -134,14 +134,15 @@ This reports:
 - release-note drift for the planned tag
 - version bump drift versus the prepared plan
 - optional GitHub workflow state for the release SHA when you want to distinguish
-  `publish succeeded` from `sibling Core CI failed` on the same commit:
+  `missing release-ready artifact`, `publish still missing`, `publish succeeded`, and `sibling Core CI failed` on the same commit:
 
 ```bash
 bun run release:recover -- --check-github
 ```
 
-This uses the latest apply report commit hash when available. For local use, provide GitHub auth and
-repo context via `GITHUB_TOKEN` plus `GITHUB_REPOSITORY` or `--github-repo`.
+This uses the latest apply report commit hash when available and treats the `release-ready` artifact
+from `Core CI` as the canonical readiness source. For local use, provide GitHub auth and repo context
+via `GITHUB_TOKEN` plus `GITHUB_REPOSITORY` or `--github-repo`.
 
 - optional burned-version checks when you explicitly opt in:
 

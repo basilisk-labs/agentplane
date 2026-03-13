@@ -1,12 +1,9 @@
 import {
-  classifyWorkflowState,
-  listWorkflowRunArtifacts,
-  listWorkflowRuns,
   resolveGithubApiBase,
   resolveGithubRepo,
   resolveGithubToken,
-  selectLatestRun,
 } from "./lib/github-actions-workflow-status.mjs";
+import { resolveReleaseReadySource } from "./lib/release-ready-source.mjs";
 
 function usage() {
   return [
@@ -85,96 +82,6 @@ function assertNonEmpty(value, label) {
   return text;
 }
 
-function buildOutcome({ state, workflow, headSha, artifactName, repo, run, artifact }) {
-  switch (state) {
-    case "ready_artifact_available": {
-      return {
-        ok: true,
-        state,
-        message: `Resolved ${artifactName} from workflow ${workflow} for ${headSha} in ${repo}.`,
-        run,
-        artifact,
-      };
-    }
-    case "ready_artifact_missing": {
-      return {
-        ok: false,
-        state,
-        message: `Workflow ${workflow} succeeded for ${headSha}, but artifact ${artifactName} is missing.`,
-        nextAction:
-          "Treat this SHA as not release-ready. Re-run Core CI after the release-ready job exists or pick a newer release SHA.",
-        run,
-        artifact: null,
-      };
-    }
-    case "workflow_not_success": {
-      return {
-        ok: false,
-        state,
-        message: `Workflow ${workflow} is not successfully completed for ${headSha} (status=${run?.status ?? "unknown"}, conclusion=${run?.conclusion ?? "unknown"}).`,
-        nextAction:
-          "Use a successful Core CI run for this SHA, or dispatch publish against a newer recovery SHA with a release-ready artifact.",
-        run,
-        artifact: null,
-      };
-    }
-    default: {
-      return {
-        ok: false,
-        state: "workflow_missing",
-        message: `No workflow ${workflow} run was found for ${headSha} in ${repo}.`,
-        nextAction:
-          "Run Core CI for the exact release SHA first; publish must consume the corresponding release-ready artifact.",
-        run: null,
-        artifact: null,
-      };
-    }
-  }
-}
-
-async function resolveRun({ apiBase, repo, workflow, headSha, runId, token }) {
-  if (runId) {
-    return {
-      state: "success",
-      run: {
-        id: Number.parseInt(assertNonEmpty(runId, "workflow run id"), 10),
-        status: "completed",
-        conclusion: "success",
-        url: "",
-        headSha,
-      },
-    };
-  }
-
-  const runs = await listWorkflowRuns({
-    apiBase,
-    repo,
-    workflow,
-    headSha,
-    token,
-  });
-  const latestRun = selectLatestRun(runs);
-  if (!latestRun) {
-    return {
-      state: "workflow_missing",
-      run: null,
-    };
-  }
-
-  const state = classifyWorkflowState(latestRun);
-  if (state !== "success") {
-    return {
-      state: "workflow_not_success",
-      run: latestRun,
-    };
-  }
-
-  return {
-    state: "success",
-    run: latestRun,
-  };
-}
-
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.help) {
@@ -188,50 +95,14 @@ async function main() {
   const headSha = assertNonEmpty(args.sha, "head SHA");
   const artifactName = assertNonEmpty(args.artifactName, "artifact name");
 
-  const runResult = await resolveRun({
+  const outcome = await resolveReleaseReadySource({
     apiBase,
     repo,
     workflow: args.workflow,
     headSha,
     runId: args.runId,
-    token,
-  });
-
-  if (runResult.state !== "success" || !runResult.run) {
-    const outcome = buildOutcome({
-      state: runResult.state,
-      workflow: args.workflow,
-      headSha,
-      artifactName,
-      repo,
-      run: runResult.run,
-      artifact: null,
-    });
-    if (args.json) {
-      process.stdout.write(`${JSON.stringify(outcome)}\n`);
-    } else {
-      process.stdout.write(`${outcome.message}\n`);
-      process.stdout.write(`Next action: ${outcome.nextAction}\n`);
-    }
-    process.exitCode = 1;
-    return;
-  }
-
-  const artifacts = await listWorkflowRunArtifacts({
-    apiBase,
-    repo,
-    runId: runResult.run.id,
-    token,
-  });
-  const artifact = artifacts.find((item) => item.name === artifactName) ?? null;
-  const outcome = buildOutcome({
-    state: artifact ? "ready_artifact_available" : "ready_artifact_missing",
-    workflow: args.workflow,
-    headSha,
     artifactName,
-    repo,
-    run: runResult.run,
-    artifact,
+    token,
   });
 
   if (args.json) {

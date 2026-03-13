@@ -9,6 +9,7 @@ import {
   resolveGithubRepo,
   resolveGithubToken,
 } from "./lib/github-actions-workflow-status.mjs";
+import { resolveReleaseReadySource } from "./lib/release-ready-source.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -238,6 +239,33 @@ function deriveRecoverySummary(report, args) {
     };
   }
 
+  if (
+    report.current.github.checked &&
+    report.current.github.releaseReady.state === "ready_artifact_available" &&
+    report.current.github.publish.state !== "success"
+  ) {
+    return {
+      state: "release_ready_but_not_published",
+      likelyCause:
+        "a successful Core CI run already produced the release-ready artifact for this SHA, but the GitHub publish workflow has not completed successfully for it",
+      nextAction:
+        "Inspect the publish workflow history for this SHA; if no publish run succeeded, use workflow_dispatch publish against the same release-ready SHA.",
+    };
+  }
+
+  if (
+    report.current.github.checked &&
+    report.current.github.releaseReady.state === "ready_artifact_missing"
+  ) {
+    return {
+      state: "release_ready_artifact_missing",
+      likelyCause:
+        "the release SHA does not have the canonical release-ready artifact, so publish should not proceed from this commit",
+      nextAction:
+        "Use a newer SHA that produced the release-ready artifact, or rerun Core CI after the release-ready job exists before attempting publish recovery.",
+    };
+  }
+
   if (report.current.github.checked && report.current.github.publish.state === "success") {
     return {
       state: "release_publish_already_succeeded",
@@ -426,6 +454,12 @@ async function buildReport(repoRoot, args) {
         releaseSha: githubSha || null,
         coreWorkflow: args.coreWorkflow,
         publishWorkflow: args.publishWorkflow,
+        releaseReady: {
+          state: "skipped",
+          runId: null,
+          url: null,
+          artifactName: "release-ready",
+        },
         coreCi: {
           state: "skipped",
           status: null,
@@ -537,7 +571,15 @@ async function buildReport(repoRoot, args) {
     report.current.github.repo = repo;
 
     if (releaseSha) {
-      const [coreCi, publish] = await Promise.all([
+      const [releaseReady, coreCi, publish] = await Promise.all([
+        resolveReleaseReadySource({
+          apiBase,
+          repo,
+          workflow: args.coreWorkflow,
+          headSha: releaseSha,
+          artifactName: "release-ready",
+          token,
+        }),
         readLatestWorkflowStatus({
           apiBase,
           repo,
@@ -554,6 +596,12 @@ async function buildReport(repoRoot, args) {
         }),
       ]);
 
+      report.current.github.releaseReady = {
+        state: releaseReady.state,
+        runId: releaseReady.run?.id ?? null,
+        url: releaseReady.artifact?.url ?? null,
+        artifactName: releaseReady.artifact?.name ?? "release-ready",
+      };
       report.current.github.coreCi = {
         state: coreCi.state,
         status: coreCi.run?.status ?? null,
@@ -566,6 +614,51 @@ async function buildReport(repoRoot, args) {
         conclusion: publish.run?.conclusion ?? null,
         url: publish.run?.url ?? null,
       };
+
+      switch (releaseReady.state) {
+        case "ready_artifact_available": {
+          pushFinding(report, {
+            level: "info",
+            code: "release_ready_artifact_available",
+            message: `Release-ready artifact ${report.current.github.releaseReady.artifactName} is available for ${releaseSha}.`,
+            nextAction:
+              "Treat this SHA as publish-eligible; use workflow_dispatch publish only if the publish workflow still needs to run.",
+          });
+          break;
+        }
+        case "ready_artifact_missing": {
+          pushFinding(report, {
+            level: "warn",
+            code: "release_ready_artifact_missing",
+            message: `Core CI succeeded for ${releaseSha}, but the release-ready artifact is missing.`,
+            nextAction:
+              "Do not publish this SHA until Core CI produces the release-ready artifact.",
+          });
+          break;
+        }
+        case "workflow_not_success": {
+          pushFinding(report, {
+            level: "warn",
+            code: "release_ready_core_ci_not_success",
+            message: `Core CI is not successful for ${releaseSha}, so no canonical release-ready artifact exists.`,
+            nextAction:
+              "Repair Core CI first; publish should only consume successful release-ready artifacts.",
+          });
+          break;
+        }
+        case "workflow_missing": {
+          pushFinding(report, {
+            level: "info",
+            code: "release_ready_core_ci_missing",
+            message: `No successful Core CI run was found for ${releaseSha}, so no release-ready artifact can be resolved.`,
+            nextAction: "Run Core CI for the exact release SHA before attempting publish recovery.",
+          });
+          break;
+        }
+        default: {
+          break;
+        }
+      }
 
       switch (publish.state) {
         case "success": {
@@ -693,6 +786,8 @@ function renderText(report) {
     `GitHub check: ${report.current.github.checked ? "enabled" : "skipped"}`,
     `GitHub repo: ${report.current.github.repo ?? "unknown"}`,
     `GitHub release SHA: ${report.current.github.releaseSha ?? "unknown"}`,
+    `GitHub release-ready: ${report.current.github.releaseReady.state}`,
+    `GitHub release-ready run id: ${report.current.github.releaseReady.runId ?? "unknown"}`,
     `GitHub Core CI (${report.current.github.coreWorkflow}): ${formatWorkflowStatus(report.current.github.coreCi)}`,
     `GitHub Publish (${report.current.github.publishWorkflow}): ${formatWorkflowStatus(report.current.github.publish)}`,
     "",
@@ -701,6 +796,9 @@ function renderText(report) {
 
   if (report.current.github.coreCi.url) {
     lines.push(`Core CI URL: ${report.current.github.coreCi.url}`);
+  }
+  if (report.current.github.releaseReady.url) {
+    lines.push(`Release-ready URL: ${report.current.github.releaseReady.url}`);
   }
   if (report.current.github.publish.url) {
     lines.push(`Publish URL: ${report.current.github.publish.url}`);

@@ -383,6 +383,159 @@ describe("release recovery script", () => {
     );
   }, 60_000);
 
+  it("reports a missing release-ready artifact separately from publish status", async () => {
+    const root = await initReleaseRepo();
+    await writeFile(
+      path.join(root, "docs", "releases", "v0.2.7.md"),
+      "# Release Notes\n\n- A\n",
+      "utf8",
+    );
+    await writeApplyReport(root, "release-sha-123");
+
+    await withGithubServer(
+      (pathname) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          return {
+            body: {
+              workflow_runs: [
+                makeWorkflowRun({
+                  status: "completed",
+                  conclusion: "success",
+                  url: "https://github.com/example/repo/actions/runs/ci-1",
+                }),
+              ],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/runs/123/artifacts")) {
+          return {
+            body: {
+              artifacts: [],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/workflows/publish.yml/runs")) {
+          return {
+            body: {
+              workflow_runs: [],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl) => {
+        const { stdout } = await runScript(
+          root,
+          ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
+          {
+            GITHUB_TOKEN: "test-token",
+            AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+          },
+        );
+        const payload = JSON.parse(stdout) as {
+          summary: { state: string; nextAction: string };
+          findings: { code: string }[];
+          current: {
+            github: {
+              releaseReady: { state: string };
+              publish: { state: string };
+            };
+          };
+        };
+
+        expect(payload.summary.state).toBe("release_ready_artifact_missing");
+        expect(payload.summary.nextAction).toContain("release-ready artifact");
+        expect(payload.current.github.releaseReady.state).toBe("ready_artifact_missing");
+        expect(payload.current.github.publish.state).toBe("missing");
+        expect(
+          payload.findings.some((finding) => finding.code === "release_ready_artifact_missing"),
+        ).toBe(true);
+      },
+    );
+  }, 60_000);
+
+  it("reports a release-ready SHA that still has not been published", async () => {
+    const root = await initReleaseRepo();
+    await writeFile(
+      path.join(root, "docs", "releases", "v0.2.7.md"),
+      "# Release Notes\n\n- A\n",
+      "utf8",
+    );
+    await writeApplyReport(root, "release-sha-123");
+
+    await withGithubServer(
+      (pathname) => {
+        if (pathname.endsWith("/actions/workflows/ci.yml/runs")) {
+          return {
+            body: {
+              workflow_runs: [
+                makeWorkflowRun({
+                  status: "completed",
+                  conclusion: "success",
+                  url: "https://github.com/example/repo/actions/runs/ci-1",
+                }),
+              ],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/runs/123/artifacts")) {
+          return {
+            body: {
+              artifacts: [
+                {
+                  id: 321,
+                  name: "release-ready",
+                  size_in_bytes: 256,
+                  expired: false,
+                  created_at: "2026-03-13T00:00:00Z",
+                  archive_download_url:
+                    "https://api.github.com/repos/example/repo/actions/artifacts/321/zip",
+                },
+              ],
+            },
+          };
+        }
+        if (pathname.endsWith("/actions/workflows/publish.yml/runs")) {
+          return {
+            body: {
+              workflow_runs: [],
+            },
+          };
+        }
+        return { status: 404, body: { message: "not found" } };
+      },
+      async (baseUrl) => {
+        const { stdout } = await runScript(
+          root,
+          ["--json", "--check-github", "--github-repo", "basilisk-labs/agentplane"],
+          {
+            GITHUB_TOKEN: "test-token",
+            AGENTPLANE_GITHUB_API_BASE_URL: baseUrl,
+          },
+        );
+        const payload = JSON.parse(stdout) as {
+          summary: { state: string; likelyCause: string };
+          current: {
+            github: {
+              releaseReady: { state: string; runId: number | null };
+              publish: { state: string };
+            };
+          };
+          findings: { code: string }[];
+        };
+
+        expect(payload.summary.state).toBe("release_ready_but_not_published");
+        expect(payload.summary.likelyCause).toContain("release-ready artifact");
+        expect(payload.current.github.releaseReady.state).toBe("ready_artifact_available");
+        expect(payload.current.github.releaseReady.runId).toBe(123);
+        expect(payload.current.github.publish.state).toBe("missing");
+        expect(
+          payload.findings.some((finding) => finding.code === "release_ready_artifact_available"),
+        ).toBe(true);
+      },
+    );
+  }, 60_000);
+
   it("prints explicit GitHub workflow status lines in text mode", async () => {
     const root = await initReleaseRepo();
     await writeFile(
@@ -432,6 +585,7 @@ describe("release recovery script", () => {
           },
         );
         expect(stdout).toContain("State: release_already_published_with_red_core_ci");
+        expect(stdout).toContain("GitHub release-ready: workflow_not_success");
         expect(stdout).toContain(
           "GitHub Core CI (ci.yml): completed_not_success (conclusion=failure)",
         );
