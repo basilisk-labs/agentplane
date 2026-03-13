@@ -3,7 +3,13 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { defaultConfig, renderTaskReadme, writeTasksExport } from "@agentplaneorg/core";
+import {
+  defaultConfig,
+  parseTaskReadme,
+  renderTaskReadme,
+  taskDocToSectionMap,
+  writeTasksExport,
+} from "@agentplaneorg/core";
 
 import { LocalBackend } from "../../backends/task-backend.js";
 import { CliError } from "../../shared/errors.js";
@@ -11,6 +17,7 @@ import type { CommandContext } from "./task-backend.js";
 import {
   appendTaskCommentIntent,
   appendTaskEventIntent,
+  setTaskSectionIntent,
   setTaskFieldsIntent,
   TaskStore,
   touchTaskDocMetaIntent,
@@ -839,5 +846,60 @@ describe("commands/shared/TaskStore", () => {
     const final = await readFile(readmePath, "utf8");
     expect(final).toContain("revision: 1");
     expect(final).toContain('status: "DOING"');
+  });
+
+  it("writes canonical sections and regenerated body together for section intents", async () => {
+    const root = await mkdtemp(path.join(os.tmpdir(), "agentplane-taskstore-"));
+    const taskId = "202602070000-SECT";
+    const readmePath = path.join(root, ".agentplane", "tasks", taskId, "README.md");
+    await mkdir(path.dirname(readmePath), { recursive: true });
+    await writeFile(
+      readmePath,
+      `${renderTaskReadme(
+        {
+          id: taskId,
+          title: "Task",
+          status: "TODO",
+          priority: "med",
+          owner: "CODER",
+          revision: 1,
+          depends_on: [],
+          tags: [],
+          verify: [],
+          plan_approval: { state: "approved", updated_at: null, updated_by: null, note: null },
+          verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+          comments: [],
+          doc_version: 3,
+          doc_updated_at: "2026-02-07T00:00:00Z",
+          doc_updated_by: "CODER",
+          description: "",
+          sections: taskDocToSectionMap(
+            ["## Summary", "", "before", "", "## Findings", "", ""].join("\n"),
+          ),
+        },
+        "STALE BODY",
+      )}\n`,
+      "utf8",
+    );
+
+    const ctx = makeCtx(root);
+    const store = new TaskStore(ctx);
+    const result = await store.mutate(taskId, () => [
+      setTaskSectionIntent({
+        section: "Summary",
+        text: "after",
+        requiredSections: ["Summary", "Findings"],
+      }),
+      touchTaskDocMetaIntent({ updatedBy: "CODER", version: 3 }),
+    ]);
+
+    expect(result.changed).toBe(true);
+    expect(result.task.sections?.Summary).toBe("after");
+
+    const parsed = parseTaskReadme(await readFile(readmePath, "utf8"));
+    expect(parsed.frontmatter.sections).toMatchObject({ Summary: "after" });
+    expect(parsed.body).toContain("## Summary");
+    expect(parsed.body).toContain("after");
+    expect(parsed.body).not.toContain("STALE BODY");
   });
 });

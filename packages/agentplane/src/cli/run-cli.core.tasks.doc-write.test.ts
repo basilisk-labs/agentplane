@@ -2,7 +2,12 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
 
-import { defaultConfig, renderTaskReadme, type ResolvedProject } from "@agentplaneorg/core";
+import {
+  defaultConfig,
+  parseTaskReadme,
+  renderTaskReadme,
+  type ResolvedProject,
+} from "@agentplaneorg/core";
 
 import { runCli } from "./run-cli.js";
 import * as taskBackend from "../backends/task-backend.js";
@@ -71,6 +76,7 @@ describe("runCli", () => {
     expect(readme).toContain("## Summary");
     expect(readme).toContain("Hello");
     expect(readme).toContain('doc_updated_by: "DOCS"');
+    expect(parseTaskReadme(readme).frontmatter.sections).toMatchObject({ Summary: "Hello" });
   });
 
   it("task doc set updates Verify Steps and immediately unblocks plan approval", async () => {
@@ -144,6 +150,9 @@ describe("runCli", () => {
     expect(readme).toContain("## Verify Steps");
     expect(readme).toContain("1. Run bun run test:cli:core.");
     expect(readme).toContain("2. Expect exit code 0.");
+    expect(parseTaskReadme(readme).frontmatter.sections).toMatchObject({
+      "Verify Steps": "1. Run bun run test:cli:core.\n2. Expect exit code 0.",
+    });
 
     const ioApprove = captureStdIO();
     try {

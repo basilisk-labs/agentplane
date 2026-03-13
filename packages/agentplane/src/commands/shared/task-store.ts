@@ -2,13 +2,13 @@ import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  ensureDocSections,
   docChanged,
   extractTaskDoc,
   mergeTaskDoc,
   parseTaskReadme,
   renderTaskReadme,
-  setMarkdownSection,
+  renderTaskDocFromSections,
+  taskDocToSectionMap,
   type ParsedTaskReadme,
 } from "@agentplaneorg/core";
 
@@ -170,25 +170,6 @@ function normalizeDocComparison(text: string | null | undefined): string {
     .trim();
 }
 
-function extractDocSectionText(doc: string, sectionName: string): string | null {
-  const lines = doc.replaceAll("\r\n", "\n").split("\n");
-  let capturing = false;
-  const out: string[] = [];
-
-  for (const line of lines) {
-    const match = /^##\s+(.*)$/.exec(line.trim());
-    if (match) {
-      if (capturing) break;
-      capturing = (match[1] ?? "").trim() === sectionName;
-      continue;
-    }
-    if (capturing) out.push(line);
-  }
-
-  if (!capturing) return null;
-  return out.join("\n").trimEnd();
-}
-
 function normalizeComments(task: TaskData): TaskComment[] {
   return Array.isArray(task.comments)
     ? task.comments.filter(
@@ -280,24 +261,22 @@ function applyTaskDocPatch(opts: {
         throwTaskDocConflict({ taskId: opts.taskId });
       }
     }
-    return opts.patch.doc;
+    return renderTaskDocFromSections(taskDocToSectionMap(opts.patch.doc));
   }
 
-  const baseDoc = ensureDocSections(opts.currentDocRaw, opts.patch.requiredSections);
+  const sections = taskDocToSectionMap(opts.currentDocRaw);
+  for (const requiredSection of opts.patch.requiredSections) {
+    if (!(requiredSection in sections)) sections[requiredSection] = "";
+  }
   if (opts.patch.expectedCurrentText !== undefined) {
-    const currentSection = normalizeDocComparison(
-      extractDocSectionText(baseDoc, opts.patch.section),
-    );
+    const currentSection = normalizeDocComparison(sections[opts.patch.section] ?? null);
     const expectedSection = normalizeDocComparison(opts.patch.expectedCurrentText);
     if (currentSection !== expectedSection) {
       throwTaskSectionConflict({ taskId: opts.taskId, section: opts.patch.section });
     }
   }
-
-  return ensureDocSections(
-    setMarkdownSection(baseDoc, opts.patch.section, opts.patch.text),
-    opts.patch.requiredSections,
-  );
+  sections[opts.patch.section] = opts.patch.text.replaceAll("\r\n", "\n").trimEnd();
+  return renderTaskDocFromSections(sections);
 }
 
 function normalizeTaskStoreIntents(intents: TaskStoreIntentResult): TaskStoreIntent[] {
@@ -383,6 +362,7 @@ function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): T
             expectedCurrentDoc: intent.expectedCurrentDoc,
           },
         });
+        next.sections = taskDocToSectionMap(String(next.doc ?? ""));
         touchDoc = true;
         break;
       }
@@ -398,6 +378,7 @@ function applyTaskStoreIntents(entry: CachedTask, intents: TaskStoreIntent[]): T
             expectedCurrentText: intent.expectedCurrentText,
           },
         });
+        next.sections = taskDocToSectionMap(String(next.doc ?? ""));
         touchDoc = true;
         break;
       }

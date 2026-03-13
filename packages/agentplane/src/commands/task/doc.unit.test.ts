@@ -222,6 +222,44 @@ describe("task doc commands (unit)", () => {
     expect(currentTask.doc).not.toContain(String.raw`Line one\nLine two`);
   });
 
+  it("cmdTaskDocShow prefers canonical sections over stale task.doc on the local backend", async () => {
+    const writes: string[] = [];
+    const stdoutSpy = vi.spyOn(process.stdout, "write").mockImplementation((chunk) => {
+      writes.push(String(chunk));
+      return true;
+    });
+
+    const ctx = mkCtx();
+    mocks.backendIsLocalFileBackend.mockReturnValue(true);
+    mocks.getTaskStore.mockReturnValue({
+      get: vi.fn().mockResolvedValue(
+        mkTask({
+          doc: "## Summary\n\nstale body\n",
+          sections: {
+            Summary: "canonical summary",
+            Plan: "canonical plan",
+            "Verify Steps": "Run checks",
+            Findings: "",
+          },
+        }),
+      ),
+    });
+
+    const { cmdTaskDocShow } = await import("./doc.js");
+    const rc = await cmdTaskDocShow({
+      ctx,
+      cwd: "/repo",
+      taskId: "T-1",
+      section: "Summary",
+      quiet: false,
+    });
+
+    expect(rc).toBe(0);
+    expect(writes.join("")).toContain("canonical summary");
+    expect(writes.join("")).not.toContain("stale body");
+    stdoutSpy.mockRestore();
+  });
+
   it("cmdTaskDocSet surfaces semantic section conflicts from the task store", async () => {
     const ctx = mkCtx();
     mocks.backendIsLocalFileBackend.mockReturnValue(true);

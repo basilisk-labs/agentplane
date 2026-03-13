@@ -2,11 +2,13 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import {
-  ensureDocSections,
   normalizeDocSectionName,
   normalizeTaskDoc,
   parseDocSections,
+  renderTaskDocFromSections,
   setMarkdownSection,
+  taskDocToSectionMap,
+  ensureDocSections,
 } from "@agentplaneorg/core";
 
 import { mapBackendError, mapCoreError } from "../../cli/error-map.js";
@@ -273,12 +275,24 @@ export async function cmdTaskDocShow(opts: {
     const useStore = backendIsLocalFileBackend(ctx);
     const storeTask = useStore ? await getTaskStore(ctx).get(opts.taskId) : null;
     const doc = useStore
-      ? String(storeTask!.doc ?? "")
+      ? storeTask?.sections && Object.keys(storeTask.sections).length > 0
+        ? renderTaskDocFromSections(storeTask.sections)
+        : String(storeTask?.doc ?? "")
       : ((await backend.getTaskDoc(opts.taskId)) ?? "");
+    const canonicalSections = new Map<string, { title: string; lines: string[] }>();
+    for (const [title, text] of Object.entries(
+      useStore && storeTask?.sections && Object.keys(storeTask.sections).length > 0
+        ? storeTask.sections
+        : taskDocToSectionMap(doc),
+    )) {
+      canonicalSections.set(normalizeDocSectionName(title), {
+        title,
+        lines: String(text ?? "").split("\n"),
+      });
+    }
     if (opts.section) {
       const sectionKey = normalizeDocSectionName(opts.section);
-      const { sections } = parseDocSections(doc);
-      const entry = sections.get(sectionKey);
+      const entry = canonicalSections.get(sectionKey);
       const content = entry?.lines ?? [];
       if (content.length > 0) {
         process.stdout.write(`${content.join("\n").trimEnd()}\n`);
@@ -286,6 +300,7 @@ export async function cmdTaskDocShow(opts: {
       }
       if (!opts.quiet) {
         process.stdout.write(`${infoMessage(`section has no content: ${opts.section}`)}\n`);
+        return 0;
       }
       return 0;
     }
