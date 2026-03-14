@@ -1,10 +1,11 @@
 ---
 id: "202603131310-SE12RR"
 title: "Add migration path for legacy task READMEs"
-status: "DOING"
+result_summary: "Legacy task README migration now lands directly in canonical one-file state instead of waiting for a later normalize or write pass."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on:
   - "202603131310-ABPXYY"
   - "202603131309-JYPPQS"
@@ -31,11 +32,16 @@ verification:
     Result: pass
     Evidence: eslint clean; both package builds exited 0.
     Scope: touched runtime and regression files.
-commit: null
+commit:
+  hash: "96aac06d6bd9420cdcce28945763a5cc05f2d4c7"
+  message: "🧭 SE12RR task: canonicalize legacy migrate-doc path"
 comments:
   -
     author: "CODER"
     body: "Start: make task migrate-doc produce canonical one-file task state for legacy READMEs immediately, then cover that behavior in upgrade and backend regressions without widening into backend interface changes."
+  -
+    author: "CODER"
+    body: "Verified: task migrate-doc now backfills canonical revision and sections on legacy README migration, prefers canonical frontmatter sections over stale rendered body, and keeps upgrade/release recovery coverage aligned with the one-file canonical state contract."
 events:
   -
     type: "status"
@@ -59,8 +65,15 @@ events:
       Result: pass
       Evidence: eslint clean; both package builds exited 0.
       Scope: touched runtime and regression files.
+  -
+    type: "status"
+    at: "2026-03-14T00:54:38.073Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: task migrate-doc now backfills canonical revision and sections on legacy README migration, prefers canonical frontmatter sections over stale rendered body, and keeps upgrade/release recovery coverage aligned with the one-file canonical state contract."
 doc_version: 3
-doc_updated_at: "2026-03-14T00:54:21.230Z"
+doc_updated_at: "2026-03-14T00:54:38.074Z"
 doc_updated_by: "CODER"
 description: "Provide migration from current README v3 task files to canonical-frontmatter-plus-generated-body one-file task format, including archive/backfill handling."
 sections:
