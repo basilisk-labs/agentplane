@@ -1,10 +1,11 @@
 ---
 id: "202603141719-X2XSQC"
 title: "Stabilize remaining lifecycle start timeout regressions for v0.3.7"
-status: "DOING"
+result_summary: "Applied the existing lifecycle timeout budget to the three remaining start commit-path cases so full-gate load no longer leaves those tests on the default 30s budget."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 depends_on: []
 tags:
   - "release"
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-14T17:25:35.638Z"
   updated_by: "CODER"
   note: "Verified: bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts; bun x tsc -b packages/core packages/agentplane. The three remaining lifecycle failures were timeout-only and now bind the existing START_COMMIT_PATH_HANDLING_TIMEOUT_MS budget."
-commit: null
+commit:
+  hash: "c6b546d0fe289c8a995bc0ad76695b7b415258fd"
+  message: "⏱️ X2XSQC test: widen lifecycle start timeout budget"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the three remaining lifecycle full-gate timeout failures, inspect timeout binding and fixture behavior in run-cli.core.lifecycle.test.ts, and make the smallest lifecycle-scoped fix that explains the confirm, single-sentence summary, and explicit commit-emoji cases before rerunning the suite."
+  -
+    author: "CODER"
+    body: "Verified: the full lifecycle suite and touched packages typecheck pass after binding the missing START_COMMIT_PATH_HANDLING_TIMEOUT_MS budget onto the three remaining start commit-path tests."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts; bun x tsc -b packages/core packages/agentplane. The three remaining lifecycle failures were timeout-only and now bind the existing START_COMMIT_PATH_HANDLING_TIMEOUT_MS budget."
+  -
+    type: "status"
+    at: "2026-03-14T17:25:54.795Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the full lifecycle suite and touched packages typecheck pass after binding the missing START_COMMIT_PATH_HANDLING_TIMEOUT_MS budget onto the three remaining start commit-path tests."
 doc_version: 3
-doc_updated_at: "2026-03-14T17:25:35.643Z"
+doc_updated_at: "2026-03-14T17:25:54.797Z"
 doc_updated_by: "CODER"
 description: "Isolate and fix the three remaining full-gate timeout failures in run-cli.core.lifecycle.test.ts covering status_commit_policy=confirm acknowledgement, single-sentence summary formatting, and explicit commit emoji handling, then confirm the lifecycle suite stays green under the release prepublish load."
 sections:
