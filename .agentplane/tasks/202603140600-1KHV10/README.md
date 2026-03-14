@@ -1,10 +1,11 @@
 ---
 id: "202603140600-1KHV10"
 title: "Add guarded Redmine writes against remote task revision"
-status: "DOING"
+result_summary: "Added optimistic expectedRevision guards for Redmine write paths, aligned capability flags with canonical_state support, and covered remote/offline guard behavior in redmine/load regressions."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on:
   - "202603140600-7VH49J"
   - "202603140600-R0JPWV"
@@ -23,11 +24,16 @@ verification:
   updated_at: "2026-03-14T06:34:01.350Z"
   updated_by: "CODER"
   note: "Verified guarded Redmine writes with vitest on redmine/load suites, eslint on backend/test files, and both package builds. canonical_state now gates revision-guard capability and stale expectedRevision writes fail before remote requests."
-commit: null
+commit:
+  hash: "be5d08590f0055dd00f2a4289cf302884410b98e"
+  message: "🛡️ 1KHV10 task: guard Redmine writes by expected revision"
 comments:
   -
     author: "CODER"
     body: "Start: implement optimistic Redmine expectedRevision guards and capability reporting around canonical_state-backed remote revisions."
+  -
+    author: "CODER"
+    body: "Verified: Redmine guarded writes now reject stale expectedRevision only when canonical_state-backed revisions are configured, and capability reporting reflects that contract."
 events:
   -
     type: "status"
@@ -42,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified guarded Redmine writes with vitest on redmine/load suites, eslint on backend/test files, and both package builds. canonical_state now gates revision-guard capability and stale expectedRevision writes fail before remote requests."
+  -
+    type: "status"
+    at: "2026-03-14T06:34:34.161Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Redmine guarded writes now reject stale expectedRevision only when canonical_state-backed revisions are configured, and capability reporting reflects that contract."
 doc_version: 3
-doc_updated_at: "2026-03-14T06:34:01.380Z"
+doc_updated_at: "2026-03-14T06:34:34.165Z"
 doc_updated_by: "CODER"
 description: "Use the remote structured state revision to reject stale Redmine writes and add regression coverage for sync and write conflict behavior."
 sections:
