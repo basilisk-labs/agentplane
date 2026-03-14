@@ -6,6 +6,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 
 - Backend
   - [backend](#backend)
+  - [backend inspect](#backend-inspect)
   - [backend migrate-canonical-state](#backend-migrate-canonical-state)
   - [backend sync](#backend-sync)
   - [sync](#sync)
@@ -136,7 +137,7 @@ This page is generated from the CLI command specs. Do not edit it by hand; edit 
 
 Backend-related operations.
 
-This is a command group. Use a subcommand such as \`agentplane backend sync ...\` or \`agentplane backend migrate-canonical-state ...\`.
+This is a command group. Use a subcommand such as \`agentplane backend sync ...\`, \`agentplane backend inspect ...\`, or \`agentplane backend migrate-canonical-state ...\`.
 
 Usage:
 
@@ -151,6 +152,29 @@ agentplane backend sync local --direction pull
 ```
 
 - Sync the backend.
+
+### backend inspect
+
+Inspect visible backend readiness facts without mutating remote state.
+
+Usage:
+
+```text
+agentplane backend inspect <id> [options]
+```
+
+Options:
+
+- `--yes`: Auto-approve network access. (default=false)
+- `--quiet`: Reduce output noise. (default=false)
+
+Examples:
+
+```sh
+agentplane backend inspect redmine --yes
+```
+
+- Inspect visible Redmine custom fields and canonical_state readiness without remote writes.
 
 ### backend migrate-canonical-state
 

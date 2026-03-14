@@ -93,20 +93,26 @@ describeWhenEnvPresent("Redmine live projection contract", () => {
     }
   });
 
-  it("surfaces canonical_state readiness for the live Redmine sandbox", async () => {
+  it("inspects visible field catalog and canonical_state readiness for the live Redmine sandbox", async () => {
     const root = await mkdtemp(path.join(os.tmpdir(), TMP_PREFIX));
     const cacheDir = path.join(root, ".agentplane", "tasks");
     const cache = new LocalBackend({ dir: cacheDir });
     const backend = new RedmineBackend({}, { cache });
 
     try {
+      const inspection = await backend.inspectConfiguration();
+      expect(inspection.visibleCustomFields.length).toBeGreaterThan(0);
       const configuredCanonicalStateField = process.env[CANONICAL_STATE_ENV_KEY]?.trim() ?? "";
       if (!configuredCanonicalStateField) {
+        expect(inspection.canonicalState.configuredFieldId).toBeNull();
         expect(backend.capabilities.supports_task_revisions).toBe(false);
         expect(backend.capabilities.supports_revision_guarded_writes).toBe(false);
         return;
       }
 
+      expect(inspection.canonicalState.configuredFieldId).toBe(
+        Number(configuredCanonicalStateField),
+      );
       expect(backend.capabilities.supports_task_revisions).toBe(true);
       expect(backend.capabilities.supports_revision_guarded_writes).toBe(true);
 

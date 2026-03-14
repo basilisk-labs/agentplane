@@ -4,8 +4,10 @@ import { usageError } from "../../cli/spec/errors.js";
 import { suggestOne } from "../../cli/spec/suggest.js";
 import type { CommandContext } from "../shared/task-backend.js";
 import {
+  cmdBackendInspectParsed,
   cmdBackendMigrateCanonicalStateParsed,
   cmdBackendSyncParsed,
+  type BackendInspectParsed,
   type BackendMigrateCanonicalStateParsed,
   type BackendSyncParsed,
 } from "../backend.js";
@@ -17,7 +19,7 @@ export const backendSpec: CommandSpec<BackendRootParsed> = {
   group: "Backend",
   summary: "Backend-related operations.",
   description:
-    "This is a command group. Use a subcommand such as `agentplane backend sync ...` or `agentplane backend migrate-canonical-state ...`.",
+    "This is a command group. Use a subcommand such as `agentplane backend sync ...`, `agentplane backend inspect ...`, or `agentplane backend migrate-canonical-state ...`.",
   args: [{ name: "cmd", required: false, variadic: true, valueHint: "<cmd>" }],
   examples: [{ cmd: COMMAND_SNIPPETS.backendSync.pullLocal, why: "Sync the backend." }],
   parse: (raw) => ({ cmd: (raw.args.cmd ?? []) as string[] }),
@@ -86,9 +88,31 @@ export const backendMigrateCanonicalStateSpec: CommandSpec<BackendMigrateCanonic
   }),
 };
 
+export const backendInspectSpec: CommandSpec<BackendInspectParsed> = {
+  id: ["backend", "inspect"],
+  group: "Backend",
+  summary: "Inspect visible backend readiness facts without mutating remote state.",
+  args: [{ name: "id", required: true, valueHint: "<id>", description: "Configured backend id." }],
+  options: [
+    { kind: "boolean", name: "yes", default: false, description: "Auto-approve network access." },
+    { kind: "boolean", name: "quiet", default: false, description: "Reduce output noise." },
+  ],
+  examples: [
+    {
+      cmd: "agentplane backend inspect redmine --yes",
+      why: "Inspect visible Redmine custom fields and canonical_state readiness without remote writes.",
+    },
+  ],
+  parse: (raw) => ({
+    backendId: String(raw.args.id),
+    yes: raw.opts.yes === true,
+    quiet: raw.opts.quiet === true,
+  }),
+};
+
 function runBackendRootGroup(_ctx: CommandCtx, p: BackendRootParsed): Promise<number> {
   const input = p.cmd.join(" ");
-  const suggestion = suggestOne(input, ["sync", "migrate-canonical-state"]);
+  const suggestion = suggestOne(input, ["sync", "inspect", "migrate-canonical-state"]);
   const suffix = suggestion ? ` Did you mean: ${suggestion}?` : "";
   const msg = p.cmd.length === 0 ? "Missing subcommand." : `Unknown subcommand: ${p.cmd[0]}.`;
   throw usageError({
@@ -106,6 +130,18 @@ export function makeRunBackendSyncHandler(getCtx: (cmd: string) => Promise<Comma
   return async (ctx: CommandCtx, p: BackendSyncParsed): Promise<number> => {
     const commandCtx = await getCtx("backend sync");
     return await cmdBackendSyncParsed({
+      ctx: commandCtx,
+      cwd: ctx.cwd,
+      rootOverride: ctx.rootOverride,
+      flags: p,
+    });
+  };
+}
+
+export function makeRunBackendInspectHandler(getCtx: (cmd: string) => Promise<CommandContext>) {
+  return async (ctx: CommandCtx, p: BackendInspectParsed): Promise<number> => {
+    const commandCtx = await getCtx("backend inspect");
+    return await cmdBackendInspectParsed({
       ctx: commandCtx,
       cwd: ctx.cwd,
       rootOverride: ctx.rootOverride,

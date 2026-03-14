@@ -258,6 +258,60 @@ describe("RedmineBackend (mocked)", () => {
     expect(cacheWriteSpy).not.toHaveBeenCalled();
   });
 
+  it("inspects visible custom fields and reports canonical_state visibility plus configured-name drift", async () => {
+    const issues: Record<string, unknown>[] = [
+      {
+        id: 101,
+        subject: "Issue",
+        description: "Desc",
+        status: { id: 5, name: "Done" },
+        custom_fields: [
+          { id: 1, name: "task_id", value: "202601300000-ABCD" },
+          { id: 2, name: "verify", value: "## Summary\n\nDoc" },
+          { id: 3, name: "commit", value: "3" },
+          { id: 13, name: "canonical_state", value: '{"revision":2}' },
+        ],
+      },
+    ];
+
+    vi.stubGlobal("fetch", (url: string, init?: RequestInit) => {
+      const reqUrl = new URL(url);
+      const pathname = reqUrl.pathname.replace(/^\//u, "");
+      const method = init?.method ?? "GET";
+      if (pathname === "issues.json" && method === "GET") {
+        return Response.json({ issues, total_count: issues.length }, { status: 200 });
+      }
+      return new Response("not found", { status: 404 });
+    });
+
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: { task_id: 1, doc: 2, doc_version: 3 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+
+    const result = await backend.inspectConfiguration();
+    expect(result.backendId).toBe("redmine");
+    expect(result.visibleCustomFields).toEqual([
+      { id: 1, name: "task_id", nonEmptyCount: 1 },
+      { id: 2, name: "verify", nonEmptyCount: 1 },
+      { id: 3, name: "commit", nonEmptyCount: 1 },
+      { id: 13, name: "canonical_state", nonEmptyCount: 1 },
+    ]);
+    expect(result.canonicalState).toEqual({
+      configuredFieldId: null,
+      visibleFieldId: 13,
+    });
+    expect(result.configuredFieldNameDrift).toEqual([
+      { key: "doc", configuredId: 2, visibleName: "verify" },
+      { key: "doc_version", configuredId: 3, visibleName: "commit" },
+    ]);
+  });
+
   it("infers DOING and DONE from Redmine status when status_map is missing", async () => {
     const issues: Record<string, unknown>[] = [
       {

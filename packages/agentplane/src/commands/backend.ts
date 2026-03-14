@@ -26,6 +26,12 @@ export type BackendMigrateCanonicalStateParsed = {
   quiet: boolean;
 };
 
+export type BackendInspectParsed = {
+  backendId: string;
+  yes: boolean;
+  quiet: boolean;
+};
+
 export async function cmdBackendSyncParsed(opts: {
   ctx?: CommandContext;
   cwd: string;
@@ -185,5 +191,78 @@ export async function cmdBackendMigrateCanonicalStateParsed(opts: {
       command: "backend migrate-canonical-state",
       root: opts.rootOverride ?? null,
     });
+  }
+}
+
+export async function cmdBackendInspectParsed(opts: {
+  ctx?: CommandContext;
+  cwd: string;
+  rootOverride?: string;
+  flags: BackendInspectParsed;
+}): Promise<number> {
+  try {
+    const ctx =
+      opts.ctx ??
+      (await loadCommandContext({ cwd: opts.cwd, rootOverride: opts.rootOverride ?? null }));
+    const backend = ctx.taskBackend;
+    const backendId = ctx.backendId;
+    const config = ctx.config;
+    if (opts.flags.backendId && backendId && opts.flags.backendId !== backendId) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: `Configured backend is "${backendId}", not "${opts.flags.backendId}"`,
+        context: {
+          command: "backend inspect",
+          reason_code: "inspect_backend_mismatch",
+        },
+      });
+    }
+    if (!backend.inspectConfiguration) {
+      throw new CliError({
+        exitCode: 2,
+        code: "E_USAGE",
+        message: backendNotSupportedMessage("inspectConfiguration()"),
+      });
+    }
+    if (backendId !== "local") {
+      await ensureNetworkApproved({
+        config,
+        yes: opts.flags.yes,
+        reason: `backend inspect may access the network (backend: ${backendId})`,
+      });
+    }
+    const result = await backend.inspectConfiguration();
+    if (opts.flags.quiet) return 0;
+    const canonicalStateSummary =
+      result.canonicalState.configuredFieldId === null
+        ? result.canonicalState.visibleFieldId === null
+          ? "missing"
+          : `visible-unconfigured:${result.canonicalState.visibleFieldId}`
+        : `configured:${result.canonicalState.configuredFieldId}`;
+    process.stdout.write(
+      `${successMessage(
+        "backend inspect",
+        undefined,
+        `visible-fields=${result.visibleCustomFields.length} canonical-state=${canonicalStateSummary} drift=${result.configuredFieldNameDrift.length}`,
+      )}\n`,
+    );
+    process.stdout.write(
+      `canonical_state configured=${result.canonicalState.configuredFieldId ?? "unset"} visible=${result.canonicalState.visibleFieldId ?? "absent"}\n`,
+    );
+    for (const drift of result.configuredFieldNameDrift) {
+      process.stdout.write(
+        `drift key=${drift.key} configured-id=${drift.configuredId} visible-name=${JSON.stringify(drift.visibleName)}\n`,
+      );
+    }
+    for (const field of result.visibleCustomFields) {
+      process.stdout.write(
+        `field id=${field.id} name=${JSON.stringify(field.name)} non-empty=${field.nonEmptyCount}\n`,
+      );
+    }
+    return 0;
+  } catch (err) {
+    if (err instanceof CliError) throw err;
+    throw mapBackendError(err, { command: "backend inspect", root: opts.rootOverride ?? null });
   }
 }

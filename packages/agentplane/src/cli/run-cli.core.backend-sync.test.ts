@@ -202,6 +202,86 @@ describe("runCli", () => {
     }
   });
 
+  it("backend inspect routes to configured backend", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const inspectConfiguration = vi.fn().mockResolvedValue({
+      backendId: "redmine",
+      visibleCustomFields: [
+        { id: 1, name: "task_id", nonEmptyCount: 5 },
+        { id: 2, name: "doc", nonEmptyCount: 5 },
+      ],
+      canonicalState: {
+        configuredFieldId: null,
+        visibleFieldId: null,
+      },
+      configuredFieldNameDrift: [{ key: "doc", configuredId: 2, visibleName: "verify" }],
+    });
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", inspectConfiguration }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["backend", "inspect", "redmine", "--yes", "--root", root]);
+      expect(code).toBe(0);
+      expect(inspectConfiguration).toHaveBeenCalledTimes(1);
+      expect(io.stdout).toContain("backend inspect");
+      expect(io.stdout).toContain("canonical_state configured=unset visible=absent");
+      expect(io.stdout).toContain("drift key=doc configured-id=2");
+      expect(io.stdout).toContain('field id=1 name="task_id" non-empty=5');
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
+  it("backend inspect requires --yes in non-tty mode when require_network=true and backend is non-local", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+    const inspectConfiguration = vi.fn().mockResolvedValue({
+      backendId: "redmine",
+      visibleCustomFields: [],
+      canonicalState: {
+        configuredFieldId: null,
+        visibleFieldId: null,
+      },
+      configuredFieldNameDrift: [],
+    });
+    const resolved: ResolvedProject = {
+      gitRoot: root,
+      agentplaneDir: path.join(root, ".agentplane"),
+    };
+    const loadResult = {
+      backend: stubTaskBackend({ id: "redmine", inspectConfiguration }),
+      backendId: "redmine",
+      resolved,
+      config: defaultConfig(),
+      backendConfigPath: path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    } satisfies Awaited<ReturnType<typeof taskBackend.loadTaskBackend>>;
+    const spy = vi.spyOn(taskBackend, "loadTaskBackend").mockResolvedValue(loadResult);
+
+    const io = captureStdIO();
+    try {
+      const code = await runCli(["backend", "inspect", "redmine", "--root", root]);
+      expect(code).toBe(3);
+      expect(io.stderr).toContain("--yes");
+      expect(inspectConfiguration).not.toHaveBeenCalled();
+    } finally {
+      io.restore();
+      spy.mockRestore();
+    }
+  });
+
   it("backend sync forwards flags to the backend", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

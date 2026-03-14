@@ -1,5 +1,6 @@
 import { syncSpec } from "../../../commands/sync.command.js";
 import {
+  backendInspectSpec,
   backendMigrateCanonicalStateSpec,
   backendSpec,
   backendSyncSpec,
@@ -143,6 +144,11 @@ export const PROJECT_COMMANDS = [
   entry(backendSyncSpec, (deps) =>
     import("../../../commands/backend/sync.command.js").then((m) =>
       m.makeRunBackendSyncHandler(deps.getCtx),
+    ),
+  ),
+  entry(backendInspectSpec, (deps) =>
+    import("../../../commands/backend/sync.command.js").then((m) =>
+      m.makeRunBackendInspectHandler(deps.getCtx),
     ),
   ),
   entry(backendMigrateCanonicalStateSpec, (deps) =>

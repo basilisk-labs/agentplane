@@ -48,7 +48,8 @@ canonical task state rollout. It is optional during the plumbing phase, but futu
 work will rely on it for `revision`, canonical `sections`, and lifecycle metadata round-tripping.
 When the active backend is `redmine`, `agentplane doctor` warns if this field is not configured,
 because the backend then remains in partial-compatibility mode and cannot enable guarded
-`expectedRevision` writes.
+`expectedRevision` writes. For live diagnosis without admin access to `/custom_fields.json`, use
+`agentplane backend inspect redmine --yes`.
 
 ## Backend JSON role
 
@@ -104,6 +105,21 @@ The command scans the current Redmine task set, skips issues that already store
 `canonical_state`, skips issues that cannot be reconstructed from legacy doc content, and reports
 any per-task failures explicitly.
 
+## Read-only inspection
+
+To inspect visible custom fields and canonical-state readiness without remote writes:
+
+```bash
+agentplane backend inspect redmine --yes
+```
+
+The command:
+
+- scans ordinary `issues.json` payloads for visible custom field ids and names;
+- reports whether `canonical_state` is configured, merely visible, or absent;
+- flags configured env field ids whose live Redmine display names drift from the expected keys;
+- does not mutate issues or the local projection.
+
 ## Validation
 
 To validate the install-first Redmine contract against a real backend without performing remote
@@ -119,7 +135,8 @@ The suite:
 - refreshes the local projection from Redmine;
 - reads tasks from the projection;
 - exports a snapshot from that projection;
-- reports whether the live sandbox is canonical_state-ready or still in partial-compatibility mode;
+- inspects visible field catalog and reports whether the live sandbox is canonical_state-ready or
+  still in partial-compatibility mode;
 - exits cleanly with a skip if required Redmine env keys are missing.
 
 ## Troubleshooting pointers

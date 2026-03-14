@@ -91,6 +91,28 @@ export type TaskCanonicalStateMigrationResult = {
   failed: { taskId: string; reason: string }[];
 };
 
+export type TaskBackendVisibleField = {
+  id: number;
+  name: string;
+  nonEmptyCount: number;
+};
+
+export type TaskBackendFieldNameDrift = {
+  key: string;
+  configuredId: number;
+  visibleName: string;
+};
+
+export type TaskBackendInspectionResult = {
+  backendId: string;
+  visibleCustomFields: TaskBackendVisibleField[];
+  canonicalState: {
+    configuredFieldId: number | null;
+    visibleFieldId: number | null;
+  };
+  configuredFieldNameDrift: TaskBackendFieldNameDrift[];
+};
+
 export type TaskBackend = {
   id: string;
   capabilities: TaskBackendCapabilities;
@@ -104,6 +126,7 @@ export type TaskBackend = {
   normalizeTasks?(): Promise<{ scanned: number; changed: number }>;
   refreshProjection?(opts: TaskProjectionRefreshOptions): Promise<void>;
   migrateCanonicalState?(): Promise<TaskCanonicalStateMigrationResult>;
+  inspectConfiguration?(): Promise<TaskBackendInspectionResult>;
   exportProjectionSnapshot?(outputPath: string): Promise<void>;
   exportTasksJson?(outputPath: string): Promise<void>;
   getTaskDoc?(taskId: string): Promise<string>;

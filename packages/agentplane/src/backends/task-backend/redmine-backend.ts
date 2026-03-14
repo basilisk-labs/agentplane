@@ -29,6 +29,11 @@ import {
   listTasksRemote as listTasksRemoteImpl,
 } from "./redmine/remote.js";
 import {
+  detectConfiguredFieldNameDrift,
+  inferVisibleCanonicalStateFieldId,
+  inspectVisibleCustomFields,
+} from "./redmine/inspect.js";
+import {
   buildRedmineCanonicalStateWithOptions,
   parseRedmineCanonicalState,
 } from "./redmine/state.js";
@@ -54,6 +59,7 @@ import {
   writeTasksExportFromTasks,
   type TaskCanonicalStateMigrationResult,
   type TaskBackend,
+  type TaskBackendInspectionResult,
   type TaskData,
   type TaskDocMeta,
   type TaskWriteOptions,
@@ -325,6 +331,30 @@ export class RedmineBackend implements TaskBackend {
     }
 
     return result;
+  }
+
+  async inspectConfiguration(): Promise<TaskBackendInspectionResult> {
+    const visibleCustomFields = await inspectVisibleCustomFields({
+      projectId: this.projectId,
+      requestJson: async (method, reqPath, payload, params) =>
+        await this.requestJson(method, reqPath, payload, params),
+    });
+    const visibleCanonicalStateFieldId = inferVisibleCanonicalStateFieldId(visibleCustomFields);
+    return {
+      backendId: this.id,
+      visibleCustomFields,
+      canonicalState: {
+        configuredFieldId:
+          typeof this.customFields.canonical_state === "number"
+            ? this.customFields.canonical_state
+            : null,
+        visibleFieldId: visibleCanonicalStateFieldId,
+      },
+      configuredFieldNameDrift: detectConfiguredFieldNameDrift({
+        configuredFields: this.customFields,
+        visibleFields: visibleCustomFields,
+      }),
+    };
   }
 
   async getTask(taskId: string): Promise<TaskData | null> {

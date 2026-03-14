@@ -309,7 +309,7 @@ describe("doctor.command", () => {
       expect(rc).toBe(0);
       const output = stderr.mock.calls.flat().join("\n");
       expect(output).toContain("Redmine backend is running in partial compatibility mode");
-      expect(output).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE");
+      expect(output).toContain("agentplane backend inspect redmine --yes");
       expect(output).toContain("supports_task_revisions=false");
     } finally {
       stderr.mockRestore();

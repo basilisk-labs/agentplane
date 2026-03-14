@@ -338,10 +338,9 @@ function checkBackendReadiness(ctx?: CommandContext): string[] {
         likelyCause:
           "AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE is not configured, so Redmine cannot round-trip the full canonical task state or guard writes by remote revision",
         nextAction: {
-          command:
-            "set AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE=<field-id> and rerun agentplane doctor",
+          command: "agentplane backend inspect redmine --yes",
           reason:
-            "enable structured canonical_state round-tripping and expectedRevision guarded writes for the Redmine backend",
+            "inspect visible Redmine custom fields first, then wire AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE to the correct field id",
         },
         details: [
           `Backend config: ${ctx.backendConfigPath}`,
