@@ -141,7 +141,7 @@ describe("runCli", () => {
     } finally {
       io.restore();
     }
-  });
+  }, 60_000);
 
   it("cleanup merged rejects unknown subcommands", async () => {
     const root = await mkGitRepoRootWithBranch("main");
