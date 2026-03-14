@@ -1,0 +1,84 @@
+---
+slug: release-0-3-7-legacy-recovery-redmine-and-safer-publish
+title: "AgentPlane 0.3.7: clearer legacy recovery, real Redmine state, and a safer publish line"
+description: "What changed in AgentPlane 0.3.7, in plain language: older repos recover more predictably, Redmine-backed task state gets less lossy, and the release path becomes stricter from local gate to npm."
+authors: [team]
+tags: [release, workflow, backend]
+---
+
+AgentPlane `0.3.7` is a patch release about making the product behave more honestly when the repository is old, the backend is external, or the release path is under stress.
+
+That sounds broad, but the theme is consistent. `0.3.7` removes a set of half-implicit transitions that were still too easy to treat as “probably fine”:
+
+- legacy task docs that upgraded in two separate mental steps,
+- Redmine state that still behaved too much like a projection-only shadow,
+- release publication that needed stronger exact-SHA and artifact-backed recovery rules.
+
+`0.3.7` makes those boundaries much sharper.
+
+<!-- truncate -->
+
+## Legacy recovery is closer to a real operator path now
+
+The most practical change in `0.3.7` is that older initialized repositories are no longer left in a fuzzy “upgrade mostly worked” state without a clear handoff.
+
+The release tightens the supported recovery path for repositories that still carry legacy README v2 task docs or partial managed-tree drift:
+
+- `agentplane doctor` reports the state more explicitly,
+- `agentplane upgrade --migrate-task-docs --yes` can bridge more of the recovery in one run,
+- and upgrade output now makes it clearer when `task migrate-doc` is still the next action.
+
+That is the right direction for a workflow tool. Recovery should be diagnosable and operational, not folklore.
+
+## Redmine gets closer to canonical task state
+
+`0.3.7` also pushes Redmine-backed repositories closer to the same canonical task-state model that local repositories already expect.
+
+This release adds more of the missing plumbing around canonical state, revision-aware round trips, lifecycle metadata preservation, readiness checks, and live sync/conflict coverage. In plain language, that means Redmine-backed state is less dependent on lossy projections and better aligned with the same sections-and-revision model the local task system now treats as real state.
+
+That matters because backend integration gets dangerous when users cannot tell whether the system owns a canonical record or merely a cached rendering of one.
+
+## README v3 stops feeling like a migration tail
+
+Another smaller but important shift in `0.3.7` is that README v3 stops behaving like the “newer format that still leaks old edge-cases.”
+
+Two visible fixes matter here:
+
+- `task derive` can now carry `--verify` and seed implementation `Verify Steps` more like `task new`,
+- verification details keep multiline formatting instead of collapsing into literal escaped newlines.
+
+This is not a redesign. It is cleanup of the task surfaces people actually touch while working.
+
+## The release line itself is stricter now
+
+The release machinery also got tighter in `0.3.7`.
+
+This patch adds stronger release-ready and publish-result artifact use, exact-SHA recovery flows, and better parity between the local prepublish gate and the GitHub publish path. The result is a release process that is harder to fake, easier to recover, and less dependent on mutable assumptions about “the latest successful run.”
+
+That is especially important for patch releases. The release system itself should not be the least trustworthy part of the release.
+
+## The practical shift
+
+`0.3.7` is a convergence release, but in a different way from `0.3.5`.
+
+It makes three things truer than they were before:
+
+- older repositories have a clearer supported recovery path,
+- Redmine-backed state is less projection-fragile,
+- release publication is stricter from local verification through GitHub and npm.
+
+That is exactly the kind of patch-line work that compounds well.
+
+## Upgrade note
+
+There is no new breaking workflow-mode change in `0.3.7`.
+
+If your repository is already on README v3 and current framework assets, the visible changes are mostly in recovery behavior, backend modeling, and release/runtime strictness.
+
+If your repository is older, the practical path is now clearer:
+
+1. Run `agentplane doctor`.
+2. If diagnostics call for it, run `agentplane upgrade --migrate-task-docs --yes`.
+3. If legacy task docs still remain, follow the explicit handoff to `agentplane task migrate-doc --all`.
+
+The formal source record remains the release notes at [`/docs/releases/v0.3.7`](/docs/releases/v0.3.7).
