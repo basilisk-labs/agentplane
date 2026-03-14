@@ -1,10 +1,11 @@
 ---
 id: "202603140600-7VH49J"
 title: "Round-trip Redmine revision and canonical sections"
-status: "DOING"
+result_summary: "Implemented Redmine revision/sections round-trip through canonical_state across mapping and setTaskDoc/writeTask paths, with regression coverage for payload build, pull reconstruction, and remote doc updates. Implementation commits: 7dd0d4545bfb, dc65a5843425."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on:
   - "202603140600-APGANH"
 tags:
@@ -36,11 +37,16 @@ verification:
     Result: pass
     Evidence: both package builds exited 0 after the Redmine round-trip changes.
     Scope: Compile-time integrity for the updated Redmine backend implementation.
-commit: null
+commit:
+  hash: "dc65a584342529c78334b39835ff008472df94d9"
+  message: "🧪 7VH49J task: cover Redmine round-trip regressions"
 comments:
   -
     author: "CODER"
     body: "Start: implement Redmine revision and canonical section round-trip through canonical_state on both read and write paths."
+  -
+    author: "CODER"
+    body: "Verified: Redmine now reconstructs doc from canonical_state sections on pull, derives sections from legacy doc when needed, and keeps revision plus sections in sync on remote doc writes."
 events:
   -
     type: "status"
@@ -69,8 +75,15 @@ events:
       Result: pass
       Evidence: both package builds exited 0 after the Redmine round-trip changes.
       Scope: Compile-time integrity for the updated Redmine backend implementation.
+  -
+    type: "status"
+    at: "2026-03-14T06:24:16.585Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Redmine now reconstructs doc from canonical_state sections on pull, derives sections from legacy doc when needed, and keeps revision plus sections in sync on remote doc writes."
 doc_version: 3
-doc_updated_at: "2026-03-14T06:23:11.488Z"
+doc_updated_at: "2026-03-14T06:24:16.590Z"
 doc_updated_by: "CODER"
 description: "Teach Redmine mapping and sync paths to persist revision and canonical sections through the new structured state field while keeping doc as a generated projection."
 sections:
