@@ -13,6 +13,8 @@ import { exitCodeForError } from "../cli/exit-codes.js";
 import { warnMessage } from "../cli/output.js";
 import { CliError } from "../shared/errors.js";
 import { ensureWorkflowArtifacts } from "../shared/workflow-artifacts.js";
+import { checkTaskReadmeMigrationState } from "./doctor/workspace.js";
+import { loadCommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
 import { getVersion } from "../meta/version.js";
 import {
@@ -275,6 +277,12 @@ export async function cmdUpgradeParsed(opts: {
     rootOverride: opts.rootOverride ?? null,
   });
   const loaded = await loadConfig(resolved.agentplaneDir);
+  const commandCtx = await loadCommandContext({
+    cwd: opts.cwd,
+    rootOverride: opts.rootOverride ?? null,
+    resolvedProject: resolved,
+    config: loaded.config,
+  });
   if (flags.mode === "auto" && !flags.dryRun) {
     await ensureCleanTrackedTreeForUpgrade(resolved.gitRoot);
   }
@@ -795,6 +803,18 @@ export async function cmdUpgradeParsed(opts: {
     }
     if (commit) {
       process.stdout.write(`Upgrade commit: ${commit.hash.slice(0, 12)} ${commit.subject}\n`);
+    }
+    const taskReadmeMigrationFindings = await checkTaskReadmeMigrationState(
+      resolved.gitRoot,
+      commandCtx,
+    );
+    if (taskReadmeMigrationFindings.length > 0) {
+      process.stderr.write(
+        `${warnMessage("upgrade post-check: task README migration follow-up detected")}\n`,
+      );
+      for (const finding of taskReadmeMigrationFindings) {
+        process.stderr.write(`- ${finding}\n`);
+      }
     }
     return 0;
   } finally {

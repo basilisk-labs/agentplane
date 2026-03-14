@@ -93,6 +93,7 @@ describe("runCli", () => {
       expect(code).toBe(0);
       expect(io.stdout).toContain("Upgrade applied");
       expect(io.stdout).toContain("Upgrade commit:");
+      expect(io.stderr).not.toContain("task migrate-doc --all");
     } finally {
       io.restore();
     }
@@ -351,6 +352,9 @@ Legacy verification plan.
       try {
         const code = await runCli(["upgrade", "--yes", "--root", root]);
         expect(code).toBe(0);
+        expect(io.stderr).toContain("upgrade post-check: task README migration follow-up detected");
+        expect(io.stderr).toContain("task README format is still on legacy v2");
+        expect(io.stderr).toContain("agentplane task migrate-doc --all");
       } finally {
         io.restore();
       }

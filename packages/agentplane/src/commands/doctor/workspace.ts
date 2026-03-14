@@ -101,7 +101,7 @@ async function readTaskDocSnapshotsFromProjection(
   }
 }
 
-function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): string[] {
+export function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): string[] {
   if (tasks.length === 0) return [];
 
   const legacy = tasks.filter((task) => task.doc_version !== 3);
@@ -160,7 +160,7 @@ function buildTaskReadmeMigrationFindings(tasks: TaskDocSnapshot[]): string[] {
   ];
 }
 
-async function checkTaskReadmeMigrationState(
+export async function checkTaskReadmeMigrationState(
   repoRoot: string,
   ctx?: CommandContext,
 ): Promise<string[]> {
