@@ -1508,6 +1508,156 @@ describe("RedmineBackend (mocked)", () => {
     ).rejects.toThrow(/guarding is unavailable/u);
   });
 
+  it("migrateCanonicalState backfills structured state for legacy doc-backed issues", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: {
+          task_id: 1,
+          canonical_state: 2,
+          doc: 3,
+        },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as {
+      requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
+    };
+    const issue = {
+      id: 101,
+      subject: "Legacy issue",
+      description: "Legacy description",
+      status: { id: 1, name: "New" },
+      custom_fields: [
+        { id: 1, value: "202603140729-W4D9ZT" },
+        {
+          id: 3,
+          value:
+            "## Summary\n\nLegacy summary.\n\n## Scope\n\n- In scope: migrate.\n\n## Verify Steps\n\n1. Migrate.\n",
+        },
+      ],
+      updated_on: "2026-03-14T00:00:00Z",
+    };
+    const requestJson = vi.fn(
+      (
+        method: string,
+        reqPath: string,
+        payload?: Record<string, unknown>,
+        _params?: Record<string, unknown>,
+      ) => {
+        if (method === "GET" && reqPath === "issues.json") {
+          return Promise.resolve({ issues: [issue], total_count: 1 });
+        }
+        if (method === "PUT" && reqPath === "issues/101.json") {
+          return Promise.resolve({
+            issue: { ...issue, ...(payload?.issue as Record<string, unknown> | undefined) },
+          });
+        }
+        throw new Error(`unexpected ${method} ${reqPath}`);
+      },
+    );
+    helper.requestJson = requestJson;
+
+    const result = await backend.migrateCanonicalState();
+
+    expect(result).toEqual({
+      scanned: 1,
+      migrated: ["202603140729-W4D9ZT"],
+      skippedStructured: [],
+      skippedNoDoc: [],
+      failed: [],
+    });
+    const putPayload = requestJson.mock.calls.find(
+      ([method, reqPath]) => method === "PUT" && reqPath === "issues/101.json",
+    )?.[2] as { issue?: { custom_fields?: { id?: unknown; value?: unknown }[] } } | undefined;
+    const canonicalField = putPayload?.issue?.custom_fields?.find((field) => field.id === 2);
+    expect(canonicalField).toBeTruthy();
+    const parsed = JSON.parse(String(canonicalField?.value)) as {
+      revision?: number;
+      sections?: Record<string, string>;
+    };
+    expect(parsed.revision).toBe(1);
+    expect(parsed.sections).toMatchObject({
+      Summary: "Legacy summary.",
+      Scope: "- In scope: migrate.",
+      "Verify Steps": "1. Migrate.",
+    });
+
+    const cached = await cache.getTask("202603140729-W4D9ZT");
+    expect(cached?.revision).toBe(1);
+    expect(cached?.sections).toMatchObject({
+      Summary: "Legacy summary.",
+      "Verify Steps": "1. Migrate.",
+    });
+  });
+
+  it("migrateCanonicalState skips issues that already store canonical_state", async () => {
+    const cache = new LocalBackend({ dir: tempDir });
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        custom_fields: {
+          task_id: 1,
+          canonical_state: 2,
+          doc: 3,
+        },
+      },
+      { cache },
+    );
+    const helper = backend as unknown as {
+      requestJson: (...args: unknown[]) => Promise<Record<string, unknown>>;
+    };
+    const issue = {
+      id: 101,
+      subject: "Structured issue",
+      description: "Structured description",
+      status: { id: 1, name: "New" },
+      custom_fields: [
+        { id: 1, value: "202603140730-R37DPX" },
+        {
+          id: 2,
+          value: JSON.stringify({
+            revision: 4,
+            sections: {
+              Summary: "Already structured.",
+            },
+          }),
+        },
+        { id: 3, value: "## Summary\n\nLegacy summary.\n" },
+      ],
+      updated_on: "2026-03-14T00:00:00Z",
+    };
+    const requestJson = vi.fn(
+      (method: string, reqPath: string, _payload?: Record<string, unknown>) => {
+        if (method === "GET" && reqPath === "issues.json") {
+          return Promise.resolve({ issues: [issue], total_count: 1 });
+        }
+        throw new Error(`unexpected ${method} ${reqPath}`);
+      },
+    );
+    helper.requestJson = requestJson;
+
+    const result = await backend.migrateCanonicalState();
+
+    expect(result).toEqual({
+      scanned: 1,
+      migrated: [],
+      skippedStructured: ["202603140730-R37DPX"],
+      skippedNoDoc: [],
+      failed: [],
+    });
+    expect(
+      requestJson.mock.calls.some(
+        ([method, reqPath]) => method === "PUT" && reqPath === "issues/101.json",
+      ),
+    ).toBe(false);
+  });
+
   it("exports a Redmine projection snapshot from cache without touching the remote source", async () => {
     const cache = new LocalBackend({ dir: tempDir });
     const task: TaskData = {
