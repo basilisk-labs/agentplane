@@ -17,6 +17,13 @@ type TestWorkspace = {
 
 const workspaces: string[] = [];
 const execFileAsync = promisify(execFile);
+const REDMINE_ENV_KEYS = [
+  "AGENTPLANE_REDMINE_URL",
+  "AGENTPLANE_REDMINE_API_KEY",
+  "AGENTPLANE_REDMINE_PROJECT_ID",
+  "AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID",
+  "AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE",
+] as const;
 
 function readCurrentCliVersion(): string {
   const packageJsonPath = fileURLToPath(new URL("../../package.json", import.meta.url));
@@ -108,6 +115,78 @@ async function mkWorkspace(): Promise<TestWorkspace> {
     "utf8",
   );
   return { root };
+}
+
+async function configureRedmineBackend(
+  root: string,
+  opts?: { canonicalStateFieldId?: string | null },
+): Promise<void> {
+  await mkdir(path.join(root, ".agentplane", "backends", "redmine"), { recursive: true });
+  await writeFile(
+    path.join(root, ".agentplane", "config.json"),
+    JSON.stringify(
+      {
+        version: 1,
+        workflow_mode: "direct",
+        agents: {
+          approvals: {
+            require_plan: false,
+            require_verify: false,
+            require_network: true,
+          },
+        },
+        tasks_backend: {
+          config_path: ".agentplane/backends/redmine/backend.json",
+        },
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+  await writeFile(
+    path.join(root, ".agentplane", "backends", "redmine", "backend.json"),
+    JSON.stringify(
+      {
+        id: "redmine",
+        version: 1,
+        settings: {
+          owner_agent: "CODER",
+        },
+      },
+      null,
+      2,
+    ),
+    "utf8",
+  );
+
+  const envLines = [
+    "AGENTPLANE_REDMINE_URL=https://redmine.example.test",
+    "AGENTPLANE_REDMINE_API_KEY=test-key",
+    "AGENTPLANE_REDMINE_PROJECT_ID=test-project",
+    "AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID=1",
+    ...(opts?.canonicalStateFieldId
+      ? [`AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE=${opts.canonicalStateFieldId}`]
+      : []),
+  ];
+  await writeFile(path.join(root, ".env"), `${envLines.join("\n")}\n`, "utf8");
+}
+
+async function withIsolatedRedmineEnv<T>(fn: () => Promise<T>): Promise<T> {
+  const previous = new Map<string, string | undefined>();
+  for (const key of REDMINE_ENV_KEYS) {
+    previous.set(key, process.env[key]);
+    delete process.env[key];
+  }
+  try {
+    return await fn();
+  } finally {
+    for (const key of REDMINE_ENV_KEYS) {
+      const value = previous.get(key);
+      if (value === undefined) delete process.env[key];
+      else process.env[key] = value;
+    }
+  }
 }
 
 async function gitInitWithCommit(root: string, subject: string): Promise<string> {
@@ -212,6 +291,50 @@ describe("doctor.command", () => {
       { fix: false, dev: false },
     );
     expect(rc).toBe(0);
+  });
+
+  it("warns when a Redmine backend is configured without canonical_state readiness", async () => {
+    const ws = await mkWorkspace();
+    await configureRedmineBackend(ws.root);
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      const rc = await withIsolatedRedmineEnv(async () => {
+        return await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+      });
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).toContain("Redmine backend is running in partial compatibility mode");
+      expect(output).toContain("AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE");
+      expect(output).toContain("supports_task_revisions=false");
+    } finally {
+      stderr.mockRestore();
+    }
+  });
+
+  it("stays quiet on Redmine readiness when canonical_state support is configured", async () => {
+    const ws = await mkWorkspace();
+    await configureRedmineBackend(ws.root, { canonicalStateFieldId: "9" });
+    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+      /* muted for assertion */
+    });
+    try {
+      const rc = await withIsolatedRedmineEnv(async () => {
+        return await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+      });
+      expect(rc).toBe(0);
+      const output = stderr.mock.calls.flat().join("\n");
+      expect(output).not.toContain("Redmine backend is running in partial compatibility mode");
+    } finally {
+      stderr.mockRestore();
+    }
   });
 
   it("fails dev checks when monorepo source tree is unavailable", async () => {
