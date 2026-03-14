@@ -1,10 +1,12 @@
 ---
 id: "202603141501-8D60SX"
 title: "Stabilize cleanup merged unknown-base timeout case"
-status: "DOING"
+result_summary: "Stabilized the cleanup merged unknown-base case under full release load by increasing only that test's timeout budget."
+risk_level: "low"
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "release"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T15:16:14.351Z"
   updated_by: "CODER"
   note: "The unknown-base cleanup case was not functionally regressing; the cleanup-merged file runs in about 24s isolated and the failing case itself takes about 1.3s, so the failure under release:ci-base was another default 30000ms spill under aggregate load. Adding a dedicated 60s budget only to that case keeps cleanup semantics unchanged while leaving the isolated suite, tsc, and package builds green."
-commit: null
+commit:
+  hash: "b89401a1a2a3c655f06df2d5d24a95ab20fad81f"
+  message: "⏱️ 8D60SX test: stabilize cleanup-merged timeout budget"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the cleanup merged unknown-base timeout in isolation and under full release-gate load, determine whether the failure is budget-only or fixture-specific, and patch the smallest coherent fix without changing cleanup semantics."
+  -
+    author: "CODER"
+    body: "Verified: the cleanup merged unknown-base failure was aggregate-load timeout pressure, not a cleanup semantic regression. Adding a dedicated 60s budget only to that case keeps the assertion intact and leaves the isolated cleanup suite, tsc, and package builds green."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "The unknown-base cleanup case was not functionally regressing; the cleanup-merged file runs in about 24s isolated and the failing case itself takes about 1.3s, so the failure under release:ci-base was another default 30000ms spill under aggregate load. Adding a dedicated 60s budget only to that case keeps cleanup semantics unchanged while leaving the isolated suite, tsc, and package builds green."
+  -
+    type: "status"
+    at: "2026-03-14T15:16:36.558Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the cleanup merged unknown-base failure was aggregate-load timeout pressure, not a cleanup semantic regression. Adding a dedicated 60s budget only to that case keeps the assertion intact and leaves the isolated cleanup suite, tsc, and package builds green."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:16:14.356Z"
+doc_updated_at: "2026-03-14T15:16:36.561Z"
 doc_updated_by: "CODER"
 description: "Stabilize the cleanup merged unknown-base rejection case under full release load without widening cleanup semantics."
 sections:
