@@ -46,6 +46,8 @@ async function mkRepoWithImplCommit(): Promise<{ root: string; implHash: string 
 }
 
 describe("buildCloseCommitMessage", () => {
+  const CLOSE_MESSAGE_FALLBACK_TIMEOUT_MS = 60_000;
+
   it("builds a deterministic close commit message (non-spike) and filters task artifacts from key files", async () => {
     const { root, implHash } = await mkRepoWithImplCommit();
     const task: TaskData = {
@@ -87,25 +89,29 @@ describe("buildCloseCommitMessage", () => {
     expect(keyLine).not.toContain(".agentplane/tasks/");
   });
 
-  it("uses a clear fallback marker when result_summary is missing", async () => {
-    const { root, implHash } = await mkRepoWithImplCommit();
-    const task: TaskData = {
-      id: "202602081506-R18Y1Q",
-      title: "Add close commit mode",
-      description: "desc",
-      status: "DONE",
-      priority: "med",
-      owner: "ORCHESTRATOR",
-      depends_on: [],
-      tags: ["cli"],
-      verify: [],
-      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
-      commit: { hash: implHash, message: "impl" },
-    };
+  it(
+    "uses a clear fallback marker when result_summary is missing",
+    { timeout: CLOSE_MESSAGE_FALLBACK_TIMEOUT_MS },
+    async () => {
+      const { root, implHash } = await mkRepoWithImplCommit();
+      const task: TaskData = {
+        id: "202602081506-R18Y1Q",
+        title: "Add close commit mode",
+        description: "desc",
+        status: "DONE",
+        priority: "med",
+        owner: "ORCHESTRATOR",
+        depends_on: [],
+        tags: ["cli"],
+        verify: [],
+        verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+        commit: { hash: implHash, message: "impl" },
+      };
 
-    const msg = await buildCloseCommitMessage({ gitRoot: root, task });
-    expect(msg.subject).toContain("(no result_summary)");
-  });
+      const msg = await buildCloseCommitMessage({ gitRoot: root, task });
+      expect(msg.subject).toContain("(no result_summary)");
+    },
+  );
 
   it("uses spike emoji and does not require verify summary", async () => {
     const { root, implHash } = await mkRepoWithImplCommit();
