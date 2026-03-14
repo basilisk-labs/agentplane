@@ -1,10 +1,11 @@
 ---
 id: "202603141602-F1GN6D"
 title: "Stabilize start semicolon-detail regression for v0.3.7"
-status: "DOING"
+result_summary: "The semicolon-details start lifecycle case now uses the existing path-handling timeout budget for full-gate stability."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on: []
 tags:
   - "release"
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-14T16:17:06.431Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts; Result: pass; Evidence: 25 tests passed after attaching the existing start path-handling timeout budget to the semicolon-details case. Scope: packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to the lifecycle test file; final confirmation remains with the next full release gate."
-commit: null
+commit:
+  hash: "1a37e67754ddf2d3e13a1dfa6803c00e17001b8f"
+  message: "⏱️ F1GN6D test: stabilize start semicolon details timeout"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the semicolon-details start lifecycle regression, confirm whether it is a timeout-only full-gate spill or a real start-path formatting bug, and keep the fix inside the start lifecycle test or implementation path only if evidence requires it."
+  -
+    author: "CODER"
+    body: "Verified: the semicolon-details start lifecycle case now uses the existing start path-handling timeout budget; isolated suite, tsc, and package builds all passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts; Result: pass; Evidence: 25 tests passed after attaching the existing start path-handling timeout budget to the semicolon-details case. Scope: packages/agentplane/src/cli/run-cli.core.lifecycle.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to the lifecycle test file; final confirmation remains with the next full release gate."
+  -
+    type: "status"
+    at: "2026-03-14T16:17:37.092Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the semicolon-details start lifecycle case now uses the existing start path-handling timeout budget; isolated suite, tsc, and package builds all passed."
 doc_version: 3
-doc_updated_at: "2026-03-14T16:17:06.436Z"
+doc_updated_at: "2026-03-14T16:17:37.095Z"
 doc_updated_by: "CODER"
 description: "Fix the remaining start lifecycle failure in run-cli.core.lifecycle coverage so status_commit_policy=off with semicolon details keeps its expected comment formatting and no longer times out under the full release gate."
 sections:

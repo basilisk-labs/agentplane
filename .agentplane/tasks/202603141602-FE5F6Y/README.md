@@ -1,10 +1,11 @@
 ---
 id: "202603141602-FE5F6Y"
 title: "Stabilize cleanup-merged listing regression for v0.3.7"
-status: "DOING"
+result_summary: "Cleanup-merged candidate listing without --yes now uses a dedicated larger timeout budget for full-gate stability."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on: []
 tags:
   - "release"
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-14T16:22:19.777Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts; Result: pass; Evidence: 15 tests passed after raising only the candidate-listing-without-yes timeout budget. Scope: packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to the cleanup-merged test file; final confirmation remains with the next full release gate."
-commit: null
+commit:
+  hash: "85e7e0330fb25e16750fb3d877856f6183ff7662"
+  message: "⏱️ FE5F6Y test: stabilize cleanup merged listing timeout"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the cleanup-merged listing regression, confirm whether the failure is budget-only or a real listing contract drift, and keep the fix inside the cleanup-merged test or listing path only if the evidence stays local."
+  -
+    author: "CODER"
+    body: "Verified: cleanup-merged candidate listing without --yes now uses a dedicated larger timeout budget; isolated suite, tsc, and package builds all passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts; Result: pass; Evidence: 15 tests passed after raising only the candidate-listing-without-yes timeout budget. Scope: packages/agentplane/src/cli/run-cli.core.pr-flow.cleanup-merged.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to the cleanup-merged test file; final confirmation remains with the next full release gate."
+  -
+    type: "status"
+    at: "2026-03-14T16:22:44.355Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: cleanup-merged candidate listing without --yes now uses a dedicated larger timeout budget; isolated suite, tsc, and package builds all passed."
 doc_version: 3
-doc_updated_at: "2026-03-14T16:22:19.782Z"
+doc_updated_at: "2026-03-14T16:22:44.359Z"
 doc_updated_by: "CODER"
 description: "Fix the remaining cleanup-merged failure in run-cli.core.pr-flow.cleanup-merged coverage so candidate listing without --yes remains deterministic under the full release gate and keeps the existing branch-pr behavior contract."
 sections:

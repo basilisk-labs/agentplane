@@ -1,10 +1,11 @@
 ---
 id: "202603141603-8F9G1Y"
 title: "Stabilize local release E2E failure-path regressions for v0.3.7"
-status: "DOING"
+result_summary: "The remaining local-release failure-path cases now use the existing local-release timeout budget for full-gate stability."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on: []
 tags:
   - "release"
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-14T16:25:24.579Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/agentplane/src/commands/release/local-release-e2e-script.test.ts; Result: pass; Evidence: 4 tests passed after binding the two remaining failure-path cases to the existing local-release timeout budget. Scope: packages/agentplane/src/commands/release/local-release-e2e-script.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to the local-release E2E test file; final confirmation remains with the next full release gate."
-commit: null
+commit:
+  hash: "fd1ebe640d8c95b6d9bca6a873bb08ca4ca9eb96"
+  message: "⏱️ 8F9G1Y test: stabilize local release failure paths"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the two local-release failure-path regressions, determine whether they are timeout-only under full gate or real local-release script behavior drift, and keep the fix inside the local-release E2E surface unless the evidence proves a broader release bug."
+  -
+    author: "CODER"
+    body: "Verified: the remaining local-release failure-path cases now use the existing local-release timeout budget; isolated suite, tsc, and package builds all passed."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/agentplane/src/commands/release/local-release-e2e-script.test.ts; Result: pass; Evidence: 4 tests passed after binding the two remaining failure-path cases to the existing local-release timeout budget. Scope: packages/agentplane/src/commands/release/local-release-e2e-script.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to the local-release E2E test file; final confirmation remains with the next full release gate."
+  -
+    type: "status"
+    at: "2026-03-14T16:26:06.220Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the remaining local-release failure-path cases now use the existing local-release timeout budget; isolated suite, tsc, and package builds all passed."
 doc_version: 3
-doc_updated_at: "2026-03-14T16:25:24.583Z"
+doc_updated_at: "2026-03-14T16:26:06.221Z"
 doc_updated_by: "CODER"
 description: "Fix the remaining local-release E2E failures in release/local-release coverage so missing GitHub auth and release-sha manifest mismatch fail explicitly and deterministically instead of timing out under the full release gate."
 sections:

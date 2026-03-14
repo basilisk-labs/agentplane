@@ -1882,6 +1882,7 @@ Options:
 - `--asset <name>`: Override the GitHub release asset name for the bundle.
 - `--checksum-asset <name>`: Override the GitHub release asset name for the checksum file.
 - `--dry-run`: Report changes without modifying files. (default=false)
+- `--migrate-task-docs`: After applying the framework upgrade, migrate legacy task README docs in the same run. (default=false)
 - `--no-backup`: Disable backups (default is to create backups). (default=false)
 - `--yes`: Auto-approve network access prompts (subject to config approvals). (default=false)
 
@@ -1916,6 +1917,12 @@ agentplane upgrade --bundle ./agentplane-upgrade.tar.gz --checksum ./agentplane-
 ```
 
 - Upgrade from local bundle files (no network).
+
+```sh
+agentplane upgrade --yes --migrate-task-docs
+```
+
+- Apply the framework upgrade and migrate legacy task README docs in one operator run.
 
 ## Task
 
@@ -2109,14 +2116,20 @@ Options:
 - `--owner <id>`: Owner id. (required)
 - `--priority <low|normal|med|high>`: Task priority (default: med). (choices=low|normal|med|high, default=med)
 - `--tag <tag>`: Repeatable. Adds a tag (must provide at least one). (repeatable)
+- `--verify <command>`: Repeatable. Verification commands/checks to run for this task. (repeatable)
+
+Notes:
+
+- Derived tasks default to doc_version=3 and seed the README v3 section contract automatically.
+- For verify-required primary tags, this command seeds a default ## Verify Steps acceptance contract in README.
 
 Examples:
 
 ```sh
-agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do the thing" --owner CODER --tag code
+agentplane task derive 202602070101-ABCD --title "Implement X" --description "Do the thing" --owner CODER --tag code --verify "bun test"
 ```
 
-- Create an implementation task derived from a spike.
+- Create an implementation task derived from a spike with seeded verify steps.
 
 ### task doc
 
