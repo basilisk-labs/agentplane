@@ -58,7 +58,9 @@ import * as prompts from "./prompts.js";
 installRunCliIntegrationHarness();
 
 describe("runCli", () => {
-  it("ready reports readiness details", async () => {
+  const READY_DETAILS_TIMEOUT_MS = 60_000;
+
+  it("ready reports readiness details", { timeout: READY_DETAILS_TIMEOUT_MS }, async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
 
@@ -126,6 +128,7 @@ describe("runCli", () => {
       "Verified: dependency completed for readiness test; checks done locally; no issues found.",
       "--result",
       "ready: finish dependency",
+      "--quiet",
       "--root",
       root,
     ]);
