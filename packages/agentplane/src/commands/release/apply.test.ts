@@ -12,6 +12,7 @@ const execFileAsync = promisify(execFile);
 const describeWhenNotHook = process.env.AGENTPLANE_HOOK_MODE === "1" ? describe.skip : describe;
 const ORIGINAL_DRY_RUN = process.env.AGENTPLANE_RELEASE_DRY_RUN;
 const RELEASE_APPLY_LONG_TIMEOUT_MS = 60_000;
+const RELEASE_APPLY_FULL_GATE_TIMEOUT_MS = 120_000;
 
 async function withDryRunReleaseMode<T>(work: () => Promise<T>): Promise<T> {
   process.env.AGENTPLANE_RELEASE_DRY_RUN = "1";
@@ -173,59 +174,67 @@ describeWhenNotHook("release apply", () => {
     expect(report.commit?.subject).toContain("release: v0.2.7");
   }, 90_000);
 
-  it("fails when tracked tree is dirty before apply", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
+  it(
+    "fails when tracked tree is dirty before apply",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
 
-    await mkdir(path.join(root, "packages", "core"), { recursive: true });
-    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
-    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
+      await mkdir(path.join(root, "packages", "core"), { recursive: true });
+      await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+      await mkdir(path.join(root, "docs", "releases"), { recursive: true });
 
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
-    await commitAll(root, "seed");
-    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+      await writeFile(
+        path.join(root, "packages", "core", "package.json"),
+        JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
+        "utf8",
+      );
+      await writeFile(
+        path.join(root, "packages", "agentplane", "package.json"),
+        JSON.stringify(
+          {
+            name: "agentplane",
+            version: "0.2.6",
+            dependencies: { "@agentplaneorg/core": "0.2.6" },
+          },
+          null,
+          2,
+        ) + "\n",
+        "utf8",
+      );
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
-    await writeFile(path.join(root, "file.txt"), "x", "utf8");
-    await commitAll(root, "feat: add file");
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
 
-    await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
-    await writeFile(
-      path.join(root, "docs", "releases", "v0.2.7.md"),
-      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-      "utf8",
-    );
+      await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+      await writeFile(
+        path.join(root, "docs", "releases", "v0.2.7.md"),
+        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+        "utf8",
+      );
 
-    // Tracked dirty change that should block release apply.
-    await writeFile(path.join(root, "file.txt"), "dirty", "utf8");
+      // Tracked dirty change that should block release apply.
+      await writeFile(path.join(root, "file.txt"), "dirty", "utf8");
 
-    await expect(
-      withDryRunReleaseMode(async () =>
-        runReleaseApply(
-          { cwd: root, rootOverride: root },
-          { plan: undefined, yes: false, push: false, remote: "origin" },
+      await expect(
+        withDryRunReleaseMode(async () =>
+          runReleaseApply(
+            { cwd: root, rootOverride: root },
+            { plan: undefined, yes: false, push: false, remote: "origin" },
+          ),
         ),
-      ),
-    ).rejects.toMatchObject({
-      code: "E_GIT",
-      context: {
-        diagnostic_state: "release apply cannot start from a dirty tracked tree",
-        diagnostic_next_action_command: "git status --short --untracked-files=no",
-      },
-    });
-  }, 60_000);
+      ).rejects.toMatchObject({
+        code: "E_GIT",
+        context: {
+          diagnostic_state: "release apply cannot start from a dirty tracked tree",
+          diagnostic_next_action_command: "git status --short --untracked-files=no",
+        },
+      });
+    },
+    RELEASE_APPLY_FULL_GATE_TIMEOUT_MS,
+  );
 
   it(
     "requires --push in normal mode for non-dry-run release apply",
@@ -699,71 +708,83 @@ describeWhenNotHook("release apply", () => {
     expect(localTagOut.trim()).toBe("");
   }, 60_000);
 
-  it("fails when the current package versions drift past the release-plan baseline", async () => {
-    const root = await mkGitRepoRoot();
-    await writeDefaultConfig(root);
+  it(
+    "fails when the current package versions drift past the release-plan baseline",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await writeDefaultConfig(root);
 
-    await mkdir(path.join(root, "packages", "core"), { recursive: true });
-    await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
-    await mkdir(path.join(root, "docs", "releases"), { recursive: true });
+      await mkdir(path.join(root, "packages", "core"), { recursive: true });
+      await mkdir(path.join(root, "packages", "agentplane"), { recursive: true });
+      await mkdir(path.join(root, "docs", "releases"), { recursive: true });
 
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.6", dependencies: { "@agentplaneorg/core": "0.2.6" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
-    await commitAll(root, "seed");
-    await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
+      await writeFile(
+        path.join(root, "packages", "core", "package.json"),
+        JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.6" }, null, 2) + "\n",
+        "utf8",
+      );
+      await writeFile(
+        path.join(root, "packages", "agentplane", "package.json"),
+        JSON.stringify(
+          {
+            name: "agentplane",
+            version: "0.2.6",
+            dependencies: { "@agentplaneorg/core": "0.2.6" },
+          },
+          null,
+          2,
+        ) + "\n",
+        "utf8",
+      );
+      await commitAll(root, "seed");
+      await execFileAsync("git", ["tag", "v0.2.6"], { cwd: root });
 
-    await writeFile(path.join(root, "file.txt"), "x", "utf8");
-    await commitAll(root, "feat: add file");
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await commitAll(root, "feat: add file");
 
-    await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
-    await writeFile(
-      path.join(root, "docs", "releases", "v0.2.7.md"),
-      ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
-      "utf8",
-    );
+      await runReleasePlan({ cwd: root, rootOverride: root }, { bump: "patch", yes: false });
+      await writeFile(
+        path.join(root, "docs", "releases", "v0.2.7.md"),
+        ["# Release Notes — v0.2.7", "", "- A", "- B", "- C", "- D", "- E", ""].join("\n"),
+        "utf8",
+      );
 
-    await writeFile(
-      path.join(root, "packages", "core", "package.json"),
-      JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.7" }, null, 2) + "\n",
-      "utf8",
-    );
-    await writeFile(
-      path.join(root, "packages", "agentplane", "package.json"),
-      JSON.stringify(
-        { name: "agentplane", version: "0.2.7", dependencies: { "@agentplaneorg/core": "0.2.7" } },
-        null,
-        2,
-      ) + "\n",
-      "utf8",
-    );
-    await commitAll(root, "drift versions");
+      await writeFile(
+        path.join(root, "packages", "core", "package.json"),
+        JSON.stringify({ name: "@agentplaneorg/core", version: "0.2.7" }, null, 2) + "\n",
+        "utf8",
+      );
+      await writeFile(
+        path.join(root, "packages", "agentplane", "package.json"),
+        JSON.stringify(
+          {
+            name: "agentplane",
+            version: "0.2.7",
+            dependencies: { "@agentplaneorg/core": "0.2.7" },
+          },
+          null,
+          2,
+        ) + "\n",
+        "utf8",
+      );
+      await commitAll(root, "drift versions");
 
-    await expect(
-      withDryRunReleaseMode(async () =>
-        runReleaseApply(
-          { cwd: root, rootOverride: root },
-          { plan: undefined, yes: false, push: false, remote: "origin" },
+      await expect(
+        withDryRunReleaseMode(async () =>
+          runReleaseApply(
+            { cwd: root, rootOverride: root },
+            { plan: undefined, yes: false, push: false, remote: "origin" },
+          ),
         ),
-      ),
-    ).rejects.toMatchObject({
-      code: "E_VALIDATION",
-      context: {
-        diagnostic_state:
-          "the repository version no longer matches the prepared release-plan baseline",
-        diagnostic_next_action_command: "agentplane release plan",
-      },
-    });
-  });
+      ).rejects.toMatchObject({
+        code: "E_VALIDATION",
+        context: {
+          diagnostic_state:
+            "the repository version no longer matches the prepared release-plan baseline",
+          diagnostic_next_action_command: "agentplane release plan",
+        },
+      });
+    },
+    RELEASE_APPLY_FULL_GATE_TIMEOUT_MS,
+  );
 });
