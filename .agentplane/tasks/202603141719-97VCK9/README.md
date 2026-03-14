@@ -1,10 +1,11 @@
 ---
 id: "202603141719-97VCK9"
 title: "Stabilize remaining stale-dist readonly timeout regression for v0.3.7"
-status: "DOING"
+result_summary: "Aligned the remaining stale-dist readonly task-list test with the existing 60s timeout budget used by the neighboring readonly runtime-explain path so full-gate load no longer leaves it on the default budget."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 7
+revision: 8
 depends_on: []
 tags:
   - "release"
@@ -20,11 +21,16 @@ verification:
   updated_at: "2026-03-14T17:32:08.651Z"
   updated_by: "CODER"
   note: "Verified: bun x vitest run packages/agentplane/src/cli/stale-dist-readonly.test.ts; bun x tsc -b packages/core packages/agentplane. The remaining stale-dist readonly full-gate failure was timeout-only and now binds the existing STALE_DIST_READONLY_TIMEOUT_MS budget."
-commit: null
+commit:
+  hash: "2590308d17c681930bdcd788ae0e0f4c69b420bf"
+  message: "⏱️ 97VCK9 test: align stale-dist readonly timeout"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the remaining stale-dist readonly timeout failure, inspect the runtime explain/task-list dirty-path fixture and timeout wiring, and make the smallest stale-dist-scoped fix before rerunning the suite."
+  -
+    author: "CODER"
+    body: "Verified: the stale-dist-readonly suite and touched packages typecheck pass after binding the existing readonly timeout budget onto the remaining task-list case."
 events:
   -
     type: "status"
@@ -39,8 +45,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: bun x vitest run packages/agentplane/src/cli/stale-dist-readonly.test.ts; bun x tsc -b packages/core packages/agentplane. The remaining stale-dist readonly full-gate failure was timeout-only and now binds the existing STALE_DIST_READONLY_TIMEOUT_MS budget."
+  -
+    type: "status"
+    at: "2026-03-14T17:32:33.992Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the stale-dist-readonly suite and touched packages typecheck pass after binding the existing readonly timeout budget onto the remaining task-list case."
 doc_version: 3
-doc_updated_at: "2026-03-14T17:32:08.658Z"
+doc_updated_at: "2026-03-14T17:32:33.994Z"
 doc_updated_by: "CODER"
 description: "Isolate and fix the remaining full-gate timeout failure in stale-dist-readonly.test.ts covering task list execution under dirty watched runtime paths, then confirm the stale-dist readonly diagnostics suite stays green under the release prepublish load."
 sections:
