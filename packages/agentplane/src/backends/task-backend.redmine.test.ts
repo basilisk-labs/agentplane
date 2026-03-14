@@ -26,6 +26,7 @@ describe("RedmineBackend (mocked)", () => {
     tempDir = await makeTempDir();
     originalEnv = { ...process.env };
     delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID;
+    delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE;
     delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC;
     delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_VERSION;
     delete process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC_UPDATED_AT;
@@ -499,6 +500,87 @@ describe("RedmineBackend (mocked)", () => {
     expect(payload.assigned_to_id).toBeUndefined();
   });
 
+  it("serializes canonical task state into a structured custom field when configured", () => {
+    const backend = new RedmineBackend(
+      {
+        url: "https://redmine.example",
+        api_key: "key",
+        project_id: "proj",
+        status_map: { TODO: 1 },
+        custom_fields: { task_id: 1, canonical_state: 9 },
+      },
+      { cache: new LocalBackend({ dir: tempDir }) },
+    );
+    const helper = backend as unknown as {
+      taskToIssuePayload: (
+        task: TaskData,
+        existingIssue?: Record<string, unknown>,
+      ) => Record<string, unknown>;
+    };
+    const payload = helper.taskToIssuePayload({
+      id: "202601300000-ABCD",
+      title: "Title",
+      description: "Desc",
+      status: "TODO",
+      priority: "med",
+      owner: "REDMINE",
+      revision: 3,
+      depends_on: [],
+      tags: [],
+      verify: [],
+      plan_approval: {
+        state: "approved",
+        updated_at: "2026-03-14T00:00:00Z",
+        updated_by: "ORCHESTRATOR",
+        note: null,
+      },
+      verification: { state: "pending", updated_at: null, updated_by: null, note: null },
+      events: [
+        { type: "status", at: "2026-03-14T00:00:00Z", author: "CODER", from: "TODO", to: "DOING" },
+      ],
+      sections: {
+        Summary: "Summary text.",
+        "Verify Steps": "1. Run focused tests.",
+      },
+    });
+    const customFields = Array.isArray(payload.custom_fields) ? payload.custom_fields : [];
+    const canonicalField = customFields.find((entry): entry is { id: number; value?: string } => {
+      if (!entry || typeof entry !== "object") return false;
+      const candidate = entry as { id?: unknown; value?: unknown };
+      return candidate.id === 9;
+    }) as { value?: string } | undefined;
+    expect(canonicalField?.value).toEqual(
+      JSON.stringify({
+        revision: 3,
+        sections: {
+          Summary: "Summary text.",
+          "Verify Steps": "1. Run focused tests.",
+        },
+        plan_approval: {
+          state: "approved",
+          updated_at: "2026-03-14T00:00:00Z",
+          updated_by: "ORCHESTRATOR",
+          note: null,
+        },
+        verification: {
+          state: "pending",
+          updated_at: null,
+          updated_by: null,
+          note: null,
+        },
+        events: [
+          {
+            type: "status",
+            at: "2026-03-14T00:00:00Z",
+            author: "CODER",
+            from: "TODO",
+            to: "DOING",
+          },
+        ],
+      }),
+    );
+  });
+
   it("normalizes priority values when mapping issues", () => {
     const backend = new RedmineBackend(
       {
@@ -527,7 +609,8 @@ describe("RedmineBackend (mocked)", () => {
 
   it("applies env overrides for custom field ids and batch tuning", () => {
     process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_TASK_ID = "11";
-    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC = "12";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE = "12";
+    process.env.AGENTPLANE_REDMINE_CUSTOM_FIELDS_DOC = "13";
     process.env.AGENTPLANE_REDMINE_BATCH_SIZE = "5";
     process.env.AGENTPLANE_REDMINE_BATCH_PAUSE = "250";
     const backend = new RedmineBackend(
@@ -535,7 +618,7 @@ describe("RedmineBackend (mocked)", () => {
         url: "https://redmine.example",
         api_key: "key",
         project_id: "proj",
-        custom_fields: { task_id: 1, doc: 2 },
+        custom_fields: { task_id: 1, canonical_state: 2, doc: 3 },
         batch_size: 1,
         batch_pause: 10,
       },
@@ -546,7 +629,8 @@ describe("RedmineBackend (mocked)", () => {
       batchPauseMs: number;
     };
     expect(backend.customFields.task_id).toBe(11);
-    expect(backend.customFields.doc).toBe(12);
+    expect(backend.customFields.canonical_state).toBe(12);
+    expect(backend.customFields.doc).toBe(13);
     expect(backend.batchSize).toBe(5);
     expect(backend.batchPauseMs).toBe(250);
   });
