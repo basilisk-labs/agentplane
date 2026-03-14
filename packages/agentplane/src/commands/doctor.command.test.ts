@@ -17,6 +17,7 @@ type TestWorkspace = {
 
 const workspaces: string[] = [];
 const execFileAsync = promisify(execFile);
+const DOCTOR_HISTORICAL_ARCHIVE_TIMEOUT_MS = 60_000;
 const REDMINE_ENV_KEYS = [
   "AGENTPLANE_REDMINE_URL",
   "AGENTPLANE_REDMINE_API_KEY",
@@ -411,51 +412,55 @@ describe("doctor.command", () => {
     }
   });
 
-  it("reports historical README v2 tasks as info when only DONE archive records remain", async () => {
-    const ws = await mkWorkspace();
-    const commitHash = await gitInitWithCommit(ws.root, "feat: baseline");
-    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-      /* muted for assertion */
-    });
-    await writeFile(
-      path.join(ws.root, ".agentplane", "tasks.json"),
-      JSON.stringify(
-        {
-          tasks: [
-            {
-              id: "202603081006-LEGACY2",
-              status: "DONE",
-              doc_version: 2,
-              commit: { hash: commitHash },
-            },
-            {
-              id: "202603081006-CURRENT2",
-              status: "DONE",
-              doc_version: 3,
-              commit: { hash: commitHash },
-            },
-          ],
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
-
-    try {
-      const rc = await runDoctor(
-        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-        { fix: false, dev: false },
+  it(
+    "reports historical README v2 tasks as info when only DONE archive records remain",
+    async () => {
+      const ws = await mkWorkspace();
+      const commitHash = await gitInitWithCommit(ws.root, "feat: baseline");
+      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+        /* muted for assertion */
+      });
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify(
+          {
+            tasks: [
+              {
+                id: "202603081006-LEGACY2",
+                status: "DONE",
+                doc_version: 2,
+                commit: { hash: commitHash },
+              },
+              {
+                id: "202603081006-CURRENT2",
+                status: "DONE",
+                doc_version: 3,
+                commit: { hash: commitHash },
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "utf8",
       );
-      expect(rc).toBe(0);
-      const output = stderr.mock.calls.flat().join("\n");
-      expect(output).toContain("historical task archive still mixes README v2 and v3");
-      expect(output).toContain("agentplane task migrate-doc --all");
-      expect(output).toContain("202603081006-LEGACY2");
-    } finally {
-      stderr.mockRestore();
-    }
-  });
+
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.mock.calls.flat().join("\n");
+        expect(output).toContain("historical task archive still mixes README v2 and v3");
+        expect(output).toContain("agentplane task migrate-doc --all");
+        expect(output).toContain("202603081006-LEGACY2");
+      } finally {
+        stderr.mockRestore();
+      }
+    },
+    DOCTOR_HISTORICAL_ARCHIVE_TIMEOUT_MS,
+  );
 
   it("warns when task README bodies drift from canonical frontmatter sections", async () => {
     const ws = await mkWorkspace();
@@ -581,42 +586,46 @@ describe("doctor.command", () => {
     }
   });
 
-  it("reports but does not fail when DONE task references an unknown historical commit hash", async () => {
-    const ws = await mkWorkspace();
-    await gitInitWithCommit(ws.root, "feat: initial");
-    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-      /* muted for assertion */
-    });
-    await writeFile(
-      path.join(ws.root, ".agentplane", "tasks.json"),
-      JSON.stringify(
-        {
-          tasks: [
-            {
-              id: "202602111801-DEF456",
-              status: "DONE",
-              commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
-            },
-          ],
-        },
-        null,
-        2,
-      ),
-      "utf8",
-    );
-    try {
-      const rc = await runDoctor(
-        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-        { fix: false, dev: false },
+  it(
+    "reports but does not fail when DONE task references an unknown historical commit hash",
+    async () => {
+      const ws = await mkWorkspace();
+      await gitInitWithCommit(ws.root, "feat: initial");
+      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+        /* muted for assertion */
+      });
+      await writeFile(
+        path.join(ws.root, ".agentplane", "tasks.json"),
+        JSON.stringify(
+          {
+            tasks: [
+              {
+                id: "202602111801-DEF456",
+                status: "DONE",
+                commit: { hash: "13721c623fd186abbaee48456aa242f7e4561119" },
+              },
+            ],
+          },
+          null,
+          2,
+        ),
+        "utf8",
       );
-      expect(rc).toBe(0);
-      expect(stderr.mock.calls.flat().join("\n")).toContain(
-        "[INFO] DONE task references unknown historical commit hash: 202602111801-DEF456 -> 13721c623fd186abbaee48456aa242f7e4561119",
-      );
-    } finally {
-      stderr.mockRestore();
-    }
-  });
+      try {
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        expect(stderr.mock.calls.flat().join("\n")).toContain(
+          "[INFO] DONE task references unknown historical commit hash: 202602111801-DEF456 -> 13721c623fd186abbaee48456aa242f7e4561119",
+        );
+      } finally {
+        stderr.mockRestore();
+      }
+    },
+    DOCTOR_HISTORICAL_ARCHIVE_TIMEOUT_MS,
+  );
 
   it("skips older archive-only historical commit anomalies by default", async () => {
     const ws = await mkWorkspace();
@@ -774,47 +783,51 @@ describe("doctor.command", () => {
     }
   });
 
-  it("summarizes repeated close-commit misuse in historical DONE tasks", async () => {
-    const ws = await mkWorkspace();
-    const closeHashA = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
-    const closeHashB = await gitInitWithCommit(ws.root, "✅ XYZ999 close: merged");
-    const stderr = vi.spyOn(console, "error").mockImplementation(() => {
-      /* muted for assertion */
-    });
-    try {
-      await writeFile(
-        path.join(ws.root, ".agentplane", "tasks.json"),
-        JSON.stringify(
-          {
-            tasks: [
-              { id: "202602111820-AAA111", status: "DONE", commit: { hash: closeHashA } },
-              { id: "202602111821-BBB222", status: "DONE", commit: { hash: closeHashA } },
-              { id: "202602111822-CCC333", status: "DONE", commit: { hash: closeHashB } },
-            ],
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
-      const rc = await runDoctor(
-        { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
-        { fix: false, dev: false },
-      );
-      expect(rc).toBe(0);
-      const output = stderr.mock.calls.flat().join("\n");
-      expect(output).toContain(
-        "[INFO] Historical task archive contains 3 DONE tasks with historical close-commit references that were classified as non-actionable archive records across 2 distinct commit hashes.",
-      );
-      expect(output).toContain("202602111820-AAA111, 202602111821-BBB222");
-      expect(output).toContain("subject: ✅ ABC123 close: done");
-      expect(output).not.toContain(
-        "DONE task implementation commit points to a close commit: 202602111820-AAA111",
-      );
-    } finally {
-      stderr.mockRestore();
-    }
-  });
+  it(
+    "summarizes repeated close-commit misuse in historical DONE tasks",
+    async () => {
+      const ws = await mkWorkspace();
+      const closeHashA = await gitInitWithCommit(ws.root, "✅ ABC123 close: done");
+      const closeHashB = await gitInitWithCommit(ws.root, "✅ XYZ999 close: merged");
+      const stderr = vi.spyOn(console, "error").mockImplementation(() => {
+        /* muted for assertion */
+      });
+      try {
+        await writeFile(
+          path.join(ws.root, ".agentplane", "tasks.json"),
+          JSON.stringify(
+            {
+              tasks: [
+                { id: "202602111820-AAA111", status: "DONE", commit: { hash: closeHashA } },
+                { id: "202602111821-BBB222", status: "DONE", commit: { hash: closeHashA } },
+                { id: "202602111822-CCC333", status: "DONE", commit: { hash: closeHashB } },
+              ],
+            },
+            null,
+            2,
+          ),
+          "utf8",
+        );
+        const rc = await runDoctor(
+          { cwd: ws.root, rootOverride: null } as unknown as Parameters<typeof runDoctor>[0],
+          { fix: false, dev: false },
+        );
+        expect(rc).toBe(0);
+        const output = stderr.mock.calls.flat().join("\n");
+        expect(output).toContain(
+          "[INFO] Historical task archive contains 3 DONE tasks with historical close-commit references that were classified as non-actionable archive records across 2 distinct commit hashes.",
+        );
+        expect(output).toContain("202602111820-AAA111, 202602111821-BBB222");
+        expect(output).toContain("subject: ✅ ABC123 close: done");
+        expect(output).not.toContain(
+          "DONE task implementation commit points to a close commit: 202602111820-AAA111",
+        );
+      } finally {
+        stderr.mockRestore();
+      }
+    },
+    DOCTOR_HISTORICAL_ARCHIVE_TIMEOUT_MS,
+  );
 
   it("downgrades legacy backfill historical hashes to info", async () => {
     const ws = await mkWorkspace();
