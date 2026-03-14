@@ -27,6 +27,7 @@ import { verifySpec } from "./verify.command.js";
 import { cmdVerifyParsed } from "./task/verify-record.js";
 
 const execFileAsync = promisify(execFile);
+const VERIFY_REWORK_FULL_GATE_TIMEOUT_MS = 60_000;
 
 async function makeRepo(): Promise<string> {
   const root = await mkGitRepoRoot();
@@ -160,62 +161,66 @@ describe("commands/workflow", () => {
     ).toThrow();
   });
 
-  it("task verify rework resets commit and sets status to DOING", async () => {
-    const root = await makeRepo();
-    const taskId = "202602050900-V1F5";
-    await addTask(root, taskId);
-    await gitCommitFile(root, "seed.txt", "chore: seed");
-    const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
-    await cmdVerifyParsed({
-      ctx,
-      cwd: root,
-      rootOverride: undefined,
-      taskId,
-      state: "ok",
-      by: "TESTER",
-      note: "Ok to finish",
-      quiet: true,
-    });
+  it(
+    "task verify rework resets commit and sets status to DOING",
+    async () => {
+      const root = await makeRepo();
+      const taskId = "202602050900-V1F5";
+      await addTask(root, taskId);
+      await gitCommitFile(root, "seed.txt", "chore: seed");
+      const ctx = await loadCommandContext({ cwd: root, rootOverride: null });
+      await cmdVerifyParsed({
+        ctx,
+        cwd: root,
+        rootOverride: undefined,
+        taskId,
+        state: "ok",
+        by: "TESTER",
+        note: "Ok to finish",
+        quiet: true,
+      });
 
-    const codeFinish = await cmdFinish({
-      cwd: root,
-      taskIds: [taskId],
-      author: "CODER",
-      body: "Verified: ".padEnd(70, "D"),
-      result: "finish: mark task done",
-      risk: undefined,
-      breaking: false,
-      commit: undefined,
-      force: false,
-      commitFromComment: false,
-      commitAllow: [],
-      commitAutoAllow: false,
-      commitAllowTasks: false,
-      commitRequireClean: false,
-      statusCommit: false,
-      statusCommitAllow: [],
-      statusCommitAutoAllow: false,
-      statusCommitRequireClean: false,
-      confirmStatusCommit: false,
-      quiet: true,
-    });
-    expect(codeFinish).toBe(0);
+      const codeFinish = await cmdFinish({
+        cwd: root,
+        taskIds: [taskId],
+        author: "CODER",
+        body: "Verified: ".padEnd(70, "D"),
+        result: "finish: mark task done",
+        risk: undefined,
+        breaking: false,
+        commit: undefined,
+        force: false,
+        commitFromComment: false,
+        commitAllow: [],
+        commitAutoAllow: false,
+        commitAllowTasks: false,
+        commitRequireClean: false,
+        statusCommit: false,
+        statusCommitAllow: [],
+        statusCommitAutoAllow: false,
+        statusCommitRequireClean: false,
+        confirmStatusCommit: false,
+        quiet: true,
+      });
+      expect(codeFinish).toBe(0);
 
-    const code = await cmdTaskVerifyRework({
-      cwd: root,
-      taskId,
-      by: "REVIEWER",
-      note: "Needs changes",
-      quiet: true,
-    });
-    expect(code).toBe(0);
+      const code = await cmdTaskVerifyRework({
+        cwd: root,
+        taskId,
+        by: "REVIEWER",
+        note: "Needs changes",
+        quiet: true,
+      });
+      expect(code).toBe(0);
 
-    const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
-    const task = await backend.getTask(taskId);
-    expect(task?.status).toBe("DOING");
-    expect(task?.commit ?? null).toBeNull();
-    expect(task?.verification?.state).toBe("needs_rework");
-  });
+      const { backend } = await taskBackend.loadTaskBackend({ cwd: root, rootOverride: null });
+      const task = await backend.getTask(taskId);
+      expect(task?.status).toBe("DOING");
+      expect(task?.commit ?? null).toBeNull();
+      expect(task?.verification?.state).toBe("needs_rework");
+    },
+    VERIFY_REWORK_FULL_GATE_TIMEOUT_MS,
+  );
 
   it("task verify ok records ok state without changing status or commit", async () => {
     const root = await makeRepo();
