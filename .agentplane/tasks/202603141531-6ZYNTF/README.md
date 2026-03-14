@@ -1,10 +1,12 @@
 ---
 id: "202603141531-6ZYNTF"
 title: "Stabilize integrate rebase failure-path timeout cases"
-status: "DOING"
+result_summary: "Stabilized the integrate rebase failure-path cases under full release load by moving them onto the shared long rebase timeout budget."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on: []
 tags:
   - "release"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T15:38:04.578Z"
   updated_by: "CODER"
   note: "The two remaining integrate rebase failure-path cases were not semantically regressing; targeted repro shows they take about 7.0s and 6.2s, but the full release gate was still leaving them on hardcoded 60s budgets while the neighboring rebase success path had already been moved to 120s. Rebinding those two failure paths to the shared 120s rebase budget keeps the failure assertions unchanged while leaving the full integrate suite, tsc, and package builds green."
-commit: null
+commit:
+  hash: "ab9006acb2f4c3be3758780804b22970d8ded70c"
+  message: "⏱️ 6ZYNTF test: stabilize integrate rebase failure timeouts"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the two integrate rebase failure-path timeout cases under isolated and full release-gate load, confirm whether their 60s budgets are still too low or mis-bound, and patch the smallest coherent fix without weakening rebase-failure assertions."
+  -
+    author: "CODER"
+    body: "Verified: the two rebase failure-path cases were aggregate-load timeout pressure, not rebase semantic regressions. Rebinding them to the shared 120s rebase timeout keeps the failure assertions intact and leaves the full integrate suite, tsc, and package builds green."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "The two remaining integrate rebase failure-path cases were not semantically regressing; targeted repro shows they take about 7.0s and 6.2s, but the full release gate was still leaving them on hardcoded 60s budgets while the neighboring rebase success path had already been moved to 120s. Rebinding those two failure paths to the shared 120s rebase budget keeps the failure assertions unchanged while leaving the full integrate suite, tsc, and package builds green."
+  -
+    type: "status"
+    at: "2026-03-14T15:38:29.831Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the two rebase failure-path cases were aggregate-load timeout pressure, not rebase semantic regressions. Rebinding them to the shared 120s rebase timeout keeps the failure assertions intact and leaves the full integrate suite, tsc, and package builds green."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:38:04.584Z"
+doc_updated_at: "2026-03-14T15:38:29.832Z"
 doc_updated_by: "CODER"
 description: "Stabilize the two integrate rebase failure-path tests that still time out under full release load without weakening rebase-failure assertions."
 sections:
