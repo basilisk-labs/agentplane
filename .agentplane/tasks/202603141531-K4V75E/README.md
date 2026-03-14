@@ -1,10 +1,12 @@
 ---
 id: "202603141531-K4V75E"
 title: "Stabilize upgrade merge overwrite timeout case"
-status: "DOING"
+result_summary: "Stabilized the upgrade.merge overwrite/config-skip case under full release load by increasing only that test's timeout budget."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on: []
 tags:
   - "release"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T15:35:03.301Z"
   updated_by: "CODER"
   note: "The overwrite-vs-config-skip upgrade.merge case was not hiding merge slowdown; targeted repro shows it takes about 2.1s, but the full release gate was letting it inherit the default 30000ms budget. Adding a dedicated 60s budget only to that first merge-behavior case keeps merge assertions unchanged while leaving the full upgrade.merge suite, tsc, and package builds green."
-commit: null
+commit:
+  hash: "65248f028d1d316907f9c7c4d86310b7d246d4f4"
+  message: "⏱️ K4V75E test: stabilize upgrade merge timeout budget"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the upgrade.merge overwrite-vs-config-skip timeout under isolated and full-gate conditions, confirm whether it is budget-only or hiding merge-path slowdown, and patch the smallest coherent fix without changing merge semantics."
+  -
+    author: "CODER"
+    body: "Verified: the upgrade.merge overwrite-vs-config-skip failure was another default-budget spill, not merge-path slowdown. Adding a dedicated 60s timeout only to that first merge-behavior case keeps the merge assertions intact and leaves the full upgrade.merge suite, tsc, and package builds green."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "The overwrite-vs-config-skip upgrade.merge case was not hiding merge slowdown; targeted repro shows it takes about 2.1s, but the full release gate was letting it inherit the default 30000ms budget. Adding a dedicated 60s budget only to that first merge-behavior case keeps merge assertions unchanged while leaving the full upgrade.merge suite, tsc, and package builds green."
+  -
+    type: "status"
+    at: "2026-03-14T15:35:34.070Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the upgrade.merge overwrite-vs-config-skip failure was another default-budget spill, not merge-path slowdown. Adding a dedicated 60s timeout only to that first merge-behavior case keeps the merge assertions intact and leaves the full upgrade.merge suite, tsc, and package builds green."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:35:03.306Z"
+doc_updated_at: "2026-03-14T15:35:34.075Z"
 doc_updated_by: "CODER"
 description: "Stabilize the upgrade.merge overwrite-vs-config-skip coverage under full release load without changing merge semantics."
 sections:
