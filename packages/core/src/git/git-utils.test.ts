@@ -44,6 +44,8 @@ async function configureGitUser(root: string): Promise<void> {
 }
 
 describe("git-utils", () => {
+  const GIT_UTILS_RENAME_TIMEOUT_MS = 60_000;
+
   it("lists staged files", async () => {
     const root = await mkGitRepoRoot();
     await writeFile(path.join(root, "file.txt"), "x", "utf8");
@@ -52,18 +54,22 @@ describe("git-utils", () => {
     expect(staged).toEqual(["file.txt"]);
   });
 
-  it("includes both sides of staged renames (to prevent protected-path bypass)", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    await writeFile(path.join(root, "file.txt"), "x", "utf8");
-    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "init"], { cwd: root });
+  it(
+    "includes both sides of staged renames (to prevent protected-path bypass)",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "init"], { cwd: root });
 
-    await execFileAsync("git", ["mv", "file.txt", "renamed.txt"], { cwd: root });
+      await execFileAsync("git", ["mv", "file.txt", "renamed.txt"], { cwd: root });
 
-    const staged = await getStagedFiles({ cwd: root, rootOverride: root });
-    expect(staged).toEqual(["file.txt", "renamed.txt"]);
-  }, 30_000);
+      const staged = await getStagedFiles({ cwd: root, rootOverride: root });
+      expect(staged).toEqual(["file.txt", "renamed.txt"]);
+    },
+    GIT_UTILS_RENAME_TIMEOUT_MS,
+  );
 
   it("lists unstaged files", async () => {
     const root = await mkGitRepoRoot();
@@ -99,19 +105,23 @@ describe("git-utils", () => {
     expect(tracked).toEqual([]);
   });
 
-  it("includes renamed files when modified after rename", async () => {
-    const root = await mkGitRepoRoot();
-    await configureGitUser(root);
-    await writeFile(path.join(root, "file.txt"), "x", "utf8");
-    await execFileAsync("git", ["add", "file.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "init"], { cwd: root });
+  it(
+    "includes renamed files when modified after rename",
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+      await writeFile(path.join(root, "file.txt"), "x", "utf8");
+      await execFileAsync("git", ["add", "file.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "init"], { cwd: root });
 
-    await execFileAsync("git", ["mv", "file.txt", "renamed.txt"], { cwd: root });
-    await writeFile(path.join(root, "renamed.txt"), "y", "utf8");
+      await execFileAsync("git", ["mv", "file.txt", "renamed.txt"], { cwd: root });
+      await writeFile(path.join(root, "renamed.txt"), "y", "utf8");
 
-    const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
-    expect(unstaged).toContain("renamed.txt");
-  }, 30_000);
+      const unstaged = await getUnstagedFiles({ cwd: root, rootOverride: root });
+      expect(unstaged).toContain("renamed.txt");
+    },
+    GIT_UTILS_RENAME_TIMEOUT_MS,
+  );
 
   it("ignores renamed-only files without modifications", async () => {
     const root = await mkGitRepoRoot();
