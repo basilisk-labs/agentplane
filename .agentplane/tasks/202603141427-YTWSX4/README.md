@@ -1,10 +1,12 @@
 ---
 id: "202603141427-YTWSX4"
 title: "Stabilize release and rebase integration timeouts for v0.3.7"
-status: "DOING"
+result_summary: "Targeted release/integrate timeout budgets stabilized; release:prepublish now advances past the prior blockers and exposes the next set of independent timeout failures."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "code"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T14:54:13.627Z"
   updated_by: "CODER"
   note: "Targeted rebase/release timeout stabilization passed: the integrate/apply/local-release suites are green, tsc passed, and the remaining full release:prepublish failures are now outside this task's scope."
-commit: null
+commit:
+  hash: "29c2c84e2ff73862f061b67d1d19407cf7c42e3f"
+  message: "⏱️ YTWSX4 test: stabilize release and integrate timeout budgets"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the remaining release-gate timeout failures across integrate rebase, release apply push coverage, and local release E2E, isolate whether the slowdown is in git orchestration or external workflow stubs, and land the smallest coherent stabilization patch."
+  -
+    author: "CODER"
+    body: "Verified: targeted integrate/apply/local-release timeout stabilization is green; the subsequent full release gate now fails only in separate historical lifecycle/doctor/release timeout cases that need their own patch tasks."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Targeted rebase/release timeout stabilization passed: the integrate/apply/local-release suites are green, tsc passed, and the remaining full release:prepublish failures are now outside this task's scope."
+  -
+    type: "status"
+    at: "2026-03-14T14:54:42.785Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: targeted integrate/apply/local-release timeout stabilization is green; the subsequent full release gate now fails only in separate historical lifecycle/doctor/release timeout cases that need their own patch tasks."
 doc_version: 3
-doc_updated_at: "2026-03-14T14:54:13.631Z"
+doc_updated_at: "2026-03-14T14:54:42.786Z"
 doc_updated_by: "CODER"
 description: "Diagnose and fix the timeout regressions in rebase-based integrate coverage, release apply push coverage, and local release E2E checks so the 0.3.7 release path can pass the full prepublish gate again."
 sections:
