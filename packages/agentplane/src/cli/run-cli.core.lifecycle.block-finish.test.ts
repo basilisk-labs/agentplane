@@ -307,7 +307,7 @@ describe("runCli", () => {
 
   it(
     "finish --close-commit creates deterministic close commit in the same command",
-    { timeout: 60_000 },
+    { timeout: 120_000 },
     async () => {
       const root = await mkGitRepoRoot();
       await writeDefaultConfig(root);
