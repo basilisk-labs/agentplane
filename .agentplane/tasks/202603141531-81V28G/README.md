@@ -1,10 +1,11 @@
 ---
 id: "202603141531-81V28G"
 title: "Stabilize git-utils staged rename timeout case"
-status: "DOING"
+result_summary: "Git-utils rename coverage now uses a dedicated timeout constant for the staged and modified rename cases."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on: []
 tags:
   - "release"
@@ -22,11 +23,16 @@ verification:
   updated_at: "2026-03-14T15:44:38.025Z"
   updated_by: "CODER"
   note: "Command: bun x vitest run packages/core/src/git/git-utils.test.ts; Result: pass; Evidence: 8 tests passed and both rename cases completed within the suite budget. Scope: packages/core/src/git/git-utils.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to a local rename-timeout constant and two rename coverage tests in one file; no scope drift."
-commit: null
+commit:
+  hash: "7b8baae7659934b4e2c704755c5de636306208e6"
+  message: "⏱️ 81V28G test: stabilize git-utils rename timeout budget"
 comments:
   -
     author: "CODER"
     body: "Start: inspect the staged rename coverage timeout in packages/core/src/git/git-utils.test.ts, keep the diff minimal, and close only if the failure is another full-gate budget spill rather than a semantic rename regression."
+  -
+    author: "CODER"
+    body: "Verified: git-utils rename coverage now has an explicit local timeout budget; suite, tsc, and package builds all passed with no scope drift."
 events:
   -
     type: "status"
@@ -41,8 +47,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: bun x vitest run packages/core/src/git/git-utils.test.ts; Result: pass; Evidence: 8 tests passed and both rename cases completed within the suite budget. Scope: packages/core/src/git/git-utils.test.ts. Command: bun x tsc -b packages/core packages/agentplane; Result: pass; Evidence: TypeScript build completed successfully. Scope: packages/core packages/agentplane. Command: bun run --filter=@agentplaneorg/core build; Result: pass; Evidence: core build exited with code 0. Scope: packages/core. Command: bun run --filter=agentplane build; Result: pass; Evidence: agentplane build exited with code 0. Scope: packages/agentplane. Review: diff is limited to a local rename-timeout constant and two rename coverage tests in one file; no scope drift."
+  -
+    type: "status"
+    at: "2026-03-14T15:44:54.812Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: git-utils rename coverage now has an explicit local timeout budget; suite, tsc, and package builds all passed with no scope drift."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:44:38.031Z"
+doc_updated_at: "2026-03-14T15:44:54.816Z"
 doc_updated_by: "CODER"
 description: "Stabilize the staged-rename coverage in core git-utils under full release load while preserving protected-path bypass detection semantics."
 sections:
