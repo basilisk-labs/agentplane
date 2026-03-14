@@ -1,10 +1,12 @@
 ---
 id: "202603141427-H6SPHS"
 title: "Fix task export and task doc regressions blocking v0.3.7"
-status: "DOING"
+result_summary: "deterministic task export and task doc show blockers for v0.3.7 are resolved"
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "code"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T14:30:32.946Z"
   updated_by: "CODER"
   note: "Verified: updated the stale export expectation to canonical doc_version=3 and fixed task doc show so blank sections report 'section has no content' instead of emitting an empty line; targeted vitest and TypeScript checks passed."
-commit: null
+commit:
+  hash: "379da2a7ef7c62eee2abdf1fad2fc42edd1182c9"
+  message: "🩹 H6SPHS code: fix release-blocking task doc regressions"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the deterministic release-gate regressions in task export normalization and task doc show output, align them with the current README v3 canonical-state contract, and rerun the targeted suites before moving on to the timeout families."
+  -
+    author: "CODER"
+    body: "Verified: the release-blocking task export and task doc show regressions are resolved, targeted tests pass, and the timeout-class blockers remain isolated to follow-up tasks."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Verified: updated the stale export expectation to canonical doc_version=3 and fixed task doc show so blank sections report 'section has no content' instead of emitting an empty line; targeted vitest and TypeScript checks passed."
+  -
+    type: "status"
+    at: "2026-03-14T14:30:56.177Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the release-blocking task export and task doc show regressions are resolved, targeted tests pass, and the timeout-class blockers remain isolated to follow-up tasks."
 doc_version: 3
-doc_updated_at: "2026-03-14T14:30:32.950Z"
+doc_updated_at: "2026-03-14T14:30:56.179Z"
 doc_updated_by: "CODER"
 description: "Resolve the deterministic release-gate regressions in task export normalization and task doc show output so the release line no longer disagrees with the README v3/canonical-state behavior introduced in 0.3.7."
 sections:
