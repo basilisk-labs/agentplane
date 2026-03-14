@@ -1,10 +1,11 @@
 ---
 id: "202603140600-R0JPWV"
 title: "Round-trip Redmine lifecycle metadata through structured state"
-status: "DOING"
+result_summary: "Completed Redmine lifecycle metadata round-trip through canonical_state on pull and remote doc-update paths, with regression coverage proving plan_approval, verification, and events are not dropped. Implementation commit: 8af5c134796d."
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 6
+revision: 7
 depends_on:
   - "202603140600-APGANH"
 tags:
@@ -36,11 +37,16 @@ verification:
     Result: pass
     Evidence: both package builds exited 0 after the lifecycle metadata changes.
     Scope: Compile-time integrity for the updated Redmine backend.
-commit: null
+commit:
+  hash: "8af5c134796d87af7df47f9e99af0b2b7c27a424"
+  message: "🧬 R0JPWV task: preserve Redmine lifecycle metadata"
 comments:
   -
     author: "CODER"
     body: "Start: implement Redmine lifecycle metadata round-trip so canonical_state keeps plan approval, verification, and events intact through pull and doc updates."
+  -
+    author: "CODER"
+    body: "Verified: Redmine now hydrates plan approval, verification, and events from canonical_state and preserves that lifecycle metadata when doc updates rewrite sections and revision."
 events:
   -
     type: "status"
@@ -69,8 +75,15 @@ events:
       Result: pass
       Evidence: both package builds exited 0 after the lifecycle metadata changes.
       Scope: Compile-time integrity for the updated Redmine backend.
+  -
+    type: "status"
+    at: "2026-03-14T06:27:16.074Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: Redmine now hydrates plan approval, verification, and events from canonical_state and preserves that lifecycle metadata when doc updates rewrite sections and revision."
 doc_version: 3
-doc_updated_at: "2026-03-14T06:26:38.798Z"
+doc_updated_at: "2026-03-14T06:27:16.077Z"
 doc_updated_by: "CODER"
 description: "Persist plan_approval, verification, and events through Redmine structured state so pull/push no longer drops canonical lifecycle metadata."
 sections:
