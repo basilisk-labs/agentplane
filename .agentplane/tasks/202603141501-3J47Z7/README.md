@@ -1,10 +1,12 @@
 ---
 id: "202603141501-3J47Z7"
 title: "Stabilize start commit-from-comment path handling timeouts"
-status: "DOING"
+result_summary: "Stabilized the three start --commit-from-comment path-handling cases under full release load by giving only those tests an explicit long timeout budget."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "release"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T15:12:14.807Z"
   updated_by: "CODER"
   note: "The three failing start --commit-from-comment path-handling cases were not semantically broken; the lifecycle file runs in about 26s isolated and those specific tests take about 2s each, so the failures under release:ci-base were default 30000ms budget spills under aggregate load. Adding a dedicated 60s budget only to the three path-handling cases keeps lifecycle assertions unchanged while stabilizing the suite."
-commit: null
+commit:
+  hash: "deeb9d399a378979300f2924778c5e86282f7c69"
+  message: "⏱️ 3J47Z7 test: stabilize lifecycle path-handling timeouts"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the three start --commit-from-comment path handling timeout cases under isolated and full-gate conditions, determine whether they need explicit timeout budgets or fixture trimming, and patch the smallest coherent fix without broadening lifecycle behavior."
+  -
+    author: "CODER"
+    body: "Verified: the three start --commit-from-comment path-handling failures were aggregate-load timeout spills, not lifecycle regressions. Adding a dedicated 60s budget only to the ./-prefix, spaced-path, and deletion-staging cases keeps the assertions intact and leaves the isolated lifecycle suite, tsc, and package builds green."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "The three failing start --commit-from-comment path-handling cases were not semantically broken; the lifecycle file runs in about 26s isolated and those specific tests take about 2s each, so the failures under release:ci-base were default 30000ms budget spills under aggregate load. Adding a dedicated 60s budget only to the three path-handling cases keeps lifecycle assertions unchanged while stabilizing the suite."
+  -
+    type: "status"
+    at: "2026-03-14T15:12:32.889Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the three start --commit-from-comment path-handling failures were aggregate-load timeout spills, not lifecycle regressions. Adding a dedicated 60s budget only to the ./-prefix, spaced-path, and deletion-staging cases keeps the assertions intact and leaves the isolated lifecycle suite, tsc, and package builds green."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:12:14.812Z"
+doc_updated_at: "2026-03-14T15:12:32.890Z"
 doc_updated_by: "CODER"
 description: "Stabilize start --commit-from-comment path normalization, spaced-path, and deletion staging tests under full release load."
 sections:
