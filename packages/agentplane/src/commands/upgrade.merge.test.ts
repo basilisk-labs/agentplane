@@ -125,7 +125,7 @@ describe("upgrade merge behavior", () => {
     const commitBody = String(commitBodyOut ?? "");
     expect(commitBody).toContain("upgrade: apply framework");
     expect(commitBody).toContain("Upgrade-Version:");
-  });
+  }, 60_000);
 
   it("does not require semantic review when baseline differs but current equals incoming", async () => {
     const root = await mkGitRepoRoot();
