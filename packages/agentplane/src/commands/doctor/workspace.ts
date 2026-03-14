@@ -316,6 +316,60 @@ async function checkTaskProjectionDrift(repoRoot: string, ctx?: CommandContext):
   ];
 }
 
+function checkBackendReadiness(ctx?: CommandContext): string[] {
+  if (ctx?.backendId !== "redmine") return [];
+
+  const { supports_task_revisions, supports_revision_guarded_writes } =
+    ctx.taskBackend.capabilities;
+
+  if (
+    supports_task_revisions === supports_revision_guarded_writes &&
+    supports_task_revisions === true
+  ) {
+    return [];
+  }
+
+  if (supports_task_revisions === false && supports_revision_guarded_writes === false) {
+    return [
+      renderDiagnosticFinding({
+        severity: "WARN",
+        state:
+          "Redmine backend is running in partial compatibility mode without canonical_state support",
+        likelyCause:
+          "AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE is not configured, so Redmine cannot round-trip the full canonical task state or guard writes by remote revision",
+        nextAction: {
+          command:
+            "set AGENTPLANE_REDMINE_CUSTOM_FIELDS_CANONICAL_STATE=<field-id> and rerun agentplane doctor",
+          reason:
+            "enable structured canonical_state round-tripping and expectedRevision guarded writes for the Redmine backend",
+        },
+        details: [
+          `Backend config: ${ctx.backendConfigPath}`,
+          "Current capability flags: supports_task_revisions=false; supports_revision_guarded_writes=false",
+          "Legacy doc field syncing can still work, but the backend remains partial-compatibility only.",
+        ],
+      }),
+    ];
+  }
+
+  return [
+    renderDiagnosticFinding({
+      severity: "WARN",
+      state: "Redmine backend capability contract is internally inconsistent",
+      likelyCause:
+        "backend capability flags diverged, so doctor cannot rely on a single revision-guard readiness state",
+      nextAction: {
+        command: "inspect Redmine backend capability wiring and rerun agentplane doctor",
+        reason: "restore a coherent readiness contract before relying on guarded remote writes",
+      },
+      details: [
+        `Backend config: ${ctx.backendConfigPath}`,
+        `Current capability flags: supports_task_revisions=${String(supports_task_revisions)}; supports_revision_guarded_writes=${String(supports_revision_guarded_writes)}`,
+      ],
+    }),
+  ];
+}
+
 export async function checkWorkspace(
   repoRoot: string,
   opts?: { ctx?: CommandContext },
@@ -372,6 +426,7 @@ export async function checkWorkspace(
     problems.push("No agent profiles found in .agentplane/agents (*.json expected).");
   }
   problems.push(
+    ...checkBackendReadiness(opts?.ctx),
     ...(await checkTaskReadmeMigrationState(repoRoot, opts?.ctx)),
     ...(await checkDoneTaskReadmeArchiveDrift(repoRoot, opts?.ctx)),
     ...(await checkTaskProjectionDrift(repoRoot, opts?.ctx)),
