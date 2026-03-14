@@ -1,10 +1,11 @@
 ---
 id: "202603140758-GWZW7Y"
 title: "Infer Redmine canonical-state readiness from issue payloads"
-status: "DOING"
+result_summary: "Operators can now inspect visible Redmine custom fields, see canonical_state visibility, and detect live field-name drift before wiring canonical_state env ids."
+status: "DONE"
 priority: "med"
 owner: "CODER"
-revision: 12
+revision: 13
 depends_on: []
 tags:
   - "code"
@@ -21,11 +22,16 @@ verification:
   updated_at: "2026-03-14T08:11:04.300Z"
   updated_by: "CODER"
   note: "Command: targeted vitest for redmine backend/CLI/help plus bun run test:backend:redmine-live, eslint, prettier, and both package builds. Result: pass. Evidence: 58 targeted backend+CLI tests passed, 12 help/docs tests passed, 2 live sandbox tests passed, eslint/prettier clean, both builds green. Scope: Redmine read-only inspection helper, backend inspect CLI surface, doctor hint, live tests, and docs/help updates."
-commit: null
+commit:
+  hash: "5b7a09fd478b7e14e5cd368b262c4926ff722599"
+  message: "🔎 GWZW7Y task: inspect Redmine field readiness from issue payloads"
 comments:
   -
     author: "CODER"
     body: "Start: implement a read-only Redmine issue-field inspection path, wire it into backend CLI diagnostics, and cover both mocked and live sandbox behavior without relying on admin-only custom_fields APIs."
+  -
+    author: "CODER"
+    body: "Verified: added a read-only Redmine field inspection path, exposed it via backend inspect, and covered mocked plus live sandbox diagnostics without relying on admin-only custom_fields access."
 events:
   -
     type: "status"
@@ -40,8 +46,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Command: targeted vitest for redmine backend/CLI/help plus bun run test:backend:redmine-live, eslint, prettier, and both package builds. Result: pass. Evidence: 58 targeted backend+CLI tests passed, 12 help/docs tests passed, 2 live sandbox tests passed, eslint/prettier clean, both builds green. Scope: Redmine read-only inspection helper, backend inspect CLI surface, doctor hint, live tests, and docs/help updates."
+  -
+    type: "status"
+    at: "2026-03-14T08:11:40.394Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: added a read-only Redmine field inspection path, exposed it via backend inspect, and covered mocked plus live sandbox diagnostics without relying on admin-only custom_fields access."
 doc_version: 3
-doc_updated_at: "2026-03-14T08:11:04.303Z"
+doc_updated_at: "2026-03-14T08:11:40.395Z"
 doc_updated_by: "CODER"
 description: "Add read-only discovery and clearer readiness diagnostics when Redmine API key cannot access custom_fields.json but issue payloads may still reveal canonical_state field usage."
 sections:
