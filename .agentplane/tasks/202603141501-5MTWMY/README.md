@@ -1,10 +1,12 @@
 ---
 id: "202603141501-5MTWMY"
 title: "Fix release apply push test timeout binding under full gate"
-status: "DOING"
+result_summary: "Fixed the release apply timeout mis-binding so the push-with-no-verify coverage uses the intended long timeout budget under full release gating."
+risk_level: "low"
+status: "DONE"
 priority: "high"
 owner: "CODER"
-revision: 5
+revision: 6
 depends_on: []
 tags:
   - "release"
@@ -22,11 +24,16 @@ verification:
   updated_at: "2026-03-14T15:06:10.353Z"
   updated_by: "CODER"
   note: "Root cause was a mis-bound timeout constant: RELEASE_APPLY_LONG_TIMEOUT_MS was attached to the neighboring requires --push case while the push-with-no-verify hook test still kept 30000ms. The targeted apply suite, the single failing case, tsc, and package builds are all green after rebinding the timeout to the intended test."
-commit: null
+commit:
+  hash: "8f73945a75630b94647446829351453640bb0ceb"
+  message: "🩹 5MTWMY test: fix release apply timeout binding"
 comments:
   -
     author: "CODER"
     body: "Start: reproduce the release apply push-with-no-verify timeout under isolated and full release-gate conditions, confirm whether the explicit timeout binding is being ignored, and land the smallest coherent fix without weakening the recursive hook assertion."
+  -
+    author: "CODER"
+    body: "Verified: the release apply push-with-no-verify case was still running with a hardcoded 30000ms because the new timeout constant had been attached to the neighboring test. Rebinding the 60s budget to the intended case keeps the recursive pre-push hook assertion intact and leaves the isolated apply suite green."
 events:
   -
     type: "status"
@@ -41,8 +48,15 @@ events:
     author: "CODER"
     state: "ok"
     note: "Root cause was a mis-bound timeout constant: RELEASE_APPLY_LONG_TIMEOUT_MS was attached to the neighboring requires --push case while the push-with-no-verify hook test still kept 30000ms. The targeted apply suite, the single failing case, tsc, and package builds are all green after rebinding the timeout to the intended test."
+  -
+    type: "status"
+    at: "2026-03-14T15:06:32.627Z"
+    author: "CODER"
+    from: "DOING"
+    to: "DONE"
+    note: "Verified: the release apply push-with-no-verify case was still running with a hardcoded 30000ms because the new timeout constant had been attached to the neighboring test. Rebinding the 60s budget to the intended case keeps the recursive pre-push hook assertion intact and leaves the isolated apply suite green."
 doc_version: 3
-doc_updated_at: "2026-03-14T15:06:10.358Z"
+doc_updated_at: "2026-03-14T15:06:32.629Z"
 doc_updated_by: "CODER"
 description: "Make the release apply push-with-no-verify coverage use the intended timeout budget in full release:prepublish runs and prove it with isolated apply coverage."
 sections:
