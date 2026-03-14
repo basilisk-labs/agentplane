@@ -803,6 +803,8 @@ export async function cmdUpgradeParsed(opts: {
     const commit = await createUpgradeCommit({
       gitRoot: resolved.gitRoot,
       paths: commitPaths,
+      tasksPath: loaded.config.paths.tasks_path,
+      workflowDir: loaded.config.paths.workflow_dir,
       versionLabel: upgradeVersionLabel,
       source: bundleLayout,
       additions: additions.length,

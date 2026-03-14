@@ -7,6 +7,7 @@ import { backupPath, fileExists } from "../../cli/fs-utils.js";
 import { exitCodeForError } from "../../cli/exit-codes.js";
 import { withDiagnosticContext } from "../../shared/diagnostics.js";
 import { CliError } from "../../shared/errors.js";
+import { protectedPathKindForFile } from "../../shared/protected-paths.js";
 import { execFileAsync, gitEnv } from "../shared/git.js";
 
 import type { UpgradeReviewRecord } from "./types.js";
@@ -65,6 +66,8 @@ export async function ensureCleanTrackedTreeForUpgrade(gitRoot: string): Promise
 export async function createUpgradeCommit(opts: {
   gitRoot: string;
   paths: string[];
+  tasksPath: string;
+  workflowDir: string;
   versionLabel: string;
   source: "local_assets" | "upgrade_bundle" | "repo_tarball";
   additions: number;
@@ -102,10 +105,36 @@ export async function createUpgradeCommit(opts: {
     `Source: ${opts.source}\n` +
     `Managed-Changes: add=${opts.additions}, update=${opts.updates}, unchanged=${opts.unchanged}\n` +
     `Incidents-Appended: ${opts.incidentsAppendedCount}\n`;
+  const allow = {
+    allowTasks: false,
+    allowPolicy: false,
+    allowConfig: false,
+    allowHooks: false,
+    allowCI: false,
+  };
+  for (const filePath of uniquePaths) {
+    const kind = protectedPathKindForFile({
+      filePath,
+      tasksPath: opts.tasksPath,
+      workflowDir: opts.workflowDir,
+    });
+    if (kind === "tasks") allow.allowTasks = true;
+    if (kind === "policy") allow.allowPolicy = true;
+    if (kind === "config") allow.allowConfig = true;
+    if (kind === "hooks") allow.allowHooks = true;
+    if (kind === "ci") allow.allowCI = true;
+  }
   try {
     await execFileAsync("git", ["commit", "-m", subject, "-m", body], {
       cwd: opts.gitRoot,
-      env: gitEnv(),
+      env: {
+        ...gitEnv(),
+        AGENTPLANE_ALLOW_TASKS: allow.allowTasks ? "1" : "0",
+        AGENTPLANE_ALLOW_POLICY: allow.allowPolicy ? "1" : "0",
+        AGENTPLANE_ALLOW_CONFIG: allow.allowConfig ? "1" : "0",
+        AGENTPLANE_ALLOW_HOOKS: allow.allowHooks ? "1" : "0",
+        AGENTPLANE_ALLOW_CI: allow.allowCI ? "1" : "0",
+      },
       maxBuffer: 10 * 1024 * 1024,
     });
   } catch (err) {

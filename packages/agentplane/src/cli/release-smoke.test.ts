@@ -268,4 +268,180 @@ Legacy verification plan.
       }
     },
   );
+
+  it(
+    "upgrade --migrate-task-docs repairs incomplete policy tree drift and legacy task docs in one release-smoke path",
+    { timeout: 120_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      let io = captureStdIO();
+      let taskId = "";
+      try {
+        expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
+        io.restore();
+
+        io = captureStdIO();
+        expect(
+          await runCli([
+            "task",
+            "new",
+            "--title",
+            "Legacy README drift target",
+            "--description",
+            "Exercise combined policy-tree drift and legacy README recovery.",
+            "--priority",
+            "med",
+            "--owner",
+            "TESTER",
+            "--tag",
+            "code",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        const match = /\b\d{12}-[A-Z0-9]{6}\b/.exec(io.stdout);
+        expect(match).not.toBeNull();
+        taskId = match?.[0] ?? "";
+      } finally {
+        io.restore();
+      }
+
+      const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+      const readmePath = path.join(taskDir, "README.md");
+      const legacyReadme = `---
+id: "${taskId}"
+title: "Legacy README drift target"
+status: "TODO"
+priority: "med"
+owner: "TESTER"
+depends_on: []
+tags:
+  - "code"
+verify: []
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit: null
+comments: []
+events: []
+doc_version: 2
+doc_updated_at: "2026-03-08T00:00:00.000Z"
+doc_updated_by: "TESTER"
+description: "Exercise combined policy-tree drift and legacy README recovery."
+id_source: "generated"
+---
+## Summary
+
+Legacy README drift target
+
+Exercise combined policy-tree drift and legacy README recovery.
+
+## Scope
+
+- In scope: policy-tree drift and legacy README recovery.
+- Out of scope: unrelated refactors.
+
+## Plan
+
+1. Remove a managed policy file.
+2. Repair the repo with upgrade plus task-doc migration.
+
+## Verify Steps
+
+### Scope
+- Primary tag: \`code\`
+
+### Checks
+- Confirm upgrade restores the missing policy file and migrates the task README.
+
+### Evidence / Commands
+- Record the recovery commands.
+
+### Pass criteria
+- The repo ends with a complete policy tree and README v3.
+
+## Verification
+
+### Plan
+
+Legacy verification plan.
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert the recovery commit.
+
+## Notes
+
+- Legacy task placeholder.
+`;
+      await writeFile(readmePath, legacyReadme, "utf8");
+
+      io = captureStdIO();
+      try {
+        expect(await runCli(["task", "export", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      const missingPolicyPath = path.join(root, ".agentplane", "policy", "workflow.upgrade.md");
+      await rm(missingPolicyPath, { force: true });
+      await commitAll(root, "✨ fixture: incomplete policy tree and legacy readme");
+
+      io = captureStdIO();
+      const doctorBefore = vi.spyOn(console, "error").mockImplementation(() => {
+        /* captured separately for assertion */
+      });
+      try {
+        expect(await runCli(["doctor", "--root", root])).toBe(1);
+        const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorBefore.mock.calls.flat().join("\n")}`;
+        expect(doctorOutput).toContain("framework-managed policy tree is incomplete");
+        expect(doctorOutput).toContain("agentplane task migrate-doc --all");
+      } finally {
+        doctorBefore.mockRestore();
+        io.restore();
+      }
+
+      io = captureStdIO();
+      try {
+        expect(await runCli(["upgrade", "--yes", "--migrate-task-docs", "--root", root])).toBe(0);
+        expect(io.stdout).toContain("Task README migration: changed=1");
+      } finally {
+        io.restore();
+      }
+
+      expect(await pathExists(missingPolicyPath)).toBe(true);
+      const migratedReadme = await readFile(readmePath, "utf8");
+      expect(migratedReadme).toContain("doc_version: 3");
+      expect(migratedReadme).toContain("## Findings");
+      expect(migratedReadme).not.toContain("## Notes");
+
+      io = captureStdIO();
+      const doctorAfter = vi.spyOn(console, "error").mockImplementation(() => {
+        /* captured separately for assertion */
+      });
+      try {
+        expect(await runCli(["doctor", "--root", root])).toBe(0);
+        const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorAfter.mock.calls.flat().join("\n")}`;
+        expect(doctorOutput).not.toContain("framework-managed policy tree is incomplete");
+        expect(doctorOutput).not.toContain("agentplane task migrate-doc --all");
+      } finally {
+        doctorAfter.mockRestore();
+        io.restore();
+      }
+    },
+  );
 });
