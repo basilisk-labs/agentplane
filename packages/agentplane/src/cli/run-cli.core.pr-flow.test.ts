@@ -57,6 +57,8 @@ import * as prompts from "./prompts.js";
 
 installRunCliIntegrationHarness();
 
+const WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS = 60_000;
+
 describe("runCli", () => {
   it("work start requires task id and flags", async () => {
     const root = await mkGitRepoRoot();
@@ -286,77 +288,81 @@ describe("runCli", () => {
     }
   });
 
-  it("work start creates a branch and worktree", async () => {
-    const root = await mkGitRepoRootWithBranch("main");
-    const config = defaultConfig();
-    config.workflow_mode = "branch_pr";
-    await writeConfig(root, config);
-    await configureGitUser(root);
+  it(
+    "work start creates a branch and worktree",
+    async () => {
+      const root = await mkGitRepoRootWithBranch("main");
+      const config = defaultConfig();
+      config.workflow_mode = "branch_pr";
+      await writeConfig(root, config);
+      await configureGitUser(root);
 
-    await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
-    const execFileAsync = promisify(execFile);
-    await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
-    await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
+      await writeFile(path.join(root, "seed.txt"), "seed", "utf8");
+      const execFileAsync = promisify(execFile);
+      await execFileAsync("git", ["add", "seed.txt"], { cwd: root });
+      await execFileAsync("git", ["commit", "-m", "seed"], { cwd: root });
 
-    await runCliSilent(["branch", "base", "set", "main", "--root", root]);
+      await runCliSilent(["branch", "base", "set", "main", "--root", root]);
 
-    let taskId = "";
-    const ioTask = captureStdIO();
-    try {
-      const code = await runCli([
-        "task",
-        "new",
-        "--title",
-        "Work start task",
-        "--description",
-        "Work start creates branch and worktree",
-        "--priority",
-        "med",
-        "--owner",
-        "CODER",
-        "--tag",
-        "nodejs",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      taskId = ioTask.stdout.trim();
-    } finally {
-      ioTask.restore();
-    }
-    await approveTaskPlan(root, taskId);
+      let taskId = "";
+      const ioTask = captureStdIO();
+      try {
+        const code = await runCli([
+          "task",
+          "new",
+          "--title",
+          "Work start task",
+          "--description",
+          "Work start creates branch and worktree",
+          "--priority",
+          "med",
+          "--owner",
+          "CODER",
+          "--tag",
+          "nodejs",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        taskId = ioTask.stdout.trim();
+      } finally {
+        ioTask.restore();
+      }
+      await approveTaskPlan(root, taskId);
 
-    const io = captureStdIO();
-    let branchName = "";
-    let worktreePath = "";
-    try {
-      const code = await runCli([
-        "work",
-        "start",
-        taskId,
-        "--agent",
-        "CODER",
-        "--slug",
-        "work-start",
-        "--worktree",
-        "--root",
-        root,
-      ]);
-      expect(code).toBe(0);
-      expect(io.stdout).toContain("✅ work start");
-      branchName = `task/${taskId}/work-start`;
-      worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-work-start`);
-    } finally {
-      io.restore();
-    }
+      const io = captureStdIO();
+      let branchName = "";
+      let worktreePath = "";
+      try {
+        const code = await runCli([
+          "work",
+          "start",
+          taskId,
+          "--agent",
+          "CODER",
+          "--slug",
+          "work-start",
+          "--worktree",
+          "--root",
+          root,
+        ]);
+        expect(code).toBe(0);
+        expect(io.stdout).toContain("✅ work start");
+        branchName = `task/${taskId}/work-start`;
+        worktreePath = path.join(root, ".agentplane", "worktrees", `${taskId}-work-start`);
+      } finally {
+        io.restore();
+      }
 
-    await expect(
-      execFileAsync("git", ["show-ref", "--verify", `refs/heads/${branchName}`], { cwd: root }),
-    ).resolves.toBeDefined();
+      await expect(
+        execFileAsync("git", ["show-ref", "--verify", `refs/heads/${branchName}`], { cwd: root }),
+      ).resolves.toBeDefined();
 
-    const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
-      cwd: root,
-    });
-    expect(stdout).toContain(worktreePath);
-  });
+      const { stdout } = await execFileAsync("git", ["worktree", "list", "--porcelain"], {
+        cwd: root,
+      });
+      expect(stdout).toContain(worktreePath);
+    },
+    WORK_START_BRANCH_AND_WORKTREE_TIMEOUT_MS,
+  );
 });
