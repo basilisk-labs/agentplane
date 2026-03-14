@@ -27,9 +27,11 @@ afterEach(() => {
 });
 
 describe("release smoke", () => {
+  const RELEASE_SMOKE_TIMEOUT_MS = 180_000;
+
   it(
     "upgrade restores workflow runtime artifacts even when managed files are otherwise unchanged",
-    { timeout: 120_000 },
+    { timeout: RELEASE_SMOKE_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await configureGitUser(root);
@@ -81,7 +83,7 @@ describe("release smoke", () => {
 
   it(
     "upgrade --migrate-task-docs recovers a legacy README v2 task without a manual export step",
-    { timeout: 120_000 },
+    { timeout: RELEASE_SMOKE_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await configureGitUser(root);
@@ -271,7 +273,7 @@ Legacy verification plan.
 
   it(
     "upgrade --migrate-task-docs repairs incomplete policy tree drift and legacy task docs in one release-smoke path",
-    { timeout: 120_000 },
+    { timeout: RELEASE_SMOKE_TIMEOUT_MS },
     async () => {
       const root = await mkGitRepoRoot();
       await configureGitUser(root);

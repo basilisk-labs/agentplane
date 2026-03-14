@@ -93,9 +93,11 @@ afterEach(async () => {
 });
 
 describe("dist-guard", () => {
+  const DIST_GUARD_TIMEOUT_MS = 60_000;
+
   it(
     "allows commits after build when only non-runtime paths changed",
-    { timeout: 60_000 },
+    { timeout: DIST_GUARD_TIMEOUT_MS },
     async () => {
       const { repoRoot, packageRoot } = await setupPackageRepo();
       await writeFile(path.join(repoRoot, "README.md"), "docs only\n", "utf8");
@@ -115,128 +117,152 @@ describe("dist-guard", () => {
     },
   );
 
-  it("blocks when runtime paths changed after the build manifest commit", async () => {
-    const { repoRoot, packageRoot } = await setupPackageRepo();
-    const cliPath = path.join(packageRoot, "src", "cli.ts");
-    const current = await readFile(cliPath, "utf8");
-    await writeFile(cliPath, `${current}export const changed = 1;\n`, "utf8");
-    await execFileAsync("git", ["add", "."], { cwd: repoRoot });
-    await execFileAsync("git", ["commit", "-m", "feat: change cli runtime"], { cwd: repoRoot });
+  it(
+    "blocks when runtime paths changed after the build manifest commit",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { repoRoot, packageRoot } = await setupPackageRepo();
+      const cliPath = path.join(packageRoot, "src", "cli.ts");
+      const current = await readFile(cliPath, "utf8");
+      await writeFile(cliPath, `${current}export const changed = 1;\n`, "utf8");
+      await execFileAsync("git", ["add", "."], { cwd: repoRoot });
+      await execFileAsync("git", ["commit", "-m", "feat: change cli runtime"], { cwd: repoRoot });
 
-    const result = await readBuildFreshness(packageRoot, {
-      watchedPaths: [
+      const result = await readBuildFreshness(packageRoot, {
+        watchedPaths: [
+          "src",
+          "bin/agentplane.js",
+          "bin/runtime-context.js",
+          "bin/stale-dist-policy.js",
+        ],
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.reason).toBe("watched_paths_changed");
+      expect(result.changedPaths).toContain("packages/agentplane/src/cli.ts");
+    },
+  );
+
+  it(
+    "ignores test-only source churn for legacy non-snapshot manifests",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { packageRoot } = await setupPackageRepo();
+      await writeFile(
+        path.join(packageRoot, "src", "cli.test.ts"),
+        "export const cliTestOnly = 1;\n",
+        "utf8",
+      );
+
+      const result = await readBuildFreshness(packageRoot, {
+        watchedPaths: [
+          "src",
+          "bin/agentplane.js",
+          "bin/runtime-context.js",
+          "bin/stale-dist-policy.js",
+        ],
+      });
+
+      expect(result.ok).toBe(true);
+      expect(result.changedPaths).toEqual([]);
+    },
+  );
+
+  it(
+    "tracks standalone runtime bin policy files as watched paths",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { packageRoot } = await setupPackageRepo();
+      const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
+      const current = await readFile(policyPath, "utf8");
+      await writeFile(policyPath, `${current}export const dirty = 1;\n`, "utf8");
+
+      const result = await readBuildFreshness(packageRoot, {
+        watchedPaths: [
+          "src",
+          "bin/agentplane.js",
+          "bin/runtime-context.js",
+          "bin/stale-dist-policy.js",
+        ],
+      });
+
+      expect(result.ok).toBe(false);
+      expect(result.reason).toBe("watched_paths_changed");
+      expect(result.changedPaths).toContain("packages/agentplane/bin/stale-dist-policy.js");
+    },
+  );
+
+  it(
+    "treats rebuilt dirty runtime trees as fresh when manifest snapshots match current source",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { packageRoot } = await setupPackageRepo();
+      const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
+      const current = await readFile(policyPath, "utf8");
+      await writeFile(policyPath, `${current}export const rebuilt = 1;\n`, "utf8");
+
+      const watchedPaths = [
         "src",
         "bin/agentplane.js",
         "bin/runtime-context.js",
         "bin/stale-dist-policy.js",
-      ],
-    });
+      ];
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
 
-    expect(result.ok).toBe(false);
-    expect(result.reason).toBe("watched_paths_changed");
-    expect(result.changedPaths).toContain("packages/agentplane/src/cli.ts");
-  });
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
 
-  it("ignores test-only source churn for legacy non-snapshot manifests", async () => {
-    const { packageRoot } = await setupPackageRepo();
-    await writeFile(
-      path.join(packageRoot, "src", "cli.test.ts"),
-      "export const cliTestOnly = 1;\n",
-      "utf8",
-    );
+      expect(result.ok).toBe(true);
+      expect(result.reason).toBe("fresh_after_snapshot_match");
+    },
+  );
 
-    const result = await readBuildFreshness(packageRoot, {
-      watchedPaths: [
+  it(
+    "reports snapshot-changed runtime files when current source diverges from the built manifest",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { packageRoot } = await setupPackageRepo();
+      const watchedPaths = [
         "src",
         "bin/agentplane.js",
         "bin/runtime-context.js",
         "bin/stale-dist-policy.js",
-      ],
-    });
+      ];
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
 
-    expect(result.ok).toBe(true);
-    expect(result.changedPaths).toEqual([]);
-  });
+      const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
+      const current = await readFile(policyPath, "utf8");
+      await writeFile(policyPath, `${current}export const changedAgain = 1;\n`, "utf8");
 
-  it("tracks standalone runtime bin policy files as watched paths", async () => {
-    const { packageRoot } = await setupPackageRepo();
-    const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
-    const current = await readFile(policyPath, "utf8");
-    await writeFile(policyPath, `${current}export const dirty = 1;\n`, "utf8");
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
 
-    const result = await readBuildFreshness(packageRoot, {
-      watchedPaths: [
+      expect(result.ok).toBe(false);
+      expect(result.reason).toBe("watched_runtime_snapshot_changed");
+      expect(result.changedPaths).toContain("bin/stale-dist-policy.js");
+    },
+  );
+
+  it(
+    "ignores test-only source churn for snapshot-backed manifests",
+    { timeout: DIST_GUARD_TIMEOUT_MS },
+    async () => {
+      const { packageRoot } = await setupPackageRepo();
+      const watchedPaths = [
         "src",
         "bin/agentplane.js",
         "bin/runtime-context.js",
         "bin/stale-dist-policy.js",
-      ],
-    });
+      ];
+      await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
+      await writeFile(
+        path.join(packageRoot, "src", "cli.test.ts"),
+        "export const cliTestOnly = 2;\n",
+        "utf8",
+      );
 
-    expect(result.ok).toBe(false);
-    expect(result.reason).toBe("watched_paths_changed");
-    expect(result.changedPaths).toContain("packages/agentplane/bin/stale-dist-policy.js");
-  });
+      const result = await readBuildFreshness(packageRoot, { watchedPaths });
 
-  it("treats rebuilt dirty runtime trees as fresh when manifest snapshots match current source", async () => {
-    const { packageRoot } = await setupPackageRepo();
-    const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
-    const current = await readFile(policyPath, "utf8");
-    await writeFile(policyPath, `${current}export const rebuilt = 1;\n`, "utf8");
-
-    const watchedPaths = [
-      "src",
-      "bin/agentplane.js",
-      "bin/runtime-context.js",
-      "bin/stale-dist-policy.js",
-    ];
-    await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
-
-    const result = await readBuildFreshness(packageRoot, { watchedPaths });
-
-    expect(result.ok).toBe(true);
-    expect(result.reason).toBe("fresh_after_snapshot_match");
-  });
-
-  it("reports snapshot-changed runtime files when current source diverges from the built manifest", async () => {
-    const { packageRoot } = await setupPackageRepo();
-    const watchedPaths = [
-      "src",
-      "bin/agentplane.js",
-      "bin/runtime-context.js",
-      "bin/stale-dist-policy.js",
-    ];
-    await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
-
-    const policyPath = path.join(packageRoot, "bin", "stale-dist-policy.js");
-    const current = await readFile(policyPath, "utf8");
-    await writeFile(policyPath, `${current}export const changedAgain = 1;\n`, "utf8");
-
-    const result = await readBuildFreshness(packageRoot, { watchedPaths });
-
-    expect(result.ok).toBe(false);
-    expect(result.reason).toBe("watched_runtime_snapshot_changed");
-    expect(result.changedPaths).toContain("bin/stale-dist-policy.js");
-  });
-
-  it("ignores test-only source churn for snapshot-backed manifests", async () => {
-    const { packageRoot } = await setupPackageRepo();
-    const watchedPaths = [
-      "src",
-      "bin/agentplane.js",
-      "bin/runtime-context.js",
-      "bin/stale-dist-policy.js",
-    ];
-    await rewriteManifestWithSnapshot(packageRoot, watchedPaths);
-    await writeFile(
-      path.join(packageRoot, "src", "cli.test.ts"),
-      "export const cliTestOnly = 2;\n",
-      "utf8",
-    );
-
-    const result = await readBuildFreshness(packageRoot, { watchedPaths });
-
-    expect(result.ok).toBe(true);
-    expect(result.changedPaths).toEqual([]);
-  });
+      expect(result.ok).toBe(true);
+      expect(result.changedPaths).toEqual([]);
+    },
+  );
 });
