@@ -373,6 +373,8 @@ Legacy verification plan.
 
       const migratedReadme = await readFile(readmePath, "utf8");
       expect(migratedReadme).toContain("doc_version: 3");
+      expect(migratedReadme).toContain("revision: 1");
+      expect(migratedReadme).toContain("sections:");
       expect(migratedReadme).toContain("## Findings");
       expect(migratedReadme).not.toContain("## Notes");
       expect(migratedReadme).not.toContain("### Plan");
@@ -380,9 +382,16 @@ Legacy verification plan.
 
       const tasksExportText = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
       const tasksExport = JSON.parse(tasksExportText) as {
-        tasks?: { id?: string; doc_version?: number }[];
+        tasks?: {
+          id?: string;
+          doc_version?: number;
+          revision?: number;
+          sections?: Record<string, string>;
+        }[];
       };
-      expect(tasksExport.tasks?.find((task) => task.id === taskId)?.doc_version).toBe(3);
+      const migratedTask = tasksExport.tasks?.find((task) => task.id === taskId);
+      expect(migratedTask?.doc_version).toBe(3);
+      expect(migratedTask?.revision).toBe(1);
 
       io = captureStdIO();
       const doctorClean = vi.spyOn(console, "error").mockImplementation(() => {

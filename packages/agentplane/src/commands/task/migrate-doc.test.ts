@@ -53,6 +53,9 @@ Keep scope.
     expect(code).toBe(0);
 
     const migrated = await readFile(readmePath, "utf8");
+    expect(migrated).toContain("revision: 1");
+    expect(migrated).toContain("sections:");
+    expect(migrated).toContain('Summary: "Keep me."');
     expect(migrated).toContain("plan_approval:");
     expect(migrated).toContain("verification:");
     expect(migrated).toContain("doc_version: 3");
@@ -128,6 +131,8 @@ Keep scope.
     expect(code).toBe(0);
 
     const migrated = await readFile(readmePath, "utf8");
+    expect(migrated).toContain("revision: 1");
+    expect(migrated).toContain("sections:");
     expect(migrated).toContain("## Context");
     expect(migrated).toContain("Legacy context that should not stay in the canonical v3 contract.");
     expect(migrated.indexOf("## Context")).toBeGreaterThan(migrated.indexOf("## Findings"));
@@ -311,6 +316,70 @@ Legacy verification notes.
     expect(migrated).not.toContain("### Results");
   });
 
+  it("prefers canonical frontmatter sections over stale rendered body when migrating current README files", async () => {
+    const root = await mkGitRepoRoot();
+    await writeDefaultConfig(root);
+
+    const taskId = "202601040002-ABCDEF";
+    const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+    const readmePath = path.join(taskDir, "README.md");
+    await mkdir(taskDir, { recursive: true });
+
+    const currentWithDrift = `---
+id: "${taskId}"
+title: "Current task"
+status: "TODO"
+priority: "low"
+owner: "CODER"
+depends_on: []
+tags: []
+verify: []
+comments: []
+events: []
+doc_version: 3
+doc_updated_at: "2026-01-04T00:00:00.000Z"
+doc_updated_by: "CODER"
+description: "Current"
+sections:
+  Summary: "Canonical summary."
+  Scope: "Canonical scope."
+  Plan: "1. Canonical plan."
+  Verify Steps: "1. Review. Expected: okay."
+  Verification: |-
+    <!-- BEGIN VERIFICATION RESULTS -->
+    <!-- END VERIFICATION RESULTS -->
+  Rollback Plan: "- Revert."
+  Findings: "Canonical finding."
+id_source: "generated"
+---
+## Summary
+
+Stale rendered summary.
+
+## Scope
+
+Stale rendered scope.
+`;
+
+    await writeFile(readmePath, currentWithDrift, "utf8");
+    const code = await cmdTaskMigrateDoc({
+      cwd: root,
+      rootOverride: root,
+      all: false,
+      quiet: false,
+      taskIds: [taskId],
+    });
+    expect(code).toBe(0);
+
+    const migrated = await readFile(readmePath, "utf8");
+    expect(migrated).toContain("revision: 1");
+    expect(migrated).toContain('Summary: "Canonical summary."');
+    expect(migrated).toContain("## Summary\n\nCanonical summary.");
+    expect(migrated).toContain("## Findings\n\nCanonical finding.");
+    expect(migrated).not.toContain("Stale rendered summary.");
+    expect(migrated).not.toContain("Stale rendered scope.");
+  });
+
   it("normalizes escaped newlines in doc_version=3 summary, scope, and frontmatter description", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);
@@ -489,10 +558,14 @@ Already normalized.
     const migratedLegacy = await readFile(path.join(legacyTaskDir, "README.md"), "utf8");
     const migratedCurrent = await readFile(path.join(currentTaskDir, "README.md"), "utf8");
     expect(migratedLegacy).toContain("doc_version: 3");
+    expect(migratedLegacy).toContain("revision: 1");
+    expect(migratedLegacy).toContain("sections:");
     expect(migratedLegacy).toContain("## Findings");
     expect(migratedLegacy).toContain("Legacy follow-up.");
     expect(migratedLegacy).not.toContain("## Notes");
     expect(migratedCurrent).toContain("doc_version: 3");
+    expect(migratedCurrent).toContain("revision: 1");
+    expect(migratedCurrent).toContain("sections:");
     expect(migratedCurrent).toContain("plan_approval:");
     expect(migratedCurrent).toContain("verification:");
     expect(migratedCurrent).toContain("Current summary.");
@@ -608,8 +681,16 @@ Already normalized.
     expect(code).toBe(0);
 
     const exported = JSON.parse(await readFile(exportPath, "utf8")) as {
-      tasks?: { id?: string; doc_version?: number }[];
+      tasks?: {
+        id?: string;
+        doc_version?: number;
+        revision?: number;
+        sections?: Record<string, string>;
+      }[];
     };
-    expect(exported.tasks?.find((task) => task.id === taskId)?.doc_version).toBe(3);
+    const migratedTask = exported.tasks?.find((task) => task.id === taskId);
+    expect(migratedTask?.doc_version).toBe(3);
+    expect(migratedTask?.revision).toBe(1);
+    expect(migratedTask?.sections?.Findings).toContain("Already normalized.");
   });
 });

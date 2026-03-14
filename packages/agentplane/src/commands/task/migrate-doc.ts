@@ -9,9 +9,11 @@ import {
   mergeTaskDoc,
   normalizeTaskDoc,
   parseTaskReadme,
+  renderTaskDocFromSections,
   renderTaskReadme,
   resolveProject,
   setMarkdownSection,
+  taskDocToSectionMap,
   type AgentplaneConfig,
 } from "@agentplaneorg/core";
 
@@ -46,6 +48,21 @@ const HUMAN_TEXT_SECTIONS = new Set(["summary", "context", "scope", "plan", "fin
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+function normalizeRevision(value: unknown): number | null {
+  return Number.isInteger(value) && typeof value === "number" && value > 0 ? value : null;
+}
+
+function normalizeCanonicalSections(value: unknown): Record<string, string> | null {
+  if (!isRecord(value)) return null;
+  const out: Record<string, string> = {};
+  for (const [title, text] of Object.entries(value)) {
+    const normalizedTitle = title.trim();
+    if (!normalizedTitle || typeof text !== "string") continue;
+    out[normalizedTitle] = text.replaceAll("\r\n", "\n").trimEnd();
+  }
+  return Object.keys(out).length > 0 ? out : null;
 }
 
 function normalizeSectionKey(section: string): string {
@@ -223,10 +240,14 @@ async function migrateTaskReadmeDoc(opts: {
   ensurePlanApprovalFrontmatter(frontmatter);
   ensureVerificationFrontmatter(frontmatter);
   normalizeFrontmatterNoteTimestamps(frontmatter);
+  const canonicalSections = normalizeCanonicalSections(frontmatter.sections);
 
   const required = opts.config.tasks.doc.required_sections;
   const extracted = extractTaskDoc(parsed.body);
-  const baseDoc = extracted || parsed.body;
+  const baseDoc =
+    canonicalSections === null
+      ? extracted || parsed.body
+      : renderTaskDocFromSections(canonicalSections);
   let nextDoc = normalizeTaskDoc(ensureDocSections(baseDoc, required));
   const docVersion = normalizeTaskDocVersion(frontmatter.doc_version);
   if (docVersion === 2) {
@@ -254,6 +275,8 @@ async function migrateTaskReadmeDoc(opts: {
     }
   }
   const nextBody = extracted ? mergeTaskDoc(parsed.body, nextDoc) : nextDoc;
+  frontmatter.sections = taskDocToSectionMap(nextDoc);
+  frontmatter.revision = normalizeRevision(frontmatter.revision) ?? 1;
 
   const rendered = renderTaskReadme(frontmatter, nextBody);
   const next = rendered.endsWith("\n") ? rendered : `${rendered}\n`;
