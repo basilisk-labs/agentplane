@@ -80,7 +80,7 @@ describe("release smoke", () => {
   );
 
   it(
-    "upgrade plus migrate-doc recovers a legacy README v2 task without a manual export step",
+    "upgrade --migrate-task-docs recovers a legacy README v2 task without a manual export step",
     { timeout: 120_000 },
     async () => {
       const root = await mkGitRepoRoot();
@@ -223,14 +223,9 @@ Legacy verification plan.
 
       io = captureStdIO();
       try {
-        expect(await runCli(["upgrade", "--yes", "--root", root])).toBe(0);
-      } finally {
-        io.restore();
-      }
-
-      io = captureStdIO();
-      try {
-        expect(await runCli(["task", "migrate-doc", "--all", "--root", root])).toBe(0);
+        expect(await runCli(["upgrade", "--yes", "--migrate-task-docs", "--root", root])).toBe(0);
+        expect(io.stdout).toContain("Task README migration: changed=1");
+        expect(io.stderr).not.toContain("agentplane task migrate-doc --all");
       } finally {
         io.restore();
       }

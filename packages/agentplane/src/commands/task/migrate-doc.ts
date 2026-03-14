@@ -22,7 +22,12 @@ import { exitCodeForError } from "../../cli/exit-codes.js";
 import { fileExists, getPathKind } from "../../cli/fs-utils.js";
 import { successMessage } from "../../cli/output.js";
 import { CliError } from "../../shared/errors.js";
-import { exportTaskProjectionSnapshot, loadCommandContext } from "../shared/task-backend.js";
+import { execFileAsync, gitEnv } from "../shared/git.js";
+import {
+  exportTaskProjectionSnapshot,
+  loadCommandContext,
+  type CommandContext,
+} from "../shared/task-backend.js";
 import {
   extractDocSection,
   extractTaskObservationSection,
@@ -35,6 +40,10 @@ import { defaultTaskDocV3 } from "./doc-template.js";
 
 type TaskMigrateDocParams = { all: boolean; quiet: boolean; taskIds: string[] };
 type MarkdownSection = { title: string; text: string };
+export type TaskDocMigrationResult = {
+  changed: number;
+  changedPaths: string[];
+};
 const V3_CANONICAL_ORDER = [
   "Summary",
   "Scope",
@@ -304,6 +313,125 @@ async function resolveReadmePaths(opts: {
   return out;
 }
 
+async function exportProjectionSnapshotIfChanged(opts: {
+  ctx: CommandContext;
+  resolvedGitRoot: string;
+  tasksPath: string;
+}): Promise<string[]> {
+  if (!(opts.ctx.taskBackend.exportProjectionSnapshot || opts.ctx.taskBackend.exportTasksJson)) {
+    return [];
+  }
+  const relOutputPath = opts.tasksPath.replaceAll("\\", "/");
+  const outputPath = path.join(opts.resolvedGitRoot, relOutputPath);
+  let before: string | null = null;
+  try {
+    before = await readFile(outputPath, "utf8");
+  } catch {
+    before = null;
+  }
+  await exportTaskProjectionSnapshot({ ctx: opts.ctx, outputPath });
+  let after: string | null = null;
+  try {
+    after = await readFile(outputPath, "utf8");
+  } catch {
+    after = null;
+  }
+  if (before === after) return [];
+  return (await canStageGitPath(opts.resolvedGitRoot, relOutputPath)) ? [relOutputPath] : [];
+}
+
+async function canStageGitPath(gitRoot: string, relPath: string): Promise<boolean> {
+  try {
+    await execFileAsync("git", ["ls-files", "--error-unmatch", "--", relPath], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return true;
+  } catch {
+    // Continue below: untracked paths may still be stageable when they are not ignored.
+  }
+
+  try {
+    await execFileAsync("git", ["check-ignore", "--quiet", "--", relPath], {
+      cwd: gitRoot,
+      env: gitEnv(),
+    });
+    return false;
+  } catch {
+    return true;
+  }
+}
+
+export async function migrateTaskDocsInWorkspace(opts: {
+  cwd: string;
+  rootOverride?: string | null;
+  all: boolean;
+  taskIds: string[];
+  resolvedProject?: Awaited<ReturnType<typeof resolveProject>>;
+  config?: AgentplaneConfig;
+  ctx?: CommandContext;
+}): Promise<TaskDocMigrationResult> {
+  const resolved =
+    opts.resolvedProject ??
+    (await resolveProject({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+    }));
+  let config = opts.config;
+  if (!config) {
+    const loadedConfig = await loadConfig(resolved.agentplaneDir);
+    config = loadedConfig.config;
+  }
+  const ctx =
+    opts.ctx ??
+    (await loadCommandContext({
+      cwd: opts.cwd,
+      rootOverride: opts.rootOverride ?? null,
+      resolvedProject: resolved,
+      config,
+    }));
+  const params: TaskMigrateDocParams = { all: opts.all, quiet: false, taskIds: opts.taskIds };
+  const tasksDir = path.join(resolved.gitRoot, config.paths.workflow_dir);
+
+  const readmePaths = await resolveReadmePaths({ tasksDir, params });
+  if (!opts.all) {
+    for (const readmePath of readmePaths) {
+      if (!(await fileExists(readmePath))) {
+        const taskId = path.basename(path.dirname(readmePath));
+        throw new CliError({
+          exitCode: exitCodeForError("E_IO"),
+          code: "E_IO",
+          message: `Task README not found: ${taskId}`,
+        });
+      }
+    }
+  }
+
+  let changed = 0;
+  const changedPaths: string[] = [];
+  for (const readmePath of readmePaths) {
+    const res = await migrateTaskReadmeDoc({ readmePath, config });
+    if (!res.changed) continue;
+    changed += 1;
+    const relReadmePath = path.relative(resolved.gitRoot, readmePath).replaceAll("\\", "/");
+    if (await canStageGitPath(resolved.gitRoot, relReadmePath)) {
+      changedPaths.push(relReadmePath);
+    }
+  }
+
+  if (changed > 0) {
+    changedPaths.push(
+      ...(await exportProjectionSnapshotIfChanged({
+        ctx,
+        resolvedGitRoot: resolved.gitRoot,
+        tasksPath: config.paths.tasks_path,
+      })),
+    );
+  }
+
+  return { changed, changedPaths: [...new Set(changedPaths)] };
+}
+
 export async function cmdTaskMigrateDoc(opts: {
   cwd: string;
   rootOverride?: string;
@@ -313,49 +441,16 @@ export async function cmdTaskMigrateDoc(opts: {
 }): Promise<number> {
   const params: TaskMigrateDocParams = { all: opts.all, quiet: opts.quiet, taskIds: opts.taskIds };
   try {
-    const resolved = await resolveProject({
+    const result = await migrateTaskDocsInWorkspace({
       cwd: opts.cwd,
       rootOverride: opts.rootOverride ?? null,
+      all: params.all,
+      taskIds: params.taskIds,
     });
-    const loaded = await loadConfig(resolved.agentplaneDir);
-    const ctx = await loadCommandContext({
-      cwd: opts.cwd,
-      rootOverride: opts.rootOverride ?? null,
-      resolvedProject: resolved,
-      config: loaded.config,
-    });
-    const tasksDir = path.join(resolved.gitRoot, loaded.config.paths.workflow_dir);
-
-    const readmePaths = await resolveReadmePaths({ tasksDir, params });
-    if (!params.all) {
-      for (const readmePath of readmePaths) {
-        if (!(await fileExists(readmePath))) {
-          const taskId = path.basename(path.dirname(readmePath));
-          throw new CliError({
-            exitCode: exitCodeForError("E_IO"),
-            code: "E_IO",
-            message: `Task README not found: ${taskId}`,
-          });
-        }
-      }
-    }
-
-    let changed = 0;
-    for (const readmePath of readmePaths) {
-      const res = await migrateTaskReadmeDoc({ readmePath, config: loaded.config });
-      if (res.changed) changed += 1;
-    }
-
-    // Refresh the local export snapshot so doctor and other snapshot-based checks
-    // immediately observe the migrated README contract without a separate task export.
-    if (ctx.taskBackend.exportProjectionSnapshot || ctx.taskBackend.exportTasksJson) {
-      const outPath = path.join(resolved.gitRoot, loaded.config.paths.tasks_path);
-      await exportTaskProjectionSnapshot({ ctx, outputPath: outPath });
-    }
 
     if (!params.quiet) {
       process.stdout.write(
-        `${successMessage("migrated task docs", undefined, `changed=${changed}`)}\n`,
+        `${successMessage("migrated task docs", undefined, `changed=${result.changed}`)}\n`,
       );
     }
     return 0;

@@ -414,6 +414,186 @@ Legacy verification plan.
     },
   );
 
+  it(
+    "upgrade --migrate-task-docs recovers a legacy README v2 task in one run",
+    { timeout: 60_000 },
+    async () => {
+      const root = await mkGitRepoRoot();
+      await configureGitUser(root);
+
+      let io = captureStdIO();
+      try {
+        expect(await runCli(["init", "--yes", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+
+      io = captureStdIO();
+      let taskId = "";
+      try {
+        expect(
+          await runCli([
+            "task",
+            "new",
+            "--title",
+            "Legacy README bridge target",
+            "--description",
+            "Exercise the opt-in upgrade README bridge.",
+            "--priority",
+            "med",
+            "--owner",
+            "TESTER",
+            "--tag",
+            "code",
+            "--root",
+            root,
+          ]),
+        ).toBe(0);
+        const match = /\b\d{12}-[A-Z0-9]{6}\b/.exec(io.stdout);
+        expect(match).not.toBeNull();
+        taskId = match?.[0] ?? "";
+      } finally {
+        io.restore();
+      }
+
+      const taskDir = path.join(root, ".agentplane", "tasks", taskId);
+      const readmePath = path.join(taskDir, "README.md");
+      const legacyReadme = `---
+id: "${taskId}"
+title: "Legacy README bridge target"
+status: "TODO"
+priority: "med"
+owner: "TESTER"
+depends_on: []
+tags:
+  - "code"
+verify: []
+plan_approval:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+verification:
+  state: "pending"
+  updated_at: null
+  updated_by: null
+  note: null
+commit: null
+comments: []
+events: []
+doc_version: 2
+doc_updated_at: "2026-03-08T00:00:00.000Z"
+doc_updated_by: "TESTER"
+description: "Exercise the opt-in upgrade README bridge."
+id_source: "generated"
+---
+## Summary
+
+Legacy README bridge target
+
+Exercise the opt-in upgrade README bridge.
+
+## Scope
+
+- In scope: legacy README v2 recovery.
+- Out of scope: unrelated refactors.
+
+## Plan
+
+1. Upgrade the framework files.
+2. Migrate task docs in the same run.
+
+## Verify Steps
+
+### Scope
+- Primary tag: \`code\`
+
+### Checks
+- Confirm upgrade and migration work end to end.
+
+### Evidence / Commands
+- Record the recovery commands.
+
+### Pass criteria
+- The project ends on README v3.
+
+## Verification
+
+### Plan
+
+Legacy verification plan.
+
+### Results
+
+<!-- BEGIN VERIFICATION RESULTS -->
+<!-- END VERIFICATION RESULTS -->
+
+## Rollback Plan
+
+- Revert the upgrade commit.
+
+## Notes
+
+- Legacy task placeholder.
+`;
+      await writeFile(readmePath, legacyReadme, "utf8");
+
+      io = captureStdIO();
+      try {
+        expect(await runCli(["task", "export", "--root", root])).toBe(0);
+      } finally {
+        io.restore();
+      }
+      await commitAll(root, "✨ fixture: legacy readme v2 for upgrade bridge");
+
+      io = captureStdIO();
+      try {
+        expect(await runCli(["upgrade", "--yes", "--migrate-task-docs", "--root", root])).toBe(0);
+        expect(io.stdout).toContain("Task README migration: changed=1");
+        expect(io.stderr).not.toContain("agentplane task migrate-doc --all");
+      } finally {
+        io.restore();
+      }
+
+      const migratedReadme = await readFile(readmePath, "utf8");
+      expect(migratedReadme).toContain("doc_version: 3");
+      expect(migratedReadme).toContain("revision: 1");
+      expect(migratedReadme).toContain("sections:");
+      expect(migratedReadme).toContain("## Findings");
+      expect(migratedReadme).not.toContain("## Notes");
+      expect(migratedReadme).not.toContain("### Plan");
+      expect(migratedReadme).not.toContain("### Results");
+
+      const tasksExportText = await readFile(path.join(root, ".agentplane", "tasks.json"), "utf8");
+      const tasksExport = JSON.parse(tasksExportText) as {
+        tasks?: {
+          id?: string;
+          doc_version?: number;
+          revision?: number;
+          doc?: string;
+        }[];
+      };
+      const migratedTask = tasksExport.tasks?.find((task) => task.id === taskId);
+      expect(migratedTask?.doc_version).toBe(3);
+      expect(migratedTask?.revision).toBe(1);
+      expect(migratedTask?.doc).toContain("Legacy task placeholder.");
+
+      io = captureStdIO();
+      const doctorClean = vi.spyOn(console, "error").mockImplementation(() => {
+        /* captured separately for assertion */
+      });
+      try {
+        expect(await runCli(["doctor", "--root", root])).toBe(0);
+        const doctorOutput = `${io.stdout}\n${io.stderr}\n${doctorClean.mock.calls.flat().join("\n")}`;
+        expect(doctorOutput).not.toContain("agentplane task migrate-doc --all");
+        expect(doctorOutput).not.toContain("active legacy");
+      } finally {
+        doctorClean.mockRestore();
+        io.restore();
+      }
+    },
+  );
+
   it("upgrade fails on dirty tracked tree before applying in default apply mode", async () => {
     const root = await mkGitRepoRoot();
     await writeDefaultConfig(root);

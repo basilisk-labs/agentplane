@@ -16,6 +16,7 @@ import { ensureWorkflowArtifacts } from "../shared/workflow-artifacts.js";
 import { checkTaskReadmeMigrationState } from "./doctor/workspace.js";
 import { loadCommandContext } from "./shared/task-backend.js";
 import { ensureNetworkApproved } from "./shared/network-approval.js";
+import { migrateTaskDocsInWorkspace } from "./task/migrate-doc.js";
 import { getVersion } from "../meta/version.js";
 import {
   applyManagedFiles,
@@ -56,6 +57,7 @@ export type UpgradeFlags = {
   allowTarball: boolean;
   dryRun: boolean;
   backup: boolean;
+  migrateTaskDocs: boolean;
   yes: boolean;
 };
 
@@ -741,6 +743,22 @@ export async function cmdUpgradeParsed(opts: {
       createdBackups,
       toBaselineKey,
     });
+    const migratedTaskDocs = flags.migrateTaskDocs
+      ? await migrateTaskDocsInWorkspace({
+          cwd: opts.cwd,
+          rootOverride: opts.rootOverride ?? null,
+          all: true,
+          taskIds: [],
+          resolvedProject: resolved,
+          config: loaded.config,
+          ctx: commandCtx,
+        })
+      : { changed: 0, changedPaths: [] };
+    if (flags.migrateTaskDocs) {
+      const details =
+        migratedTaskDocs.changed > 0 ? `changed=${migratedTaskDocs.changed}` : "already current";
+      process.stdout.write(`Task README migration: ${details}\n`);
+    }
 
     const hasManagedMutations = additions.length > 0 || updates.length > 0;
     const shouldMutateConfig = await persistUpgradeState({
@@ -777,6 +795,7 @@ export async function cmdUpgradeParsed(opts: {
       ...new Set([
         ...additions,
         ...updates,
+        ...migratedTaskDocs.changedPaths,
         ...workflowArtifacts.commitPaths,
         ...(shouldMutateConfig ? [CONFIG_REL_PATH] : []),
       ]),

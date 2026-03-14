@@ -73,9 +73,32 @@ describe("upgradeSpec parsing/validation", () => {
     expect(out.parsed.mode).toBe("agent");
   });
 
+  it("parses --migrate-task-docs", () => {
+    const out = parseCommandArgv(upgradeSpec, ["--migrate-task-docs"]);
+    expect(out.parsed.migrateTaskDocs).toBe(true);
+  });
+
   it("rejects --agent + --auto", () => {
     try {
       parseCommandArgv(upgradeSpec, ["--agent", "--auto"]);
+      throw new Error("expected parseCommandArgv to throw");
+    } catch (err) {
+      expect(err).toMatchObject({ code: "E_USAGE" });
+    }
+  });
+
+  it("rejects --migrate-task-docs with --agent", () => {
+    try {
+      parseCommandArgv(upgradeSpec, ["--agent", "--migrate-task-docs"]);
+      throw new Error("expected parseCommandArgv to throw");
+    } catch (err) {
+      expect(err).toMatchObject({ code: "E_USAGE" });
+    }
+  });
+
+  it("rejects --migrate-task-docs with --dry-run", () => {
+    try {
+      parseCommandArgv(upgradeSpec, ["--dry-run", "--migrate-task-docs"]);
       throw new Error("expected parseCommandArgv to throw");
     } catch (err) {
       expect(err).toMatchObject({ code: "E_USAGE" });

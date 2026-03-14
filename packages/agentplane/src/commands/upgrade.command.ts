@@ -81,6 +81,13 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
     },
     {
       kind: "boolean",
+      name: "migrate-task-docs",
+      default: false,
+      description:
+        "After applying the framework upgrade, migrate legacy task README docs in the same run.",
+    },
+    {
+      kind: "boolean",
       name: "no-backup",
       default: false,
       description: "Disable backups (default is to create backups).",
@@ -122,6 +129,10 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
       cmd: "agentplane upgrade --bundle ./agentplane-upgrade.tar.gz --checksum ./agentplane-upgrade.tar.gz.sha256",
       why: "Upgrade from local bundle files (no network).",
     },
+    {
+      cmd: "agentplane upgrade --yes --migrate-task-docs",
+      why: "Apply the framework upgrade and migrate legacy task README docs in one operator run.",
+    },
   ],
   parse: (raw) => {
     const noBackup = raw.opts["no-backup"] === true;
@@ -137,6 +148,7 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
       checksumAsset: raw.opts["checksum-asset"] as string | undefined,
       dryRun: raw.opts["dry-run"] === true,
       backup: !noBackup,
+      migrateTaskDocs: raw.opts["migrate-task-docs"] === true,
       yes: raw.opts.yes === true,
     };
   },
@@ -159,6 +171,20 @@ export const upgradeSpec: CommandSpec<UpgradeParsed> = {
         command: "upgrade",
         message:
           "Remote upgrade options (--tag/--source/--asset/--checksum-asset) require --remote.",
+      });
+    }
+    if (p.migrateTaskDocs && p.mode === "agent") {
+      throw usageError({
+        spec: upgradeSpec,
+        command: "upgrade",
+        message: "Option --migrate-task-docs cannot be used with --agent.",
+      });
+    }
+    if (p.migrateTaskDocs && p.dryRun) {
+      throw usageError({
+        spec: upgradeSpec,
+        command: "upgrade",
+        message: "Option --migrate-task-docs cannot be used with --dry-run.",
       });
     }
   },
